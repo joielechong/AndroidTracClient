@@ -1,0 +1,11 @@
+Installation is easy:
+
+./configure 
+make
+make install   (as root)
+
+Run 
+
+./configure --help
+
+for options during the install process

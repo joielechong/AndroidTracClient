@@ -1,0 +1,108 @@
+TTX  Versie 2.4.7
+Copyright (C) 2001-2003 Marcel Mol
+Copyright (C) 1995,1996,2004 Michiel van Loon
+
+Historie van wijzigingen:
+2.4.7 22 juni 2004 Michiel van Loon
+      Add --debug option
+      NOS changed behaviour of its server, change of User-Agent String	
+2.4.6 23 februari 2003 Marcel Mol.
+      Add --raw option
+      NOS changed color coding from hexnumbers to ascii names.
+2.4.5 22 januari 2003 Marcel Mol.
+      Interpret color codes (<FONT COLOR+...>) in the teletekst
+      data into ansi color codes.
+      Add option --nocol to disable color support
+      Add --help and -h option for help
+2.4.4 10 januari 2003 Marcel Mol.
+      Nieuw teletekst versie van de NOS.
+      alle teletekst data staat nu tussen 1 set <pre></pre>.
+      er staan allerlei font settings tussen de teletekst data.
+      alle paginas moeten als <paginanummer>-<subpaginanummer>
+      opgevraagd worden. Ttx loopt dan ook net zolang tot een sub
+      pagina refrentie faalt.
+
+2.4.3 Tijdelijke bugfix voor zeer grote pagina's (566)
+
+2.4   De NOS had weer eens wat veranderd in het protocol en plotsklaps werkte 
+      het niet meer.
+      Makefile aangepast voor Solaris in de Unix distributie.
+
+2.3   Een hinderlijk bugje gefixed
+
+2.2   Meer dan 1 pagina als argument nu mogelijk
+
+2.1   Versie aangepast voor Unix. Getest en werkend op Sun, Solaris en Linux.
+
+2.0   Als gevolg van het alleenrecht van de NOS voor teletekst pagina verspreiding 
+      op het net is er alleen nog maar een WWW interface beschikbaar. Deze nieuwe
+      versie emuleert de uitvoer van het oude formaat. Maakte gebruik van de TCPIP
+      libraries zonder dat ik daar de documentatie van had, maar het werkte
+
+1.0   Een nooit uigegeven REXX met C programma versie die het NOS 
+      interface begreep.
+
+0.x   De oorspronkelijke versie die via de VU de pagina's ophaalde.
+
+Auteur:
+     Michiel van Loon (mfvl@xs4all.nl)
+
+
+Beschrijving:
+     TTX is een programma om een teletekst pagina in te lezen in tekstmode.
+
+Benodigd zijn:
+     - GCC om de bijgeleverde sources te compileren, een andere compiler eist 
+       misschien een iets ander makefile en wat wijzigingen in de code.
+
+Installatie:
+     Zet TTX in een directory in het PATH.
+
+Gebruik:
+     ttx [--nocol] paginanummer ...
+     Als er geen paginanummer wordt meegegevn dan wordt pagina
+     100 opgevraagd.
+
+     TTX werkt vanaf de prompt en de uitvoer kan op alle standaard
+     manieren worden gemanipuleerd.
+
+     Bijvoorbeeld voor de beurskoersen op file geef je
+
+          TTX 570 >pag570.ttx
+
+     Het programma haalt alle subpaginas van een hoofdpagina op.
+
+Plannen voor de toekomst:
+     Weinig. Voor alle geavanceerde toepassingen (als het volgen van 
+     links etc.) verwijs ik graag naar de WWW-browsers die dat met 
+     gemak kunnen. 
+
+NB.
+     Dit programma mag vrijelijk worden gedistribueerd, mits dit 
+     documentatiefile daar ongewijzigd bij blijft.
+     Voor het gebruik van dit programma voor commerciele toepassingen 
+     dienen vooraf met mij afspraken te worden gemaakt.
+
+NB.2
+     Alle teletekst pagina's die op deze wijze zijn te verkrijgen zijn 
+     copyright NOS.
+
+FREEWARE of SHAREWARE
+     Dit programma is freeware, maar een ieder die een onweerstaanbare 
+     neiging voelt dat hij hiervoor wil betalen is het toegestaan een 
+     willekeurig bedrag op girorekening (3808539 tnv M.F. van Loon)
+     en mijn bankrekeningnummer (368935922 tnv M.J.E. Mol)
+     te laten bijschrijven. Ik zal dan mededelingen over een nieuwe versie 
+     als eerste aan je laten weten (geen plannen trouwens in die richting, 
+     die PLANNEN VOOR DE TOEKOMST hiervoor). Maar ideeen en reacties zijn 
+     uiteraard welkom.
+
+DISCLAIMER (hoort :-))
+     Ik aanvaard geen enkele verantwoordelijkheid voor welke schade dan ook 
+     die door het gebruik van dit programma wordt veroorzaakt.
+
+
+Michiel van Loon                  Marcel Mol
+mfvl@xs4all.nl                    marcel@mesa.nl
+
+22 januari 2003
