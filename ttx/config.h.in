@@ -15,11 +15,20 @@
 /* Define to 1 if you have the `calloc' function. */
 #undef HAVE_CALLOC
 
+/* Define to 1 if you have the `close' function. */
+#undef HAVE_CLOSE
+
+/* Define to 1 if you have the `connect' function. */
+#undef HAVE_CONNECT
+
 /* Define to 1 if you don't have `vprintf' but do have `_doprnt.' */
 #undef HAVE_DOPRNT
 
 /* Define to 1 if you have the <errno.h> header file. */
 #undef HAVE_ERRNO_H
+
+/* Define to 1 if you have the `fprintf' function. */
+#undef HAVE_FPRINTF
 
 /* Define to 1 if you have the `getenv' function. */
 #undef HAVE_GETENV
@@ -122,6 +131,9 @@
 
 /* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H
+
+/* Define to 1 if you have the `strlen' function. */
+#undef HAVE_STRLEN
 
 /* Define to 1 if you have the `strncasecmp' function. */
 #undef HAVE_STRNCASECMP
