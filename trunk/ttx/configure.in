@@ -22,7 +22,7 @@ AC_TYPE_SIZE_T
 
 dnl Checks for library functions.
 AC_FUNC_VPRINTF
-AC_CHECK_FUNCS(gethostbyname gethostbyaddr getservbyname gethostname socket strstr inet_aton strncasecmp strnicmp inet_ntoa inet_addr getenv getopt memset strdup atoi htons ntohs perror calloc getsockname send recv strncmp strcat strcpy strchr index memmove getopt_long)
+AC_CHECK_FUNCS(gethostbyname gethostbyaddr getservbyname gethostname socket strstr inet_aton strncasecmp strnicmp inet_ntoa inet_addr getenv getopt memset strdup atoi htons ntohs perror calloc getsockname send recv strncmp strcat strcpy strchr index memmove getopt_long close fprintf connect strlen)
 
 AC_ARG_ENABLE(color,
         [  --disable-color          No colored output],
