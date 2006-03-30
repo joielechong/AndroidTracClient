@@ -1,0 +1,40 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(ttx.cpp)
+AM_INIT_AUTOMAKE(ttx, 2.4.7)
+AM_CONFIG_HEADER(config.h)
+
+dnl Checks for programs.
+AC_PROG_AWK
+AC_PROG_CC
+AC_PROG_CXX
+AC_PROG_CPP
+AC_PROG_CXXCPP
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_C_PROTOTYPES
+
+dnl Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS(stdio.h string.h sys/types.h sys/socket.h netdb.h errno.h unistd.h netinet/in.h arpa/inet.h)
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_TYPE_SIZE_T
+
+dnl Checks for library functions.
+AC_FUNC_VPRINTF
+AC_CHECK_FUNCS(gethostbyname gethostbyaddr getservbyname gethostname socket strstr inet_aton strncasecmp strnicmp inet_ntoa inet_addr getenv getopt memset strdup atoi htons ntohs perror calloc getsockname send recv strncmp strcat strcpy strchr index memmove getopt_long)
+
+AC_ARG_ENABLE(color,
+        [  --disable-color          No colored output],
+        [with_color=$enableval],
+        [with_color=yes])
+test "$with_color" = "yes" && AC_DEFINE(COLOR_ENABLE,[],[Color enabled])
+
+AC_ARG_ENABLE(debug,
+        [  --enable-debug           Debug version (for developers only)],
+        [with_debug=$enableval],
+        [with_debug=no])
+test "$with_debug" = "yes" && AC_DEFINE(DEBUG,[],[Debug enabled])
+
+AC_OUTPUT(Makefile)
