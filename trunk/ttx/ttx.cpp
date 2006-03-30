@@ -6,7 +6,7 @@
 
 /*
  * ttx.c
- * Copyright (C) 1995,1996,2004 M.F. van Loon <mfvl@xs4all.nl>,
+ * Copyright (C) 1995,1996,2004,2005 M.F. van Loon <mfvl@xs4all.nl>,
  * Copyright (C) 2001-2003 Marcel .J.E. Mol <marcel@mesa.nl>
  *
  * This program is free software; you can redistribute it and/or
@@ -92,7 +92,7 @@ struct option long_options[] = {
 #define TTX_PORT      "80"
 #define TTX_URL        "/tekst/"
 
-#define ID         "TTX V" VERSION " (C) 1995,1996,2004 M.F. van Loon, 2001-2003 M.J.E. Mol"
+#define ID         "TTX V" VERSION " (C) 1995,1996,2004,2005 M.F. van Loon, 2001-2003 M.J.E. Mol"
 #define USER_AGENT "Mozilla/5.0 (compatible; MSIE 6.0; Windows NT 5.0; .NET CLR 1.0.3705)"
 #define err_sock_print() perror("Cannot write to net\n")
 
