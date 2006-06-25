@@ -100,7 +100,7 @@ datum              : INTEGER;
 type               : STRING|EMPTY {$<s>$="";};
 dummy              : STRING|EMPTY;
 nr1                : INTEGER;
-naam               : STRING|INTEGER|EMPTY {$<s>$=""};
+naam               : STRING|INTEGER{static char t[255];sprintf(t,"%d",$<i>1);$<s>$=t;}|EMPTY {$<s>$=""};
 bedrag             : FLOAT;
 ab1                : STRING;
 omschr             : STRING|EMPTY {$<s>$=""};
