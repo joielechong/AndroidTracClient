@@ -100,7 +100,7 @@ datum              : INTEGER;
 type               : STRING|EMPTY {$<s>$="";};
 dummy              : STRING|EMPTY;
 nr1                : INTEGER;
-naam               : STRING|EMPTY {$<s>$=""};
+naam               : STRING|INTEGER|EMPTY {$<s>$=""};
 bedrag             : FLOAT;
 ab1                : STRING;
 omschr             : STRING|EMPTY {$<s>$=""};
