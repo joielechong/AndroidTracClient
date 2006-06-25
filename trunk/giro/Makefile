@@ -19,7 +19,7 @@ giro.tab.h: giro.y
 pg_giro.o: pg_giro.c pg_giro.h
 
 clean: 
-	rm -f *.o *.i *.output giro.tab.* lex.yy.*
+	rm -f giro *.o *.i *.output giro.tab.* lex.yy.*
 
 install: giro
 	install giro ~/bin
