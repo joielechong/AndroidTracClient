@@ -3,7 +3,7 @@
 use strict;
 use DBI;
 
-my $dbh = DBI->connect("dbi:Pg:dbname=httpd", "mfvl", "gotect03");
+my $dbh = DBI->connect("dbi:Pg:dbname=httpd");
 my $saldos = $dbh->selectall_arrayref("SELECT girorekening,max(datum) from saldo where rekening='Girorekening' group by girorekening;");
 
 my $maxrow=$#$saldos;
