@@ -26,18 +26,38 @@
  */
 #include "config.h" 
 
+#ifdef HAVE_STDIO_H
 #include <stdio.h>
+#endif
+#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif
+#ifdef HAVE_NETDB_H
 #include <netdb.h>
+#endif
+#ifdef HAVE_ERRNO_H
 #include <errno.h>
+#endif
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#endif
+#ifdef HAVE_GETOPT_H
 #include <getopt.h>
+#endif
 #include "sockextr.h"
 
 #ifndef FALSE
 # define FALSE (0)
 # define TRUE (!FALSE)
+#endif
+
+#ifdef WIN32
+WORD wVersionRequested;
+WSADATA wsaData;
+int err;
 #endif
 
 #ifdef HAVE_STRNCASECMP
@@ -417,6 +437,18 @@ int main(int argc, char **argv)
 #endif
     }
   }
+
+#ifdef WIN32
+wVersionRequested = MAKEWORD( 1, 1 );
+
+err = WSAStartup( wVersionRequested, &wsaData );
+if ( err != 0 ) {
+    /* Tell the user that we couldn't find a useable */
+    /* winsock.dll.                                  */
+  fprintf(stderr,"Foute versie van Winsock\n");
+    return 4;
+}
+#endif
   
   //  fprintf(stderr, "%s\n", ID);
   

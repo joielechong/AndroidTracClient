@@ -1,4 +1,4 @@
-dnl Process this file with autoconf to produce a configure script.
+LIBdnl Process this file with autoconf to produce a configure script.
 AC_INIT(ttx.cpp)
 AM_INIT_AUTOMAKE(ttx, 2.4.8pre)
 AM_CONFIG_HEADER(config.h)
@@ -12,9 +12,10 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_C_PROTOTYPES
 
+
 dnl Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(stdio.h string.h sys/types.h sys/socket.h netdb.h errno.h unistd.h netinet/in.h arpa/inet.h stdlib.h getopt.h)
+AC_CHECK_HEADERS(stdio.h string.h stdarg.h sys/types.h sys/socket.h netdb.h errno.h unistd.h netinet/in.h arpa/inet.h stdlib.h getopt.h winsock2.h winsock.h ws2tcpip.h)
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -22,7 +23,10 @@ AC_TYPE_SIZE_T
 
 dnl Checks for library functions.
 AC_FUNC_VPRINTF
-AC_CHECK_FUNCS(gethostbyname gethostbyaddr getservbyname gethostname socket strstr inet_aton strncasecmp strnicmp inet_ntoa inet_addr getenv getopt memset strdup atoi htons ntohs perror calloc getsockname send recv strncmp strcat strcpy strchr index memmove getopt_long close fprintf connect strlen)
+
+AC_SEARCH_LIBS(gethostbyname,ws2_32 wsock32)
+
+AC_CHECK_FUNCS(gethostbyaddr getservbyname gethostname socket strstr inet_aton strncasecmp strnicmp inet_ntoa inet_addr getenv getopt memset strdup atoi htons ntohs perror calloc getsockname send recv strncmp strcat strcpy strchr index memmove getopt_long close fprintf connect strlen)
 
 AC_ARG_ENABLE(color,
         [  --disable-color          No colored output],

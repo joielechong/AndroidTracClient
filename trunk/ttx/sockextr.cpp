@@ -20,12 +20,20 @@
  *
  */
 
+#include <config.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
+#ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
+#endif
+#ifdef HAVE_NETDB_H
 #include <netdb.h>
+#endif
+#ifdef HAVE_WS2TCPIP_H
+#include <ws2tcpip.h>
+#endif
 #include <errno.h>
 
 #include "sockextr.h"
@@ -199,7 +207,7 @@ static void fill_buffer(struct tcp_socket *sock)
   if((TCP_BUFFER - sock->in) < count)
     count = TCP_BUFFER - sock->in;
 
-  if((read = recv(sock->socket,sock->recvbuf+sock->in,count,0)) < 0)
+  if((read = recv(sock->socket,(char *)(sock->recvbuf+sock->in),count,0)) < 0)
   {
     perror("Fill buffer failed");
     return;
