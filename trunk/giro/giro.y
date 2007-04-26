@@ -32,6 +32,7 @@ int yylex(void);
    char *o,*p;
    double b;
    char cmd[1024];
+   
    //   fprintf(stderr,"%d %ld %ld %s %d %ld %s %9.2lf %s %s\n",format,girorek,datum,type,nr,reknr,naam,bedrag,ab,omschr);
    
    if (*ab != 0) {
@@ -42,7 +43,7 @@ int yylex(void);
 	 o=omschr+strlen(naam);
        else
 	 o=omschr;
-       //       fprintf(stderr,"iii = %d, o=%s\n",iii,o);
+       //    fprintf(stderr,"iii = %d, o=%s\n",iii,o);
      } else 
        o=omschr;
 
