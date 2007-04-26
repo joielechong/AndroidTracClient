@@ -11,6 +11,7 @@ F3               {I}[eE]{I}
 F                {F1}|{F2}|{F3}
 G                {G1}|{G2}|{F3}
 Q                "\""
+A                [^\"}]+
 
 %{
 #include <stdio.h>
@@ -52,7 +53,8 @@ static char *strip (char *s) {
 
 ","                      {return ',';}
 
-{Q}[^\"}]+{Q}            {yylval.s=strdup(strip(yytext+1)); return STRING;}
+{Q}{A}TOYS[ ]{Q}R{Q}{A}{Q} {yylval.s=strdup(strip(yytext+1)); return STRING;}
+{Q}{A}{Q}                {yylval.s=strdup(strip(yytext+1)); return STRING;}
 
 [ \t\r]                    
 \n                       
