@@ -55,6 +55,7 @@ static char *strip (char *s) {
 
 {Q}{A}TOYS[ ]{Q}R{Q}{A}{Q} {yylval.s=strdup(strip(yytext+1)); return STRING;}
 {Q}{A}{Q}                {yylval.s=strdup(strip(yytext+1)); return STRING;}
+{Q}{Q}PICK[ ]2[ ]PAY{Q}{A}{Q} {yylval.s=strdup(strip(yytext+1)); return STRING;}
 
 [ \t\r]                    
 \n                       
