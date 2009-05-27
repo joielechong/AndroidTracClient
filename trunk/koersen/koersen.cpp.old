@@ -1,0 +1,198 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <time.h>
+
+int jaar,maand,dag = 0;
+FILE *rend;
+
+enum types {normaal, optie, optie_rel,laatste};
+
+struct tabel
+{
+  char tt_nam[11];
+  char db_nam[11];
+  double koers;
+  enum types type;
+  double conv_koers;
+} tabel[]        = {{ "PB-BEL F  ","PBF",-1,normaal},
+                    { "ROBECO    ","ROBECO",-1,normaal},
+//                    { "RODAMCO   ","RODAMCO",-1,normaal},
+//                    { "ROLINCO   ","ROLINCO",-1,normaal},
+		    { "ROLINCO   ","RZROLINCO",-1,normaal},
+		    { "RG EMERG  ","RZEMF",-1,normaal},
+		    { "RG HOL BEZ","RZHB",-1,normaal},
+                    { "POSTBK BF ","PBF",-1,normaal},
+                    { "POSTBK AF ","PAF",-1,normaal},
+//                    { "POSTBK OF ","POF",-1,normaal},
+                    { "POSTBK VF ","PVF",-1,normaal},
+		    { "POSTBK IT ","PIF",-1,normaal},
+                    { "RG AMERIC ","AMERICA",-1,normaal},
+                    { "RG PACIFI ","PACIFIC",-1,normaal},
+                    { "AHOLD     ","AHOLD",-1,normaal},
+//		    { "AJAX      ","AJAX",-1,normaal},
+		    { "HITT      ","HITT",-1,normaal},
+		    { "ICT       ","ICT",-1,normaal},
+		    { "ICT       ","ICTOPT97",-1,optie,22.10},
+		    { "ICT       ","ICTOPT98",-1,optie,35.02},
+                    { "KPN       ","KPN",-1,normaal},
+		    { "TNT POSTGR","TPG",-1,normaal},
+//                    { "DORDT PET ","DORDTPET",-1,normaal},
+                    { " ING      ","ING",-1,normaal},
+                    { "Adam Excha","AEX",-1,normaal},
+		    { "Adam Excha","FISCA97",-1,optie_rel,737.46},
+		    { "Adam Excha","FISCA98",-1,optie_rel,1070.33},
+                    { "OHRA AAND ","OAF",-1,normaal},
+                    { "OHRA OBLDF","ODF",-1,normaal},
+                    { "OHRA TOTAL","OTF",-1,normaal},
+		    { "ASM LITHO ","ASML",-1,normaal},
+//		    { "FORTISAMEV","FORTIS",-1,normaal},
+		    { "SIMAC     ","SIMAC",-1,normaal},
+//		    { "ELSEVIER  ","ELSEVIER",-1,normaal},
+		    { "NUMICO    ","NUMICO",-1,normaal},
+		    { "HEINEKEN  ","HEINEKEN",-1,normaal},
+                    { "ASN AANDF ","ABF",-1,normaal},
+		    { "TRIGF     ","TGF",-1,normaal},
+		    { "          ","",0 ,laatste } };
+
+void skip_page(FILE *fid)
+{
+  char buffer[512];
+
+  for(;;)
+  {
+    if ((fgets(buffer,sizeof(buffer),fid)) == NULL)
+      return;
+    if (strncmp(buffer,"NOS-TT",6) == 0)
+      return;
+  }
+}
+
+void pagina(char *filename)
+{
+  char buffer[512];
+  int i;
+  FILE *fid;
+  float koers;
+
+  if (strcmp(filename,"-") == 0)
+    fid = stdin;
+  else
+    if ((fid = fopen(filename,"rt")) == NULL)
+    {
+      perror(filename);
+      return;
+    }
+  for(;;)
+  {
+    if ((fgets(buffer,sizeof(buffer),fid)) == NULL)
+      break;
+    if (strstr(buffer,"TOP-30") != 0)
+      skip_page(fid);
+    if (strstr(buffer,"EFFECTENBEURS") != 0 && dag == 0)
+      sscanf(buffer+24,"%d/%d",&dag,&maand);
+    else
+    {
+      for(i=0;tabel[i].type!=laatste ;i++)
+      {
+        if (strstr(buffer,tabel[i].tt_nam) != NULL)
+        {
+          buffer[35] = '.';
+          if (sscanf(buffer+31,"%f",&koers) == 1) {
+	    switch (tabel[i].type) {
+	    case laatste:
+	      break;  // to satisfy the compiler
+	    case normaal:
+	      tabel[i].koers = koers;
+	      break;
+	    case optie:
+	      tabel[i].koers = (tabel[i].conv_koers < koers ? 
+				koers-tabel[i].conv_koers :
+				0);
+	      break;
+	    case optie_rel:
+	      tabel[i].koers = (tabel[i].conv_koers < koers ? 
+				(koers-tabel[i].conv_koers)/tabel[i].conv_koers :
+				0);
+	      break;
+	    }
+	  }
+        }
+      }
+      if ((strncmp(buffer,"        ",8) == 0) && isalnum(buffer[8]))
+      {
+        double oud,nieuw;
+
+        buffer[35] = '.';
+        buffer[24] = '.';
+        buffer[18] = 0;
+        oud   = atof(buffer+20);
+        nieuw = atof(buffer+31);
+        fprintf(rend,"%s %8.2f %8.2f ",buffer+8,oud,nieuw);
+        if (oud > 0)
+          fprintf(rend,"%7.2f%%",100.0*(nieuw-oud)/oud);
+        else
+          fprintf(rend,"*******");
+        fprintf(rend,"\n");
+      }
+    }
+  }
+  if (fid != stdin) fclose(fid);
+}
+
+int main(int argc, char *argv[])
+{
+  time_t tijd;
+  struct tm *t;
+#ifdef __EMX__
+  char format[] = "%4.4d%2.2d%2.2d,%6.4lf,\"%s\"\n";
+#else
+  char format[] = "%4.4d%2.2d%2.2d,%6.4lf,\"%s\"\r\n";
+#endif
+  int i;
+  FILE *fid_uit;
+
+#ifdef __EMX__
+  char filprint[] = "c:\\temp\\koers_up.prn";
+  char filrend[]  = "c:\\temp\\rend.txt";
+#else
+  char filprint[] = "/p233/c/temp/koers_up.prn";
+  char filrend[]  = "/p233/c/temp/rend.txt";
+#endif
+
+  rend = fopen(filrend,"wt");
+
+  time(&tijd);
+  t = localtime(&tijd);
+  jaar = t->tm_year + 1900;
+
+  for(i=1;i<argc;i++)
+    pagina(argv[i]);
+
+#ifdef __EMX__
+  fid_uit = fopen(filprint,"at");
+#else
+  fid_uit = fopen(filprint,"ab");
+#endif
+
+  if (fid_uit == NULL)
+  {
+     perror(filprint);
+     return 1;
+  }
+
+  for(i=0;tabel[i].type!=laatste;i++)
+  {
+    if(tabel[i].koers >= 0)
+    {
+      fprintf(fid_uit,format,jaar,maand,dag,tabel[i].koers,tabel[i].db_nam);
+      printf(format,jaar,maand,dag,tabel[i].koers,tabel[i].db_nam);
+    }
+  }
+
+  fclose(fid_uit);
+  fclose(rend);
+
+  return 0;
+}

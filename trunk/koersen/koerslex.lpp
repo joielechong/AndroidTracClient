@@ -1,0 +1,36 @@
+D                       [0-9]
+S                       [-+]
+
+%{
+#include "koerssyn.h"
+%}
+
+%%
+
+\"[^\n"]*\"             { yylval.s=yytext;return(STRING); }
+
+"{"                     { return(OPENBLOCK); }
+
+"}"                     { return(CLOSEBLOCK); }
+
+"normaal"               { return(NORMAAL); }
+"optie_fl"              { return(OPTIE_FL); }
+"optie_rel_fl"          { return(OPTIE_REL_FL); }
+"optie_eur"             { return(OPTIE_EUR); }
+"optie_rel_eur"         { return(OPTIE_REL_EUR); }
+"laatste"               { return(LAATSTE); }
+
+{D}+    |
+{S}{D}+                 { yylval.f=atoi(yytext); return(FLOAT); }
+{D}+"."{D}* |
+{S}{D}+"."{D}*          { yylval.f=atof(yytext); return(FLOAT); }
+
+","                     { return(','); }
+";"                     { return(';'); }
+
+"//"[^\n]*              /* do nothing */ ;
+"#"[^\n]*               /* do nothing */ ;
+[ \t\n]+                /* eat up whitespace */
+
+.                       /* do nothing */ ;
+
