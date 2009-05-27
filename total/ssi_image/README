@@ -1,0 +1,155 @@
+##############################################################################
+# Server Side Includes Random Image Displayer
+# Created by: Matt Wright
+# Version 1.2
+# Created On: 7/1/95            Last Modified: 11/4/95
+# I can be reached at:  mattw@misha.net
+# Scripts located at:   http://worldwidemart.com/scripts/
+##############################################################################
+# If you run into any problems while trying to configure this scripts, help  #
+# is available.  The steps you should take to get the fastest results, are:  #
+#       1) Read this file thoroughly					     #
+#       2) Consult the Matt's Script Archive Frequently Asked Questions:     #
+#               http://www.worldwidemart.com/scripts/faq/	             #
+#       3) If you are still having difficulty installing this script, send   #
+#          e-mail to: scripts-help@tahoenet.com				     #
+#          Include any error messages you are receiving and as much detail   #
+#          as you can so we can spot your problem.  Also include the variable#
+#          configuration block that is located at the top of the script.     #
+#									     #
+# Hopefully we will be able to help you solve your problems.  Thank you.     #
+##############################################################################
+
+This script is provided to allow you to have a random image appear on your 
+page every time it is reloaded.  The server side includes version offers you 
+link flexibility as well as coinciding random alt text and other variables 
+which make it slightly more advanced than the Basic Random Image Displayer.
+
+There are two files included with this script.
+        1) README - This file, which explains installation
+        2) ssi_rand_image.pl - The perl script which chooses the random image.
+
+Below is a list of the changes that must be made to the ssi_rand_image.pl file 
+in order for it to choose your random images correctly:
+
+Inside the script you will see a list of variables, which must be defined in 
+order for your script to work.  Below is a description of how to define each 
+one:
+
+$basedir = "http://your.host.xxx/path/to/images/";
+
+        The standard portion of my url for each image.  This is the base 
+location of each image that is referenced in the next array @images. The 
+random image name chosen out of @images will be appended later on in the 
+script to form a complete url.
+
+@images = ("first_image.gif","second_image.jpg","third_image.gif");
+
+        This is the name of each image.  They can be whatever format you would 
+like, just make sure that when each of these filenames is appended to 
+$basedir, they form a complete url path to the image.
+
+@urls = ("http://url_linked/to/first_image",
+         "http://url_linked/to/second_image",
+         "http://url_linked/to/third_image");
+
+        If you want each image to be accompanied with a link, then this is 
+your chance to do it.  If you leave a field blank, then the script will assume 
+you do not have a url for that image and it will not link the image to 
+anything.  So therefore, if you did not have a link for the second image in 
+the example above you could do:
+
+        @urls = ("http://url_linked/to/first_image",
+                 "",
+                 "http://url_linked/to/third_image");
+
+@alt = ("First WWW Page","Second WWW Page","Third WWW Page");
+
+        This is the same idea as the @urls array.  Each of these alt text fields 
+corresponds to the image located in the same array spot in @images, as well 
+as the same url located in the @urls array.  If you don't want the alt text 
+for a certain image just leave the field blank as in the example of @urls 
+above.
+---
+
+There are also a number of options that you will need to define and decide 
+whether to use.  They are located directly below the variables in the 
+ssi_rand_image.pl script.
+
+$uselog = "1";            # 1 = YES; 0 = NO
+
+        At this point you must decide whether or not you want to use the 
+logging feature.  for most practical purposes this will not be used, but some 
+people may find it helpful either for keeping stats or seeing which images get 
+picked the most.  All the logging feature will record is the image, date, and 
+remote host that saw the image.  Should you choose to turn this option on, you 
+will need to define two more variables:
+
+   $logfile = "/home/mattw/public_html/links/ssi_image";
+                The location of the log file.  This must be in a 
+        readable/writable directory and given read/write permissions for all 
+        users so that the server's uid may edit the log file.
+   $date = `/usr/bin/date`; chop($date);
+                This is the location of your date function enclosed in '`' so 
+        that it will be executed when it is called upon.  It returns the date 
+        function for logging purposes only.
+
+$link_image = "1";        # 1 = YES; 0 = NO
+
+        If you turn this variable off you do not need to worry about what is 
+in the @urls variable.  It simply won't link any of your images.
+
+$align = "left";
+
+        This is the way in which you want your image aligned.  Valid choices 
+for Netscape include: left, right, middle, absmiddle, bottom, and absbottom.
+
+$border = "2";
+
+        This is the size you want your border to be.  Mainly occurs when you 
+have images linked the border turns blue, and in Netscape you can control the 
+size.  Setting this to zero causes there to be no border.
+
+You can turn off both align and border by setting them equal to "" like:
+$align = ""; or $border = "";
+_____________________________________________________________________________
+
+Server Side Includes
+
+I hope that you already know how to accomplish a Server Side Includes, and 
+therefore I am not going to go into detail about how.  Two things you can 
+check for are:
+
+1) Ask your sysadmin if you have access to server side includes and what you 
+need to change about your file to make them work.  This often involves 
+changing your .html files to .shtml.
+
+2) If you really don't know anything about Server Side Includes, you can 
+check out a great tutorial that NCSA has developed;  located at:
+
+        http://hoohoo.ncsa.uiuc.edu/docs/tutorials/includes.html
+
+________________________________________________________________________
+
+HISTORY:
+Version 1.1:	9/30	- Corrections made to random image displayer to 
+			  add functionality of alt text, links, etc... 
+			  to each random image..
+Version 1.2:	11/4	- Errors in alt="" tag not being noticed 
+			  correctly, and spacing being messed up fixed!
+
+________________________________________________________________________
+
+The Random Image Script was written to be useful, and comes with no 
+warranties, express or implied.  You can use this script freely, however you 
+want.  You can modify it however you like, I would just ask two things:
+
+1) Register it with me when you use it:  This means send me the url of where 
+it is implemented.  It can be done through the on-line form located at:
+        http://worldwidemart.com/scripts/implement.html
+
+2) Keep my name in the scripts (and possibly on the html page) somewhere.
+
+And last of all, ENJOY THE SCRIPT!
+________________________________________________________________________
+Matt Wright - mattw@misha.net - http://www.worldwidemart.com/scripts/

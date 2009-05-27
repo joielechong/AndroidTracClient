@@ -1,0 +1,3 @@
+; invert.def : Declares the module parameters.
+
+LIBRARY      "invert.DLL"
