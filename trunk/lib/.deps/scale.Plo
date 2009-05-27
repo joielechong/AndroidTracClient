@@ -1,0 +1,1 @@
+scale.lo scale.o: scale.c

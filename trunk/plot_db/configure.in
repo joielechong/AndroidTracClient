@@ -1,0 +1,30 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(Barchart.cpp)
+AM_INIT_AUTOMAKE(Barchart,0.0.1)
+AM_CONFIG_HEADER(config.h)
+
+dnl Checks for programs.
+AC_PROG_CC
+AC_PROG_CXX
+AC_PROG_CPP
+AC_PROG_CXXCPP
+AC_PROG_INSTALL
+
+dnl Checks for libraries.
+dnl Replace `main' with a function in -lgd:
+AC_CHECK_LIB(iconv, libiconv)
+AC_CHECK_LIB(gd, gdImageCreate)
+AC_CHECK_LIB(m, log)
+AC_CHECK_LIB(crypt, crypt)
+AC_CHECK_LIB(mfl, main)
+AC_CHECK_LIB(pq, PQexec)
+
+dnl Checks for header files.
+AC_CHECK_HEADERS(libpq-fe.h)
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+
+dnl Checks for library functions.
+
+AC_OUTPUT(Makefile)

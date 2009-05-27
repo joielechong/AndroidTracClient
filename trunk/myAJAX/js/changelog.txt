@@ -1,0 +1,186 @@
+/**
+*
+* myAJAX:  My AJAX implemetation ( http://myajax.sourceforge.net/ )
+* Copyright (c) 2006 - 2007, Raul IONESCU <raul.ionescu@yahoo.com>, Bucharest, ROMANIA
+*
+* Special Thanks:     
+* Sebastian IACOB  <isebastian07@yahoo.com>,    Bucharest, ROMANIA
+* Sebastian VASILE <sebastianvasile@yahoo.com>, Timisoara, ROMANIA
+* Tudor BARBU      <tudor@it-base.ro>,          Bucharest, ROMANIA
+*
+* @package      myAJAX
+* @copyright 	Copyright (c) 2006 - 2007, Raul IONESCU.
+* @disclaimer   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+*               INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+*               FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+*               IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES 
+*               OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+*               OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.   
+* @author 	Raul IONESCU <raul.ionescu@yahoo.com>
+* @license      The MIT License. ( http://www.opensource.org/licenses/mit-license.php )
+* @version 	6.1.0
+* @category 	Javascript functions for AJAX.
+* @access 	public
+* @notes        Uses some modified functions from jBookmarker project made by Tudor BARBU.
+*               (http://www.it-base.ro/blog/posts/javascript/jbookmarker-create-bookmarkable-ajax-apps.html)
+* @notes        Uses some slightly modified functions from http://www.dustindiaz.com/top-ten-javascript/ and 
+*               http://www.webtoolkit.info/ 
+*
+* REDISTRIBUTIONS OF FILES MUST RETAIN THE ABOVE COPYRIGHT NOTICE.
+*/
+
+
+
+Version 6.1.0
+------------------------------------------------------------------------------------
+        - Adding dragging facility for HTML elements - see `myAJAX.draggable` function.
+        - Redefine `myXML` object definition into `myAJAX.XML` and `XMLHttp` object 
+        definition into `myAJAX.XMLHttp`, while keeping backward compatibility.
+        - Adding `$getPosition` method for `HTMLElement`.
+        - Adding `$scroll` and `$getMousePosition` methods for `window`.
+        - Redesign of `$captureEvent` and `$releaseEvent` methods for `HTMLElement`.
+        - Renaming `$style` `HTMLElement`'s method into `$getStyle`.
+        - Renaming `$opacity` `HTMLElement`'s method into `$setOpacity`.
+        
+Version 6.0.3
+------------------------------------------------------------------------------------
+        - Adding `$releaseEvent` method for `HTMLElement`.
+        - Adding `$body` method for `Function`.
+        - Redesign of `$captureEvent` method for `HTMLElement`.
+        - Very small redesign of `$` method.
+        - Bug fixing: javascript code being received through iFrame method is executed twice.
+
+Version 6.0.2
+------------------------------------------------------------------------------------
+        - In the case when browser does not support `iframe` element and iframe based method is selected,
+        an `Error` is thrown: `myAJAX.constants.errorMessages.iframeElementNotSupported`.
+        - Adding `$reset` method for `HTMLElement`.
+        - Redesign of `$unescapeHTML` method and `myajax.php` file.
+
+Version 6.0.1
+------------------------------------------------------------------------------------
+        - Adding `myajax.php` file for delivering compressed version of `myajax.js`.
+
+Version 6.0.0
+------------------------------------------------------------------------------------
+        - Renaming all methods starting with `$`.
+        - Modifying `$` function to extend returned objects, with all methods of `HTMLElement`
+        and auto assigning an ID if the HTML element doesn't have one already.
+        - Redefine prototype methods for `Object` into prototype methods for `HTMLElement`.
+        - Modifying `document.getElementById`, `document.createElement`, `document.createTextNode`,
+        `document.getElementsByName` and `document.getElementsByTagName` methods, in order
+        to return objects with all `HTMLElement`'s methods, inherited.
+        - Adding `version` property for `myAJAX` object.
+        - Adding `$indexOf` method for `Array` objects.
+        - Adding `$show`, `$hide`, `$opacity`, `$remove`, `$toggleOpacity`, `$updateHTML` and 
+        `$updateText` methods for `HTMLElement`.
+        - Adding `$`, `$extractScripts`, `$stripScripts`, `$escapeHTML` and `$unescapeHTML` methods for 
+        `String` objects.
+        - Adding `$setProperty` method for `Object`.
+        - Adding `document.$createElement' method.
+        - Moving `Cookie` object into a separate file `cookie.js`.
+        - Other redesigns / optimizations.
+
+Version 5.0.4
+------------------------------------------------------------------------------------
+        - Adding `nodeStyle` and `inheritFromObject` methods for `Object`.
+        - Bug fixing for `toggleDisplay` and `toggleVisibility` functions.
+
+Version 5.0.3
+------------------------------------------------------------------------------------
+        - Bug fixing: added `thisObject` internal variable for saving `this` context, 
+        inside of `myAJAX` object.
+
+Version 5.0.2
+------------------------------------------------------------------------------------
+        - Bug fixing for the case when `refreshInterval` is set and the response hasn't arrived
+        until the next request, the `myAJAX` object doesn't wait for response.
+
+Version 5.0.1
+------------------------------------------------------------------------------------
+        - Added compressed version of `myajax.js`.
+
+Version 5.0.0
+------------------------------------------------------------------------------------
+        - `myAJAX.urlParameters` can be a string (containing URL parameters or an `id` of a form
+          or form element) or an object (pointing to a form or to a single form element).
+        - In case that `myAJAX.urlParameters` is referencing a form containing file inputs,
+          the form will be automatically submitted through a hidden IFRAME.
+        - Adding possibility to send myAJAX's parameters through a single object.
+        - Adding `onStartFunction` method for `myAJAX` object.
+        - Adding `ajaxMethod` property for the `myAJAX` object.
+        - Adding `ID` property for myAJAX object instead of the`getObjectID` method.
+        - Adding `enableMultiplyingFileInputs` property for the myAJAX object.
+        - Redefine `ajax` function as a statical method for the `myAJAX` object.
+        - Renaming `parseObject` method into an `object2QueryString`.
+        - Converting `newAJAX` function into an `XMLHttp` object.
+        - Adding a `$` function.
+        - Adding `toggleDisplay`, `toggleVisibility`, `copyStyle`, `isString`, `isForm`
+          and `isFormWithFileInput` methods for `Object`.
+        - Adding `getKeys`, `baseName` and `stripCRLF` methods for `String` objects.        
+        - Adding `inArray` method for `Array` objects.        
+        - Redesign of `base64Encode` and `replaceAll` functions.
+        - Adding `utf8Encode`, `utf8Decode`, `base64Decode`, `md5` and `captureEvent` methods
+          for `String` objects.
+        - Moving all hash functions into a separate JavaScript file `hash.js`
+        - Many other redesigns / optimizations.
+
+Version 4.2.0
+------------------------------------------------------------------------------------
+        - Adding `stripTags`, `crc32`, `checkIBAN` and `base64Encode` functions for `String` objects.
+
+Version 4.1.0
+------------------------------------------------------------------------------------
+        - Adding facility to parse any kind of objects for `parseObject` function.
+        - Adding `trim` function for `String` objects.
+        - Small redesign of `myXML` object.
+
+Version 4.0.1
+------------------------------------------------------------------------------------
+        - Bug fixes for the `replaceAll`, `urlEncode`, `urlDecode`, `setKey`, `getKey`, `removeKey`
+        and `parseObject` functions.
+
+Version 4.0.0
+------------------------------------------------------------------------------------
+        - Added `getObjectID` method to the `myAJAX` object.
+        - Redesign of the `urlEncode`, `urlDecode`, `setKey` and `parseObject` functions.
+        - Many other redesigns / improvments.
+
+Version 3.3.1
+------------------------------------------------------------------------------------
+        - `urlEncode` and `urlDecode` functions returns same `urlParameters` instead of null.
+
+Version 3.3.0
+------------------------------------------------------------------------------------
+        - Added `Cookie` object.
+        - Added new `String` prototype functions.
+        - Removing cookie methods from `myAJAX` object.
+        - Removing URL encode/decode methods from `myAJAX` object.
+
+Version 3.2.2
+------------------------------------------------------------------------------------
+        - Major bug fixing for cases when `urlParameters` is an object.
+
+Version 3.2.1
+------------------------------------------------------------------------------------
+        - Move cookie methods into `myAJAX` object.
+        - Major bug fixing for `getCookie` method.
+        - `urlParameters` can be a `String` or an `Object` pointing to a form or to a single form element.
+
+Version 3.2.0
+------------------------------------------------------------------------------------
+        - Added `Cookie` object to the project.
+
+Version 3.1.2
+------------------------------------------------------------------------------------
+        - Bug fixing for cases when GET method is used and url parameters are sent.
+
+Version 3.1.1
+------------------------------------------------------------------------------------
+        - Bug fixing for `namedInstance` method.
+        
+Version 3.1.0
+------------------------------------------------------------------------------------
+        - Added `changelog.txt` file to the project.
+        - Moved global variable constants into `myAJAX.prototype.constants`
+        - Added `namedInstance` method.
