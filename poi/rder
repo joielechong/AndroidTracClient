@@ -1,0 +1,443 @@
+         naam         | slot  
+----------------------+-------
+ SNS NED AAND FONDS   | 28.31
+ SNSNA.AS             | 28.31
+ SNS OPTIMAAL ORANJE  | 26.25
+ SNSPO.AS             | 26.25
+ SNSPG.AS             | 26.09
+ SNS OPTIMAAL GEEL    | 26.09
+ SNSPB.AS             | 24.86
+ SNS OPTIMAAL BLAUW   | 24.86
+ SEODF.AS             | 24.77
+ SNS EURO OBLIGFNDS   | 24.77
+ SNS OPTIMAAL ROOD    | 23.36
+ SNSPR.AS             | 23.36
+ SNS EURO LIQ FONDS   | 22.92
+ SNSGD.AS             | 22.92
+ SNS EURO VASTGOEDFDS | 22.91
+ SNEVG.AS             | 22.91
+ SNS EURO MIXFONDS    | 21.39
+ SNEMF.AS             | 21.39
+ SNS EURO AAND FNDS   | 15.91
+ SNEAF.AS             | 15.91
+ SSPAF.AS             | 14.07
+ SNS HOOGDIV AANDFD   | 14.07
+ SNSDA.AS             | 13.89
+ SNS DUURZAAM AANDF   | 13.89
+ SNSOL.AS             | 13.14
+ SNS OPK LAND AF      | 13.14
+ SNS AZIE AAND FDS    | 12.52
+ SNS AZIE AAND FNDS   | 12.52
+ SNS WERELD AANDFDS   | 10.84
+ SNS OPTIMAAL PAARS   |  9.33
+ SNS AMERIK AAND FD   |  9.18
+ SNS REAAL            |   2.9
+(32 rows)
+
+         naam         | slot  
+----------------------+-------
+ SNS NED AAND FONDS   | 28.31
+ SNSNA.AS             | 28.31
+ SNS OPTIMAAL ORANJE  | 26.25
+ SNSPO.AS             | 26.25
+ SNSPG.AS             | 26.09
+ SNS OPTIMAAL GEEL    | 26.09
+ SNSPB.AS             | 24.86
+ SNS OPTIMAAL BLAUW   | 24.86
+ SEODF.AS             | 24.77
+ SNS EURO OBLIGFNDS   | 24.77
+ SNS OPTIMAAL ROOD    | 23.36
+ SNSPR.AS             | 23.36
+ SNS EURO LIQ FONDS   | 22.92
+ SNSGD.AS             | 22.92
+ SNS EURO VASTGOEDFDS | 22.91
+ SNEVG.AS             | 22.91
+ SNS EURO MIXFONDS    | 21.39
+ SNEMF.AS             | 21.39
+ SNS EURO AAND FNDS   | 15.91
+ SNEAF.AS             | 15.91
+ SSPAF.AS             | 14.07
+ SNS HOOGDIV AANDFD   | 14.07
+ SNSDA.AS             | 13.89
+ SNS DUURZAAM AANDF   | 13.89
+ SNSOL.AS             | 13.14
+ SNS OPK LAND AF      | 13.14
+ SNS AZIE AAND FDS    | 12.52
+ SNS AZIE AAND FNDS   | 12.52
+ SNS WERELD AANDFDS   | 10.84
+ SNS OPTIMAAL PAARS   |  9.33
+ SNS AMERIK AAND FD   |  9.18
+ SNS REAAL            |   2.9
+(32 rows)
+
+          naam          |   slot   
+------------------------+----------
+ PSI-20                 |  6332.84
+ CAC 40                 |  2975.43
+ FTSEUROFIRST 80        |  2837.42
+ NEXTCAC 70             |  2715.64
+ FTSEUROFIRST 100       |  2508.24
+ BEL20 CLOSE            |   1833.3
+ NEXT 150               |   900.79
+ EURONEXT 100           |    514.8
+ AMS SMALL CAP INDX     |   313.51
+ AMX-INDEX              |   309.21
+ FORTIS AEXI FD9        |   253.47
+ AMS EOE INDEX          |   243.28
+ COLUMBIA SECURITY      |   170.51
+ IDB MM INTER EQTY      |   127.55
+ EUR/JPY                | 118.7976
+ WP STEWART HOLD FD     |   108.27
+ FORTIS EUROBL FD2      |   102.75
+ UNIBAIL-RODAMCO        |   100.39
+ IDB REALEST EQT FD     |    87.41
+ FORT.NETHERLANDS FD    |    75.22
+ OPTIMIX EUROP-FD D     |    71.32
+ ALLIANZ HOL SELEC3     |    65.61
+ ALLIANZ HOL OBLI2      |    62.41
+ FORTIS SCN FD8         |    59.97
+ TRIODOS GROENFONDS     |    58.36
+ LC 100 EUROPE          |    57.49
+ RO AFRIKA FONDS        |    56.26
+ ASN MIXFONDS           |    55.85
+ WERELDHAVE             |   55.395
+ ORANGE GL BOND FND     |    53.98
+ HAL TRUST              |     48.8
+ FORTIS ALLIN FD        |    47.85
+ ROBECO SAFE MIX        |    44.69
+ ROBECO_PRIVATE_EQ.     |       44
+ ING GLOB RL EST FD     |    43.24
+ FORTIS GHIE FD18       |    43.15
+ RORENTO                |       43
+ ALLIANZ HOL PACIF5     |    42.63
+ ALLIANZ HOL EU 11      |    42.16
+ VAN LANSCHOT           |       42
+ ASN AANDELENFONDS      |     41.7
+ RO BALANCED MIX        |    41.46
+ RO LIFE CYCLE A 12     |    40.79
+ ROBECO SOLID MIX       |    40.49
+ ING_UTIL               |     40.1
+ LANSCHOT EURO CRED     |    39.93
+ ALLIANZ HOL 4          |    38.81
+ RO LIFE CYCLE B 15     |    38.06
+ OHRA ONR GOED FONDS    |    37.54
+ ROBECO GROWTH MIX      |     36.6
+ SMIT INTERNATIONAL     |   36.425
+ ING_DUTCH_FUND         |    35.68
+ ING_ENERGY_FUND        |    35.58
+ FORTIS APHI FD19       |    35.12
+ ING EURO OBLI FD       |    35.11
+ IDB EQTY INCOME        |    34.82
+ FORTIS PGD FD5         |    34.44
+ VASTNED RETAIL         |    34.28
+ FORTIS ALLINC FD7      |    34.07
+ ING GLOBAL FD          |    34.07
+ RO LIFE CYCLE C 20     |    33.76
+ IDB GLOB CONVERT       |    33.48
+ CORIO                  |    33.38
+ RO LIFE CYCLE D 25     |    32.51
+ OPTIMIX INCOM FD C     |    31.76
+ ING DAILY CONSGD8      |    31.57
+ OHRA OBL DIV  FONDS    |    30.94
+ FORTIS OBAM            |    30.09
+ RO LIFE CYCLE E 30     |    29.92
+ RO DUURZAAM AAND A     |    29.76
+ ING EMRG ESTEUR FD     |     29.7
+ ING LION FUND          |    29.55
+ RO LIFE CYCLE G 40     |    29.33
+ RO LIFE CYCLE F 35     |    29.26
+ VOPAK                  |    29.18
+ ING BASIC MAT FD 6     |    29.09
+ SAINT GOBAIN           |   29.085
+ AKZO NOBEL             |    29.06
+ DELTA DEELNMNG FDS     |    28.32
+ SNSNA.AS               |    28.31
+ SNS NED AAND FONDS     |    28.31
+ FORTIS GPS FD4         |    28.19
+ OPTIMIX EMERG MKTS     |    28.14
+ TRIODOS MW OBL FDS     |    27.93
+ ASN OBLIGATIEFONDS     |    27.64
+ ALLIANZ HOL EUSEL6     |    27.24
+ ORANGE FUND            |    26.74
+ FORTIS PS FDE6         |     26.7
+ FORTIS PS FDA5         |    26.51
+ SNSPO.AS               |    26.25
+ SNS OPTIMAAL ORANJE    |    26.25
+ RO DYNAMIC MIX         |    26.23
+ TRIODOS CULT FONDS     |    26.17
+ SNS OPTIMAAL GEEL      |    26.09
+ SNSPG.AS               |    26.09
+ ACH EUR OBLI FD4       |    25.46
+ ING AEX SHADOW         |    25.28
+ SCHUITEMA              |    25.25
+ SNSPB.AS               |    24.86
+ SNS OPTIMAAL BLAUW     |    24.86
+ SNS EURO OBLIGFNDS     |    24.77
+ SEODF.AS               |    24.77
+ OPTIMIX MIX FD   E     |    24.63
+ FSB EURORENT FD        |    24.39
+ ING TLC SERV FD 4      |    24.05
+ NUTRECO                |       24
+ ERIKS GROEP            |    23.95
+ MEI TSJECH SLOWAK      |    23.85
+ HUNTER DOUGLAS         |    23.75
+ ING EU SM CP FD        |    23.48
+ ING INDUSTR FD 3       |    23.37
+ SNSPR.AS               |    23.36
+ SNS OPTIMAAL ROOD      |    23.36
+ RO EURO OBL DIV B      |    23.26
+ ING DYN MIX1 FD        |    23.22
+ HEINEKEN               |    23.07
+ SNS EURO LIQ FONDS     |    22.92
+ SNSGD.AS               |    22.92
+ SNEVG.AS               |    22.91
+ SNS EURO VASTGOEDFDS   |    22.91
+ TRIODOS MEERW.MIX      |     22.7
+ ING FAR EAST FD        |    22.41
+ ING FIRSTCLAS FD30     |    22.01
+ LANSCH GL EQ FD NV     |    21.87
+ ING EURO CR OBL FD     |    21.56
+ ALLIANZ WERELD 10      |    21.44
+ SNS EURO MIXFONDS      |    21.39
+ SNEMF.AS               |    21.39
+ LANSCHOT MS DEF        |    21.33
+ HEINEKEN HOLDING       |    21.31
+ FORTIS PS FDE7         |    21.26
+ EUROCOMM. PROP CD      |    21.25
+ OHRA SPAAR DIV. FDS    |       21
+ HOLLAND COLOURS        |    20.61
+ ING DYN MIX2 FD        |    20.57
+ FUGRO                  |    20.11
+ BATENBURG              |    19.99
+ ING GLOBAL EM FD       |    19.83
+ ING INF TECHN FD       |     19.8
+ LANSCHOT MS NEU        |    19.52
+ ING OPP AAND FONDS     |    19.48
+ DSM KON                |    19.35
+ ACH EUR MIX FD5        |    19.23
+ RO COMMODITY FUND      |    19.07
+ OHRA TOTAAL FONDS      |    19.05
+ ING YOUNG MIX FD       |    18.92
+ ING LX CONS GDSFD      |     18.9
+ ROYAL DUTCH SHELL A    |    18.88
+ ING HEALTH CARE 9      |    18.76
+ IDB ALCHEMY            |    18.71
+ RO DIVIRENTE A         |    18.68
+ FORTIS HIP FD10        |    18.33
+ ROYAL DUTCH SHELL B    |   18.095
+ UNILEVER               |    17.95
+ ING DYN MIX3 FD        |    17.65
+ SUSTAINABLE VAL FD     |    17.44
+ LANSCHOT MS GRO        |    17.37
+ ARCELORMITTAL          |    17.14
+ HES                    |   16.945
+ ACCELL GROUP           |    16.93
+ ING HG DIV OBL FD      |    16.86
+ DRES VPV EUR VALFD     |    16.79
+ ING HG DV AANDFD17     |    16.78
+ CRUCELL                |    16.47
+ RO HIGH YIELD OBL      |    16.44
+ MASTERMIX GL MIXF      |    16.16
+ IDB EMERG COMP         |    16.13
+ GRONTMIJ               |    16.02
+ ROBECO                 |    15.98
+ NEDAP                  |    15.98
+ SNEAF.AS               |    15.91
+ SNS EURO AAND FNDS     |    15.91
+ RO HOLLANDS BEZIT      |    15.79
+ ING DYN MIX4 FD        |    15.67
+ LANSCHOT MS OFF        |    15.51
+ ORANGE GL HI DIV F     |    15.45
+ DELTA LLOYD EUR DF     |    15.32
+ SLIGRO                 |    15.29
+ TRIODOS MW AAND FDS    |    15.23
+ FRIESLAND B AAND.      |    14.96
+ ING PR DIV FD          |    14.96
+ ORANGE EUR SMLCAP      |    14.91
+ ORANGE SENSE FUND      |    14.83
+ ING EUROPE FUND 20     |    14.77
+ BOSKALIS WESTMIN       |    14.67
+ TEN CATE               |    14.56
+ ING NORTH AMERICA      |    14.44
+ WOLTERS KLUWER         |    14.41
+ TELEGRAAF MEDIA GR     |     14.2
+ RANDSTAD               |    14.19
+ EXACT HOLDING          |    14.14
+ TNT POST GROUP         |    14.13
+ SNS HOOGDIV AANDFD     |    14.07
+ SSPAF.AS               |    14.07
+ SNSDA.AS               |    13.89
+ SNS DUURZAAM AANDF     |    13.89
+ ING GLOBAL OBL FD      |    13.81
+ ING GLOB GROWTH FD     |    13.56
+ DRES VPV INCOME        |    13.46
+ ASN SMALL&MIDCAP       |    13.46
+ PHILIPS KON            |    13.43
+ BALLAST NEDAM          |    13.35
+ ING DYN MIX5 FD        |     13.2
+ SNSOL.AS               |    13.14
+ SNS OPK LAND AF        |    13.14
+ ROLINCO                |    13.13
+ ING BIOTECHN FD        |    13.07
+ STERN GROEP            |    12.85
+ ASM LITHOGRAPHY        |     12.8
+ DELTA LLOYD RENTE FNDS |    12.75
+ OHRA CARE FONDS        |    12.61
+ SNS AZIE AAND FNDS     |    12.52
+ SNS AZIE AAND FDS      |    12.52
+ ING EUR GROWTH FD      |    12.41
+ NIEUWE STEEN INV       |    11.98
+ PHOENIX FUND           |    11.92
+ BRILL KON              |    11.92
+ ACH EUR AAND FD2       |    11.62
+ ALLIANZ HOL AMER       |    11.61
+ ING DZ AAND FD         |    11.56
+ ASN MILIEUWATERFONDS   |    11.44
+ DELTA LLOYD DONAU FNDS |     11.4
+ OHRA MILIEUTECHN  FD   |    11.08
+ JETIX EUROPE           |       11
+ IMTECH                 |   10.935
+ SNS WERELD AANDFDS     |    10.84
+ CSM                    |   10.785
+ KPN                    |    10.47
+ INTEREFF EM AFRICA     |    10.32
+ OHRA AANDELEN FONDS    |    10.28
+ DELTA LLOYD EU CR      |    10.23
+ DELTA LLOYD DLR FNDS   |    10.17
+ ACH WERELD AANDFD3     |    10.07
+ SBM OFFSHORE NV        |     9.95
+ KAS-ASSOCIATIE         |      9.9
+ RB HG DIV ONR GOED     |      9.7
+ ACHM NL AAND FD1       |     9.68
+ ING BANK INTERNET FD   |     9.45
+ ORANGE EUR PROP FD     |     9.44
+ SNS OPTIMAAL PAARS     |     9.33
+ ELSEVIER               |     9.21
+ SNS AMERIK AAND FD     |     9.18
+ OPG                    |    9.081
+ AHOLD                  |     8.96
+ DIM VASTGOED           |      8.9
+ ARCADIS                |     8.89
+ DELTA LLOYD MIX FD     |     8.88
+ MW TOPS USD            |      8.6
+ AIR FRANCE-KLM         |    8.595
+ LIBERTY ACQ SHARE      |      8.5
+ ALANHERI               |    8.499
+ INTEREFF VIETNAM       |     8.46
+ FORNIX BIOSCIENCES     |     8.42
+ ING FINANC FUND 10     |     8.36
+ BRUNEL INTERNAT        |     8.28
+ USG PEOPLE             |     8.27
+ KENDRION               |    8.231
+ ING JAPAN FUND         |     8.21
+ MEI RUSLAND MID FO     |     8.07
+ HOMBURG INVEST A       |      7.7
+ MACINTOSH RETAIL       |     7.69
+ VASTNED OFFICES        |    7.644
+ ONCOMETHYL             |     7.64
+ UNIT 4 AGRESSO         |     7.61
+ RO YOUNG DYN           |     7.36
+ PAN EUROP HOTEL        |    7.279
+ CROWN VAN GELDER       |    7.219
+ AJAX                   |      7.2
+ BETER BED              |    7.031
+ GAMMA                  |        7
+ TKH GROUP              |     6.95
+ T&P ALLEGRETTO FD      |     6.81
+ TRIODOS VASTGOED       |     6.74
+ MEI ROM EN BUL FD      |     6.56
+ AMG                    |     6.53
+ DELTA LLOYD SLD FD     |     6.38
+ KON BAM GROEP          |     6.35
+ DRAKA                  |    6.269
+ ING                    |     6.23
+ BOUSSARD GAVAUDAN      |     6.18
+ ARSEUS (D)             |     6.13
+ BINCKBANK              |    6.055
+ WEGENER ARCADE         |        6
+ ASM INTERNATIONAL      |      5.9
+ AAREAL BKCAP FD TR     |     5.75
+ BANCO SANTANDER        |     5.72
+ DOC DATA               |     5.72
+ HEIJMANS               |     5.69
+ OHRA NW ENERGY FONDS   |     5.67
+ OPTIMIX AMERICA FD     |     5.56
+ GALAPAGOS              |     5.17
+ OHRA TECHN.TREND FD.   |     5.06
+ ORANGE EUR DIV FD      |        5
+ DELTA LLOYD EUROFD     |     4.86
+ ICT                    |     4.84
+ KON WESSANEN           |    4.739
+ DELTA LLOYD JADE       |     4.67
+ AALBERTS               |    4.487
+ DELTA LLOYD NL FD      |     4.43
+ TOMTOM                 |     4.43
+ DELTA LLOYD INVEST     |     4.42
+ ORANGE EUR HDIV FD     |     4.38
+ NEWAYS ELECTRONICS     |     4.12
+ ORANJEWOUD             |     4.12
+ AEGON                  |     3.65
+ AMSTERDAM COMMOD.      |     3.55
+ YATRA                  |      3.5
+ BAM NON CONV PREF      |     3.35
+ AMT HOLDING            |      3.2
+ INNOCONCEPTS           |      3.1
+ PROLOGIS EURO PROP     |     3.05
+ AND INTERNAT PUBL      |      2.9
+ SNS REAAL              |      2.9
+ ORDINA                 |     2.85
+ DPA FLEX GROUP         |    2.644
+ LB PRIV EQ PARTN       |      2.6
+ SUPER DE BOER          |    2.545
+ KKR PEI                |     2.53
+ CTAC                   |      2.5
+ OCE                    |    2.429
+ SPYKER CARS            |    2.411
+ MOOLEN VAN DER         |      2.1
+ KARDAN                 |    2.075
+ WAVIN                  |     2.02
+ EUR/AUD                |    1.966
+ TETRAGON FIN GRP       |      1.8
+ ACCSYS                 |      1.8
+ EUR/CAD                |   1.6519
+ AP ALTERNAT ASSETS     |     1.65
+ ALCATEL-LUCENT         |      1.5
+ EUR/CHF                |   1.4875
+ BE SEMICONDUCTOR IND.  |     1.47
+ SIMAC                  |     1.45
+ FORB.BR                |     1.34
+ FORTIS NL              |     1.34
+ EURUSD                 |   1.3144
+ LBI INTERNATIONAL      |     1.21
+ GBP/EUR                |   1.1023
+ PUNCH GRAPHIX          |     1.05
+ EUR/GBP                |   0.9072
+ EXENDIS                |      0.9
+ OCTOPLUS               |     0.88
+ BLUE FOX ENTERPRSE     |     0.82
+ USDEUR                 |   0.7608
+ LOGICA                 |     0.73
+ CHF/EUR                |   0.6723
+ NEDFIELD               |    0.661
+ CAD/EUR                |   0.6053
+ PHARMING GROUP         |     0.59
+ SAMAS NV               |     0.54
+ AUD/EUR                |   0.5087
+ VOLTA FINANCE          |     0.43
+ EUROCASTLE INVEST.     |     0.41
+ QURIUS                 |    0.275
+ ANTONOV                |     0.17
+ MANAGEMENT SHARE       |     0.16
+ ROOD TESTHOUSE         |    0.146
+ DICO                   |     0.14
+ ROY BK OF SCOTLAND     |     0.14
+ DE VRIES ROBBE GRP     |    0.113
+ TIE HOLDING            |    0.092
+ SOPHEON                |     0.09
+ CETECO                 |     0.05
+ VIVENDA MEDIA GROUP    |     0.05
+ PAN EUROP HOTELW       |    0.036
+ KPN QWEST              |     0.02
+ JPY/EUR                |   0.0084
+(367 rows)
+

@@ -1,0 +1,26 @@
+Zusammenfassung Blitzer für Belgium
+----------------------------------------------
+8			Blitzer-100
+43			Blitzer-120
+35			Blitzer-120-m
+1			Blitzer-130
+3			Blitzer-30
+8			Blitzer-30-m
+123			Blitzer-50
+4			Blitzer-50-m
+1			Blitzer-60
+71			Blitzer-70
+6			Blitzer-80
+26			Blitzer-90
+6			Blitzer-90-m
+2			Blitzer-Laser-30
+1			Blitzer-Laser-70
+17			Blitzer-Rotlicht
+1			Blitzer-Rotlicht-30
+86			Blitzer-Rotlicht-50
+2			Blitzer-Rotlicht-60
+108			Blitzer-Rotlicht-70
+2			Blitzer-Rotlicht-80
+61			Blitzer-Rotlicht-90
+9			Blitzer-unsortiert
+241			Blitzer-unsortiert-m

@@ -1,0 +1,56 @@
+--
+-- PostgreSQL database dump
+--
+
+SET client_encoding = 'SQL_ASCII';
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- Name: DATABASE template1; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON DATABASE template1 IS 'Default template database';
+
+
+--
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
+--
+
+COMMENT ON SCHEMA public IS 'Standard public schema';
+
+
+SET search_path = public, pg_catalog;
+
+--
+-- Name: plpgsql_call_handler(); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION plpgsql_call_handler() RETURNS language_handler
+    AS '$libdir/plpgsql', 'plpgsql_call_handler'
+    LANGUAGE c;
+
+
+ALTER FUNCTION public.plpgsql_call_handler() OWNER TO mfvl;
+
+--
+-- Name: plpgsql; Type: PROCEDURAL LANGUAGE; Schema: public; Owner: 
+--
+
+CREATE TRUSTED PROCEDURAL LANGUAGE plpgsql HANDLER plpgsql_call_handler;
+
+
+--
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- PostgreSQL database dump complete
+--
+

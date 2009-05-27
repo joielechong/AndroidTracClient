@@ -1,0 +1,19 @@
+drop trigger co_cookies_ins on cookie;
+
+create or replace function co_cookies_ins() returns trigger as '
+declare
+  cnt integer;
+begin
+  select into cnt count from cookie where datum=NEW.datum and cookie=NEW.cookie;
+  if found then
+    update cookie set count=count+1 where datum=NEW.datum and cookie=NEW.cookie;
+    return NULL;
+  else
+    NEW.count := 1;
+    return NEW;
+  end if;
+
+end;' language 'plpgsql';
+
+create trigger co_cookies_ins before insert on cookie
+          for each row execute procedure co_cookies_ins();

@@ -1,0 +1,257 @@
+--
+-- PostgreSQL database dump
+--
+
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = off;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET escape_string_warning = off;
+
+--
+-- Name: template1; Type: COMMENT; Schema: -; Owner: postgres
+--
+
+COMMENT ON DATABASE template1 IS 'Default template database';
+
+
+--
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
+--
+
+COMMENT ON SCHEMA public IS 'Standard public schema';
+
+
+--
+-- Name: plperl; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: postgres
+--
+
+CREATE PROCEDURAL LANGUAGE plperl;
+
+
+--
+-- Name: plpgsql; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: postgres
+--
+
+CREATE PROCEDURAL LANGUAGE plpgsql;
+
+
+SET search_path = public, pg_catalog;
+
+--
+-- Name: tablefunc_crosstab_2; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE tablefunc_crosstab_2 AS (
+	row_name text,
+	category_1 text,
+	category_2 text
+);
+
+
+ALTER TYPE public.tablefunc_crosstab_2 OWNER TO postgres;
+
+--
+-- Name: tablefunc_crosstab_3; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE tablefunc_crosstab_3 AS (
+	row_name text,
+	category_1 text,
+	category_2 text,
+	category_3 text
+);
+
+
+ALTER TYPE public.tablefunc_crosstab_3 OWNER TO postgres;
+
+--
+-- Name: tablefunc_crosstab_4; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE tablefunc_crosstab_4 AS (
+	row_name text,
+	category_1 text,
+	category_2 text,
+	category_3 text,
+	category_4 text
+);
+
+
+ALTER TYPE public.tablefunc_crosstab_4 OWNER TO postgres;
+
+--
+-- Name: connectby(text, text, text, text, integer, text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION connectby(text, text, text, text, integer, text) RETURNS SETOF record
+    AS '$libdir/tablefunc', 'connectby_text'
+    LANGUAGE c STABLE STRICT;
+
+
+ALTER FUNCTION public.connectby(text, text, text, text, integer, text) OWNER TO postgres;
+
+--
+-- Name: connectby(text, text, text, text, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION connectby(text, text, text, text, integer) RETURNS SETOF record
+    AS '$libdir/tablefunc', 'connectby_text'
+    LANGUAGE c STABLE STRICT;
+
+
+ALTER FUNCTION public.connectby(text, text, text, text, integer) OWNER TO postgres;
+
+--
+-- Name: connectby(text, text, text, text, text, integer, text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION connectby(text, text, text, text, text, integer, text) RETURNS SETOF record
+    AS '$libdir/tablefunc', 'connectby_text_serial'
+    LANGUAGE c STABLE STRICT;
+
+
+ALTER FUNCTION public.connectby(text, text, text, text, text, integer, text) OWNER TO postgres;
+
+--
+-- Name: connectby(text, text, text, text, text, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION connectby(text, text, text, text, text, integer) RETURNS SETOF record
+    AS '$libdir/tablefunc', 'connectby_text_serial'
+    LANGUAGE c STABLE STRICT;
+
+
+ALTER FUNCTION public.connectby(text, text, text, text, text, integer) OWNER TO postgres;
+
+--
+-- Name: crosstab(text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION crosstab(text) RETURNS SETOF record
+    AS '$libdir/tablefunc', 'crosstab'
+    LANGUAGE c STABLE STRICT;
+
+
+ALTER FUNCTION public.crosstab(text) OWNER TO postgres;
+
+--
+-- Name: crosstab(text, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION crosstab(text, integer) RETURNS SETOF record
+    AS '$libdir/tablefunc', 'crosstab'
+    LANGUAGE c STABLE STRICT;
+
+
+ALTER FUNCTION public.crosstab(text, integer) OWNER TO postgres;
+
+--
+-- Name: crosstab(text, text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION crosstab(text, text) RETURNS SETOF record
+    AS '$libdir/tablefunc', 'crosstab_hash'
+    LANGUAGE c STABLE STRICT;
+
+
+ALTER FUNCTION public.crosstab(text, text) OWNER TO postgres;
+
+--
+-- Name: crosstab2(text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION crosstab2(text) RETURNS SETOF tablefunc_crosstab_2
+    AS '$libdir/tablefunc', 'crosstab'
+    LANGUAGE c STABLE STRICT;
+
+
+ALTER FUNCTION public.crosstab2(text) OWNER TO postgres;
+
+--
+-- Name: crosstab3(text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION crosstab3(text) RETURNS SETOF tablefunc_crosstab_3
+    AS '$libdir/tablefunc', 'crosstab'
+    LANGUAGE c STABLE STRICT;
+
+
+ALTER FUNCTION public.crosstab3(text) OWNER TO postgres;
+
+--
+-- Name: crosstab4(text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION crosstab4(text) RETURNS SETOF tablefunc_crosstab_4
+    AS '$libdir/tablefunc', 'crosstab'
+    LANGUAGE c STABLE STRICT;
+
+
+ALTER FUNCTION public.crosstab4(text) OWNER TO postgres;
+
+--
+-- Name: nonull_append_strings(text, text); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION nonull_append_strings(text, text) RETURNS text
+    AS $_$SELECT CASE 
+WHEN $1 IS NULL THEN $2 
+WHEN $2 IS NULL THEN $1
+ELSE $1 || ' ' || $2
+END
+$_$
+    LANGUAGE sql IMMUTABLE;
+
+
+ALTER FUNCTION public.nonull_append_strings(text, text) OWNER TO mfvl;
+
+--
+-- Name: normal_rand(integer, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION normal_rand(integer, double precision, double precision) RETURNS SETOF double precision
+    AS '$libdir/tablefunc', 'normal_rand'
+    LANGUAGE c STRICT;
+
+
+ALTER FUNCTION public.normal_rand(integer, double precision, double precision) OWNER TO postgres;
+
+--
+-- Name: plpgsql_call_handler(); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION plpgsql_call_handler() RETURNS language_handler
+    AS '$libdir/plpgsql', 'plpgsql_call_handler'
+    LANGUAGE c;
+
+
+ALTER FUNCTION public.plpgsql_call_handler() OWNER TO mfvl;
+
+--
+-- Name: ||+; Type: OPERATOR; Schema: public; Owner: mfvl
+--
+
+CREATE OPERATOR ||+ (
+    PROCEDURE = nonull_append_strings,
+    LEFTARG = text,
+    RIGHTARG = text
+);
+
+
+ALTER OPERATOR public.||+ (text, text) OWNER TO mfvl;
+
+--
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- PostgreSQL database dump complete
+--
+

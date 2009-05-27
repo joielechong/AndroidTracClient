@@ -1,0 +1,51 @@
+create or replace function gpsdatum(double precision,integer) returns text as '
+my $tijd = shift;
+my $datum = shift;
+
+my ($dt,$uur,$minuut,$seconde,$dag,$maand,$jaar);
+
+$uur = int($tijd/10000);
+$minuut = int($tijd/100 -100*$uur);
+$seconde = int($tijd - 10000*$uur - 100*$minuut);
+
+$dag = int($datum/10000);
+$maand = int($datum/100 - 100*$dag);
+$jaar = $datum - 100*$maand - 10000*$dag;
+
+$dt = sprintf("%4.4d-%2.2d-%2.2d %2.2d:%2.2d:%2.2d UTC",$jaar+2000,$maand,$dag,$uur,$minuut,$seconde);
+
+return  $dt;
+' language plperl;
+
+drop trigger ins_gps on gpsdata;
+drop trigger upd_gps on gpsdata;
+
+create or replace function ins_gps() returns trigger as '
+declare
+  dt varchar;
+  datum integer;
+  tijd double precision;
+begin
+  datum := NEW.datum;
+  tijd := NEW.tijd;
+  NEW.dt = gpsdatum(tijd,datum);
+  return NEW;
+end; ' language 'plpgsql';
+
+create or replace function upd_gps() returns trigger as '
+declare
+  dt varchar;
+  datum integer;
+  tijd double precision;
+begin
+  if ((NEW.datum <> OLD.datum) or (NEW.tijd <> OLD.tijd)) or (OLD.dt is null) then
+    datum := NEW.datum;
+    tijd := NEW.tijd;
+    NEW.dt = gpsdatum(tijd,datum);
+  end if;
+  return NEW;
+end; ' language 'plpgsql';
+
+create trigger ins_gps before insert on gpsdata for each row execute procedure ins_gps();
+create trigger upd_gps before update on gpsdata for each row execute procedure upd_gps();
+

@@ -1,0 +1,23 @@
+drop trigger af_album_del on album;
+drop trigger af_fotos_del on fotos;
+drop trigger af_fotos_ins on fotos;
+
+create or replace function af_album_del() returns trigger as 
+'begin delete from albumfoto where albumid=old.id; return old; end;' language 'plpgsql';
+
+create or replace function af_fotos_del() returns trigger as 
+'begin delete from albumfoto where fotoid=old.id; return old; end;' language 'plpgsql';
+
+create or replace function af_fotos_ins() returns trigger as
+'begin insert into albumfoto values (0,new.id,new.id); return new; end;' language 'plpgsql'; 
+
+
+create trigger af_album_del before delete
+    on album for each row execute procedure af_album_del();
+
+create trigger af_fotos_del before delete
+    on fotos for each row execute procedure af_fotos_del();
+
+create trigger af_fotos_ins after insert
+    on fotos for each row execute procedure af_fotos_ins();
+
