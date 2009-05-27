@@ -1,0 +1,192 @@
+ttx.o ttx.o: ../ttx.cpp ./config.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/stdio.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/_mingw.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/include/stddef.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/include/stdarg.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/sys/types.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/errno.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/string.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/stdlib.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/getopt.h \
+  ../sockextr.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/unistd.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/io.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/stdint.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/process.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/winsock2.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/windows.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/windef.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/winnt.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/winerror.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/basetsd.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/pshpack4.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/poppack.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/wincon.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/winbase.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/wingdi.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/winuser.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/winnls.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/winver.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/winnetwk.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/winreg.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/winsvc.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/cderr.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/dde.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/ddeml.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/dlgs.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/imm.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/lzexpand.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/mmsystem.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/nb30.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/rpc.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/rpcdce.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/basetyps.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/rpcdcep.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/rpcnsi.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/rpcnterr.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/shellapi.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/pshpack2.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/winperf.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/commdlg.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/winspool.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/ole2.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/objbase.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/rpcndr.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/rpcnsip.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/objfwd.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/wtypes.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/unknwn.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/objidl.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/cguid.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/olectlid.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/oleauto.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/oaidl.h \
+  /usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/oleidl.h
+
+./config.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/stdio.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/_mingw.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/include/stddef.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/include/stdarg.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/sys/types.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/errno.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/string.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/stdlib.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/getopt.h:
+
+../sockextr.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/unistd.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/io.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/stdint.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/process.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/winsock2.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/windows.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/windef.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/winnt.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/winerror.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/basetsd.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/pshpack4.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/poppack.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/wincon.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/winbase.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/wingdi.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/winuser.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/winnls.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/winver.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/winnetwk.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/winreg.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/winsvc.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/cderr.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/dde.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/ddeml.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/dlgs.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/imm.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/lzexpand.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/mmsystem.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/nb30.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/rpc.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/rpcdce.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/basetyps.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/rpcdcep.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/rpcnsi.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/rpcnterr.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/shellapi.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/pshpack2.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/winperf.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/commdlg.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/winspool.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/ole2.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/objbase.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/rpcndr.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/rpcnsip.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/objfwd.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/wtypes.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/unknwn.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/objidl.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/cguid.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/olectlid.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/oleauto.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/oaidl.h:
+
+/usr/i586-mingw32/lib/gcc/i586-mingw32/3.4.5/../../../../i586-mingw32/include/oleidl.h:
