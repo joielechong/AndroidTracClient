@@ -1,0 +1,33 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(koersen.cpp)
+AM_INIT_AUTOMAKE(koersen,1.1.0)
+AM_CONFIG_HEADER(config.h)
+
+dnl Checks for programs.
+AC_PROG_YACC
+AC_PROG_CC
+AC_PROG_CXX
+AC_PROG_CPP
+AM_PROG_LEX
+AC_PROG_INSTALL
+
+dnl Checks for libraries.
+dnl Replace `main' with a function in -lfl:
+AC_CHECK_LIB(fl, main)
+dnl Replace `main' with a function in -lmfl:
+AC_CHECK_LIB(mfl, main)
+dnl Replace `main' with a function in -lstdc:
+AC_CHECK_LIB(stdc, main)
+
+dnl Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS(malloc.h unistd.h)
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+
+dnl Checks for library functions.
+AC_FUNC_ALLOCA
+AC_CHECK_FUNCS(strdup)
+
+AC_OUTPUT(Makefile)
