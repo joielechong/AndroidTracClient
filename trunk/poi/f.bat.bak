@@ -1,7 +1,0 @@
-m:
-cd \src\poi
-
-perl poidist.pl
-
-#d:\perl\bin\perl flitspaal.pl
-pause
