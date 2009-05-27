@@ -1,0 +1,300 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <mfl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <time.h>
+#include <gd.h>
+#include <gdfonts.h>
+#include <gdfontl.h>
+#include "libpq-fe.h"
+
+int color[10] = {0,1,2,3,4,5,6,7,8,9};
+int kleur[10];
+
+int nfields;
+char *outfile = "barchart.gif";
+
+char *fieldnames[10];
+
+struct result
+{
+  char *veld;
+  double waarde[10];
+} *results;
+
+void exit_nicely(PGconn* conn)
+{
+  PQfinish(conn);
+  exit(2);
+}
+
+long getResults(const char *dbName, const char *query)
+{
+  char *pghost, *pgport, *pgoptions, *pgtty;
+  long i,n;
+  PGresult *res;
+  PGconn* conn;
+
+  pghost = NULL;
+  pgport = NULL;
+  pgoptions = NULL;
+  pgtty = NULL;
+
+  /* make a connection to the database */
+  conn = PQsetdb(pghost, pgport, pgoptions, pgtty, dbName);
+  
+  /* check to see that the backend connection was successfully made */
+  if (PQstatus(conn) == CONNECTION_BAD) {
+    fprintf(stderr,"Connection to database '%s' failed.\n", dbName);
+    fprintf(stderr,"%s",PQerrorMessage(conn));
+    exit_nicely(conn);
+  }
+
+  res=PQexec(conn,query);
+  if (res == NULL) {
+    fprintf(stderr,"PQexec failed: %s\n",PQerrorMessage(conn));
+    exit_nicely(conn);
+  }
+  else {
+    if (PQresultStatus(res) != PGRES_TUPLES_OK) {
+      fprintf(stderr,"SELECT command didn't return tuples properly\n");
+      PQclear(res);
+      exit_nicely(conn);
+    }
+  }
+
+  if (PQnfields(res) <= nfields) {
+    fprintf(stderr,"Not enough fields in query\n");
+    fprintf(stderr,"  Request : %2d\n",nfields);
+    fprintf(stderr,"  Query   : %2d + 1\n",PQnfields(res)-1);
+    PQclear(res);
+    exit_nicely(conn);
+  }
+
+  n = PQntuples(res);
+  if (n < 1) {
+    fprintf(stderr,"PQntuples < 1 is %ld\n",n);
+    PQclear(res);
+    exit_nicely(conn);
+  }
+
+  for(i=0;i<=nfields;i++) {
+    char *s=PQfname(res,i);
+
+    if (s)
+      fieldnames[i] = strdup(PQfname(res,i));
+    else
+      fieldnames[i]="Unkown";
+  }
+
+  results = (struct result *)calloc(n,sizeof(struct result));
+  if (results == NULL) {
+    PQclear(res);
+    perror("results");
+    exit_nicely(conn);
+  }
+
+  for(i=0;i<n;i++) {
+    int j;
+
+    results[i].veld = strdup(PQgetvalue(res,i,0));
+    for (j=1;j<=nfields;j++)
+      results[i].waarde[j-1] = atof(PQgetvalue(res,i,j));
+  }
+
+  PQclear(res);
+  
+  /* close the connection to the database and cleanup */
+  PQfinish(conn);
+  
+  /*   fclose(debug); */
+  return n;
+}
+
+void displayResults(int width,int height,long n)
+{
+  gdImagePtr im=0;
+  FILE *gifout;
+  int  black,white,red,blue;
+  double xmax,xspace,xfact,xorig,xend;
+  double yfact,yorig,yend,yaxis,ywid;
+  long i;
+  int  ndiv,xint,j;
+
+  im = gdImageCreate(width,height);
+
+  white =            gdImageColorAllocate(im,255,255,255);
+  kleur[1] = red   = gdImageColorAllocate(im,255,0,0);
+  kleur[2] = blue  = gdImageColorAllocate(im,0,0,255);
+  kleur[3] =         gdImageColorAllocate(im,0,255,0);
+  kleur[4] =         gdImageColorAllocate(im,255,255,0);
+  kleur[5] =         gdImageColorAllocate(im,207,207,207);
+  kleur[6] = black = gdImageColorAllocate(im,0,0,0);
+  kleur[7] =         gdImageColorAllocate(im,207,123,37);
+  kleur[8] =         gdImageColorAllocate(im,200,2,150);
+  kleur[9] =         gdImageColorAllocate(im,64,111,123);
+
+  gdImageColorTransparent(im,white);
+
+  xspace = 0;
+  xmax   = 0;
+  for(i=0;i<n;i++) {
+    strip_cr(results[i].veld);
+    if (strlen(results[i].veld) >xspace)
+      xspace = strlen(results[i].veld);
+    for (j=0;j<nfields;j++) {
+      if (results[i].waarde[j] > xmax)
+	xmax = results[i].waarde[j];
+    }
+  }
+
+  ndiv=0;
+  xint=(int)(xmax+0.9);
+
+  scale(&xint,&ndiv);
+  xmax=xint;
+
+  xspace *= gdFontLarge->w;
+
+  xfact = (width - xspace -10 - 2*gdFontLarge->h)/xmax;
+  xorig = xspace + 5;
+  xend   = xorig + xmax*xfact;
+
+  yaxis = 3*gdFontLarge->h;
+
+  yfact = (height-10 - yaxis) / n;
+  yorig = 0;
+  yend  = yorig + yfact * n;
+  ywid  = yfact / (nfields+1);
+
+  for (i=0;i<=ndiv;i++) {
+    int x1,x2,y1,y2,x;
+    char text[10];
+
+    x = i*xint/ndiv;
+    y1 = (int)(yorig);
+    y2 = (int)yend+5;
+
+    x1 = (int)(xorig + x*xfact);
+    x2 = x1;
+
+    gdImageLine(im,x1,y1,x2,y2,black);
+    y2 += 5;
+    sprintf(text,"%d",x);
+    x1 -= strlen(text)*gdFontLarge->w/2;
+    gdImageString(im,gdFontLarge,x1,y2,text,black);
+  }
+
+  for(i=1;i<=nfields;i++) {
+    int x1,x2,y1,y2;
+
+    x1 = (i-1)*width/nfields;
+    x2 = x1 + 10;
+    y1 = (int)(yend+gdFontLarge->h*2);
+    y2 = (int)(y1 + gdFontLarge->h*0.5);
+
+    gdImageFilledRectangle(im,x1,y1,x2,y2,kleur[color[i]]);
+    gdImageString(im,gdFontSmall,x2+2,y1,fieldnames[i],black);
+  }
+
+  for (i=0;i<n;i++) {
+    int x1,x2,y2,y3,y4,ys;
+    double y1;
+
+    y1 = yend - i*yfact - ywid/2;
+    y2 = (int)(y1 - yfact*0.5);
+    ys = (int)(yend - (i+0.5)*yfact-gdFontLarge->h/2);
+
+    x1 = (int)xorig;
+
+    gdImageString(im,gdFontLarge,x1-5-gdFontLarge->w*strlen(results[i].veld),ys,results[i].veld,black);
+    for (j=0;j<nfields;j++) {
+      x2 = (int)(x1 + results[i].waarde[j] * xfact);
+      y3 = (int)(y1 - j*ywid);
+      y4 = (int)(y3 - ywid);
+      gdImageFilledRectangle(im,x1,y4,x2,y3,kleur[color[j+1]]);
+    }
+  }
+
+  gdImageRectangle(im,(int)xorig,(int)yorig,(int)xend,(int)yend,black);
+
+  gifout=fopen(outfile,"wb");
+  gdImageGif(im,gifout);
+  gdImageDestroy(im);
+}
+
+void usage(const char *caller)
+{
+  fprintf(stderr,"Usage: %s <dbase> <query> options\n",caller);
+  fprintf(stderr,"Options: -w width\n");
+  fprintf(stderr,"         -h height\n");
+  fprintf(stderr,"         -c<n> colnr\n");
+}
+
+int main(int argc,char **argv)
+{
+  char *dbName;
+  char *query;
+  int  width;
+  int  height;
+  long n;
+  int  i,j;
+
+  if (argc < 3) {
+    usage(argv[0]);
+    return 1;
+  }
+
+
+  dbName = strdup(argv[1]);
+  query = strdup(argv[2]);
+
+// Set default values
+
+  width   = 650;
+  height  = 150;
+  nfields = 1;
+
+  for(i=3;i<argc;i++) {
+    if (argv[i][0] == '-') {
+      switch (argv[i][1]) {
+      case 'w':  
+	width=atol(argv[++i]);
+        break;
+
+      case 'h':
+	height=atol(argv[++i]);
+	break;
+
+      case 'c':
+	j = argv[i][2] - '0';
+	if (j<1 || j>9) {
+	  fprintf(stderr,"Colorindex must be in range 1-9\n");
+	  return 1;
+	}
+	color[j] = atoi(argv[++i]);
+	break;
+
+      case 'n':
+	nfields = atoi(argv[++i]);
+	break;
+
+      case 'o':
+	outfile = strdup(argv[++i]);
+	break;
+
+      default:
+	fprintf(stderr,"Unknown option '%s'\n",argv[i]);
+	usage(argv[0]);
+	break;
+      }
+    }
+  }
+
+  n=getResults(dbName,query);
+  displayResults(width,height,n);
+
+  return 0;
+}
