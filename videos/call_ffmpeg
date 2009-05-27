@@ -1,0 +1,4 @@
+#! /bin/sh
+
+ffmpeg -i /mnt/hdd1/JVC-20060819/SD_VIDEO/$1/$2.MOD -target pal-dvd -aspect 16:9 -vb 8500k $2.MPG
+
