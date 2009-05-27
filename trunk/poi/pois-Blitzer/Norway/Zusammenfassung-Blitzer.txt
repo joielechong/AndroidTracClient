@@ -1,8 +1,0 @@
-Zusammenfassung Blitzer für Norway
-----------------------------------------------
-2			Blitzer-50
-3			Blitzer-60
-4			Blitzer-70
-2			Blitzer-80
-2			Blitzer-90
-1			Blitzer-unsortiert
