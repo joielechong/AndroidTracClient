@@ -1,0 +1,24 @@
+Zusammenfassung Blitzer für Spain
+----------------------------------------------
+67			Blitzer-100
+106			Blitzer-120
+2			Blitzer-120-m
+4			Blitzer-30
+14			Blitzer-40
+1			Blitzer-40-m
+62			Blitzer-50
+18			Blitzer-50-m
+20			Blitzer-60
+10			Blitzer-70
+43			Blitzer-80
+25			Blitzer-90
+2			Blitzer-90-m
+5			Blitzer-Rotlicht
+1			Blitzer-Rotlicht-30
+1			Blitzer-Rotlicht-40
+9			Blitzer-Rotlicht-50
+3			Blitzer-Rotlicht-60
+5			Blitzer-Rotlicht-80
+1			Blitzer-Rotlicht-90
+48			Blitzer-unsortiert
+65			Blitzer-unsortiert-m

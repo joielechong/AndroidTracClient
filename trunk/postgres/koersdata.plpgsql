@@ -1,0 +1,15 @@
+drop trigger test1 on rekening;
+
+create or replace function remove_koersinfo() returns trigger as '
+declare 
+	c integer;
+begin
+	select count(slot) into c from koersid where id=OLD.id;
+	raise notice ''% records in database for % (%)'',c,OLD.naam,OLD.id;
+	delete from koersid where id=OLD.id;
+	return OLD;
+	end;
+' language 'plpgsql';
+
+create trigger test1 before delete on rekening for each row execute procedure remove_koersinfo();
+

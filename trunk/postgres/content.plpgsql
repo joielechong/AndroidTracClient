@@ -1,0 +1,11 @@
+drop trigger tp_content_ins on content;
+
+create or replace function tp_content_ins() returns trigger as 
+'begin 
+	new.toegevoegd=now(); 
+	return new; 
+end;' language 'plpgsql';
+
+create trigger tp_content_ins before insert
+    on content for each row execute procedure tp_content_ins();
+

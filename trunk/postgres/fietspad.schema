@@ -1,0 +1,501 @@
+--
+-- PostgreSQL database dump
+--
+
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = off;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET escape_string_warning = off;
+
+--
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
+--
+
+COMMENT ON SCHEMA public IS 'Standard public schema';
+
+
+--
+-- Name: plpgsql; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: postgres
+--
+
+CREATE PROCEDURAL LANGUAGE plpgsql;
+
+
+SET search_path = public, pg_catalog;
+
+--
+-- Name: addcall(timestamp with time zone, character varying, character varying); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION addcall(timestamp with time zone, character varying, character varying) RETURNS integer
+    AS $_$DECLARE
+rv int4;
+u varchar;
+BEGIN
+u := $3;
+UPDATE content SET calls=calls + 1, last_call=$1, last_visitor=$2 where url=u;
+IF NOT FOUND THEN
+u := u  || '/';
+UPDATE content SET calls=calls + 1, last_call=$1, last_visitor=$2 where url=u;
+IF NOT FOUND THEN
+u := $3;
+INSERT INTO content (calls,last_call,last_visitor,url) VALUES (1,$1,$2,u);
+END IF;
+END IF;
+SELECT calls INTO rv FROM content where url=u;
+RETURN rv;
+END;$_$
+    LANGUAGE plpgsql;
+
+
+ALTER FUNCTION public.addcall(timestamp with time zone, character varying, character varying) OWNER TO mfvl;
+
+--
+-- Name: addcall1(timestamp with time zone, character varying, character varying); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION addcall1(datum timestamp with time zone, last_visitor character varying, url character varying) RETURNS void
+    AS $_$UPDATE content SET "calls"=calls + 1, "last_call"=$1, "last_visitor"=$2 where "url"=$3$_$
+    LANGUAGE sql;
+
+
+ALTER FUNCTION public.addcall1(datum timestamp with time zone, last_visitor character varying, url character varying) OWNER TO mfvl;
+
+--
+-- Name: plpgsql_call_handler(); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION plpgsql_call_handler() RETURNS language_handler
+    AS '$libdir/plpgsql', 'plpgsql_call_handler'
+    LANGUAGE c;
+
+
+ALTER FUNCTION public.plpgsql_call_handler() OWNER TO mfvl;
+
+--
+-- Name: tp_content_ins(); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION tp_content_ins() RETURNS "trigger"
+    AS $$begin
+new.toegevoegd=now();
+return new;
+end;$$
+    LANGUAGE plpgsql;
+
+
+ALTER FUNCTION public.tp_content_ins() OWNER TO mfvl;
+
+SET default_tablespace = '';
+
+SET default_with_oids = true;
+
+--
+-- Name: adressen; Type: TABLE; Schema: public; Owner: fietspad; Tablespace: 
+--
+
+CREATE TABLE adressen (
+    email character varying NOT NULL,
+    sent boolean DEFAULT false,
+    "valid" boolean DEFAULT false
+);
+
+
+ALTER TABLE public.adressen OWNER TO fietspad;
+
+--
+-- Name: boeken; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE boeken (
+    bfmid integer NOT NULL,
+    siteid integer NOT NULL,
+    bfpid character varying NOT NULL,
+    bfmtype character varying NOT NULL,
+    prdid character varying(25) NOT NULL,
+    imgsrc character varying(255),
+    titel character varying(255) NOT NULL,
+    auteur character varying(255) NOT NULL,
+    sectie1 character varying(255) NOT NULL,
+    sectie2 character varying(255) NOT NULL,
+    toegevoegd date
+);
+
+
+ALTER TABLE public.boeken OWNER TO mfvl;
+
+--
+-- Name: categorie; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE categorie (
+    id integer NOT NULL,
+    categorie character varying,
+    omschrijving character varying,
+    intro text
+);
+
+
+ALTER TABLE public.categorie OWNER TO mfvl;
+
+--
+-- Name: categorie_id_seq; Type: SEQUENCE; Schema: public; Owner: mfvl
+--
+
+CREATE SEQUENCE categorie_id_seq
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.categorie_id_seq OWNER TO mfvl;
+
+--
+-- Name: categorie_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mfvl
+--
+
+ALTER SEQUENCE categorie_id_seq OWNED BY categorie.id;
+
+
+--
+-- Name: content; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE content (
+    id integer NOT NULL,
+    url character varying NOT NULL,
+    active boolean DEFAULT true NOT NULL,
+    inactive_since date,
+    last_result_code integer DEFAULT 200 NOT NULL,
+    toegevoegd date,
+    categorie character varying DEFAULT 'Onbekend'::character varying NOT NULL,
+    tekst text,
+    "sequence" character varying,
+    failures integer DEFAULT 0 NOT NULL,
+    last_call timestamp with time zone,
+    calls integer DEFAULT 0 NOT NULL,
+    last_visitor character varying
+);
+
+
+ALTER TABLE public.content OWNER TO mfvl;
+
+--
+-- Name: TABLE content; Type: COMMENT; Schema: public; Owner: mfvl
+--
+
+COMMENT ON TABLE content IS 'Links van het fietspad';
+
+
+--
+-- Name: COLUMN content.id; Type: COMMENT; Schema: public; Owner: mfvl
+--
+
+COMMENT ON COLUMN content.id IS 'Uniek ID';
+
+
+--
+-- Name: COLUMN content.url; Type: COMMENT; Schema: public; Owner: mfvl
+--
+
+COMMENT ON COLUMN content.url IS 'URL van de link';
+
+
+--
+-- Name: COLUMN content.active; Type: COMMENT; Schema: public; Owner: mfvl
+--
+
+COMMENT ON COLUMN content.active IS 'Wel of niet tonen';
+
+
+--
+-- Name: COLUMN content.inactive_since; Type: COMMENT; Schema: public; Owner: mfvl
+--
+
+COMMENT ON COLUMN content.inactive_since IS 'Laastse keer werkend gezien';
+
+
+--
+-- Name: COLUMN content.last_result_code; Type: COMMENT; Schema: public; Owner: mfvl
+--
+
+COMMENT ON COLUMN content.last_result_code IS 'HTTP return code bij laatste scan';
+
+
+--
+-- Name: COLUMN content.toegevoegd; Type: COMMENT; Schema: public; Owner: mfvl
+--
+
+COMMENT ON COLUMN content.toegevoegd IS 'Item toegevoegd';
+
+
+--
+-- Name: COLUMN content.categorie; Type: COMMENT; Schema: public; Owner: mfvl
+--
+
+COMMENT ON COLUMN content.categorie IS 'Categorie van de link';
+
+
+--
+-- Name: COLUMN content.failures; Type: COMMENT; Schema: public; Owner: mfvl
+--
+
+COMMENT ON COLUMN content.failures IS 'Aantal achtereenvolgende mislukte aanroepen';
+
+
+--
+-- Name: COLUMN content.last_call; Type: COMMENT; Schema: public; Owner: mfvl
+--
+
+COMMENT ON COLUMN content.last_call IS 'Laatste keer aangeroepen';
+
+
+--
+-- Name: COLUMN content.calls; Type: COMMENT; Schema: public; Owner: mfvl
+--
+
+COMMENT ON COLUMN content.calls IS 'Aantal keren aangeroepen';
+
+
+--
+-- Name: COLUMN content.last_visitor; Type: COMMENT; Schema: public; Owner: mfvl
+--
+
+COMMENT ON COLUMN content.last_visitor IS 'Laatste site die link aanriep';
+
+
+--
+-- Name: content_id_seq; Type: SEQUENCE; Schema: public; Owner: mfvl
+--
+
+CREATE SEQUENCE content_id_seq
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.content_id_seq OWNER TO mfvl;
+
+--
+-- Name: content_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mfvl
+--
+
+ALTER SEQUENCE content_id_seq OWNED BY content.id;
+
+
+--
+-- Name: gastboek; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE gastboek (
+    id integer NOT NULL,
+    datum date,
+    tijd time without time zone,
+    naam character varying,
+    email character varying,
+    woonplaats character varying,
+    tekst text,
+    ip inet
+);
+
+
+ALTER TABLE public.gastboek OWNER TO mfvl;
+
+--
+-- Name: gastboek_id_seq; Type: SEQUENCE; Schema: public; Owner: mfvl
+--
+
+CREATE SEQUENCE gastboek_id_seq
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.gastboek_id_seq OWNER TO mfvl;
+
+--
+-- Name: gastboek_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mfvl
+--
+
+ALTER SEQUENCE gastboek_id_seq OWNED BY gastboek.id;
+
+
+--
+-- Name: sponsors; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE sponsors (
+    id integer NOT NULL,
+    naam text NOT NULL,
+    tekst text NOT NULL,
+    "sequence" integer NOT NULL
+);
+
+
+ALTER TABLE public.sponsors OWNER TO mfvl;
+
+--
+-- Name: sponsors_id_seq; Type: SEQUENCE; Schema: public; Owner: mfvl
+--
+
+CREATE SEQUENCE sponsors_id_seq
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.sponsors_id_seq OWNER TO mfvl;
+
+--
+-- Name: sponsors_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mfvl
+--
+
+ALTER SEQUENCE sponsors_id_seq OWNED BY sponsors.id;
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE categorie ALTER COLUMN id SET DEFAULT nextval('categorie_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE content ALTER COLUMN id SET DEFAULT nextval('content_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE gastboek ALTER COLUMN id SET DEFAULT nextval('gastboek_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE sponsors ALTER COLUMN id SET DEFAULT nextval('sponsors_id_seq'::regclass);
+
+
+--
+-- Name: adressen_pkey; Type: CONSTRAINT; Schema: public; Owner: fietspad; Tablespace: 
+--
+
+ALTER TABLE ONLY adressen
+    ADD CONSTRAINT adressen_pkey PRIMARY KEY (email);
+
+
+--
+-- Name: cat_003; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY categorie
+    ADD CONSTRAINT cat_003 PRIMARY KEY (id);
+
+
+--
+-- Name: commercie_url_key; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY content
+    ADD CONSTRAINT commercie_url_key UNIQUE (url);
+
+
+--
+-- Name: con_001; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY content
+    ADD CONSTRAINT con_001 PRIMARY KEY (id);
+
+
+--
+-- Name: gastboek_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY gastboek
+    ADD CONSTRAINT gastboek_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: isbn; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY boeken
+    ADD CONSTRAINT isbn PRIMARY KEY (bfpid);
+
+
+--
+-- Name: sponsors_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY sponsors
+    ADD CONSTRAINT sponsors_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cat_001; Type: INDEX; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE UNIQUE INDEX cat_001 ON categorie USING btree (categorie);
+
+
+--
+-- Name: dt; Type: INDEX; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE INDEX dt ON gastboek USING btree (datum, tijd);
+
+
+--
+-- Name: tp_content_ins; Type: TRIGGER; Schema: public; Owner: mfvl
+--
+
+CREATE TRIGGER tp_content_ins
+    BEFORE INSERT ON content
+    FOR EACH ROW
+    EXECUTE PROCEDURE tp_content_ins();
+
+
+--
+-- Name: content_categorie; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY content
+    ADD CONSTRAINT content_categorie FOREIGN KEY (categorie) REFERENCES categorie(categorie);
+
+
+--
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- Name: adressen; Type: ACL; Schema: public; Owner: fietspad
+--
+
+REVOKE ALL ON TABLE adressen FROM PUBLIC;
+REVOKE ALL ON TABLE adressen FROM fietspad;
+GRANT ALL ON TABLE adressen TO fietspad;
+GRANT ALL ON TABLE adressen TO mfvl;
+GRANT ALL ON TABLE adressen TO httpd;
+
+
+--
+-- PostgreSQL database dump complete
+--
+

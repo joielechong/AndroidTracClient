@@ -1,0 +1,762 @@
+--
+-- PostgreSQL database dump
+--
+
+SET client_encoding = 'SQL_ASCII';
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
+--
+
+COMMENT ON SCHEMA public IS 'Standard public schema';
+
+
+SET search_path = public, pg_catalog;
+
+--
+-- Name: plpgsql_call_handler(); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION plpgsql_call_handler() RETURNS language_handler
+    AS '/usr/local/pgsql/lib/plpgsql.so', 'plpgsql_call_handler'
+    LANGUAGE c;
+
+
+ALTER FUNCTION public.plpgsql_call_handler() OWNER TO mfvl;
+
+--
+-- Name: plpgsql; Type: PROCEDURAL LANGUAGE; Schema: public; Owner: 
+--
+
+CREATE PROCEDURAL LANGUAGE plpgsql HANDLER plpgsql_call_handler;
+
+
+--
+-- Name: add_categorie(); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION add_categorie() RETURNS "trigger"
+    AS $$
+declare 
+  newcat varchar;
+  girorek bigint;
+  rek bigint;
+  nm varchar;
+  omschr varchar;
+  tp varchar;
+begin 
+  girorek := NEW.girorekening;
+  rek := NEW.rekening;
+  nm := NEW.naam;
+  omschr := NEW.omschrijving;
+  tp := NEW.type;
+
+  if ( tp = 'GM') then
+    if ( omschr like '%797Q282%' ) then
+      newcat := 'CASH-H';
+    else 
+      if ( omschr like '%320R243%' ) then
+        newcat := 'CASH-M';
+      else
+        newcat :='CASH';
+      end if;
+    end if;
+    NEW.categorie := newcat;
+  else
+    select into newcat categorie from autocat where girorekening=girorek and rekening=rek;
+    if found then
+      NEW.categorie := newcat;
+      raise info 'Categorie = % voor %/%/%/%',newcat,NEW.datum,girorek,rek,NEW.bedrag;
+    else
+      select into newcat categorie from autocat1 where nm like naam;
+      if found then
+        NEW.categorie := newcat;
+        raise info 'Categorie = % voor %/%/%/%',newcat,NEW.datum,girorek,rek,NEW.bedrag;
+      else
+        select into newcat categorie from autocat2 where omschr like omschrijving;
+        if found then
+          NEW.categorie := newcat;
+          raise info 'Categorie = % voor %/%/%/%',newcat,NEW.datum,girorek,rek,NEW.bedrag;
+        else
+          raise info 'Geen categorie voor %/%/%/%',NEW.datum,girorek,rek,NEW.bedrag;
+        end if;
+      end if;
+    end if;
+  end if;
+  return NEW;
+end; $$
+    LANGUAGE plpgsql;
+
+
+ALTER FUNCTION public.add_categorie() OWNER TO mfvl;
+
+--
+-- Name: af_album_del(); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION af_album_del() RETURNS "trigger"
+    AS $$begin 
+  delete from albumfoto where albumid=old.id; 
+  return old; 
+end;$$
+    LANGUAGE plpgsql;
+
+
+ALTER FUNCTION public.af_album_del() OWNER TO mfvl;
+
+--
+-- Name: af_fotos_del(); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION af_fotos_del() RETURNS "trigger"
+    AS $$begin 
+  delete from albumfoto where fotoid=old.id; 
+  return old; 
+end;$$
+    LANGUAGE plpgsql;
+
+
+ALTER FUNCTION public.af_fotos_del() OWNER TO mfvl;
+
+--
+-- Name: af_fotos_ins(); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION af_fotos_ins() RETURNS "trigger"
+    AS $$begin
+  insert into albumfoto values (0,new.id,new.id);
+  return new;
+end;$$
+    LANGUAGE plpgsql;
+
+
+ALTER FUNCTION public.af_fotos_ins() OWNER TO mfvl;
+
+--
+-- Name: tp_fietsers_del(); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION tp_fietsers_del() RETURNS "trigger"
+    AS $$begin
+  delete from type where type.id=old.id;
+  return old; 
+end;$$
+    LANGUAGE plpgsql;
+
+
+ALTER FUNCTION public.tp_fietsers_del() OWNER TO mfvl;
+
+SET default_tablespace = '';
+
+SET default_with_oids = true;
+
+--
+-- Name: album; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE album (
+    id serial NOT NULL,
+    naam character varying NOT NULL,
+    default_read boolean DEFAULT false,
+    default_modify boolean DEFAULT false
+);
+
+
+ALTER TABLE public.album OWNER TO mfvl;
+
+--
+-- Name: album_users; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE album_users (
+    userid integer,
+    albumid integer,
+    "read" boolean DEFAULT false,
+    modify boolean DEFAULT false
+);
+
+
+ALTER TABLE public.album_users OWNER TO mfvl;
+
+--
+-- Name: albumfoto; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE albumfoto (
+    albumid integer NOT NULL,
+    fotoid integer NOT NULL,
+    seqnr integer,
+    omschrijving character varying DEFAULT ''::character varying,
+    width integer DEFAULT 0,
+    height integer DEFAULT 0,
+    rotate integer DEFAULT 0
+);
+
+
+ALTER TABLE public.albumfoto OWNER TO mfvl;
+
+--
+-- Name: autocat; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE autocat (
+    girorekening bigint,
+    rekening integer,
+    categorie character varying
+);
+
+
+ALTER TABLE public.autocat OWNER TO mfvl;
+
+--
+-- Name: autocat1; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE autocat1 (
+    naam character varying,
+    categorie character varying
+);
+
+
+ALTER TABLE public.autocat1 OWNER TO mfvl;
+
+--
+-- Name: autocat2; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE autocat2 (
+    omschrijving character varying,
+    categorie character varying
+);
+
+
+ALTER TABLE public.autocat2 OWNER TO mfvl;
+
+--
+-- Name: fietsers; Type: TABLE; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE TABLE fietsers (
+    id integer NOT NULL,
+    naam character varying NOT NULL,
+    email character varying NOT NULL,
+    woonplaats character varying NOT NULL,
+    geslacht character(1) NOT NULL,
+    leeftijd integer,
+    geboortejaar integer,
+    voorkeur character varying,
+    aanmaak date,
+    wijzig date,
+    "password" character varying,
+    groep character varying DEFAULT 'fietser'::character varying,
+    hits integer DEFAULT 0
+);
+
+
+ALTER TABLE public.fietsers OWNER TO httpd;
+
+--
+-- Name: fietslinks; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE fietslinks (
+    id serial NOT NULL,
+    url character varying,
+    count integer,
+    visit date,
+    last_status integer,
+    curr_status integer
+);
+
+
+ALTER TABLE public.fietslinks OWNER TO mfvl;
+
+--
+-- Name: foto_users; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE foto_users (
+    id serial NOT NULL,
+    email character varying,
+    "password" character varying,
+    "read" boolean DEFAULT false,
+    modify boolean DEFAULT false
+);
+
+
+ALTER TABLE public.foto_users OWNER TO mfvl;
+
+--
+-- Name: fotos; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE fotos (
+    filename character varying NOT NULL,
+    omschrijving character varying,
+    id serial NOT NULL,
+    thumbnail oid,
+    datum date,
+    camera character varying,
+    filmnr integer,
+    fotonr integer,
+    hitcount integer,
+    auteur character varying
+);
+
+
+ALTER TABLE public.fotos OWNER TO mfvl;
+
+--
+-- Name: giro; Type: TABLE; Schema: public; Owner: root; Tablespace: 
+--
+
+CREATE TABLE giro (
+    girorekening bigint,
+    datum integer,
+    "type" character(2),
+    volgnr integer,
+    rekening bigint,
+    naam character varying,
+    bedrag double precision,
+    omschrijving character varying,
+    categorie character varying DEFAULT 'NTB'::character varying
+);
+
+
+ALTER TABLE public.giro OWNER TO root;
+
+--
+-- Name: giro1; Type: VIEW; Schema: public; Owner: mfvl
+--
+
+CREATE VIEW giro1 AS
+    SELECT (giro.datum / 10000) AS jaar, mod((giro.datum / 100), 100) AS maand, mod(giro.datum, 100) AS dag, giro.girorekening, giro."type", giro.volgnr, giro.rekening, giro.naam, giro.bedrag, giro.omschrijving, giro.categorie FROM giro;
+
+
+ALTER TABLE public.giro1 OWNER TO mfvl;
+
+--
+-- Name: giro2; Type: VIEW; Schema: public; Owner: mfvl
+--
+
+CREATE VIEW giro2 AS
+    SELECT (giro.datum / 100) AS maand, giro.categorie, sum(giro.bedrag) AS bedrag FROM giro GROUP BY (giro.datum / 100), giro.categorie ORDER BY (giro.datum / 100), giro.categorie;
+
+
+ALTER TABLE public.giro2 OWNER TO mfvl;
+
+--
+-- Name: girotmp; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE girotmp (
+    girorekening integer,
+    datum integer,
+    naam character varying,
+    "type" character(2),
+    rekening integer,
+    bedrag double precision
+);
+
+
+ALTER TABLE public.girotmp OWNER TO mfvl;
+
+--
+-- Name: girotmp1; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE girotmp1 (
+    girorekening integer,
+    datum integer,
+    "type" character(2),
+    volgnr integer,
+    rekening integer,
+    naam character varying,
+    bedrag double precision,
+    omschrijving character varying
+);
+
+
+ALTER TABLE public.girotmp1 OWNER TO mfvl;
+
+--
+-- Name: saldo; Type: TABLE; Schema: public; Owner: root; Tablespace: 
+--
+
+CREATE TABLE saldo (
+    datum integer,
+    girorekening integer,
+    rekening character varying,
+    saldo double precision
+);
+
+
+ALTER TABLE public.saldo OWNER TO root;
+
+--
+-- Name: temp; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE "temp" (
+    url character varying
+);
+
+
+ALTER TABLE public."temp" OWNER TO mfvl;
+
+--
+-- Name: type; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE "type" (
+    id integer,
+    "type" character varying
+);
+
+
+ALTER TABLE public."type" OWNER TO mfvl;
+
+--
+-- Name: ac_001; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY autocat
+    ADD CONSTRAINT ac_001 UNIQUE (girorekening, rekening);
+
+
+ALTER INDEX public.ac_001 OWNER TO mfvl;
+
+--
+-- Name: af; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY albumfoto
+    ADD CONSTRAINT af UNIQUE (albumid, fotoid);
+
+
+ALTER INDEX public.af OWNER TO mfvl;
+
+--
+-- Name: album_naam; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY album
+    ADD CONSTRAINT album_naam UNIQUE (naam);
+
+
+ALTER INDEX public.album_naam OWNER TO mfvl;
+
+--
+-- Name: album_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY album
+    ADD CONSTRAINT album_pkey PRIMARY KEY (id);
+
+
+ALTER INDEX public.album_pkey OWNER TO mfvl;
+
+--
+-- Name: email001; Type: CONSTRAINT; Schema: public; Owner: httpd; Tablespace: 
+--
+
+ALTER TABLE ONLY fietsers
+    ADD CONSTRAINT email001 UNIQUE (email);
+
+
+ALTER INDEX public.email001 OWNER TO httpd;
+
+--
+-- Name: fietsers_pkey; Type: CONSTRAINT; Schema: public; Owner: httpd; Tablespace: 
+--
+
+ALTER TABLE ONLY fietsers
+    ADD CONSTRAINT fietsers_pkey PRIMARY KEY (id);
+
+
+ALTER INDEX public.fietsers_pkey OWNER TO httpd;
+
+--
+-- Name: fietslinks_id_key; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY fietslinks
+    ADD CONSTRAINT fietslinks_id_key UNIQUE (id);
+
+
+ALTER INDEX public.fietslinks_id_key OWNER TO mfvl;
+
+--
+-- Name: fotos_filename_key; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY fotos
+    ADD CONSTRAINT fotos_filename_key UNIQUE (filename);
+
+
+ALTER INDEX public.fotos_filename_key OWNER TO mfvl;
+
+--
+-- Name: fotos_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY fotos
+    ADD CONSTRAINT fotos_pkey PRIMARY KEY (id);
+
+
+ALTER INDEX public.fotos_pkey OWNER TO mfvl;
+
+--
+-- Name: saldo_001; Type: CONSTRAINT; Schema: public; Owner: root; Tablespace: 
+--
+
+ALTER TABLE ONLY saldo
+    ADD CONSTRAINT saldo_001 UNIQUE (datum, girorekening, rekening);
+
+
+ALTER INDEX public.saldo_001 OWNER TO root;
+
+--
+-- Name: url; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY fietslinks
+    ADD CONSTRAINT url UNIQUE (url);
+
+
+ALTER INDEX public.url OWNER TO mfvl;
+
+--
+-- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY foto_users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+ALTER INDEX public.users_pkey OWNER TO mfvl;
+
+--
+-- Name: ac1_001; Type: INDEX; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE UNIQUE INDEX ac1_001 ON autocat1 USING btree (naam);
+
+
+ALTER INDEX public.ac1_001 OWNER TO mfvl;
+
+--
+-- Name: af1; Type: INDEX; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE INDEX af1 ON albumfoto USING btree (albumid);
+
+
+ALTER INDEX public.af1 OWNER TO mfvl;
+
+--
+-- Name: af2; Type: INDEX; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE INDEX af2 ON albumfoto USING btree (fotoid);
+
+
+ALTER INDEX public.af2 OWNER TO mfvl;
+
+--
+-- Name: au001; Type: INDEX; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE UNIQUE INDEX au001 ON album_users USING btree (userid, albumid);
+
+
+ALTER INDEX public.au001 OWNER TO mfvl;
+
+--
+-- Name: giro_idx01; Type: INDEX; Schema: public; Owner: root; Tablespace: 
+--
+
+CREATE INDEX giro_idx01 ON giro USING btree (girorekening, datum);
+
+
+ALTER INDEX public.giro_idx01 OWNER TO root;
+
+--
+-- Name: giro_idx02; Type: INDEX; Schema: public; Owner: root; Tablespace: 
+--
+
+CREATE INDEX giro_idx02 ON giro USING btree (datum);
+
+
+ALTER INDEX public.giro_idx02 OWNER TO root;
+
+--
+-- Name: type_idx01; Type: INDEX; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE INDEX type_idx01 ON "type" USING btree (id);
+
+
+ALTER INDEX public.type_idx01 OWNER TO mfvl;
+
+--
+-- Name: type_idx02; Type: INDEX; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE INDEX type_idx02 ON "type" USING btree ("type");
+
+
+ALTER INDEX public.type_idx02 OWNER TO mfvl;
+
+--
+-- Name: us001; Type: INDEX; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE UNIQUE INDEX us001 ON foto_users USING btree (email);
+
+
+ALTER INDEX public.us001 OWNER TO mfvl;
+
+--
+-- Name: add_categorie; Type: TRIGGER; Schema: public; Owner: root
+--
+
+CREATE TRIGGER add_categorie
+    BEFORE INSERT ON giro
+    FOR EACH ROW
+    EXECUTE PROCEDURE add_categorie();
+
+
+--
+-- Name: af_album_del; Type: TRIGGER; Schema: public; Owner: mfvl
+--
+
+CREATE TRIGGER af_album_del
+    BEFORE DELETE ON album
+    FOR EACH ROW
+    EXECUTE PROCEDURE af_album_del();
+
+
+--
+-- Name: af_fotos_del; Type: TRIGGER; Schema: public; Owner: mfvl
+--
+
+CREATE TRIGGER af_fotos_del
+    BEFORE DELETE ON fotos
+    FOR EACH ROW
+    EXECUTE PROCEDURE af_fotos_del();
+
+
+--
+-- Name: af_fotos_ins; Type: TRIGGER; Schema: public; Owner: mfvl
+--
+
+CREATE TRIGGER af_fotos_ins
+    AFTER INSERT ON fotos
+    FOR EACH ROW
+    EXECUTE PROCEDURE af_fotos_ins();
+
+
+--
+-- Name: tp_fietsers_del; Type: TRIGGER; Schema: public; Owner: httpd
+--
+
+CREATE TRIGGER tp_fietsers_del
+    BEFORE DELETE ON fietsers
+    FOR EACH ROW
+    EXECUTE PROCEDURE tp_fietsers_del();
+
+
+--
+-- Name: albumid; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY albumfoto
+    ADD CONSTRAINT albumid FOREIGN KEY (albumid) REFERENCES album(id);
+
+
+--
+-- Name: albumid; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY album_users
+    ADD CONSTRAINT albumid FOREIGN KEY (albumid) REFERENCES album(id);
+
+
+--
+-- Name: fotoid; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY albumfoto
+    ADD CONSTRAINT fotoid FOREIGN KEY (fotoid) REFERENCES fotos(id);
+
+
+--
+-- Name: typeid; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY "type"
+    ADD CONSTRAINT typeid FOREIGN KEY (id) REFERENCES fietsers(id);
+
+
+--
+-- Name: userid; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY album_users
+    ADD CONSTRAINT userid FOREIGN KEY (userid) REFERENCES foto_users(id);
+
+
+--
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- Name: fietsers; Type: ACL; Schema: public; Owner: httpd
+--
+
+REVOKE ALL ON TABLE fietsers FROM PUBLIC;
+REVOKE ALL ON TABLE fietsers FROM httpd;
+GRANT ALL ON TABLE fietsers TO httpd;
+GRANT ALL ON TABLE fietsers TO mfvl;
+
+
+--
+-- Name: giro; Type: ACL; Schema: public; Owner: root
+--
+
+REVOKE ALL ON TABLE giro FROM PUBLIC;
+REVOKE ALL ON TABLE giro FROM root;
+GRANT ALL ON TABLE giro TO root;
+
+
+--
+-- Name: girotmp; Type: ACL; Schema: public; Owner: mfvl
+--
+
+REVOKE ALL ON TABLE girotmp FROM PUBLIC;
+REVOKE ALL ON TABLE girotmp FROM mfvl;
+GRANT ALL ON TABLE girotmp TO mfvl;
+
+
+--
+-- Name: saldo; Type: ACL; Schema: public; Owner: root
+--
+
+REVOKE ALL ON TABLE saldo FROM PUBLIC;
+REVOKE ALL ON TABLE saldo FROM root;
+GRANT ALL ON TABLE saldo TO root;
+
+
+--
+-- PostgreSQL database dump complete
+--
+

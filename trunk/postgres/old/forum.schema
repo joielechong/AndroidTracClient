@@ -1,0 +1,855 @@
+--
+-- PostgreSQL database dump
+--
+
+SET client_encoding = 'SQL_ASCII';
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
+--
+
+COMMENT ON SCHEMA public IS 'Standard public schema';
+
+
+SET search_path = public, pg_catalog;
+
+--
+-- Name: plpgsql_call_handler(); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION plpgsql_call_handler() RETURNS language_handler
+    AS '$libdir/plpgsql', 'plpgsql_call_handler'
+    LANGUAGE c;
+
+
+ALTER FUNCTION public.plpgsql_call_handler() OWNER TO mfvl;
+
+--
+-- Name: plpgsql; Type: PROCEDURAL LANGUAGE; Schema: public; Owner: 
+--
+
+CREATE TRUSTED PROCEDURAL LANGUAGE plpgsql HANDLER plpgsql_call_handler;
+
+
+SET default_tablespace = '';
+
+SET default_with_oids = true;
+
+--
+-- Name: access; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE "access" (
+    access_id serial NOT NULL,
+    access_title character varying
+);
+
+
+ALTER TABLE public."access" OWNER TO mfvl;
+
+--
+-- Name: banlist; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE banlist (
+    ban_id serial NOT NULL,
+    ban_userid integer,
+    ban_ip inet,
+    ban_start timestamp without time zone,
+    ban_end timestamp without time zone,
+    ban_time_type bigint
+);
+
+
+ALTER TABLE public.banlist OWNER TO mfvl;
+
+--
+-- Name: catagories; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE catagories (
+    cat_id serial NOT NULL,
+    cat_title character varying,
+    cat_order character varying
+);
+
+
+ALTER TABLE public.catagories OWNER TO mfvl;
+
+--
+-- Name: config; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE config (
+    config_id serial NOT NULL,
+    sitename character varying,
+    allow_html integer,
+    allow_bbcode integer,
+    allow_sig integer,
+    allow_namechange integer DEFAULT 0,
+    admin_passwd character varying,
+    selected integer DEFAULT 0 NOT NULL,
+    posts_per_page integer,
+    hot_threshold integer,
+    topics_per_page integer,
+    allow_theme_create integer,
+    override_themes integer DEFAULT 0,
+    email_sig character varying,
+    email_from character varying,
+    default_lang character varying
+);
+
+
+ALTER TABLE public.config OWNER TO mfvl;
+
+--
+-- Name: disallow; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE disallow (
+    disallow_id serial NOT NULL,
+    disallow_username character varying
+);
+
+
+ALTER TABLE public.disallow OWNER TO mfvl;
+
+--
+-- Name: forum_access; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE forum_access (
+    forum_id integer NOT NULL,
+    user_id integer NOT NULL,
+    can_post integer DEFAULT 0 NOT NULL
+);
+
+
+ALTER TABLE public.forum_access OWNER TO mfvl;
+
+--
+-- Name: forum_mods; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE forum_mods (
+    forum_id integer NOT NULL,
+    user_id integer NOT NULL
+);
+
+
+ALTER TABLE public.forum_mods OWNER TO mfvl;
+
+--
+-- Name: forums; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE forums (
+    forum_id serial NOT NULL,
+    forum_name character varying,
+    forum_desc text,
+    forum_access integer DEFAULT 1,
+    forum_moderator integer,
+    forum_topics integer DEFAULT 0 NOT NULL,
+    forum_posts integer DEFAULT 0 NOT NULL,
+    forum_last_post_id integer DEFAULT 0 NOT NULL,
+    cat_id integer,
+    forum_type integer DEFAULT 0
+);
+
+
+ALTER TABLE public.forums OWNER TO mfvl;
+
+--
+-- Name: headermetafooter; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE headermetafooter (
+    header text,
+    meta text,
+    footer text
+);
+
+
+ALTER TABLE public.headermetafooter OWNER TO mfvl;
+
+--
+-- Name: logging; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE logging (
+    id serial NOT NULL,
+    date timestamp without time zone,
+    user_id integer,
+    forum_id integer,
+    topic_id integer,
+    post_id integer,
+    "action" character varying,
+    ip inet
+);
+
+
+ALTER TABLE public.logging OWNER TO mfvl;
+
+--
+-- Name: posts; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE posts (
+    post_id serial NOT NULL,
+    topic_id integer DEFAULT 0 NOT NULL,
+    forum_id integer DEFAULT 0 NOT NULL,
+    poster_id integer NOT NULL,
+    post_time timestamp without time zone,
+    poster_ip inet
+);
+
+
+ALTER TABLE public.posts OWNER TO mfvl;
+
+--
+-- Name: posts_text; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE posts_text (
+    post_id integer NOT NULL,
+    post_text text
+);
+
+
+ALTER TABLE public.posts_text OWNER TO mfvl;
+
+--
+-- Name: priv_msgs; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE priv_msgs (
+    msg_id serial NOT NULL,
+    from_userid integer DEFAULT 0 NOT NULL,
+    to_userid integer DEFAULT 0 NOT NULL,
+    msg_time timestamp without time zone,
+    poster_ip inet,
+    msg_status integer DEFAULT 0,
+    msg_text text
+);
+
+
+ALTER TABLE public.priv_msgs OWNER TO mfvl;
+
+--
+-- Name: ranks; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE ranks (
+    rank_id serial NOT NULL,
+    rank_title character varying NOT NULL,
+    rank_min integer NOT NULL,
+    rank_max integer NOT NULL,
+    rank_special integer DEFAULT 0,
+    rank_image character varying
+);
+
+
+ALTER TABLE public.ranks OWNER TO mfvl;
+
+--
+-- Name: sessions; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE sessions (
+    sess_id bigint DEFAULT 0 NOT NULL,
+    user_id integer DEFAULT 0 NOT NULL,
+    start_time timestamp without time zone DEFAULT '2000-01-01 00:00:00'::timestamp without time zone NOT NULL,
+    remote_ip inet NOT NULL,
+    CONSTRAINT sessions_sess_id_check CHECK ((sess_id >= 0)),
+    CONSTRAINT sessions_start_time_check CHECK ((start_time >= '2000-01-01 00:00:00'::timestamp without time zone))
+);
+
+
+ALTER TABLE public.sessions OWNER TO mfvl;
+
+--
+-- Name: smiles; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE smiles (
+    id serial NOT NULL,
+    code character varying,
+    smile_url character varying,
+    emotion character varying
+);
+
+
+ALTER TABLE public.smiles OWNER TO mfvl;
+
+--
+-- Name: themes; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE themes (
+    theme_id serial NOT NULL,
+    theme_name character varying,
+    bgcolor character varying,
+    textcolor character varying,
+    color1 character varying,
+    color2 character varying,
+    table_bgcolor character varying,
+    header_image character varying,
+    newtopic_image character varying,
+    reply_image character varying,
+    linkcolor character varying,
+    vlinkcolor character varying,
+    theme_default integer DEFAULT 0,
+    fontface character varying,
+    fontsize1 character varying,
+    fontsize2 character varying,
+    fontsize3 character varying,
+    fontsize4 character varying,
+    tablewidth character varying,
+    replylocked_image character varying
+);
+
+
+ALTER TABLE public.themes OWNER TO mfvl;
+
+--
+-- Name: topics; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE topics (
+    topic_id serial NOT NULL,
+    topic_title character varying,
+    topic_poster integer NOT NULL,
+    topic_time timestamp without time zone,
+    topic_views integer DEFAULT 0 NOT NULL,
+    topic_replies integer DEFAULT 0 NOT NULL,
+    topic_last_post_id integer NOT NULL,
+    forum_id integer NOT NULL,
+    topic_status integer DEFAULT 0 NOT NULL,
+    topic_notify integer DEFAULT 0
+);
+
+
+ALTER TABLE public.topics OWNER TO mfvl;
+
+--
+-- Name: users; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE users (
+    user_id serial NOT NULL,
+    username character varying NOT NULL,
+    user_regdate timestamp without time zone NOT NULL,
+    user_password character varying DEFAULT ''::character varying NOT NULL,
+    user_email character varying,
+    user_icq character varying,
+    user_website character varying,
+    user_occ character varying,
+    user_from character varying,
+    user_intrest character varying,
+    user_sig character varying,
+    user_viewemail integer,
+    user_theme integer DEFAULT 1,
+    user_aim character varying,
+    user_yim character varying,
+    user_msnm character varying,
+    user_posts integer DEFAULT 0,
+    user_attachsig integer DEFAULT 0,
+    user_desmile integer DEFAULT 0,
+    user_html integer DEFAULT 0,
+    user_bbcode integer DEFAULT 0,
+    user_rank integer DEFAULT 0,
+    user_level integer DEFAULT 1,
+    user_lang character varying,
+    user_actkey character varying,
+    user_newpasswd character varying
+);
+
+
+ALTER TABLE public.users OWNER TO mfvl;
+
+--
+-- Name: whosonline; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE whosonline (
+    id serial NOT NULL,
+    ip inet,
+    name character varying,
+    count character varying,
+    date timestamp without time zone,
+    username character varying,
+    forum integer
+);
+
+
+ALTER TABLE public.whosonline OWNER TO mfvl;
+
+--
+-- Name: words; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE words (
+    word_id serial NOT NULL,
+    word character varying,
+    replacement character varying
+);
+
+
+ALTER TABLE public.words OWNER TO mfvl;
+
+--
+-- Name: access_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY "access"
+    ADD CONSTRAINT access_pkey PRIMARY KEY (access_id);
+
+
+ALTER INDEX public.access_pkey OWNER TO mfvl;
+
+--
+-- Name: banlist_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY banlist
+    ADD CONSTRAINT banlist_pkey PRIMARY KEY (ban_id);
+
+
+ALTER INDEX public.banlist_pkey OWNER TO mfvl;
+
+--
+-- Name: catagories_cat_title_key; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY catagories
+    ADD CONSTRAINT catagories_cat_title_key UNIQUE (cat_title);
+
+
+ALTER INDEX public.catagories_cat_title_key OWNER TO mfvl;
+
+--
+-- Name: catagories_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY catagories
+    ADD CONSTRAINT catagories_pkey PRIMARY KEY (cat_id);
+
+
+ALTER INDEX public.catagories_pkey OWNER TO mfvl;
+
+--
+-- Name: config_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY config
+    ADD CONSTRAINT config_pkey PRIMARY KEY (config_id);
+
+
+ALTER INDEX public.config_pkey OWNER TO mfvl;
+
+--
+-- Name: config_selected_key; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY config
+    ADD CONSTRAINT config_selected_key UNIQUE (selected);
+
+
+ALTER INDEX public.config_selected_key OWNER TO mfvl;
+
+--
+-- Name: disallow_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY disallow
+    ADD CONSTRAINT disallow_pkey PRIMARY KEY (disallow_id);
+
+
+ALTER INDEX public.disallow_pkey OWNER TO mfvl;
+
+--
+-- Name: forum_access_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY forum_access
+    ADD CONSTRAINT forum_access_pkey PRIMARY KEY (forum_id, user_id);
+
+
+ALTER INDEX public.forum_access_pkey OWNER TO mfvl;
+
+--
+-- Name: forums_forum_name_key; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY forums
+    ADD CONSTRAINT forums_forum_name_key UNIQUE (forum_name);
+
+
+ALTER INDEX public.forums_forum_name_key OWNER TO mfvl;
+
+--
+-- Name: forums_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY forums
+    ADD CONSTRAINT forums_pkey PRIMARY KEY (forum_id);
+
+
+ALTER INDEX public.forums_pkey OWNER TO mfvl;
+
+--
+-- Name: logging_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY logging
+    ADD CONSTRAINT logging_pkey PRIMARY KEY (id);
+
+
+ALTER INDEX public.logging_pkey OWNER TO mfvl;
+
+--
+-- Name: posts_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY posts
+    ADD CONSTRAINT posts_pkey PRIMARY KEY (post_id);
+
+
+ALTER INDEX public.posts_pkey OWNER TO mfvl;
+
+--
+-- Name: posts_text_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY posts_text
+    ADD CONSTRAINT posts_text_pkey PRIMARY KEY (post_id);
+
+
+ALTER INDEX public.posts_text_pkey OWNER TO mfvl;
+
+--
+-- Name: priv_msgs_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY priv_msgs
+    ADD CONSTRAINT priv_msgs_pkey PRIMARY KEY (msg_id);
+
+
+ALTER INDEX public.priv_msgs_pkey OWNER TO mfvl;
+
+--
+-- Name: ranks_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY ranks
+    ADD CONSTRAINT ranks_pkey PRIMARY KEY (rank_id);
+
+
+ALTER INDEX public.ranks_pkey OWNER TO mfvl;
+
+--
+-- Name: sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY sessions
+    ADD CONSTRAINT sessions_pkey PRIMARY KEY (sess_id);
+
+
+ALTER INDEX public.sessions_pkey OWNER TO mfvl;
+
+--
+-- Name: smiles_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY smiles
+    ADD CONSTRAINT smiles_pkey PRIMARY KEY (id);
+
+
+ALTER INDEX public.smiles_pkey OWNER TO mfvl;
+
+--
+-- Name: themes_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY themes
+    ADD CONSTRAINT themes_pkey PRIMARY KEY (theme_id);
+
+
+ALTER INDEX public.themes_pkey OWNER TO mfvl;
+
+--
+-- Name: topics_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY topics
+    ADD CONSTRAINT topics_pkey PRIMARY KEY (topic_id);
+
+
+ALTER INDEX public.topics_pkey OWNER TO mfvl;
+
+--
+-- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (user_id);
+
+
+ALTER INDEX public.users_pkey OWNER TO mfvl;
+
+--
+-- Name: users_user_email_key; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY users
+    ADD CONSTRAINT users_user_email_key UNIQUE (user_email);
+
+
+ALTER INDEX public.users_user_email_key OWNER TO mfvl;
+
+--
+-- Name: whosonline_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY whosonline
+    ADD CONSTRAINT whosonline_pkey PRIMARY KEY (id);
+
+
+ALTER INDEX public.whosonline_pkey OWNER TO mfvl;
+
+--
+-- Name: words_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY words
+    ADD CONSTRAINT words_pkey PRIMARY KEY (word_id);
+
+
+ALTER INDEX public.words_pkey OWNER TO mfvl;
+
+--
+-- Name: forums_lp; Type: INDEX; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE INDEX forums_lp ON forums USING btree (forum_last_post_id);
+
+
+ALTER INDEX public.forums_lp OWNER TO mfvl;
+
+--
+-- Name: pmsg_user; Type: INDEX; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE INDEX pmsg_user ON priv_msgs USING btree (to_userid);
+
+
+ALTER INDEX public.pmsg_user OWNER TO mfvl;
+
+--
+-- Name: post_; Type: INDEX; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE INDEX post_ ON posts USING btree (topic_id);
+
+
+ALTER INDEX public.post_ OWNER TO mfvl;
+
+--
+-- Name: post_forum; Type: INDEX; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE INDEX post_forum ON posts USING btree (forum_id);
+
+
+ALTER INDEX public.post_forum OWNER TO mfvl;
+
+--
+-- Name: post_poster; Type: INDEX; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE INDEX post_poster ON posts USING btree (poster_id);
+
+
+ALTER INDEX public.post_poster OWNER TO mfvl;
+
+--
+-- Name: ranks_max; Type: INDEX; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE INDEX ranks_max ON ranks USING btree (rank_max);
+
+
+ALTER INDEX public.ranks_max OWNER TO mfvl;
+
+--
+-- Name: sess_ip; Type: INDEX; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE INDEX sess_ip ON sessions USING btree (remote_ip);
+
+
+ALTER INDEX public.sess_ip OWNER TO mfvl;
+
+--
+-- Name: sess_start; Type: INDEX; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE INDEX sess_start ON sessions USING btree (start_time);
+
+
+ALTER INDEX public.sess_start OWNER TO mfvl;
+
+--
+-- Name: topic_forum; Type: INDEX; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE INDEX topic_forum ON topics USING btree (forum_id);
+
+
+ALTER INDEX public.topic_forum OWNER TO mfvl;
+
+--
+-- Name: topic_lp; Type: INDEX; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE INDEX topic_lp ON topics USING btree (topic_last_post_id);
+
+
+ALTER INDEX public.topic_lp OWNER TO mfvl;
+
+--
+-- Name: forum_access_forum_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY forum_access
+    ADD CONSTRAINT forum_access_forum_id_fkey FOREIGN KEY (forum_id) REFERENCES forums(forum_id);
+
+
+--
+-- Name: forum_access_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY forum_access
+    ADD CONSTRAINT forum_access_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(user_id);
+
+
+--
+-- Name: forum_mods_forum_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY forum_mods
+    ADD CONSTRAINT forum_mods_forum_id_fkey FOREIGN KEY (forum_id) REFERENCES forums(forum_id);
+
+
+--
+-- Name: forum_mods_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY forum_mods
+    ADD CONSTRAINT forum_mods_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(user_id);
+
+
+--
+-- Name: forums_cat_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY forums
+    ADD CONSTRAINT forums_cat_id_fkey FOREIGN KEY (cat_id) REFERENCES catagories(cat_id);
+
+
+--
+-- Name: posts_forum_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY posts
+    ADD CONSTRAINT posts_forum_id_fkey FOREIGN KEY (forum_id) REFERENCES forums(forum_id);
+
+
+--
+-- Name: posts_poster_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY posts
+    ADD CONSTRAINT posts_poster_id_fkey FOREIGN KEY (poster_id) REFERENCES users(user_id);
+
+
+--
+-- Name: posts_text_post_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY posts_text
+    ADD CONSTRAINT posts_text_post_id_fkey FOREIGN KEY (post_id) REFERENCES posts(post_id);
+
+
+--
+-- Name: posts_topic_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY posts
+    ADD CONSTRAINT posts_topic_id_fkey FOREIGN KEY (topic_id) REFERENCES topics(topic_id);
+
+
+--
+-- Name: priv_msgs_from_userid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY priv_msgs
+    ADD CONSTRAINT priv_msgs_from_userid_fkey FOREIGN KEY (from_userid) REFERENCES users(user_id);
+
+
+--
+-- Name: priv_msgs_to_userid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY priv_msgs
+    ADD CONSTRAINT priv_msgs_to_userid_fkey FOREIGN KEY (to_userid) REFERENCES users(user_id);
+
+
+--
+-- Name: sessions_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY sessions
+    ADD CONSTRAINT sessions_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(user_id);
+
+
+--
+-- Name: topics_forum_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY topics
+    ADD CONSTRAINT topics_forum_id_fkey FOREIGN KEY (forum_id) REFERENCES forums(forum_id);
+
+
+--
+-- Name: topics_topic_poster_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY topics
+    ADD CONSTRAINT topics_topic_poster_fkey FOREIGN KEY (topic_poster) REFERENCES users(user_id);
+
+
+--
+-- Name: users_user_theme_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY users
+    ADD CONSTRAINT users_user_theme_fkey FOREIGN KEY (user_theme) REFERENCES themes(theme_id);
+
+
+--
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- PostgreSQL database dump complete
+--
+

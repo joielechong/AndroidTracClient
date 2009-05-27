@@ -1,0 +1,100 @@
+--
+-- PostgreSQL database dump
+--
+
+SET client_encoding = 'SQL_ASCII';
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
+--
+
+COMMENT ON SCHEMA public IS 'Standard public schema';
+
+
+SET search_path = public, pg_catalog;
+
+--
+-- Name: plpgsql_call_handler(); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION plpgsql_call_handler() RETURNS language_handler
+    AS '$libdir/plpgsql', 'plpgsql_call_handler'
+    LANGUAGE c;
+
+
+ALTER FUNCTION public.plpgsql_call_handler() OWNER TO mfvl;
+
+--
+-- Name: plpgsql; Type: PROCEDURAL LANGUAGE; Schema: public; Owner: 
+--
+
+CREATE TRUSTED PROCEDURAL LANGUAGE plpgsql HANDLER plpgsql_call_handler;
+
+
+SET default_tablespace = '';
+
+SET default_with_oids = true;
+
+--
+-- Name: ppa_reports; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE ppa_reports (
+    report_id serial NOT NULL,
+    report_name character varying(255) NOT NULL,
+    db_name character varying(255) NOT NULL,
+    date_created date DEFAULT now() NOT NULL,
+    created_by character varying(255) NOT NULL,
+    descr text,
+    report_sql text NOT NULL
+);
+
+
+ALTER TABLE public.ppa_reports OWNER TO mfvl;
+
+--
+-- Name: ppa_reports_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY ppa_reports
+    ADD CONSTRAINT ppa_reports_pkey PRIMARY KEY (report_id);
+
+
+ALTER INDEX public.ppa_reports_pkey OWNER TO mfvl;
+
+--
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- Name: ppa_reports; Type: ACL; Schema: public; Owner: mfvl
+--
+
+REVOKE ALL ON TABLE ppa_reports FROM PUBLIC;
+REVOKE ALL ON TABLE ppa_reports FROM mfvl;
+GRANT ALL ON TABLE ppa_reports TO mfvl;
+GRANT INSERT,SELECT,UPDATE,DELETE ON TABLE ppa_reports TO PUBLIC;
+
+
+--
+-- Name: ppa_reports_report_id_seq; Type: ACL; Schema: public; Owner: mfvl
+--
+
+REVOKE ALL ON TABLE ppa_reports_report_id_seq FROM PUBLIC;
+REVOKE ALL ON TABLE ppa_reports_report_id_seq FROM mfvl;
+GRANT ALL ON TABLE ppa_reports_report_id_seq TO mfvl;
+GRANT SELECT,UPDATE ON TABLE ppa_reports_report_id_seq TO PUBLIC;
+
+
+--
+-- PostgreSQL database dump complete
+--
+

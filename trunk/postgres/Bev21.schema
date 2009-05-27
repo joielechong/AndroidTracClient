@@ -1,0 +1,2418 @@
+--
+-- PostgreSQL database dump
+--
+
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = off;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET escape_string_warning = off;
+
+--
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
+--
+
+COMMENT ON SCHEMA public IS 'Standard public schema';
+
+
+--
+-- Name: plpgsql; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: postgres
+--
+
+CREATE PROCEDURAL LANGUAGE plpgsql;
+
+
+SET search_path = public, pg_catalog;
+
+--
+-- Name: nonull_append_strings(text, text); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION nonull_append_strings(text, text) RETURNS text
+    AS $_$SELECT CASE 
+WHEN $1 IS NULL THEN $2 
+WHEN $2 IS NULL THEN $1
+ELSE $1 || ' ' || $2
+END
+$_$
+    LANGUAGE sql IMMUTABLE;
+
+
+ALTER FUNCTION public.nonull_append_strings(text, text) OWNER TO mfvl;
+
+--
+-- Name: plpgsql_call_handler(); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION plpgsql_call_handler() RETURNS language_handler
+    AS '$libdir/plpgsql', 'plpgsql_call_handler'
+    LANGUAGE c;
+
+
+ALTER FUNCTION public.plpgsql_call_handler() OWNER TO mfvl;
+
+--
+-- Name: ||+; Type: OPERATOR; Schema: public; Owner: mfvl
+--
+
+CREATE OPERATOR ||+ (
+    PROCEDURE = nonull_append_strings,
+    LEFTARG = text,
+    RIGHTARG = text
+);
+
+
+ALTER OPERATOR public.||+ (text, text) OWNER TO mfvl;
+
+SET default_tablespace = '';
+
+SET default_with_oids = true;
+
+--
+-- Name: areaid; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE areaid (
+    areaid_naamgebied character varying,
+    areaid_objecttypebev21 character varying,
+    areaid_objectcode character varying,
+    CONSTRAINT check_objecttype CHECK (((areaid_objecttypebev21)::text = 'area'::text))
+);
+
+
+ALTER TABLE public.areaid OWNER TO mfvl;
+
+--
+-- Name: bev21; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE bev21 (
+    name character varying NOT NULL,
+    classname character varying NOT NULL,
+    aliasname character varying NOT NULL
+);
+
+
+ALTER TABLE public.bev21 OWNER TO mfvl;
+
+--
+-- Name: bev21_object; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE bev21_object (
+    id integer NOT NULL,
+    naamgebied character varying,
+    objecttypebev21 character varying,
+    objectcode character varying
+);
+
+
+ALTER TABLE public.bev21_object OWNER TO mfvl;
+
+--
+-- Name: bev21_object_id_seq; Type: SEQUENCE; Schema: public; Owner: mfvl
+--
+
+CREATE SEQUENCE bev21_object_id_seq
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.bev21_object_id_seq OWNER TO mfvl;
+
+--
+-- Name: bev21_object_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mfvl
+--
+
+ALTER SEQUENCE bev21_object_id_seq OWNED BY bev21_object.id;
+
+
+--
+-- Name: kbv_antwoordreden; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE kbv_antwoordreden (
+    messageid integer NOT NULL,
+    antwoordtekstnummer integer,
+    messagebron character varying NOT NULL
+);
+
+
+ALTER TABLE public.kbv_antwoordreden OWNER TO mfvl;
+
+--
+-- Name: kbv_antwoordtekst; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE kbv_antwoordtekst (
+    antwoordtekstnummer integer NOT NULL,
+    antwoordtekst character varying
+);
+
+
+ALTER TABLE public.kbv_antwoordtekst OWNER TO mfvl;
+
+--
+-- Name: kbv_bordersafetyprovision; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE kbv_bordersafetyprovision (
+    wisselid character varying NOT NULL,
+    positieopspoortak_afstandvanknoop1 integer,
+    spoortakidbev21_naamgebied character varying,
+    spoortakidbev21_objecttypebev21 character varying,
+    spoortakidbev21_objectcode character varying,
+    knoopidbev21_naamgebied character varying,
+    knoopidbev21_objecttypebev21 character varying,
+    knoopidbev21_objectcode character varying
+);
+
+
+ALTER TABLE public.kbv_bordersafetyprovision OWNER TO mfvl;
+
+--
+-- Name: kbv_detector; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE kbv_detector (
+    naamgebied character varying,
+    objecttypebev21 character varying,
+    objectcode character varying
+);
+
+
+ALTER TABLE public.kbv_detector OWNER TO mfvl;
+
+--
+-- Name: kbv_dienstoverpad; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE kbv_dienstoverpad (
+    dienstoverpadid character varying NOT NULL
+)
+INHERITS (areaid);
+
+
+ALTER TABLE public.kbv_dienstoverpad OWNER TO mfvl;
+
+--
+-- Name: kbv_knoop; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE kbv_knoop (
+    naamgebied character varying NOT NULL,
+    objecttypebev21 character varying NOT NULL,
+    objectcode character varying NOT NULL
+);
+
+
+ALTER TABLE public.kbv_knoop OWNER TO mfvl;
+
+--
+-- Name: kbv_melding; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE kbv_melding (
+    meldingbetekeniscode character varying NOT NULL,
+    meldingrubriek character varying,
+    meldingtekst character varying,
+    indicatorverzend character varying,
+    indicatorkwiteer character varying,
+    indicatorblok character varying
+);
+
+
+ALTER TABLE public.kbv_melding OWNER TO mfvl;
+
+--
+-- Name: kbv_melding_bronparameter; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE kbv_melding_bronparameter (
+    meldingbetekeniscode character varying,
+    bronorc character varying,
+    bronoic character varying
+);
+
+
+ALTER TABLE public.kbv_melding_bronparameter OWNER TO mfvl;
+
+--
+-- Name: kbv_melding_parameterorc; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE kbv_melding_parameterorc (
+    meldingbetekeniscode character varying,
+    orc character varying
+);
+
+
+ALTER TABLE public.kbv_melding_parameterorc OWNER TO mfvl;
+
+--
+-- Name: kbv_meldingtrigger; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE kbv_meldingtrigger (
+    meldingbetekeniscode character varying,
+    kbvmeldingid integer NOT NULL
+);
+
+
+ALTER TABLE public.kbv_meldingtrigger OWNER TO mfvl;
+
+--
+-- Name: kbv_route; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE kbv_route (
+    vanspoor character varying NOT NULL,
+    naarspoor character varying NOT NULL,
+    dwangcode character varying,
+    beginsein_objectidprl character varying,
+    eindsein_objectidprl character varying,
+    startpositie_positieopspoortak_afstandvanknoop1 integer,
+    startpositie_spoortakidbev21_naamgebied character varying,
+    startpositie_spoortakidbev21_objecttypebev21 character varying,
+    startpositie_spoortakidbev21_objectcode character varying,
+    eindpositie_positieopspoortak_afstandvanknoop1 integer,
+    eindpositie_spoortakidbev21_naamgebied character varying,
+    eindpositie_spoortakidbev21_objecttypebev21 character varying,
+    eindpositie_spoortakidbev21_objectcode character varying,
+    startpositie_knoopidbev21_naamgebied character varying,
+    startpositie_knoopidbev21_objecttypebev21 character varying,
+    startpositie_knoopidbev21_objectcode character varying,
+    eindpositie_knoopidbev21_naamgebied character varying,
+    eindpositie_knoopidbev21_objecttypebev21 character varying,
+    eindpositie_knoopidbev21_objectcode character varying
+);
+
+
+ALTER TABLE public.kbv_route OWNER TO mfvl;
+
+--
+-- Name: kbv_route_spoortakdeel; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE kbv_route_spoortakdeel (
+    vanspoor character varying,
+    naarspoor character varying,
+    dwangcode character varying,
+    "row" integer,
+    spoortakidbev21_naamgebied character varying,
+    spoortakidbev21_objecttypebev21 character varying,
+    spoortakidbev21_objectcode character varying,
+    afstandvanknoop1 integer,
+    afstandvanknoop2 integer
+);
+
+
+ALTER TABLE public.kbv_route_spoortakdeel OWNER TO mfvl;
+
+--
+-- Name: noncore_element; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE noncore_element (
+    noncoreelementid_naamgebied character varying,
+    noncoreelementid_objecttypebev21 character varying,
+    noncoreelementid_objectcode character varying
+);
+
+
+ALTER TABLE public.noncore_element OWNER TO mfvl;
+
+--
+-- Name: kbv_sectie; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE kbv_sectie (
+    sectieid character varying NOT NULL,
+    lampsectie character varying,
+    vertragingsein_vertraging integer,
+    vertragingsein_uitrijdsein character varying,
+    CONSTRAINT kbv_sectie_lampsectie_check CHECK ((((lampsectie)::text = 'Ja'::text) OR ((lampsectie)::text = 'Nee'::text)))
+)
+INHERITS (noncore_element);
+
+
+ALTER TABLE public.kbv_sectie OWNER TO mfvl;
+
+--
+-- Name: kbv_sectie_spoortakdeel; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE kbv_sectie_spoortakdeel (
+    sectieid character varying,
+    afstandvanknoop1 integer,
+    afstandvanknoop2 integer,
+    spoortakidbev21_objectcode character varying,
+    spoortakidbev21_naamgebied character varying,
+    spoortakidbev21_objecttypebev21 character varying,
+    "row" integer
+);
+
+
+ALTER TABLE public.kbv_sectie_spoortakdeel OWNER TO mfvl;
+
+--
+-- Name: kbv_sein; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE kbv_sein (
+    seinid character varying NOT NULL,
+    seintype character varying,
+    afrijdsectie_objectidprl character varying,
+    voorsectie_objectidprl character varying,
+    seinpositie_richtingtovspoortak character varying,
+    seinpositie_positieopspoortak_afstandvanknoop1 integer,
+    seinpositie_spoortakidbev21_naamgebied character varying,
+    seinpositie_spoortakidbev21_objecttypebev21 character varying,
+    seinpositie_spoortakidbev21_objectcode character varying
+);
+
+
+ALTER TABLE public.kbv_sein OWNER TO mfvl;
+
+--
+-- Name: kbv_sein_vhr_b; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE kbv_sein_vhr_b (
+    seinid character varying,
+    "row" integer,
+    startpositie_positieopspoortak_afstandvanknoop1 integer,
+    startpositie_spoortakidbev21_naamgebied character varying,
+    startpositie_spoortakidbev21_objecttypebev21 character varying,
+    startpositie_spoortakidbev21_objectcode character varying,
+    eindpositie_positieopspoortak_afstandvanknoop1 integer,
+    eindpositie_spoortakidbev21_naamgebied character varying,
+    eindpositie_spoortakidbev21_objecttypebev21 character varying,
+    eindpositie_spoortakidbev21_objectcode character varying
+);
+
+
+ALTER TABLE public.kbv_sein_vhr_b OWNER TO mfvl;
+
+--
+-- Name: kbv_sein_vhr_b_spoortakdeel; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE kbv_sein_vhr_b_spoortakdeel (
+    seinid character varying,
+    "row" integer,
+    afstandvanknoop1 integer,
+    afstandvanknoop2 integer,
+    spoortakidbev21_naamgebied character varying,
+    spoortakidbev21_objecttypebev21 character varying,
+    spoortakidbev21_objectcode character varying
+);
+
+
+ALTER TABLE public.kbv_sein_vhr_b_spoortakdeel OWNER TO mfvl;
+
+--
+-- Name: kbv_sein_vhr_e; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE kbv_sein_vhr_e (
+    seinid character varying,
+    "row" integer,
+    startpositie_positieopspoortak_afstandvanknoop1 integer,
+    startpositie_spoortakidbev21_naamgebied character varying,
+    startpositie_spoortakidbev21_objecttypebev21 character varying,
+    startpositie_spoortakidbev21_objectcode character varying,
+    eindpositie_positieopspoortak_afstandvanknoop1 integer,
+    eindpositie_spoortakidbev21_naamgebied character varying,
+    eindpositie_spoortakidbev21_objecttypebev21 character varying,
+    eindpositie_spoortakidbev21_objectcode character varying
+);
+
+
+ALTER TABLE public.kbv_sein_vhr_e OWNER TO mfvl;
+
+--
+-- Name: kbv_sein_vhr_e_spoortakdeel; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE kbv_sein_vhr_e_spoortakdeel (
+    seinid character varying,
+    "row" integer,
+    afstandvanknoop1 integer,
+    afstandvanknoop2 integer,
+    spoortakidbev21_naamgebied character varying,
+    spoortakidbev21_objecttypebev21 character varying,
+    spoortakidbev21_objectcode character varying
+);
+
+
+ALTER TABLE public.kbv_sein_vhr_e_spoortakdeel OWNER TO mfvl;
+
+--
+-- Name: kbv_spoortak; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE kbv_spoortak (
+    spoortakid_naamgebied character varying,
+    spoortakid_objecttypebev21 character varying,
+    spoortakid_objectcode character varying,
+    lengtespoortak integer,
+    knoop1_naamgebied character varying,
+    knoop1_objecttypebev21 character varying,
+    knoop1_objectcode character varying,
+    knoop2_naamgebied character varying,
+    knoop2_objecttypebev21 character varying,
+    knoop2_objectcode character varying
+);
+
+
+ALTER TABLE public.kbv_spoortak OWNER TO mfvl;
+
+--
+-- Name: kbv_stroomvoorziening; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE kbv_stroomvoorziening (
+    stroomvoorzieningid character varying NOT NULL
+)
+INHERITS (noncore_element);
+
+
+ALTER TABLE public.kbv_stroomvoorziening OWNER TO mfvl;
+
+--
+-- Name: kbv_tunnelschuif; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE kbv_tunnelschuif (
+    tunnelschuifid character varying NOT NULL
+)
+INHERITS (areaid);
+
+
+ALTER TABLE public.kbv_tunnelschuif OWNER TO mfvl;
+
+--
+-- Name: kbv_vastekruising; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE kbv_vastekruising (
+    vastekruisingid character varying NOT NULL,
+    spoortakdeel1_spoortakidbev21_naamgebied character varying,
+    spoortakdeel1_spoortakidbev21_objecttypebev21 character varying,
+    spoortakdeel1_spoortakidbev21_objectcode character varying,
+    spoortakdeel2_spoortakidbev21_naamgebied character varying,
+    spoortakdeel2_spoortakidbev21_objecttypebev21 character varying,
+    spoortakdeel2_spoortakidbev21_objectcode character varying
+);
+
+
+ALTER TABLE public.kbv_vastekruising OWNER TO mfvl;
+
+--
+-- Name: kbv_verbinding; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE kbv_verbinding (
+    id integer NOT NULL,
+    spoortakdeel_afstandvanknoop1 integer,
+    spoortakdeel_afstandvanknoop2 integer,
+    spoortakidbev21_naamgebied character varying,
+    spoortakidbev21_objecttypebev21 character varying,
+    spoortakidbev21_objectcode character varying,
+    steller_naamgebied character varying,
+    steller_objecttypebev21 character varying,
+    steller_objectcode character varying,
+    stand_value integer
+);
+
+
+ALTER TABLE public.kbv_verbinding OWNER TO mfvl;
+
+--
+-- Name: kbv_vrijgaverangeren; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE kbv_vrijgaverangeren (
+    vrijgaverangerenid character varying NOT NULL
+)
+INHERITS (areaid);
+
+
+ALTER TABLE public.kbv_vrijgaverangeren OWNER TO mfvl;
+
+--
+-- Name: kbv_werkzone; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE kbv_werkzone (
+    werkzoneid character varying NOT NULL
+)
+INHERITS (areaid);
+
+
+ALTER TABLE public.kbv_werkzone OWNER TO mfvl;
+
+--
+-- Name: kbv_wissel; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE kbv_wissel (
+    wisselid character varying NOT NULL,
+    stellerid_naamgebied character varying,
+    stellerid_objecttypebev21 character varying,
+    stellerid_objectcode character varying,
+    wisseltakdeellinks_afstandvanknoop1 integer,
+    wisseltakdeellinks_afstandvanknoop2 integer,
+    wisseltakdeellinks_spoortakidbev21_naamgebied character varying,
+    wisseltakdeellinks_spoortakidbev21_objecttypebev21 character varying,
+    wisseltakdeellinks_spoortakidbev21_objectcode character varying,
+    wisseltakdeelrechts_spoortakidbev21_naamgebied character varying,
+    wisseltakdeelrechts_spoortakidbev21_objecttypebev21 character varying,
+    wisseltakdeelrechts_spoortakidbev21_objectcode character varying,
+    wisseltakdeelrechts_afstandvanknoop1 integer,
+    wisseltakdeelrechts_afstandvanknoop2 integer
+);
+
+
+ALTER TABLE public.kbv_wissel OWNER TO mfvl;
+
+--
+-- Name: kbvt_area; Type: VIEW; Schema: public; Owner: mfvl
+--
+
+CREATE VIEW kbvt_area AS
+    SELECT bev21_object.id, bev21_object.naamgebied, bev21_object.objecttypebev21, bev21_object.objectcode FROM bev21_object WHERE ((bev21_object.objecttypebev21)::text = 'area'::text);
+
+
+ALTER TABLE public.kbvt_area OWNER TO mfvl;
+
+--
+-- Name: list; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE list (
+    row_id integer NOT NULL
+);
+
+
+ALTER TABLE public.list OWNER TO mfvl;
+
+--
+-- Name: vis; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis (
+    infra_configuration_version_id character varying,
+    protocol_version character varying,
+    train_traffic_area_id character varying,
+    vis_nmax_message_params character varying
+)
+INHERITS (bev21);
+
+
+ALTER TABLE public.vis OWNER TO mfvl;
+
+--
+-- Name: vis_adjacent_system; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_adjacent_system (
+    "type" integer
+)
+INHERITS (bev21);
+
+
+ALTER TABLE public.vis_adjacent_system OWNER TO mfvl;
+
+--
+-- Name: vpt_object; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vpt_object (
+    vpt_area_code character varying NOT NULL,
+    vpt_infra_object_code character varying NOT NULL,
+    vpt_infra_object_type integer NOT NULL
+);
+
+
+ALTER TABLE public.vpt_object OWNER TO mfvl;
+
+--
+-- Name: vis_area; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_area (
+    area_type integer,
+    vis_area_id character varying,
+    vis_id character varying
+)
+INHERITS (bev21, vpt_object);
+
+
+ALTER TABLE public.vis_area OWNER TO mfvl;
+
+--
+-- Name: vis_area_list; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_area_list (
+    vis_area_name character varying NOT NULL
+)
+INHERITS (list);
+
+
+ALTER TABLE public.vis_area_list OWNER TO mfvl;
+
+--
+-- Name: vis_area_nn_vis_section; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_area_nn_vis_section (
+    vis_section_id character varying
+)
+INHERITS (vis_area_list);
+
+
+ALTER TABLE public.vis_area_nn_vis_section OWNER TO mfvl;
+
+--
+-- Name: vis_area_vis_area_conflicting; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_area_vis_area_conflicting (
+    vis_area_id character varying
+)
+INHERITS (vis_area_list);
+
+
+ALTER TABLE public.vis_area_vis_area_conflicting OWNER TO mfvl;
+
+--
+-- Name: vis_as_apb_control; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_as_apb_control (
+    vis_adjacent_system_id character varying
+)
+INHERITS (bev21);
+
+
+ALTER TABLE public.vis_as_apb_control OWNER TO mfvl;
+
+--
+-- Name: vis_branch; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_branch (
+    length integer,
+    node1 character varying,
+    node2 character varying,
+    nr_sbp integer
+)
+INHERITS (bev21, vpt_object);
+
+
+ALTER TABLE public.vis_branch OWNER TO mfvl;
+
+--
+-- Name: vis_branch_combination; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_branch_combination (
+    vis_node_id character varying,
+    left_position character varying,
+    right_position character varying
+)
+INHERITS (bev21);
+
+
+ALTER TABLE public.vis_branch_combination OWNER TO mfvl;
+
+--
+-- Name: vis_branch_combination_list; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_branch_combination_list (
+    vis_branch_combination_name character varying NOT NULL
+)
+INHERITS (list);
+
+
+ALTER TABLE public.vis_branch_combination_list OWNER TO mfvl;
+
+--
+-- Name: vis_branch_combination_nn_vis_branch; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_branch_combination_nn_vis_branch (
+    vis_branch_id character varying
+)
+INHERITS (vis_branch_combination_list);
+
+
+ALTER TABLE public.vis_branch_combination_nn_vis_branch OWNER TO mfvl;
+
+--
+-- Name: vis_bsp; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_bsp (
+    choice integer,
+    deviating_position integer,
+    disable_enable integer,
+    vis_point_id character varying
+)
+INHERITS (bev21);
+
+
+ALTER TABLE public.vis_bsp OWNER TO mfvl;
+
+--
+-- Name: vis_bsp_list; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_bsp_list (
+    vis_bsp_name character varying NOT NULL
+)
+INHERITS (list);
+
+
+ALTER TABLE public.vis_bsp_list OWNER TO mfvl;
+
+--
+-- Name: vis_bsp_nn_vis_area; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_bsp_nn_vis_area (
+    vis_area_id character varying
+)
+INHERITS (vis_bsp_list);
+
+
+ALTER TABLE public.vis_bsp_nn_vis_area OWNER TO mfvl;
+
+--
+-- Name: vis_bsp_vis_bp_pos_branch; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_bsp_vis_bp_pos_branch (
+    distance_node_1 integer,
+    distance_node_2 integer,
+    vis_branch_id character varying
+)
+INHERITS (vis_bsp_list);
+
+
+ALTER TABLE public.vis_bsp_vis_bp_pos_branch OWNER TO mfvl;
+
+--
+-- Name: vis_bsp_vis_bp_pos_node; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_bsp_vis_bp_pos_node (
+    vis_node_id character varying
+)
+INHERITS (vis_bsp_list);
+
+
+ALTER TABLE public.vis_bsp_vis_bp_pos_node OWNER TO mfvl;
+
+--
+-- Name: vis_detector; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_detector (
+    detector_type integer,
+    vis_id character varying
+)
+INHERITS (bev21, vpt_object);
+
+
+ALTER TABLE public.vis_detector OWNER TO mfvl;
+
+--
+-- Name: vis_elementary_route; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_elementary_route (
+    invalid_end_loc integer,
+    reversing_area integer,
+    vis_adjacent_system_id character varying,
+    vis_id character varying,
+    vis_virtual_signal_id character varying,
+    end_location character varying,
+    exit_location character varying,
+    start_location character varying
+)
+INHERITS (bev21);
+
+
+ALTER TABLE public.vis_elementary_route OWNER TO mfvl;
+
+--
+-- Name: vis_elementary_route_list; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_elementary_route_list (
+    vis_elementary_route_name character varying NOT NULL
+)
+INHERITS (list);
+
+
+ALTER TABLE public.vis_elementary_route_list OWNER TO mfvl;
+
+--
+-- Name: vis_elementary_route_nn_vis_area; Type: TABLE; Schema: public; Owner: root; Tablespace: 
+--
+
+CREATE TABLE vis_elementary_route_nn_vis_area (
+    vis_area_id character varying
+)
+INHERITS (vis_elementary_route_list);
+
+
+ALTER TABLE public.vis_elementary_route_nn_vis_area OWNER TO root;
+
+--
+-- Name: vis_elementary_route_nn_vis_detector; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_elementary_route_nn_vis_detector (
+    vis_detector_id character varying
+)
+INHERITS (vis_elementary_route_list);
+
+
+ALTER TABLE public.vis_elementary_route_nn_vis_detector OWNER TO mfvl;
+
+--
+-- Name: vis_elementary_route_nn_vis_tc_infra_segment; Type: TABLE; Schema: public; Owner: root; Tablespace: 
+--
+
+CREATE TABLE vis_elementary_route_nn_vis_tc_infra_segment (
+    vis_tc_infra_segment_id character varying
+)
+INHERITS (vis_elementary_route_list);
+
+
+ALTER TABLE public.vis_elementary_route_nn_vis_tc_infra_segment OWNER TO root;
+
+--
+-- Name: vis_elementary_route_nn_vis_track_circuit; Type: TABLE; Schema: public; Owner: root; Tablespace: 
+--
+
+CREATE TABLE vis_elementary_route_nn_vis_track_circuit (
+    vis_track_circuit_id character varying
+)
+INHERITS (vis_elementary_route_list);
+
+
+ALTER TABLE public.vis_elementary_route_nn_vis_track_circuit OWNER TO root;
+
+--
+-- Name: vis_elementary_route_vis_er_branch_part; Type: TABLE; Schema: public; Owner: root; Tablespace: 
+--
+
+CREATE TABLE vis_elementary_route_vis_er_branch_part (
+    bp_order integer,
+    boundary_1 integer,
+    boundary_2 integer,
+    vis_branch_id character varying
+)
+INHERITS (vis_elementary_route_list);
+
+
+ALTER TABLE public.vis_elementary_route_vis_er_branch_part OWNER TO root;
+
+--
+-- Name: vis_elementary_route_vis_er_conficting; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_elementary_route_vis_er_conficting (
+    vis_elementary_route_id character varying
+)
+INHERITS (vis_elementary_route_list);
+
+
+ALTER TABLE public.vis_elementary_route_vis_er_conficting OWNER TO mfvl;
+
+--
+-- Name: vis_elementary_route_vis_er_point; Type: TABLE; Schema: public; Owner: root; Tablespace: 
+--
+
+CREATE TABLE vis_elementary_route_vis_er_point (
+    required_position integer,
+    vis_point_id character varying
+)
+INHERITS (vis_elementary_route_list);
+
+
+ALTER TABLE public.vis_elementary_route_vis_er_point OWNER TO root;
+
+--
+-- Name: vis_elementary_route_vis_out_of_gauge; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_elementary_route_vis_out_of_gauge (
+    vpt_out_of_gauge integer
+)
+INHERITS (vis_elementary_route_list);
+
+
+ALTER TABLE public.vis_elementary_route_vis_out_of_gauge OWNER TO mfvl;
+
+--
+-- Name: vis_grid_position; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_grid_position (
+    choice integer,
+    "type" integer
+)
+INHERITS (bev21);
+
+
+ALTER TABLE public.vis_grid_position OWNER TO mfvl;
+
+--
+-- Name: vis_grid_position_list; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_grid_position_list (
+    vis_grid_position_name character varying NOT NULL
+)
+INHERITS (list);
+
+
+ALTER TABLE public.vis_grid_position_list OWNER TO mfvl;
+
+--
+-- Name: vis_grid_position_vis_gp_pos_branch; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_grid_position_vis_gp_pos_branch (
+    distance_node_1 integer,
+    distance_node_2 integer,
+    vis_branch_id character varying
+)
+INHERITS (vis_grid_position_list);
+
+
+ALTER TABLE public.vis_grid_position_vis_gp_pos_branch OWNER TO mfvl;
+
+--
+-- Name: vis_grid_position_vis_gp_pos_node; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_grid_position_vis_gp_pos_node (
+    vis_node_id character varying
+)
+INHERITS (vis_grid_position_list);
+
+
+ALTER TABLE public.vis_grid_position_vis_gp_pos_node OWNER TO mfvl;
+
+--
+-- Name: vis_interface_ixl; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_interface_ixl (
+    ixl_id character varying,
+    vis_id character varying
+)
+INHERITS (bev21);
+
+
+ALTER TABLE public.vis_interface_ixl OWNER TO mfvl;
+
+--
+-- Name: vis_interface_ixl_list; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_interface_ixl_list (
+    vis_interface_ixl_name character varying NOT NULL
+)
+INHERITS (list);
+
+
+ALTER TABLE public.vis_interface_ixl_list OWNER TO mfvl;
+
+--
+-- Name: vis_interface_ixl_vis_controls_ixl; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_interface_ixl_vis_controls_ixl (
+    ack_init_cercv_idx integer,
+    nbr_variable integer
+)
+INHERITS (vis_interface_ixl_list);
+
+
+ALTER TABLE public.vis_interface_ixl_vis_controls_ixl OWNER TO mfvl;
+
+--
+-- Name: vis_interface_ixl_vis_indication_ixl; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_interface_ixl_vis_indication_ixl (
+    init_cexmt_idx integer,
+    nbr_variable integer
+)
+INHERITS (vis_interface_ixl_list);
+
+
+ALTER TABLE public.vis_interface_ixl_vis_indication_ixl OWNER TO mfvl;
+
+--
+-- Name: vis_n_selection; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_n_selection (
+    end_choice integer,
+    start_choice integer
+)
+INHERITS (bev21);
+
+
+ALTER TABLE public.vis_n_selection OWNER TO mfvl;
+
+--
+-- Name: vis_n_selection_list; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_n_selection_list (
+    vis_n_selection_name character varying
+)
+INHERITS (list);
+
+
+ALTER TABLE public.vis_n_selection_list OWNER TO mfvl;
+
+--
+-- Name: vis_n_selection_nn_vis_elementary_route; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_n_selection_nn_vis_elementary_route (
+    vis_elementary_route_id character varying
+)
+INHERITS (vis_n_selection_list);
+
+
+ALTER TABLE public.vis_n_selection_nn_vis_elementary_route OWNER TO mfvl;
+
+--
+-- Name: vis_n_selection_vis_ns_branch_part; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_n_selection_vis_ns_branch_part (
+    bp_order integer,
+    boundary_1 integer,
+    boundary_2 integer,
+    vis_branch_id character varying
+)
+INHERITS (vis_n_selection_list);
+
+
+ALTER TABLE public.vis_n_selection_vis_ns_branch_part OWNER TO mfvl;
+
+--
+-- Name: vis_n_selection_vis_ns_end_pos_branch; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_n_selection_vis_ns_end_pos_branch (
+    distance_node_1 integer,
+    distance_node_2 integer,
+    vis_branch_id character varying
+)
+INHERITS (vis_n_selection_list);
+
+
+ALTER TABLE public.vis_n_selection_vis_ns_end_pos_branch OWNER TO mfvl;
+
+--
+-- Name: vis_n_selection_vis_ns_end_pos_node; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_n_selection_vis_ns_end_pos_node (
+    vis_node_id character varying
+)
+INHERITS (vis_n_selection_list);
+
+
+ALTER TABLE public.vis_n_selection_vis_ns_end_pos_node OWNER TO mfvl;
+
+--
+-- Name: vis_n_selection_vis_ns_start_pos_branch; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_n_selection_vis_ns_start_pos_branch (
+    distance_node_1 integer,
+    distance_node_2 integer,
+    vis_branch_id character varying
+)
+INHERITS (vis_n_selection_list);
+
+
+ALTER TABLE public.vis_n_selection_vis_ns_start_pos_branch OWNER TO mfvl;
+
+--
+-- Name: vis_n_selection_vis_ns_start_pos_node; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_n_selection_vis_ns_start_pos_node (
+    vis_node_id character varying
+)
+INHERITS (vis_n_selection_list);
+
+
+ALTER TABLE public.vis_n_selection_vis_ns_start_pos_node OWNER TO mfvl;
+
+--
+-- Name: vis_node; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_node (
+)
+INHERITS (bev21, vpt_object);
+
+
+ALTER TABLE public.vis_node OWNER TO mfvl;
+
+--
+-- Name: vis_non_core; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_non_core (
+    element_control_size integer,
+    element_indication_size integer,
+    vis_id character varying
+)
+INHERITS (bev21, vpt_object);
+
+
+ALTER TABLE public.vis_non_core OWNER TO mfvl;
+
+--
+-- Name: vis_point; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_point (
+    vis_id character varying,
+    vis_section_id character varying
+)
+INHERITS (bev21, vpt_object);
+
+
+ALTER TABLE public.vis_point OWNER TO mfvl;
+
+--
+-- Name: vis_point_list; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_point_list (
+    vis_point_name character varying
+)
+INHERITS (list);
+
+
+ALTER TABLE public.vis_point_list OWNER TO mfvl;
+
+--
+-- Name: vis_point_nn_vis_area; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_point_nn_vis_area (
+    vis_area_id character varying
+)
+INHERITS (vis_point_list);
+
+
+ALTER TABLE public.vis_point_nn_vis_area OWNER TO mfvl;
+
+--
+-- Name: vis_point_vis_point_poss_pos; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_point_vis_point_poss_pos (
+    vpt_point_machine_position integer
+)
+INHERITS (vis_point_list);
+
+
+ALTER TABLE public.vis_point_vis_point_poss_pos OWNER TO mfvl;
+
+--
+-- Name: vis_reason_for_non_acceptance; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_reason_for_non_acceptance (
+    section_origin integer,
+    section_index integer,
+    vis_response_to_vpt_txt_msg_id character varying
+)
+INHERITS (bev21);
+
+
+ALTER TABLE public.vis_reason_for_non_acceptance OWNER TO mfvl;
+
+--
+-- Name: vis_reason_for_revocation; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_reason_for_revocation (
+    section_index integer,
+    section_origin integer,
+    vis_response_to_vpt_txt_msg_id character varying
+)
+INHERITS (bev21);
+
+
+ALTER TABLE public.vis_reason_for_revocation OWNER TO mfvl;
+
+--
+-- Name: vis_response_to_vpt_txt_msg; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_response_to_vpt_txt_msg (
+    choice integer,
+    vis_id character varying
+)
+INHERITS (bev21);
+
+
+ALTER TABLE public.vis_response_to_vpt_txt_msg OWNER TO mfvl;
+
+--
+-- Name: vis_response_to_vpt_txt_msg_list; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_response_to_vpt_txt_msg_list (
+    vis_response_to_vpt_txt_msg_name character varying NOT NULL
+)
+INHERITS (list);
+
+
+ALTER TABLE public.vis_response_to_vpt_txt_msg_list OWNER TO mfvl;
+
+--
+-- Name: vis_response_to_vpt_txt_msg_vis_to_vpt_message_id; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_response_to_vpt_txt_msg_vis_to_vpt_message_id (
+    integer_id integer
+)
+INHERITS (vis_response_to_vpt_txt_msg_list);
+
+
+ALTER TABLE public.vis_response_to_vpt_txt_msg_vis_to_vpt_message_id OWNER TO mfvl;
+
+--
+-- Name: vis_section; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_section (
+    passive integer
+)
+INHERITS (bev21);
+
+
+ALTER TABLE public.vis_section OWNER TO mfvl;
+
+--
+-- Name: vis_signal; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_signal (
+    vis_id character varying
+)
+INHERITS (bev21, vpt_object);
+
+
+ALTER TABLE public.vis_signal OWNER TO mfvl;
+
+--
+-- Name: vis_signal_list; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_signal_list (
+    vis_signal_name character varying NOT NULL
+)
+INHERITS (list);
+
+
+ALTER TABLE public.vis_signal_list OWNER TO mfvl;
+
+--
+-- Name: vis_signal_vis_signal_pos_aspect; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_signal_vis_signal_pos_aspect (
+    signal_aspect integer
+)
+INHERITS (vis_signal_list);
+
+
+ALTER TABLE public.vis_signal_vis_signal_pos_aspect OWNER TO mfvl;
+
+--
+-- Name: vis_signal_vis_signal_pos_failure; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_signal_vis_signal_pos_failure (
+    signal_failure integer
+)
+INHERITS (vis_signal_list);
+
+
+ALTER TABLE public.vis_signal_vis_signal_pos_failure OWNER TO mfvl;
+
+--
+-- Name: vis_signal_vis_signal_pos_speed; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_signal_vis_signal_pos_speed (
+    signal_speed integer
+)
+INHERITS (vis_signal_list);
+
+
+ALTER TABLE public.vis_signal_vis_signal_pos_speed OWNER TO mfvl;
+
+--
+-- Name: vis_tc_infra_segment; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_tc_infra_segment (
+    end_choice integer,
+    start_choice integer,
+    vis_track_circuit_id character varying
+)
+INHERITS (bev21);
+
+
+ALTER TABLE public.vis_tc_infra_segment OWNER TO mfvl;
+
+--
+-- Name: vis_tc_infra_segment_list; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_tc_infra_segment_list (
+    vis_tc_infra_segment_name character varying NOT NULL
+)
+INHERITS (list);
+
+
+ALTER TABLE public.vis_tc_infra_segment_list OWNER TO mfvl;
+
+--
+-- Name: vis_tc_infra_segment_vis_tc_branch_part; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_tc_infra_segment_vis_tc_branch_part (
+    bp_order integer,
+    boundary_1 integer,
+    boundary_2 integer,
+    vis_branch_id character varying
+)
+INHERITS (vis_tc_infra_segment_list);
+
+
+ALTER TABLE public.vis_tc_infra_segment_vis_tc_branch_part OWNER TO mfvl;
+
+--
+-- Name: vis_tc_infra_segment_vis_tc_end_pos_branch; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_tc_infra_segment_vis_tc_end_pos_branch (
+    distance_node_1 integer,
+    distance_node_2 integer,
+    vis_branch_id character varying
+)
+INHERITS (vis_tc_infra_segment_list);
+
+
+ALTER TABLE public.vis_tc_infra_segment_vis_tc_end_pos_branch OWNER TO mfvl;
+
+--
+-- Name: vis_tc_infra_segment_vis_tc_end_pos_node; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_tc_infra_segment_vis_tc_end_pos_node (
+    vis_node_id character varying
+)
+INHERITS (vis_tc_infra_segment_list);
+
+
+ALTER TABLE public.vis_tc_infra_segment_vis_tc_end_pos_node OWNER TO mfvl;
+
+--
+-- Name: vis_tc_infra_segment_vis_tc_start_pos_branch; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_tc_infra_segment_vis_tc_start_pos_branch (
+    distance_node_1 integer,
+    distance_node_2 integer,
+    vis_branch_id character varying
+)
+INHERITS (vis_tc_infra_segment_list);
+
+
+ALTER TABLE public.vis_tc_infra_segment_vis_tc_start_pos_branch OWNER TO mfvl;
+
+--
+-- Name: vis_tc_infra_segment_vis_tc_start_pos_node; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_tc_infra_segment_vis_tc_start_pos_node (
+    vis_node_id character varying
+)
+INHERITS (vis_tc_infra_segment_list);
+
+
+ALTER TABLE public.vis_tc_infra_segment_vis_tc_start_pos_node OWNER TO mfvl;
+
+--
+-- Name: vis_track_circuit; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_track_circuit (
+    vis_section_id character varying
+)
+INHERITS (bev21);
+
+
+ALTER TABLE public.vis_track_circuit OWNER TO mfvl;
+
+--
+-- Name: vis_virtual_signal; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vis_virtual_signal (
+    tc_in_advance_of_vs character varying,
+    vis_tc_in_rear_of_vs character varying
+)
+INHERITS (bev21);
+
+
+ALTER TABLE public.vis_virtual_signal OWNER TO mfvl;
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE bev21_object ALTER COLUMN id SET DEFAULT nextval('bev21_object_id_seq'::regclass);
+
+
+--
+-- Name: antwoordreden_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY kbv_antwoordreden
+    ADD CONSTRAINT antwoordreden_pkey PRIMARY KEY (messageid, messagebron);
+
+
+--
+-- Name: antwoordtekst_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY kbv_antwoordtekst
+    ADD CONSTRAINT antwoordtekst_pkey PRIMARY KEY (antwoordtekstnummer);
+
+
+--
+-- Name: areaid_areaid_naamgebied_key; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY areaid
+    ADD CONSTRAINT areaid_areaid_naamgebied_key UNIQUE (areaid_naamgebied, areaid_objecttypebev21, areaid_objectcode);
+
+
+--
+-- Name: bev21_aliasname_key; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY bev21
+    ADD CONSTRAINT bev21_aliasname_key UNIQUE (aliasname);
+
+
+--
+-- Name: bev21_object_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY bev21_object
+    ADD CONSTRAINT bev21_object_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: bev21_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY bev21
+    ADD CONSTRAINT bev21_pkey PRIMARY KEY (name);
+
+
+--
+-- Name: kbv_bordersafetyprovision_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY kbv_bordersafetyprovision
+    ADD CONSTRAINT kbv_bordersafetyprovision_pkey PRIMARY KEY (wisselid);
+
+
+--
+-- Name: kbv_dienstoverpad_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY kbv_dienstoverpad
+    ADD CONSTRAINT kbv_dienstoverpad_pkey PRIMARY KEY (dienstoverpadid);
+
+
+--
+-- Name: kbv_sectie_pkey1; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY kbv_sectie
+    ADD CONSTRAINT kbv_sectie_pkey1 PRIMARY KEY (sectieid);
+
+
+--
+-- Name: kbv_sein_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY kbv_sein
+    ADD CONSTRAINT kbv_sein_pkey PRIMARY KEY (seinid);
+
+
+--
+-- Name: kbv_stroomvoorziening_pkey1; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY kbv_stroomvoorziening
+    ADD CONSTRAINT kbv_stroomvoorziening_pkey1 PRIMARY KEY (stroomvoorzieningid);
+
+
+--
+-- Name: kbv_tunnelschuif_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY kbv_tunnelschuif
+    ADD CONSTRAINT kbv_tunnelschuif_pkey PRIMARY KEY (tunnelschuifid);
+
+
+--
+-- Name: kbv_vastekruising_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY kbv_vastekruising
+    ADD CONSTRAINT kbv_vastekruising_pkey PRIMARY KEY (vastekruisingid);
+
+
+--
+-- Name: kbv_verbinding_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY kbv_verbinding
+    ADD CONSTRAINT kbv_verbinding_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kbv_vrijgaverangeren_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY kbv_vrijgaverangeren
+    ADD CONSTRAINT kbv_vrijgaverangeren_pkey PRIMARY KEY (vrijgaverangerenid);
+
+
+--
+-- Name: kbv_werkzone_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY kbv_werkzone
+    ADD CONSTRAINT kbv_werkzone_pkey PRIMARY KEY (werkzoneid);
+
+
+--
+-- Name: kbv_wissel_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY kbv_wissel
+    ADD CONSTRAINT kbv_wissel_pkey PRIMARY KEY (wisselid);
+
+
+--
+-- Name: melding_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY kbv_melding
+    ADD CONSTRAINT melding_pkey PRIMARY KEY (meldingbetekeniscode);
+
+
+--
+-- Name: meldingtrigger_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY kbv_meldingtrigger
+    ADD CONSTRAINT meldingtrigger_pkey PRIMARY KEY (kbvmeldingid);
+
+
+--
+-- Name: vis_adjacent_system_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY vis_adjacent_system
+    ADD CONSTRAINT vis_adjacent_system_pkey PRIMARY KEY (name);
+
+
+--
+-- Name: vis_area_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY vis_area
+    ADD CONSTRAINT vis_area_pkey PRIMARY KEY (name);
+
+
+--
+-- Name: vis_as_apb_control_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY vis_as_apb_control
+    ADD CONSTRAINT vis_as_apb_control_pkey PRIMARY KEY (name);
+
+
+--
+-- Name: vis_branch_combination_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY vis_branch_combination
+    ADD CONSTRAINT vis_branch_combination_pkey PRIMARY KEY (name);
+
+
+--
+-- Name: vis_branch_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY vis_branch
+    ADD CONSTRAINT vis_branch_pkey PRIMARY KEY (name);
+
+
+--
+-- Name: vis_bsp_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY vis_bsp
+    ADD CONSTRAINT vis_bsp_pkey PRIMARY KEY (name);
+
+
+--
+-- Name: vis_detector_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY vis_detector
+    ADD CONSTRAINT vis_detector_pkey PRIMARY KEY (name);
+
+
+--
+-- Name: vis_elementary_route_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY vis_elementary_route
+    ADD CONSTRAINT vis_elementary_route_pkey PRIMARY KEY (name);
+
+
+--
+-- Name: vis_grid_position_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY vis_grid_position
+    ADD CONSTRAINT vis_grid_position_pkey PRIMARY KEY (name);
+
+
+--
+-- Name: vis_interface_ixl_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY vis_interface_ixl
+    ADD CONSTRAINT vis_interface_ixl_pkey PRIMARY KEY (name);
+
+
+--
+-- Name: vis_n_selection_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY vis_n_selection
+    ADD CONSTRAINT vis_n_selection_pkey PRIMARY KEY (name);
+
+
+--
+-- Name: vis_node_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY vis_node
+    ADD CONSTRAINT vis_node_pkey PRIMARY KEY (name);
+
+
+--
+-- Name: vis_non_core_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY vis_non_core
+    ADD CONSTRAINT vis_non_core_pkey PRIMARY KEY (name);
+
+
+--
+-- Name: vis_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY vis
+    ADD CONSTRAINT vis_pkey PRIMARY KEY (name);
+
+
+--
+-- Name: vis_point_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY vis_point
+    ADD CONSTRAINT vis_point_pkey PRIMARY KEY (name);
+
+
+--
+-- Name: vis_reason_for_non_acceptance_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY vis_reason_for_non_acceptance
+    ADD CONSTRAINT vis_reason_for_non_acceptance_pkey PRIMARY KEY (name);
+
+
+--
+-- Name: vis_reason_for_revocation_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY vis_reason_for_revocation
+    ADD CONSTRAINT vis_reason_for_revocation_pkey PRIMARY KEY (name);
+
+
+--
+-- Name: vis_response_to_vpt_txt_msg_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY vis_response_to_vpt_txt_msg
+    ADD CONSTRAINT vis_response_to_vpt_txt_msg_pkey PRIMARY KEY (name);
+
+
+--
+-- Name: vis_section_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY vis_section
+    ADD CONSTRAINT vis_section_pkey PRIMARY KEY (name);
+
+
+--
+-- Name: vis_signal_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY vis_signal
+    ADD CONSTRAINT vis_signal_pkey PRIMARY KEY (name);
+
+
+--
+-- Name: vis_tc_infra_segment_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY vis_tc_infra_segment
+    ADD CONSTRAINT vis_tc_infra_segment_pkey PRIMARY KEY (name);
+
+
+--
+-- Name: vis_track_circuit_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY vis_track_circuit
+    ADD CONSTRAINT vis_track_circuit_pkey PRIMARY KEY (name);
+
+
+--
+-- Name: vis_virtual_signal_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY vis_virtual_signal
+    ADD CONSTRAINT vis_virtual_signal_pkey PRIMARY KEY (name);
+
+
+--
+-- Name: vpt_object_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY vpt_object
+    ADD CONSTRAINT vpt_object_pkey PRIMARY KEY (vpt_area_code, vpt_infra_object_code);
+
+
+--
+-- Name: antwoordreden_antwoordtekstnummer_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY kbv_antwoordreden
+    ADD CONSTRAINT antwoordreden_antwoordtekstnummer_fkey FOREIGN KEY (antwoordtekstnummer) REFERENCES kbv_antwoordtekst(antwoordtekstnummer);
+
+
+--
+-- Name: kbv_sectie_spoortakdeel_sectieid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY kbv_sectie_spoortakdeel
+    ADD CONSTRAINT kbv_sectie_spoortakdeel_sectieid_fkey FOREIGN KEY (sectieid) REFERENCES kbv_sectie(sectieid);
+
+
+--
+-- Name: kbv_sein_vhr_b_seinid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY kbv_sein_vhr_b
+    ADD CONSTRAINT kbv_sein_vhr_b_seinid_fkey FOREIGN KEY (seinid) REFERENCES kbv_sein(seinid);
+
+
+--
+-- Name: kbv_sein_vhr_b_spoortakdeel_seinid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY kbv_sein_vhr_b_spoortakdeel
+    ADD CONSTRAINT kbv_sein_vhr_b_spoortakdeel_seinid_fkey FOREIGN KEY (seinid) REFERENCES kbv_sein(seinid);
+
+
+--
+-- Name: kbv_sein_vhr_e_seinid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY kbv_sein_vhr_e
+    ADD CONSTRAINT kbv_sein_vhr_e_seinid_fkey FOREIGN KEY (seinid) REFERENCES kbv_sein(seinid);
+
+
+--
+-- Name: kbv_sein_vhr_e_spoortakdeel_seinid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY kbv_sein_vhr_e_spoortakdeel
+    ADD CONSTRAINT kbv_sein_vhr_e_spoortakdeel_seinid_fkey FOREIGN KEY (seinid) REFERENCES kbv_sein(seinid);
+
+
+--
+-- Name: melding_bronparameter_meldingbetekeniscode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY kbv_melding_bronparameter
+    ADD CONSTRAINT melding_bronparameter_meldingbetekeniscode_fkey FOREIGN KEY (meldingbetekeniscode) REFERENCES kbv_melding(meldingbetekeniscode);
+
+
+--
+-- Name: melding_parameterorc_meldingbetekeniscode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY kbv_melding_parameterorc
+    ADD CONSTRAINT melding_parameterorc_meldingbetekeniscode_fkey FOREIGN KEY (meldingbetekeniscode) REFERENCES kbv_melding(meldingbetekeniscode);
+
+
+--
+-- Name: meldingtrigger_meldingbetekeniscode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY kbv_meldingtrigger
+    ADD CONSTRAINT meldingtrigger_meldingbetekeniscode_fkey FOREIGN KEY (meldingbetekeniscode) REFERENCES kbv_melding(meldingbetekeniscode);
+
+
+--
+-- Name: nn_vis_area_vis_area_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_point_nn_vis_area
+    ADD CONSTRAINT nn_vis_area_vis_area_id_fkey FOREIGN KEY (vis_area_id) REFERENCES vis_area(name);
+
+
+--
+-- Name: nn_vis_branch_vis_branch_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_branch_combination_nn_vis_branch
+    ADD CONSTRAINT nn_vis_branch_vis_branch_id_fkey FOREIGN KEY (vis_branch_id) REFERENCES vis_branch(name);
+
+
+--
+-- Name: nn_vis_section_vis_section_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_area_nn_vis_section
+    ADD CONSTRAINT nn_vis_section_vis_section_id_fkey FOREIGN KEY (vis_section_id) REFERENCES vis_section(name);
+
+
+--
+-- Name: vis_area_list_vis_area_name_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_area_list
+    ADD CONSTRAINT vis_area_list_vis_area_name_fkey FOREIGN KEY (vis_area_name) REFERENCES vis_area(name);
+
+
+--
+-- Name: vis_area_vis_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_area
+    ADD CONSTRAINT vis_area_vis_id_fkey FOREIGN KEY (vis_id) REFERENCES vis(name);
+
+
+--
+-- Name: vis_branch_combination_list_vis_branch_combination_name_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_branch_combination_list
+    ADD CONSTRAINT vis_branch_combination_list_vis_branch_combination_name_fkey FOREIGN KEY (vis_branch_combination_name) REFERENCES vis_branch_combination(name);
+
+
+--
+-- Name: vis_branch_combination_vis_node_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_branch_combination
+    ADD CONSTRAINT vis_branch_combination_vis_node_id_fkey FOREIGN KEY (vis_node_id) REFERENCES vis_node(name);
+
+
+--
+-- Name: vis_branch_node1_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_branch
+    ADD CONSTRAINT vis_branch_node1_fkey FOREIGN KEY (node1) REFERENCES vis_node(name);
+
+
+--
+-- Name: vis_branch_node2_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_branch
+    ADD CONSTRAINT vis_branch_node2_fkey FOREIGN KEY (node2) REFERENCES vis_node(name);
+
+
+--
+-- Name: vis_bsp_list_vis_bsp_name_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_bsp_list
+    ADD CONSTRAINT vis_bsp_list_vis_bsp_name_fkey FOREIGN KEY (vis_bsp_name) REFERENCES vis_bsp(name);
+
+
+--
+-- Name: vis_bsp_nn_vis_area_vis_area_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_bsp_nn_vis_area
+    ADD CONSTRAINT vis_bsp_nn_vis_area_vis_area_id_fkey FOREIGN KEY (vis_area_id) REFERENCES vis_area(name);
+
+
+--
+-- Name: vis_bsp_vis_bp_pos_branch_vis_branch_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_bsp_vis_bp_pos_branch
+    ADD CONSTRAINT vis_bsp_vis_bp_pos_branch_vis_branch_id_fkey FOREIGN KEY (vis_branch_id) REFERENCES vis_branch(name);
+
+
+--
+-- Name: vis_bsp_vis_bp_pos_node_vis_node_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_bsp_vis_bp_pos_node
+    ADD CONSTRAINT vis_bsp_vis_bp_pos_node_vis_node_id_fkey FOREIGN KEY (vis_node_id) REFERENCES vis_node(name);
+
+
+--
+-- Name: vis_bsp_vis_point_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_bsp
+    ADD CONSTRAINT vis_bsp_vis_point_id_fkey FOREIGN KEY (vis_point_id) REFERENCES vis_point(name);
+
+
+--
+-- Name: vis_detector_vis_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_detector
+    ADD CONSTRAINT vis_detector_vis_id_fkey FOREIGN KEY (vis_id) REFERENCES vis(name);
+
+
+--
+-- Name: vis_elementary_route_end_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_elementary_route
+    ADD CONSTRAINT vis_elementary_route_end_location_fkey FOREIGN KEY (end_location) REFERENCES vis_grid_position(name);
+
+
+--
+-- Name: vis_elementary_route_exit_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_elementary_route
+    ADD CONSTRAINT vis_elementary_route_exit_location_fkey FOREIGN KEY (exit_location) REFERENCES vis_grid_position(name);
+
+
+--
+-- Name: vis_elementary_route_list_vis_elementary_route_name_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_elementary_route_list
+    ADD CONSTRAINT vis_elementary_route_list_vis_elementary_route_name_fkey FOREIGN KEY (vis_elementary_route_name) REFERENCES vis_elementary_route(name);
+
+
+--
+-- Name: vis_elementary_route_nn_vis_area_vis_area_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY vis_elementary_route_nn_vis_area
+    ADD CONSTRAINT vis_elementary_route_nn_vis_area_vis_area_id_fkey FOREIGN KEY (vis_area_id) REFERENCES vis_area(name);
+
+
+--
+-- Name: vis_elementary_route_nn_vis_detector_vis_detector_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_elementary_route_nn_vis_detector
+    ADD CONSTRAINT vis_elementary_route_nn_vis_detector_vis_detector_id_fkey FOREIGN KEY (vis_detector_id) REFERENCES vis_detector(name);
+
+
+--
+-- Name: vis_elementary_route_nn_vis_tc_inf_vis_tc_infra_segment_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY vis_elementary_route_nn_vis_tc_infra_segment
+    ADD CONSTRAINT vis_elementary_route_nn_vis_tc_inf_vis_tc_infra_segment_id_fkey FOREIGN KEY (vis_tc_infra_segment_id) REFERENCES vis_tc_infra_segment(name);
+
+
+--
+-- Name: vis_elementary_route_nn_vis_track_cir_vis_track_circuit_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY vis_elementary_route_nn_vis_track_circuit
+    ADD CONSTRAINT vis_elementary_route_nn_vis_track_cir_vis_track_circuit_id_fkey FOREIGN KEY (vis_track_circuit_id) REFERENCES vis_track_circuit(name);
+
+
+--
+-- Name: vis_elementary_route_start_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_elementary_route
+    ADD CONSTRAINT vis_elementary_route_start_location_fkey FOREIGN KEY (start_location) REFERENCES vis_grid_position(name);
+
+
+--
+-- Name: vis_elementary_route_vis_adjacent_system_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_elementary_route
+    ADD CONSTRAINT vis_elementary_route_vis_adjacent_system_id_fkey FOREIGN KEY (vis_adjacent_system_id) REFERENCES vis_adjacent_system(name);
+
+
+--
+-- Name: vis_elementary_route_vis_er_branch_part_vis_branch_i_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY vis_elementary_route_vis_er_branch_part
+    ADD CONSTRAINT vis_elementary_route_vis_er_branch_part_vis_branch_i_fkey FOREIGN KEY (vis_branch_id) REFERENCES vis_branch(name);
+
+
+--
+-- Name: vis_elementary_route_vis_er_point_vis_point_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY vis_elementary_route_vis_er_point
+    ADD CONSTRAINT vis_elementary_route_vis_er_point_vis_point_id_fkey FOREIGN KEY (vis_point_id) REFERENCES vis_point(name);
+
+
+--
+-- Name: vis_elementary_route_vis_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_elementary_route
+    ADD CONSTRAINT vis_elementary_route_vis_id_fkey FOREIGN KEY (vis_id) REFERENCES vis(name);
+
+
+--
+-- Name: vis_elementary_route_vis_virtual_signal_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_elementary_route
+    ADD CONSTRAINT vis_elementary_route_vis_virtual_signal_id_fkey FOREIGN KEY (vis_virtual_signal_id) REFERENCES vis_virtual_signal(name);
+
+
+--
+-- Name: vis_grid_position_list_vis_grid_position_name_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_grid_position_list
+    ADD CONSTRAINT vis_grid_position_list_vis_grid_position_name_fkey FOREIGN KEY (vis_grid_position_name) REFERENCES vis_grid_position(name);
+
+
+--
+-- Name: vis_grid_position_vis_gp_pos_branch_vis_branch_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_grid_position_vis_gp_pos_branch
+    ADD CONSTRAINT vis_grid_position_vis_gp_pos_branch_vis_branch_id_fkey FOREIGN KEY (vis_branch_id) REFERENCES vis_branch(name);
+
+
+--
+-- Name: vis_grid_position_vis_gp_pos_node_vis_node_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_grid_position_vis_gp_pos_node
+    ADD CONSTRAINT vis_grid_position_vis_gp_pos_node_vis_node_id_fkey FOREIGN KEY (vis_node_id) REFERENCES vis_node(name);
+
+
+--
+-- Name: vis_interface_ixl_list_vis_interface_ixl_name_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_interface_ixl_list
+    ADD CONSTRAINT vis_interface_ixl_list_vis_interface_ixl_name_fkey FOREIGN KEY (vis_interface_ixl_name) REFERENCES vis_interface_ixl(name);
+
+
+--
+-- Name: vis_interface_ixl_vis_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_interface_ixl
+    ADD CONSTRAINT vis_interface_ixl_vis_id_fkey FOREIGN KEY (vis_id) REFERENCES vis(name);
+
+
+--
+-- Name: vis_n_selection_list_vis_n_selection_name_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_n_selection_list
+    ADD CONSTRAINT vis_n_selection_list_vis_n_selection_name_fkey FOREIGN KEY (vis_n_selection_name) REFERENCES vis_n_selection(name);
+
+
+--
+-- Name: vis_n_selection_vis_ns_elementa_vis_elementary_route_id_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_n_selection_nn_vis_elementary_route
+    ADD CONSTRAINT vis_n_selection_vis_ns_elementa_vis_elementary_route_id_id_fkey FOREIGN KEY (vis_elementary_route_id) REFERENCES vis_elementary_route(name);
+
+
+--
+-- Name: vis_n_selection_vs_ns_branch_part_vis_branch_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_n_selection_vis_ns_branch_part
+    ADD CONSTRAINT vis_n_selection_vs_ns_branch_part_vis_branch_id_fkey FOREIGN KEY (vis_branch_id) REFERENCES vis_branch(name);
+
+
+--
+-- Name: vis_n_selection_vs_ns_end_pos_branch_vis_branch_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_n_selection_vis_ns_end_pos_branch
+    ADD CONSTRAINT vis_n_selection_vs_ns_end_pos_branch_vis_branch_id_fkey FOREIGN KEY (vis_branch_id) REFERENCES vis_branch(name);
+
+
+--
+-- Name: vis_n_selection_vs_ns_end_pos_node_vis_node_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_n_selection_vis_ns_end_pos_node
+    ADD CONSTRAINT vis_n_selection_vs_ns_end_pos_node_vis_node_id_fkey FOREIGN KEY (vis_node_id) REFERENCES vis_node(name);
+
+
+--
+-- Name: vis_n_selection_vs_ns_start_pos_branch_vis_branch_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_n_selection_vis_ns_start_pos_branch
+    ADD CONSTRAINT vis_n_selection_vs_ns_start_pos_branch_vis_branch_id_fkey FOREIGN KEY (vis_branch_id) REFERENCES vis_branch(name);
+
+
+--
+-- Name: vis_n_selection_vs_ns_start_pos_node_vis_node_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_n_selection_vis_ns_start_pos_node
+    ADD CONSTRAINT vis_n_selection_vs_ns_start_pos_node_vis_node_id_fkey FOREIGN KEY (vis_node_id) REFERENCES vis_node(name);
+
+
+--
+-- Name: vis_non_core_vis_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_non_core
+    ADD CONSTRAINT vis_non_core_vis_id_fkey FOREIGN KEY (vis_id) REFERENCES vis(name);
+
+
+--
+-- Name: vis_point_list_vis_point_name_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_point_list
+    ADD CONSTRAINT vis_point_list_vis_point_name_fkey FOREIGN KEY (vis_point_name) REFERENCES vis_point(name);
+
+
+--
+-- Name: vis_point_vis_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_point
+    ADD CONSTRAINT vis_point_vis_id_fkey FOREIGN KEY (vis_id) REFERENCES vis(name);
+
+
+--
+-- Name: vis_point_vis_section_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_point
+    ADD CONSTRAINT vis_point_vis_section_id_fkey FOREIGN KEY (vis_section_id) REFERENCES vis_section(name);
+
+
+--
+-- Name: vis_reason_for_non_acceptance_vis_response_to_vpt_txt_msg__fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_reason_for_non_acceptance
+    ADD CONSTRAINT vis_reason_for_non_acceptance_vis_response_to_vpt_txt_msg__fkey FOREIGN KEY (vis_response_to_vpt_txt_msg_id) REFERENCES vis_response_to_vpt_txt_msg(name);
+
+
+--
+-- Name: vis_reason_for_revocation_vis_response_to_vpt_txt_msg_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_reason_for_revocation
+    ADD CONSTRAINT vis_reason_for_revocation_vis_response_to_vpt_txt_msg_id_fkey FOREIGN KEY (vis_response_to_vpt_txt_msg_id) REFERENCES vis_response_to_vpt_txt_msg(name);
+
+
+--
+-- Name: vis_response_to_vpt_txt_msg_l_vis_response_to_vpt_txt_name_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_response_to_vpt_txt_msg_list
+    ADD CONSTRAINT vis_response_to_vpt_txt_msg_l_vis_response_to_vpt_txt_name_fkey FOREIGN KEY (vis_response_to_vpt_txt_msg_name) REFERENCES vis_response_to_vpt_txt_msg(name);
+
+
+--
+-- Name: vis_response_to_vpt_txt_msg_vis_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_response_to_vpt_txt_msg
+    ADD CONSTRAINT vis_response_to_vpt_txt_msg_vis_id_fkey FOREIGN KEY (vis_id) REFERENCES vis(name);
+
+
+--
+-- Name: vis_signal_list_vis_signal_name_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_signal_list
+    ADD CONSTRAINT vis_signal_list_vis_signal_name_fkey FOREIGN KEY (vis_signal_name) REFERENCES vis_signal(name);
+
+
+--
+-- Name: vis_signal_vis_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_signal
+    ADD CONSTRAINT vis_signal_vis_id_fkey FOREIGN KEY (vis_id) REFERENCES vis(name);
+
+
+--
+-- Name: vis_tc_branch_part_vis_branch_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_tc_infra_segment_vis_tc_branch_part
+    ADD CONSTRAINT vis_tc_branch_part_vis_branch_id_fkey FOREIGN KEY (vis_branch_id) REFERENCES vis_branch(name);
+
+
+--
+-- Name: vis_tc_end_pos_branch_vis_branch_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_tc_infra_segment_vis_tc_end_pos_branch
+    ADD CONSTRAINT vis_tc_end_pos_branch_vis_branch_id_fkey FOREIGN KEY (vis_branch_id) REFERENCES vis_branch(name);
+
+
+--
+-- Name: vis_tc_end_pos_node_vis_node_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_tc_infra_segment_vis_tc_end_pos_node
+    ADD CONSTRAINT vis_tc_end_pos_node_vis_node_id_fkey FOREIGN KEY (vis_node_id) REFERENCES vis_node(name);
+
+
+--
+-- Name: vis_tc_infra_segment_list_vis_tc_infra_segment_name_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_tc_infra_segment_list
+    ADD CONSTRAINT vis_tc_infra_segment_list_vis_tc_infra_segment_name_fkey FOREIGN KEY (vis_tc_infra_segment_name) REFERENCES vis_tc_infra_segment(name);
+
+
+--
+-- Name: vis_tc_infra_segment_vis_track_circuit_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_tc_infra_segment
+    ADD CONSTRAINT vis_tc_infra_segment_vis_track_circuit_id_fkey FOREIGN KEY (vis_track_circuit_id) REFERENCES vis_track_circuit(name);
+
+
+--
+-- Name: vis_tc_start_pos_branch_vis_branch_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_tc_infra_segment_vis_tc_start_pos_branch
+    ADD CONSTRAINT vis_tc_start_pos_branch_vis_branch_id_fkey FOREIGN KEY (vis_branch_id) REFERENCES vis_branch(name);
+
+
+--
+-- Name: vis_tc_start_pos_node_vis_node_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_tc_infra_segment_vis_tc_start_pos_node
+    ADD CONSTRAINT vis_tc_start_pos_node_vis_node_id_fkey FOREIGN KEY (vis_node_id) REFERENCES vis_node(name);
+
+
+--
+-- Name: vis_track_circuit_vis_section_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_track_circuit
+    ADD CONSTRAINT vis_track_circuit_vis_section_id_fkey FOREIGN KEY (vis_section_id) REFERENCES vis_section(name);
+
+
+--
+-- Name: vis_virtual_signal_tc_in_advance_of_vs_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_virtual_signal
+    ADD CONSTRAINT vis_virtual_signal_tc_in_advance_of_vs_fkey FOREIGN KEY (tc_in_advance_of_vs) REFERENCES vis_track_circuit(name);
+
+
+--
+-- Name: vis_virtual_signal_vis_tc_in_rear_of_vs_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY vis_virtual_signal
+    ADD CONSTRAINT vis_virtual_signal_vis_tc_in_rear_of_vs_fkey FOREIGN KEY (vis_tc_in_rear_of_vs) REFERENCES vis_track_circuit(name);
+
+
+--
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- PostgreSQL database dump complete
+--
+

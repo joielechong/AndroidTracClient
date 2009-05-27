@@ -1,0 +1,268 @@
+--
+-- PostgreSQL database dump
+--
+
+SET client_encoding = 'SQL_ASCII';
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
+--
+
+COMMENT ON SCHEMA public IS 'Standard public schema';
+
+
+SET search_path = public, pg_catalog;
+
+--
+-- Name: plpgsql_call_handler(); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION plpgsql_call_handler() RETURNS language_handler
+    AS '/usr/local/pgsql/lib/plpgsql.so', 'plpgsql_call_handler'
+    LANGUAGE c;
+
+
+ALTER FUNCTION public.plpgsql_call_handler() OWNER TO mfvl;
+
+--
+-- Name: plpgsql; Type: PROCEDURAL LANGUAGE; Schema: public; Owner: 
+--
+
+CREATE PROCEDURAL LANGUAGE plpgsql HANDLER plpgsql_call_handler;
+
+
+--
+-- Name: tp_content_ins(); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION tp_content_ins() RETURNS "trigger"
+    AS $$begin new.toegevoegd=now(); return new; end;$$
+    LANGUAGE plpgsql;
+
+
+ALTER FUNCTION public.tp_content_ins() OWNER TO mfvl;
+
+SET default_tablespace = '';
+
+SET default_with_oids = true;
+
+--
+-- Name: adressen; Type: TABLE; Schema: public; Owner: fietspad; Tablespace: 
+--
+
+CREATE TABLE adressen (
+    email character varying,
+    sent boolean DEFAULT false,
+    "valid" boolean DEFAULT false
+);
+
+
+ALTER TABLE public.adressen OWNER TO fietspad;
+
+--
+-- Name: categorie; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE categorie (
+    id serial NOT NULL,
+    categorie character varying,
+    omschrijving character varying,
+    intro text
+);
+
+
+ALTER TABLE public.categorie OWNER TO mfvl;
+
+--
+-- Name: content; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE content (
+    id serial NOT NULL,
+    url character varying(255) NOT NULL,
+    active boolean DEFAULT true NOT NULL,
+    inactive_since date,
+    last_result_code integer DEFAULT 200 NOT NULL,
+    toegevoegd date,
+    categorie character varying DEFAULT 'Onbekend'::character varying NOT NULL,
+    tekst text,
+    "sequence" character varying,
+    failures integer DEFAULT 0 NOT NULL
+);
+
+
+ALTER TABLE public.content OWNER TO mfvl;
+
+--
+-- Name: TABLE content; Type: COMMENT; Schema: public; Owner: mfvl
+--
+
+COMMENT ON TABLE content IS 'Links van het fietspad';
+
+
+--
+-- Name: COLUMN content.id; Type: COMMENT; Schema: public; Owner: mfvl
+--
+
+COMMENT ON COLUMN content.id IS 'Uniek ID';
+
+
+--
+-- Name: COLUMN content.url; Type: COMMENT; Schema: public; Owner: mfvl
+--
+
+COMMENT ON COLUMN content.url IS 'URL van de link';
+
+
+--
+-- Name: COLUMN content.active; Type: COMMENT; Schema: public; Owner: mfvl
+--
+
+COMMENT ON COLUMN content.active IS 'Wel of niet tonen';
+
+
+--
+-- Name: gastboek; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE gastboek (
+    id serial NOT NULL,
+    datum date,
+    tijd time without time zone,
+    naam character varying,
+    email character varying,
+    woonplaats character varying,
+    tekst text,
+    ip inet
+);
+
+
+ALTER TABLE public.gastboek OWNER TO mfvl;
+
+--
+-- Name: sponsors; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE sponsors (
+    id serial NOT NULL,
+    naam text NOT NULL,
+    tekst text NOT NULL,
+    "sequence" integer NOT NULL
+);
+
+
+ALTER TABLE public.sponsors OWNER TO mfvl;
+
+--
+-- Name: cat_003; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY categorie
+    ADD CONSTRAINT cat_003 PRIMARY KEY (id);
+
+
+ALTER INDEX public.cat_003 OWNER TO mfvl;
+
+--
+-- Name: commercie_url_key; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY content
+    ADD CONSTRAINT commercie_url_key UNIQUE (url);
+
+
+ALTER INDEX public.commercie_url_key OWNER TO mfvl;
+
+--
+-- Name: con_001; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY content
+    ADD CONSTRAINT con_001 PRIMARY KEY (id);
+
+
+ALTER INDEX public.con_001 OWNER TO mfvl;
+
+--
+-- Name: gastboek_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY gastboek
+    ADD CONSTRAINT gastboek_pkey PRIMARY KEY (id);
+
+
+ALTER INDEX public.gastboek_pkey OWNER TO mfvl;
+
+--
+-- Name: x001; Type: CONSTRAINT; Schema: public; Owner: fietspad; Tablespace: 
+--
+
+ALTER TABLE ONLY adressen
+    ADD CONSTRAINT x001 UNIQUE (email);
+
+
+ALTER INDEX public.x001 OWNER TO fietspad;
+
+--
+-- Name: cat_001; Type: INDEX; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE UNIQUE INDEX cat_001 ON categorie USING btree (categorie);
+
+
+ALTER INDEX public.cat_001 OWNER TO mfvl;
+
+--
+-- Name: dt; Type: INDEX; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE INDEX dt ON gastboek USING btree (datum, tijd);
+
+
+ALTER INDEX public.dt OWNER TO mfvl;
+
+--
+-- Name: tp_content_ins; Type: TRIGGER; Schema: public; Owner: mfvl
+--
+
+CREATE TRIGGER tp_content_ins
+    BEFORE INSERT ON content
+    FOR EACH ROW
+    EXECUTE PROCEDURE tp_content_ins();
+
+
+--
+-- Name: content_categorie; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY content
+    ADD CONSTRAINT content_categorie FOREIGN KEY (categorie) REFERENCES categorie(categorie);
+
+
+--
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- Name: adressen; Type: ACL; Schema: public; Owner: fietspad
+--
+
+REVOKE ALL ON TABLE adressen FROM PUBLIC;
+REVOKE ALL ON TABLE adressen FROM fietspad;
+GRANT ALL ON TABLE adressen TO fietspad;
+GRANT ALL ON TABLE adressen TO mfvl;
+GRANT ALL ON TABLE adressen TO httpd;
+
+
+--
+-- PostgreSQL database dump complete
+--
+

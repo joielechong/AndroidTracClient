@@ -1,0 +1,5 @@
+Zusammenfassung Blitzer für Poland
+----------------------------------------------
+310			Blitzer-50
+1242			Blitzer-50-m
+2			Blitzer-70-m

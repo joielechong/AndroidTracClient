@@ -1,0 +1,22 @@
+Zusammenfassung Blitzer für Netherlands
+----------------------------------------------
+29			Blitzer-100
+2			Blitzer-100-m
+16			Blitzer-120
+3			Blitzer-120-m
+2			Blitzer-30
+1			Blitzer-40
+229			Blitzer-50
+3			Blitzer-50-m
+28			Blitzer-60
+27			Blitzer-70
+167			Blitzer-80
+1			Blitzer-Laser-50
+17			Blitzer-Rotlicht
+2			Blitzer-Rotlicht-30
+173			Blitzer-Rotlicht-50
+2			Blitzer-Rotlicht-60
+44			Blitzer-Rotlicht-70
+33			Blitzer-Rotlicht-80
+22			Blitzer-unsortiert
+318			Blitzer-unsortiert-m

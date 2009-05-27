@@ -1,0 +1,6 @@
+Zusammenfassung Blitzer für Hungary
+----------------------------------------------
+2			Blitzer-100
+6			Blitzer-130
+1			Blitzer-50-m
+4			Blitzer-Laser-50

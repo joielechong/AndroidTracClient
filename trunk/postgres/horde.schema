@@ -1,0 +1,760 @@
+--
+-- PostgreSQL database dump
+--
+
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = off;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET escape_string_warning = off;
+
+--
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
+--
+
+COMMENT ON SCHEMA public IS 'Standard public schema';
+
+
+--
+-- Name: plperl; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: postgres
+--
+
+CREATE PROCEDURAL LANGUAGE plperl;
+
+
+--
+-- Name: plpgsql; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: postgres
+--
+
+CREATE PROCEDURAL LANGUAGE plpgsql;
+
+
+SET search_path = public, pg_catalog;
+
+--
+-- Name: tablefunc_crosstab_2; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE tablefunc_crosstab_2 AS (
+	row_name text,
+	category_1 text,
+	category_2 text
+);
+
+
+ALTER TYPE public.tablefunc_crosstab_2 OWNER TO postgres;
+
+--
+-- Name: tablefunc_crosstab_3; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE tablefunc_crosstab_3 AS (
+	row_name text,
+	category_1 text,
+	category_2 text,
+	category_3 text
+);
+
+
+ALTER TYPE public.tablefunc_crosstab_3 OWNER TO postgres;
+
+--
+-- Name: tablefunc_crosstab_4; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE tablefunc_crosstab_4 AS (
+	row_name text,
+	category_1 text,
+	category_2 text,
+	category_3 text,
+	category_4 text
+);
+
+
+ALTER TYPE public.tablefunc_crosstab_4 OWNER TO postgres;
+
+--
+-- Name: connectby(text, text, text, text, integer, text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION connectby(text, text, text, text, integer, text) RETURNS SETOF record
+    AS '$libdir/tablefunc', 'connectby_text'
+    LANGUAGE c STABLE STRICT;
+
+
+ALTER FUNCTION public.connectby(text, text, text, text, integer, text) OWNER TO postgres;
+
+--
+-- Name: connectby(text, text, text, text, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION connectby(text, text, text, text, integer) RETURNS SETOF record
+    AS '$libdir/tablefunc', 'connectby_text'
+    LANGUAGE c STABLE STRICT;
+
+
+ALTER FUNCTION public.connectby(text, text, text, text, integer) OWNER TO postgres;
+
+--
+-- Name: connectby(text, text, text, text, text, integer, text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION connectby(text, text, text, text, text, integer, text) RETURNS SETOF record
+    AS '$libdir/tablefunc', 'connectby_text_serial'
+    LANGUAGE c STABLE STRICT;
+
+
+ALTER FUNCTION public.connectby(text, text, text, text, text, integer, text) OWNER TO postgres;
+
+--
+-- Name: connectby(text, text, text, text, text, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION connectby(text, text, text, text, text, integer) RETURNS SETOF record
+    AS '$libdir/tablefunc', 'connectby_text_serial'
+    LANGUAGE c STABLE STRICT;
+
+
+ALTER FUNCTION public.connectby(text, text, text, text, text, integer) OWNER TO postgres;
+
+--
+-- Name: crosstab(text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION crosstab(text) RETURNS SETOF record
+    AS '$libdir/tablefunc', 'crosstab'
+    LANGUAGE c STABLE STRICT;
+
+
+ALTER FUNCTION public.crosstab(text) OWNER TO postgres;
+
+--
+-- Name: crosstab(text, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION crosstab(text, integer) RETURNS SETOF record
+    AS '$libdir/tablefunc', 'crosstab'
+    LANGUAGE c STABLE STRICT;
+
+
+ALTER FUNCTION public.crosstab(text, integer) OWNER TO postgres;
+
+--
+-- Name: crosstab(text, text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION crosstab(text, text) RETURNS SETOF record
+    AS '$libdir/tablefunc', 'crosstab_hash'
+    LANGUAGE c STABLE STRICT;
+
+
+ALTER FUNCTION public.crosstab(text, text) OWNER TO postgres;
+
+--
+-- Name: crosstab2(text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION crosstab2(text) RETURNS SETOF tablefunc_crosstab_2
+    AS '$libdir/tablefunc', 'crosstab'
+    LANGUAGE c STABLE STRICT;
+
+
+ALTER FUNCTION public.crosstab2(text) OWNER TO postgres;
+
+--
+-- Name: crosstab3(text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION crosstab3(text) RETURNS SETOF tablefunc_crosstab_3
+    AS '$libdir/tablefunc', 'crosstab'
+    LANGUAGE c STABLE STRICT;
+
+
+ALTER FUNCTION public.crosstab3(text) OWNER TO postgres;
+
+--
+-- Name: crosstab4(text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION crosstab4(text) RETURNS SETOF tablefunc_crosstab_4
+    AS '$libdir/tablefunc', 'crosstab'
+    LANGUAGE c STABLE STRICT;
+
+
+ALTER FUNCTION public.crosstab4(text) OWNER TO postgres;
+
+--
+-- Name: nonull_append_strings(text, text); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION nonull_append_strings(text, text) RETURNS text
+    AS $_$SELECT CASE 
+WHEN $1 IS NULL THEN $2 
+WHEN $2 IS NULL THEN $1
+ELSE $1 || ' ' || $2
+END
+$_$
+    LANGUAGE sql IMMUTABLE;
+
+
+ALTER FUNCTION public.nonull_append_strings(text, text) OWNER TO mfvl;
+
+--
+-- Name: normal_rand(integer, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION normal_rand(integer, double precision, double precision) RETURNS SETOF double precision
+    AS '$libdir/tablefunc', 'normal_rand'
+    LANGUAGE c STRICT;
+
+
+ALTER FUNCTION public.normal_rand(integer, double precision, double precision) OWNER TO postgres;
+
+--
+-- Name: plpgsql_call_handler(); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION plpgsql_call_handler() RETURNS language_handler
+    AS '$libdir/plpgsql', 'plpgsql_call_handler'
+    LANGUAGE c;
+
+
+ALTER FUNCTION public.plpgsql_call_handler() OWNER TO mfvl;
+
+--
+-- Name: ||+; Type: OPERATOR; Schema: public; Owner: mfvl
+--
+
+CREATE OPERATOR ||+ (
+    PROCEDURE = nonull_append_strings,
+    LEFTARG = text,
+    RIGHTARG = text
+);
+
+
+ALTER OPERATOR public.||+ (text, text) OWNER TO mfvl;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: horde_datatree; Type: TABLE; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE TABLE horde_datatree (
+    datatree_id integer DEFAULT 0 NOT NULL,
+    group_uid character varying(255) DEFAULT ' '::character varying NOT NULL,
+    user_uid character varying(255) DEFAULT ' '::character varying NOT NULL,
+    datatree_name character varying(255) DEFAULT ' '::character varying NOT NULL,
+    datatree_parents character varying(255) DEFAULT ' '::character varying NOT NULL,
+    datatree_order integer DEFAULT 0,
+    datatree_data text,
+    datatree_serialized smallint DEFAULT 0 NOT NULL
+);
+
+
+ALTER TABLE public.horde_datatree OWNER TO httpd;
+
+--
+-- Name: horde_datatree_attributes; Type: TABLE; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE TABLE horde_datatree_attributes (
+    datatree_id integer DEFAULT 0 NOT NULL,
+    attribute_name character varying(255) DEFAULT ' '::character varying NOT NULL,
+    attribute_key character varying(255) DEFAULT ' '::character varying NOT NULL,
+    attribute_value text
+);
+
+
+ALTER TABLE public.horde_datatree_attributes OWNER TO httpd;
+
+--
+-- Name: horde_datatree_seq; Type: SEQUENCE; Schema: public; Owner: httpd
+--
+
+CREATE SEQUENCE horde_datatree_seq
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.horde_datatree_seq OWNER TO httpd;
+
+--
+-- Name: horde_histories; Type: TABLE; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE TABLE horde_histories (
+    history_id integer DEFAULT 0 NOT NULL,
+    object_uid character varying(255) DEFAULT ' '::character varying NOT NULL,
+    history_action character varying(32) DEFAULT ' '::character varying NOT NULL,
+    history_ts integer DEFAULT 0 NOT NULL,
+    history_desc text,
+    history_who character varying(255),
+    history_extra text
+);
+
+
+ALTER TABLE public.horde_histories OWNER TO httpd;
+
+--
+-- Name: horde_histories_seq; Type: SEQUENCE; Schema: public; Owner: httpd
+--
+
+CREATE SEQUENCE horde_histories_seq
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.horde_histories_seq OWNER TO httpd;
+
+--
+-- Name: horde_prefs; Type: TABLE; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE TABLE horde_prefs (
+    pref_uid character varying(200) DEFAULT ' '::character varying NOT NULL,
+    pref_scope character varying(16) DEFAULT ' '::character varying NOT NULL,
+    pref_name character varying(32) DEFAULT ' '::character varying NOT NULL,
+    pref_value text
+);
+
+
+ALTER TABLE public.horde_prefs OWNER TO httpd;
+
+--
+-- Name: horde_sessionhandler; Type: TABLE; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE TABLE horde_sessionhandler (
+    session_id character varying(32) DEFAULT ' '::character varying NOT NULL,
+    session_lastmodified integer DEFAULT 0 NOT NULL,
+    session_data bytea
+);
+
+
+ALTER TABLE public.horde_sessionhandler OWNER TO httpd;
+
+--
+-- Name: horde_tokens; Type: TABLE; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE TABLE horde_tokens (
+    token_address character varying(100) DEFAULT ' '::character varying NOT NULL,
+    token_id character varying(32) DEFAULT ' '::character varying NOT NULL,
+    token_timestamp integer DEFAULT 0 NOT NULL
+);
+
+
+ALTER TABLE public.horde_tokens OWNER TO httpd;
+
+--
+-- Name: horde_users; Type: TABLE; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE TABLE horde_users (
+    user_uid character varying(255) DEFAULT ' '::character varying NOT NULL,
+    user_pass character varying(255) DEFAULT ' '::character varying NOT NULL,
+    user_soft_expiration_date integer DEFAULT 0,
+    user_hard_expiration_date integer DEFAULT 0
+);
+
+
+ALTER TABLE public.horde_users OWNER TO httpd;
+
+--
+-- Name: horde_vfs; Type: TABLE; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE TABLE horde_vfs (
+    vfs_id integer DEFAULT 0 NOT NULL,
+    vfs_type smallint DEFAULT 0 NOT NULL,
+    vfs_path character varying(255) DEFAULT ' '::character varying NOT NULL,
+    vfs_name character varying(255) DEFAULT ' '::character varying NOT NULL,
+    vfs_modified integer DEFAULT 0 NOT NULL,
+    vfs_owner character varying(255) DEFAULT ' '::character varying NOT NULL,
+    vfs_data bytea
+);
+
+
+ALTER TABLE public.horde_vfs OWNER TO httpd;
+
+--
+-- Name: kronolith_events; Type: TABLE; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE TABLE kronolith_events (
+    event_id character varying(32) DEFAULT ' '::character varying NOT NULL,
+    event_uid character varying(255) DEFAULT ' '::character varying NOT NULL,
+    calendar_id character varying(255) DEFAULT ' '::character varying NOT NULL,
+    event_creator_id character varying(255) DEFAULT ' '::character varying NOT NULL,
+    event_description text,
+    event_location text,
+    event_status integer DEFAULT 0,
+    event_attendees text,
+    event_keywords text,
+    event_exceptions text,
+    event_title character varying(255),
+    event_category character varying(80),
+    event_recurtype integer DEFAULT 0,
+    event_recurinterval integer DEFAULT 0,
+    event_recurdays integer DEFAULT 0,
+    event_recurenddate timestamp without time zone,
+    event_start timestamp without time zone,
+    event_end timestamp without time zone,
+    event_alarm integer DEFAULT 0,
+    event_modified integer DEFAULT 0 NOT NULL
+);
+
+
+ALTER TABLE public.kronolith_events OWNER TO httpd;
+
+--
+-- Name: kronolith_storage; Type: TABLE; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE TABLE kronolith_storage (
+    vfb_owner character varying(255),
+    vfb_email character varying(255) DEFAULT ' '::character varying NOT NULL,
+    vfb_serialized text
+);
+
+
+ALTER TABLE public.kronolith_storage OWNER TO httpd;
+
+--
+-- Name: mnemo_memos; Type: TABLE; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE TABLE mnemo_memos (
+    memo_owner character varying(255) DEFAULT ' '::character varying NOT NULL,
+    memo_id character varying(32) DEFAULT ' '::character varying NOT NULL,
+    memo_uid character varying(255) DEFAULT ' '::character varying NOT NULL,
+    memo_desc character varying(64) DEFAULT ' '::character varying NOT NULL,
+    memo_body text,
+    memo_category character varying(80),
+    memo_private smallint DEFAULT 0 NOT NULL
+);
+
+
+ALTER TABLE public.mnemo_memos OWNER TO httpd;
+
+--
+-- Name: nag_tasks; Type: TABLE; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE TABLE nag_tasks (
+    task_id character varying(32) DEFAULT ' '::character varying NOT NULL,
+    task_owner character varying(255) DEFAULT ' '::character varying NOT NULL,
+    task_name character varying(255) DEFAULT ' '::character varying NOT NULL,
+    task_uid character varying(255) DEFAULT ' '::character varying NOT NULL,
+    task_desc text,
+    task_due integer,
+    task_priority integer DEFAULT 0 NOT NULL,
+    task_category character varying(80),
+    task_completed smallint DEFAULT 0 NOT NULL,
+    task_alarm integer DEFAULT 0 NOT NULL,
+    task_private smallint DEFAULT 0 NOT NULL
+);
+
+
+ALTER TABLE public.nag_tasks OWNER TO httpd;
+
+--
+-- Name: turba_objects; Type: TABLE; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE TABLE turba_objects (
+    object_id character varying(32) DEFAULT ' '::character varying NOT NULL,
+    owner_id character varying(255) DEFAULT ' '::character varying NOT NULL,
+    object_type character varying(255) DEFAULT 'Object'::character varying NOT NULL,
+    object_uid character varying(255),
+    object_members text,
+    object_name character varying(255),
+    object_alias character varying(32),
+    object_email character varying(255),
+    object_homeaddress character varying(255),
+    object_workaddress character varying(255),
+    object_homephone character varying(25),
+    object_workphone character varying(25),
+    object_cellphone character varying(25),
+    object_fax character varying(25),
+    object_title character varying(255),
+    object_company character varying(255),
+    object_notes text,
+    object_pgppublickey text,
+    object_smimepublickey text,
+    object_freebusyurl character varying(255)
+);
+
+
+ALTER TABLE public.turba_objects OWNER TO httpd;
+
+--
+-- Name: datatree_primary_idx; Type: CONSTRAINT; Schema: public; Owner: httpd; Tablespace: 
+--
+
+ALTER TABLE ONLY horde_datatree
+    ADD CONSTRAINT datatree_primary_idx PRIMARY KEY (datatree_id);
+
+
+--
+-- Name: history_primary_idx; Type: CONSTRAINT; Schema: public; Owner: httpd; Tablespace: 
+--
+
+ALTER TABLE ONLY horde_histories
+    ADD CONSTRAINT history_primary_idx PRIMARY KEY (history_id);
+
+
+--
+-- Name: kronolith_primary_idx; Type: CONSTRAINT; Schema: public; Owner: httpd; Tablespace: 
+--
+
+ALTER TABLE ONLY kronolith_events
+    ADD CONSTRAINT kronolith_primary_idx PRIMARY KEY (event_id);
+
+
+--
+-- Name: mnemo_primary_idx; Type: CONSTRAINT; Schema: public; Owner: httpd; Tablespace: 
+--
+
+ALTER TABLE ONLY mnemo_memos
+    ADD CONSTRAINT mnemo_primary_idx PRIMARY KEY (memo_owner, memo_id);
+
+
+--
+-- Name: nag_primary_idx; Type: CONSTRAINT; Schema: public; Owner: httpd; Tablespace: 
+--
+
+ALTER TABLE ONLY nag_tasks
+    ADD CONSTRAINT nag_primary_idx PRIMARY KEY (task_id);
+
+
+--
+-- Name: pref_primary_idx; Type: CONSTRAINT; Schema: public; Owner: httpd; Tablespace: 
+--
+
+ALTER TABLE ONLY horde_prefs
+    ADD CONSTRAINT pref_primary_idx PRIMARY KEY (pref_uid, pref_scope, pref_name);
+
+
+--
+-- Name: session_primary_idx; Type: CONSTRAINT; Schema: public; Owner: httpd; Tablespace: 
+--
+
+ALTER TABLE ONLY horde_sessionhandler
+    ADD CONSTRAINT session_primary_idx PRIMARY KEY (session_id);
+
+
+--
+-- Name: token_primary_idx; Type: CONSTRAINT; Schema: public; Owner: httpd; Tablespace: 
+--
+
+ALTER TABLE ONLY horde_tokens
+    ADD CONSTRAINT token_primary_idx PRIMARY KEY (token_address, token_id);
+
+
+--
+-- Name: turba_primary_idx; Type: CONSTRAINT; Schema: public; Owner: httpd; Tablespace: 
+--
+
+ALTER TABLE ONLY turba_objects
+    ADD CONSTRAINT turba_primary_idx PRIMARY KEY (object_id);
+
+
+--
+-- Name: user_primary_idx; Type: CONSTRAINT; Schema: public; Owner: httpd; Tablespace: 
+--
+
+ALTER TABLE ONLY horde_users
+    ADD CONSTRAINT user_primary_idx PRIMARY KEY (user_uid);
+
+
+--
+-- Name: vfs_primary_idx; Type: CONSTRAINT; Schema: public; Owner: httpd; Tablespace: 
+--
+
+ALTER TABLE ONLY horde_vfs
+    ADD CONSTRAINT vfs_primary_idx PRIMARY KEY (vfs_id);
+
+
+--
+-- Name: datatree_attribute_idx; Type: INDEX; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE INDEX datatree_attribute_idx ON horde_datatree_attributes USING btree (datatree_id);
+
+
+--
+-- Name: datatree_attribute_key_idx; Type: INDEX; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE INDEX datatree_attribute_key_idx ON horde_datatree_attributes USING btree (attribute_key);
+
+
+--
+-- Name: datatree_attribute_name_idx; Type: INDEX; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE INDEX datatree_attribute_name_idx ON horde_datatree_attributes USING btree (attribute_name);
+
+
+--
+-- Name: datatree_datatree_name_idx; Type: INDEX; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE INDEX datatree_datatree_name_idx ON horde_datatree USING btree (datatree_name);
+
+
+--
+-- Name: datatree_group_idx; Type: INDEX; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE INDEX datatree_group_idx ON horde_datatree USING btree (group_uid);
+
+
+--
+-- Name: datatree_serialized_idx; Type: INDEX; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE INDEX datatree_serialized_idx ON horde_datatree USING btree (datatree_serialized);
+
+
+--
+-- Name: datatree_user_idx; Type: INDEX; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE INDEX datatree_user_idx ON horde_datatree USING btree (user_uid);
+
+
+--
+-- Name: history_action_idx; Type: INDEX; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE INDEX history_action_idx ON horde_histories USING btree (history_action);
+
+
+--
+-- Name: history_ts_idx; Type: INDEX; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE INDEX history_ts_idx ON horde_histories USING btree (history_ts);
+
+
+--
+-- Name: history_uid_idx; Type: INDEX; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE INDEX history_uid_idx ON horde_histories USING btree (object_uid);
+
+
+--
+-- Name: kronolith_calendar_idx; Type: INDEX; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE INDEX kronolith_calendar_idx ON kronolith_events USING btree (calendar_id);
+
+
+--
+-- Name: kronolith_uid_idx; Type: INDEX; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE INDEX kronolith_uid_idx ON kronolith_events USING btree (event_uid);
+
+
+--
+-- Name: kronolith_vfb_email_idx; Type: INDEX; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE INDEX kronolith_vfb_email_idx ON kronolith_storage USING btree (vfb_email);
+
+
+--
+-- Name: kronolith_vfb_owner_idx; Type: INDEX; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE INDEX kronolith_vfb_owner_idx ON kronolith_storage USING btree (vfb_owner);
+
+
+--
+-- Name: mnemo_notepad_idx; Type: INDEX; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE INDEX mnemo_notepad_idx ON mnemo_memos USING btree (memo_owner);
+
+
+--
+-- Name: mnemo_uid_idx; Type: INDEX; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE INDEX mnemo_uid_idx ON mnemo_memos USING btree (memo_uid);
+
+
+--
+-- Name: nag_tasklist_idx; Type: INDEX; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE INDEX nag_tasklist_idx ON nag_tasks USING btree (task_owner);
+
+
+--
+-- Name: nag_uid_idx; Type: INDEX; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE INDEX nag_uid_idx ON nag_tasks USING btree (task_uid);
+
+
+--
+-- Name: pref_scope_idx; Type: INDEX; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE INDEX pref_scope_idx ON horde_prefs USING btree (pref_scope);
+
+
+--
+-- Name: pref_uid_idx; Type: INDEX; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE INDEX pref_uid_idx ON horde_prefs USING btree (pref_uid);
+
+
+--
+-- Name: turba_owner_idx; Type: INDEX; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE INDEX turba_owner_idx ON turba_objects USING btree (owner_id);
+
+
+--
+-- Name: vfs_name_idx; Type: INDEX; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE INDEX vfs_name_idx ON horde_vfs USING btree (vfs_name);
+
+
+--
+-- Name: vfs_path_idx; Type: INDEX; Schema: public; Owner: httpd; Tablespace: 
+--
+
+CREATE INDEX vfs_path_idx ON horde_vfs USING btree (vfs_path);
+
+
+--
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- PostgreSQL database dump complete
+--
+
