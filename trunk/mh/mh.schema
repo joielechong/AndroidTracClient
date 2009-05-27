@@ -1,0 +1,80 @@
+--
+-- PostgreSQL database dump
+--
+
+SET client_encoding = 'UNICODE';
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
+--
+
+COMMENT ON SCHEMA public IS 'Standard public schema';
+
+
+SET search_path = public, pg_catalog;
+
+--
+-- Name: plpgsql_call_handler(); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION plpgsql_call_handler() RETURNS language_handler
+    AS '$libdir/plpgsql', 'plpgsql_call_handler'
+    LANGUAGE c;
+
+
+ALTER FUNCTION public.plpgsql_call_handler() OWNER TO mfvl;
+
+--
+-- Name: plpgsql; Type: PROCEDURAL LANGUAGE; Schema: public; Owner: 
+--
+
+CREATE TRUSTED PROCEDURAL LANGUAGE plpgsql HANDLER plpgsql_call_handler;
+
+
+SET default_tablespace = '';
+
+SET default_with_oids = true;
+
+--
+-- Name: kbvlog; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE kbvlog (
+    id serial NOT NULL,
+    systeem character varying,
+    tijd timestamp without time zone,
+    bron character varying,
+    proces character varying,
+    "type" character(1),
+    bericht character varying
+);
+
+
+ALTER TABLE public.kbvlog OWNER TO mfvl;
+
+--
+-- Name: kbvlog_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY kbvlog
+    ADD CONSTRAINT kbvlog_pkey PRIMARY KEY (id);
+
+
+ALTER INDEX public.kbvlog_pkey OWNER TO mfvl;
+
+--
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- PostgreSQL database dump complete
+--
+
