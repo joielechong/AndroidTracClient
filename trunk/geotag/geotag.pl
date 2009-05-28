@@ -47,6 +47,9 @@ foreach my $file (@files) {
     my ($datum,$tijd) = split(' ',$date);
     my ($year,$month,$day) = split(':',$datum);
     my ($hour,$min,$sec) = split(':',$tijd);
+#
+#  FIXME: nu nog een handmatige correctie gaat via $correct
+#
     $sec -= 4;
     if ($sec < 0) {
 	$sec += 60;
@@ -57,6 +60,9 @@ foreach my $file (@files) {
 	$min += 60;
 	$hour--;
     }
+#    
+#  Einde FIXME
+#    
     my $isotime=sprintf("%4.4d-%2.2d-%2.2dT%2.2d:%2.2d:%2.2dZ",$year,$month,$day,$hour,$min,$sec);
     my $lat=$gpxdata{$isotime}->{'lat'};
     my $lon=$gpxdata{$isotime}->{'lon'};
