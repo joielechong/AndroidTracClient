@@ -23,7 +23,7 @@ my $result = GetOptions("gpx=s" => \$gpxfile,
 print "gpx = $gpxfile\n" if defined $gpxfile;
 print "dir = $picdir\n" if defined $picdir;
 print "correct = $correct\n" if defined $correct;
-print result = $result\n";
+print "result = $result\n";
 
 usage() unless (defined($gpxfile) and defined($picdir));
 
