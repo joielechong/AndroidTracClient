@@ -21,7 +21,9 @@ my $result = GetOptions("gpx=s" => \$gpxfile,
 			"correct=s" => \$correct);
 
 print "gpx = $gpxfile\n" if defined $gpxfile;
-			
+print "dir = $picdir\n" if defined $picdir;
+print "correct = $correct\n" if defined $correct;
+
 usage() unless (defined($gpxfile) and defined($picdir));
 
 my %gpxdata;
