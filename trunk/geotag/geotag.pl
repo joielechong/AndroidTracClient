@@ -38,6 +38,10 @@ my $ref = $xml->XMLin($gpxfile);
 foreach my $seg (@{$ref->{trk}->{trkseg}}) {
 #    print "Segment\n";
 #    print Dumper($seg);
+
+#
+# FIXME dit kan ook een enkel element zijn, waarschijnlijk ook het nivo erboven
+#
     foreach my $trkpt (@{$seg->{trkpt}}) {
 #	print "Trackpoints\n";
 #	print Dumper($trkpt);
