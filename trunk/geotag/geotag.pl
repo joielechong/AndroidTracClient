@@ -7,13 +7,22 @@ use Image::ExifTool qw(:Public);
 use POSIX qw(mktime gmtime ctime);
 use Getopt::Long;
 
-my $gpxfile = '';
-my $picdir = '';
-my $correct = '';
+my $gpxfile = undef;
+my $picdir = undef;
+my $correct = undef;
+
+sub usage {
+	print "Usage:\n   geotag.pl --gpx <gpxfile> --dir <directory containing pictures> [--correct <time correction>]\n\n";
+}
 
 my $result = GetOptions("gpx=s" => \$gpxfile,
 			"dir=s" => \$picdir,
 			"correct=s" => \$correct);
+			
+unless defined($gpxfile) and defined($picdir) {
+	usage();
+	die;
+}
 
 my %gpxdata;
 
