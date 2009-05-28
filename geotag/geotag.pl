@@ -5,14 +5,17 @@ use XML::Simple;
 use Data::Dumper;
 use Image::ExifTool qw(:Public);
 use POSIX qw(mktime gmtime ctime);
+use Getopt::Long;
 
-my $gpxfile = shift;
-my $picdir = shift;
-my $correct = shift;
+my $gpxfile = '';
+my $picdir = '';
+my $correct = '';
+
+my $result = GetOptions("gpx=s" => \$gpxfile,
+			"dir=s" => \$picdir,
+			"correct=s" => \$correct);
 
 my %gpxdata;
-
-
 
 my $xml=XML::Simple->new();
 
