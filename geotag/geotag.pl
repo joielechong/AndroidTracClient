@@ -19,6 +19,8 @@ sub usage {
 my $result = GetOptions("gpx=s" => \$gpxfile,
 			"dir=s" => \$picdir,
 			"correct=s" => \$correct);
+
+print "gpx = $gpxfile\n" if defined $gpxfile;
 			
 usage() unless (defined($gpxfile) and defined($picdir));
 
