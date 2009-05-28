@@ -20,9 +20,9 @@ my $result = GetOptions("gpx=s" => \$gpxfile,
 			"dir=s" => \$picdir,
 			"correct=s" => \$correct);
 
-print "gpx = $gpxfile\n" if defined $gpxfile;
-print "dir = $picdir\n" if defined $picdir;
-print "correct = $correct\n" if defined $correct;
+#print "gpx = $gpxfile\n" if defined $gpxfile;
+#print "dir = $picdir\n" if defined $picdir;
+#print "correct = $correct\n" if defined $correct;
 print "result = $result\n";
 
 usage() unless (defined($gpxfile) and defined($picdir));
@@ -31,17 +31,13 @@ my %gpxdata;
 
 my $xml=XML::Simple->new();
 
-my $ref = $xml->XMLin($gpxfile);
+my $ref = $xml->XMLin($gpxfile, ForceArray=>['trkseg','trkpt']);
 
 #FIXME check of wel ingelezen
 
 foreach my $seg (@{$ref->{trk}->{trkseg}}) {
 #    print "Segment\n";
 #    print Dumper($seg);
-
-#
-# FIXME dit kan ook een enkel element zijn, waarschijnlijk ook het nivo erboven
-#
     foreach my $trkpt (@{$seg->{trkpt}}) {
 #	print "Trackpoints\n";
 #	print Dumper($trkpt);
