@@ -13,16 +13,15 @@ my $correct = undef;
 
 sub usage {
 	print "Usage:\n   geotag.pl --gpx <gpxfile> --dir <directory containing pictures> [--correct <time correction>]\n\n";
+	exit(2);
 }
 
 my $result = GetOptions("gpx=s" => \$gpxfile,
 			"dir=s" => \$picdir,
 			"correct=s" => \$correct);
 			
-unless defined($gpxfile) and defined($picdir) {
-	usage();
-	die;
-}
+usage() unless (defined($gpxfile) and defined($picdir));
+
 
 my %gpxdata;
 
