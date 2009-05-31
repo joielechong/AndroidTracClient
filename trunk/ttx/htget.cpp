@@ -77,9 +77,9 @@
 int  repeat;
 int debug = 0;
 int  error = FALSE;
-char *hostname = NODE;
+char *hostname = (char*)NODE;
 char url[URLLEN] = URL;
-char *port = PORT;
+char *port = (char*)PORT;
 FILE *outfd;
 char buffer[BUFLEN];
 
@@ -160,29 +160,29 @@ int get_page()
             fprintf(stderr, "Can't connect to: %s:%s\n", hostname, port);
             return 1;
         }
-        if (sock_printf(s, "GET %s HTTP/1.0", url) < 0) {
+        if (sock_printf(s, (char*)"GET %s HTTP/1.0", url) < 0) {
             err_sock_print();
             return 1;
         }
-        if (sock_printf(s, "%s", USER_AGENT) < 0) {
+        if (sock_printf(s, (char*)"%s", USER_AGENT) < 0) {
             err_sock_print();
             return 1;
         }
-        if (sock_printf(s, "Host: %s:%s", hostname, port) < 0) {
+        if (sock_printf(s, (char*)"Host: %s:%s", hostname, port) < 0) {
             err_sock_print();
             return 1;
         }
 
-        if (sock_printf(s, "") < 0) {
+        if (sock_printf(s, (char*)"") < 0) {
             err_sock_print();
             return 1;
         }
 
         if (debug) {
-            fprintf(stderr, "GET %s HTTP/1.0\n", url);
-            fprintf(stderr, "%s\n", USER_AGENT);
-            fprintf(stderr, "Host: %s:%s", hostname, port);
-            fprintf(stderr, "\n");
+	  fprintf(stderr, (char*)"GET %s HTTP/1.0\n", url);
+            fprintf(stderr, (char*)"%s\n", USER_AGENT);
+            fprintf(stderr, (char*)"Host: %s:%s", hostname, port);
+            fprintf(stderr, (char*)"\n");
         }
 
         repeat = FALSE;
@@ -192,9 +192,9 @@ int get_page()
             strip_cr(buffer);
 
             if (debug >= 2)
-                fprintf(stderr,"Hdr:%4ld: %s\n", strlen(buffer), buffer);
+	      fprintf(stderr,"Hdr:%4ld: %s\n", (long)strlen(buffer), buffer);
             else if (debug)
-                fprintf(stderr, "Hdr:Size = %4ld\n", strlen(buffer));
+	      fprintf(stderr, "Hdr:Size = %4ld\n", (long)strlen(buffer));
 
             if (buffer[0] == 0)
                 break;  /* end of header lines */
@@ -277,7 +277,7 @@ int expand_uri(char *  buffer)
             port = d;
         }
         else
-            port = DEFAULT_PORT;
+	  port = (char *)DEFAULT_PORT;
         if (e != NULL) {
             CHECK_URL_LEN(e);
             strcpy(url, e);

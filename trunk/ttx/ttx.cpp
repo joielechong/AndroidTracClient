@@ -139,14 +139,14 @@ FILE * fout;
 
 int    do_color = 1;
 
-char *color_table[] = { "black",
-			"red", 
-			"lime", 
-			"yellow", 
-			"blue", 
-			"fuchsia", 
-			"aqua", 
-			"white", 
+const char * color_table[] = { (char *)"black",
+			       "red", 
+			       "lime", 
+			       "yellow", 
+			       "blue", 
+			       "fuchsia", 
+			       "aqua", 
+			       "white", 
 };
 # define MAXCOL 8
 #endif 
@@ -205,9 +205,9 @@ int getpage(const char * pagenum,const int subpage)
       strip_cr(buffer);
 #ifdef DEBUG
       if (debug >1)
-	fprintf(stderr, "%4ld: %s\n", strlen(buffer), buffer);
+	fprintf(stderr, "%4ld: %s\n", (long)strlen(buffer), buffer);
       else if (debug > 0)
- 	fprintf(stderr, "Size = %4ld\n", strlen(buffer));
+ 	fprintf(stderr, "Size = %4ld\n", (long)strlen(buffer));
 #endif
 
       if (in_header) {
@@ -243,7 +243,7 @@ int getpage(const char * pagenum,const int subpage)
  		port = d;
  	      }
  	      else
- 		port = "80";
+ 		port = (char*)"80";
  	      if(e != NULL) {
 		strcpy(url, e);
  		*e = 0;
@@ -383,7 +383,7 @@ void usage(void)
   printf("    -h  --help      this help screen\n");
   printf("    -L  --less      use 'less' for output to screen\n");
   printf("    -r  --raw       do not process, but dump raw page data\n");
-  printf("    -v  --version   print version informatio\n\n");
+  printf("    -v  --version   print version information\n\n");
   
   return;
   
@@ -453,11 +453,11 @@ if ( err != 0 ) {
   //  fprintf(stderr, "%s\n", ID);
   
   if (!(ttx_node = getenv("TTX_NODE")))
-    ttx_node = TTX_NODE;
+    ttx_node = (char *)TTX_NODE;
   if (!(ttx_port = getenv("TTX_PORT")))
-    ttx_port = TTX_PORT;
+    ttx_port = (char *)TTX_PORT;
   if (!(ttx_url = getenv("TTX_URL")))
-    ttx_url = TTX_URL;
+    ttx_url = (char *)TTX_URL;
 
   if (do_less) {
     fout = popen("less","w");
