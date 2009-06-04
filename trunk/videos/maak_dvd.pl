@@ -97,6 +97,7 @@ sub mkpict {
 	my $filename = "$prefix_pict_in/dvd$dvdnr-$menutype";
 	
 	my $in = GD::Image->new($filename."-in.jpg");
+	die "Kan ".$filename."-in.jpg niet openen\n" unless defined($in);
 	my $out = GD::Image->new(720,576,1);
 	my $mask = GD::Image->new(720,576,0);
 	my $high = GD::Image->new(720,576,0);
