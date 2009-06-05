@@ -2,13 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-char buffer[8192];
+#define BUFSIZE (8192)
+char buffer[BUFSIZE];
 
 int main(void)
 {
   int first    = 1;
 
-  while (gets(buffer) != NULL) {
+  while (fgets(buffer,BUFSIZE,stdin) != NULL) {
     if (strlen(buffer) == 0) {
       break;
     }
@@ -21,6 +22,6 @@ int main(void)
     }
     first = 0;
   }
-  while (gets(buffer) != NULL)
+  while (fgets(buffer,BUFSIZE,stdin) != NULL)
     puts(buffer);
 }

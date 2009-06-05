@@ -8,7 +8,7 @@ BINDIR=$(ROOTDIR)/bin
 all: convtbl skipheader
 
 skipheader: skipheader.cpp
-	$(LINK) -o skipheader skipheader.cpp 
+	$(LINK) -o skipheader skipheader.cpp -lstdc++
 
 convtbl: lex.yy.c
 	$(LINK) $(CFLAGS) -o convtbl lex.yy.c -lfl
@@ -21,4 +21,4 @@ install: all
 	install -m 755 -s skipheader $(BINDIR)
 
 clean:
-	rm -f lex.yy.c convtbl skipheader
+	rm -f lex.yy.c convtbl skipheader *.o
