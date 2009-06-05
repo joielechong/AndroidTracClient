@@ -1,4 +1,4 @@
-CFLAGS=-O2 -Wall -funsigned-char -mpentium 
+CFLAGS=-O2 -Wall -funsigned-char
 
 LINK=gcc
 
@@ -20,4 +20,5 @@ install: all
 	install -m 755 -s convtbl $(BINDIR)
 	install -m 755 -s skipheader $(BINDIR)
 
-
+clean:
+	rm -f lex.yy.c convtbl skipheader
