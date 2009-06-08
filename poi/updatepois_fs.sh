@@ -11,7 +11,7 @@ sleep 5
 
 psql -d mfvl -c "truncate pois.temp"
 
-find . -name "Flitsservice.asc" -mtime 0 -maxdepth 1 -exec ./loadpoifile.sh '{}' \;
+find . -maxdepth 1 -mtime 0 -name "Flitsservice.asc" -exec ./loadpoifile.sh '{}' \;
 
 psql -d mfvl -f - <<EOF 
 insert into pois.inputfiles (naam) select distinct filename from pois.temp where not filename in (select naam from pois.inputfiles);

@@ -12,9 +12,9 @@ sleep 5
 
 psql -c "truncate pois.temp"
 
-find . -name "*.asc" -mtime 0 -maxdepth 1 -exec ./loadpoifile.sh '{}' \;
+find . -maxdepth 1 -mtime 0 -name "*.asc" -exec ./loadpoifile.sh '{}' \;
 cd pois-Blitzer
-find . -name "*.asc" -maxdepth 2 -exec ../loadpoifile.sh '{}' \;
+find . -maxdepth 2 -name "*.asc" -exec ../loadpoifile.sh '{}' \;
 cd ..
 
 psql -f - <<EOF 
