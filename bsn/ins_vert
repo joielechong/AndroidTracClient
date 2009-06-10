@@ -1,0 +1,41 @@
+#! /bin/sh
+
+if [ -z "$1" ] ; then
+  echo "Argument 1 ontbreekt";
+  exit 1
+fi
+
+if [ -z "$2" ] ; then
+  echo "Argument 2 ontbreekt";
+  exit 1;
+fi
+
+al=`psql koersdata  -qtAc "select naam2 from vertaal where naam1='$2';"`
+if [ -n "$al" ] ; then
+  echo "$2 wordt al vertaald in $al. Doe het handmatig."
+  exit 1;
+fi
+
+id=`psql koersdata -qtAc "select id from rekening where naam='$1';"`
+if [ -z "$id" ] ; then
+  echo "$1 komt niet voor in rekening database"
+  exit 1;
+fi
+
+echo "saving data of $1"
+psql koersdata -qtAc "select * from koers where naam='$1';" |awk -f pg.bsn.awk >/tmp/ins_vert_$$.bsn
+
+echo "entering $1 --> $2 in vertaal"
+
+
+psql koersdata -qtc "insert into vertaal values ('$1', '$2');"
+
+# if [ "$2" != "-" ] ; then
+  psql koersdata -tc "update vertaal set naam2='$2' where naam2='$1';"
+# fi
+
+echo "removing $1"
+psql koersdata -tc "delete from rekening where naam='$1';"
+
+echo "inserting the data again"
+bsn2pg /tmp/ins_vert_$$.bsn
