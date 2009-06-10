@@ -10,12 +10,14 @@ if [ -z "$2" ] ; then
   exit 1;
 fi
 
+psql koersdata  -qtAc "explain select naam2 from vertaal where naam1='$2';"
 al=`psql koersdata  -qtAc "select naam2 from vertaal where naam1='$2';"`
 if [ -n "$al" ] ; then
   echo "$2 wordt al vertaald in $al. Doe het handmatig."
   exit 1;
 fi
 
+psql koersdata -qtAc "explain select id from rekening where naam='$1';"
 id=`psql koersdata -qtAc "select id from rekening where naam='$1';"`
 if [ -z "$id" ] ; then
   echo "$1 komt niet voor in rekening database"
@@ -23,19 +25,28 @@ if [ -z "$id" ] ; then
 fi
 
 echo "saving data of $1"
+psql koersdata -qtAc "explain select * from koers where naam='$1';"
 psql koersdata -qtAc "select * from koers where naam='$1';" |awk -f pg.bsn.awk >/tmp/ins_vert_$$.bsn
+
+echo "rename where possible"
+psql -d koersdata -tc "explain update koersid set id=c.id from rekening b, rekening c where koersid.id=b.id and b.naam='$1' and c.naam='$2' and not koersid.datum in (select d.datum from koersid d where d.id=c.id);"
+psql -d koersdata -tc "update koersid set id=c.id from rekening b, rekening c where koersid.id=b.id and b.naam='$1' and c.naam='$2' and not koersid.datum in (select d.datum from koersid d where d.id=c.id);"
+
 
 echo "entering $1 --> $2 in vertaal"
 
-
+psql koersdata -qtc "explain insert into vertaal values ('$1', '$2');"
 psql koersdata -qtc "insert into vertaal values ('$1', '$2');"
 
 # if [ "$2" != "-" ] ; then
+  psql koersdata -tc "explain update vertaal set naam2='$2' where naam2='$1';"
   psql koersdata -tc "update vertaal set naam2='$2' where naam2='$1';"
 # fi
 
 echo "removing $1"
+psql koersdata -tc "explain delete from rekening where naam='$1';"
 psql koersdata -tc "delete from rekening where naam='$1';"
 
-echo "inserting the data again"
-bsn2pg /tmp/ins_vert_$$.bsn
+# echo "inserting the data again"
+# bsn2pg /tmp/ins_vert_$$.bsn
+
