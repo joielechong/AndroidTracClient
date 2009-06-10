@@ -38,9 +38,9 @@ $overz->set_header('&C&"Bold"&A');
 $overz->set_landscape();
 
 my $dbh = DBI->connect("dbi:Pg:dbname=httpd");
-my $sth1 = $dbh->prepare("SELECT DISTINCT categorie FROM giro ORDER BY categorie");
+my $sth1 = $dbh->prepare("SELECT DISTINCT categorie FROM giro WHERE NOT categorie IN ('SPAREN','HEENENWEER') ORDER BY categorie");
 my $sth2 = $dbh->prepare("SELECT min(datum) AS start,max(datum) AS eind from giro");
-my $sth3 = $dbh->prepare("SELECT * from giro_maand");
+my $sth3 = $dbh->prepare("SELECT * from giro_maand WHERE NOT categorie IN ('SPAREN','HEENENWEER')");
 
 $sth1->execute();
 my $cattemp = $sth1->fetchall_arrayref();
