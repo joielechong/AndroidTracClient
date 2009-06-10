@@ -26,6 +26,11 @@ $wrapbold->set_text_wrap();
 $wrapbold->set_bold();
 my $center=$workbook->add_format();
 $center->set_align("center");
+my $num=$workbook->add_format();
+$num->set_num_format("$#,##0.00");
+my $numbold=$workbook->add_format();
+$numbold->set_num_format("$#,##0.00");
+$numbold->set_bold();
 
 my $overz = $workbook->add_worksheet("Overzicht");
 $overz->set_header('&C&"Bold"&A');
@@ -59,10 +64,10 @@ $overz->write(0,0,"Jaar",$centerbold);
 foreach my $cat (sort @categories) {
 	$cols{$cat} = $colptr;
 	$overz->write(0,$colptr,$cat,$centerbold);
-	my $celstr = xl_rowcol_to_cell(1,$col);  
-	my $celend = xl_rowcol_to_cell($eindjaar-$startjaar+1,$col);  
+	my $celstr = xl_rowcol_to_cell(1,$colptr);  
+	my $celend = xl_rowcol_to_cell($eindjaar-$startjaar+1,$colptr);  
 	my $formula=("=SUM($celstr:$celend)");
-	$overz->write($eindjaar-$startjaar+2,$colptr++,$formula,$bold);
+	$overz->write($eindjaar-$startjaar+2,$colptr++,$formula,$numbold);
 }
 
 for my $jaar ($startjaar..$eindjaar) {
@@ -84,7 +89,7 @@ for my $jaar ($startjaar..$eindjaar) {
 		my $celstr = xl_rowcol_to_cell(1,$col);  
 		my $celend = xl_rowcol_to_cell(12,$col);  
 		my $formula=("=SUM($celstr:$celend)");
-		$ws->write(13,$col++,$formula,$bold);
+		$ws->write(13,$col++,$formula,$numbold);
 	}
 }
 
@@ -113,7 +118,7 @@ foreach my $key (sort keys %db) {
 	foreach my $cat (sort @categories) {
 		my $col=$cols{$cat};
 		my $bedrag = $db{$key}->{$cat};
-		$ws->write($row,$col++,$bedrag) unless (!defined($bedrag) or ($bedrag == 0));
+		$ws->write($row,$col++,$bedrag,$num) unless (!defined($bedrag) or ($bedrag == 0));
 	}	
 }
 
