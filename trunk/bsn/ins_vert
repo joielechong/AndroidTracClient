@@ -1,52 +1,62 @@
-#! /bin/sh
+#! /usr/bin/perl -w
 
-if [ -z "$1" ] ; then
-  echo "Argument 1 ontbreekt";
-  exit 1
-fi
+use strict;
+use Pg;
 
-if [ -z "$2" ] ; then
-  echo "Argument 2 ontbreekt";
-  exit 1;
-fi
+sub SQLexec {
+    my $conn=shift;
+    my $cmd = shift;
 
-psql koersdata  -qtAc "explain select naam2 from vertaal where naam1='$2';"
-al=`psql koersdata  -qtAc "select naam2 from vertaal where naam1='$2';"`
-if [ -n "$al" ] ; then
-  echo "$2 wordt al vertaald in $al. Doe het handmatig."
-  exit 1;
-fi
+    print "$cmd\n";
+    return $conn->exec($cmd);
+}
 
-psql koersdata -qtAc "explain select id from rekening where naam='$1';"
-id=`psql koersdata -qtAc "select id from rekening where naam='$1';"`
-if [ -z "$id" ] ; then
-  echo "$1 komt niet voor in rekening database"
-  exit 1;
-fi
+my $arg1=shift;
+my $arg2=shift;
+my @row;
+my @maand=("JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC");
 
-echo "saving data of $1"
-psql koersdata -qtAc "explain select * from koers where naam='$1';"
-psql koersdata -qtAc "select * from koers where naam='$1';" |awk -f pg.bsn.awk >/tmp/ins_vert_$$.bsn
+die "Argument 1 ontbreekt\n" unless $arg1;
+die "Argument 2 ontbreekt\n" unless $arg2;
 
-echo "rename where possible"
-psql -d koersdata -tc "explain update koersid set id=c.id from rekening b, rekening c where koersid.id=b.id and b.naam='$1' and c.naam='$2' and not koersid.datum in (select d.datum from koersid d where d.id=c.id);"
-psql -d koersdata -tc "update koersid set id=c.id from rekening b, rekening c where koersid.id=b.id and b.naam='$1' and c.naam='$2' and not koersid.datum in (select d.datum from koersid d where d.id=c.id);"
+my $conn = Pg::connectdb("dbname=koersdata");
 
+my $result=SQLexec($conn,"select naam2 from vertaal where naam1='$arg2';");
+if ($result->ntuples > 0) {
+    @row=$result->fetchrow();
+    my $x = $row[0];
+    die "$arg2 wordt al vertaald in $x. Doe het handmatig\n";
+}
 
-echo "entering $1 --> $2 in vertaal"
+$result=SQLexec($conn,"select id from rekening where naam='$arg1';");
+die "$arg1 komt niet voor in rekening database\n" if ($result->ntuples ==0);
+@row=$result->fetchrow();
+my $id1=$row[0];
 
-psql koersdata -qtc "explain insert into vertaal values ('$1', '$2');"
-psql koersdata -qtc "insert into vertaal values ('$1', '$2');"
+$result=SQLexec($conn,"select id from rekening where naam='$arg2';");
+if ($result->ntuples == 0) {
+    SQLexec($conn,"insert into rekening (naam) values ('$arg2');");
+    $result=SQLexec($conn,"select id from rekening where naam='$arg2';");
+}
+@row=$result->fetchrow();
+my $id2=$row[0];
 
-# if [ "$2" != "-" ] ; then
-  psql koersdata -tc "explain update vertaal set naam2='$2' where naam2='$1';"
-  psql koersdata -tc "update vertaal set naam2='$2' where naam2='$1';"
-# fi
+$result=SQLexec($conn,"select naam,datum,volume,open,hoog,laag,slot from koers where naam='$arg1';");
+if ($result->ntuples > 0) {
+    print $result->ntuples," rijen in tabel\n";
+    open UIT,">/tmp/iv$$.bsn" or die "Kan uitvoer /tmp/iv$$.bsn niet openen\n";
+    while (@row=$result->fetchrow()) {
+#	print join(" ",@row),"\n";
+	my ($jaar,$maand,$dag)=split("-",$row[1]);
+	printf UIT "0/1/%2.2d-%s-%2.2d\r\n",$dag,$maand[$maand-1],$jaar%100;
+	printf UIT "9|30|%s|%d|%.2f|%.2f|%.2f|%.2f\r\n",$row[0],$row[2],$row[3],$row[4],$row[5],$row[6];
+    }
+    close UIT;
 
-echo "removing $1"
-psql koersdata -tc "explain delete from rekening where naam='$1';"
-psql koersdata -tc "delete from rekening where naam='$1';"
+    $result=SQLexec($conn,"update koersid set id=$id2 where id=$id1 and not datum in (select d.datum from koersid d where d.id=$id2);");
+    print $result->cmdTuples," rijen aangepast\n";
+}
 
-# echo "inserting the data again"
-# bsn2pg /tmp/ins_vert_$$.bsn
-
+SQLexec($conn,"insert into vertaal values ('$arg1','$arg2');");
+SQLexec($conn,"update vertaal set naam2='$arg2' where naam2='$arg1';");
+SQLexec($conn,"delete from rekening where naam='$arg1'");
