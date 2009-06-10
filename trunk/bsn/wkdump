@@ -1,0 +1,13 @@
+#! /bin/sh
+
+PATH=$PATH:/usr/local/pgsql/bin
+
+if [ -z "$1" ] ; then
+  start=`psql koersdata -qAtc "select date(now()) - 7;"`
+else
+  start=$1
+fi
+
+echo $start
+
+psql koersdata -qAtc "select * from koers where datum>'$start' order by datum,naam;" | awk -f $HOME/bsn/src/pg.bsn.awk >/temp/bsn-files/week.bsn

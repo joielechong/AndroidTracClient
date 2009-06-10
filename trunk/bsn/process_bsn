@@ -1,0 +1,10 @@
+#! /bin/sh
+
+cd $HOME/bsn/src
+
+for i in $HOME/bsn/data/*.[bv]sn ; do
+  if [ -f "$i" ]; then
+    $HOME/bsn/src/bsn2pg "$i"
+    mv "$i" $HOME/bsn/data/done
+  fi
+done
