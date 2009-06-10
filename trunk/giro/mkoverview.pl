@@ -6,6 +6,7 @@ use Data::Dumper;
 use Spreadsheet::WriteExcel;
 
 my $workbook = Spreadsheet::WriteExcel->new('overview.xls');
+my %sheets;
 
 my $bold=$workbook->add_format()->set_bold();
 my $centerbold=$workbook->add_format()->set_bold()->set_align("center");
@@ -57,6 +58,7 @@ for (my $jaar=$startjaar;$jaar<=$eindjaar;$jaar++) {
 		$db{$jaar}->{$cat}=0;
 	}
 	my $ws = $workbook->add_worksheet($jaar);
+	$sheets{$jaar} = $ws;
 	$overz->write($jaar+1-$startjaar,0,$jaar);
 	$ws->write(0,0,"Maand");
 	for (my $maand=1;$maand < 13; $maand++) {
@@ -87,7 +89,7 @@ foreach my $key (sort keys %db) {
 	} else {
 		my $jaar = int($key/100);
 		my $maand = $key - 100*$jaar;
-		$ws = $sheets($key);
+		$ws = $sheets($jaar);
 		$row = $maand;
 	}
 	my $col=1;
