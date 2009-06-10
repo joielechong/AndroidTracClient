@@ -67,6 +67,8 @@ $center->set_align("center");
 
 exit();
 
+my $xmltree;
+
 $overz->set_header('&C&"Bold"&A');
 $overz->set_footer('&L&D&R&P/&N');
 $overz->set_landscape();
