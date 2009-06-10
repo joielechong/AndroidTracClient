@@ -71,6 +71,7 @@ foreach my $cat (sort @categories) {
 }
 
 for my $jaar ($startjaar..$eindjaar) {
+print "$jaar\r";
 	foreach my $cat (@categories) {
 		$db{$jaar}->{$cat}=0;
 	}
@@ -95,6 +96,7 @@ for my $jaar ($startjaar..$eindjaar) {
 
 foreach my $m (@$data) {
 	my $maand=$m->[0];
+	print "$m\r";
 	my $jaar = int($maand/100);
 	my $cat = $m->[1];
 	my $bedrag = $m->[2];
@@ -121,5 +123,5 @@ foreach my $key (sort keys %db) {
 		$ws->write($row,$col++,$bedrag,$num) unless (!defined($bedrag) or ($bedrag == 0));
 	}	
 }
-
+print "\n";
 exit();
