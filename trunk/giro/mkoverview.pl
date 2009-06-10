@@ -108,6 +108,7 @@ foreach my $m (@$data) {
 foreach my $key (sort keys %db) {
 	my $ws;
 	my $row;
+	print "$key\r";
 	if ($key < 10000) {
 		$ws = $overz;
 		$row = $key - $startjaar + 1;
