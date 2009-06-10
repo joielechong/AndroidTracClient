@@ -61,6 +61,7 @@ my %cols;
 
 my $colptr=1;
 $overz->write(0,0,"Jaar",$centerbold);
+print STDERR "Overz\r";
 foreach my $cat (sort @categories) {
 	$cols{$cat} = $colptr;
 	$overz->write(0,$colptr,$cat,$centerbold);
