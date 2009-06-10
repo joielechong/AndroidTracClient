@@ -100,7 +100,7 @@ foreach my $key (sort keys %db) {
 	my $col=1;
 	foreach my $cat (sort @categories) {
 		my $bedrag = $db{$key}->{$cat};
-		$ws->write($row,$col++,$bedrag) unless $bedrag == 0;
+		$ws->write($row,$col++,$bedrag) unless (!defined($bedrag) or ($bedrag == 0));
 	}	
 }
 
