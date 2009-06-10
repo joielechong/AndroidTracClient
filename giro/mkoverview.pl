@@ -10,11 +10,16 @@ my $sth1 = $dbh->prepare("SELECT DISTINCT categorie FROM giro");
 my $sth2 = $dbh->prepare("SELECT min(datum) AS start,max(datum) AS eind from giro");
 
 $sth1->execute();
-my $categories = $sth1->fetchall_arrayref();
+my $cattemp = $sth1->fetchall_arrayref();
 $sth2->execute();
-my ($start,$eind) = $sth2->fetchrow_arrray();
+my ($start,$eind) = $sth2->fetchrow_array();
 
-print Dumper($categories);
+my @categories;
+for each my $cat (@$cattemp) {
+	push @categories,$cat->[0];
+}
+
+print Dumper(\@categories);
 print "$start $eind\n";
 exit();
 
