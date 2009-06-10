@@ -52,7 +52,7 @@ my $eindjaar =int($eind / 10000);
 $sth3->execute();
 my $data=$sth3->fetchall_arrayref();
 my %db;
-my $cols;
+my %cols;
 
 my $colptr=1;
 $overz->write(0,0,"Jaar",$centerbold);
