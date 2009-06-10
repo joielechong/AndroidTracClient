@@ -9,7 +9,8 @@ my $workbook = Spreadsheet::WriteExcel->new('overview.xls');
 my %sheets;
 
 my $bold=$workbook->add_format()->set_bold();
-my $centerbold=$workbook->add_format()->set_bold()->set_align("center");
+my $centerbold=$workbook->add_format()->set_bold();
+$centerbold->set_align("center");
 my $italic=$workbook->add_format();
 $italic->set_italic();
 my $boldbig=$workbook->add_format();
