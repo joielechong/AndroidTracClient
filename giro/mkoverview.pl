@@ -69,7 +69,7 @@ for my $jaar ($startjaar..$eindjaar) {
 	$overz->write($jaar+1-$startjaar,0,$jaar,$bold);
 	$ws->set_header('&C&"Bold"&A');
 	$ws->write(0,0,"Maand",$centerbold);
-	for my (1..12) {
+	for my $maand (1..12) {
 		$ws->write($maand,0,$maand,$bold);
 	}
 	my $col=1;
