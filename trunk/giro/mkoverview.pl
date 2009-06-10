@@ -8,8 +8,10 @@ use Spreadsheet::WriteExcel;
 my $workbook = Spreadsheet::WriteExcel->new('overview.xls');
 my %sheets;
 
-my $bold=$workbook->add_format()->set_bold();
-my $centerbold=$workbook->add_format()->set_bold();
+my $bold=$workbook->add_format();
+$bold->set_bold();
+my $centerbold=$workbook->add_format();
+$centerbold->set_bold();
 $centerbold->set_align("center");
 my $italic=$workbook->add_format();
 $italic->set_italic();
