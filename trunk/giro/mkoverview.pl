@@ -84,12 +84,12 @@ foreach my $key (sort keys %db) {
 	my $ws;
 	my $row;
 	if ($key < 10000) {
-		$ws = $sheets("Overzicht");
+		$ws = $sheets{"Overzicht"};
 		$row = $key - $startjaar + 1;
 	} else {
 		my $jaar = int($key/100);
 		my $maand = $key - 100*$jaar;
-		$ws = $sheets($jaar);
+		$ws = $sheets{$jaar};
 		$row = $maand;
 	}
 	my $col=1;
@@ -116,7 +116,6 @@ $overz->set_column(2,2,40);
 
 
 my %rowptrs;
-my %sheets;
 my %subjects;
 my $uc;
 my $dep;
