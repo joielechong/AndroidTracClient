@@ -56,6 +56,7 @@ my %db;
 my $colptr=1;
 $overz->write(0,0,"Jaar",$centerbold);
 foreach my $cat (sort @categories) {
+	$cat->{Kolomptr} = $col;
 	$overz->write(0,$colptr++,$cat,$centerbold);
 }
 
@@ -72,8 +73,8 @@ for my $jaar ($startjaar..$eindjaar) {
 	for my $maand (1..12) {
 		$ws->write($maand,0,$maand,$bold);
 	}
-	my $col=1;
 	foreach my $cat (sort @categories) {
+		$col=$cat->{Kolomptr};
 		$ws->write(0,$col,$cat,$centerbold);
 		my $celstr = xl_rowcol_to_cell(1,$col);  
 		my $celend = xl_rowcol_to_cell(12,$col);  
@@ -104,8 +105,8 @@ foreach my $key (sort keys %db) {
 		$ws = $sheets{$jaar};
 		$row = $maand;
 	}
-	my $col=1;
 	foreach my $cat (sort @categories) {
+		$col=$cat->{Kolomptr};
 		my $bedrag = $db{$key}->{$cat};
 		$ws->write($row,$col++,$bedrag) unless (!defined($bedrag) or ($bedrag == 0));
 	}	
