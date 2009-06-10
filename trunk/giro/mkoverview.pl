@@ -33,6 +33,7 @@ $numbold->set_num_format('#,##0.00');
 $numbold->set_bold();
 
 my $overz = $workbook->add_worksheet("Overzicht");
+$overz->freeze_panes(1,1);
 $overz->set_header('&C&"Bold"&A');
 $overz->set_landscape();
 
@@ -77,6 +78,7 @@ for my $jaar ($startjaar..$eindjaar) {
 		$db{$jaar}->{$cat}=0;
 	}
 	my $ws = $workbook->add_worksheet($jaar);
+	$ws->freeze_panes(1,1);
 	$ws->set_landscape();
 	$sheets{$jaar} = $ws;
 	$overz->write($jaar+1-$startjaar,0,$jaar,$bold);
