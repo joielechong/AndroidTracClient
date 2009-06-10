@@ -27,9 +27,9 @@ $wrapbold->set_bold();
 my $center=$workbook->add_format();
 $center->set_align("center");
 my $num=$workbook->add_format();
-$num->set_num_format("$#,##0.00");
+$num->set_num_format("#,##0.00");
 my $numbold=$workbook->add_format();
-$numbold->set_num_format("$#,##0.00");
+$numbold->set_num_format("#,##0.00");
 $numbold->set_bold();
 
 my $overz = $workbook->add_worksheet("Overzicht");
