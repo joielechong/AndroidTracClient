@@ -51,7 +51,7 @@ my $data=$sth3->fetchall_arrayref();
 my %db;
 
 my $colptr=1;
-$overz->ws(0,0,"Jaar");
+$overz->write(0,0,"Jaar");
 foreach my $cat (sort @categories) {
 	$overz->write(0,$colptr++,$cat);
 }
@@ -81,13 +81,13 @@ foreach my $m (@$data) {
 	$db{$maand}->{$cat}=$bedrag;
 	$db{$jaar}->{$cat} += $bedrag;
 }
-print Dumper(\%db);
+#print Dumper(\%db);
 
 foreach my $key (sort keys %db) {
 	my $ws;
 	my $row;
 	if ($key < 10000) {
-		$ws = $sheets{"Overzicht"};
+		$ws = $overz;
 		$row = $key - $startjaar + 1;
 	} else {
 		my $jaar = int($key/100);
@@ -97,7 +97,7 @@ foreach my $key (sort keys %db) {
 	}
 	my $col=1;
 	foreach my $cat (sort @categories) {
-		my $bedrag = $cat->{$cat};
+		my $bedrag = $db{$key}->{$cat};
 		$ws->write($row,$col++,$bedrag);
 	}	
 }
