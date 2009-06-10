@@ -60,14 +60,17 @@ my $data=$sth3->fetchall_arrayref();
 my %db;
 my %cols;
 
-my $colptr=1;
 $overz->write(0,0,"Jaar",$centerbold);
 print STDERR "Overz     \r";
-$overz->write(0,$colptr,"Totaal",$centerbold);
-my $celstr = xl_rowcol_to_cell(1,$colptr);  
-my $celend = xl_rowcol_to_cell($eindjaar-$startjaar+1,$colptr);  
+
+$overz->write(0,1,"Totaal",$centerbold);
+my $celstr = xl_rowcol_to_cell(1,1);  
+my $celend = xl_rowcol_to_cell($eindjaar-$startjaar+1,1);  
 my $formula=("=SUM($celstr:$celend)");
-$overz->write($eindjaar-$startjaar+2,$colptr++,$formula,$numbold);
+$overz->write($eindjaar-$startjaar+2,1,$formula,$numbold);
+
+my $colptr=2;
+
 foreach my $cat (sort @categories) {
 	$cols{$cat} = $colptr;
 	$overz->write(0,$colptr,$cat,$centerbold);
@@ -82,10 +85,10 @@ for my $jaar ($startjaar..$eindjaar) {
 	foreach my $cat (@categories) {
 		$db{$jaar}->{$cat}=0;
 	}
-	$celstr = xl_rowcol_to_cell($eindjaar-$startjaar+1,2);  
-	$celend = xl_rowcol_to_cell($eindjaar-$startjaar+1,$colptr-1);  
+	$celstr = xl_rowcol_to_cell($jaar-$startjaar+1,2);  
+	$celend = xl_rowcol_to_cell($jaar-$startjaar+1,$colptr-1);  
 	$formula=("=SUM($celstr:$celend)");
-	$overz->write($eindjaar-$startjaar+1,1,$formula,$numbold);
+	$overz->write($jaar-$startjaar+1,1,$formula,$num);
 	my $ws = $workbook->add_worksheet($jaar);
 	$ws->freeze_panes(1,1);
 	$ws->set_landscape();
