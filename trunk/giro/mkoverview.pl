@@ -96,7 +96,7 @@ print "$jaar\r";
 
 foreach my $m (@$data) {
 	my $maand=$m->[0];
-	print "$m\r";
+	print "$maand\r";
 	my $jaar = int($maand/100);
 	my $cat = $m->[1];
 	my $bedrag = $m->[2];
