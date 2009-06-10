@@ -4,6 +4,7 @@ use strict;
 use DBI;
 use Data::Dumper;
 use Spreadsheet::WriteExcel;
+use Spreadsheet::WriteExcel::Utility;
 
 my $workbook = Spreadsheet::WriteExcel->new('overview.xls');
 my %sheets;
@@ -28,6 +29,7 @@ $center->set_align("center");
 
 my $overz = $workbook->add_worksheet("Overzicht");
 $overz->set_header('&C&"Bold"&A');
+$overz->set_landscape();
 
 my $dbh = DBI->connect("dbi:Pg:dbname=httpd");
 my $sth1 = $dbh->prepare("SELECT DISTINCT categorie FROM giro ORDER BY categorie");
@@ -52,26 +54,31 @@ my $data=$sth3->fetchall_arrayref();
 my %db;
 
 my $colptr=1;
-$overz->write(0,0,"Jaar");
+$overz->write(0,0,"Jaar",$centerbold);
 foreach my $cat (sort @categories) {
-	$overz->write(0,$colptr++,$cat);
+	$overz->write(0,$colptr++,$cat,$centerbold);
 }
 
-for (my $jaar=$startjaar;$jaar<=$eindjaar;$jaar++) {
+for my $jaar ($startjaar..$eindjaar) {
 	foreach my $cat (@categories) {
 		$db{$jaar}->{$cat}=0;
 	}
 	my $ws = $workbook->add_worksheet($jaar);
+	$ws->set_landscape();
 	$sheets{$jaar} = $ws;
-	$overz->write($jaar+1-$startjaar,0,$jaar);
+	$overz->write($jaar+1-$startjaar,0,$jaar,$bold);
 	$ws->set_header('&C&"Bold"&A');
-	$ws->write(0,0,"Maand");
-	for (my $maand=1;$maand < 13; $maand++) {
-		$ws->write($maand,0,$maand);
+	$ws->write(0,0,"Maand",$centerbold);
+	for my (1..12) {
+		$ws->write($maand,0,$maand,$bold);
 	}
 	my $col=1;
 	foreach my $cat (sort @categories) {
-		$ws->write(0,$col++,$cat);
+		$ws->write(0,$col,$cat,$centerbold);
+		my $celstr = xl_rowcol_to_cell(1,$col);  
+		my $celend = xl_rowcol_to_cell(12,$col);  
+		my $formula=("=SUM($celstr:$celend)");
+		$ws->write(13,$col++,$formula,$bold);
 	}
 }
 
