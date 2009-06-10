@@ -29,11 +29,21 @@ my $eindjaar =int($eind / 10000);
 $sth3->execute();
 my $data=$sth3->fetchall_arrayref();
 my %db;
+
 for (my $jaar=$startjaar;$jaar<=$eindjaar;$jaar++) {
 	foreach my $cat (@categories) {
 		$db{$jaar}->{$cat}=0;
 	}
-	$workbook->add_worksheet($jaar);
+	my $ws = $workbook->add_worksheet($jaar);
+	$overz->write($jaar+2-$startjaar,0,$jaar);
+	$ws->write(0,0,"Maand");
+	for (my $maand=1;$maand < 13; $maand++) {
+		$ws->write($maand,0,$maand);
+	}
+	my $col=1;
+	foreach my $cat (sort @categories) {
+		$ws->write(0,$col++,$cat);
+	}
 }
 
 foreach my $m (@$data) {
