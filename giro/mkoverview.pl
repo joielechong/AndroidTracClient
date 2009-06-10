@@ -6,8 +6,9 @@ use Data::Dumper;
 use Spreadsheet::WriteExcel;
 
 my $dbh = DBI->connect("dbi:Pg:dbname=httpd");
-my $sth1 = $dbh->prepare("SELECT DISTINCT categorie FROM giro");
+my $sth1 = $dbh->prepare("SELECT DISTINCT categorie FROM giro ORDER BY categorie");
 my $sth2 = $dbh->prepare("SELECT min(datum) AS start,max(datum) AS eind from giro");
+my $sth3 = $dbh->prepare("SELECT * from giro_maand");
 
 $sth1->execute();
 my $cattemp = $sth1->fetchall_arrayref();
@@ -15,12 +16,17 @@ $sth2->execute();
 my ($start,$eind) = $sth2->fetchrow_array();
 
 my @categories;
-for each my $cat (@$cattemp) {
+foreach my $cat (@$cattemp) {
 	push @categories,$cat->[0];
 }
 
-print Dumper(\@categories);
-print "$start $eind\n";
+my $startjaar=$start / 10000;
+my $eindjaar =$eind / 10000;
+
+$sth3->execute();
+my $data=$sth3->fetchall_arrayref();
+print Dumper($data);
+
 exit();
 
 my $workbook = Spreadsheet::WriteExcel->new('overview.xls');
