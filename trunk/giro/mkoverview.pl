@@ -27,6 +27,7 @@ my $center=$workbook->add_format();
 $center->set_align("center");
 
 my $overz = $workbook->add_worksheet("Overzicht");
+$overz->set_header('&C&"Bold"&A');
 
 my $dbh = DBI->connect("dbi:Pg:dbname=httpd");
 my $sth1 = $dbh->prepare("SELECT DISTINCT categorie FROM giro ORDER BY categorie");
@@ -63,6 +64,7 @@ for (my $jaar=$startjaar;$jaar<=$eindjaar;$jaar++) {
 	my $ws = $workbook->add_worksheet($jaar);
 	$sheets{$jaar} = $ws;
 	$overz->write($jaar+1-$startjaar,0,$jaar);
+	$ws->set_header('&C&"Bold"&A');
 	$ws->write(0,0,"Maand");
 	for (my $maand=1;$maand < 13; $maand++) {
 		$ws->write($maand,0,$maand);
@@ -98,7 +100,7 @@ foreach my $key (sort keys %db) {
 	my $col=1;
 	foreach my $cat (sort @categories) {
 		my $bedrag = $db{$key}->{$cat};
-		$ws->write($row,$col++,$bedrag);
+		$ws->write($row,$col++,$bedrag) unless $bedrag == 0;
 	}	
 }
 
