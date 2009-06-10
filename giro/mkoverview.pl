@@ -108,7 +108,7 @@ for my $jaar ($startjaar..$eindjaar) {
 		$celstr = xl_rowcol_to_cell($maand,2);  
 		$celend = xl_rowcol_to_cell($maand,$colptr-1);  
 		$formula=("=SUM($celstr:$celend)");
-		$overz->write($maand,1,$formula,$numbold);
+		$ws->write($maand,1,$formula,$numbold);
 	}
 	foreach my $cat (sort @categories) {
 		my $col=$cols{$cat};
