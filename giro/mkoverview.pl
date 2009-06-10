@@ -52,11 +52,12 @@ my $eindjaar =int($eind / 10000);
 $sth3->execute();
 my $data=$sth3->fetchall_arrayref();
 my %db;
+my $cols;
 
 my $colptr=1;
 $overz->write(0,0,"Jaar",$centerbold);
 foreach my $cat (sort @categories) {
-	$cat->{Kolomptr} = $colptr;
+	$cols{$cat} = $colptr;
 	$overz->write(0,$colptr++,$cat,$centerbold);
 }
 
@@ -74,7 +75,7 @@ for my $jaar ($startjaar..$eindjaar) {
 		$ws->write($maand,0,$maand,$bold);
 	}
 	foreach my $cat (sort @categories) {
-		my $col=$cat->{Kolomptr};
+		my $col=$cols{$cat};
 		$ws->write(0,$col,$cat,$centerbold);
 		my $celstr = xl_rowcol_to_cell(1,$col);  
 		my $celend = xl_rowcol_to_cell(12,$col);  
@@ -106,7 +107,7 @@ foreach my $key (sort keys %db) {
 		$row = $maand;
 	}
 	foreach my $cat (sort @categories) {
-		my $col=$cat->{Kolomptr};
+		my $col=$cols{$cat};
 		my $bedrag = $db{$key}->{$cat};
 		$ws->write($row,$col++,$bedrag) unless (!defined($bedrag) or ($bedrag == 0));
 	}	
