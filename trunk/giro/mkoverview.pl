@@ -25,7 +25,21 @@ my $eindjaar =$eind / 10000;
 
 $sth3->execute();
 my $data=$sth3->fetchall_arrayref();
-print Dumper($data);
+my %db
+for (my $jaar=$startjaar;$jaar<=$eindjaar;$jaar++) {
+	for my $cat (@categories) {
+		$db{$jaar}->{$cat}=0;
+	}
+}
+foreach my $m (@$data) {
+	my $maand=$m->[0];
+	my $jaar = $maand/100;
+	my $cat = $m->[1];
+	my $bedrag = $m->[2];
+	$db{$maand}->{$cat}=$bedrag;
+	$db{$jaar}->{$cat} += $bedrag;
+}
+print Dumper(\%db);
 
 exit();
 
