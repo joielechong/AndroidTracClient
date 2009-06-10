@@ -6,6 +6,22 @@ use Data::Dumper;
 use Spreadsheet::WriteExcel;
 
 my $workbook = Spreadsheet::WriteExcel->new('overview.xls');
+
+my $bold=$workbook->add_format()->set_bold();
+my $centerbold=$workbook->add_format()->set_bold()->set_align("center");
+my $italic=$workbook->add_format();
+$italic->set_italic();
+my $boldbig=$workbook->add_format();
+$boldbig->set_bold();
+$boldbig->set_size(14);
+my $wrap=$workbook->add_format();
+$wrap->set_text_wrap();
+my $wrapbold=$workbook->add_format();
+$wrapbold->set_text_wrap();
+$wrapbold->set_bold();
+my $center=$workbook->add_format();
+$center->set_align("center");
+
 my $overz = $workbook->add_worksheet("Overzicht");
 
 my $dbh = DBI->connect("dbi:Pg:dbname=httpd");
@@ -30,12 +46,18 @@ $sth3->execute();
 my $data=$sth3->fetchall_arrayref();
 my %db;
 
+my $colptr=1;
+$overz->ws(0,0,"Jaar");
+foreach my $cat (sort @categories) {
+	$overz->write(0,$colptr++,$cat);
+}
+
 for (my $jaar=$startjaar;$jaar<=$eindjaar;$jaar++) {
 	foreach my $cat (@categories) {
 		$db{$jaar}->{$cat}=0;
 	}
 	my $ws = $workbook->add_worksheet($jaar);
-	$overz->write($jaar+2-$startjaar,0,$jaar);
+	$overz->write($jaar+1-$startjaar,0,$jaar);
 	$ws->write(0,0,"Maand");
 	for (my $maand=1;$maand < 13; $maand++) {
 		$ws->write($maand,0,$maand);
@@ -56,24 +78,24 @@ foreach my $m (@$data) {
 }
 print Dumper(\%db);
 
-my $bold=$workbook->add_format();
-$bold->set_bold();
-my $centerbold=$workbook->add_format();
-$centerbold->set_bold();
-$centerbold->set_align("center");
-my $italic=$workbook->add_format();
-$italic->set_italic();
-my $boldbig=$workbook->add_format();
-$boldbig->set_bold();
-$boldbig->set_size(14);
-my $wrap=$workbook->add_format();
-$wrap->set_text_wrap();
-my $wrapbold=$workbook->add_format();
-$wrapbold->set_text_wrap();
-$wrapbold->set_bold();
-my $center=$workbook->add_format();
-$center->set_align("center");
-
+foreach my $key (sort keys %db) {
+	my $ws;
+	my $row;
+	if ($key < 10000) {
+		$ws = $sheets("Overzicht");
+		$row = $key - $startjaar + 1;
+	} else {
+		my $jaar = int($key/100);
+		my $maand = $key - 100*$jaar;
+		$ws = $sheets($key);
+		$row = $maand;
+	}
+	my $col=1;
+	foreach my $cat (sort @categories) {
+		my $bedrag = $cat->{$cat};
+		$ws->write($row,$col++,$bedrag);
+	}	
+}
 
 exit();
 
