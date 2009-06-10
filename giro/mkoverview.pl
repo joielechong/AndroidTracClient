@@ -5,6 +5,9 @@ use DBI;
 use Data::Dumper;
 use Spreadsheet::WriteExcel;
 
+my $workbook = Spreadsheet::WriteExcel->new('overview.xls');
+my $overz = $workbook->add_worksheet("Overzicht");
+
 my $dbh = DBI->connect("dbi:Pg:dbname=httpd");
 my $sth1 = $dbh->prepare("SELECT DISTINCT categorie FROM giro ORDER BY categorie");
 my $sth2 = $dbh->prepare("SELECT min(datum) AS start,max(datum) AS eind from giro");
@@ -20,42 +23,28 @@ foreach my $cat (@$cattemp) {
 	push @categories,$cat->[0];
 }
 
-my $startjaar=$start / 10000;
-my $eindjaar =$eind / 10000;
+my $startjaar=int($start / 10000);
+my $eindjaar =int($eind / 10000);
 
 $sth3->execute();
 my $data=$sth3->fetchall_arrayref();
-my %db
+my %db;
 for (my $jaar=$startjaar;$jaar<=$eindjaar;$jaar++) {
-	for my $cat (@categories) {
+	foreach my $cat (@categories) {
 		$db{$jaar}->{$cat}=0;
 	}
+	$workbook->add_worksheet($jaar);
 }
+
 foreach my $m (@$data) {
 	my $maand=$m->[0];
-	my $jaar = $maand/100;
+	my $jaar = int($maand/100);
 	my $cat = $m->[1];
 	my $bedrag = $m->[2];
 	$db{$maand}->{$cat}=$bedrag;
 	$db{$jaar}->{$cat} += $bedrag;
 }
 print Dumper(\%db);
-
-exit();
-
-my $workbook = Spreadsheet::WriteExcel->new('overview.xls');
-my $overz = $workbook->add_worksheet("Overzicht");
-$overz->set_header('&C&"Bold"&A');
-$overz->set_footer('&L&D&R&P/&N');
-$overz->set_landscape();
-$overz->set_margins_TB(1.8/2.54);
-$overz->set_margins_LR(1.5/2.54);
-$overz->set_column(0,0,65);
-$overz->set_column(1,1,16);
-$overz->set_column(2,2,40);
-#my $status = $workbook->add_format();
-#$status->set_num_format('[Color 10]='OPEN';[Red]='FAIL';General');
-
 
 my $bold=$workbook->add_format();
 $bold->set_bold();
@@ -74,6 +63,21 @@ $wrapbold->set_text_wrap();
 $wrapbold->set_bold();
 my $center=$workbook->add_format();
 $center->set_align("center");
+
+
+exit();
+
+$overz->set_header('&C&"Bold"&A');
+$overz->set_footer('&L&D&R&P/&N');
+$overz->set_landscape();
+$overz->set_margins_TB(1.8/2.54);
+$overz->set_margins_LR(1.5/2.54);
+$overz->set_column(0,0,65);
+$overz->set_column(1,1,16);
+$overz->set_column(2,2,40);
+#my $status = $workbook->add_format();
+#$status->set_num_format('[Color 10]='OPEN';[Red]='FAIL';General');
+
 
 my %rowptrs;
 my %sheets;
