@@ -71,7 +71,7 @@ foreach my $cat (sort @categories) {
 }
 
 for my $jaar ($startjaar..$eindjaar) {
-print "$jaar\r";
+	print STDERR "$jaar\r";
 	foreach my $cat (@categories) {
 		$db{$jaar}->{$cat}=0;
 	}
@@ -96,7 +96,7 @@ print "$jaar\r";
 
 foreach my $m (@$data) {
 	my $maand=$m->[0];
-	print "$maand\r";
+	print STDERR "$maand\r";
 	my $jaar = int($maand/100);
 	my $cat = $m->[1];
 	my $bedrag = $m->[2];
@@ -108,7 +108,7 @@ foreach my $m (@$data) {
 foreach my $key (sort keys %db) {
 	my $ws;
 	my $row;
-	print "$key\r";
+	print STDERR "$key\r";
 	if ($key < 10000) {
 		$ws = $overz;
 		$row = $key - $startjaar + 1;
