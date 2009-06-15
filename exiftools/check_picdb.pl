@@ -6,7 +6,7 @@ use Image::ExifTool qw(:Public);
 use DBI;
 use Data::Dumper;
 
-chdir("/home");
+chdir("/data");
 my $dbh = DBI->connect("DBI:Pg:dbname=httpd") or die "cannot open database\n";
 
 #print $dbh->{AutoCommit},"\n";
