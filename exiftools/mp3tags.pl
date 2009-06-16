@@ -8,14 +8,12 @@ use Data::Dumper;
 
 my $PREFIX="/data/Music/";
 
-my $dbh=DBI->connect("DBI:Pg:dbname=mfvl");
+my $dbh=DBI->connect("DBI:Pg:dbname=mfvl") or die "cannot open database\n";
 my $sth0 = $dbh->prepare("SELECT mp3.filename FROM mp3, (SELECT filename FROM mp3 EXCEPT SELECT filename FROM filetemp) AS xxx WHERE mp3.filename=xxx.filename;");
 my $sth1 = $dbh->prepare("SELECT filename FROM mp3 WHERE artist IS NULL");
 my $sth2 = $dbh->prepare("UPDATE mp3 set artist=?,song=?,album=?,track=?,year=?,genre=?,comment=?,duur=?,filesize=? WHERE filename=?");
 
 chdir("/data/Music");
-my $dbh = DBI->connect("DBI:Pg:dbname=httpd") or die "cannot open database\n";
-
 #print $dbh->{AutoCommit},"\n";
 $dbh->{AutoCommit}=0;
 
@@ -38,7 +36,7 @@ my @delfiles=();
 
 $sth0->execute();
 while (my @row=$sth0->fetchrow_array() ) {
-    my $filename=$$row[0];
+    my $filename=$row[0];
 	$filename =~ s/'/''/g;
     push @delfiles,$filename  unless -f $filename;
 }
