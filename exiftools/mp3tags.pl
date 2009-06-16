@@ -21,12 +21,14 @@ print "Check of alle mp3's nog bestaan\n";
 
 $dbh->do("create temporary table filetemp (filename varchar)");
 
-open PIJP,"find . -type f -name \"*.[mM][pP]3\" -o -name \"*.[wW][mM][aA]\"| cut -c3-|" or die "Kan filenamen lijst niet openen\n";
+open PIJP,"find . -type f -name \"*.[mM][pP]3\" -o -name \"*.[wW][mM][aA]\"| cut -c3-| " or die "Kan filenamen lijst niet openen\n";
 
 $dbh->do("copy filetemp from stdin;");
 
 while (<PIJP>) {
-    $dbh->pg_putline($_);
+    my $file = $_;
+    my $efile = encode('UTF-8',$file);
+    $dbh->pg_putline($efile);
 }
 $dbh->pg_endcopy();
 close PIJP;
@@ -37,27 +39,23 @@ my @delfiles=();
 $sth0->execute();
 while (my @row=$sth0->fetchrow_array() ) {
     my $filename=$row[0];
-	$filename =~ s/'/''/g;
+    $filename =~ s/'/''/g;
     push @delfiles,$filename  unless -f $filename;
 }
 print join(", ",@delfiles),"\n";
 
 if ($#delfiles >= 0) {
-#    my $cmd="delete from albumfoto where fotoid in (select id from fotos where filename in ('".join("','",@delfiles)."'));";
-#    $dbh->do($cmd);
-    
-    my $cmd="delete from fotos where filename in ('".join("','",@delfiles)."');";
+    my $cmd="delete from mp3 where filename in ('".join("','",@delfiles)."');";
     $dbh->do($cmd);
 }
-
 $dbh->commit();
 my $exiftool = new Image::ExifTool;
 
 $sth1->execute();
 
 while (my @row=$sth1->fetchrow_array()) {
-#    my $file = decode('utf8',$row[0]);
-    my $file = encode('us-ascii',decode('utf8',$row[0]));
+    my $efile = $row[0];
+    my $file = decode('UTF-8',$efile);
     my $info = $exiftool->ImageInfo($PREFIX.$file);
 #    print Dumper($info);
     foreach my $key (keys %$info) {
@@ -92,5 +90,6 @@ while (my @row=$sth1->fetchrow_array()) {
     } else {
 	next;
     }
-    $sth2->execute($artist,$title,$album,$track,$year,$genre,$comment,$duration,$filesize,$file);
+    $sth2->execute($artist,$title,$album,$track,$year,$genre,$comment,$duration,$filesize,$efile);
 }
+$dbh->commit;
