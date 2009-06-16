@@ -12,6 +12,7 @@ my $dbh=DBI->connect("DBI:Pg:dbname=mfvl") or die "cannot open database\n";
 my $sth0 = $dbh->prepare("SELECT mp3.filename FROM mp3, (SELECT filename FROM mp3 EXCEPT SELECT filename FROM filetemp) AS xxx WHERE mp3.filename=xxx.filename;");
 my $sth1 = $dbh->prepare("SELECT filename FROM mp3 WHERE artist IS NULL");
 my $sth2 = $dbh->prepare("UPDATE mp3 set artist=?,song=?,album=?,track=?,year=?,genre=?,comment=?,duur=?,filesize=? WHERE filename=?");
+my $sth3 = $dbh->prepare("insert into mp3 (filename) select filename from filetemp except select filename from mp3;");
 
 chdir("/data/Music");
 #print $dbh->{AutoCommit},"\n";
