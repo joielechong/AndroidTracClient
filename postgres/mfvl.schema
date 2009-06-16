@@ -52,6 +52,21 @@ CREATE PROCEDURAL LANGUAGE plperlu;
 CREATE PROCEDURAL LANGUAGE plpgsql;
 
 
+SET search_path = public, pg_catalog;
+
+--
+-- Name: testrowperl; Type: TYPE; Schema: public; Owner: mfvl
+--
+
+CREATE TYPE testrowperl AS (
+	f1 integer,
+	f2 text,
+	f3 text
+);
+
+
+ALTER TYPE public.testrowperl OWNER TO mfvl;
+
 SET search_path = pois, pg_catalog;
 
 --
@@ -802,6 +817,16 @@ CREATE TABLE close50 (
 ALTER TABLE pois.close50 OWNER TO mfvl;
 
 --
+-- Name: close50_upd; Type: VIEW; Schema: pois; Owner: mfvl
+--
+
+CREATE VIEW close50_upd AS
+    SELECT CASE WHEN (p1.update_date < p2.update_date) THEN p2.update_date ELSE p1.update_date END AS upd, c.id1, c.lat1, c.lon1, c.id2, c.lat2, c.lon2, c.distance, c.file1, c.rem1, c.file2, c.rem2, c.t1, c.t2 FROM close50 c, posten p1, posten p2 WHERE ((((c.id1 = p1.id) AND (c.id2 = p2.id)) AND (p1.rel_id IS NULL)) AND (p2.rel_id IS NULL)) ORDER BY CASE WHEN (p1.update_date < p2.update_date) THEN p2.update_date ELSE p1.update_date END DESC;
+
+
+ALTER TABLE pois.close50_upd OWNER TO mfvl;
+
+--
 -- Name: inputfiles; Type: TABLE; Schema: pois; Owner: mfvl; Tablespace: 
 --
 
@@ -812,7 +837,8 @@ CREATE TABLE inputfiles (
     "type" character varying,
     xmlurl character varying,
     lastupdate timestamp without time zone,
-    land character varying
+    land character varying,
+    inmio boolean DEFAULT true NOT NULL
 );
 
 
@@ -853,7 +879,7 @@ ALTER TABLE pois.eigen OWNER TO mfvl;
 --
 
 CREATE VIEW flitspalen AS
-    SELECT "if".snelheid, COALESCE("if"."type", 'Overig'::character varying) AS "type", p.lon, p.lat, p.commentaar, p.id, p.rel_id, p.richting, p.bidirectioneel, p.land FROM (inputfiles "if" JOIN posten p ON ((("if".naam)::text = (p.file)::text))) WHERE (((p.rel_id IS NULL) AND (p.updated = true)) AND ((p.file)::text !~~* '%goedkop%'::text)) ORDER BY p.lon, p.lat;
+    SELECT "if".snelheid, COALESCE("if"."type", 'Overig'::character varying) AS "type", p.lon, p.lat, p.commentaar, p.id, p.rel_id, p.richting, p.bidirectioneel, p.land FROM (inputfiles "if" JOIN posten p ON ((("if".naam)::text = (p.file)::text))) WHERE ((((p.rel_id IS NULL) AND (p.updated = true)) AND ((p.file)::text !~~* '%goedkop%'::text)) AND "if".inmio) ORDER BY p.lon, p.lat;
 
 
 ALTER TABLE pois.flitspalen OWNER TO mfvl;
@@ -903,7 +929,7 @@ ALTER TABLE pois."laatste week" OWNER TO mfvl;
 --
 
 CREATE VIEW miolijst AS
-    SELECT flitspalen.lon, flitspalen.lat, mtcstring(flitspalen."type", flitspalen.id, flitspalen.snelheid, flitspalen.richting, flitspalen.bidirectioneel) AS mtcstring FROM flitspalen WHERE (NOT ((flitspalen."type")::text = ANY ((ARRAY['Overig'::character varying, 'mobiel'::character varying])::text[]))) ORDER BY flitspalen.lon, flitspalen.lat;
+    SELECT flitspalen.lon, flitspalen.lat, mtcstring(flitspalen."type", flitspalen.id, flitspalen.snelheid, flitspalen.richting, flitspalen.bidirectioneel) AS mtcstring FROM flitspalen WHERE ((flitspalen."type")::text <> 'Overig'::text) ORDER BY flitspalen.lon, flitspalen.lat;
 
 
 ALTER TABLE pois.miolijst OWNER TO mfvl;
@@ -972,6 +998,16 @@ CREATE VIEW "vergelijk poisupdate" AS
 
 
 ALTER TABLE pois."vergelijk poisupdate" OWNER TO mfvl;
+
+--
+-- Name: woonwerk; Type: VIEW; Schema: pois; Owner: mfvl
+--
+
+CREATE VIEW woonwerk AS
+    SELECT posten.id, posten.lon, posten.lat, posten.commentaar, posten.file, posten.naam, posten.rel_id, posten.updated, posten.changed, posten.richting, posten.bidirectioneel, posten.land, posten.insert_date, posten.update_date FROM posten WHERE ((((posten.lat >= (51.83)::double precision) AND (posten.lat <= (52.35)::double precision)) AND (posten.lon >= (4.35)::double precision)) AND (posten.lon <= (5.17)::double precision));
+
+
+ALTER TABLE pois.woonwerk OWNER TO mfvl;
 
 SET search_path = public, pg_catalog;
 
@@ -1280,6 +1316,33 @@ CREATE VIEW dankbetuigingen AS
 
 
 ALTER TABLE public.dankbetuigingen OWNER TO mfvl;
+
+--
+-- Name: videos; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE videos (
+    tijdstip timestamp without time zone NOT NULL,
+    directory character varying NOT NULL,
+    naam character varying NOT NULL,
+    duur double precision,
+    onderwerp character varying,
+    dvdnr integer,
+    aspect character varying
+);
+
+
+ALTER TABLE public.videos OWNER TO mfvl;
+
+--
+-- Name: dvds; Type: VIEW; Schema: public; Owner: mfvl
+--
+
+CREATE VIEW dvds AS
+    SELECT videos.dvdnr, (sum(videos.duur) / (60)::double precision) AS duur, min(date(videos.tijdstip)) AS eerstedag, max(date(videos.tijdstip)) AS laatstedag FROM videos WHERE (videos.duur > (3)::double precision) GROUP BY videos.dvdnr ORDER BY videos.dvdnr;
+
+
+ALTER TABLE public.dvds OWNER TO mfvl;
 
 SET default_with_oids = true;
 
@@ -1645,6 +1708,58 @@ CREATE VIEW miolijst AS
 
 ALTER TABLE public.miolijst OWNER TO mfvl;
 
+--
+-- Name: mp3; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE mp3 (
+    id integer NOT NULL,
+    filename character varying,
+    artist character varying,
+    album character varying,
+    song character varying,
+    track character varying,
+    genre character varying,
+    "comment" character varying,
+    "year" character varying,
+    duur character varying,
+    filesize character varying
+);
+
+
+ALTER TABLE public.mp3 OWNER TO mfvl;
+
+--
+-- Name: mp3_id_seq; Type: SEQUENCE; Schema: public; Owner: mfvl
+--
+
+CREATE SEQUENCE mp3_id_seq
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.mp3_id_seq OWNER TO mfvl;
+
+--
+-- Name: mp3_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mfvl
+--
+
+ALTER SEQUENCE mp3_id_seq OWNED BY mp3.id;
+
+
+--
+-- Name: mp3invoer; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE mp3invoer (
+    filename character varying
+);
+
+
+ALTER TABLE public.mp3invoer OWNER TO mfvl;
+
 SET default_with_oids = true;
 
 --
@@ -1787,7 +1902,8 @@ ALTER TABLE public.sendmailmtamapobject OWNER TO mfvl;
 --
 
 CREATE TABLE tel_types (
-    tel_type character varying NOT NULL
+    tel_type character varying NOT NULL,
+    "order" smallint NOT NULL
 );
 
 
@@ -1843,7 +1959,7 @@ ALTER TABLE public.telfort_namen OWNER TO mfvl;
 --
 
 CREATE VIEW telnummer AS
-    SELECT contacts.naam, telephone.number, telephone.tel_type, telephone.list FROM contacts, telephone WHERE (contacts.id = telephone.contact_id) ORDER BY contacts.fileas;
+    SELECT contacts.naam, telephone.number, telephone.tel_type, telephone.prio, telephone.list FROM contacts, telephone WHERE (contacts.id = telephone.contact_id) ORDER BY contacts.fileas, telephone.prio;
 
 
 ALTER TABLE public.telnummer OWNER TO mfvl;
@@ -1933,6 +2049,29 @@ CREATE VIEW vakantie AS
 
 ALTER TABLE public.vakantie OWNER TO mfvl;
 
+SET default_with_oids = false;
+
+--
+-- Name: video_aspect; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE video_aspect (
+    aspect character varying NOT NULL
+);
+
+
+ALTER TABLE public.video_aspect OWNER TO mfvl;
+
+--
+-- Name: videoonderwerpen; Type: VIEW; Schema: public; Owner: mfvl
+--
+
+CREATE VIEW videoonderwerpen AS
+    SELECT date(videos.tijdstip) AS date, videos.onderwerp, videos.dvdnr, (sum(videos.duur) / (60)::double precision) FROM videos WHERE ((videos.duur > (3)::double precision) AND (NOT (videos.dvdnr IS NULL))) GROUP BY date(videos.tijdstip), videos.onderwerp, videos.dvdnr ORDER BY date(videos.tijdstip), videos.onderwerp, videos.dvdnr;
+
+
+ALTER TABLE public.videoonderwerpen OWNER TO mfvl;
+
 SET search_path = pois, pg_catalog;
 
 --
@@ -2005,6 +2144,13 @@ ALTER TABLE ldap_entries ALTER COLUMN id SET DEFAULT nextval('ldap_entries_id_se
 --
 
 ALTER TABLE ldap_oc_mappings ALTER COLUMN id SET DEFAULT nextval('ldap_oc_mappings_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE mp3 ALTER COLUMN id SET DEFAULT nextval('mp3_id_seq'::regclass);
 
 
 --
@@ -2187,6 +2333,14 @@ ALTER TABLE ONLY fax
 
 
 --
+-- Name: file_dir; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY videos
+    ADD CONSTRAINT file_dir UNIQUE (directory, naam);
+
+
+--
 -- Name: guestbook_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
 --
 
@@ -2259,6 +2413,14 @@ ALTER TABLE ONLY mail
 
 
 --
+-- Name: mp3_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY mp3
+    ADD CONSTRAINT mp3_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: naw_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
 --
 
@@ -2304,6 +2466,14 @@ ALTER TABLE ONLY sendmailmta
 
 ALTER TABLE ONLY sendmailmtaaliasobject
     ADD CONSTRAINT sendmailmtaaliasobject_mtakey_key UNIQUE (mtakey);
+
+
+--
+-- Name: tel_type_order; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY tel_types
+    ADD CONSTRAINT tel_type_order UNIQUE ("order");
 
 
 --
@@ -2376,6 +2546,22 @@ ALTER TABLE ONLY telfort_zakelijk
 
 ALTER TABLE ONLY naw
     ADD CONSTRAINT uninaw UNIQUE (contact_id, adr_type);
+
+
+--
+-- Name: video_aspect_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY video_aspect
+    ADD CONSTRAINT video_aspect_pkey PRIMARY KEY (aspect);
+
+
+--
+-- Name: videos_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY videos
+    ADD CONSTRAINT videos_pkey PRIMARY KEY (tijdstip);
 
 
 SET search_path = pois, pg_catalog;
@@ -2588,6 +2774,13 @@ CREATE RULE upd_lw AS ON UPDATE TO "laatste week" DO INSTEAD NOTHING;
 
 
 --
+-- Name: upd_lw_dir; Type: RULE; Schema: pois; Owner: mfvl
+--
+
+CREATE RULE upd_lw_dir AS ON UPDATE TO "laatste week" WHERE ((((new.richting <> old.richting) OR (new.bidirectioneel <> old.bidirectioneel)) OR ((NOT (new.richting IS NULL)) AND (old.richting IS NULL))) OR ((new.richting IS NULL) AND (NOT (old.richting IS NULL)))) DO INSTEAD UPDATE posten p SET richting = new.richting, bidirectioneel = new.bidirectioneel WHERE (p.id = old.id);
+
+
+--
 -- Name: upd_lw_land; Type: RULE; Schema: pois; Owner: mfvl
 --
 
@@ -2615,6 +2808,13 @@ SET search_path = public, pg_catalog;
 --
 
 CREATE RULE adres_del AS ON DELETE TO adres DO INSTEAD DELETE FROM naw n USING contacts c WHERE (((((((old.naam)::text = (c.naam)::text) AND (c.id = n.contact_id)) AND ((old.straat)::text = (n.straat)::text)) AND ((old.postcode)::text = (n.postcode)::text)) AND ((old.stad)::text = (n.stad)::text)) AND ((old.land)::text = (n.land)::text));
+
+
+--
+-- Name: adres_ins; Type: RULE; Schema: public; Owner: mfvl
+--
+
+CREATE RULE adres_ins AS ON INSERT TO adres DO INSTEAD INSERT INTO naw (contact_id, straat, postcode, stad, land, inmio, adr_type) SELECT contacts.id, new.straat, new.postcode, new.stad, new.land, new.inmio, new.adr_type FROM contacts WHERE ((contacts.naam)::text = (new.naam)::text);
 
 
 --
@@ -2772,6 +2972,27 @@ CREATE RULE invoer_upd AS ON UPDATE TO invoer DO INSTEAD NOTHING;
 
 
 --
+-- Name: kerstkaart_del; Type: RULE; Schema: public; Owner: mfvl
+--
+
+CREATE RULE kerstkaart_del AS ON DELETE TO kerstkaart DO INSTEAD DELETE FROM catcontact USING categories WHERE (((catcontact.contact_id = old.id) AND (catcontact.cat_id = categories.id)) AND ((categories.categorie)::text = 'kerstkaart'::text));
+
+
+--
+-- Name: kerstkaart_ins; Type: RULE; Schema: public; Owner: mfvl
+--
+
+CREATE RULE kerstkaart_ins AS ON INSERT TO kerstkaart DO INSTEAD NOTHING;
+
+
+--
+-- Name: kerstkaart_ins_id; Type: RULE; Schema: public; Owner: mfvl
+--
+
+CREATE RULE kerstkaart_ins_id AS ON INSERT TO kerstkaart WHERE (NOT (new.id IS NULL)) DO INSTEAD INSERT INTO catcontact (contact_id, cat_id) SELECT new.id, categories.id FROM categories WHERE ((categories.categorie)::text = 'kerstkaart'::text);
+
+
+--
 -- Name: login1_upd; Type: RULE; Schema: public; Owner: mfvl
 --
 
@@ -2846,6 +3067,13 @@ CREATE RULE upd_telnummer AS ON UPDATE TO telnummer DO INSTEAD NOTHING;
 --
 
 CREATE RULE upd_telnummer1 AS ON UPDATE TO telnummer WHERE ((old.number)::text <> (new.number)::text) DO INSTEAD UPDATE telephone t SET number = new.number FROM contacts c WHERE ((((c.naam)::text = (old.naam)::text) AND (c.id = t.contact_id)) AND ((t.number)::text = (old.number)::text));
+
+
+--
+-- Name: upd_telnummer2; Type: RULE; Schema: public; Owner: mfvl
+--
+
+CREATE RULE upd_telnummer2 AS ON UPDATE TO telnummer WHERE ((old.number)::text <> (new.number)::text) DO INSTEAD UPDATE telephone t SET prio = new.prio FROM contacts c WHERE ((((c.naam)::text = (old.naam)::text) AND (c.id = t.contact_id)) AND ((t.number)::text = (old.number)::text));
 
 
 SET search_path = pois, pg_catalog;
@@ -3211,6 +3439,14 @@ ALTER TABLE ONLY naw
 
 
 --
+-- Name: aspect_aspect; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY videos
+    ADD CONSTRAINT aspect_aspect FOREIGN KEY (aspect) REFERENCES video_aspect(aspect);
+
+
+--
 -- Name: catcontact_cat_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
 --
 
@@ -3501,6 +3737,15 @@ GRANT ALL ON TABLE "temp" TO mfvl;
 GRANT ALL ON TABLE "temp" TO httpd;
 
 
+--
+-- Name: woonwerk; Type: ACL; Schema: pois; Owner: mfvl
+--
+
+REVOKE ALL ON TABLE woonwerk FROM PUBLIC;
+REVOKE ALL ON TABLE woonwerk FROM mfvl;
+GRANT SELECT ON TABLE woonwerk TO httpd;
+
+
 SET search_path = public, pg_catalog;
 
 --
@@ -3625,6 +3870,16 @@ REVOKE ALL ON TABLE dankbetuigingen FROM PUBLIC;
 REVOKE ALL ON TABLE dankbetuigingen FROM mfvl;
 GRANT ALL ON TABLE dankbetuigingen TO mfvl;
 GRANT ALL ON TABLE dankbetuigingen TO httpd;
+
+
+--
+-- Name: videos; Type: ACL; Schema: public; Owner: mfvl
+--
+
+REVOKE ALL ON TABLE videos FROM PUBLIC;
+REVOKE ALL ON TABLE videos FROM mfvl;
+GRANT ALL ON TABLE videos TO mfvl;
+GRANT SELECT ON TABLE videos TO httpd;
 
 
 --
@@ -3892,26 +4147,6 @@ REVOKE ALL ON TABLE telfort_namen FROM PUBLIC;
 REVOKE ALL ON TABLE telfort_namen FROM mfvl;
 GRANT ALL ON TABLE telfort_namen TO mfvl;
 GRANT ALL ON TABLE telfort_namen TO httpd;
-
-
---
--- Name: telnummer; Type: ACL; Schema: public; Owner: mfvl
---
-
-REVOKE ALL ON TABLE telnummer FROM PUBLIC;
-REVOKE ALL ON TABLE telnummer FROM mfvl;
-GRANT ALL ON TABLE telnummer TO mfvl;
-GRANT ALL ON TABLE telnummer TO httpd;
-
-
---
--- Name: telfort_allenamen; Type: ACL; Schema: public; Owner: mfvl
---
-
-REVOKE ALL ON TABLE telfort_allenamen FROM PUBLIC;
-REVOKE ALL ON TABLE telfort_allenamen FROM mfvl;
-GRANT ALL ON TABLE telfort_allenamen TO mfvl;
-GRANT ALL ON TABLE telfort_allenamen TO httpd;
 
 
 --
