@@ -3,7 +3,7 @@
 use strict;
 use Text::vCard::Addressbook;
 use Data::Dumper;
-my @types = qw(ADR,BDAY,EMAIL,FN,N,ORG,TEL,TITLE,URL);
+my @types = qw(ADR BDAY EMAIL FN N ORG TEL TITLE URL);
 
 while (my $file = shift) {
 	my $address_book = Text::vCard::Addressbook->new({'source_file' => $file,});
