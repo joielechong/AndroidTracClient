@@ -49,6 +49,9 @@ if ($#delfiles >= 0) {
     $dbh->do($cmd);
 }
 $dbh->commit();
+
+$dbh->{AutoCommit}=1;
+
 my $exiftool = new Image::ExifTool;
 
 $sth1->execute();
@@ -56,6 +59,7 @@ $sth1->execute();
 while (my @row=$sth1->fetchrow_array()) {
     my $efile = $row[0];
     my $file = decode('UTF-8',$efile);
+    print "$file\n";
     my $info = $exiftool->ImageInfo($PREFIX.$file);
 #    print Dumper($info);
     foreach my $key (keys %$info) {
@@ -92,4 +96,3 @@ while (my @row=$sth1->fetchrow_array()) {
     }
     $sth2->execute($artist,$title,$album,$track,$year,$genre,$comment,$duration,$filesize,$efile);
 }
-$dbh->commit;
