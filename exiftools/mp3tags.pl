@@ -53,6 +53,8 @@ $dbh->commit();
 
 $dbh->{AutoCommit}=1;
 
+$sth3->execute();
+
 my $exiftool = new Image::ExifTool;
 
 $sth1->execute();
