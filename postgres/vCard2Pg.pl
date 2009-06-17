@@ -25,7 +25,6 @@ while (my $file = shift) {
 	my @emails;
 	
 	my $fullname = $vcard->fullname();
-	my $company = $vcard->org();
 	my $title = $vcard->title();
 	my $bday = $vcard->bday();
 	my $url = $vcard->$url;
