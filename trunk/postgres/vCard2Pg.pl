@@ -86,11 +86,7 @@ while (my $file = shift) {
 		my $count = $#emails + 1;
 		my $sqlcmd= "INSERT INTO mail (contact_id,mailaddress) SELECT $contact_id,mail.ids[gs_ser] as ma FROM (SELECT ARRAY[$mas]) as mail(ids),generate_series(1,$count) as gs_ser EXCEPT SELECT contact_id,mailaddress FROM mail where contact_id=$contact_id";
 #		print "\nQuery = $sqlcmd\n";
-		my $aryref=$dbh->selectall_arrayref($sqlcmd);
-		
-		foreach my $row (@$aryref) {
-			print "\nNieuwe emails: ",join(",",@$row),"\n";
-		}
+		$dbh->do($sqlcmd);
 	    }
 	    print "\n";
 	} else {
