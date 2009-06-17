@@ -49,10 +49,17 @@ while (my $file = shift) {
 	if (defined($nodes)) {
 	    foreach my $md (@$nodes) {
 		if (defined($md->value)) {
-#		    print $md->types(),' ',$md->value,"\n";
-		    push @phones,$md->value;
+		    my $number = $md->value;
+		    if (substr($number,0,2) eq '31') {
+			$number = '+'.$number;
+		    }
+		    if (substr($number,0,4) eq '+310') {
+			$substr($number,0,4) = ' ';
+		    }
+#		    print $md->types(),' ',$number,"\n";
+		    push @phones,$number;
 		    unless (defined($contact_id)) {
-			$sth2->execute($md->value);
+			$sth2->execute($number);
 			if (my @row=$sth2->fetchrow_array()) {
 			    $contact_id=$row[0];
 			}
