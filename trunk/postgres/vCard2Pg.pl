@@ -56,26 +56,25 @@ while (my $file = shift) {
 			$number = '+'.$number;
 		    }
 		    if (substr($number,0,4) eq '+310') {
-			$substr($number,0,4) = '+31';
+			substr($number,0,4) = '+31';
 		    }
 		    $type='Other' if $type eq '';
-
-#		    print "$type $number\n";
+		    print "$type $number\n";
 		    if ($type eq 'fax') {
-			push @faxes,$number);
-		 } else {
-		    push @phones,$number;
-		    unless (defined($contact_id)) {
-			$sth2->execute($number);
-			if (my @row=$sth2->fetchrow_array()) {
-			    $contact_id=$row[0];
+			push @faxes,$number;
+		    } else {
+			push @phones,$number;
+			unless (defined($contact_id)) {
+			    $sth2->execute($number);
+			    if (my @row=$sth2->fetchrow_array()) {
+				$contact_id=$row[0];
+			    }
 			}
-		    }
 		    }
 		}
 	    }
 	}
-
+	
 	if (defined($contact_id)) {
 	    my $process = 0;
 	    print " $contact_id ";
@@ -91,9 +90,9 @@ while (my $file = shift) {
 		}
 	    } else {
 		print ' ??? Toevoegen? (J/N)';
-		    my $answer = lc(getc());
-		    $process = 1 if $answer eq 'j'; 
-		    die "direct gestopt\n" if $answer eq "q";
+		my $answer = lc(getc());
+		$process = 1 if $answer eq 'j'; 
+		die "direct gestopt\n" if $answer eq "q";
 	    }
 	    if ($process) {
 		print " Nu verwerken";
@@ -114,7 +113,7 @@ while (my $file = shift) {
 		$count = $#faxes + 1;
 		if ($count > 0) {
 		    my $faxs = "'".join("','",@faxes)."'";
-		    my $sqlcmd= "INSERT INTO fax (contact_id,number) SELECT $contact_id,nums.ids[gs.ser] as number FROM (SELECT ARRAY[$tels]) as nums(ids),generate_series(1,$count) as gs(ser) EXCEPT SELECT contact_id,number FROM fax where contact_id=$contact_id";
+		    my $sqlcmd= "INSERT INTO fax (contact_id,number) SELECT $contact_id,nums.ids[gs.ser] as number FROM (SELECT ARRAY[$faxs]) as nums(ids),generate_series(1,$count) as gs(ser) EXCEPT SELECT contact_id,number FROM fax where contact_id=$contact_id";
 		    print "\nQuery = $sqlcmd\n";
 		    $dbh->do($sqlcmd);
 		}
