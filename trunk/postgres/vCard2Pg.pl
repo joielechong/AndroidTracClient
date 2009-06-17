@@ -56,21 +56,21 @@ while (my $file = shift) {
 			$number = '+'.$number;
 		    }
 		    if (substr($number,0,4) eq '+310') {
-			substr($number,0,4) = '+31';
+			$substr($number,0,4) = '+31';
 		    }
 		    $type='Other' if $type eq '';
-		    print $type,' ',$number,"\n";
+
+#		    print "$type $number\n";
 		    if ($type eq 'fax') {
-		    } else {
-			push @faxes,$number;
-		    } else {
-			push @phones,$number;
-			unless (defined($contact_id)) {
-			    $sth2->execute($number);
-			    if (my @row=$sth2->fetchrow_array()) {
-				$contact_id=$row[0];
-			    }
+			push @faxes,$number);
+		 } else {
+		    push @phones,$number;
+		    unless (defined($contact_id)) {
+			$sth2->execute($number);
+			if (my @row=$sth2->fetchrow_array()) {
+			    $contact_id=$row[0];
 			}
+		    }
 		    }
 		}
 	    }
@@ -111,153 +111,10 @@ while (my $file = shift) {
 		    print "\nQuery = $sqlcmd\n";
 		    $dbh->do($sqlcmd);
 		}
-		    } else {
-			push @faxes,$number;
-		    } else {
-			push @phones,$number;
-			unless (defined($contact_id)) {
-			    $sth2->execute($number);
-			    if (my @row=$sth2->fetchrow_array()) {
-				$contact_id=$row[0];
-			    }
-			}
-		    }
-		}
-	    }
-	}
-
-	if (defined($contact_id)) {
-	    my $process = 0;
-	    print " $contact_id ";
-	    $sth3->execute($contact_id);
-	    if (my @row=$sth3->fetchrow_array()) {
-		print ' ',$row[0];
-		if (lc($row[0]) ne lc($vcard->fullname())) {
-		    print " !!DIFF!! Verwerken? (J/N): ";
-		    my $answer = lc(getc());
-		    $process = 1 if $answer eq 'j'; 
-		} else {
-		    $process = 1;
-		}
-	    } else {
-		print ' ??? Toevoegen? (J/N)';
-		    my $answer = lc(getc());
-		    $process = 1 if $answer eq 'j'; 
-		    die "direct gestopt\n" if $answer eq "q";
-	    }
-	    if ($process) {
-		print " Nu verwerken";
-		my $count = $#emails + 1;
+		$count = $#faxes + 1;
 		if ($count > 0) {
-		    my $mas = "'".join("','",@emails)."'";
-		    my $sqlcmd= "INSERT INTO mail (contact_id,mailaddress) SELECT $contact_id,mail.ids[gs.ser] as mailaddress FROM (SELECT ARRAY[$mas]) as mail(ids),generate_series(1,$count) as gs(ser) EXCEPT SELECT contact_id,mailaddress FROM mail where contact_id=$contact_id";
-		    print "\nQuery = $sqlcmd\n";
-		    $dbh->do($sqlcmd);
-		}
-		$count = $#phones + 1;
-		if ($count > 0) {
-		    my $tels = "'".join("','",@phones)."'";
-		    my $sqlcmd= "INSERT INTO telephone (contact_id,number) SELECT $contact_id,nums.ids[gs.ser] as number FROM (SELECT ARRAY[$tels]) as nums(ids),generate_series(1,$count) as gs(ser) EXCEPT SELECT contact_id,number FROM telephone where contact_id=$contact_id";
-		    print "\nQuery = $sqlcmd\n";
-		    $dbh->do($sqlcmd);
-		}
-		    } else {
-			push @faxes,$number;
-		    } else {
-			push @phones,$number;
-			unless (defined($contact_id)) {
-			    $sth2->execute($number);
-			    if (my @row=$sth2->fetchrow_array()) {
-				$contact_id=$row[0];
-			    }
-			}
-		    }
-		}
-	    }
-	}
-
-	if (defined($contact_id)) {
-	    my $process = 0;
-	    print " $contact_id ";
-	    $sth3->execute($contact_id);
-	    if (my @row=$sth3->fetchrow_array()) {
-		print ' ',$row[0];
-		if (lc($row[0]) ne lc($vcard->fullname())) {
-		    print " !!DIFF!! Verwerken? (J/N): ";
-		    my $answer = lc(getc());
-		    $process = 1 if $answer eq 'j'; 
-		} else {
-		    $process = 1;
-		}
-	    } else {
-		print ' ??? Toevoegen? (J/N)';
-		    my $answer = lc(getc());
-		    $process = 1 if $answer eq 'j'; 
-		    die "direct gestopt\n" if $answer eq "q";
-	    }
-	    if ($process) {
-		print " Nu verwerken";
-		my $count = $#emails + 1;
-		if ($count > 0) {
-		    my $mas = "'".join("','",@emails)."'";
-		    my $sqlcmd= "INSERT INTO mail (contact_id,mailaddress) SELECT $contact_id,mail.ids[gs.ser] as mailaddress FROM (SELECT ARRAY[$mas]) as mail(ids),generate_series(1,$count) as gs(ser) EXCEPT SELECT contact_id,mailaddress FROM mail where contact_id=$contact_id";
-		    print "\nQuery = $sqlcmd\n";
-		    $dbh->do($sqlcmd);
-		}
-		$count = $#phones + 1;
-		if ($count > 0) {
-		    my $tels = "'".join("','",@phones)."'";
-		    my $sqlcmd= "INSERT INTO telephone (contact_id,number) SELECT $contact_id,nums.ids[gs.ser] as number FROM (SELECT ARRAY[$tels]) as nums(ids),generate_series(1,$count) as gs(ser) EXCEPT SELECT contact_id,number FROM telephone where contact_id=$contact_id";
-		    print "\nQuery = $sqlcmd\n";
-		    $dbh->do($sqlcmd);
-		}
-		    } else {
-			push @faxes,$number;
-		    } else {
-			push @phones,$number;
-			unless (defined($contact_id)) {
-			    $sth2->execute($number);
-			    if (my @row=$sth2->fetchrow_array()) {
-				$contact_id=$row[0];
-			    }
-			}
-		    }
-		}
-	    }
-	}
-
-	if (defined($contact_id)) {
-	    my $process = 0;
-	    print " $contact_id ";
-	    $sth3->execute($contact_id);
-	    if (my @row=$sth3->fetchrow_array()) {
-		print ' ',$row[0];
-		if (lc($row[0]) ne lc($vcard->fullname())) {
-		    print " !!DIFF!! Verwerken? (J/N): ";
-		    my $answer = lc(getc());
-		    $process = 1 if $answer eq 'j'; 
-		} else {
-		    $process = 1;
-		}
-	    } else {
-		print ' ??? Toevoegen? (J/N)';
-		    my $answer = lc(getc());
-		    $process = 1 if $answer eq 'j'; 
-		    die "direct gestopt\n" if $answer eq "q";
-	    }
-	    if ($process) {
-		print " Nu verwerken";
-		my $count = $#emails + 1;
-		if ($count > 0) {
-		    my $mas = "'".join("','",@emails)."'";
-		    my $sqlcmd= "INSERT INTO mail (contact_id,mailaddress) SELECT $contact_id,mail.ids[gs.ser] as mailaddress FROM (SELECT ARRAY[$mas]) as mail(ids),generate_series(1,$count) as gs(ser) EXCEPT SELECT contact_id,mailaddress FROM mail where contact_id=$contact_id";
-		    print "\nQuery = $sqlcmd\n";
-		    $dbh->do($sqlcmd);
-		}
-		$count = $#phones + 1;
-		if ($count > 0) {
-		    my $tels = "'".join("','",@phones)."'";
-		    my $sqlcmd= "INSERT INTO telephone (contact_id,number) SELECT $contact_id,nums.ids[gs.ser] as number FROM (SELECT ARRAY[$tels]) as nums(ids),generate_series(1,$count) as gs(ser) EXCEPT SELECT contact_id,number FROM telephone where contact_id=$contact_id";
+		    my $faxs = "'".join("','",@faxes)."'";
+		    my $sqlcmd= "INSERT INTO fax (contact_id,number) SELECT $contact_id,nums.ids[gs.ser] as number FROM (SELECT ARRAY[$tels]) as nums(ids),generate_series(1,$count) as gs(ser) EXCEPT SELECT contact_id,number FROM fax where contact_id=$contact_id";
 		    print "\nQuery = $sqlcmd\n";
 		    $dbh->do($sqlcmd);
 		}
