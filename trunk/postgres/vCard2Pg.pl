@@ -27,7 +27,7 @@ while (my $file = shift) {
 	my $fullname = $vcard->fullname();
 	my $title = $vcard->title();
 	my $bday = $vcard->bday();
-	my $url = $vcard->$url;
+	my $url = $vcard->url;
 	
 	print "Got card for $fullname";
 	my $nodes = $vcard->get('email');
@@ -35,7 +35,7 @@ while (my $file = shift) {
 	    foreach my $md (@$nodes) {
 		if (defined($md->value)) {
 #		    print $md->types(),' ',$md->value,"\n";
-		    push @email,lc($md->value);
+		    push @emails,lc($md->value);
 		    unless (defined($contact_id)) {
 			$sth1->execute(lc($md->value));
 			if (my @row=$sth1->fetchrow_array()) {
