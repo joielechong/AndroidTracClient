@@ -79,16 +79,15 @@ while (my $file = shift) {
 		print ' ??? Toevoegen? (J/N)';
 		    my $answer = lc(getc());
 		    $process = 1 if $answer eq 'j'; 
+		    die "direct gestopt\n" if $answer eq "q";
 	    }
 	    if ($process) {
 		print " Nu verwerken";
-		if (defined($contact_id)) {
-			my $mas = "'".join("','",@emails)."'";
-			my $count = $#emails + 1;
-			$sth99->execute($contact_id,$mas,$count,$contact_id);
-			while (my @row=$sth99->fetchrow_arry()) {
-				print "Nieuwe emails: ",join(",",@row),"\n";
-			}
+		my $mas = "'".join("','",@emails)."'";
+		my $count = $#emails + 1;
+		$sth99->execute($contact_id,$mas,$count,$contact_id);
+		while (my @row=$sth99->fetchrow_array()) {
+			print "Nieuwe emails: ",join(",",@row),"\n";
 		}
 	    }
 	    print "\n";
