@@ -79,7 +79,14 @@ while (my $file = shift) {
 		    my $answer = lc(getc());
 		    $process = 1 if $answer eq 'j'; 
 	    }
-	    print "Nu verwerken" if $process;
+	    if ($process) {
+		print " Nu verwerken";
+		if (defined($contact_id)) {
+			my $mas = "'".join("','",@emails)."'";
+			my $count = $#emails + 1;
+			my $sqlcmd = "SELECT $contact_id,mail.ids[gs_ser] as ma FROM (SELECT ARRAY[$mas]) as mail(ids),generate_series(1,$count) as gs_ser EXCEPT SELECT contacty_id,mailaddress FROM mail where contact_id=$contact_id";
+			print "$sqlcmd\n";
+	    }
 	    print "\n";
 	} else {
 	    print "\n";
