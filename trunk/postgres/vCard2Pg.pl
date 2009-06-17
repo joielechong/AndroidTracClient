@@ -84,7 +84,7 @@ while (my $file = shift) {
 		print " Nu verwerken";
 		my $mas = "'".join("','",@emails)."'";
 		my $count = $#emails + 1;
-		my $sqlcmd= "SELECT $contact_id,mail.ids[gs_ser] as ma FROM (SELECT ARRAY[$mas]) as mail(ids),generate_series(1,$count) as gs_ser EXCEPT SELECT contact_id,mailaddress FROM mail where contact_id=$contact_id");
+		my $sqlcmd= "SELECT $contact_id,mail.ids[gs_ser] as ma FROM (SELECT ARRAY[$mas]) as mail(ids),generate_series(1,$count) as gs_ser EXCEPT SELECT contact_id,mailaddress FROM mail where contact_id=$contact_id";
 		print "\nQuery = $sqlcmd\n";
 		my $aryref=$dbh->selectall_arrayref($sqlcmd);
 		
