@@ -6,9 +6,9 @@ use Data::Dumper;
 use DBI;
 
 my $dbh=DBI->connect("DBI:Pg:dbname=mfvl");
-my $sth1 = $dbh->prepare("SELECT contact_id FROM mail WHERE mailaddress = ?");
-my $sth2 = $dbh->prepare("SELECT contact_id FROM telephone WHERE number = normtel(?)");
-my $sth3 = $dbh->prepare("SELECT cn FROM contacts WHERE id = ?");
+my $sth1 = $dbh->prepare("SELECT contact_id FROM mail where mailaddress = ?");
+my $sth2 = $dbh->prepare("SELECT contact_id FROM telephone where number = normtel(?) and list");
+my $sth3 = $dbh->prepare("SELECT cn FROM contacts where id = ?");
 my $sth4 = $dbh->prepare("SELECT mailaddress FROM mail WHERE contact_id=?");
 my $sth5 = $dbh->prepare("SELECT number FROM telephone WHERE contact_id=?");
 my $sth6 = $dbh->prepare("INSERT INTO mail (contact_id,mailaddress) VALUES(?,?)");
@@ -68,7 +68,7 @@ while (my $file = shift) {
 	    $sth3->execute($contact_id);
 	    if (my @row=$sth3->fetchrow_array()) {
 		print ' ',$row[0];
-		if ($row[0] ne $fullname) {
+		if (lc($row[0]) ne lc($vcard->fullname())) {
 		    print " !!DIFF!! Verwerken? (J/N): ";
 		    my $answer = lc(getc());
 		    $process = 1 if $answer eq 'j'; 
