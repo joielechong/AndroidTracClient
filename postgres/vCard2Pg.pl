@@ -13,7 +13,7 @@ my $sth4 = $dbh->prepare("SELECT mailaddress FROM mail WHERE contact_id=?");
 my $sth5 = $dbh->prepare("SELECT number FROM telephone WHERE contact_id=?");
 my $sth6 = $dbh->prepare("INSERT INTO mail (contact_id,mailaddress) VALUES(?,?)");
 my $sth7 = $dbh->prepare("INSERT INTO telephone (contact_id,number) VALUES(?,?)");
-my $sth99=$dbh->prepare("SELECT ?,mail.ids[gs_ser] as ma FROM (SELECT ARRAY[?]) as mail(ids),generate_series(1,?) as gs_ser EXCEPT SELECT contact_id,mailaddress FROM mail where contact_id=?");
+my $sth99= $dbh->prepare("SELECT ?,mail.ids[gs_ser] as ma FROM (SELECT ARRAY[?]) as mail(ids),generate_series(1,?) as gs_ser EXCEPT SELECT contact_id,mailaddress FROM mail where contact_id=?");
 
 my @types = qw(ADR BDAY EMAIL FN N ORG TEL TITLE URL);
 
