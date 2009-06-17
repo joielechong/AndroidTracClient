@@ -13,7 +13,6 @@ my $sth4 = $dbh->prepare("SELECT mailaddress FROM mail WHERE contact_id=?");
 my $sth5 = $dbh->prepare("SELECT number FROM telephone WHERE contact_id=?");
 my $sth6 = $dbh->prepare("INSERT INTO mail (contact_id,mailaddress) VALUES(?,?)");
 my $sth7 = $dbh->prepare("INSERT INTO telephone (contact_id,number) VALUES(?,?)");
-my $sth99= $dbh->prepare("SELECT ?,mail.ids[gs_ser] as ma FROM (SELECT ARRAY[?]) as mail(ids),generate_series(1,?) as gs_ser EXCEPT SELECT contact_id,mailaddress FROM mail where contact_id=?");
 
 my @types = qw(ADR BDAY EMAIL FN N ORG TEL TITLE URL);
 
@@ -85,9 +84,12 @@ while (my $file = shift) {
 		print " Nu verwerken";
 		my $mas = "'".join("','",@emails)."'";
 		my $count = $#emails + 1;
-		$sth99->execute($contact_id,$mas,$count,$contact_id);
-		while (my @row=$sth99->fetchrow_array()) {
-			print "Nieuwe emails: ",join(",",@row),"\n";
+		my $sqlcmd= "SELECT $contact_id,mail.ids[gs_ser] as ma FROM (SELECT ARRAY[$mas]) as mail(ids),generate_series(1,$count) as gs_ser EXCEPT SELECT contact_id,mailaddress FROM mail where contact_id=$contact_id");
+		print "\nQuery = $sqlcmd\n";
+		my $aryref=$dbh->selectall_arrayref($sqlcmd);
+		
+		foreach my $row (@$aryref) {
+			print "Nieuwe emails: ",join(",",@$row),"\n";
 		}
 	    }
 	    print "\n";
