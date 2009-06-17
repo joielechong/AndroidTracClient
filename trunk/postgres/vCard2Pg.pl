@@ -9,12 +9,12 @@ my $dbh=DBI->connect("DBI:Pg:dbname=mfvl");
 my $sth1 = $dbh->prepare("SELECT contact_id FROM mail where mailaddress = ?");
 my $sth2 = $dbh->prepare("SELECT contact_id FROM telephone where number = normtel(?) and list");
 my $sth3 = $dbh->prepare("SELECT cn FROM contacts where id = ?");
-my $sth4 = $dbh->prepare("SELECT mailaddress FROM mail WHERE contact_id=?");
-my $sth5 = $dbh->prepare("SELECT number FROM telephone WHERE contact_id=?");
-my $sth6 = $dbh->prepare("INSERT INTO mail (contact_id,mailaddress) VALUES(?,?)");
-my $sth7 = $dbh->prepare("INSERT INTO telephone (contact_id,number) VALUES(?,?)");
+#my $sth4 = $dbh->prepare("SELECT mailaddress FROM mail WHERE contact_id=?");
+#my $sth5 = $dbh->prepare("SELECT number FROM telephone WHERE contact_id=?");
+#my $sth6 = $dbh->prepare("INSERT INTO mail (contact_id,mailaddress) VALUES(?,?)");
+#my $sth7 = $dbh->prepare("INSERT INTO telephone (contact_id,number) VALUES(?,?)");
 
-my @types = qw(ADR BDAY EMAIL FN N ORG TEL TITLE URL);
+#my @types = qw(ADR BDAY EMAIL FN N ORG TEL TITLE URL);
 
 while (my $file = shift) {
     my $address_book = Text::vCard::Addressbook->new({'source_file' => $file,});
@@ -35,7 +35,7 @@ while (my $file = shift) {
 	if (defined($nodes)) {
 	    foreach my $md (@$nodes) {
 		if (defined($md->value)) {
-#		    print $md->types(),' ',$md->value,"\n";
+#		    print join(',',$md->types()),' ',$md->value,"\n";
 		    push @emails,lc($md->value);
 		    unless (defined($contact_id)) {
 			$sth1->execute(lc($md->value));
@@ -51,7 +51,7 @@ while (my $file = shift) {
 	    foreach my $md (@$nodes) {
 		if (defined($md->value)) {
 		    my $number = $md->value;
-		    my $type = $md->types();
+		    my $type = join(',',$md->types());
 		    if (substr($number,0,2) eq '31') {
 			$number = '+'.$number;
 		    }
