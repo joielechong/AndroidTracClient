@@ -86,8 +86,9 @@ while (my $file = shift) {
 		if ($count > 0) {
 		    my $mas = "'".join("','",@emails)."'";
 		    my $sqlcmd= "INSERT INTO mail (contact_id,mailaddress) SELECT $contact_id,mail.ids[gs.ser] as mailaddress FROM (SELECT ARRAY[$mas]) as mail(ids),generate_series(1,$count) as gs(ser) EXCEPT SELECT contact_id,mailaddress FROM mail where contact_id=$contact_id";
-		    print "\nQuery = $sqlcmd";
-		    $dbh->do($sqlcmd);
+		    print "\nQuery = $sqlcmd\n";
+		    my $n =$dbh->do($sqlcmd);
+		    print "$n toegevoegd";
 		}
 	    }
 	    print "\n";
