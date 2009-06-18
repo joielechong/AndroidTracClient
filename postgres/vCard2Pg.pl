@@ -29,6 +29,11 @@ while (my $file = shift) {
 	my $org = $orglist->[0]->name if defined $orglist;
 	
 	print "Got card for $fullname";
+	$sth5->execute($fullname);
+	if (my @row=$sth5->fetchrow_array()) {
+		$contact_id=$row[0];
+	}
+	
 	my $nodes = $vcard->get('email');
 	if (defined($nodes)) {
 	    foreach my $md (@$nodes) {
