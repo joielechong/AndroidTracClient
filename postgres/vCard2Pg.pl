@@ -2,15 +2,35 @@
 
 use strict;
 use Text::vCard::Addressbook;
-use Data::Dumper;
+use Term::ReadKey;
 use DBI;
+use Data::Dumper;
 
 my $dbh=DBI->connect("DBI:Pg:dbname=mfvl");
 my $sth1 = $dbh->prepare("SELECT contact_id FROM mail where mailaddress = ?");
 my $sth2 = $dbh->prepare("SELECT contact_id FROM telephone where number = normtel(?) and list");
 my $sth3 = $dbh->prepare("SELECT cn FROM contacts where id = ?");
 my $sth4 = $dbh->prepare("INSERT INTO invoer (voornaam,tussenvoegsel,achternaam,company,function,geboortedatum,webpagina) VALUES (?,?,?,?,?,?,?)");
-my $sth5 = $dbh->prepare("SELECT id FROM contacts WHERE cn=?");
+my $sth5 = $dbh->prepare("SELECT id FROM contacts WHERE lc(cn)=lc(?)");
+
+sub normtel {
+my $nr = shift;
+
+$nr =~s/[ \-\(\)]//g;
+
+return $nr;
+}
+
+sub getchar {
+my $key                                            
+               ReadMode 4; # Turn off controls keys                             
+               while (not defined ($key = ReadKey(-1))) {                       
+                       # No key yet                                             
+               }                                                                
+               print "Get key $key\n";                                          
+               ReadMode 0; # Reset tty mode before exiting     
+	       retrun $key;
+	       }
 
 while (my $file = shift) {
     my $address_book = Text::vCard::Addressbook->new({'source_file' => $file,});
@@ -53,7 +73,7 @@ while (my $file = shift) {
 	if (defined($nodes)) {
 	    foreach my $md (@$nodes) {
 		if (defined($md->value)) {
-		    my $number = $md->value;
+		    my $number = normtel($md->value);
 		    my $type = join(',',$md->types());
 		    if (substr($number,0,2) eq '31') {
 			$number = '+'.$number;
@@ -86,7 +106,7 @@ while (my $file = shift) {
 		print ' ',$row[0];
 		if (lc($row[0]) ne lc($fullname)) {
 		    print " !!DIFF!! Verwerken? (J/N): ";
-		    my $answer = lc(getc());
+		    my $answer = lc(getchar());
 		    $process = 1 if $answer eq 'j'; 
 		    die "direct gestopt\n" if $answer eq "q";
 		} else {
@@ -95,7 +115,7 @@ while (my $file = shift) {
 	    } # contact_id bestaat altijd al
 	} else {
 	    print ' ??? Toevoegen? (J/N)';
-	    my $answer = lc(getc());
+	    my $answer = lc(getchar());
 	    $process = 1 if $answer eq 'j'; 
 	    die "direct gestopt\n" if $answer eq "q";
 	    if ($process) {
