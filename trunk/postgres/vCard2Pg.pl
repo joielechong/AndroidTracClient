@@ -9,6 +9,8 @@ my $dbh=DBI->connect("DBI:Pg:dbname=mfvl");
 my $sth1 = $dbh->prepare("SELECT contact_id FROM mail where mailaddress = ?");
 my $sth2 = $dbh->prepare("SELECT contact_id FROM telephone where number = normtel(?) and list");
 my $sth3 = $dbh->prepare("SELECT cn FROM contacts where id = ?");
+my $sth4 = $dbh->prepare(INSERT INTO invoer (voornaam,tussenvoegsel,achternaam,company,function,geboortedatum,webpagina) VALUES (?,?,?,?,?,?,?)";
+my $sth5 = $dbh->prepare(SELECT contact_id FROM contacts WHERE cn=?";
 
 while (my $file = shift) {
     my $address_book = Text::vCard::Addressbook->new({'source_file' => $file,});
@@ -20,6 +22,10 @@ while (my $file = shift) {
 	my @faxes;
 	
 	my $fullname = $vcard->fullname();
+	    my $title = $vcard->title();
+	    my $bday = $vcard->bday();
+	    my $url = $vcard->url;
+	    my $org = $vcard->get('ORG')->[0]->name
 	
 	print "Got card for $fullname";
 	my $nodes = $vcard->get('email');
@@ -72,7 +78,7 @@ while (my $file = shift) {
 	    $sth3->execute($contact_id);
 	    if (my @row=$sth3->fetchrow_array()) {
 		print ' ',$row[0];
-		if (lc($row[0]) ne lc($vcard->fullname())) {
+		if (lc($row[0]) ne lc($fullname)) {
 		    print " !!DIFF!! Verwerken? (J/N): ";
 		    my $answer = lc(getc());
 		    $process = 1 if $answer eq 'j'; 
@@ -86,14 +92,20 @@ while (my $file = shift) {
 	    my $answer = lc(getc());
 	    $process = 1 if $answer eq 'j'; 
 	    die "direct gestopt\n" if $answer eq "q";
-	    my $name=$vcard->get('N');
-	    print Dumper($name);
-	    exit();
+	    my $name=$vcard->get('N')->[0];
+	    $sth4->execute($name->given,$name->middle,$name->family,$org,$title,$bday,$url);
+	    $sth5->execute($fullname);
+	    if (my @row=$sth5->fetchrow_array()) {
+		print ' ',$row[0];
+		$contact_id=$row[0];
+		} else {
+		    $process = 0;
+		    print "Oeps blijkbaar niet goed opgeslagen, dus meteen stoppen\n";
+		    print Dumper($name);
+		    die "Paniek\n";
+		}
 	}
 	if ($process) {
-	    my $title = $vcard->title();
-	    my $bday = $vcard->bday();
-	    my $url = $vcard->url;
 	    print " Nu verwerken";
 	    my $count = $#emails + 1;
 	    if ($count > 0) {
