@@ -10,7 +10,7 @@ my $sth1 = $dbh->prepare("SELECT contact_id FROM mail where mailaddress = ?");
 my $sth2 = $dbh->prepare("SELECT contact_id FROM telephone where number = normtel(?) and list");
 my $sth3 = $dbh->prepare("SELECT cn FROM contacts where id = ?");
 my $sth4 = $dbh->prepare("INSERT INTO invoer (voornaam,tussenvoegsel,achternaam,company,function,geboortedatum,webpagina) VALUES (?,?,?,?,?,?,?)");
-my $sth5 = $dbh->prepare("SELECT contact_id FROM contacts WHERE cn=?");
+my $sth5 = $dbh->prepare("SELECT id FROM contacts WHERE cn=?");
 
 while (my $file = shift) {
     my $address_book = Text::vCard::Addressbook->new({'source_file' => $file,});
