@@ -93,6 +93,7 @@ while (my $file = shift) {
 	    my $answer = lc(getc());
 	    $process = 1 if $answer eq 'j'; 
 	    die "direct gestopt\n" if $answer eq "q";
+	    if ($process) {
 	    my $name=$vcard->get('N')->[0];
 	    $sth4->execute($name->given,$name->middle,$name->family,$org,$title,$bday,$url);
 	    $sth5->execute($fullname);
@@ -104,6 +105,7 @@ while (my $file = shift) {
 		print "Oeps blijkbaar niet goed opgeslagen, dus meteen stoppen\n";
 		print Dumper($name);
 		die "Paniek\n";
+	    }
 	    }
 	}
 	if ($process) {
