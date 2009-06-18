@@ -26,9 +26,6 @@ while (my $file = shift) {
 	my @faxes;
 	
 	my $fullname = $vcard->fullname();
-	my $title = $vcard->title();
-	my $bday = $vcard->bday();
-	my $url = $vcard->url;
 	
 	print "Got card for $fullname";
 	my $nodes = $vcard->get('email');
@@ -75,8 +72,8 @@ while (my $file = shift) {
 	    }
 	}
 	
+	my $process = 0;
 	if (defined($contact_id)) {
-	    my $process = 0;
 	    print " $contact_id ";
 	    $sth3->execute($contact_id);
 	    if (my @row=$sth3->fetchrow_array()) {
@@ -85,16 +82,24 @@ while (my $file = shift) {
 		    print " !!DIFF!! Verwerken? (J/N): ";
 		    my $answer = lc(getc());
 		    $process = 1 if $answer eq 'j'; 
+		    die "direct gestopt\n" if $answer eq "q";
 		} else {
 		    $process = 1;
 		}
-	    } else {
+	    } // contact_id bestaat altijd al dus geen else
+	} else {
 		print ' ??? Toevoegen? (J/N)';
 		my $answer = lc(getc());
 		$process = 1 if $answer eq 'j'; 
 		die "direct gestopt\n" if $answer eq "q";
-	    }
-	    if ($process) {
+		my $name=$vcard->N;
+		print Dumper($name);
+		exit();
+	}
+	if ($process) {
+	my $title = $vcard->title();
+	my $bday = $vcard->bday();
+	my $url = $vcard->url;
 		print " Nu verwerken";
 		my $count = $#emails + 1;
 		if ($count > 0) {
@@ -117,10 +122,7 @@ while (my $file = shift) {
 		    print "\nQuery = $sqlcmd\n";
 		    $dbh->do($sqlcmd);
 		}
-	    }
-	    print "\n";
-	} else {
-	    print "\n";
 	}
+	print "\n";
     }
 }
