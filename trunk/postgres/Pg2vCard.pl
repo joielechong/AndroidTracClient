@@ -39,7 +39,7 @@ while (my @row=$sth1->fetchrow_array()) {
     $sth2->execute($row[0]);
     while (my @rowm=$sth2->fetchrow_array()) {
 #	print " Mail: ",join(", ",@rowm),"\n";
-	my $mail = $vcard->add_node({node_type=>'EMAIL'});
+	my $mail = $vcard->add_node({node_type=>'EMAIL',types=>'INTERNET'});
 	$mail->params({'INTERNET'=>1});
 	$mail->params({'INTERNET;PREF'=>1}) if defined($rowm[2]) and $rowm[2] == 1;
 	$mail->value($rowm[0]);
@@ -58,5 +58,5 @@ while (my @row=$sth1->fetchrow_array()) {
 }
 
 my $vcf = $addressbook->export();
-$vcf =~ s/TYPE=//g;
+#$vcf =~ s/TYPE=//g;
 print $vcf,"\n";
