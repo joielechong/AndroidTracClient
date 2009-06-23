@@ -11,26 +11,26 @@ my $sth1 = $dbh->prepare("SELECT contact_id FROM mail where mailaddress = ?");
 my $sth2 = $dbh->prepare("SELECT contact_id FROM telephone where number = normtel(?) and list");
 my $sth3 = $dbh->prepare("SELECT cn FROM contacts where id = ?");
 my $sth4 = $dbh->prepare("INSERT INTO invoer (voornaam,tussenvoegsel,achternaam,company,function,geboortedatum,webpagina) VALUES (?,?,?,?,?,?,?)");
-my $sth5 = $dbh->prepare("SELECT id FROM contacts WHERE lc(cn)=lc(?)");
+my $sth5 = $dbh->prepare("SELECT id FROM contacts WHERE lower(cn)=lower(?)");
 
 sub normtel {
-my $nr = shift;
-
-$nr =~s/[ \-\(\)]//g;
-
-return $nr;
+    my $nr = shift;
+    
+    $nr =~s/[ \-\(\)]//g;
+    
+    return $nr;
 }
 
 sub getchar {
-my $key                                            
-               ReadMode 4; # Turn off controls keys                             
-               while (not defined ($key = ReadKey(-1))) {                       
-                       # No key yet                                             
-               }                                                                
-               print "Get key $key\n";                                          
-               ReadMode 0; # Reset tty mode before exiting     
-	       retrun $key;
-	       }
+    my $key;
+    ReadMode 4; # Turn off controls keys                             
+    while (not defined ($key = ReadKey(-1))) {                       
+	# No key yet                                             
+    }                                                                
+    print "$key\n";                                          
+    ReadMode 0; # Reset tty mode before exiting     
+    return $key;
+}
 
 while (my $file = shift) {
     my $address_book = Text::vCard::Addressbook->new({'source_file' => $file,});
@@ -45,6 +45,7 @@ while (my $file = shift) {
 	my $title = $vcard->title();
 	my $bday = $vcard->bday();
 	my $url = $vcard->url;
+	$bday = undef if (defined($bday) and ($bday eq "40951531"));
 	my $orglist = $vcard->get('ORG');
 	my $org = $orglist->[0]->name if defined $orglist;
 	
@@ -82,7 +83,7 @@ while (my $file = shift) {
 			substr($number,0,4) = '+31';
 		    }
 		    $type='Other' if $type eq '';
-		    print "$type $number\n";
+		    print " $type $number\n";
 		    if ($type eq 'fax') {
 			push @faxes,$number;
 		    } else {
@@ -119,18 +120,20 @@ while (my $file = shift) {
 	    $process = 1 if $answer eq 'j'; 
 	    die "direct gestopt\n" if $answer eq "q";
 	    if ($process) {
-	    my $name=$vcard->get('N')->[0];
-	    $sth4->execute($name->given,$name->middle,$name->family,$org,$title,$bday,$url);
-	    $sth5->execute($fullname);
-	    if (my @row=$sth5->fetchrow_array()) {
-		print ' ',$row[0];
-		$contact_id=$row[0];
-	    } else {
-		$process = 0;
-		print "Oeps blijkbaar niet goed opgeslagen, dus meteen stoppen\n";
-		print Dumper($name);
-		die "Paniek\n";
-	    }
+		my $name=$vcard->get('N')->[0];
+	        my $voornaam = $name->given;
+		$voornaam = undef if $voornaam eq '';
+		$sth4->execute($voornaam,$name->middle,$name->family,$org,$title,$bday,$url);
+		$sth5->execute($fullname);
+		if (my @row=$sth5->fetchrow_array()) {
+		    print ' ',$row[0];
+		    $contact_id=$row[0];
+		} else {
+		    $process = 0;
+		    print "Oeps blijkbaar niet goed opgeslagen, dus meteen stoppen\n";
+		    print Dumper($name);
+		    die "Paniek\n";
+		}
 	    }
 	}
 	if ($process) {
