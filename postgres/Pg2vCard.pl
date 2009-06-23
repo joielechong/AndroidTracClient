@@ -25,7 +25,7 @@ while (my @row=$sth1->fetchrow_array()) {
 	$family .= ", ".$row[4] if defined($row[4]);
 	$name->family($family);
     } elsif (defined($row[6])) {
-	$name->$family($row[6]);
+	$name->family($row[6]);
     }
     $vcard->bday($row[5]) if defined($row[5]);
     $vcard->url($row[7]) if defined($row[7]);
