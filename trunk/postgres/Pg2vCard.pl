@@ -40,8 +40,8 @@ while (my @row=$sth1->fetchrow_array()) {
     while (my @rowm=$sth2->fetchrow_array()) {
 #	print " Mail: ",join(", ",@rowm),"\n";
 	my $mail = $vcard->add_node({node_type=>'EMAIL',types=>'INTERNET'});
-	$mail->params({'INTERNET'=>1});
-	$mail->params({'INTERNET;PREF'=>1}) if defined($rowm[2]) and $rowm[2] == 1;
+	$mail->add_types('INTERNET');
+	$mail->add_types('PREF') if defined($rowm[2]) and $rowm[2] == 1;
 	$mail->value($rowm[0]);
     }
     $sth3->execute($row[0]);
@@ -49,9 +49,10 @@ while (my @row=$sth1->fetchrow_array()) {
 #	print " Tel : ",join(", ",@rowt),"\n";
 	my $tel = $vcard->add_node({node_type=>'TEL'});
 	if (defined($rowt[1])) {
-	$tel->params({'HOME'=>1}) if $rowt[1] eq 'Prive';
-	$tel->params({'CELL'=>1}) if $rowt[1] eq 'Mobiel';
-	$tel->params({'WORK'=>1}) if $rowt[1] eq 'Werk';
+	    $tel->add_types('HOME') if $rowt[1] eq 'Prive';
+	    $tel->add_types('CELL') if $rowt[1] eq 'Mobiel';
+	    $tel->add_types('WORK') if $rowt[1] eq 'Werk';
+	    $tel->add_types('PREF') if defined($rowt[2]) and $rowt[2] == 1;
 	}
 	$tel->value($rowt[0]);
     }
