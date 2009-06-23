@@ -38,15 +38,18 @@ while (my @row=$sth1->fetchrow_array()) {
 #	print " Mail: ",join(", ",@rowm),"\n";
 	my $mail = $vcard->add_node({node_type=>'EMAIL'});
 	$mail->params({'INTERNET'=>1});
+	$mail->params({'PREF'=>1}) if defined($rowm[2]) and $rowm[2] == 1;
 	$mail->value($rowm[0]);
     }
     $sth3->execute($row[0]);
     while (my @rowt=$sth3->fetchrow_array()) {
 #	print " Tel : ",join(", ",@rowt),"\n";
 	my $tel = $vcard->add_node({node_type=>'TEL'});
-	$tel->params({'HOME'=>1}) if defined($rowt[1]) and $rowt[1] eq 'Prive';
-	$tel->params({'CELL'=>1}) if defined($rowt[1]) and $rowt[1] eq 'Mobiel';
-	$tel->params({'WORK'=>1}) if defined($rowt[1]) and $rowt[1] eq 'Werk';
+	if (defined($rowt[1])) {
+	$tel->params({'HOME'=>1}) if $rowt[1] eq 'Prive';
+	$tel->params({'CELL'=>1}) if $rowt[1] eq 'Mobiel';
+	$tel->params({'WORK'=>1}) if $rowt[1] eq 'Werk';
+	}
 	$tel->value($rowt[0]);
     }
 }
