@@ -468,7 +468,7 @@
 	my @classes=('FieldName date','ListTableFieldValue','ListTableFieldValueRight');;
 	
 	my @list = $html->getElementsByClassName('FieldName date');
-	return if $#list == 1;
+	return unless $#list == 1;
 	my $datum1 = $list[0]->innerText;
 	my $datum2 = $list[1]->innerText;
 	my @fondslist = $html->getElementsByClassName('ListTableFieldValue');
