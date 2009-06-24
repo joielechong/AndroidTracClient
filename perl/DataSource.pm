@@ -9,7 +9,6 @@
     use LWP::ConnCache;
     use HTTP::Cookies;
     use File::Temp;
-    use HTML::TagParser;
     
     BEGIN {
 	$DataSource::VERSION = "0.1";
@@ -386,6 +385,7 @@
 	my $fdbh = shift;
 	
 	my $html = HTML::TagParser->new( $self->{'content'} );
+	return unless defined($html);
 	
 	my @fondslist = $html->getElementsByTagName('td');
 #	print Dumper(\@fondslist);
@@ -540,6 +540,7 @@
 	my $fdbh = shift;
 	
 	my $html = HTML::TagParser->new( $self->{'content'} );
+	return unless defined($html);
 	
 	my %fondsen;
 	
