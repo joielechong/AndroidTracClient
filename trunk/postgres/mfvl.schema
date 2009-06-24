@@ -1352,8 +1352,8 @@ SET default_with_oids = true;
 
 CREATE TABLE mail (
     mailaddress character varying NOT NULL,
-    priority integer NOT NULL,
-    "type" character varying NOT NULL
+    priority integer,
+    "type" character varying
 )
 INHERITS (attr);
 
@@ -1376,8 +1376,8 @@ ALTER TABLE public.email OWNER TO mfvl;
 
 CREATE TABLE fax (
     number character varying NOT NULL,
-    fax_type character varying NOT NULL,
-    prio integer NOT NULL
+    fax_type character varying DEFAULT 'Onbekend'::character varying NOT NULL,
+    prio integer
 )
 INHERITS (attr);
 
@@ -1915,8 +1915,8 @@ ALTER TABLE public.tel_types OWNER TO mfvl;
 
 CREATE TABLE telephone (
     number character varying NOT NULL,
-    tel_type character varying NOT NULL,
-    prio integer NOT NULL,
+    tel_type character varying DEFAULT 'Onbekend'::character varying NOT NULL,
+    prio integer,
     list boolean DEFAULT true NOT NULL
 )
 INHERITS (attr);
@@ -3073,7 +3073,14 @@ CREATE RULE upd_telnummer1 AS ON UPDATE TO telnummer WHERE ((old.number)::text <
 -- Name: upd_telnummer2; Type: RULE; Schema: public; Owner: mfvl
 --
 
-CREATE RULE upd_telnummer2 AS ON UPDATE TO telnummer WHERE ((old.number)::text <> (new.number)::text) DO INSTEAD UPDATE telephone t SET prio = new.prio FROM contacts c WHERE ((((c.naam)::text = (old.naam)::text) AND (c.id = t.contact_id)) AND ((t.number)::text = (old.number)::text));
+CREATE RULE upd_telnummer2 AS ON UPDATE TO telnummer WHERE ((old.tel_type)::text <> (new.tel_type)::text) DO INSTEAD UPDATE telephone t SET tel_type = new.tel_type FROM contacts c WHERE ((((c.naam)::text = (old.naam)::text) AND (c.id = t.contact_id)) AND ((t.number)::text = (old.number)::text));
+
+
+--
+-- Name: upd_telnummer3; Type: RULE; Schema: public; Owner: mfvl
+--
+
+CREATE RULE upd_telnummer3 AS ON UPDATE TO telnummer WHERE (((old.prio <> new.prio) OR ((old.prio IS NULL) AND (NOT (new.prio IS NULL)))) OR ((new.prio IS NULL) AND (NOT (old.prio IS NULL)))) DO INSTEAD UPDATE telephone t SET prio = new.prio FROM contacts c WHERE ((((c.naam)::text = (old.naam)::text) AND (c.id = t.contact_id)) AND ((t.number)::text = (old.number)::text));
 
 
 SET search_path = pois, pg_catalog;
