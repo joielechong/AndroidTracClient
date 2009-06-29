@@ -46,7 +46,7 @@ foreach my $dir (sort keys %directories) {
 	    my $track = $contents{$song}->{track};
 	    next unless defined $track;
 	    unless (defined $inhoud[$track]) {
-	        $inhoud[$track] = $contents{$song};
+	        $inhoud[$track] = $song;
 	    } else {
 		my $inc=1;
 		$inc = -1 if $track == $directories{$dir};
@@ -66,7 +66,7 @@ foreach my $dir (sort keys %directories) {
 	    next if defined $track;
 	    $track = rand($directories{$dir})+1;
 	    unless (defined $inhoud[$track]) {
-	        $inhoud[$track] = $contents{$song};
+	        $inhoud[$track] = $song;
 	    } else {
 		my $inc=1;
 		$inc = -1 if $track == $directories{$dir};
