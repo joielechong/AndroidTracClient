@@ -87,7 +87,7 @@ foreach my $dir (sort keys %directories) {
 	for (my $i=1;$i<= $directories{$dir};$i++) {
 	    my $file = $inhoud[$i];
 	    my ($name,$path,$ext) = fileparse($file,@sufflist);
-	    my $line =- sprintf("%s/%3.3d - %s - %s%s=%s",$dir,$i,$contents{$file}->{song},$contents{$file}->{artist},$file);
+	    my $line =- sprintf("%s/%3.3d - %s - %s%s=%s",$dir,$i,$contents{$file}->{song},$contents{$file}->{artist},$ext,$file);
 	    print "$line\n";
 	}
 }
