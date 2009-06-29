@@ -103,4 +103,4 @@ foreach my $dir (sort keys %directories) {
 	}
 }
 
-print "Klaar\n  Netto $netto bytes\n  Bruto $bruto bytes\n";
+print STDERR "Klaar\n  Netto $netto bytes\n  Bruto $bruto bytes\n";
