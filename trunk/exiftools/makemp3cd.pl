@@ -41,12 +41,12 @@ foreach my $dir (sort keys %directories) {
 	my @inhoud;
 	print "Nu verwerken van $dir\n";
 	my $ntracks = $directories{$dir};
-	foreach my $song (keys %content) {
-	    next if $dir ne $content{$song}->{directory};
-	    my $track = $content{$song}->{track}
+	foreach my $song (keys %contents) {
+	    next if $dir ne $contents{$song}->{directory};
+	    my $track = $contents{$song}->{track}
 	    next unless defined $track;
 	    unless (defined $inhoud[$track]) {
-	        $inhoud[$track] = $content{$song};
+	        $inhoud[$track] = $contents{$song};
 	    } else {
 		my $inc=1;
 		$inc = -1 if $track == $directories{$dir};
@@ -57,16 +57,16 @@ foreach my $dir (sort keys %directories) {
 			$track=--;
 		    }
 		}
-		$inhoud[$track] = $content[$song];
+		$inhoud[$track] = $contents[$song];
 	    }
 	}
-	foreach my $song (keys %content) {
-	    next if $dir ne $content{$song}->{directory};
+	foreach my $song (keys %contents) {
+	    next if $dir ne $contents{$song}->{directory};
 	    my $track = $content{$song}->{track}
 	    next if defined $track;
 	    $track = rand($directories{$dir})+1;
 	    unless (defined $inhoud[$track]) {
-	        $inhoud[$track] = $content{$song};
+	        $inhoud[$track] = $contents{$song};
 	    } else {
 		my $inc=1;
 		$inc = -1 if $track == $directories{$dir};
@@ -77,7 +77,7 @@ foreach my $dir (sort keys %directories) {
 			$track=--;
 		    }
 		}
-		$inhoud[$track] = $content[$song];
+		$inhoud[$track] = $contents[$song];
 	    }
 	}
 	print Dumper(\@inhoud);
