@@ -77,9 +77,6 @@ foreach my $dir (sort keys %directories) {
 	    my $track = $contents{$song}->{track};
 	    next if defined $track;
 	    $track = rand($directories{$dir})+1;
-	    unless (defined $inhoud[$track]) {
-	        $inhoud[$track] = $song;
-	    } else {
 		my $inc=1;
 		$inc = -1 if $track == $directories{$dir};
 		while (defined($inhoud[$track])) {
@@ -90,7 +87,6 @@ foreach my $dir (sort keys %directories) {
 		    }
 		}
 		$inhoud[$track] = $song;
-	    }
 	}	
 #	print Dumper(\@inhoud);
 	for (my $i=1;$i<= $directories{$dir};$i++) {
