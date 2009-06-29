@@ -3,6 +3,7 @@
 use strict;
 use DBI;
 use Image::ExifTool;
+use MP3::Tag;
 use Encode;
 use Data::Dumper;
 
@@ -12,7 +13,8 @@ my $dbh=DBI->connect("DBI:Pg:dbname=mfvl") or die "cannot open database\n";
 my $sth0 = $dbh->prepare("SELECT mp3.filename FROM mp3, (SELECT filename FROM mp3 EXCEPT SELECT filename FROM filetemp) AS xxx WHERE mp3.filename=xxx.filename;");
 my $sth1 = $dbh->prepare("SELECT filename FROM mp3 WHERE artist IS NULL");
 my $sth2 = $dbh->prepare("UPDATE mp3 set artist=?,song=?,album=?,track=?,year=?,genre=?,comment=?,duur=?,filesize=? WHERE filename=?");
-my $sth3 = $dbh->prepare("insert into mp3 (filename) select filename from filetemp except select filename from mp3;");
+my $sth3 = $dbh->prepare("INSERT INTO mp3 (filename) SELECT filename FROM filetemp EXCEPT SELECT filename FROM mp3;");
+my $sth4 = $dbh->prepare("SELECT filename,artist,song,album,track,year,genre,comment FROM mp3 WHERE filename ILIKE '%.mp3' AND NOT artist IS NULL AND artist <> '' ORDER BY filename");
 
 chdir("/data/Music");
 #print $dbh->{AutoCommit},"\n";
@@ -62,7 +64,7 @@ $sth1->execute();
 while (my @row=$sth1->fetchrow_array()) {
     my $efile = $row[0];
     my $file = decode('UTF-8',$efile);
-    print "$file\n";
+#    print "$file\n";
     my $info = $exiftool->ImageInfo($PREFIX.$file);
 #    print Dumper($info);
     foreach my $key (keys %$info) {
@@ -98,4 +100,71 @@ while (my @row=$sth1->fetchrow_array()) {
 	next;
     }
     $sth2->execute($artist,$title,$album,$track,$year,$genre,$comment,$duration,$filesize,$efile);
+}
+
+$sth4->execute();
+
+while (my @row=$sth4->fetchrow_array()) {
+    my ($efile,$artist,$title,$album,$track,$year,$genre,$comment) = @row;
+    $artist='' unless defined($artist);
+    $title='' unless defined($title);
+    $album='' unless defined($album);
+    $track='' unless defined($track);
+    $year='' unless defined($year);
+    $genre='' unless defined($genre);
+    $comment='' unless defined($comment);
+    $artist =~ s/ +$// ;
+    $title =~ s/ +$//;
+    $album =~ s/ +$//;
+    $track =~ s/ +$//;
+    $year =~ s/ +$//;
+    $genre =~ s/ +$//;
+    $comment =~ s/ +$//;
+
+    my $file = decode('UTF-8',$efile);
+#    print "$file\n";
+    my $mp3 = MP3::Tag->new($file);
+    next unless defined($mp3);
+    my ($mp_title, $mp_track, $mp_artist, $mp_album, $mp_comment, $mp_year, $mp_genre) = $mp3->autoinfo();
+    my $change=0;
+    if ($mp_title ne $title) {
+	$mp3->title_set($title);
+	$change=1;
+    }
+    if ($mp_track ne $track) {
+	$mp3->track_set($track);
+	$change=1;
+    }
+    if ($mp_artist ne $artist) {
+	$mp3->artist_set($artist);
+	$change=1;
+    }
+    if ($mp_album ne $album) {
+	$mp3->album_set($album);
+	$change=1;
+    }
+    if ($mp_comment ne $comment) {
+	$mp3->comment_set($comment);
+    }
+    if ($mp_year ne $year) {
+	$mp3->year_set($year);
+	$change=1;
+    }
+    if ($mp_genre ne $genre) {
+	$mp3->genre_set($genre);
+    }
+    if ($change) {
+	print "$title $mp_title\n";
+	print "$track $mp_track\n";
+	print "$artist $mp_artist\n";
+	print "$album $mp_album\n";
+	print "$comment $mp_comment\n";
+	print "$year $mp_year\n";
+	print "$genre $mp_genre\n";
+	print "Changed: $file\n";
+	eval {
+	    $mp3->update_tags();
+	};warn $@ if $@;
+    }
+    $mp3->close();
 }
