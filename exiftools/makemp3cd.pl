@@ -2,14 +2,14 @@
 
 use strict;
 use DBI;
-use File::Basename
+use File::Basename;
 use Data::Dumper;
 
 my %contents;
 my %directories;
 my %tracklist;
 
-my @suff=('.mp3','.MP3','.wma','.WMA');
+my @sufflist=('.mp3','.MP3','.wma','.WMA');
 
 my $dbh=DBI->connect("DBI:Pg:dbname=mfvl") or die "cannot open database\n";
 my $sth1 = $dbh->prepare("SELECT directory,count(*) FROM mp3cdcontents GROUP BY directory");
