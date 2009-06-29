@@ -38,7 +38,47 @@ print Dumper(\%contents);
 print Dumper(\%tracklist);
 
 foreach my $dir (sort keys %directories) {
+	my @inhoud;
 	print "Nu verwerken van $dir\n";
 	my $ntracks = $directories{$dir};
-	
+	foreach my $song (keys %content) {
+	    next if $dir ne $content{$song}->{directory};
+	    my $track = $content{$song}->{track}
+	    next unless defined $track;
+	    unless (defined $inhoud[$track]) {
+	        $inhoud[$track] = $content{$song};
+	    } else {
+		my $inc=1;
+		$inc = -1 if $track == $directories{$dir};
+		while (defined($inhoud[$track])) {
+		    $track += $inc;
+		    if ($track > $directories{$dir}) {
+			$inc = -1;
+			$track=--;
+		    }
+		}
+		$inhoud[$track] = $content[$song];
+	    }
+	}
+	foreach my $song (keys %content) {
+	    next if $dir ne $content{$song}->{directory};
+	    my $track = $content{$song}->{track}
+	    next if defined $track;
+	    $track = rand($directories{$dir})+1;
+	    unless (defined $inhoud[$track]) {
+	        $inhoud[$track] = $content{$song};
+	    } else {
+		my $inc=1;
+		$inc = -1 if $track == $directories{$dir};
+		while (defined($inhoud[$track])) {
+		    $track += $inc;
+		    if ($track > $directories{$dir}) {
+			$inc = -1;
+			$track=--;
+		    }
+		}
+		$inhoud[$track] = $content[$song];
+	    }
+	}
+	print Dumper(\@inhoud);
 }
