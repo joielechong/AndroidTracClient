@@ -37,9 +37,9 @@ while (my @row=$sth2->fetchrow_array()) {
     $contents{$file}->{track}=$track;
     $contents{$file}->{artist}=$row[3];
     $contents{$file}->{song}=$row[4];
-    my @stat = stat("$PREFIX/".file);
-    $contents{$file}->netto=$stat[7];
-    $contents{$file}->bruto=$stat[11]*$stat[12];
+    my @stat = stat("$PREFIX/".$file);
+    $contents{$file}->{netto}=$stat[7];
+    $contents{$file}->{bruto}=$stat[11]*$stat[12];
 }
 
 #print Dumper(\%directories);
