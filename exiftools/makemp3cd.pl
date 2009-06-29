@@ -9,6 +9,8 @@ my %contents;
 my %directories;
 my %tracklist;
 
+my $PREFIX="/data/Music/";
+
 my @sufflist=('.mp3','.MP3','.wma','.WMA');
 
 my $dbh=DBI->connect("DBI:Pg:dbname=mfvl") or die "cannot open database\n";
@@ -23,22 +25,29 @@ while (my @row=$sth1->fetchrow_array()) {
 
 $sth2->execute();
 while (my @row=$sth2->fetchrow_array()) {
-    $contents{$row[5]}->{cdnr}=$row[0];
-    $contents{$row[5]}->{directory}=$row[1];
+	my $file = $row[5];
+    $contents{$file}->{cdnr}=$row[0];
+    $contents{$file}->{directory}=$row[1];
     my $track = $row[2];
     if (defined($track)) {
 	$track = $directories{$row[1]} if $track == -1;
 	$track = undef if ($track < 1 or $track > $directories{$row[1]});
     }
     push @{$tracklist{$row[1]}},$track if defined($track);
-    $contents{$row[5]}->{track}=$track;
-    $contents{$row[5]}->{artist}=$row[3];
-    $contents{$row[5]}->{song}=$row[4];
+    $contents{$file}->{track}=$track;
+    $contents{$file}->{artist}=$row[3];
+    $contents{$file}->{song}=$row[4];
+    my @stat = stat("$PREFIX/".file);
+    $contents{$file}->netto=$stat[7];
+    $contents{$file}->bruto=$stat[11]*$stat[12];
 }
 
 #print Dumper(\%directories);
 #print Dumper(\%contents);
 #print Dumper(\%tracklist);
+
+my $netto=0;
+my $bruto=0;
 
 foreach my $dir (sort keys %directories) {
 	my @inhoud;
@@ -89,5 +98,9 @@ foreach my $dir (sort keys %directories) {
 	    my ($name,$path,$ext) = fileparse($file,@sufflist);
 	    my $line = sprintf("%s/%3.3d - %s - %s%s=%s",$dir,$i,$contents{$file}->{song},$contents{$file}->{artist},$ext,$file);
 	    print "$line\n";
+	    $netto += $contents{$file}->{netto};
+	    $bruto += $contents{$file}->{bruto};
 	}
 }
+
+print "Klaar\n  Netto $netto bytes\n  Bruto $bruto bytes\n";
