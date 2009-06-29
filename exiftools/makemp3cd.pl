@@ -2,11 +2,14 @@
 
 use strict;
 use DBI;
+use File::Basename
 use Data::Dumper;
 
 my %contents;
 my %directories;
 my %tracklist;
+
+my @suff=('.mp3','.MP3','.wma','.WMA');
 
 my $dbh=DBI->connect("DBI:Pg:dbname=mfvl") or die "cannot open database\n";
 my $sth1 = $dbh->prepare("SELECT directory,count(*) FROM mp3cdcontents GROUP BY directory");
@@ -79,10 +82,11 @@ foreach my $dir (sort keys %directories) {
 		}
 		$inhoud[$track] = $song;
 	    }
-	}
+	}	
 #	print Dumper(\@inhoud);
 	for (my $i=1;$i<= $directories{$dir};$i++) {
 	    my $file = $inhoud[$i];
-	    print "$dir/$i - ".$contents{$file}->{song}." - ".$contents{$file}->{artist}."=$file\n";
+	    my ($name,$path,$ext) = fileparse($file,@sufflist);
+	    print "$dir/$i - ".$contents{$file}->{song}." - ".$contents{$file}->{artist}."$ext=$file\n";
 	}
 }
