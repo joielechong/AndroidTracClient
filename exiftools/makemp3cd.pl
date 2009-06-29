@@ -83,6 +83,6 @@ foreach my $dir (sort keys %directories) {
 #	print Dumper(\@inhoud);
 	for (my $i=1;$i<= $directories{$dir};$i++) {
 	    my $file = $inhoud[$i];
-	    print "$directory/$i - ".$contents{$file}->{song}." - ".$contents{$file}->{artist}."=$file\n";
+	    print "$dir/$i - ".$contents{$file}->{song}." - ".$contents{$file}->{artist}."=$file\n";
 	}
 }
