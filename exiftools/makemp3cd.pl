@@ -33,9 +33,9 @@ while (my @row=$sth2->fetchrow_array()) {
     $contents{$row[5]}->{song}=$row[4];
 }
 
-print Dumper(\%directories);
-print Dumper(\%contents);
-print Dumper(\%tracklist);
+#print Dumper(\%directories);
+#print Dumper(\%contents);
+#print Dumper(\%tracklist);
 
 foreach my $dir (sort keys %directories) {
 	my @inhoud;
@@ -80,5 +80,9 @@ foreach my $dir (sort keys %directories) {
 		$inhoud[$track] = $contents{$song};
 	    }
 	}
-	print Dumper(\@inhoud);
+#	print Dumper(\@inhoud);
+	for (my $i=1;$i<= $directories{$dir};$i++) {
+	    my $file = $inhoud[$i];
+	    print "$directory/$i - ".$contents{$file}->{song}." - ".$contents{$file}->{artist}."=$file\n";
+	}
 }
