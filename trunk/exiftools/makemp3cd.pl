@@ -42,7 +42,7 @@ while (my @row=$sth2->fetchrow_array()) {
 
 foreach my $dir (sort keys %directories) {
 	my @inhoud;
-	print "Nu verwerken van $dir\n";
+	print STDERR "Nu verwerken van $dir\n";
 	my $ntracks = $directories{$dir};
 	foreach my $song (keys %contents) {
 	    next if $dir ne $contents{$song}->{directory};
@@ -87,7 +87,7 @@ foreach my $dir (sort keys %directories) {
 	for (my $i=1;$i<= $directories{$dir};$i++) {
 	    my $file = $inhoud[$i];
 	    my ($name,$path,$ext) = fileparse($file,@sufflist);
-	    my $line =- sprintf("%s/%3.3d - %s - %s%s=%s",$dir,$i,$contents{$file}->{song},$contents{$file}->{artist},$ext,$file);
+	    my $line = sprintf("%s/%3.3d - %s - %s%s=%s",$dir,$i,$contents{$file}->{song},$contents{$file}->{artist},$ext,$file);
 	    print "$line\n";
 	}
 }
