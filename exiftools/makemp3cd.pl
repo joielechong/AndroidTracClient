@@ -57,7 +57,7 @@ foreach my $dir (sort keys %directories) {
 			$track--;
 		    }
 		}
-		$inhoud[$track] = $contents{$song};
+		$inhoud[$track] = $song;
 	    }
 	}
 	foreach my $song (keys %contents) {
@@ -77,7 +77,7 @@ foreach my $dir (sort keys %directories) {
 			$track--;
 		    }
 		}
-		$inhoud[$track] = $contents{$song};
+		$inhoud[$track] = $song;
 	    }
 	}
 #	print Dumper(\@inhoud);
