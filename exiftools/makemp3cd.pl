@@ -10,7 +10,7 @@ my %tracklist;
 
 my $dbh=DBI->connect("DBI:Pg:dbname=mfvl") or die "cannot open database\n";
 my $sth1 = $dbh->prepare("SELECT directory,count(*) FROM mp3cdcontents GROUP BY directory");
-my $sth2 = $dbh->prepare("SELECT cdnr,directory,track,artist,song,filename FROM mp3cdcontents");
+my $sth2 = $dbh->prepare("SELECT cdnr,directory,track,artist,song,filename FROM mp3cdcontents ORDER BY cdnr,directory,track");
 
 $sth1->execute();
 while (my @row=$sth1->fetchrow_array()) {
@@ -43,7 +43,7 @@ foreach my $dir (sort keys %directories) {
 	my $ntracks = $directories{$dir};
 	foreach my $song (keys %contents) {
 	    next if $dir ne $contents{$song}->{directory};
-	    my $track = $contents{$song}->{track}
+	    my $track = $contents{$song}->{track};
 	    next unless defined $track;
 	    unless (defined $inhoud[$track]) {
 	        $inhoud[$track] = $contents{$song};
@@ -54,15 +54,15 @@ foreach my $dir (sort keys %directories) {
 		    $track += $inc;
 		    if ($track > $directories{$dir}) {
 			$inc = -1;
-			$track=--;
+			$track--;
 		    }
 		}
-		$inhoud[$track] = $contents[$song];
+		$inhoud[$track] = $contents{$song};
 	    }
 	}
 	foreach my $song (keys %contents) {
 	    next if $dir ne $contents{$song}->{directory};
-	    my $track = $content{$song}->{track}
+	    my $track = $contents{$song}->{track};
 	    next if defined $track;
 	    $track = rand($directories{$dir})+1;
 	    unless (defined $inhoud[$track]) {
@@ -74,10 +74,10 @@ foreach my $dir (sort keys %directories) {
 		    $track += $inc;
 		    if ($track > $directories{$dir}) {
 			$inc = -1;
-			$track=--;
+			$track--;
 		    }
 		}
-		$inhoud[$track] = $contents[$song];
+		$inhoud[$track] = $contents{$song};
 	    }
 	}
 	print Dumper(\@inhoud);
