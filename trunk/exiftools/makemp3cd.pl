@@ -79,7 +79,7 @@ foreach my $dir (sort keys %directories) {
 	    my $track = $contents{$song}->{track};
 	    next if defined $track;
 	    $track = rand($directories{$dir})+1;
-	    $track = $directories[$dir] if $track < 1;
+	    $track = $directories{$dir} if $track < 1;
 		my $inc=1;
 		$inc = -1 if $track == $directories{$dir};
 		while (defined($inhoud[$track])) {
