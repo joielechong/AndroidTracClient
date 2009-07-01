@@ -955,7 +955,7 @@ N:de Roo;Frank
 FN:Frank de Roo
 TITLE:Sales- & Recruitment Manager
 ORG:HighTech Solutions, Apeldoorn
-EMAIL;INTERNET:frank.deroo@hightech.nl
+EMAIL;INTERNET:frankderoo@planet.nl
 END:VCARD
 BEGIN:VCARD
 VERSION:2.1
@@ -1247,7 +1247,7 @@ BEGIN:VCARD
 VERSION:2.1
 N:Loenhoud;Hans van
 FN:Hans van Loenhoud
-TITLE:Vice-voorzitter, bestuurslid werkgroepen
+TITLE:Redacteur TestNet Nieuws, trekker werkgroep ISO29119
 ORG:TestNet
 EMAIL;INTERNET:loenhoud@inqa.nl
 END:VCARD
@@ -1303,8 +1303,8 @@ BEGIN:VCARD
 VERSION:2.1
 N:Snijder;Paul
 FN:Paul Snijder
-TITLE:HR Manager
-ORG:Paul Snijder Interim Management
+TITLE:HR Manager (self-employed)
+ORG:Philips Healthcare
 EMAIL;INTERNET:paul.snijder@philips.com
 END:VCARD
 BEGIN:VCARD
@@ -2195,6 +2195,14 @@ EMAIL;INTERNET:porro@spipartners.nl
 END:VCARD
 BEGIN:VCARD
 VERSION:2.1
+N:van den Berg;Eric
+FN:Eric van den Berg
+TITLE:Marketing Manager International
+ORG:Bombardier
+EMAIL;INTERNET:ievandenberg@cogeco.ca
+END:VCARD
+BEGIN:VCARD
+VERSION:2.1
 N:Musters;Peter
 FN:Peter Musters
 TITLE:Gemeenteraadslid
@@ -2371,19 +2379,19 @@ EMAIL;INTERNET:geert.mooi@nl.ibm.com
 END:VCARD
 BEGIN:VCARD
 VERSION:2.1
-N:Rengelink;Arina
-FN:Arina Rengelink
-TITLE:Public Relations & Communication Manager
-ORG:ICT Automatisering N.V.
-EMAIL;INTERNET:arina.rengelink@ict.nl
-END:VCARD
-BEGIN:VCARD
-VERSION:2.1
 N:Toet;Martin
 FN:Martin Toet
 TITLE:Test Manager at KPN
 ORG:VDVL
 EMAIL;INTERNET:martin.toet@hotmail.com
+END:VCARD
+BEGIN:VCARD
+VERSION:2.1
+N:Rengelink;Arina
+FN:Arina Rengelink
+TITLE:Public Relations & Communication Manager
+ORG:ICT Automatisering N.V.
+EMAIL;INTERNET:arina.rengelink@ict.nl
 END:VCARD
 BEGIN:VCARD
 VERSION:2.1
@@ -2589,7 +2597,7 @@ BEGIN:VCARD
 VERSION:2.1
 N:van Houten;Marcel
 FN:Marcel van Houten
-TITLE:First Officer  B747
+TITLE:First Officer Airbus A330
 ORG:Hong Kong Dragon Airlines
 EMAIL;INTERNET:marcelmeel@yahoo.co.uk
 END:VCARD
@@ -2689,8 +2697,8 @@ EMAIL;INTERNET:hans.van.den.hoven@ict.nl
 END:VCARD
 BEGIN:VCARD
 VERSION:2.1
-N:Doeleman;Ronald
-FN:Ronald Doeleman
+N:Doeleman, MIRSE MIET;Ronald
+FN:Ronald Doeleman, MIRSE MIET
 TITLE:Site Safety Officer
 ORG:Alstom Transport BV
 EMAIL;INTERNET:rhj.doeleman@gmail.com
@@ -3025,10 +3033,18 @@ EMAIL;INTERNET:fvloenhout@wxs.nl
 END:VCARD
 BEGIN:VCARD
 VERSION:2.1
+N:van Vliet - van de Ven;Conny
+FN:Conny van Vliet - van de Ven
+TITLE:Officemanager
+ORG:Interaction Groep
+EMAIL;INTERNET:connyvanvliet@live.nl
+END:VCARD
+BEGIN:VCARD
+VERSION:2.1
 N:Colenbrander;Michiel
 FN:Michiel Colenbrander
-TITLE:Owner
-ORG:Savoury Software
+TITLE:Business Unit Manager
+ORG:ThiemeMeulenhoff
 EMAIL;INTERNET:m.colenbrander@cvd-consult.nl
 END:VCARD
 BEGIN:VCARD
@@ -3069,7 +3085,7 @@ N:Boekee;Sander
 FN:Sander Boekee
 TITLE:Senior Consultant
 ORG:ARCADIS Nederland BV
-EMAIL;INTERNET:s.boekee@arcadis.nl
+EMAIL;INTERNET:sander.boekee@arcadis.nl
 END:VCARD
 BEGIN:VCARD
 VERSION:2.1

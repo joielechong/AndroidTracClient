@@ -1161,6 +1161,24 @@ Les jardin d'Elyse,83600 Frejus,France</name>
         </Style>
       </Placemark>
       <Placemark>
+        <name>Locuz, Beechavenue 54-80,1119 PT Schiphol Rijk,Nederland</name>
+        <Point>
+          <coordinates>4.746687,52.2796112,0</coordinates>
+        </Point>
+        <Style>
+          <IconStyle>
+            <Icon>
+              <h>30</h>
+              <href>http://my.pdamill.com/~fable/igopoi.bmp</href>
+              <w>30</w>
+              <y>30</y>
+            </Icon>
+            <heading>0</heading>
+          </IconStyle>
+          <LabelStyle></LabelStyle>
+        </Style>
+      </Placemark>
+      <Placemark>
         <name>Logopedie praktijk Parlevliet, Max Havelaarstraat 313,1183 LT Amstelveen,Nederland</name>
         <Point>
           <coordinates>4.873781,52.305328,0</coordinates>
@@ -1218,6 +1236,24 @@ Les jardin d'Elyse,83600 Frejus,France</name>
         <name>Marianne, Joyce en Dave van der Ploeg, Lindenlaan 577,1185 LW Amstelveen,Nederland</name>
         <Point>
           <coordinates>4.860943,52.294674,0</coordinates>
+        </Point>
+        <Style>
+          <IconStyle>
+            <Icon>
+              <h>30</h>
+              <href>http://my.pdamill.com/~fable/igopoi.bmp</href>
+              <w>30</w>
+              <y>30</y>
+            </Icon>
+            <heading>0</heading>
+          </IconStyle>
+          <LabelStyle></LabelStyle>
+        </Style>
+      </Placemark>
+      <Placemark>
+        <name>Menno Ong, Valeriusstraat 229/2,1075 GA Amsterdam,Nederland</name>
+        <Point>
+          <coordinates>4.8586586,52.3514824,0</coordinates>
         </Point>
         <Style>
           <IconStyle>
@@ -1468,7 +1504,7 @@ Bouleard du Commerce 390,83480 Puget sur Argens,France</name>
         </Style>
       </Placemark>
       <Placemark>
-        <name>Renate Markos y Celada, 1. Quai Aulagnier
+        <name>Renate Sieber, 1. Quai Aulagnier
 Residence des Isles
 Bat E1,92600 Asnières,France</name>
         <Point>
