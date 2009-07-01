@@ -13,17 +13,21 @@ my $PREFIX="/data/Music/";
 
 my @sufflist=('.mp3','.MP3','.wma','.WMA');
 
-my $dbh=DBI->connect("DBI:Pg:dbname=mfvl") or die "cannot open database\n";
-my $sth1 = $dbh->prepare("SELECT directory,count(*) FROM mp3cdcontents GROUP BY directory");
-my $sth2 = $dbh->prepare("SELECT cdnr,directory,track,artist,song,filename FROM mp3cdcontents ORDER BY cdnr,directory,track");
+my $cdnr = shift;
 
-$sth1->execute();
+die "Aanroep: $0 <cdnr>\n" unless defined $cdnr;
+
+my $dbh=DBI->connect("DBI:Pg:dbname=mfvl") or die "cannot open database\n";
+my $sth1 = $dbh->prepare("SELECT directory,count(*) FROM mp3cdcontents where cdnr=?  GROUP BY directory");
+my $sth2 = $dbh->prepare("SELECT cdnr,directory,track,artist,song,filename FROM mp3cdcontents WHERE cdnr=? ORDER BY cdnr,directory,track");
+
+$sth1->execute($cdnr);
 while (my @row=$sth1->fetchrow_array()) {
     $directories{$row[0]} = $row[1];
     $tracklist{$row[0]} = ();
 }
 
-$sth2->execute();
+$sth2->execute($cdnr);
 while (my @row=$sth2->fetchrow_array()) {
 	my $file = $row[5];
     $contents{$file}->{cdnr}=$row[0];
@@ -91,6 +95,7 @@ foreach my $dir (sort keys %directories) {
 #	print Dumper(\@inhoud);
 	for (my $i=1;$i<= $directories{$dir};$i++) {
 	    my $file = $inhoud[$i];
+	    print STDERR "$file\n";
 	    my ($name,$path,$ext) = fileparse($file,@sufflist);
 	    my $line = sprintf("%s/%3.3d - %s - %s%s=%s",$dir,$i,$contents{$file}->{song},$contents{$file}->{artist},$ext,$file);
 	    print "$line\n";
@@ -99,4 +104,4 @@ foreach my $dir (sort keys %directories) {
 	}
 }
 
-print STDERR "Klaar\n  Netto $netto bytes\n  Bruto $bruto bytes\n";
+print STDERR "Klaar\n  Netto $netto bytes\n\n";
