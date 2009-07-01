@@ -78,18 +78,17 @@ foreach my $dir (sort keys %directories) {
 	    next if $dir ne $contents{$song}->{directory};
 	    my $track = $contents{$song}->{track};
 	    next if defined $track;
-	    $track = rand($directories{$dir})+1;
-	    $track = $directories{$dir} if $track < 1;
-		my $inc=1;
-		$inc = -1 if $track == $directories{$dir};
-		while (defined($inhoud[$track])) {
-		    $track += $inc;
-		    if ($track > $directories{$dir}) {
-			$inc = -1;
-			$track--;
-		    }
+	    $track = 1+ int(rand($directories{$dir}));
+	    my $inc=1;
+	    $inc = -1 if $track == $directories{$dir};
+	    while (defined($inhoud[$track])) {
+		$track += $inc;
+		if ($track > $directories{$dir}) {
+		    $inc = -1;
+		    $track--;
 		}
-		$inhoud[$track] = $song;
+	    }
+	    $inhoud[$track] = $song;
 	}	
 #	print Dumper(\@inhoud);
 	for (my $i=1;$i<= $directories{$dir};$i++) {
