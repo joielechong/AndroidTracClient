@@ -43,7 +43,6 @@ while (my @row=$sth2->fetchrow_array()) {
     $contents{$file}->{song}=$row[4];
     my @stat = stat("$PREFIX/".$file);
     $contents{$file}->{netto}=$stat[7];
-    $contents{$file}->{bruto}=$stat[11]*$stat[12];
 }
 
 #print Dumper(\%directories);
@@ -51,7 +50,6 @@ while (my @row=$sth2->fetchrow_array()) {
 #print Dumper(\%tracklist);
 
 my $netto=0;
-my $bruto=0;
 
 foreach my $dir (sort keys %directories) {
 	my @inhoud;
@@ -100,7 +98,6 @@ foreach my $dir (sort keys %directories) {
 	    my $line = sprintf("%s/%3.3d - %s - %s%s=%s",$dir,$i,$contents{$file}->{song},$contents{$file}->{artist},$ext,$file);
 	    print "$line\n";
 	    $netto += $contents{$file}->{netto};
-	    $bruto += $contents{$file}->{bruto};
 	}
 }
 
