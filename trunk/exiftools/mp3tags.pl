@@ -133,7 +133,6 @@ while (my @row=$sth4->fetchrow_array()) {
     }
     if ($mp_track ne $track) {
 	$mp3->track_set($track);
-	$change=1;
     }
     if ($mp_artist ne $artist) {
 	$mp3->artist_set($artist);
