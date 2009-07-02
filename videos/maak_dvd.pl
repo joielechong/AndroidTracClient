@@ -251,7 +251,7 @@ open BATCH,">$prefix_out/maak_mpg.sh";
 print BATCH "#! /bin/sh\n";
 print BATCH "function call_ffmpeg()\n";
 print BATCH "{\n";
-print BATCH " 	ffmpeg -v 0 -i $prefix_in/\$2/\$1.MOD  -target pal-dvd -aspect 16:9 -deinterlace -vb 9000k -ab 384k  - | ";
+print BATCH " 	ffmpeg -v 0 -i $prefix_in/\$2/\$1.MOD  -target pal-dvd -aspect 16:9 -flags ilme -vb 9000k -ab 384k  - | ";
 print BATCH "spumux -s0 $prefix_out/\$1.id.xml | ";
 print BATCH "spumux -s1 $prefix_out/\$1.tc.xml > $prefix_out/\$1.mpg\n";
 print BATCH "}\n\n";
