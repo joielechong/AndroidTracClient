@@ -271,7 +271,13 @@ if ($start != $eind) {
 
     # radars.bnet.be
 
-    $nfreq = HTTP::Request->new(GET=>"http://radars.bnet.be/servlets/radarsfixes/getFile?ext=ov2&lim=a");
+#    $nfreq = HTTP::Request->new(GET=>"http://radars.bnet.be/servlets/radarsfixes/getFile?ext=ov2&lim=a");
+    $nfreq = HTTP::Request->new(POST => 'http://flits.bnet.be/servlets/flitspalen/getFlitspalen');
+    $cookie_jar->add_cookie_header($nfreq);
+    $ua->cookie_jar($cookie_jar);
+    
+    $nfreq->content_type('application/x-www-form-urlencoded');
+    $nfreq->content('type=1&lim=&cond=1');
     $nfres = $ua->request($nfreq);
 
     $content = $nfres->content;
