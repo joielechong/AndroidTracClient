@@ -53,9 +53,10 @@ if (defined($reffile)) {
     print "Reftime = ",$reftime->strftime("%F %T"),"\n";
     my $strp2 = new DateTime::Format::Strptime(pattern=>'%Y:%m:%d %T');
     my $picttime = $strp2->parse_datetime($date); 
-    print Dumper($reftime);
-    print Dumper($picttime);
+#    print Dumper($reftime);
+#    print Dumper($picttime);
     my $difftime = $reftime - $picttime;
+    print "Picttime = ",$picttime->strftime("%F %T"),"\n";
     print Dumper($difftime);
     exit();
 }
