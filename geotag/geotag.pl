@@ -58,7 +58,7 @@ if (defined($reffile)) {
     my $picttime = $strp2->parse_datetime($date); 
     print "DateTimeOriginal = $date\n";
     print "Reftime = ",$reftime->strftime("%F %T"),"\n";
-    my $difftime = $reftime - $picttime;
+    $difftime = $reftime - $picttime;
     print "Picttime = ",$picttime->strftime("%F %T"),"\n";
     print Dumper($difftime);
 }
@@ -103,21 +103,20 @@ foreach my $file (@files) {
 # FIXME hier iets mee doen?
 #
     my $date = $exif->GetValue('DateTimeOriginal');
-#
-# FIXME wat als er geen tijd is?
-#
-    print "$file $date";
+    next unless defined($date);
+
     my $newdate = $date;
     my $oldtime = $strp2->parse_datetime($date);
     my $newtime = $oldtime + $difftime;
     $newdate = $newtime->strftime("%Y:%m:%d %T");
 
-    print "$file\noldtime = $date\nnewdate = $newdate\n";
 
     my $isotime=$newtime->strftime("%FT%TZ");
+    print "$file\noldtime = $date\nnewdate = $newdate\nisotime=$isotime\n";
     my $lat=$gpxdata{$isotime}->{'lat'};
     my $lon=$gpxdata{$isotime}->{'lon'};
     next unless defined($lat);
+
 #
 # FIXME wat als GPS minder vaak dan 1/s
 #
@@ -133,5 +132,5 @@ foreach my $file (@files) {
     $exif->SetNewValue('FileModifyDate',$newtime);
 #     $exif->WriteInfo("$picdir/$file","/temp/$file");
 #    $exif->SetFileModifyDate($picdir/$file);
-    sleep(60);
+exit();
 }
