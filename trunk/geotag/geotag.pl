@@ -46,8 +46,8 @@ my $result = GetOptions("gpx=s" => \$gpxfile,
 usage() unless ((defined($gpxfile) xor defined($nmeafile)) and defined($picdir));
 usage() if (defined($reffile) xor defined($reftime_src));
 
-my $strp1 = new DateTime::Format::Strptime(pattern=>'%F %T',time_zone='Europe/Amsterdam');
-my $strp2 = new DateTime::Format::Strptime(pattern=>'%Y:%m:%d %T',time_zone='Europe/Amsterdam');
+my $strp1 = new DateTime::Format::Strptime(pattern=>'%F %T',time_zone=>'Europe/Amsterdam');
+my $strp2 = new DateTime::Format::Strptime(pattern=>'%Y:%m:%d %T',time_zone=>'Europe/Amsterdam');
 my $difftime = DateTime::Duration->new(seconds=>0);
  
 if (defined($reffile)) {
