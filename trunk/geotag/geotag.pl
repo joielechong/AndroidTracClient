@@ -56,11 +56,11 @@ if (defined($reffile)) {
     my $reftime = $strp1->parse_datetime($reftime_src);
     my $date = $exif->GetValue('DateTimeOriginal');
     my $picttime = $strp2->parse_datetime($date); 
-    print "DateTimeOriginal = $date\n";
-    print "Reftime = ",$reftime->strftime("%F %T"),"\n";
+#    print "DateTimeOriginal = $date\n";
+#    print "Reftime = ",$reftime->strftime("%F %T"),"\n";
     $difftime = $reftime - $picttime;
-    print "Picttime = ",$picttime->strftime("%F %T"),"\n";
-    print Dumper($difftime);
+#    print "Picttime = ",$picttime->strftime("%F %T"),"\n";
+#    print Dumper($difftime);
 }
 
 my %gpxdata;
@@ -112,10 +112,10 @@ foreach my $file (@files) {
     $newtime->set_time_zone('UTC');
 
     my $isotime=$newtime->strftime("%FT%TZ");
-    print "$file\noldtime = $date\nnewdate = $newdate\nisotime=$isotime\n";
     my $lat=$gpxdata{$isotime}->{'lat'};
     my $lon=$gpxdata{$isotime}->{'lon'};
     next unless defined($lat);
+    print "$file\noldtime = $date\nnewdate = $newdate\nisotime=$isotime\n";
 
 #
 # FIXME wat als GPS minder vaak dan 1/s
