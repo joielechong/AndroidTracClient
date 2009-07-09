@@ -46,7 +46,7 @@ usage() if (defined($reffile) xor defined($reftime_src));
 if (defined($reffile)) {
     my $exif = new Image::ExifTool;
     my $success = $exif->ExtractInfo("$picdir/$reffile");
-    my $strp = DateTime::Format::Strptime(pattern=>'%F %T');
+    my $strp = new DateTime::Format::Strptime(pattern=>'%F %T');
     my $reftime = $strp->parse_datetime($reftime_src);
     my $date = $exif->GetValue('DateTimeOriginal');
     print "DateTimeOriginal = $date\n";
