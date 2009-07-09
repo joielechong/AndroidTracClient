@@ -1,6 +1,3 @@
-
-
-
 #! /usr/bin/perl -w
 
 use strict;
@@ -130,7 +127,5 @@ foreach my $file (@files) {
     $exif->SetNewValue('GPSAltitude',0); # FIXME NMEA levert wel hoogte
     $exif->SetNewValue('GPSTimeStamp',substr($isotime,11,8));
     $exif->SetNewValue('FileModifyDate',$newdate,Protected=>1);
-#     $exif->WriteInfo("$picdir/$file","/temp/$file");
-#    $exif->SetFileModifyDate($picdir/$file);
-exit();
+    $exif->WriteInfo("$picdir/$file","/temp/$file");
 }
