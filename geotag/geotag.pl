@@ -1,3 +1,6 @@
+
+
+
 #! /usr/bin/perl -w
 
 use strict;
@@ -45,13 +48,14 @@ usage() if (defined($reffile) xor defined($reftime_src));
 
 my $strp1 = new DateTime::Format::Strptime(pattern=>'%F %T');
 my $strp2 = new DateTime::Format::Strptime(pattern=>'%Y:%m:%d %T');
-my $picttime = $strp2->parse_datetime($date); 
-my $difftime = $picttime - $picttime;
+my $difftime = DateTime::Duration->new(seconds=>0);
+ 
 if (defined($reffile)) {
     my $exif = new Image::ExifTool;
     my $success = $exif->ExtractInfo("$picdir/$reffile");
     my $reftime = $strp1->parse_datetime($reftime_src);
     my $date = $exif->GetValue('DateTimeOriginal');
+    my $picttime = $strp2->parse_datetime($date); 
     print "DateTimeOriginal = $date\n";
     print "Reftime = ",$reftime->strftime("%F %T"),"\n";
     my $difftime = $reftime - $picttime;
@@ -106,11 +110,11 @@ foreach my $file (@files) {
     my $newdate = $date;
     my $oldtime = $strp2->parse_datetime($date);
     my $newtime = $oldtime + $difftime;
-    my $newdate = $newtime->strftime("%Y:%m:%d %T");
+    $newdate = $newtime->strftime("%Y:%m:%d %T");
 
     print "$file\noldtime = $date\nnewdate = $newdate\n";
 
-    my $isotime=$newtime->strftime(%FT%TZ");
+    my $isotime=$newtime->strftime("%FT%TZ");
     my $lat=$gpxdata{$isotime}->{'lat'};
     my $lon=$gpxdata{$isotime}->{'lon'};
     next unless defined($lat);
