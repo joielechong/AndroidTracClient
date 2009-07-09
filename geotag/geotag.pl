@@ -43,22 +43,20 @@ my $result = GetOptions("gpx=s" => \$gpxfile,
 usage() unless ((defined($gpxfile) xor defined($nmeafile)) and defined($picdir));
 usage() if (defined($reffile) xor defined($reftime_src));
 
+my $strp1 = new DateTime::Format::Strptime(pattern=>'%F %T');
+my $strp2 = new DateTime::Format::Strptime(pattern=>'%Y:%m:%d %T');
+my $picttime = $strp2->parse_datetime($date); 
+my $difftime $picttime - $picttime;
 if (defined($reffile)) {
     my $exif = new Image::ExifTool;
     my $success = $exif->ExtractInfo("$picdir/$reffile");
-    my $strp1 = new DateTime::Format::Strptime(pattern=>'%F %T');
     my $reftime = $strp1->parse_datetime($reftime_src);
     my $date = $exif->GetValue('DateTimeOriginal');
     print "DateTimeOriginal = $date\n";
     print "Reftime = ",$reftime->strftime("%F %T"),"\n";
-    my $strp2 = new DateTime::Format::Strptime(pattern=>'%Y:%m:%d %T');
-    my $picttime = $strp2->parse_datetime($date); 
-#    print Dumper($reftime);
-#    print Dumper($picttime);
     my $difftime = $reftime - $picttime;
     print "Picttime = ",$picttime->strftime("%F %T"),"\n";
     print Dumper($difftime);
-    exit();
 }
 
 my %gpxdata;
@@ -105,26 +103,14 @@ foreach my $file (@files) {
 # FIXME wat als er geen tijd is?
 #
     print "$file $date";
-    my ($datum,$tijd) = split(' ',$date);
-    my ($year,$month,$day) = split(':',$datum);
-    my ($hour,$min,$sec) = split(':',$tijd);
-#
-#  FIXME: nu nog een handmatige correctie gaat via $correct
-#
-    if (defined($reffile)) {  
-	$sec -= 4;
-	if ($sec < 0) {
-		$sec += 60;
-		$min--;	
-	}	
-	$min -= 58;
-	if ($min < 0) {
-		$min += 60;
-		$hour--;
-	}
-    }
+    my $newdate = $date;
+    my $oldtime = $strp2->parse_datetime($date);
+    my $newtime $oldtime + $difftime;
+    my $newdate = $newtime->strftime("%Y:%m:%d %T");
 
-    my $isotime=sprintf("%4.4d-%2.2d-%2.2dT%2.2d:%2.2d:%2.2dZ",$year,$month,$day,$hour,$min,$sec);
+    print "$file\noldtime = $date\nnewdate = $newdate\n";
+
+    my $isotime=$newtime->strftime(%FT%TZ");
     my $lat=$gpxdata{$isotime}->{'lat'};
     my $lon=$gpxdata{$isotime}->{'lon'};
     next unless defined($lat);
@@ -140,7 +126,8 @@ foreach my $file (@files) {
     $exif->SetNewValue('GPSLongitudeRef','E');  #FIXME  zou niet vast moeten zijn
     $exif->SetNewValue('GPSAltitude',0); # FIXME NMEA levert wel hoogte
     $exif->SetNewValue('GPSTimeStamp',substr($isotime,11,8));
-    $exif->SetNewValue('FileModifyDate',$isotime);
-    $exif->WriteInfo("$picdir/$file","/temp/$file");
+    $exif->SetNewValue('FileModifyDate',$newtime);
+#     $exif->WriteInfo("$picdir/$file","/temp/$file");
 #    $exif->SetFileModifyDate($picdir/$file);
+    sleep(60);
 }
