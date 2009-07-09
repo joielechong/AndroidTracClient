@@ -9,23 +9,29 @@ use Getopt::Long;
 
 my $gpxfile = undef;
 my $picdir = undef;
-my $correct = undef;
+my $reffile = undef;
+my $reftime = undef;
 
 sub usage {
-	print "Usage:\n   geotag.pl --gpx <gpxfile> --dir <directory containing pictures> [--correct <time correction>]\n\n";
+	print "Usage:\n   geotag.pl --gpx <gpxfile> --dir <directory containing pictures> [--reffile <reference file> --reftime <reference time>]\n\n";
 	exit(2);
 }
 
 my $result = GetOptions("gpx=s" => \$gpxfile,
 			"dir=s" => \$picdir,
-			"correct=s" => \$correct);
+			"reffile=s" => \$reffile,
+			"reftime=s" => \$reftime);
 
 #print "gpx = $gpxfile\n" if defined $gpxfile;
 #print "dir = $picdir\n" if defined $picdir;
-#print "correct = $correct\n" if defined $correct;
+#print "reffile = $reffile\n" if defined $reffile;
+#print "reftime = $reftime\n" if defined $reftime;
+
+
 print "result = $result\n";
 
 usage() unless (defined($gpxfile) and defined($picdir));
+usage() unless (defined($reffile) xor defined($reftime));
 
 my %gpxdata;
 
@@ -77,7 +83,7 @@ foreach my $file (@files) {
 #
 #  FIXME: nu nog een handmatige correctie gaat via $correct
 #
-    if (defined($correct)) {  
+    if (defined($reffile)) {  
 	$sec -= 4;
 	if ($sec < 0) {
 		$sec += 60;
@@ -101,13 +107,12 @@ foreach my $file (@files) {
     $lon = 'undef' unless defined($lon);
     print " $isotime $lat $lon\n";
     $exif->SetNewValue('GPSLatitude',$lat);
-    $exif->SetNewValue('GPSLatitudeRef','N');
+    $exif->SetNewValue('GPSLatitudeRef','N');  #FIXME  zou niet vast moeten zijn
     $exif->SetNewValue('GPSLongitude',$lon);
-    $exif->SetNewValue('GPSLongitudeRef','E');
-    $exif->SetNewValue('GPSAltitude',0);
+    $exif->SetNewValue('GPSLongitudeRef','E');  #FIXME  zou niet vast moeten zijn
+    $exif->SetNewValue('GPSAltitude',0); # FIXME NMEA levert wel hoogte
     $exif->SetNewValue('GPSTimeStamp',substr($isotime,11,8));
-#
-# FIXME FileModifyDate moet op $date gezet worden
-#     
+    $exif->SetNewValue('FileModifyDate',$isotime)
     $exif->WriteInfo("$picdir/$file","/temp/$file");
+#    $exif->SetFileModifyDate($picdir/$file);
 }
