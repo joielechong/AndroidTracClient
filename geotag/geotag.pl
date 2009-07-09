@@ -46,7 +46,7 @@ usage() if (defined($reffile) xor defined($reftime_src));
 my $strp1 = new DateTime::Format::Strptime(pattern=>'%F %T');
 my $strp2 = new DateTime::Format::Strptime(pattern=>'%Y:%m:%d %T');
 my $picttime = $strp2->parse_datetime($date); 
-my $difftime $picttime - $picttime;
+my $difftime = $picttime - $picttime;
 if (defined($reffile)) {
     my $exif = new Image::ExifTool;
     my $success = $exif->ExtractInfo("$picdir/$reffile");
