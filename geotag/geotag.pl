@@ -51,7 +51,7 @@ if (defined($reffile)) {
     my $date = $exif->GetValue('DateTimeOriginal');
     print "DateTimeOriginal = $date\n";
     print "Reftime = ",$reftime->strftime("%F %T"),"\n";
-    my $picttime = $strp->parsetime($date); 
+    my $picttime = $strp->parse_datetime($date); 
     my $difftime = $reftime - $picttime;
     print Dumper($difftime);
     exit();
