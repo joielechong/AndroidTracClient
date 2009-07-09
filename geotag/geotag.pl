@@ -46,12 +46,13 @@ usage() if (defined($reffile) xor defined($reftime_src));
 if (defined($reffile)) {
     my $exif = new Image::ExifTool;
     my $success = $exif->ExtractInfo("$picdir/$reffile");
-    my $strp = new DateTime::Format::Strptime(pattern=>'%F %T');
-    my $reftime = $strp->parse_datetime($reftime_src);
+    my $strp1 = new DateTime::Format::Strptime(pattern=>'%F %T');
+    my $reftime = $strp1->parse_datetime($reftime_src);
     my $date = $exif->GetValue('DateTimeOriginal');
     print "DateTimeOriginal = $date\n";
     print "Reftime = ",$reftime->strftime("%F %T"),"\n";
-    my $picttime = $strp->parse_datetime($date); 
+    my $strp2 = new DateTime::Format::Strptime(pattern=>'%Y:%m:%d %T');
+    my $picttime = $strp2->parse_datetime($date); 
     print Dumper($reftime);
     print Dumper($picttime);
     my $difftime = $reftime - $picttime;
