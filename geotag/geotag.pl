@@ -53,6 +53,8 @@ if (defined($reffile)) {
     print "Reftime = ",$reftime->strftime("%F %T"),"\n";
     my $picttime = $strp->parse_datetime($date); 
     my $difftime = $reftime - $picttime;
+    print Dumper($reftime);
+    print Dumper($picttime);
     print Dumper($difftime);
     exit();
 }
