@@ -2,36 +2,56 @@
 
 use strict;
 use XML::Simple;
-use Data::Dumper;
+use DateTime;
+use DateTime::Duration;
+use DateTime::Format::ISO8601;
 use Image::ExifTool qw(:Public);
 use POSIX qw(mktime gmtime ctime);
 use Getopt::Long;
+use Data::Dumper;
 
 my $gpxfile = undef;
+my $nmeafile = undef;
 my $picdir = undef;
 my $reffile = undef;
+my $reftime_src = undef;
 my $reftime = undef;
 
 sub usage {
-	print "Usage:\n   geotag.pl --gpx <gpxfile> --dir <directory containing pictures> [--reffile <reference file> --reftime <reference time>]\n\n";
+	print "Usage:\n";
+	print "   geotag.pl [--gpx <gpxfile> | --nmea <nmeafile> ] --dir <directory containing pictures> [--reffile <reference file> --reftime <reference time>]\n\n";
+	print "       One of --gpx or --nmea must be specified\n";
+	print "       --reffile and --reftime must be both present or both absent\n\n";
 	exit(2);
 }
 
 my $result = GetOptions("gpx=s" => \$gpxfile,
+			"nmea=s" => \$nmeafile,
 			"dir=s" => \$picdir,
 			"reffile=s" => \$reffile,
-			"reftime=s" => \$reftime);
+			"reftime=s" => \$reftime_src);
 
 #print "gpx = $gpxfile\n" if defined $gpxfile;
+#print "nmea = $nmeafile\n" if defined $nmeafile;
 #print "dir = $picdir\n" if defined $picdir;
 #print "reffile = $reffile\n" if defined $reffile;
-#print "reftime = $reftime\n" if defined $reftime;
+#print "reftime = $reftime_src\n" if defined $reftime_src;
 
 
-print "result = $result\n";
+#print "result = $result\n";
 
-usage() unless (defined($gpxfile) and defined($picdir));
-usage() unless (defined($reffile) xor defined($reftime));
+usage() unless ((defined($gpxfile) xor defined($nmeafile)) and defined($picdir));
+usage() if (defined($reffile) xor defined($reftime_src));
+
+if (defined($reffile)) {
+    my $exif = new Image::ExifTool;
+    my $success = $exif->ExtractInfo("$picdir/$reffile");
+    my $reftime = DateTime::Format::ISO8601->parse_datetime( $reftime_src);
+    my $date = $exif->GetValue('DateTimeOriginal');
+    print "DateTimeOriginal = $date\n";
+    print "Reftime = ",$reftime->strftime("%F %T"),"\n";
+    exit();
+}
 
 my %gpxdata;
 
@@ -67,8 +87,8 @@ foreach my $file (@files) {
 #
 
 #    my $info = ImageInfo("$picdir/$file");
-#    print Dumper($info);
     my $info=$exif->GetInfo('DateTimeOriginal');
+#    print Dumper($info);
 # 
 # FIXME hier iets mee doen?
 #
@@ -112,7 +132,7 @@ foreach my $file (@files) {
     $exif->SetNewValue('GPSLongitudeRef','E');  #FIXME  zou niet vast moeten zijn
     $exif->SetNewValue('GPSAltitude',0); # FIXME NMEA levert wel hoogte
     $exif->SetNewValue('GPSTimeStamp',substr($isotime,11,8));
-    $exif->SetNewValue('FileModifyDate',$isotime)
+    $exif->SetNewValue('FileModifyDate',$isotime);
     $exif->WriteInfo("$picdir/$file","/temp/$file");
 #    $exif->SetFileModifyDate($picdir/$file);
 }
