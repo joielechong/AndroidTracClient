@@ -129,7 +129,7 @@ foreach my $file (@files) {
     $exif->SetNewValue('GPSLongitudeRef','E');  #FIXME  zou niet vast moeten zijn
     $exif->SetNewValue('GPSAltitude',0); # FIXME NMEA levert wel hoogte
     $exif->SetNewValue('GPSTimeStamp',substr($isotime,11,8));
-    $exif->SetNewValue('FileModifyDate',$newdate);
+    $exif->SetNewValue('FileModifyDate',$newdate,Protected=>1);
 #     $exif->WriteInfo("$picdir/$file","/temp/$file");
 #    $exif->SetFileModifyDate($picdir/$file);
 exit();
