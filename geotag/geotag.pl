@@ -4,7 +4,7 @@ use strict;
 use XML::Simple;
 use DateTime;
 use DateTime::Duration;
-use DateTime::Format::ISO8601;
+use DateTime::Format::Strptime;
 use Image::ExifTool qw(:Public);
 use POSIX qw(mktime gmtime ctime);
 use Getopt::Long;
@@ -46,7 +46,8 @@ usage() if (defined($reffile) xor defined($reftime_src));
 if (defined($reffile)) {
     my $exif = new Image::ExifTool;
     my $success = $exif->ExtractInfo("$picdir/$reffile");
-    my $reftime = DateTime::Format::ISO8601->parse_datetime( $reftime_src);
+    my $strp = DateTime::Format::Strptime(pattern=>'%F %T');
+    my $reftime = $strp->parse_datetime($reftime_src);
     my $date = $exif->GetValue('DateTimeOriginal');
     print "DateTimeOriginal = $date\n";
     print "Reftime = ",$reftime->strftime("%F %T"),"\n";
