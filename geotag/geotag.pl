@@ -105,7 +105,7 @@ foreach my $file (@files) {
     print "$file $date";
     my $newdate = $date;
     my $oldtime = $strp2->parse_datetime($date);
-    my $newtime $oldtime + $difftime;
+    my $newtime = $oldtime + $difftime;
     my $newdate = $newtime->strftime("%Y:%m:%d %T");
 
     print "$file\noldtime = $date\nnewdate = $newdate\n";
