@@ -46,8 +46,8 @@ my $result = GetOptions("gpx=s" => \$gpxfile,
 usage() unless ((defined($gpxfile) xor defined($nmeafile)) and defined($picdir));
 usage() if (defined($reffile) xor defined($reftime_src));
 
-my $strp1 = new DateTime::Format::Strptime(pattern=>'%F %T');
-my $strp2 = new DateTime::Format::Strptime(pattern=>'%Y:%m:%d %T');
+my $strp1 = new DateTime::Format::Strptime(pattern=>'%F %T',time_zone='Europe/Amsterdam');
+my $strp2 = new DateTime::Format::Strptime(pattern=>'%Y:%m:%d %T',time_zone='Europe/Amsterdam');
 my $difftime = DateTime::Duration->new(seconds=>0);
  
 if (defined($reffile)) {
@@ -109,7 +109,7 @@ foreach my $file (@files) {
     my $oldtime = $strp2->parse_datetime($date);
     my $newtime = $oldtime + $difftime;
     $newdate = $newtime->strftime("%Y:%m:%d %T");
-
+    $newtime->set_time_zone('UTC');
 
     my $isotime=$newtime->strftime("%FT%TZ");
     print "$file\noldtime = $date\nnewdate = $newdate\nisotime=$isotime\n";
@@ -129,7 +129,7 @@ foreach my $file (@files) {
     $exif->SetNewValue('GPSLongitudeRef','E');  #FIXME  zou niet vast moeten zijn
     $exif->SetNewValue('GPSAltitude',0); # FIXME NMEA levert wel hoogte
     $exif->SetNewValue('GPSTimeStamp',substr($isotime,11,8));
-    $exif->SetNewValue('FileModifyDate',$newtime);
+    $exif->SetNewValue('FileModifyDate',$newdate);
 #     $exif->WriteInfo("$picdir/$file","/temp/$file");
 #    $exif->SetFileModifyDate($picdir/$file);
 exit();
