@@ -109,6 +109,7 @@
 	my $res = $self->{ua}->request($req);
 	$cookie_jar->extract_cookies($res);
 	$self->{'content'} = $res->content;
+	$self->{'url'} = $url;
     }
     
     sub inSkipList {
@@ -280,12 +281,15 @@
 	my $fdbh = shift;
 	my @fields = ("NAME","LAST","TIME","DATE","PREV","OPEN","HIGH","LOW","VOL");
 	my $csv = Text::CSV_XS->new({sep_char => $self->{'sepchar'}});
+	my $linenumber = 0;
 	
 	my $fh=new File::Temp();
 	print $fh $self->{'content'};
 	seek($fh,0,SEEK_SET);
 	$csv->column_names(@fields);
 	while (my $hr = $csv->getline_hr($fh)) {
+	    eval {
+		$linenumber++;
 #			print Dumper($hr);
 #			print $hr->{DATE}," ",$hr->{TIME},"\n";
 	    my $time_t = $self->parse_time($hr->{DATE},$hr->{TIME});
@@ -298,6 +302,10 @@
 	    $fdbh->storeKoers($hr->{NAME},$time_t,$hr->{LAST},$hr->{OPEN},$hr->{HIGH},$hr->{LOW},$hr->{VOL},$hr->{PREV});
 	    $self->outputKoers($hr->{NAME},$time_t,$hr->{LAST},$hr->{OPEN},$hr->{HIGH},$hr->{LOW},$hr->{VOL},$hr->{PREV});
 	}
+	}
+	if ($@) {
+		warn("Error during processing of ".$self->{url}." at line $linenumber\nReported cause: $@\n");
+		}
 	close $fh;
     }
 }
