@@ -266,10 +266,12 @@
        my $datum = shift;
        my $timestr = shift;
        my ($month,$day,$year) = split("/",$datum);
+       return undef unless defined($month) and defined($day) and defined($year);
        my $time = substr($timestr,0,length($timestr)-2);
        $time =~ s/ //g;
        my $timeoff = substr($timestr,length($timestr)-2,2);
        my ($hour,$minut) = split(":",$time);
+       return undef unless defined($hour) and defined($minut);
        my $time_t = POSIX::mktime(0,$minut,$hour,$day,$month-1,$year-1900);
        $time_t += 3600*12 if $timeoff eq 'pm' && $hour ne '12';
        $time_t += 3600*6; # offset for USA
@@ -288,11 +290,11 @@
 	seek($fh,0,SEEK_SET);
 	$csv->column_names(@fields);
 	while (my $hr = $csv->getline_hr($fh)) {
-	    eval {
 		$linenumber++;
 #			print Dumper($hr);
 #			print $hr->{DATE}," ",$hr->{TIME},"\n";
 		my $time_t = $self->parse_time($hr->{DATE},$hr->{TIME});
+		next unless defined $time_t;
 		$hr->{VOL} = 0 if $hr->{VOL} eq "N/A";
 		$hr->{OPEN} = $hr->{LAST} if $hr->{OPEN} eq "N/A";
 		$hr->{HIGH} = max($hr->{OPEN},$hr->{LAST}) if $hr->{HIGH} eq "N/A";
@@ -301,11 +303,7 @@
 		
 		$fdbh->storeKoers($hr->{NAME},$time_t,$hr->{LAST},$hr->{OPEN},$hr->{HIGH},$hr->{LOW},$hr->{VOL},$hr->{PREV});
 		$self->outputKoers($hr->{NAME},$time_t,$hr->{LAST},$hr->{OPEN},$hr->{HIGH},$hr->{LOW},$hr->{VOL},$hr->{PREV});
-	    }
-	}
-	if ($@) {
-	    warn("Error during processing of ".$self->{url}." at line $linenumber\nReported cause: $@\n");
-	}
+        }
 	close $fh;
     }
 }
