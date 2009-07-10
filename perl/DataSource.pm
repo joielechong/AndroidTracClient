@@ -331,10 +331,12 @@
 	my $datum = shift;
 	my $timestr = shift;
 	my ($month,$day,$year) = split("/",$datum);
+       return undef unless defined($month) and defined($day) and defined($year);
 	my $time = substr($timestr,0,length($timestr)-2);
 	$time =~ s/ //g;
 	my $timeoff = substr($timestr,length($timestr)-2,2);
 	my ($hour,$minut) = split(":",$time);
+       return undef unless defined($hour) and defined($minut);
 	my $time_t = POSIX::mktime(0,$minut,$hour,$day,$month-1,$year-1900);
 	$time_t += 3600*12 if $timestr eq "PM" && $hour ne '12';
 	$time_t += 3600; # offset for Western Europe 
