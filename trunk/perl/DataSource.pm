@@ -262,19 +262,19 @@
     }
     
    sub parse_time {
-	my $self=shift;
-	my $datum = shift;
-	my $timestr = shift;
-	my ($month,$day,$year) = split("/",$datum);
-	my $time = substr($timestr,0,length($timestr)-2);
-	$time =~ s/ //g;
-	my $timeoff = substr($timestr,length($timestr)-2,2);
-	my ($hour,$minut) = split(":",$time);
-	my $time_t = POSIX::mktime(0,$minut,$hour,$day,$month-1,$year-1900);
-	$time_t += 3600*12 if $timeoff eq 'pm' && $hour ne '12';
-	$time_t += 3600*6; # offset for USA
-	return $time_t;
-    }
+       my $self=shift;
+       my $datum = shift;
+       my $timestr = shift;
+       my ($month,$day,$year) = split("/",$datum);
+       my $time = substr($timestr,0,length($timestr)-2);
+       $time =~ s/ //g;
+       my $timeoff = substr($timestr,length($timestr)-2,2);
+       my ($hour,$minut) = split(":",$time);
+       my $time_t = POSIX::mktime(0,$minut,$hour,$day,$month-1,$year-1900);
+       $time_t += 3600*12 if $timeoff eq 'pm' && $hour ne '12';
+       $time_t += 3600*6; # offset for USA
+       return $time_t;
+   }
     
     sub process {
 	my $self = shift;
@@ -292,20 +292,20 @@
 		$linenumber++;
 #			print Dumper($hr);
 #			print $hr->{DATE}," ",$hr->{TIME},"\n";
-	    my $time_t = $self->parse_time($hr->{DATE},$hr->{TIME});
-	    $hr->{VOL} = 0 if $hr->{VOL} eq "N/A";
-	    $hr->{OPEN} = $hr->{LAST} if $hr->{OPEN} eq "N/A";
-	    $hr->{HIGH} = max($hr->{OPEN},$hr->{LAST}) if $hr->{HIGH} eq "N/A";
-	    $hr->{LOW} = min($hr->{OPEN},$hr->{LAST}) if $hr->{LOW} eq "N/A";
-	    $hr->{PREV} = $hr->{LAST} if $hr->{PREV} eq "N/A";
-	    
-	    $fdbh->storeKoers($hr->{NAME},$time_t,$hr->{LAST},$hr->{OPEN},$hr->{HIGH},$hr->{LOW},$hr->{VOL},$hr->{PREV});
-	    $self->outputKoers($hr->{NAME},$time_t,$hr->{LAST},$hr->{OPEN},$hr->{HIGH},$hr->{LOW},$hr->{VOL},$hr->{PREV});
-	}
+		my $time_t = $self->parse_time($hr->{DATE},$hr->{TIME});
+		$hr->{VOL} = 0 if $hr->{VOL} eq "N/A";
+		$hr->{OPEN} = $hr->{LAST} if $hr->{OPEN} eq "N/A";
+		$hr->{HIGH} = max($hr->{OPEN},$hr->{LAST}) if $hr->{HIGH} eq "N/A";
+		$hr->{LOW} = min($hr->{OPEN},$hr->{LAST}) if $hr->{LOW} eq "N/A";
+		$hr->{PREV} = $hr->{LAST} if $hr->{PREV} eq "N/A";
+		
+		$fdbh->storeKoers($hr->{NAME},$time_t,$hr->{LAST},$hr->{OPEN},$hr->{HIGH},$hr->{LOW},$hr->{VOL},$hr->{PREV});
+		$self->outputKoers($hr->{NAME},$time_t,$hr->{LAST},$hr->{OPEN},$hr->{HIGH},$hr->{LOW},$hr->{VOL},$hr->{PREV});
+	    }
 	}
 	if ($@) {
-		warn("Error during processing of ".$self->{url}." at line $linenumber\nReported cause: $@\n");
-		}
+	    warn("Error during processing of ".$self->{url}." at line $linenumber\nReported cause: $@\n");
+	}
 	close $fh;
     }
 }
