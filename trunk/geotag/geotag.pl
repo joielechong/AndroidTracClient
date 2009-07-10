@@ -17,12 +17,43 @@ my $reffile = undef;
 my $reftime_src = undef;
 my $reftime = undef;
 
+sub dump2csv {
+    my $gpxdata = shift;
+
+    foreach my $key (sort (keys(%$gpxdata))) {
+	print "$key,".$$gpxdata{$key}->{lat}.",".$$gpxdata{$key}->{lon}.",".$$gpxdata{$key}->{alt}.",";
+	print $$gpxdata{$key}->{spd} if defined($$gpxdata{$key}->{spd});
+	print "\n";
+    }
+}
+
+sub gps2iso {
+    my $gpstime = shift;
+    my $gpsdate = shift;
+    $gpsdate =~ m/(..)(..)(..)/;
+    my $iso = "20$3-$2-$1T";
+    $gpstime =~ m/(..)(..)(..)..../;
+    $iso .= "$1:$2:$3Z";
+    return $iso;
+}
+
+sub gps2dec {
+    my $degstr=shift;
+    my $ref = shift;
+
+    my $deg=int ($degstr/100);
+    $degstr -= 100*$deg;
+    $deg += $degstr/60.0;
+    $deg = -$deg if ($ref eq "S") or ($ref eq "W");
+    return $deg;
+}
+
 sub usage {
-	print "Usage:\n";
-	print "   geotag.pl [--gpx <gpxfile> | --nmea <nmeafile> ] --dir <directory containing pictures> [--reffile <reference file> --reftime <reference time>]\n\n";
-	print "       One of --gpx or --nmea must be specified\n";
-	print "       --reffile and --reftime must be both present or both absent\n\n";
-	exit(2);
+    print "Usage:\n";
+    print "   geotag.pl [--gpx <gpxfile> | --nmea <nmeafile> ] --dir <directory containing pictures> [--reffile <reference file> --reftime <reference time>]\n\n";
+    print "       One of --gpx or --nmea must be specified\n";
+    print "       --reffile and --reftime must be both present or both absent\n\n";
+    exit(2);
 }
 
 my $result = GetOptions("gpx=s" => \$gpxfile,
@@ -62,23 +93,64 @@ if (defined($reffile)) {
 
 my %gpxdata;
 
-my $xml=XML::Simple->new();
+if (defined($gpxfile)) {
 
-my $ref = $xml->XMLin($gpxfile, ForceArray=>['trkseg','trkpt']);
-
+    my $xml=XML::Simple->new();
+    
+    my $ref = $xml->XMLin($gpxfile, ForceArray=>['trkseg','trkpt']);
+    
 #FIXME check of wel ingelezen
-
-foreach my $seg (@{$ref->{trk}->{trkseg}}) {
+    
+    foreach my $seg (@{$ref->{trk}->{trkseg}}) {
 #    print "Segment\n";
 #    print Dumper($seg);
-    foreach my $trkpt (@{$seg->{trkpt}}) {
+	foreach my $trkpt (@{$seg->{trkpt}}) {
 #	print "Trackpoints\n";
 #	print Dumper($trkpt);
-	$gpxdata{$$trkpt{'time'}}->{'lat'} = $$trkpt{'lat'};
-	$gpxdata{$$trkpt{'time'}}->{'lon'} = $$trkpt{'lon'};
+	    $gpxdata{$$trkpt{'time'}}->{'lat'} = $$trkpt{'lat'};
+	    $gpxdata{$$trkpt{'time'}}->{'lon'} = $$trkpt{'lon'};
+	    $gpxdata{$$trkpt{'time'}}->{'alt'} = 0;
+	}
+    }
+} else {  # dus is het NMEA
+    my $lastdate;
+    my $lastalt=0;
+    open NMEA,"<$nmeafile" or die "Kan $nmeafile niet openen\n";
+    while (<NMEA>) {
+	my ($inline,$chk) = split('\*');
+	next unless defined $chk;
+	if ($inline =~ /^\$GPRMC/) {
+	    my ($tag,$gpstime,$status,$lat,$latref,$lon,$lonref,$spd,$course,$gpsdate,$magvar,$magvarref) = split(",",$inline);
+	    unless (defined($gpsdate)) {
+		$lastdate = undef;
+		$lastalt = undef;
+		next;
+	    }
+	    $lastdate=$gpsdate;
+	    next unless defined($status) and ($status eq "A");
+	    my $iso = gps2iso($gpstime,$gpsdate);
+	    $gpxdata{$iso}->{lat} = gps2dec($lat,$latref);
+	    $gpxdata{$iso}->{lon} = gps2dec($lon,$lonref);
+	    $gpxdata{$iso}->{alt} = $lastalt unless defined $gpxdata{$iso}->{alt};
+	    $gpxdata{$iso}->{spd} = $spd*1.852 if defined($spd) and ($spd ne "");
+	} elsif ($inline =~ /^\$GPGGA/) {
+	    next unless defined $lastdate;
+	    my ($tag,$gpstime,$lat,$latref,$lon,$lonref,$fixqual,$nrsat,$hdop,$altitude,$altunit,$geoidht,$geoidunit,$res1,$res2) = split(",",$inline);
+	    next if $fixqual == 0;
+	    unless (defined($altitude)) {
+		$lastdate = undef;
+		$lastalt = undef;
+		next;
+	    }
+	    my $iso = gps2iso($gpstime,$lastdate);
+	    $gpxdata{$iso}->{lat} = gps2dec($lat,$latref);
+	    $gpxdata{$iso}->{lon} = gps2dec($lon,$lonref);
+	    $gpxdata{$iso}->{alt} = $lastalt = $altitude;
+	}
     }
 }
-#print Dumper(\%gpxdata);
+
+#dump2csv(\%gpxdata);
 
 opendir FOTOOS,$picdir;
 my @files = sort (grep {/\.[Jj][pP][gG]$/} readdir(FOTOOS));
@@ -111,20 +183,33 @@ foreach my $file (@files) {
     my $isotime=$newtime->strftime("%FT%TZ");
     my $lat=$gpxdata{$isotime}->{'lat'};
     my $lon=$gpxdata{$isotime}->{'lon'};
+    my $alt=$gpxdata{$isotime}->{'alt'};
+    my $spd=$gpxdata{$isotime}->{'spd'};
     next unless defined($lat);
     print "$file\noldtime = $date\nnewdate = $newdate\nisotime=$isotime\n";
 
 #
-# FIXME wat als GPS minder vaak dan 1/s
+# FIXME wat als GPS minder vaak dan 1/s GPX slaat bij identiek over
 #
     $lat = 'undef' unless defined($lat);
     $lon = 'undef' unless defined($lon);
     print " $isotime $lat $lon\n";
-    $exif->SetNewValue('GPSLatitude',$lat);
-    $exif->SetNewValue('GPSLatitudeRef','N');  #FIXME  zou niet vast moeten zijn
-    $exif->SetNewValue('GPSLongitude',$lon);
-    $exif->SetNewValue('GPSLongitudeRef','E');  #FIXME  zou niet vast moeten zijn
-    $exif->SetNewValue('GPSAltitude',0); # FIXME NMEA levert wel hoogte
+    if ($lat >=0) {
+	$exif->SetNewValue('GPSLatitude',$lat);
+	$exif->SetNewValue('GPSLatitudeRef','N');
+    } else {
+	$exif->SetNewValue('GPSLatitude',-$lat);
+	$exif->SetNewValue('GPSLatitudeRef','S');
+    }
+    if ($lon >= 0) {
+	$exif->SetNewValue('GPSLongitude',$lon);
+	$exif->SetNewValue('GPSLongitudeRef','E');
+    } else {
+	$exif->SetNewValue('GPSLongitude',-$lon);
+	$exif->SetNewValue('GPSLongitudeRef','W');
+    }
+    $exif->SetNewValue('GPSAltitude',$alt)  if (defined($alt));
+    $exif->SetNewValue('GPSSpeed',$spd) if (defined($spd)) ;
     $exif->SetNewValue('GPSTimeStamp',substr($isotime,11,8));
     $exif->SetNewValue('FileModifyDate',$newdate,Protected=>1);
     $exif->WriteInfo("$picdir/$file","/temp/$file");
