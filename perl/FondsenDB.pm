@@ -53,7 +53,7 @@
 		my $self = shift;
 		my $arg = shift;
 		
-		$self->{dbh}->RaiseError($arg);
+		$self->{dbh}->{RaiseError}=$arg;
 	}
 	
 	sub exportKoersen {
