@@ -218,7 +218,7 @@
 			$fdbh->storeKoers($hr->{"Instrument's name"},$time_t,$hr->{Last},$hr->{"Day First"},$hr->{"Day High"},$hr->{"Day Low"},$hr->{"Volume"},'N/A');
 		    };
 		    if ($@) {
-			warn("Kon gegevens niet wegschrijven: $@\n";
+			warn("Kon gegevens niet wegschrijven: $@\n");
 			print STDERR "URL: ".$self->{url}."\n";
 			print STDERR Dumper($hr};
 		    }
