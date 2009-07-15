@@ -300,8 +300,13 @@
 		$linenumber++;
 #			print Dumper($hr);
 #			print $hr->{DATE}," ",$hr->{TIME},"\n";
+		next if $hr->{TIME} eq 'N/A';
 		my $time_t = $self->parse_time($hr->{DATE},$hr->{TIME});
-		next unless defined $time_t;
+	        unless (defined($time_t)) {
+		    print STDERR "Parse error op regel $linenumber van ".$self->{url}."\n";
+		    print STDERR Dumper($hr);
+		    next;
+		}
 		$hr->{VOL} = 0 if $hr->{VOL} eq "N/A";
 		$hr->{OPEN} = $hr->{LAST} if $hr->{OPEN} eq "N/A";
 		$hr->{HIGH} = max($hr->{OPEN},$hr->{LAST}) if $hr->{HIGH} eq "N/A";
