@@ -215,9 +215,10 @@
 		    my ($day,$month,$year) = split("/",$date);
 		    my $time_t = POSIX::mktime(0,$minut,$hour,$day,$month-1,$year+100);
 		    eval {
-			local $dbh->{RaiseError} = 0;
+			$fdbh->RaiseError(1);
 			$fdbh->storeKoers($hr->{"Instrument's name"},$time_t,$hr->{Last},$hr->{"Day First"},$hr->{"Day High"},$hr->{"Day Low"},$hr->{"Volume"},'N/A');
-		    };
+			$fdbh->RaiseError();
+				    };
 		    if ($@) {
 			warn("Kon gegevens niet wegschrijven: $@\n");
 			print STDERR "URL: ".$self->{url}."\n";
