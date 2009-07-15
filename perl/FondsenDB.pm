@@ -31,7 +31,7 @@
 		
 		$self->{debug} = 0;
 		$self->{dryrun} = 0;
-		$self->{dbh} = DBI->connect("dbi:Pg:dbname=koersdata");
+		$self->{dbh} = DBI->connect("dbi:Pg:dbname=koersdata",{RaiseError=>1});
 		$self->{sth1}=$self->{dbh}->prepare("SELECT * FROM nieuwkoersinfo(?,?,?,?,?,?,?)");
 		$self->{sth2}=$self->{dbh}->prepare("copy (select naam,slot,substr(current_time(0),1,5) as time,datum,prev,open,hoog,laag,volume from koersen_vandaag) to '$outputfile' with csv force quote naam;");
 	}
