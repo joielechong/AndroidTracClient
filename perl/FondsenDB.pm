@@ -49,6 +49,13 @@
 		$self->{sth1}->execute(uc($name),$date,$vol,$open,$high,$low,$last);
 	}
 	
+	sub RaiseError {
+		my $self = shift;
+		my $arg = shift;
+		
+		$self->{dbh}->RaiseError($arg);
+	}
+	
 	sub exportKoersen {
 		my $self = shift;
 		
