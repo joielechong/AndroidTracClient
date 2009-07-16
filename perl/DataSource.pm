@@ -300,7 +300,7 @@
 		$linenumber++;
 #			print Dumper($hr);
 #			print $hr->{DATE}," ",$hr->{TIME},"\n";
-		next if $hr->{TIME} eq 'N/A';
+		next if (($hr->{TIME} eq 'N/A') or ($hr->{DATE} eq 'N/A'));
 		my $time_t = $self->parse_time($hr->{DATE},$hr->{TIME});
 	        unless (defined($time_t)) {
 		    print STDERR "Parse error op regel $linenumber van ".$self->{url}."\n";
