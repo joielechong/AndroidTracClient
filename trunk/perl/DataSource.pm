@@ -215,11 +215,11 @@
 		    my ($hour,$minut) = split(":",$time);
 		    my ($day,$month,$year) = split("/",$date);
 		    my $time_t = POSIX::mktime(0,$minut,$hour,$day,$month-1,$year+100);
-		    $hr->{Last} =~ s/ //g;
+		    $hr->{"Last"} =~ s/ //g;
 		    $hr->{"Day First"} =~ s/ //g;
 		    $hr->{"Day High"} =~ s/ //g;
 		    $hr->{"Day Low"} =~ s/ //g;
-		    $hr->{Volume} =~ s/ //g;
+		    $hr->{"Volume"} =~ s/ //g if defined $hr->{Volume};
 		    $fdbh->storeKoers($hr->{"Instrument's name"},$time_t,$hr->{Last},$hr->{"Day First"},$hr->{"Day High"},$hr->{"Day Low"},$hr->{"Volume"},'N/A');
 		    $self->outputKoers($hr->{"Instrument's name"},$time_t,$hr->{Last},$hr->{"Day First"},$hr->{"Day High"},$hr->{"Day Low"},$hr->{"Volume"},'N/A');
 		}
