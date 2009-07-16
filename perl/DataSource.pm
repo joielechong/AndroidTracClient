@@ -215,14 +215,12 @@
 		    my ($hour,$minut) = split(":",$time);
 		    my ($day,$month,$year) = split("/",$date);
 		    my $time_t = POSIX::mktime(0,$minut,$hour,$day,$month-1,$year+100);
-		    eval {
-			$fdbh->storeKoers($hr->{"Instrument's name"},$time_t,$hr->{Last},$hr->{"Day First"},$hr->{"Day High"},$hr->{"Day Low"},$hr->{"Volume"},'N/A');
-		    };
-		    if ($@) {
-			warn("Kon gegevens niet wegschrijven: $@\n");
-			print STDERR "URL: ".$self->{url}."\n";
-			print STDERR Dumper($hr);
-		    }
+		    $hr->{Last} =~ s/ //g;
+		    $hr->{"Day First"} =~ s/ //g;
+		    $hr->{"Day High"} =~ s/ //g;
+		    $hr->{"Day Low"} =~ s/ //g;
+		    $hr->{Volume} =~ s/ //g;
+		    $fdbh->storeKoers($hr->{"Instrument's name"},$time_t,$hr->{Last},$hr->{"Day First"},$hr->{"Day High"},$hr->{"Day Low"},$hr->{"Volume"},'N/A');
 		    $self->outputKoers($hr->{"Instrument's name"},$time_t,$hr->{Last},$hr->{"Day First"},$hr->{"Day High"},$hr->{"Day Low"},$hr->{"Volume"},'N/A');
 		}
 		$fdbh->RaiseError();
