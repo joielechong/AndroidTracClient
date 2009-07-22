@@ -18,6 +18,7 @@ find . -maxdepth 2 -name "*.asc" -exec ../loadpoifile.sh '{}' \;
 cd ..
 
 psql -f - <<EOF 
+delete from pois.temp where naam in (select naam from pois.temp group by naam having count(lat)>1);
 insert into pois.inputfiles (naam) select distinct filename from pois.temp where not filename in (select naam from pois.inputfiles);
 update pois.temp set descr=trim(descr);
 update pois.posten set updated='no' where file in (select distinct filename from pois.temp);
