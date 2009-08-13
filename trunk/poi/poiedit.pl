@@ -34,7 +34,7 @@ my @passwords=('mikel02',
 my $cache = LWP::ConnCache->new;
 
 my $ua = LWP::UserAgent->new;
-$ua->agent("Mozilla/4.0 (compatible; MSIE 7.0)");
+$ua->agent("Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7");
 $ua->conn_cache($cache);
 
 sub _ingroup {
