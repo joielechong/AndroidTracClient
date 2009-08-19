@@ -82,10 +82,11 @@ if (defined($reffile)) {
     my $exif = new Image::ExifTool;
     my $success = $exif->ExtractInfo("$picdir/$reffile");
     my $reftime = $strp1->parse_datetime($reftime_src);
+#    print Dumper($reftime);
     my $date = $exif->GetValue('DateTimeOriginal');
     my $picttime = $strp2->parse_datetime($date); 
-#    print "DateTimeOriginal = $date\n";
-#    print "Reftime = ",$reftime->strftime("%F %T"),"\n";
+    print "DateTimeOriginal = $date\n";
+    print "Reftime = ",$reftime->strftime("%F %T"),"\n";
     $difftime = $reftime - $picttime;
 #    print "Picttime = ",$picttime->strftime("%F %T"),"\n";
 #    print Dumper($difftime);
@@ -208,7 +209,14 @@ foreach my $file (@files) {
 	$exif->SetNewValue('GPSLongitude',-$lon);
 	$exif->SetNewValue('GPSLongitudeRef','W');
     }
-    $exif->SetNewValue('GPSAltitude',$alt)  if (defined($alt));
+    if (defined($alt)) {
+	if ($alt > 0) {
+	    $exif->SetNewValue('GPSAltitude',$alt)  
+	    $exif->SetNewValue('GPSAltitudeRef',0)  
+	} else {
+	    $exif->SetNewValue('GPSAltitude',-$alt)  
+	    $exif->SetNewValue('GPSAltitudeRef',1)  
+    }
     $exif->SetNewValue('GPSSpeed',$spd) if (defined($spd)) ;
     $exif->SetNewValue('GPSTimeStamp',substr($isotime,11,8));
     $exif->SetNewValue('FileModifyDate',$newdate,Protected=>1);
