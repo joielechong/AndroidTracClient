@@ -35,6 +35,8 @@ my $cache = LWP::ConnCache->new;
 
 my $ua = LWP::UserAgent->new;
 $ua->agent("Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7");
+$ua->proxy(['http', 'ftp'], 'http://67.69.254.255:80/');
+$ua->no_proxy('flitspaal.nl','bruxelles5.info','goedkooptanken.nu','bnet.be','navifriends.de','navifriends.com','flitsservice.nl');
 $ua->conn_cache($cache);
 
 sub _ingroup {
