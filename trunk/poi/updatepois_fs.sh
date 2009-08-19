@@ -4,6 +4,7 @@ PATH=$PATH:/usr/local/bin:/usr/bin:/bin:/usr/local/pgsql/bin
 cd /home/mfvl/src/poi
 
 perl poiedit.pl 3
+#ssh  mfvl@xs4all.nl "GET http://flitsservice.com/flitsservice.ov2" >Flitsservice.ov2
 
 perl ov2toasc.pl
 
@@ -11,7 +12,7 @@ sleep 5
 
 psql -d mfvl -c "truncate pois.temp"
 
-find . -maxdepth 1 -mtime 0 -name "Flitsservice.asc" -exec ./loadpoifile.sh '{}' \;
+find . -maxdepth 1 -mtime 0 -name "Flitsservice*.asc" -exec ./loadpoifile.sh '{}' \;
 
 psql -d mfvl -f - <<EOF 
 insert into pois.inputfiles (naam) select distinct filename from pois.temp where not filename in (select naam from pois.inputfiles);
