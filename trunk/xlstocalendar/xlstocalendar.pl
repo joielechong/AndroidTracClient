@@ -7,6 +7,9 @@ use DateTime;
 use DateTime::Duration;
 use Data::Dumper;
 
+my $propname = 'http://van-loon.xs4all.nl/calendar/#xls';
+my $propval = 'xlstocalendar';
+
 my $file = shift;
 my $jaar = shift;
 my $maand = shift;
@@ -100,10 +103,16 @@ $gcal->set_calendar($c);
 
 print "Oude entries verwijderen\n";
 for my $tmp ($gcal->get_events('max-results'=>'100000000','start-min'=>$startdate,'start-max'=>$enddate)) {
-    print $tmp->title,"\n";
-    $gcal->delete_entry($tmp) || print "Kon ".$tmp->id." niet weggooien: $@\n";
+    print $tmp->title,":";
+    my ($name,$value) = $tmp->extended_property;
+#    if (defined($name) && defined($value) && $name eq $propname && $value eq $propval) {
+	$gcal->delete_entry($tmp) || print "Kon ".$tmp->id." niet weggooien: $@\n";
+#    } else {
+#	print " niet";
+#    }
+    print " verwijderd\n";
 }
-print "=========================\nNu nieuwe toevoegen\n";
+#print "=========================\nNu nieuwe toevoegen\n";
 
 foreach my $e (@cal) {
     my $event = Net::Google::Calendar::Entry->new();
@@ -127,17 +136,18 @@ foreach my $e (@cal) {
 	    $minuut = 30 if $minuut eq '3';
 	    $endtime =  DateTime->new(year=>$jaar,month=>$maand,day=>$e->{datum},hour=>$uur,minute=>$minuut,second=>0,time_zone=>'Europe/Amsterdam');
 	}
-	print $starttime->strftime("%F %T"),$uur,$minuut,"\n";
-	print $endtime->strftime("%F %T"),$uur,$minuut,"\n";
+#	print $starttime->strftime("%F %T"),$uur,$minuut,"\n";
+#	print $endtime->strftime("%F %T"),$uur,$minuut,"\n";
 	$event->when($starttime,$endtime);
     } else {
 	my $starttime = DateTime->new(year=>$jaar,month=>$maand,day=>$e->{datum});
 	$event->when($starttime,$starttime,1);
     }
     $event->location($e->{locatie}) if defined($e->{locatie});
-    $event->extended_property(name=>'http://van-loon.xs4all.nl/calendar/',value=>'xlstocalendar');
+    $event->extended_property($propname,$propval);
     $event->visibility('public');
     $event->status('confirmed');
+#    print Dumper $event;
     my $tmp = $gcal->add_entry($event);
     die "Couldn't add event: $@\n" unless defined $tmp;
 }
