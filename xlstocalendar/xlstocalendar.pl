@@ -68,11 +68,12 @@ foreach my $entry (@$data) {
 	    $curcal++;
 	    $cal[$curcal]->{datum} = $curdag;
 	    $cal[$curcal]->{activiteit} = $entry->[3];
-	    chomp($cal[$curcal]);
+	    chomp($cal[$curcal]->{activiteit});
 	    $cal[$curcal]->{begintijd} = undef;
 	    $cal[$curcal]->{eindtijd} = undef;
 	    $cal[$curcal]->{begintijd} = $entry->[2] unless $entry->[2] eq '';
 	    $cal[$curcal]->{locatie} = $entry->[5];
+	    chomp($cal[$curcal]->{locatie});
 	    $state = 1;
 	} elsif ($state == 1) {
 	    $cal[$curcal]->{eindtijd} = $entry->[2] unless $entry->[2] eq '';
@@ -82,6 +83,8 @@ foreach my $entry (@$data) {
 	    chomp($cal[$curcal]->{locatie});
 	    $state=0;
 	}
+	    $cal[$curcal]->{activiteit} =~ s/\W+/ /g;
+	    $cal[$curcal]->{locatie} =~ s/\W+/ /g;
     } else {
 	$state = 0;
     }
@@ -105,11 +108,11 @@ print "Oude entries verwijderen\n";
 for my $tmp ($gcal->get_events('max-results'=>'100000000','start-min'=>$startdate,'start-max'=>$enddate)) {
     print $tmp->title,":";
     my ($name,$value) = $tmp->extended_property;
-#    if (defined($name) && defined($value) && $name eq $propname && $value eq $propval) {
+    if (defined($name) && defined($value) && $name eq $propname && $value eq $propval) {
 	$gcal->delete_entry($tmp) || print "Kon ".$tmp->id." niet weggooien: $@\n";
-#    } else {
-#	print " niet";
-#    }
+    } else {
+	print " niet";
+    }
     print " verwijderd\n";
 }
 #print "=========================\nNu nieuwe toevoegen\n";
@@ -117,7 +120,7 @@ for my $tmp ($gcal->get_events('max-results'=>'100000000','start-min'=>$startdat
 foreach my $e (@cal) {
     my $event = Net::Google::Calendar::Entry->new();
     print Dumper $e;
-    $event->title($e->{activiteit});
+    $event->title("2e: ".$e->{activiteit});
     my $uur = $e->{begintijd};
     my $minuut = undef;
     if (defined($uur)) {
