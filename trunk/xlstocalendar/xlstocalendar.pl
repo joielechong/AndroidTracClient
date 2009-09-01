@@ -29,7 +29,6 @@ while (<CRED>) {
     if ($key eq "password") {
       $pass = $val;
     }    
-  }
 }
 close CRED;
 
