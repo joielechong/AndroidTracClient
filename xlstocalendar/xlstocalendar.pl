@@ -20,16 +20,17 @@ print "$startdate\n$enddate\n";
 
 print $file,"\n";
 
-OPEN CRED "</home/mfvl/download/credentials.poi" or die "Kan credential file niet openen: $@\n";
+open CRED,"</home/mfvl/download/credentials.poi" or die "Kan credential file niet openen: $@\n";
 while (<CRED>) {
-	my ($key,$val) = split("=");
+    my ($key,$val) = split("=");
     if ($key eq "username") {
-      $user = $val;
+	$user = $val;
     }
     if ($key eq "password") {
-      $pass = $val;
+	$pass = $val;
     }    
 }
+
 close CRED;
 
 
@@ -134,7 +135,7 @@ foreach my $e (@cal) {
 	$event->when($starttime,$starttime,1);
     }
     $event->location($e->{locatie}) if defined($e->{locatie});
-		$event->extended_property('http://van-loon.xs4all.nl/calendar/'=>'xlstocalendar');
+    $event->extended_property('http://van-loon.xs4all.nl/calendar/'=>'xlstocalendar');
     $event->visibility('public');
     $event->status('confirmed');
     $gcal->add_entry($event);
