@@ -135,7 +135,7 @@ foreach my $e (@cal) {
 	$event->when($starttime,$starttime,1);
     }
     $event->location($e->{locatie}) if defined($e->{locatie});
-    $event->extended_property('http://van-loon.xs4all.nl/calendar/'=>'xlstocalendar');
+    $event->extended_property(name=>'http://van-loon.xs4all.nl/calendar/',value=>'xlstocalendar');
     $event->visibility('public');
     $event->status('confirmed');
     my $tmp = $gcal->add_entry($event);
