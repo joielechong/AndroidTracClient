@@ -31,7 +31,7 @@ while (<CRED>) {
     }    
   }
 }
-fclose($cred);
+close CRED;
 
 
 my $ws = sprintf("%4.4d-%2.2d",$jaar,$maand);
