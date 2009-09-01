@@ -23,10 +23,10 @@ print $file,"\n";
 OPEN CRED "</home/mfvl/download/credentials.poi" or die "Kan credential file niet openen: $@\n";
 while (<CRED>) {
 	my ($key,$val) = split("=");
-    if ($key === "username") {
+    if ($key eq "username") {
       $user = $val;
     }
-    if ($key === "password") {
+    if ($key eq "password") {
       $pass = $val;
     }    
   }
