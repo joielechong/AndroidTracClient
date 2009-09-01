@@ -138,5 +138,6 @@ foreach my $e (@cal) {
     $event->extended_property('http://van-loon.xs4all.nl/calendar/'=>'xlstocalendar');
     $event->visibility('public');
     $event->status('confirmed');
-    $gcal->add_entry($event);
+    my $tmp = $gcal->add_entry($event);
+    die "Couldn't add event: $@\n" unless defined $tmp;
 }
