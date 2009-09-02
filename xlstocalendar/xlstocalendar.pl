@@ -46,11 +46,11 @@ close CRED;
     
     sub new {
 	my($class, $file,$ws) = @_;        # Class name is in the first parameter
-	my $self = SUPER->new();
-	bless($self, $class);          # Say: $self is a $class
+  my $self  = $class->SUPER::new();
 	$self->{file} = $file;
 	$self->{ws} = $ws;
 	$self->{data} = $self->load($file,$ws) or die $self->error;
+	bless($self, $class);          # Say: $self is a $class
 	return $self;
     }
     
