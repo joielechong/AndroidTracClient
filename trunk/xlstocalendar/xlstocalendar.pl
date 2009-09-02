@@ -43,35 +43,13 @@ close CRED;
     
     use strict;
     use	base 'Spreadsheet::DataFromExcel';
-    
-    sub new {
-	my($class, $file,$ws) = @_;        # Class name is in the first parameter
-	my $self  = $class->SUPER::new();
-	$self->{file} = $file;
-	$self->{ws} = $ws;
-	$self->{data} = $self->load($file,$ws) or die $self->error;
-	bless($self, $class);          # Say: $self is a $class
-	return $self;
-    }
-    
-    sub data {
-	my $self = shift;
-	return $self->{data};
-    }
-};
-
-my $ws = sprintf("%4.4d-%2.2d",$jaar,$maand);
-
-my $sp = Jaarplan->new($file,$ws);
-#my $sp = Spreadsheet::DataFromExcel->new();
-#my $data = $sp->load($file,$ws) or die $sp->error;
-my @cal;
-my %ce;
+		
+		sub loaddata {
 my $curdag=undef;
 my $curcal=-1;
 my $state=0;
-
-foreach my $entry (@{$sp->data}) {
+			my $data = $self->load($file,$ws) or die $self->error;
+foreach my $entry (@$data) {
 #    print Dumper $entry;
 
     next if $entry->[0] eq "za/zo";
@@ -100,31 +78,57 @@ foreach my $entry (@{$sp->data}) {
     if ($entry->[3] ne '' || $entry->[2] ne '') {
 	if ($state == 0) {
 	    $curcal++;
-	    $cal[$curcal]->{datum} = $curdag;
-	    $cal[$curcal]->{activiteit} = $entry->[3];
-	    chomp($cal[$curcal]->{activiteit});
-	    $cal[$curcal]->{begintijd} = undef;
-	    $cal[$curcal]->{eindtijd} = undef;
-	    $cal[$curcal]->{begintijd} = $entry->[2] unless $entry->[2] eq '';
-	    $cal[$curcal]->{locatie} = $entry->[5];
-	    chomp($cal[$curcal]->{locatie});
-	    $cal[$curcal]->{deelnemers} = $entry->[4];
-	    chomp($cal[$curcal]->{deelnemers});
+	    $self->{CAL}->[$curcal]->{datum} = $curdag;
+	    $self->{CAL}->[$curcal]->{activiteit} = $entry->[3];
+	    chomp($self->{CAL}->[$curcal]->{activiteit});
+	    $self->{CAL}->[$curcal]->{begintijd} = undef;
+	    $self->{CAL}->[$curcal]->{eindtijd} = undef;
+	    $self->{CAL}->[$curcal]->{begintijd} = $entry->[2] unless $entry->[2] eq '';
+	    $self->{CAL}->[$curcal]->{locatie} = $entry->[5];
+	    chomp($self->{CAL}->[$curcal]->{locatie});
+	    $self->{CAL}->[$curcal]->{deelnemers} = $entry->[4];
+	    chomp($self->{CAL}->[$curcal]->{deelnemers});
 	    $state = 1;
 	} elsif ($state == 1) {
-	    $cal[$curcal]->{eindtijd} = $entry->[2] unless $entry->[2] eq '';
-	    $cal[$curcal]->{activiteit} .= ' '.$entry->[3];
-	    chomp($cal[$curcal]->{activiteit});
-	    $cal[$curcal]->{locatie} .= ' '.$entry->[5];
-	    chomp($cal[$curcal]->{locatie});
-	    $cal[$curcal]->{deelnemers} .= ' '.$entry->[4];
-	    chomp($cal[$curcal]->{deelnemers});
+	    $self->{CAL}->[$curcal]->{eindtijd} = $entry->[2] unless $entry->[2] eq '';
+	    $self->{CAL}->[$curcal]->{activiteit} .= ' '.$entry->[3];
+	    chomp($self->{CAL}->[$curcal]->{activiteit});
+	    $self->{CAL}->[$curcal]->{locatie} .= ' '.$entry->[5];
+	    chomp($self->{CAL}->[$curcal]->{locatie});
+	    $self->{CAL}->[$curcal]->{deelnemers} .= ' '.$entry->[4];
+	    chomp($self->{CAL}->[$curcal]->{deelnemers});
 	    $state=0;
 	}
     } else {
 	$state = 0;
     }
 }
+		}
+    
+    sub new {
+	my($class, $file,$ws) = @_;        # Class name is in the first parameter
+	my $self  = $class->SUPER::new();
+	$self->{FILE} = $file;
+	$self->{WS} = $ws;
+	$self->{CAL} = ();
+	bless($self, $class);          # Say: $self is a $class
+	self->loaddata();
+	return $self;
+    }
+    
+		sub cal {
+			my $self = shift;
+			
+			return $self->{CAL};
+		}
+};
+
+my $ws = sprintf("%4.4d-%2.2d",$jaar,$maand);
+
+my $sp = Jaarplan->new($file,$ws);
+my @cal;
+my %ce;
+
 #print Dumper \@cal;
 
 
@@ -153,7 +157,7 @@ for my $tmp ($gcal->get_events('max-results'=>'100000000','start-min'=>$startdat
 }
 #print "=========================\nNu nieuwe toevoegen\n";
 
-foreach my $e (@cal) {
+foreach my $e (@{$sp->cal}) {
     my $event = Net::Google::Calendar::Entry->new();
     print Dumper $e;
     $event->title(encode('UTF-8',"2e: ".$e->{activiteit}));
