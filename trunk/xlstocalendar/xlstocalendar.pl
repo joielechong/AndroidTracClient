@@ -13,7 +13,6 @@ my $propval = 'xlstocalendar';
 my $file = shift;
 my $jaar = shift;
 my $maand = shift;
-my ($user,$pass);
 
 die "Aanroep verkeerd\n" unless defined($file) and defined($jaar) and defined($maand);
 
@@ -164,7 +163,6 @@ my $ws = sprintf("%4.4d-%2.2d",$jaar,$maand);
 my $sp = Jaarplan->new($file,$ws);
 
 my $gcal = Schoolagenda->new('Schoolagenda');
-$gcal->login($user,$pass);
 
 print "Oude entries verwijderen\n";
 for my $tmp ($gcal->get_events('max-results'=>'100000000','start-min'=>$startdate,'start-max'=>$enddate)) {
