@@ -12,6 +12,16 @@ use Data::Dumper;
     use strict;
     use	base 'Spreadsheet::DataFromExcel';
     use Data::Dumper;
+		
+		sub clean {
+			my $d = shift;
+			$d = '' unless defined $d;
+	    $d =~ s/^\[ ]+//;
+	    $d =~ s/[ ]+$//;
+	    $d =~ s/[\000-\037]//g;
+			chomp($d);
+			return $d;
+		}
     
     sub loaddata {
 	my $self = shift;
@@ -22,6 +32,10 @@ use Data::Dumper;
 	foreach my $entry (@$data) {
 #    print Dumper $entry;
 	    
+			for (0..5) {
+				$entry->[$_]=clean($entry->[$_]);
+			}
+			
 	    next if $entry->[0] eq "za/zo";
 	    next if $entry->[0] eq "Za/zo";
 	    next if $entry->[0] eq "za";
@@ -32,32 +46,16 @@ use Data::Dumper;
 		$curdag = $entry->[1];
 		$state = 0;
 	    }
-	    $entry->[2]='' unless defined $entry->[2];
-	    $entry->[3]='' unless defined $entry->[3];
-	    $entry->[4]='' unless defined $entry->[4];
-	    $entry->[5]='' unless defined $entry->[5];
-	    $entry->[3]=~ s/^\[ ]+//;
-	    $entry->[3]=~ s/[ ]+$//;
-	    $entry->[4]=~ s/^[ ]+//;
-	    $entry->[4]=~ s/[ ]$//;
-	    $entry->[5]=~ s/^[ ]+//;
-	    $entry->[5]=~ s/[ ]+$//;
-	    $entry->[3]=~ s/[\000-\037]//g;
-	    $entry->[4]=~ s/[\000-\037]//g;
-	    $entry->[5]=~ s/[\000-\037]//g;
 	    if ($entry->[3] ne '' || $entry->[2] ne '') {
 		if ($state == 0) {
 		    $curcal++;
 		    $self->{CAL}->[$curcal]->{datum} = $curdag;
 		    $self->{CAL}->[$curcal]->{activiteit} = $entry->[3];
-		    chomp($self->{CAL}->[$curcal]->{activiteit});
 		    $self->{CAL}->[$curcal]->{begintijd} = undef;
 		    $self->{CAL}->[$curcal]->{eindtijd} = undef;
 		    $self->{CAL}->[$curcal]->{begintijd} = $entry->[2] unless $entry->[2] eq '';
 		    $self->{CAL}->[$curcal]->{locatie} = $entry->[5];
-		    chomp($self->{CAL}->[$curcal]->{locatie});
 		    $self->{CAL}->[$curcal]->{deelnemers} = $entry->[4];
-		    chomp($self->{CAL}->[$curcal]->{deelnemers});
 		    $state = 1;
 		} elsif ($state == 1) {
 		    $self->{CAL}->[$curcal]->{eindtijd} = $entry->[2] unless $entry->[2] eq '';
