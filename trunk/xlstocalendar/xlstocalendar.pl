@@ -49,7 +49,7 @@ close CRED;
 my $curdag=undef;
 my $curcal=-1;
 my $state=0;
-			my $data = $self->load($file,$ws) or die $self->error;
+			my $data = $self->load($self->{FILE},$self->{WS}) or die $self->error;
 foreach my $entry (@$data) {
 #    print Dumper $entry;
 
