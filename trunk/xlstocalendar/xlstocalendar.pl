@@ -94,9 +94,6 @@ use Data::Dumper;
     }
 };
 
-my $propname = 'http://van-loon.xs4all.nl/calendar/#xls';
-my $propval = 'xlstocalendar';
-
 {
     package Schoolagenda;
     
@@ -105,6 +102,9 @@ my $propval = 'xlstocalendar';
     use Data::Dumper;
 
     
+my $propname = 'http://van-loon.xs4all.nl/calendar/#xls';
+my $propval = 'xlstocalendar';
+
     sub open_calendar {
 	my $self = shift;
 	
@@ -147,7 +147,7 @@ my $propval = 'xlstocalendar';
     }
 		
 		sub cleanup {
-			my ($self,$startdate,$enddate,$propname,$propval) = @_;
+			my ($self,$startdate,$enddate) = @_;
 for my $tmp ($self->get_events('max-results'=>'100000000','start-min'=>$startdate,'start-max'=>$enddate)) {
     print $tmp->title,":";
     my ($name,$value) = $tmp->extended_property;
@@ -159,6 +159,14 @@ for my $tmp ($self->get_events('max-results'=>'100000000','start-min'=>$startdat
     print " verwijderd\n";
 }
 			
+		}
+		
+		sub add_entry {
+			my ($self,$event) = @_;
+	    $event->extended_property($propname,$propval);
+    $event->visibility('public');
+    $event->status('confirmed');
+		$self->SUPER::add_entry($event);
 		}
 };
 
@@ -175,7 +183,7 @@ my $gcal = Schoolagenda->new('Schoolagenda');
 print "Oude entries verwijderen\n";
 my $startdate = DateTime->new(year=>$jaar,month=>$maand,day=>1,time_zone=>'Europe/Amsterdam');
 my $enddate = $startdate + DateTime::Duration->new(months=>1,seconds=>-1);
-$gcal->cleanup($startdate,$enddate,$propname,$propval);
+$gcal->cleanup($startdate,$enddate);
 
 foreach my $e (@{$sp->cal}) {
     my $event = Net::Google::Calendar::Entry->new();
@@ -208,9 +216,6 @@ foreach my $e (@{$sp->cal}) {
     }
     $event->content(encode('UTF-8',$e->{deelnemers})) if defined $e->{deelnemers};
     $event->location(encode('UTF-8',$e->{locatie})) if defined($e->{locatie});
-    $event->extended_property($propname,$propval);
-    $event->visibility('public');
-    $event->status('confirmed');
 #    print Dumper $event;
     my $tmp = $gcal->add_entry($event);
     die "Couldn't add event: $@\n" unless defined $tmp;
