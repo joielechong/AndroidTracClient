@@ -104,7 +104,7 @@ use Data::Dumper;
 			propname => 'http://van-loon.xs4all.nl/calendar/#xls',
 			propval => 'xlstocalendar',
 			credentials => "/home/mfvl/download/credentials.poi",
-			calendarname => 'Schoolagenda';
+			calendarname => 'Schoolagenda'
 		);
 
     sub open_calendar {
@@ -120,7 +120,6 @@ use Data::Dumper;
     
     sub get_credentials {
 	my $self = shift;
-	my $;
 	
 	open CRED,"<".$ClassData{credentials} or die "Kan credential file ".$ClassData{credentials}." niet openen: $@\n";
 	while (<CRED>) {
