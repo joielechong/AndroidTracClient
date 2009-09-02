@@ -38,7 +38,8 @@ while (<CRED>) {
 
 close CRED;
 
-package Jaarplan {
+{
+package Jaarplan;
 	
 use strict;
 use	base qw{Spreadsheet::DataFromExcel};
