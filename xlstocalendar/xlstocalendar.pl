@@ -7,21 +7,6 @@ use DateTime::Duration;
 use Encode;
 use Data::Dumper;
 
-my $propname = 'http://van-loon.xs4all.nl/calendar/#xls';
-my $propval = 'xlstocalendar';
-
-my $file = shift;
-my $jaar = shift;
-my $maand = shift;
-
-die "Aanroep verkeerd\n" unless defined($file) and defined($jaar) and defined($maand);
-
-my $startdate = DateTime->new(year=>$jaar,month=>$maand,day=>1,time_zone=>'Europe/Amsterdam');
-my $enddate = $startdate + DateTime::Duration->new(months=>1,seconds=>-1);
-print "$startdate\n$enddate\n"; 
-
-print $file,"\n";
-
 {
     package Jaarplan;
     
@@ -115,6 +100,9 @@ print $file,"\n";
     use strict;
     use base 'Net::Google::Calendar';
     use Data::Dumper;
+my $propname = 'http://van-loon.xs4all.nl/calendar/#xls';
+my $propval = 'xlstocalendar';
+
     
     sub open_calendar {
 	my $self = shift;
@@ -156,25 +144,37 @@ print $file,"\n";
 	$self->open_calendar();
 	return $self;
     }
-    
-};
-
-my $ws = sprintf("%4.4d-%2.2d",$jaar,$maand);
-my $sp = Jaarplan->new($file,$ws);
-
-my $gcal = Schoolagenda->new('Schoolagenda');
-
-print "Oude entries verwijderen\n";
-for my $tmp ($gcal->get_events('max-results'=>'100000000','start-min'=>$startdate,'start-max'=>$enddate)) {
+		
+		sub cleanup {
+			my ($self,$startdate,$enddate) = @_;
+for my $tmp ($self->get_events('max-results'=>'100000000','start-min'=>$startdate,'start-max'=>$enddate)) {
     print $tmp->title,":";
     my ($name,$value) = $tmp->extended_property;
     if (defined($name) && defined($value) && $name eq $propname && $value eq $propval) {
-	$gcal->delete_entry($tmp) || print "Kon ".$tmp->id." niet weggooien: $@\n";
+	$self->delete_entry($tmp) || print "Fout: kon ".$tmp->id." niet weggooien: $@. Niet";
     } else {
 	print " niet";
     }
     print " verwijderd\n";
 }
+			
+		}
+};
+
+my $file = shift;
+my $jaar = shift;
+my $maand = shift;
+
+die "Aanroep verkeerd\n" unless defined($file) and defined($jaar) and defined($maand);
+
+my $ws = sprintf("%4.4d-%2.2d",$jaar,$maand);
+my $sp = Jaarplan->new($file,$ws);
+my $gcal = Schoolagenda->new('Schoolagenda');
+
+print "Oude entries verwijderen\n";
+my $startdate = DateTime->new(year=>$jaar,month=>$maand,day=>1,time_zone=>'Europe/Amsterdam');
+my $enddate = $startdate + DateTime::Duration->new(months=>1,seconds=>-1);
+$gcal->cleanup($startdate,$enddate);
 
 foreach my $e (@{$sp->cal}) {
     my $event = Net::Google::Calendar::Entry->new();
