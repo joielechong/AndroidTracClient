@@ -39,25 +39,25 @@ while (<CRED>) {
 close CRED;
 
 {
-package Jaarplan;
-	
-use strict;
-use	base 'Spreadsheet::DataFromExcel';
-	
-sub new {
-    my($class, $file,$ws) = @_;        # Class name is in the first parameter
-    my $self = SUPER->new();
-    bless($self, $class);          # Say: $self is a $class
-		$self->{file} = $file;
-		$self->{ws} = $ws;
-		$self->{data} = $self->load($file,$ws) or die $self->error;
-    return $self;
-}
-
-sub data {
+    package Jaarplan;
+    
+    use strict;
+    use	base 'Spreadsheet::DataFromExcel';
+    
+    sub new {
+	my($class, $file,$ws) = @_;        # Class name is in the first parameter
+	my $self = SUPER->new();
+	bless($self, $class);          # Say: $self is a $class
+	$self->{file} = $file;
+	$self->{ws} = $ws;
+	$self->{data} = $self->load($file,$ws) or die $self->error;
+	return $self;
+    }
+    
+    sub data {
 	my $self = shift;
 	return $self->{data};
-}
+    }
 };
 
 my $ws = sprintf("%4.4d-%2.2d",$jaar,$maand);
