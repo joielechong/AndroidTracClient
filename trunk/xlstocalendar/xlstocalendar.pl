@@ -99,14 +99,14 @@ use Data::Dumper;
     use strict;
     use base 'Net::Google::Calendar';
     use Data::Dumper;
-
-		our %ClassData= (
-			propname => 'http://van-loon.xs4all.nl/calendar/#xls',
-			propval => 'xlstocalendar',
-			credentials => "/home/mfvl/download/credentials.poi",
-			calendarname => 'Schoolagenda'
-		);
-
+    
+    our %ClassData= (
+	propname => 'http://van-loon.xs4all.nl/calendar/#xls',
+	propval => 'xlstocalendar',
+	credentials => "/home/mfvl/download/credentials.poi",
+	calendarname => 'Schoolagenda'
+	);
+    
     sub open_calendar {
 	my $self = shift;
 	
@@ -145,28 +145,28 @@ use Data::Dumper;
 	$self->open_calendar();
 	return $self;
     }
-		
-		sub cleanup {
-			my ($self,$startdate,$enddate) = @_;
-for my $tmp ($self->get_events('max-results'=>'100000000','start-min'=>$startdate,'start-max'=>$enddate)) {
-    print $tmp->title,":";
-    my ($name,$value) = $tmp->extended_property;
-    if (defined($name) && defined($value) && $name eq $ClassData{propname} && $value eq $ClassData{propval}) {
-	$self->delete_entry($tmp) || print "Fout: kon ".$tmp->id." niet weggooien: $@. Niet";
-    } else {
-	print " niet";
+    
+    sub cleanup {
+	my ($self,$startdate,$enddate) = @_;
+	for my $tmp ($self->get_events('max-results'=>'100000000','start-min'=>$startdate,'start-max'=>$enddate)) {
+	    print $tmp->title,":";
+	    my ($name,$value) = $tmp->extended_property;
+	    if (defined($name) && defined($value) && $name eq $ClassData{propname} && $value eq $ClassData{propval}) {
+		$self->delete_entry($tmp) || print "Fout: kon ".$tmp->id." niet weggooien: $@. Niet";
+	    } else {
+		print " niet";
+	    }
+	    print " verwijderd\n";
+	}
     }
-    print " verwijderd\n";
-}
-		}
-		
-		sub add_entry {
-			my ($self,$event) = @_;
-	    $event->extended_property($ClassData{propname},$ClassData{propval});
-    $event->visibility('public');
-    $event->status('confirmed');
-		$self->SUPER::add_entry($event);
-		}
+    
+    sub add_entry {
+	my ($self,$event) = @_;
+	$event->extended_property($ClassData{propname},$ClassData{propval});
+	$event->visibility('public');
+	$event->status('confirmed');
+	$self->SUPER::add_entry($event);
+    }
 };
 
 my $file = shift;
