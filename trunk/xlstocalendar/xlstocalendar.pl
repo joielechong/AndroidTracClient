@@ -42,11 +42,11 @@ close CRED;
 package Jaarplan;
 	
 use strict;
-use	base qw{Spreadsheet::DataFromExcel};
+use	base 'Spreadsheet::DataFromExcel';
 	
 sub new {
     my($class, $file,$ws) = @_;        # Class name is in the first parameter
-    my $self = SUPER::new();
+    my $self = SUPER->new();
     bless($self, $class);          # Say: $self is a $class
 		$self->{file} = $file;
 		$self->{ws} = $ws;
