@@ -167,6 +167,33 @@ use Data::Dumper;
     }
 };
 
+{
+	package Afspraak;
+	
+	use strict;
+	use base 'Net::Google::Calendar::Entry';
+	use DateTime;
+	use DateTime::Duration;
+	use Data::Dumper;
+	
+	sub new {
+		my $class = shift;        # Class name is in the first parameter
+		my $self  = $class->SUPER::new();
+		$self->{JAAR} = undef;
+		$self->{MAAND} = undef;
+		$self->{DAG} = undef;
+		bless($self,$class);
+		return $self;
+	}
+
+	sub datum {
+		my ($self,$jaar,$maand,$dag= @_;
+		$self->{JAAR} = $jaar;
+		$self->{MAAND} = $maand;
+		$self->{DAG} = $dag;
+	}
+};
+
 my $file = shift;
 my $jaar = shift;
 my $maand = shift;
@@ -183,7 +210,8 @@ my $enddate = $startdate + DateTime::Duration->new(months=>1,seconds=>-1);
 $gcal->cleanup($startdate,$enddate);
 
 foreach my $e (@{$sp->cal}) {
-    my $event = Net::Google::Calendar::Entry->new();
+    my $event = Afspraak->new();
+		$event->datum($jaar,$maand,$e->{datum});
 #    print Dumper $e;
     $event->title(encode('UTF-8',"2e: ".$e->{activiteit}));
     my $uur = $e->{begintijd};
