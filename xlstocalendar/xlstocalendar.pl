@@ -27,7 +27,7 @@ print $file,"\n";
     
     use strict;
     use	base 'Spreadsheet::DataFromExcel';
-		use Data::Dumper;
+    use Data::Dumper;
     
     sub loaddata {
 	my $self = shift;
@@ -110,40 +110,40 @@ print $file,"\n";
 };
 
 {
-	package Schoolagenda;
+    package Schoolagenda;
+    
+    use strict;
+    use base 'Net::Google::Calendar';
+    use Data::Dumper;
+    
+    sub open_calendar {
+	my $self = shift;
 	
-	use strict;
-	use parent 'Net::Google::Calendar';
-	use Data::Dumper;
-
-		sub open_calendar {
-			my $self = shift;
-			
-			my $c;
-			for ($self->get_calendars) {
-				$c = $_ if $_->title eq $self->{AGENDA};
-			}
-			die 'Kan kalender '.$self->{AGENDA}.' niet vinden' unless defined $c;
-			$self->set_calendar($c);
-		}
-		
-		sub get_credentials {
-			my $self = shift;
-			my $credentials = "/home/mfvl/download/credentials.poi";
-			
-			open CRED,"<$credentials" or die "Kan credential file niet openen: $@\n";
-			while (<CRED>) {
-				my ($key,$val) = split("=");
-				if ($key eq "username") {
-					$self->{USER} = $val;
-				}
-				if ($key eq "password") {
-					$self->{PASS} = $val;
-				}
-			}
-			close CRED;
-		}
-
+	my $c;
+	for ($self->get_calendars) {
+	    $c = $_ if $_->title eq $self->{AGENDA};
+	}
+	die 'Kan kalender '.$self->{AGENDA}.' niet vinden' unless defined $c;
+	$self->set_calendar($c);
+    }
+    
+    sub get_credentials {
+	my $self = shift;
+	my $credentials = "/home/mfvl/download/credentials.poi";
+	
+	open CRED,"<$credentials" or die "Kan credential file niet openen: $@\n";
+	while (<CRED>) {
+	    my ($key,$val) = split("=");
+	    if ($key eq "username") {
+		$self->{USER} = $val;
+	    }
+	    if ($key eq "password") {
+		$self->{PASS} = $val;
+	    }
+	}
+	close CRED;
+    }
+    
     sub new {
 	my $class = shift;        # Class name is in the first parameter
 	my $self  = $class->SUPER::new();
@@ -178,7 +178,7 @@ for my $tmp ($gcal->get_events('max-results'=>'100000000','start-min'=>$startdat
 
 foreach my $e (@{$sp->cal}) {
     my $event = Net::Google::Calendar::Entry->new();
-    print Dumper $e;
+#    print Dumper $e;
     $event->title(encode('UTF-8',"2e: ".$e->{activiteit}));
     my $uur = $e->{begintijd};
     my $minuut = undef;
@@ -213,4 +213,5 @@ foreach my $e (@{$sp->cal}) {
 #    print Dumper $event;
     my $tmp = $gcal->add_entry($event);
     die "Couldn't add event: $@\n" unless defined $tmp;
+    print $event->title.": toegevoegd\n";
 }
