@@ -94,14 +94,15 @@ use Data::Dumper;
     }
 };
 
+my $propname = 'http://van-loon.xs4all.nl/calendar/#xls';
+my $propval = 'xlstocalendar';
+
 {
     package Schoolagenda;
     
     use strict;
     use base 'Net::Google::Calendar';
     use Data::Dumper;
-my $propname = 'http://van-loon.xs4all.nl/calendar/#xls';
-my $propval = 'xlstocalendar';
 
     
     sub open_calendar {
@@ -146,7 +147,7 @@ my $propval = 'xlstocalendar';
     }
 		
 		sub cleanup {
-			my ($self,$startdate,$enddate) = @_;
+			my ($self,$startdate,$enddate,$propname,$propval) = @_;
 for my $tmp ($self->get_events('max-results'=>'100000000','start-min'=>$startdate,'start-max'=>$enddate)) {
     print $tmp->title,":";
     my ($name,$value) = $tmp->extended_property;
@@ -174,7 +175,7 @@ my $gcal = Schoolagenda->new('Schoolagenda');
 print "Oude entries verwijderen\n";
 my $startdate = DateTime->new(year=>$jaar,month=>$maand,day=>1,time_zone=>'Europe/Amsterdam');
 my $enddate = $startdate + DateTime::Duration->new(months=>1,seconds=>-1);
-$gcal->cleanup($startdate,$enddate);
+$gcal->cleanup($startdate,$enddate,$propname,$propval);
 
 foreach my $e (@{$sp->cal}) {
     my $event = Net::Google::Calendar::Entry->new();
