@@ -5,6 +5,7 @@ use Spreadsheet::DataFromExcel;
 use Net::Google::Calendar;
 use DateTime;
 use DateTime::Duration;
+use Encode;
 use Data::Dumper;
 
 my $propname = 'http://van-loon.xs4all.nl/calendar/#xls';
@@ -62,7 +63,17 @@ foreach my $entry (@$data) {
     }
     $entry->[2]='' unless defined $entry->[2];
     $entry->[3]='' unless defined $entry->[3];
+    $entry->[4]='' unless defined $entry->[4];
     $entry->[5]='' unless defined $entry->[5];
+    $entry->[3]=~ s/^\[ ]+//;
+    $entry->[3]=~ s/[ ]+$//;
+    $entry->[4]=~ s/^[ ]+//;
+    $entry->[4]=~ s/[ ]$//;
+    $entry->[5]=~ s/^[ ]+//;
+    $entry->[5]=~ s/[ ]+$//;
+    $entry->[3]=~ s/[\000-\037]//g;
+    $entry->[4]=~ s/[\000-\037]//g;
+    $entry->[5]=~ s/[\000-\037]//g;
     if ($entry->[3] ne '' || $entry->[2] ne '') {
 	if ($state == 0) {
 	    $curcal++;
@@ -74,6 +85,8 @@ foreach my $entry (@$data) {
 	    $cal[$curcal]->{begintijd} = $entry->[2] unless $entry->[2] eq '';
 	    $cal[$curcal]->{locatie} = $entry->[5];
 	    chomp($cal[$curcal]->{locatie});
+	    $cal[$curcal]->{deelnemers} = $entry->[4];
+	    chomp($cal[$curcal]->{deelnemers});
 	    $state = 1;
 	} elsif ($state == 1) {
 	    $cal[$curcal]->{eindtijd} = $entry->[2] unless $entry->[2] eq '';
@@ -81,10 +94,10 @@ foreach my $entry (@$data) {
 	    chomp($cal[$curcal]->{activiteit});
 	    $cal[$curcal]->{locatie} .= ' '.$entry->[5];
 	    chomp($cal[$curcal]->{locatie});
+	    $cal[$curcal]->{deelnemers} .= ' '.$entry->[4];
+	    chomp($cal[$curcal]->{deelnemers});
 	    $state=0;
 	}
-	    $cal[$curcal]->{activiteit} =~ s/\W+/ /g;
-	    $cal[$curcal]->{locatie} =~ s/\W+/ /g;
     } else {
 	$state = 0;
     }
@@ -120,7 +133,7 @@ for my $tmp ($gcal->get_events('max-results'=>'100000000','start-min'=>$startdat
 foreach my $e (@cal) {
     my $event = Net::Google::Calendar::Entry->new();
     print Dumper $e;
-    $event->title("2e: ".$e->{activiteit});
+    $event->title(encode('UTF-8',"2e: ".$e->{activiteit}));
     my $uur = $e->{begintijd};
     my $minuut = undef;
     if (defined($uur)) {
@@ -146,7 +159,8 @@ foreach my $e (@cal) {
 	my $starttime = DateTime->new(year=>$jaar,month=>$maand,day=>$e->{datum});
 	$event->when($starttime,$starttime,1);
     }
-    $event->location($e->{locatie}) if defined($e->{locatie});
+    $event->content(encode('UTF-8',$e->{deelnemers})) if defined $e->{deelnemers};
+    $event->location(encode('UTF-8',$e->{locatie})) if defined($e->{locatie});
     $event->extended_property($propname,$propval);
     $event->visibility('public');
     $event->status('confirmed');
