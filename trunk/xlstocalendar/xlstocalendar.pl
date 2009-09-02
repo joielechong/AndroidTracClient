@@ -45,6 +45,7 @@ close CRED;
     use	base 'Spreadsheet::DataFromExcel';
 		
 		sub loaddata {
+			my $self = shift;
 my $curdag=undef;
 my $curcal=-1;
 my $state=0;
