@@ -1,7 +1,6 @@
 #! /usr/bin/perl -w
 
 use strict;
-use Net::Google::Calendar;
 use DateTime;
 use DateTime::Duration;
 use Encode;
@@ -101,26 +100,29 @@ use Data::Dumper;
     use base 'Net::Google::Calendar';
     use Data::Dumper;
 
-    
-my $propname = 'http://van-loon.xs4all.nl/calendar/#xls';
-my $propval = 'xlstocalendar';
+		our %ClassData= (
+			propname => 'http://van-loon.xs4all.nl/calendar/#xls',
+			propval => 'xlstocalendar',
+			credentials => "/home/mfvl/download/credentials.poi",
+			calendarname => 'Schoolagenda';
+		);
 
     sub open_calendar {
 	my $self = shift;
 	
 	my $c;
 	for ($self->get_calendars) {
-	    $c = $_ if $_->title eq $self->{AGENDA};
+	    $c = $_ if $_->title eq $ClassData{calendarname};
 	}
-	die 'Kan kalender '.$self->{AGENDA}.' niet vinden' unless defined $c;
+	die 'Kan kalender '.$ClassData{calendarname}.' niet vinden' unless defined $c;
 	$self->set_calendar($c);
     }
     
     sub get_credentials {
 	my $self = shift;
-	my $credentials = "/home/mfvl/download/credentials.poi";
+	my $;
 	
-	open CRED,"<$credentials" or die "Kan credential file niet openen: $@\n";
+	open CRED,"<".$ClassData{credentials} or die "Kan credential file ".$ClassData{credentials}." niet openen: $@\n";
 	while (<CRED>) {
 	    my ($key,$val) = split("=");
 	    if ($key eq "username") {
@@ -136,10 +138,9 @@ my $propval = 'xlstocalendar';
     sub new {
 	my $class = shift;        # Class name is in the first parameter
 	my $self  = $class->SUPER::new();
-	$self->{AGENDA} = shift;
 	$self->{USER} = undef;
 	$self->{PASS} = undef;
-	bless($self, $class);          # Say: $self is a $class
+	bless($self, $class); 
 	$self->get_credentials();
 	$self->login($self->{USER},$self->{PASS});
 	$self->open_calendar();
@@ -151,19 +152,18 @@ my $propval = 'xlstocalendar';
 for my $tmp ($self->get_events('max-results'=>'100000000','start-min'=>$startdate,'start-max'=>$enddate)) {
     print $tmp->title,":";
     my ($name,$value) = $tmp->extended_property;
-    if (defined($name) && defined($value) && $name eq $propname && $value eq $propval) {
+    if (defined($name) && defined($value) && $name eq $ClassData{propname} && $value eq $ClassData{propval}) {
 	$self->delete_entry($tmp) || print "Fout: kon ".$tmp->id." niet weggooien: $@. Niet";
     } else {
 	print " niet";
     }
     print " verwijderd\n";
 }
-			
 		}
 		
 		sub add_entry {
 			my ($self,$event) = @_;
-	    $event->extended_property($propname,$propval);
+	    $event->extended_property($ClassData{propname},$ClassData{propval});
     $event->visibility('public');
     $event->status('confirmed');
 		$self->SUPER::add_entry($event);
@@ -178,7 +178,7 @@ die "Aanroep verkeerd\n" unless defined($file) and defined($jaar) and defined($m
 
 my $ws = sprintf("%4.4d-%2.2d",$jaar,$maand);
 my $sp = Jaarplan->new($file,$ws);
-my $gcal = Schoolagenda->new('Schoolagenda');
+my $gcal = Schoolagenda->new();
 
 print "Oude entries verwijderen\n";
 my $startdate = DateTime->new(year=>$jaar,month=>$maand,day=>1,time_zone=>'Europe/Amsterdam');
