@@ -8,6 +8,7 @@ use DateTime::Duration;
 use Encode;
 use Data::Dumper;
 
+my $credentials = "/home/mfvl/download/credentials.poi";
 my $propname = 'http://van-loon.xs4all.nl/calendar/#xls';
 my $propval = 'xlstocalendar';
 
@@ -24,7 +25,7 @@ print "$startdate\n$enddate\n";
 
 print $file,"\n";
 
-open CRED,"</home/mfvl/download/credentials.poi" or die "Kan credential file niet openen: $@\n";
+open CRED,"<$credentials" or die "Kan credential file niet openen: $@\n";
 while (<CRED>) {
     my ($key,$val) = split("=");
     if ($key eq "username") {
@@ -37,18 +38,39 @@ while (<CRED>) {
 
 close CRED;
 
+package Jaarplan {
+	
+use strict;
+use	base qw{Spreadsheet::DataFromExcel};
+	
+sub new {
+    my($class, $file,$ws) = @_;        # Class name is in the first parameter
+    my $self = SUPER::new();
+    bless($self, $class);          # Say: $self is a $class
+		$self->{file} = $file;
+		$self->{ws} = $ws;
+		$self->{data} = $self->load($file,$ws) or die $self->error;
+    return $self;
+}
+
+sub data {
+	my $self = shift;
+	return $self->{data};
+}
+};
 
 my $ws = sprintf("%4.4d-%2.2d",$jaar,$maand);
 
-my $sp = Spreadsheet::DataFromExcel->new();
-my $data = $sp->load($file,$ws) or die $sp->error;
+my $sp = Jaarplan->new($file,$ws);
+#my $sp = Spreadsheet::DataFromExcel->new();
+#my $data = $sp->load($file,$ws) or die $sp->error;
 my @cal;
 my %ce;
 my $curdag=undef;
 my $curcal=-1;
 my $state=0;
 
-foreach my $entry (@$data) {
+foreach my $entry (@{$sp->data}) {
 #    print Dumper $entry;
 
     next if $entry->[0] eq "za/zo";
