@@ -7,7 +7,6 @@ use DateTime::Duration;
 use Encode;
 use Data::Dumper;
 
-my $credentials = "/home/mfvl/download/credentials.poi";
 my $propname = 'http://van-loon.xs4all.nl/calendar/#xls';
 my $propval = 'xlstocalendar';
 
@@ -24,24 +23,12 @@ print "$startdate\n$enddate\n";
 
 print $file,"\n";
 
-open CRED,"<$credentials" or die "Kan credential file niet openen: $@\n";
-while (<CRED>) {
-    my ($key,$val) = split("=");
-    if ($key eq "username") {
-	$user = $val;
-    }
-    if ($key eq "password") {
-	$pass = $val;
-    }    
-}
-
-close CRED;
-
 {
     package Jaarplan;
     
     use strict;
     use	base 'Spreadsheet::DataFromExcel';
+		use Data::Dumper;
     
     sub loaddata {
 	my $self = shift;
@@ -123,21 +110,61 @@ close CRED;
     }
 };
 
-my $ws = sprintf("%4.4d-%2.2d",$jaar,$maand);
+{
+	package Schoolagenda;
+	
+	use strict;
+	use parent 'Net::Google::Calendar';
+	use Data::Dumper;
 
+		sub open_calendar {
+			my $self = shift;
+			
+			my $c;
+			for ($self->get_calendars) {
+				$c = $_ if $_->title eq $self->{AGENDA};
+			}
+			die 'Kan kalender '.$self->{AGENDA}.' niet vinden' unless defined $c;
+			$self->set_calendar($c);
+		}
+		
+		sub get_credentials {
+			my $self = shift;
+			my $credentials = "/home/mfvl/download/credentials.poi";
+			
+			open CRED,"<$credentials" or die "Kan credential file niet openen: $@\n";
+			while (<CRED>) {
+				my ($key,$val) = split("=");
+				if ($key eq "username") {
+					$self->{USER} = $val;
+				}
+				if ($key eq "password") {
+					$self->{PASS} = $val;
+				}
+			}
+			close CRED;
+		}
+
+    sub new {
+	my $class = shift;        # Class name is in the first parameter
+	my $self  = $class->SUPER::new();
+	$self->{AGENDA} = shift;
+	$self->{USER} = undef;
+	$self->{PASS} = undef;
+	bless($self, $class);          # Say: $self is a $class
+	$self->get_credentials();
+	$self->login($self->{USER},$self->{PASS});
+	$self->open_calendar();
+	return $self;
+    }
+    
+};
+
+my $ws = sprintf("%4.4d-%2.2d",$jaar,$maand);
 my $sp = Jaarplan->new($file,$ws);
 
-my $gcal = Net::Google::Calendar->new();
+my $gcal = Schoolagenda->new('Schoolagenda');
 $gcal->login($user,$pass);
-
-my $c;
-for ($gcal->get_calendars) {
-    $c = $_ if $_->title eq 'Schoolagenda';
-}
-
-die 'Kan kalender niet vinden' unless defined $c;
-
-$gcal->set_calendar($c);
 
 print "Oude entries verwijderen\n";
 for my $tmp ($gcal->get_events('max-results'=>'100000000','start-min'=>$startdate,'start-max'=>$enddate)) {
