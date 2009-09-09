@@ -12,16 +12,16 @@ use Data::Dumper;
     use strict;
     use	base 'Spreadsheet::DataFromExcel';
     use Data::Dumper;
-		
-		sub clean {
-			my $d = shift;
-			$d = '' unless defined $d;
-	    $d =~ s/^\[ ]+//;
-	    $d =~ s/[ ]+$//;
-	    $d =~ s/[\000-\037]//g;
-			chomp($d);
-			return $d;
-		}
+    
+    sub clean {
+	my $d = shift;
+	$d = '' unless defined $d;
+	$d =~ s/^\[ ]+//;
+	$d =~ s/[ ]+$//;
+	$d =~ s/[\000-\037]//g;
+	chomp($d);
+	return $d;
+    }
     
     sub loaddata {
 	my $self = shift;
@@ -32,10 +32,10 @@ use Data::Dumper;
 	foreach my $entry (@$data) {
 #    print Dumper $entry;
 	    
-			for (0..5) {
-				$entry->[$_]=clean($entry->[$_]);
-			}
-			
+	    for (0..5) {
+		$entry->[$_]=clean($entry->[$_]);
+	    }
+	    
 	    next if $entry->[0] eq "za/zo";
 	    next if $entry->[0] eq "Za/zo";
 	    next if $entry->[0] eq "za";
