@@ -33,7 +33,7 @@
 		$self->{dryrun} = 0;
 		$self->{dbh} = DBI->connect("dbi:Pg:dbname=koersdata");
 		$self->{sth1}=$self->{dbh}->prepare("SELECT * FROM nieuwkoersinfo(?,?,?,?,?,?,?)");
-		$self->{sth2}=$self->{dbh}->prepare("copy (select naam,slot,substr(current_time(0),1,5) as time,datum,prev,open,hoog,laag,volume from koersen_vandaag) to '$outputfile' with csv force quote naam;");
+		$self->{sth2}=$self->{dbh}->prepare("copy (select naam,slot,to_char(now(),'HH:MI') as time,datum,prev,open,hoog,laag,volume from koersen_vandaag) to '$outputfile' with csv force quote naam;");
 	}
 	
 	sub storeKoers {
