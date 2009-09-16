@@ -7,7 +7,7 @@ use XML::LibXSLT;
 
 package DBIx::XMLServer;
 
-our $VERSION = '0.02';
+our $VERSION = '0.02MFVL';
 
 my $our_ns = 'http://boojum.org.uk/NS/XMLServer';
 
