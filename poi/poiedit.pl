@@ -45,11 +45,11 @@ my @passwords=('mikel02',
 
 my $cache = LWP::ConnCache->new;
 
-my $proxy=$proxies[int(rand(1+$#proxies)];
+my $proxy=$proxies[int(rand(1+$#proxies))];
 print "Proxy used = $proxy\n";
 my $ua = LWP::UserAgent->new;
 $ua->agent("Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7");
-$ua->proxy(['http', 'ftp'], $proxy);
+$ua->proxy(['http', 'ftp'], "http://".$proxy."/");
 #$ua->proxy(['http', 'ftp'], 'http://67.69.254.254:80/');
 $ua->no_proxy('flitspaal.nl','bruxelles5.info','goedkooptanken.nu','bnet.be','navifriends.de','navifriends.com','flitsservice.nl');
 $ua->conn_cache($cache);
