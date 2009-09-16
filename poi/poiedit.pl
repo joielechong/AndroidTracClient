@@ -7,6 +7,18 @@ use LWP::ConnCache;
 use HTTP::Cookies;
 use Data::Dumper;
 
+my @proxies = ('189.70.29.113:80',
+							 '150.188.31.2:3128',
+							 '148.233.239.23:80',
+							 '84.255.246.20:80',
+							 '189.109.46.210',
+							 '207.250.81.2:3128',
+							 '217.58.153.172:8080',
+							 '211.115.185.44:80',
+							 '202.54.61.99:8080',
+							 '200.174.85.195:3128',
+							 '67.69.254.254:80');
+
 my @xmlsrc=( 
 	     "http://www.flitspaal.nl/poi_flitspalen.xml",
 	     "http://www.bruxelles5.info/POI/poi_bruxelles5.xml",
@@ -33,9 +45,11 @@ my @passwords=('mikel02',
 
 my $cache = LWP::ConnCache->new;
 
+my $proxy=$proxies[int(rand(1+$#proxies)];
+print "Proxy used = $proxy\n";
 my $ua = LWP::UserAgent->new;
 $ua->agent("Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7");
-$ua->proxy(['http', 'ftp'], 'http://217.58.153.172:8080/');
+$ua->proxy(['http', 'ftp'], $proxy);
 #$ua->proxy(['http', 'ftp'], 'http://67.69.254.254:80/');
 $ua->no_proxy('flitspaal.nl','bruxelles5.info','goedkooptanken.nu','bnet.be','navifriends.de','navifriends.com','flitsservice.nl');
 $ua->conn_cache($cache);
