@@ -32,10 +32,6 @@ while (my ($id,$longitude,$latitude,$commentaar,$name,$richting,$bidirectioneel,
 		my $placemark = $folder->addNewChild(undef,'Placemark');
 		$placemark->addNewChild(undef,'Point')->appendTextChild('coordinates',"$longitude,$latitude");
 		$placemark->appendTextChild('description',"$id $commentaar $snelheid $type");
-		my $lookat = $placemark->addNewChild(undef,'LookAt');
-		$lookat->appendTextChild('name',$name);
-		$lookat->appendTextChild('longitude',$longitude);
-		$lookat->appendTextChild('latitude',$latitude);
 }
 
 $doc->setDocumentElement($kml);
