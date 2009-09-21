@@ -4,7 +4,7 @@ use strict;
 
 use Data::Dumper;
 use DBI;
-use Archive::Zip;
+use Archive::Zip qw(:CONSTANTS);
 use XML::Compile::Util;
 use XML::Compile::Schema;
 
@@ -39,4 +39,9 @@ while (my ($id,$longitude,$latitude,$commentaar,$name,$richting,$bidirectioneel,
 }
 
 $doc->setDocumentElement($kml);
-print $doc->toString;
+
+my $zip = Archive::Zip->new();
+my $sm = $zip->addString($doc->toString,'flits.kml');
+$sm->desiredCompressionMethod(COMPRESSION_DEFLATED);
+$sm->desiredCompressionLevel(9);
+$zip->writeToFileNamed('flits.kmz');
