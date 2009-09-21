@@ -9,11 +9,11 @@ use XML::Compile::Util;
 use XML::Compile::Schema;
 
 my $schema = XML::Compile::Schema->new;
-$schema->importDefinitions('kml21.xsd');
+$schema->importDefinitions('ogckml22.xsd');
 my $doc =XML::LibXML::Document->new('1.0','UTF-8');
 
 my $kml = XML::LibXML::Element->new('kml');
-$kml->setNamespace('http://earth.google.com/kml/2.1');
+$kml->setNamespace('http://www.opengis.net/kml/2.2');
 
 my $document=$kml->addNewChild(undef,'Document');
 $document->setAttribute('id','light');
@@ -28,14 +28,14 @@ $sth1->execute();
 
 while (my ($id,$longitude,$latitude,$commentaar,$name,$richting,$bidirectioneel,$land,$insert_date,$update_date,$snelheid,$type,$inmio)= $sth1->fetchrow_array()) {
 		my $placemark = $folder->addNewChild(undef,'Placemark');
-		my $description = "&lt;pre&gt;ID: $id\nNaam: $name\nOmschr: $commentaar\n";
+		my $description = "<pre>ID: $id\nNaam: $name\nOmschr: $commentaar\n";
 		$description .= "Snelh: $snelheid\n" if defined $snelheid;
 		$description .= "Type: $type\n" if defined $type;
 		$description .= "Richting: $richting, $bidirectioneel\n" if defined $richting;
 		$placemark->addNewChild(undef,'Orientation')->appendTextChild('heading',($bidirectioneel?-$richting:$richting)) if defined $richting;
 		$description .= "Land: $land\n" if defined $land;
 		$description .= "inmio: $inmio\n" if defined $inmio;
-		$description .= "&lt;/pre&gt;\n";
+		$description .= "</pre>\n";
 		$placemark->addNewChild(undef,'Point')->appendTextChild('coordinates',"$longitude,$latitude");
 		$placemark->appendTextChild('description',$description);
 }
