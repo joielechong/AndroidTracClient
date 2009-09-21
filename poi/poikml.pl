@@ -5,10 +5,15 @@ use strict;
 use Data::Dumper;
 use DBI;
 use Archive::Zip;
+use XML::Compile::Util;
 use XML::Compile::Schema;
 
 my $schema = XML::Compile::Schema->new;
 $schema->importDefinitions('kml21.xsd');
+my $doc =XML::LibXML::Document->new('1.0','UTF-8');
+
+my $rootelem = $doc->createElement('kml');
+$element->setAttribute('id','light');
 
 my $kml;
 
@@ -34,3 +39,4 @@ while (my ($id,$longitude,$latitude,$commentaar,$name,$richting,$bidirectioneel,
     $kml->{kml}->{Document}->{Folder}->[0]->{Placemark}->[$cnt]->{LookAt}->[0]->{name}=$name;
     $cnt++;
 }
+
