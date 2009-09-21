@@ -12,8 +12,12 @@ my $schema = XML::Compile::Schema->new;
 $schema->importDefinitions('kml21.xsd');
 my $doc =XML::LibXML::Document->new('1.0','UTF-8');
 
-my $rootelem = $doc->createElement('kml');
-$element->setAttribute('id','light');
+my $rootelem = XML::LibXML::Element->new('kml');
+$rootelem->setNamespace('http://earth.google.com/kml/2.1');
+my $document=$rootelem->addNewChild(undef,'Document');
+$document->setAttribute('id','light');
+$doc->setDocumentElement($rootelem);
+
 
 my $kml;
 
