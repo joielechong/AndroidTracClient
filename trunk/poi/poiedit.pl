@@ -7,7 +7,8 @@ use LWP::ConnCache;
 use HTTP::Cookies;
 use Data::Dumper;
 
-my @proxies = ('189.70.29.113:80',
+my @proxies = (
+#							 '189.70.29.113:80',
 							 '150.188.31.2:3128',
 							 '148.233.239.23:80',
 							 '84.255.246.20:80',
