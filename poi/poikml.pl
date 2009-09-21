@@ -8,7 +8,7 @@ use Archive::Zip;
 use XML::Compile::Schema;
 
 my $schema = XML::Compile::Schema->new;
-$schema->importDefinitions('http://earth.google.com/kml/2.1');
+$schema->importDefinitions('kml21.xsd');
 
 my $kml;
 
