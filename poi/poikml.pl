@@ -22,11 +22,11 @@ $sth1->execute();
 my $cnt=0;
 
 while (my ($id,$longitude,$latitude,$commentaar,$name,$richting,$bidirectioneel,$land,$insert_date,$updatedate,$snelheid,$type,$inmio)= $sth1->fetchrow_array()) {
-    $kml->{kml}->{Document}->{Folder}->[0]->{Placemark}->[$cnt]->{Point}->{coordinates}="$longitude,$latitude";
-    $kml->{kml}->{Document}->{Folder}->[0]->{Placemark}->[$cnt]->{description}="$id $commentaar $snelheid $type";
-    $kml->{kml}->{Document}->{Folder}->[0]->{Placemark}->[$cnt]->{LookAt}->{longitude}=$longitude;
-    $kml->{kml}->{Document}->{Folder}->[0]->{Placemark}->[$cnt]->{LookAt}->{latitude}=$latitude;
-    $kml->{kml}->{Document}->{Folder}->[0]->{Placemark}->[$cnt]->{LookAt}->{name}=$name;
+    $kml->{kml}->{Document}->{Folder}->[0]->{Placemark}->[$cnt]->{Point}->[0]->{coordinates}="$longitude,$latitude";
+    $kml->{kml}->{Document}->{Folder}->[0]->{Placemark}->[$cnt]->[0]->{description}="$id $commentaar $snelheid $type";
+    $kml->{kml}->{Document}->{Folder}->[0]->{Placemark}->[$cnt]->{LookAt}->{[0]->longitude}=$longitude;
+    $kml->{kml}->{Document}->{Folder}->[0]->{Placemark}->[$cnt]->{LookAt}->[0]->{latitude}=$latitude;
+    $kml->{kml}->{Document}->{Folder}->[0]->{Placemark}->[$cnt]->{LookAt}->[0]->{name}=$name;
     $cnt++;
 }
 
