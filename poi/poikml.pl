@@ -32,7 +32,7 @@ while (my ($id,$longitude,$latitude,$commentaar,$name,$richting,$bidirectioneel,
 		$description .= "Snelh: $snelheid\n" if defined $snelheid;
 		$description .= "Type: $type\n" if defined $type;
 		$description .= "Richting: $richting, $bidirectioneel\n" if defined $richting;
-		$placemark->addNewChild(undef,'Orientation')->appendTextChild('heading',$richting) if defined $richting;
+		$placemark->addNewChild(undef,'Orientation')->appendTextChild('heading',($bidirectioneel?-$richting:$richting)) if defined $richting;
 		$description .= "Land: $land\n" if defined $land;
 		$description .= "inmio: $inmio\n" if defined $inmio;
 		$description .= "&lt/pre&gt;\n";
