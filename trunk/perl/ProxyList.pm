@@ -8,7 +8,7 @@
     BEGIN {
 			$ProxyList::VERSION = "0.1";
 
-my @proxies = (
+our @proxies = (
     '63.220.6.34:80',
     '64.125.136.28:80',
     '67.228.115.150:80',
