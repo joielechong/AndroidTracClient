@@ -9,7 +9,17 @@ use DBI;
 
 #$XML::Simple::PREFERRED_PARSER = 'XML::Parser';
 
-my $baseurl="http://maps.google.com/maps/geo?key=ABQIAAAAhN9BXMs5QuEWNPELVVQK9RSoE5om2NR-mWZGYVWTmUqo7KwJSRRu77NO5gbQQbn3w2uh8WrOsG4P3A&output=xml";
+my $keyfile='/home/mfvl/download/google_maps_key.txt';
+my $google_key = undef;
+
+open KEY, "<$keyfile" or die "Kan %keyfile niet openen: $@\n";
+my $key = <KEY>;
+close KEY;
+
+$google_key = "key=$key";
+
+
+my $baseurl="http://maps.google.com/maps/geo?".$google_key."&output=xml";
 
 my $dbh=DBI->connect("dbi:Pg:dbname=mfvl","","");
 my $sth=$dbh->prepare("SELECT DISTINCT * from miolijst");

@@ -48,3 +48,5 @@ EOF
 
 psql -d mfvl -c "copy (select lon,lat,pois.mtcstring(type,id,snelheid,richting,bidirectioneel) from pois.flitspalen WHERE type <> 'Overig') to STDOUT with csv quote as ' ';" | todos >uitvoer/SCFormat.asc
 
+perl poikml.pl
+mv flits.kmz /web/www
