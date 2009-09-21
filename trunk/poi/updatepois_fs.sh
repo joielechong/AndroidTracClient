@@ -41,5 +41,5 @@ delete from pois.temp as t using pois.posten as p where p.lat=t.lat and p.lon = 
 update pois.posten set updated=true where file='Flitsservice.asc' and (update_date > (now()- interval '1 day'));
 EOF
 
-psql -d mfvl -c "copy (select lon,lat,pois.mtcstring(type,id,snelheid,richting,bidirectioneel) from pois.flitspalen) to STDOUT with csv quote as ' ';" | todos >uitvoer/SCFormat.asc
+psql -d mfvl -c "copy (select lon,lat,pois.mtcstring(type,id,snelheid,richting,bidirectioneel) from pois.flitspalen WHERE type<>'Overig') to STDOUT with csv quote as ' ';" | todos >uitvoer/SCFormat.asc
 
