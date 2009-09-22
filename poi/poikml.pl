@@ -50,3 +50,6 @@ my $sm = $zip->addString($doc->toString,'flits.kml');
 $sm->desiredCompressionMethod(COMPRESSION_DEFLATED);
 $sm->desiredCompressionLevel(9);
 $zip->writeToFileNamed('flits.kmz');
+
+#my $xmlschema = XML::LibXML::Schema->new(location=>'ogckml22.xsd');
+#eval {$xmlschema->validate($doc); };
