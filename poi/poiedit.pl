@@ -178,7 +178,8 @@ for (my $i=$start;$i<=$eind;$i++) {
 	}
 	next;
     }
-    unless ($res->content =~ /^<?xml/) {
+    print "**".$res->content."\n";
+    unless ( $res->content =~ /<?xml/) {
 	if ($i == 3 && $retry <5) {
 	    set_proxy($ua);
 	    $i--;
