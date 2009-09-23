@@ -71,7 +71,7 @@ sub get_url {
     my $ua = shift;
     my $url = shift;
 
-#    print STDERR "get_url: $url\n";
+    print STDERR "get_url: $url\n";
 # Create a request
     my $req = HTTP::Request->new(GET => $url);
 # Pass request to the user agent and get a response back
@@ -83,7 +83,8 @@ sub get_url {
     }
     
     my $result = $ua->request($req);
-    die "Request failed\n" unless $result->is_success;
+    print STDERR $result->status_line,"\n";
+    die "Request failed\n" unless $result->is_success || $result->status_line =~ /304/;
     return $result;
 }
 
