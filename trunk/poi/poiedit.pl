@@ -84,7 +84,6 @@ sub get_url {
     
     my $result = $ua->request($req);
     print STDERR $result->status_line,"\n";
-    die "Request failed\n" unless $result->is_success || $result->status_line =~ /304/;
     return $result;
 }
 
