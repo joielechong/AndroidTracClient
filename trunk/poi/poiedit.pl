@@ -71,7 +71,7 @@ sub get_url {
     my $ua = shift;
     my $url = shift;
 
-    print STDERR "get_url: $url\n";
+#    print STDERR "get_url: $url\n";
 # Create a request
     my $req = HTTP::Request->new(GET => $url);
 # Pass request to the user agent and get a response back
