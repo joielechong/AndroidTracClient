@@ -70,6 +70,8 @@ sub ingroup {
 sub get_url {
     my $ua = shift;
     my $url = shift;
+
+    print STDERR "get_url: $url\n";
 # Create a request
     my $req = HTTP::Request->new(GET => $url);
 # Pass request to the user agent and get a response back
@@ -142,22 +144,22 @@ sub process_poi {
 	print NIEUW $newdata;
 	close NIEUW;	
     }
-
+    
 # Image file ook ophalen dan lijken we echter
-		
-	$url = $poi->{image};
-	if (defined($url) {
+    
+    my $url = $poi->{image};
+    if (defined($url) && $url =~ /http:/) {
 	if (defined($poi->{authorization})) {
 	    my $username=$usernames[$index];
 	    my $password=$passwords[$index];
 	    $url =~s/%Username%/$username/;	
 	    $url =~s/%Password%/$password/;    
 	}
-	    $res = get_url($ua,$url);
-}	
-		
-		
-		}
+	get_url($ua,$url);
+    }	
+    
+    
+}
 
 sub is_integer      { $_[0] =~ /^[+-]?\d+$/       }
 
@@ -184,7 +186,7 @@ for (my $i=$start;$i<=$eind;$i++) {
     #print Dumper($req);
     my $res = $ua->request($req);
     print STDERR "Request geeft ".$res->status_line."\n";
-    print STDERR $res->as_string;
+#    print STDERR $res->as_string;
     unless ($res->is_success) {
 	if ($i == 3 && $retry <5) {
 	    set_proxy($ua);
@@ -193,7 +195,7 @@ for (my $i=$start;$i<=$eind;$i++) {
 	}
 	next;
     }
-    print "**".$res->content."\n";
+#    print "**".$res->content."\n";
     unless ( $res->content =~ /<?xml/) {
 	if ($i == 3 && $retry <5) {
 	    set_proxy($ua);
