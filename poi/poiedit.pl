@@ -35,14 +35,14 @@ my @passwords=('mikel02',
 
 my $cache = LWP::ConnCache->new;
 
-my $proxy=ProxyList::get_proxy();
-print STDERR "Proxy used = $proxy\n";
-my $ua = LWP::UserAgent->new;
-$ua->agent("Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7");
-$ua->proxy(['http', 'ftp'], "http://".$proxy."/");
-#$ua->proxy(['http', 'ftp'], 'http://67.69.254.254:80/');
-$ua->no_proxy('flitspaal.nl','bruxelles5.info','goedkooptanken.nu','bnet.be','navifriends.de','navifriends.com','flitsservice.nl');
-$ua->conn_cache($cache);
+sub set_proxy {
+	my $ua = shift;
+	
+	my $proxy=ProxyList::get_proxy();
+	print STDERR "Proxy used = $proxy\n";
+	$ua->proxy(['http', 'ftp'], "http://".$proxy."/");
+	$ua->no_proxy('flitspaal.nl','bruxelles5.info','goedkooptanken.nu','bnet.be','navifriends.de','navifriends.com','flitsservice.nl');
+}
 
 sub _ingroup {
     my $group = shift;
@@ -68,6 +68,7 @@ sub ingroup {
 }
 
 sub get_url {
+	  my $ua = shift;
     my $url = shift;
 # Create a request
     my $req = HTTP::Request->new(GET => $url);
@@ -79,7 +80,9 @@ sub get_url {
         $req->header($key=>$value);
     }
 
-    return $ua->request($req);
+    my $result = $ua->request($req);
+		die "Request failed\n" unless $result->is_success;
+		return $result;
 }
 
 sub process_poi {
@@ -115,7 +118,7 @@ sub process_poi {
 	my $res;
 	if (defined($poi->{lastmodified})) {
 	    my $lastmodified = $poi->{lastmodified};
-            $res = get_url($lastmodified);
+            $res = get_url($ua,$lastmodified);
 	    my $rmstring = $res->content;
 	    chomp($rmstring);
 	    print "$description $lmstring $rmstring\n";
@@ -123,9 +126,9 @@ sub process_poi {
 	
 	    return if ($dag_remote < $dag_local);
 	    return if ($dag_remote == $dag_local) && ($tijd_remote <= $tijd_local);
-	    $res = get_url($url);
+	    $res = get_url($ua,$url);
 	} else {
-	    $res = get_url($url,'if_modified_since'=>$gmtijd);
+	    $res = get_url($ua,$url,'if_modified_since'=>$gmtijd);
 	    print "$description $lmstring ".$res->{_rc}."\n";
 	}	    
 # Check the outcome of the response
@@ -143,7 +146,10 @@ sub process_poi {
 
 sub is_integer      { $_[0] =~ /^[+-]?\d+$/       }
 
-#print $#xmlsrc,"\n";
+my $ua = LWP::UserAgent->new;
+$ua->agent("Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7");
+$ua->conn_cache($cache);
+set_proxy($ua);
 
 my $start=0;
 my $eind=$#xmlsrc;
@@ -154,12 +160,22 @@ if (defined($arg) && is_integer($arg)) {
 	$eind=$arg;
 }
 
+my $retry=0;
+
 for (my $i=$start;$i<=$eind;$i++) {
     print $xmlsrc[$i],"\n";
     my $req = HTTP::Request->new(GET => $xmlsrc[$i]);
     $req->header(UA_CPU => 'x86');
     #print Dumper($req);
     my $res = $ua->request($req);
+		unless ($res->is_success) {
+			print "Request geeft ".$res->status_line."\n";
+			if ($i == 3 && $retry <5) {
+				set_proxy($ua);
+				$i--;
+				$retry++;
+			}
+		}
     #print Dumper($res);
     my $xmlin = XMLin($res->content);
     #print Dumper($xmlin);
