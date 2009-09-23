@@ -168,28 +168,36 @@ for (my $i=$start;$i<=$eind;$i++) {
     $req->header(UA_CPU => 'x86');
     #print Dumper($req);
     my $res = $ua->request($req);
-    print "Request geeft ".$res->status_line."\n";
-    print $res->as_string;
+    print STDERR "Request geeft ".$res->status_line."\n";
+    print STDERR $res->as_string;
     unless ($res->is_success) {
 	if ($i == 3 && $retry <5) {
 	    set_proxy($ua);
 	    $i--;
 	    $retry++;
-	    next;
 	}
+	next;
+    }
+    unless ($res->content =~ /^<?xml/) {
+	if ($i == 3 && $retry <5) {
+	    set_proxy($ua);
+	    $i--;
+	    $retry++;
+	}
+	next;
     }
     #print Dumper($res);
     my $xmlin;
-		eval {
-    $xmlin = XMLin($res->content);
-    #print Dumper($xmlin);
-    #print ref($xmlin->{poi}),"\n";
-    if (ref($xmlin->{poi}) eq "HASH") {
-	process_poi($ua,$xmlin->{poi},$i);
-    } elsif (ref($xmlin->{poi}) eq "ARRAY") {
-	for (my $j=0;$j<=$#{$xmlin->{poi}};$j++) {
-	    process_poi($ua,$xmlin->{poi}->[$j],$i);
-			}
+    eval {
+	$xmlin = XMLin($res->content);
+	#print Dumper($xmlin);
+	#print ref($xmlin->{poi}),"\n";
+	if (ref($xmlin->{poi}) eq "HASH") {
+	    process_poi($ua,$xmlin->{poi},$i);
+	} elsif (ref($xmlin->{poi}) eq "ARRAY") {
+	    for (my $j=0;$j<=$#{$xmlin->{poi}};$j++) {
+		process_poi($ua,$xmlin->{poi}->[$j],$i);
+	    }
 	} ;
     }
 }
