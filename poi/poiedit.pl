@@ -179,15 +179,18 @@ for (my $i=$start;$i<=$eind;$i++) {
 	}
     }
     #print Dumper($res);
-    my $xmlin = XMLin($res->content);
+    my $xmlin;
+		eval {
+    $xmlin = XMLin($res->content);
     #print Dumper($xmlin);
     #print ref($xmlin->{poi}),"\n";
     if (ref($xmlin->{poi}) eq "HASH") {
-	eval {process_poi($ua,$xmlin->{poi},$i); };
+	process_poi($ua,$xmlin->{poi},$i);
     } elsif (ref($xmlin->{poi}) eq "ARRAY") {
 	for (my $j=0;$j<=$#{$xmlin->{poi}};$j++) {
-	    eval {process_poi($ua,$xmlin->{poi}->[$j],$i); };
-	}
+	    process_poi($ua,$xmlin->{poi}->[$j],$i);
+			}
+	} ;
     }
 }
 
