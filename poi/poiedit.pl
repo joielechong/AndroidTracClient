@@ -142,7 +142,22 @@ sub process_poi {
 	print NIEUW $newdata;
 	close NIEUW;	
     }
-}
+
+# Image file ook ophalen dan lijken we echter
+		
+	$url = $poi->{image};
+	if (defined($url) {
+	if (defined($poi->{authorization})) {
+	    my $username=$usernames[$index];
+	    my $password=$passwords[$index];
+	    $url =~s/%Username%/$username/;	
+	    $url =~s/%Password%/$password/;    
+	}
+	    $res = get_url($ua,$url);
+}	
+		
+		
+		}
 
 sub is_integer      { $_[0] =~ /^[+-]?\d+$/       }
 
