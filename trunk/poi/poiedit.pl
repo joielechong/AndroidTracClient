@@ -10,18 +10,18 @@ use HTTP::Cookies;
 use Data::Dumper;
 
 my @xmlsrc=( 
-	     "http://www.flitspaal.nl/poi_flitspalen.xml",
-	     "http://www.bruxelles5.info/POI/poi_bruxelles5.xml",
-	     "http://www.goedkooptanken.nu/tomtom/pois.xml",
-	     "http://flitsservice.com/poi_edit_fs.xml"
-	     );
+    "http://www.flitspaal.nl/poi_flitspalen.xml",
+    "http://www.bruxelles5.info/POI/poi_bruxelles5.xml",
+    "http://www.goedkooptanken.nu/tomtom/pois.xml",
+    "http://flitsservice.com/poi_edit_fs.xml"
+    );
 
 my @groups=(
-	     	['standaard_installatie1'],
-	     	["Radars Belges", 'Radars Francais'],
-	     	['Nederland'],
-	     	['Flitsservice.nl;Actuele mobiele controles']
-	   );
+    ['standaard_installatie1'],
+    ["Radars Belges", 'Radars Francais'],
+    ['Nederland'],
+    ['Flitsservice.nl;Actuele mobiele controles']
+    );
 
 my @usernames=('michiel@van-loon.xs4all.nl',
 	       "",
@@ -36,12 +36,12 @@ my @passwords=('mikel02',
 my $cache = LWP::ConnCache->new;
 
 sub set_proxy {
-	my $ua = shift;
-	
-	my $proxy=ProxyList::get_proxy();
-	print STDERR "Proxy used = $proxy\n";
-	$ua->proxy(['http', 'ftp'], "http://".$proxy."/");
-	$ua->no_proxy('flitspaal.nl','bruxelles5.info','goedkooptanken.nu','bnet.be','navifriends.de','navifriends.com','flitsservice.nl');
+    my $ua = shift;
+    
+    my $proxy=ProxyList::get_proxy();
+    print STDERR "Proxy used = $proxy\n";
+    $ua->proxy(['http', 'ftp'], "http://".$proxy."/");
+    $ua->no_proxy('flitspaal.nl','bruxelles5.info','goedkooptanken.nu','bnet.be','navifriends.de','navifriends.com','flitsservice.nl');
 }
 
 sub _ingroup {
@@ -68,21 +68,21 @@ sub ingroup {
 }
 
 sub get_url {
-	  my $ua = shift;
+    my $ua = shift;
     my $url = shift;
 # Create a request
     my $req = HTTP::Request->new(GET => $url);
 # Pass request to the user agent and get a response back
-
+    
     while ($#_ >= 0) {
         my $key = shift;
         my $value = shift;
         $req->header($key=>$value);
     }
-
+    
     my $result = $ua->request($req);
-		die "Request failed\n" unless $result->is_success;
-		return $result;
+    die "Request failed\n" unless $result->is_success;
+    return $result;
 }
 
 sub process_poi {
@@ -114,7 +114,7 @@ sub process_poi {
             $lmstring = sprintf("%4.4d%2.2d%2.2d %2.2d%2.2d%2.2d",$tijd[5]+1900,$tijd[4]+1,$tijd[3],$tijd[2],$tijd[1],$tijd[0]);
         }
         my ($dag_local, $tijd_local)=split(" ",$lmstring);
-
+	
 	my $res;
 	if (defined($poi->{lastmodified})) {
 	    my $lastmodified = $poi->{lastmodified};
@@ -123,7 +123,7 @@ sub process_poi {
 	    chomp($rmstring);
 	    print "$description $lmstring $rmstring\n";
 	    my ($dag_remote, $tijd_remote)=split(" ",$rmstring);
-	
+	    
 	    return if ($dag_remote < $dag_local);
 	    return if ($dag_remote == $dag_local) && ($tijd_remote <= $tijd_local);
 	    $res = get_url($ua,$url);
@@ -156,8 +156,8 @@ my $eind=$#xmlsrc;
 
 my $arg = shift;
 if (defined($arg) && is_integer($arg)) {
-	$start=$arg;
-	$eind=$arg;
+    $start=$arg;
+    $eind=$arg;
 }
 
 my $retry=0;
@@ -168,20 +168,22 @@ for (my $i=$start;$i<=$eind;$i++) {
     $req->header(UA_CPU => 'x86');
     #print Dumper($req);
     my $res = $ua->request($req);
-		unless ($res->is_success) {
-			print "Request geeft ".$res->status_line."\n";
-			if ($i == 3 && $retry <5) {
-				set_proxy($ua);
-				$i--;
-				$retry++;
-			}
-		}
+    print "Request geeft ".$res->status_line."\n";
+    print $res->as_string;
+    unless ($res->is_success) {
+	if ($i == 3 && $retry <5) {
+	    set_proxy($ua);
+	    $i--;
+	    $retry++;
+	    next;
+	}
+    }
     #print Dumper($res);
     my $xmlin = XMLin($res->content);
     #print Dumper($xmlin);
     #print ref($xmlin->{poi}),"\n";
     if (ref($xmlin->{poi}) eq "HASH") {
-		eval {process_poi($ua,$xmlin->{poi},$i); };
+	eval {process_poi($ua,$xmlin->{poi},$i); };
     } elsif (ref($xmlin->{poi}) eq "ARRAY") {
 	for (my $j=0;$j<=$#{$xmlin->{poi}};$j++) {
 	    eval {process_poi($ua,$xmlin->{poi}->[$j],$i); };
@@ -190,120 +192,121 @@ for (my $i=$start;$i<=$eind;$i++) {
 }
 
 if ($start != $eind) {
-
+    
 # www.navifriends.de 
-
+    
     my $cookie_jar = HTTP::Cookies->new();
     my $nfreq = HTTP::Request->new(GET => 'http://www.navifriends.de/');
     my $nfres = $ua->request($nfreq);
+    my $content;
     
 #print Dumper($nfres);
     if ($nfres->is_success) {
-    $cookie_jar->extract_cookies($nfres);
-    print "\n\n================\n",$cookie_jar->as_string,"\n";
-    
-    $nfreq = HTTP::Request->new(POST => 'http://www.navifriends.com/phpbbForum/ucp.php?mode=login');
-    $cookie_jar->add_cookie_header($nfreq);
-    $ua->cookie_jar($cookie_jar);
-    
-    $nfreq->content_type('application/x-www-form-urlencoded');
-    $nfreq->content('username=mfvl&password=mikel02&login=Anmelden');
-    
-    $nfres = $ua->request($nfreq);
-    if ($nfres->is_success) {
-    
+	$cookie_jar->extract_cookies($nfres);
+	print "\n\n================\n",$cookie_jar->as_string,"\n";
+	
+	$nfreq = HTTP::Request->new(POST => 'http://www.navifriends.com/phpbbForum/ucp.php?mode=login');
+	$cookie_jar->add_cookie_header($nfreq);
+	$ua->cookie_jar($cookie_jar);
+	
+	$nfreq->content_type('application/x-www-form-urlencoded');
+	$nfreq->content('username=mfvl&password=mikel02&login=Anmelden');
+	
+	$nfres = $ua->request($nfreq);
+	if ($nfres->is_success) {
+	    
 #print Dumper($nfres->);
-    
-    $cookie_jar->extract_cookies($nfres);
-    print "\n\n================\n",$cookie_jar->as_string,"\n";
-    
-    my $refresh = $nfres->header('refresh');
-    print "\nRefresh: $refresh\n";
-    
-    $refresh =~ m/(.*);url=(http:.*)$/;
-    my $delay = $1;
-    my $refstr = $2;
-    
-    sleep($delay);
-    $nfreq = HTTP::Request->new(GET => $refstr);
-    $cookie_jar->add_cookie_header($nfreq);
-    $ua->cookie_jar($cookie_jar);
-    $nfres = $ua->request($nfreq);
-    if ($nfres->is_success) {
-    
+	    
+	    $cookie_jar->extract_cookies($nfres);
+	    print "\n\n================\n",$cookie_jar->as_string,"\n";
+	    
+	    my $refresh = $nfres->header('refresh');
+	    print "\nRefresh: $refresh\n";
+	    
+	    $refresh =~ m/(.*);url=(http:.*)$/;
+	    my $delay = $1;
+	    my $refstr = $2;
+	    
+	    sleep($delay);
+	    $nfreq = HTTP::Request->new(GET => $refstr);
+	    $cookie_jar->add_cookie_header($nfreq);
+	    $ua->cookie_jar($cookie_jar);
+	    $nfres = $ua->request($nfreq);
+	    if ($nfres->is_success) {
+		
 #print Dumper($nfres);
-    
-    $cookie_jar->extract_cookies($nfres);
-    print "\n\n================\n",$cookie_jar->as_string,"\n";
-    
-    my $content = $nfres->content;
-    
-    my $pos = index($content,'index.php?Nickname=');
-    my $m1 = rindex($content,'"',$pos);
-    my $m2 = index($content,'"',$pos);
-    
-    my $poiurl = substr($content,$m1+1,$m2-$m1-1);
-    print $poiurl,"\n";
-    
-    $nfreq = HTTP::Request->new(GET => $poiurl);
-    $nfreq->header('referer' => $refstr);
-    $cookie_jar->add_cookie_header($nfreq);
-    $ua->cookie_jar($cookie_jar);
-    $nfres = $ua->request($nfreq);
-    if ($nfres->is_success) {
-    
+		
+		$cookie_jar->extract_cookies($nfres);
+		print "\n\n================\n",$cookie_jar->as_string,"\n";
+		
+		$content = $nfres->content;
+		
+		my $pos = index($content,'index.php?Nickname=');
+		my $m1 = rindex($content,'"',$pos);
+		my $m2 = index($content,'"',$pos);
+		
+		my $poiurl = substr($content,$m1+1,$m2-$m1-1);
+		print $poiurl,"\n";
+		
+		$nfreq = HTTP::Request->new(GET => $poiurl);
+		$nfreq->header('referer' => $refstr);
+		$cookie_jar->add_cookie_header($nfreq);
+		$ua->cookie_jar($cookie_jar);
+		$nfres = $ua->request($nfreq);
+		if ($nfres->is_success) {
+		    
 #print Dumper($nfres);
-    
-    $cookie_jar->extract_cookies($nfres);
-    print "\n\n================\n",$cookie_jar->as_string,"\n";
-    
-    $nfreq = HTTP::Request->new(POST => 'http://www.navifriends.com/nfpois/download.php');
-    $nfreq->header('referer' => $refstr);
-    $nfreq->content_type('application/x-www-form-urlencoded');
-    $nfreq->content('Land=komplett&B1=zusammenstellen');
-    $cookie_jar->add_cookie_header($nfreq);
-    $ua->cookie_jar($cookie_jar);
-    $nfres = $ua->request($nfreq);
-    if ($nfres->is_success) {
-    
+		    
+		    $cookie_jar->extract_cookies($nfres);
+		    print "\n\n================\n",$cookie_jar->as_string,"\n";
+		    
+		    $nfreq = HTTP::Request->new(POST => 'http://www.navifriends.com/nfpois/download.php');
+		    $nfreq->header('referer' => $refstr);
+		    $nfreq->content_type('application/x-www-form-urlencoded');
+		    $nfreq->content('Land=komplett&B1=zusammenstellen');
+		    $cookie_jar->add_cookie_header($nfreq);
+		    $ua->cookie_jar($cookie_jar);
+		    $nfres = $ua->request($nfreq);
+		    if ($nfres->is_success) {
+			
 #print Dumper($nfres);
-    
-    $cookie_jar->extract_cookies($nfres);
-    print "\n\n================\n",$cookie_jar->as_string,"\n";
-    
-    $content = $nfres->content;
-    
-    $m1 = index($content,'download1.php?Datei=');
-    $m2 = index($content,'>',$m1);
-    
-    my $poizip = substr($content,$m1,$m2-$m1);
-    print $poizip,"\n";
-    
-    $nfreq = HTTP::Request->new(GET => "http://www.navifriends.com/nfpois/$poizip");
-    $nfreq->header('referer' => $refstr);
-    $cookie_jar->add_cookie_header($nfreq);
-    $ua->cookie_jar($cookie_jar);
-    $nfres = $ua->request($nfreq);
-    if ($nfres->is_success) {
-    
+			
+			$cookie_jar->extract_cookies($nfres);
+			print "\n\n================\n",$cookie_jar->as_string,"\n";
+			
+			$content = $nfres->content;
+			
+			$m1 = index($content,'download1.php?Datei=');
+			$m2 = index($content,'>',$m1);
+			
+			my $poizip = substr($content,$m1,$m2-$m1);
+			print $poizip,"\n";
+			
+			$nfreq = HTTP::Request->new(GET => "http://www.navifriends.com/nfpois/$poizip");
+			$nfreq->header('referer' => $refstr);
+			$cookie_jar->add_cookie_header($nfreq);
+			$ua->cookie_jar($cookie_jar);
+			$nfres = $ua->request($nfreq);
+			if ($nfres->is_success) {
+			    
 #print Dumper($nfres);
-    
-    $cookie_jar->extract_cookies($nfres);
-    print "\n\n================\n",$cookie_jar->as_string,"\n";
-    
-    $content = $nfres->content;
-    
-    open X,">pois-Blitzer.zip";
-    print X $content;
-    close X;
-}
-}
-}
-}
-}
-}
+			    
+			    $cookie_jar->extract_cookies($nfres);
+			    print "\n\n================\n",$cookie_jar->as_string,"\n";
+			    
+			    $content = $nfres->content;
+			    
+			    open X,">pois-Blitzer.zip";
+			    print X $content;
+			    close X;
+			}
+		    }
+		}
+	    }
+	}
+    }
     # radars.bnet.be
-
+    
 #    $nfreq = HTTP::Request->new(GET=>"http://radars.bnet.be/servlets/radarsfixes/getFile?ext=ov2&lim=a");
     $nfreq = HTTP::Request->new(POST => 'http://flits.bnet.be/servlets/flitspalen/getFlitspalen');
     $cookie_jar->add_cookie_header($nfreq);
@@ -312,12 +315,12 @@ if ($start != $eind) {
     $nfreq->content_type('application/x-www-form-urlencoded');
     $nfreq->content('type=1&lim=&cond=1');
     $nfres = $ua->request($nfreq);
-		
-		if ($nfres->is_success) {
-			$content = $nfres->content;
-
-			open X,">radarsfixes.zip";
-			print X $content;
-			close X;
-		}
+    
+    if ($nfres->is_success) {
+	$content = $nfres->content;
+	
+	open X,">radarsfixes.zip";
+	print X $content;
+	close X;
+    }
 }
