@@ -181,10 +181,10 @@ for (my $i=$start;$i<=$eind;$i++) {
     #print Dumper($xmlin);
     #print ref($xmlin->{poi}),"\n";
     if (ref($xmlin->{poi}) eq "HASH") {
-	process_poi($ua,$xmlin->{poi},$i);
+		eval {process_poi($ua,$xmlin->{poi},$i); };
     } elsif (ref($xmlin->{poi}) eq "ARRAY") {
 	for (my $j=0;$j<=$#{$xmlin->{poi}};$j++) {
-	    process_poi($ua,$xmlin->{poi}->[$j],$i);
+	    eval {process_poi($ua,$xmlin->{poi}->[$j],$i); };
 	}
     }
 }
@@ -198,7 +198,7 @@ if ($start != $eind) {
     my $nfres = $ua->request($nfreq);
     
 #print Dumper($nfres);
-    
+    if ($nfres->is_success) {
     $cookie_jar->extract_cookies($nfres);
     print "\n\n================\n",$cookie_jar->as_string,"\n";
     
@@ -210,6 +210,7 @@ if ($start != $eind) {
     $nfreq->content('username=mfvl&password=mikel02&login=Anmelden');
     
     $nfres = $ua->request($nfreq);
+    if ($nfres->is_success) {
     
 #print Dumper($nfres->);
     
@@ -228,6 +229,7 @@ if ($start != $eind) {
     $cookie_jar->add_cookie_header($nfreq);
     $ua->cookie_jar($cookie_jar);
     $nfres = $ua->request($nfreq);
+    if ($nfres->is_success) {
     
 #print Dumper($nfres);
     
@@ -248,6 +250,7 @@ if ($start != $eind) {
     $cookie_jar->add_cookie_header($nfreq);
     $ua->cookie_jar($cookie_jar);
     $nfres = $ua->request($nfreq);
+    if ($nfres->is_success) {
     
 #print Dumper($nfres);
     
@@ -261,6 +264,7 @@ if ($start != $eind) {
     $cookie_jar->add_cookie_header($nfreq);
     $ua->cookie_jar($cookie_jar);
     $nfres = $ua->request($nfreq);
+    if ($nfres->is_success) {
     
 #print Dumper($nfres);
     
@@ -280,6 +284,7 @@ if ($start != $eind) {
     $cookie_jar->add_cookie_header($nfreq);
     $ua->cookie_jar($cookie_jar);
     $nfres = $ua->request($nfreq);
+    if ($nfres->is_success) {
     
 #print Dumper($nfres);
     
@@ -291,7 +296,12 @@ if ($start != $eind) {
     open X,">pois-Blitzer.zip";
     print X $content;
     close X;
-
+}
+}
+}
+}
+}
+}
     # radars.bnet.be
 
 #    $nfreq = HTTP::Request->new(GET=>"http://radars.bnet.be/servlets/radarsfixes/getFile?ext=ov2&lim=a");
@@ -302,10 +312,12 @@ if ($start != $eind) {
     $nfreq->content_type('application/x-www-form-urlencoded');
     $nfreq->content('type=1&lim=&cond=1');
     $nfres = $ua->request($nfreq);
+		
+		if ($nfres->is_success) {
+			$content = $nfres->content;
 
-    $content = $nfres->content;
-
-    open X,">radarsfixes.zip";
-    print X $content;
-    close X;
+			open X,">radarsfixes.zip";
+			print X $content;
+			close X;
+		}
 }
