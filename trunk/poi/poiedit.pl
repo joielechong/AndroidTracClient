@@ -39,7 +39,7 @@ sub set_proxy {
     my $ua = shift;
     
     my $proxy=ProxyList::get_proxy();
-    print STDERR "Proxy used = $proxy\n";
+#    print STDERR "Proxy used = $proxy\n";
     $ua->proxy(['http', 'ftp'], "http://".$proxy."/");
     $ua->no_proxy('flitspaal.nl','bruxelles5.info','goedkooptanken.nu','bnet.be','navifriends.de','navifriends.com','flitsservice.nl');
 }
@@ -71,7 +71,7 @@ sub get_url {
     my $ua = shift;
     my $url = shift;
 
-    print STDERR "get_url: $url\n";
+#    print STDERR "get_url: $url\n";
 # Create a request
     my $req = HTTP::Request->new(GET => $url);
 # Pass request to the user agent and get a response back
@@ -83,7 +83,7 @@ sub get_url {
     }
     
     my $result = $ua->request($req);
-    print STDERR $result->status_line,"\n";
+#    print STDERR $result->status_line,"\n";
     return $result;
 }
 
@@ -185,7 +185,7 @@ for (my $i=$start;$i<=$eind;$i++) {
     $req->header(UA_CPU => 'x86');
     #print Dumper($req);
     my $res = $ua->request($req);
-    print STDERR "Request geeft ".$res->status_line."\n";
+#    print STDERR "Request geeft ".$res->status_line."\n";
 #    print STDERR $res->as_string;
     unless ($res->is_success) {
 	if ($i == 3 && $retry <5) {
