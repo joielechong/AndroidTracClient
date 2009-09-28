@@ -6,6 +6,7 @@ cd /home/mfvl/src/poi
 perl poiedit.pl
 unzip  -d pois-Blitzer -qo pois-Blitzer
 unzip -d . -qo radarsfixes.zip
+unzip -d . -qo Mio.zip
 
 perl ov2toasc.pl
 sleep 5
