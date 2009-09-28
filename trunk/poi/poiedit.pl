@@ -334,7 +334,7 @@ if ($start != $eind) {
 	    }
 	}
     }
-    # radars.bnet.be
+# radars.bnet.be
     
 #    $nfreq = HTTP::Request->new(GET=>"http://radars.bnet.be/servlets/radarsfixes/getFile?ext=ov2&lim=a");
     $nfreq = HTTP::Request->new(POST => 'http://flits.bnet.be/servlets/flitspalen/getFlitspalen');
@@ -346,9 +346,27 @@ if ($start != $eind) {
     $nfres = $ua->request($nfreq);
     
     if ($nfres->is_success) {
+			    $cookie_jar->extract_cookies($nfres);
 	$content = $nfres->content;
 	
 	open X,">radarsfixes.zip";
+	print X $content;
+	close X;
+    }
+		
+# www.alertgps.fr
+    
+    $nfreq = HTTP::Request->new(GET => 'http://www.alertegps.com/down_file_zip.asp?id_matos=21&nomfichier=Mio.zip&log=False');
+    $cookie_jar->add_cookie_header($nfreq);
+    $ua->cookie_jar($cookie_jar);
+    
+    $nfres = $ua->request($nfreq);
+    
+    if ($nfres->is_success) {
+			    $cookie_jar->extract_cookies($nfres);
+	$content = $nfres->content;
+	
+	open X,">Mio.zip";
 	print X $content;
 	close X;
     }
