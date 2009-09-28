@@ -13,7 +13,7 @@ my @xmlsrc=(
     "http://www.flitspaal.nl/poi_flitspalen.xml",
     "http://www.bruxelles5.info/POI/poi_bruxelles5.xml",
     "http://www.goedkooptanken.nu/tomtom/pois.xml",
-    "http://flitsservice.com/poi_edit_fs.xml"
+#    "http://flitsservice.com/poi_edit_fs.xml"
     );
 
 my @groups=(
@@ -346,14 +346,15 @@ if ($start != $eind) {
     $nfres = $ua->request($nfreq);
     
     if ($nfres->is_success) {
-			    $cookie_jar->extract_cookies($nfres);
+	$cookie_jar->extract_cookies($nfres);
+	print "\n\n================\n",$cookie_jar->as_string,"\n";
 	$content = $nfres->content;
 	
 	open X,">radarsfixes.zip";
 	print X $content;
 	close X;
     }
-		
+    
 # www.alertgps.fr
     
     $nfreq = HTTP::Request->new(GET => 'http://www.alertegps.com/down_file_zip.asp?id_matos=21&nomfichier=Mio.zip&log=False');
@@ -363,7 +364,8 @@ if ($start != $eind) {
     $nfres = $ua->request($nfreq);
     
     if ($nfres->is_success) {
-			    $cookie_jar->extract_cookies($nfres);
+	$cookie_jar->extract_cookies($nfres);
+	print "\n\n================\n",$cookie_jar->as_string,"\n";
 	$content = $nfres->content;
 	
 	open X,">Mio.zip";
