@@ -41,7 +41,7 @@ sub set_proxy {
     my $proxy=ProxyList::get_proxy();
 #    print STDERR "Proxy used = $proxy\n";
     $ua->proxy(['http', 'ftp'], "http://".$proxy."/");
-    $ua->no_proxy('flitspaal.nl','bruxelles5.info','goedkooptanken.nu','bnet.be','navifriends.de','navifriends.com','flitsservice.nl');
+    $ua->no_proxy('flitspaal.nl','bruxelles5.info','goedkooptanken.nu','bnet.be','navifriends.de','navifriends.com','flitsservice.nl','alertegps.fr');
 }
 
 sub _ingroup {

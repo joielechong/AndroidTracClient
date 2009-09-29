@@ -11,7 +11,7 @@
   <source name="Goedkooptanken" url="http://www.goedkooptanken.nu/tomtom/pois.xml" type="ov2">
     <group>Nederland</group>
   </source>
-  <source name="Flitsservice.com" url="http://flitsservice.com/poi_edi_fs.xml" useproxy="1" type="ov2">
+  <source name="Flitsservice.com" url="http://flitsservice.com/poi_edit_fs.xml" useproxy="1" type="ov2">
     <group>Flitsservice.nl;Actuele mobiele controle</group>
   </source>
 	<source name="Navifriends" url="http://www.navifriends.de/" type="nf" >
