@@ -1,17 +1,24 @@
 <?xml version="1.0" ?>
 <poiedit>
-  <source name="Flitspalen.nl" url="http://www.flitspaal.nl/poi_flitspalen.xml">
+  <source name="Flitspalen.nl" url="http://www.flitspaal.nl/poi_flitspalen.xml" type="ov2">
     <group>standaard_installatie1</group>
     <credentials username="michiel@van-loon.xs4all.nl" password="mikel02" />
   </source>
-  <source name="Bruxelles 5" url="http://www.bruxelles5.info/POI/poi_bruxelles5.xml">
+  <source name="Bruxelles 5" url="http://www.bruxelles5.info/POI/poi_bruxelles5.xml" type="ov2">
     <group>Radars Belges</group>
     <group>Radars Francais</group>
   </source>
-  <source name="Goedkooptanken" url="http://www.goedkooptanken.nu/tomtom/pois.xml">
+  <source name="Goedkooptanken" url="http://www.goedkooptanken.nu/tomtom/pois.xml" type="ov2">
     <group>Nederland</group>
   </source>
-  <source name="Flitsservice.com" url="http://flitsservice.com/poi_edi_fs.xml" useproxy="1">
+  <source name="Flitsservice.com" url="http://flitsservice.com/poi_edi_fs.xml" useproxy="1" type="ov2">
     <group>Flitsservice.nl;Actuele mobiele controle</group>
   </source>
+	<source name="Navifriends" url="http://www.navifriends.de/" type="nf" >
+    <credentials username="mfvl" password="mikel02" />
+	</source>
+	<source name="Alertegps" url="http://www.alertegps.com/down_file_zip.asp?id_matos=21&amp;nomfichier=Mio.zip&amp;log=False" type="zip" />	
+	<source name="BNet" url="http://flits.bnet.be/servlets/flitspalen/getFlitspalen" type="zip">
+		<postinfo>type=1&amp;lim=&amp;cond=1</postinfo>
+	</source>
 </poiedit>

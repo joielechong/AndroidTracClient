@@ -355,7 +355,7 @@ if ($start != $eind) {
 	close X;
     }
     
-# www.alertgps.fr
+# www.alertegps.fr
     
     $nfreq = HTTP::Request->new(GET => 'http://www.alertegps.com/down_file_zip.asp?id_matos=21&nomfichier=Mio.zip&log=False');
     $cookie_jar->add_cookie_header($nfreq);
