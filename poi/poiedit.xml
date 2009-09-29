@@ -17,8 +17,14 @@
 	<source name="Navifriends" url="http://www.navifriends.de/" type="nf" >
     <credentials username="mfvl" password="mikel02" />
 	</source>
-	<source name="Alertegps" url="http://www.alertegps.com/down_file_zip.asp?id_matos=21&amp;nomfichier=Mio.zip&amp;log=False" type="zip" />	
-	<source name="BNet" url="http://flits.bnet.be/servlets/flitspalen/getFlitspalen" type="zip">
-		<postinfo>type=1&amp;lim=&amp;cond=1</postinfo>
+	<source name="Alertegps" url="http://www.alertegps.com/down_file_zip.asp" type="zip">
+		<info>id_matos=21</info>
+		<info>nomfichier=Mio.zip</info>
+		<info>log=False</info>
+	</source>
+	<source name="BNet" url="http://flits.bnet.be/servlets/flitspalen/getFlitspalen" type="zip" method='POST'>
+		<info>type=1</info>
+		<info>lim=</info>
+		<info>cond=1</info>
 	</source>
 </poiedit>
