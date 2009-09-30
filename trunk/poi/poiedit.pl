@@ -13,7 +13,7 @@ my @xmlsrc=(
     "http://www.flitspaal.nl/poi_flitspalen.xml",
     "http://www.bruxelles5.info/POI/poi_bruxelles5.xml",
     "http://www.goedkooptanken.nu/tomtom/pois.xml",
-#    "http://flitsservice.com/poi_edit_fs.xml"
+    "http://flitsservice.com/poi_edit_fs.xml"
     );
 
 my @groups=(
