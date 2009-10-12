@@ -13,25 +13,27 @@ my @xmlsrc=(
     "http://www.flitspaal.nl/poi_flitspalen.xml",
     "http://www.bruxelles5.info/POI/poi_bruxelles5.xml",
     "http://www.goedkooptanken.nu/tomtom/pois.xml",
-    "http://flitsservice.com/poi_edit_fs.xml"
+#    "http://flitsservice.com/poi_edit_fs.xml"
     );
 
 my @groups=(
     ['standaard_installatie1'],
     ["Radars Belges", 'Radars Francais'],
     ['Nederland'],
-    ['Flitsservice.nl;Actuele mobiele controles']
+#    ['Flitsservice.nl;Actuele mobiele controles']
     );
 
 my @usernames=('michiel@van-loon.xs4all.nl',
 	       "",
 	       "",
-	       "");
+#	       ""
+				);
 
 my @passwords=('mikel02',
 	       "",
 	       "",
-	       "");
+#	       ""
+				 );
 
 my $cache = LWP::ConnCache->new;
 
