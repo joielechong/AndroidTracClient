@@ -227,7 +227,7 @@ if ($start != $eind) {
     $cookie_jar = HTTP::Cookies->new();
 	
 # www.poi66.com
-	$nfreq = HTTP::Request->new(POST => 'http://www.poi66.com/maps/export');
+$nfreq = HTTP::Request->new(POST => 'http://www.poi66.com/maps/export');
     $cookie_jar->add_cookie_header($nfreq);
     $ua->cookie_jar($cookie_jar);
     
@@ -240,11 +240,32 @@ if ($start != $eind) {
 	print "\n\n================\n",$cookie_jar->as_string,"\n";
 	$content = $nfres->content;
 	
+	my @lines = split("\n",$content);
+	my %speeds;
 	
+	foreach (@lines) {
+		chomp;
+		next if /^;/;
+		s/^ *//;
+		s/ *, */,/g;
+		my ($lat,$lon,$desc) = split(",",$_);
+		$desc =~ s/\"//g;
+		$desc =~ m/\[(\d+\)](.*)/;
+		my $speed = $1;
+		my $rest = $2;
+		unless exists($speeds{$speed}) {
+			$speeds{$speed} = ();
+		}
+		push $speeds{$speed},"$lat,$lon,\"$lat $lon $rest\"";
+	}
 	
-	open X,">poi66.asc";
-	print X $content;
-	close X;
+	foreach my $speed (keys(%speeds))
+	{
+		open P,">poi66_$speed.asc" or die "Kan poi66_$speed,asc niet openen: $@\n";
+		print join("\n",@{$speeds{$speed}});
+		close P;
+	}
+	
     }
 
 	# www.navifriends.de 
