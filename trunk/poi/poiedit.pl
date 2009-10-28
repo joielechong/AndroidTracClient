@@ -248,21 +248,26 @@ $nfreq = HTTP::Request->new(POST => 'http://www.poi66.com/maps/export');
 		next if /^;/;
 		s/^ *//;
 		s/ *, */,/g;
-		my ($lat,$lon,$desc) = split(",",$_);
+		my ($lon,$lat,$desc) = split(",",$_);
 		$desc =~ s/\"//g;
-		$desc =~ m/\[(\d+\)](.*)/;
+		$desc =~ m/\[(\d+)\] *(.*)/;
 		my $speed = $1;
 		my $rest = $2;
-		unless exists($speeds{$speed}) {
+		unless (defined($speed)) {
+		    $desc =~ m/\[(rood)\] *(.*)/;
+		    $speed = $1;
+		    $rest = $2;
+		}
+		unless (exists($speeds{$speed})) {
 			$speeds{$speed} = ();
 		}
-		push $speeds{$speed},"$lat,$lon,\"$lat $lon $rest\"";
+		push @{$speeds{$speed}},"$lon,$lat,\"$lon $lat $rest\"";
 	}
 	
 	foreach my $speed (keys(%speeds))
 	{
 		open P,">poi66_$speed.asc" or die "Kan poi66_$speed,asc niet openen: $@\n";
-		print join("\n",@{$speeds{$speed}});
+		print P join("\n",@{$speeds{$speed}});
 		close P;
 	}
 	
