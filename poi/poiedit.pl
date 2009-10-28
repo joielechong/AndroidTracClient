@@ -223,7 +223,8 @@ for (my $i=$start;$i<=$eind;$i++) {
 }
 
 if ($start != $eind) {
-    	
+    my ($cookie_jar,$nfreq,$nfres,$content);
+	
 # www.poi66.com
 	$nfreq = HTTP::Request->new(POST => 'http://www.poi66.com/maps/export');
     $cookie_jar->add_cookie_header($nfreq);
@@ -247,10 +248,10 @@ if ($start != $eind) {
 
 	# www.navifriends.de 
     
-    my $cookie_jar = HTTP::Cookies->new();
-    my $nfreq = HTTP::Request->new(GET => 'http://www.navifriends.de/');
-    my $nfres = $ua->request($nfreq);
-    my $content;
+    $cookie_jar = HTTP::Cookies->new();
+    $nfreq = HTTP::Request->new(GET => 'http://www.navifriends.de/');
+    $nfres = $ua->request($nfreq);
+    $content;
     
 #print Dumper($nfres);
     if ($nfres->is_success) {
