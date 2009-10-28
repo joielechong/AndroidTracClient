@@ -266,7 +266,7 @@ $nfreq = HTTP::Request->new(POST => 'http://www.poi66.com/maps/export');
 	
 	foreach my $speed (keys(%speeds))
 	{
-		open P,">poi66_$speed.asc" or die "Kan poi66_$speed,asc niet openen: $@\n";
+		open P,">poi66_$speed.asc" or die "Kan poi66_$speed.asc niet openen: $@\n";
 		print P join("\n",@{$speeds{$speed}});
 		close P;
 	}
