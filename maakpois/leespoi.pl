@@ -20,7 +20,8 @@ sub printData {
 #my $dbhPg = DBI->connect("dbi:Pg:dbname=mfvl","","");
 
 #my $dbh=DBI->connect("dbi:SQLite:dbname=iGo-orig.db","","");
-my $dbh=DBI->connect("dbi:SQLite:dbname=iGO.db","","");
+#my $dbh=DBI->connect("dbi:SQLite:dbname=iGO.db","","");
+my $dbh=DBI->connect("dbi:SQLite:dbname=iGO-20091016.db","","");
 my $sth1 = $dbh->prepare("SELECT * from WPOIGLOUP_V1");
 my $sth2 = $dbh->prepare("SELECT * from WPOILABEL_V1");
 my $sth3 = $dbh->prepare("SELECT * from WPOITREE_V1");
@@ -58,6 +59,7 @@ while (my $row=$sth2->fetchrow_hashref()) {
     my $data=$row->{DATA};
     print "HDR=\n";
     printData($hdr);
+    $labels[$i]->{hdr} = $hdr;
     print "DATA=\n";
     printData($data);
     my @fields = unpack("lC5Ll3C5l4C",$data);
@@ -80,5 +82,5 @@ while (my $row=$sth2->fetchrow_hashref()) {
     $i++;
 }
 
-#print Dumper(\@labels);
+print Dumper(\@labels);
 close CSV;
