@@ -224,6 +224,7 @@ for (my $i=$start;$i<=$eind;$i++) {
 
 if ($start != $eind) {
     my ($cookie_jar,$nfreq,$nfres,$content);
+    $cookie_jar = HTTP::Cookies->new();
 	
 # www.poi66.com
 	$nfreq = HTTP::Request->new(POST => 'http://www.poi66.com/maps/export');
@@ -248,10 +249,8 @@ if ($start != $eind) {
 
 	# www.navifriends.de 
     
-    $cookie_jar = HTTP::Cookies->new();
     $nfreq = HTTP::Request->new(GET => 'http://www.navifriends.de/');
     $nfres = $ua->request($nfreq);
-    $content;
     
 #print Dumper($nfres);
     if ($nfres->is_success) {
