@@ -13,26 +13,26 @@ my @xmlsrc=(
     "http://www.flitspaal.nl/poi_flitspalen.xml",
     "http://www.bruxelles5.info/POI/poi_bruxelles5.xml",
     "http://www.goedkooptanken.nu/tomtom/pois.xml",
-#    "http://flitsservice.com/poi_edit_fs.xml"
+    "http://flitsservice.com/poi_edit_fs.xml"
     );
 
 my @groups=(
     ['standaard_installatie1'],
     ["Radars Belges", 'Radars Francais'],
     ['Nederland'],
-#    ['Flitsservice.nl;Actuele mobiele controles']
+    ['Flitsservice.nl;Actuele mobiele controles']
     );
 
 my @usernames=('michiel@van-loon.xs4all.nl',
 	       "",
 	       "",
-#	       ""
+	       ""
 				);
 
 my @passwords=('mikel02',
 	       "",
 	       "",
-#	       ""
+	       ""
 				 );
 
 my $cache = LWP::ConnCache->new;
@@ -374,4 +374,24 @@ if ($start != $eind) {
 	print X $content;
 	close X;
     }
+		
+# www.poi66.com
+	$nfreq = HTTP::Request->new(POST => 'http://www.poi66.com/maps/export');
+    $cookie_jar->add_cookie_header($nfreq);
+    $ua->cookie_jar($cookie_jar);
+    
+    $nfreq->content_type('application/x-www-form-urlencoded');
+    $nfreq->content('abbrev_be=1&abbrev_de=1&abbrev_nl=1&addcity=1&addcountry=1&album=flits&ext=asc&button=Download+ASC');
+    $nfres = $ua->request($nfreq);
+    
+    if ($nfres->is_success) {
+	$cookie_jar->extract_cookies($nfres);
+	print "\n\n================\n",$cookie_jar->as_string,"\n";
+	$content = $nfres->content;
+	
+	open X,">poi166.asc";
+	print X $content;
+	close X;
+    }
+
 }
