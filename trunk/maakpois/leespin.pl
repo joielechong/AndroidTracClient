@@ -19,7 +19,7 @@ sub printData {
 
 #my $dbhPg = DBI->connect("dbi:Pg:dbname=mfvl","","");
 
-#my $dbh=DBI->connect("dbi:SQLite:dbname=iGo-orig.db","","");
+#my $dbh=DBI->connect("dbi:SQLite:dbname=iGO-20091016.db","","");
 my $dbh=DBI->connect("dbi:SQLite:dbname=iGO.db","","");
 my $sth1 = $dbh->prepare("SELECT * from WPOIGLOUP_V1");
 my $sth2 = $dbh->prepare("SELECT * from WPOILABEL_V1");
@@ -34,14 +34,18 @@ $sth5->execute();
 print "PIN_V1\n";
 while (my $row=$sth5->fetchrow_hashref()) {
     print $row->{ID},", ",$row->{F1},", ",$row->{F2},"\n";
+    $pins[$i]->{id} = $row->{ID};
+    $pins[$i]->{f1} = $row->{F1};
+    $pins[$i]->{f2} = $row->{F2};
     my $hdr=$row->{HDR};
     my $data=$row->{DATA};
-    print "HDR=\n";
-    printData($hdr);
-    print "DATA=\n";
-    printData($data);
+#    print "HDR=\n";
+#    printData($hdr);
+    $pins[$i]->{hdr} = $hdr;
+#    print "DATA=\n";
+#    printData($data);
     my @fields = unpack("VVVVVa*",$data);
-    print Dumper(\@fields);
+#    print Dumper(\@fields);
     $pins[$i]->{lon} = $fields[1]*1.0/0x800000;
     $pins[$i]->{lat} = $fields[2]*1.0/0x800000;
     $pins[$i]->{veld1} = $fields[0];
