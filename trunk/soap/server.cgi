@@ -3,7 +3,7 @@
   use SOAP::Transport::HTTP;
 
   SOAP::Transport::HTTP::CGI   
-    -> dispatch_to('Demo')     
+    -> dispatch_to('/web/perlclasses/soap/')     
     -> handle;
 
   package Demo;

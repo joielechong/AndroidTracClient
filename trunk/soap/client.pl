@@ -3,7 +3,7 @@
   use SOAP::Lite;
 
   print SOAP::Lite                                             
-    -> uri('http://localhost/Demo')                                             
-    -> proxy('http://localhost/cgi-bin/hibye.cgi')
+    -> uri('http://van-loon.xs4all.nl/Demo')                                             
+    -> proxy('http://van-loon.xs4all.nl/cgi-bin/server.cgi')
     -> bye()                                                    
     -> result;
