@@ -11,8 +11,11 @@
     
     sub echo {
 	my $arg = join(", ",@_);
+	my %antwoord;
 	
-	return "Ik ontving: $arg\n";
+	$antwoord{klas} = shift;
+	$antwoord{arg} = shift;
+	return %antwoord;
     }	
     1;	
 }				
