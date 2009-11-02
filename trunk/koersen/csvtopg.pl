@@ -1,4 +1,4 @@
-#! /usr/bin/perl -w
+#! /usr/bin/perl -wd
 
 use lib "/home/mfvl/lib/perl/";
 #use lib "/mnt/xs4all/";
@@ -7,7 +7,12 @@ use POSIX qw /mktime strftime/;
 
 use FondsenDB;
 use DataSource;
+use XML::Simple;
 use Data::Dumper;
+
+my $dllist = XMLin("~/etc/dl.xml");
+print Dumper($dllist);
+exit(1);
 
 my $fdbh = new FondsenDB;
 #$fdbh->{dryrun} = 1;
