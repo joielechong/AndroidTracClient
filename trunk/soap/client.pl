@@ -4,6 +4,6 @@
 
   print SOAP::Lite                                             
     -> uri('http://van-loon.xs4all.nl/Demo')                                             
-    -> proxy('http://van-loon.xs4all.nl/cgi-bin/server.cgi')
+    -> proxy('http://van-loon.xs4all.nl/services/server.pl')
     -> echo('test')                                                    
     -> result;
