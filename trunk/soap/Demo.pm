@@ -7,3 +7,4 @@
   sub bye {                    
     return "goodbye, cruel world";
   }
+1;
