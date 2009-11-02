@@ -10,7 +10,9 @@ use DataSource;
 use XML::Simple;
 use Data::Dumper;
 
-my $dllist = XMLin("~/etc/dl.xml");
+my $home=$ENV{'HOME'};
+$homer = "" unless defined $home;
+my $dllist = XMLin("$home/etc/dl.xml");
 print Dumper($dllist);
 exit(1);
 
