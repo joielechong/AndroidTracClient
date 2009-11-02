@@ -1,13 +1,7 @@
 {
     package Demo;
-	BEGIN { 
-		@INC = qw(/usr/local/lib/perl5/5.10.0/i586-linux-thread-multi-ld 
-				  /usr/local/lib/perl5/5.10.0 
-				  /usr/local/lib/perl5/site_perl/5.10.0/i586-linux-thread-multi-ld 
-				  /usr/local/lib/perl5/site_perl/5.10.0 
-				  .);
-		use DBI;
-    }
+	require DBI;
+
     sub hi {                     
 	return "hello, world";     
     } 
