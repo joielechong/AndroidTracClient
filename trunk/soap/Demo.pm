@@ -6,6 +6,8 @@
 
 	use DBI;
 
+    sub new { bless {},shift;}
+
     sub hi {                     
 	return "hello, world";     
     } 
