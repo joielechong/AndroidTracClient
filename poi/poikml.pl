@@ -19,11 +19,11 @@ $folder->appendTextChild('name','Flitspalen');
 
 my $dbh = DBI->connect("dbi:Pg:dbname=mfvl");
 
-my $sth1 = $dbh->prepare("SELECT p.id,lon AS longtitude,lat AS latitude,commentaar,p.naam AS name,richting,bidirectioneel,p.land,insert_date,update_date,snelheid,type,inmio,p.file  FROM pois.posten AS p Inner Join pois.inputfiles AS if ON p.file = if.naam WHERE rel_id IS NULL  AND updated =  'true' AND if.naam NOT LIKE  '%goedkop%'");
+my $sth1 = $dbh->prepare("SELECT p.id,lon AS longtitude,lat AS latitude,commentaar,p.naam AS name,richting,bidirectioneel,p.land,insert_date,update_date,snelheid,type,inmio,p.file,p.rel_id  FROM pois.posten AS p Inner Join pois.inputfiles AS if ON p.file = if.naam WHERE rel_id IS NULL  AND updated =  'true' AND if.naam NOT LIKE  '%goedkop%'");
 
 $sth1->execute();
 
-while (my ($id,$longitude,$latitude,$commentaar,$name,$richting,$bidirectioneel,$land,$insert_date,$update_date,$snelheid,$type,$inmio,$file)= $sth1->fetchrow_array()) {
+while (my ($id,$longitude,$latitude,$commentaar,$name,$richting,$bidirectioneel,$land,$insert_date,$update_date,$snelheid,$type,$inmio,$file,$rel_id)= $sth1->fetchrow_array()) {
 		my $placemark = $folder->addNewChild(undef,'Placemark');
 		my $description = "<pre>ID: $id\nNaam: $name\nOmschr: $commentaar\nFile: $file\n";
 		$description .= "Snelh: $snelheid\n" if defined $snelheid;
@@ -37,6 +37,7 @@ while (my ($id,$longitude,$latitude,$commentaar,$name,$richting,$bidirectioneel,
 		} else {
 			$description .= "</pre>Land<form action='http://van-loon.xs4all.nl/cgi-bin/updpoi.pl'><input type='hidden' name='id' value='$id'><input name='Land' length=3><input type='submit'></form><pre>\n";
 		}
+		$description .= "rel_id: $rel_id\n" id defined $rel_id;
 		$description .= "inmio: $inmio\n" if defined $inmio;
 		$description .= "</pre>\n";
 		$placemark->addNewChild(undef,'Point')->appendTextChild('coordinates',"$longitude,$latitude");
