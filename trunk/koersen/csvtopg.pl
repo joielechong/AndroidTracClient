@@ -1,4 +1,4 @@
-#! /usr/bin/perl -wd
+#! /usr/bin/perl -w
 
 use lib "/home/mfvl/lib/perl/";
 #use lib "/mnt/xs4all/";
@@ -11,9 +11,10 @@ use XML::Simple;
 use Data::Dumper;
 
 my $home=$ENV{'HOME'};
-$homer = "" unless defined $home;
+$home = "" unless defined $home;
 my $dllist = XMLin("$home/etc/dl.xml");
-print Dumper($dllist);
+my %dllist = %{$dllist->{source}};
+print Dumper(\%dllist);
 exit(1);
 
 my $fdbh = new FondsenDB;
