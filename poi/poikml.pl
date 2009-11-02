@@ -37,7 +37,7 @@ while (my ($id,$longitude,$latitude,$commentaar,$name,$richting,$bidirectioneel,
 		} else {
 			$description .= "</pre>Land<form action='http://van-loon.xs4all.nl/cgi-bin/updpoi.pl'><input type='hidden' name='id' value='$id'><input name='Land' length=3><input type='submit'></form><pre>\n";
 		}
-		$description .= "rel_id: $rel_id\n" id defined $rel_id;
+		$description .= "rel_id: $rel_id\n" if defined $rel_id;
 		$description .= "inmio: $inmio\n" if defined $inmio;
 		$description .= "</pre>\n";
 		$placemark->addNewChild(undef,'Point')->appendTextChild('coordinates',"$longitude,$latitude");
