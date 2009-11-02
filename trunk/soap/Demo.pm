@@ -24,7 +24,7 @@
     }	
 	
 	sub stocks {
-		my $dbh = DBI->connect("dbname=koersdata");
+		my $dbh = DBI->connect("dbi::Pg::dbname=koersdata");
 		my $sth1 = $dbh->prepare("SELECT naam FROM koersen_vandaag");
 		my $lijst = $sth1->fetchall_arrayref();
 		
