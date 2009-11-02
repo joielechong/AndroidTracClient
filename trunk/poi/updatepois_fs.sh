@@ -36,6 +36,7 @@ delete from pois.temp as t using pois.posten as p where p.lat=t.lat and p.lon = 
 update pois.posten as p set changed='yes', lat=t.lat, lon=t.lon, file=t.filename, commentaar=t.descr, updated='yes' from pois.temp as t where t.naam=p.naam;
 delete from pois.temp as t using pois.posten as p where p.lat=t.lat and p.lon = t.lon and p.commentaar = t.descr and p.file=t.filename;
 
+delete from temp where ctid not in (select max(dup.ctid) from temp as dup group by dup.naam);
 insert into pois.posten (lat,lon,file,commentaar,naam,updated,changed) select lat,lon,filename,descr,naam,'yes','yes' from pois.temp;
 delete from pois.temp as t using pois.posten as p where p.lat=t.lat and p.lon = t.lon and p.commentaar = t.descr and p.file=t.filename;
 update pois.posten set updated=true where file='Flitsservice.asc' and (update_date > (now()- interval '1 day'));

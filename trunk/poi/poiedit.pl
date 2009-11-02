@@ -272,8 +272,7 @@ $nfreq = HTTP::Request->new(POST => 'http://www.poi66.com/maps/export');
 	}
 	
     }
-
-	# www.navifriends.de 
+# www.navifriends.de 
     
     $nfreq = HTTP::Request->new(GET => 'http://www.navifriends.de/');
     $nfres = $ua->request($nfreq);
