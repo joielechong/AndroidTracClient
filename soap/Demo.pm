@@ -30,3 +30,4 @@
 	
     1;	
 }				
+/usr/local/lib/perl5/5.10.0/i586-linux-thread-multi-ld,/usr/local/lib/perl5/5.10.0,/usr/local/lib/perl5/site_perl/5.10.0/i586-linux-thread-multi-ld,/usr/local/lib/perl5/site_perl/5.10.0,.
