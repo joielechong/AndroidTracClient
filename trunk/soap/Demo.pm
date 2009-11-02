@@ -2,8 +2,10 @@
     package Demo;
 	BEGIN { 
 		@INC = split (',',"usr/local/lib/perl5/5.10.0/i586-linux-thread-multi-ld,/usr/local/lib/perl5/5.10.0,/usr/local/lib/perl5/site_perl/5.10.0/i586-linux-thread-multi-ld,/usr/local/lib/perl5/site_perl/5.10.0,.");
-		use DBI;
     }
+
+	use DBI;
+
     sub hi {                     
 	return "hello, world";     
     } 
