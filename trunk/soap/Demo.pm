@@ -15,7 +15,7 @@
 	
 	$antwoord{klas} = shift;
 	$antwoord{arg} = shift;
-	return %antwoord;
+	return \%antwoord;
     }	
     1;	
 }				
