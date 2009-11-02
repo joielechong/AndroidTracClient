@@ -23,6 +23,18 @@
 	return \%antwoord;
     }	
 	
+	sub stock {
+		my $class = shift;
+		my $stock = shift;
+		
+		my $dbh = DBI->connect("dbi:Pg:dbname=koersdata");
+		my $sth1 = $dbh->prepare("SELECT * FROM koersen_vandaag where naam=?");
+		$sth1->execute($stock);
+		my $lijst = $sth1->fetchrow_hashref();
+		
+		return $lijst;
+	}
+	
 	sub stocks {
 		my $dbh = DBI->connect("dbi:Pg:dbname=koersdata");
 		my $sth1 = $dbh->prepare("SELECT naam FROM koersen_vandaag");
