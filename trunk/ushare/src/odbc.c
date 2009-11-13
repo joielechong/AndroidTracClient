@@ -4,13 +4,13 @@
 
 static void extract_error (char *fn, SQLHANDLE handle, SQLSMALLINT type) {
 	SQLINTEGER i=0;
-	SQL INTEGER native;
+	SQLINTEGER native;
 	SQLCHAR state[7];
 	SQLCHAR text[256];
 	SQLSMALLINT len;
 	SQLRETURN ret;
 	
-	fprintf(stderr,"\nThe driver reported the following diagnostics whilst running %\n\n",fn);
+	fprintf(stderr,"\nThe driver reported the following diagnostics whilst running %s\n\n",fn);
 	do {
 		ret = SQLGetDiagRec(type,handle,++i,state,&native,text,sizeof(text),&len);
 		if (SQL_SUCCEEDED(ret))
@@ -30,12 +30,12 @@ int main (int argc, char **argv) {
   SQLSMALLINT outstrlen;
 
   SQLAllocHandle(SQL_HANDLE_ENV,SQL_NULL_HANDLE, &env);
-  SQLSetEEnvAttr(env,SQL_ATTR_ODBC_VERSION, (void *)SQL_OV_ODBC3,0);
+  SQLSetEnvAttr(env,SQL_ATTR_ODBC_VERSION, (void *)SQL_OV_ODBC3,0);
 
   SQLAllocHandle(SQL_HANDLE_DBC,env,&dbc);
   ret=SQLDriverConnect(dbc,NULL,"DSN=contacts;", SQL_NTS, outstr,sizeof(outstr),&outstrlen,SQL_DRIVER_COMPLETE);
   if (SQL_SUCCEEDED(ret)) {
-    print("Connected\n");
+    printf("Connected\n");
     printf("Returned connection string was:\n\t%s\n", outstr);
     if (ret == SQL_SUCCESS_WITH_INFO) {
       printf("Driver reported the following diagnostics\n");
