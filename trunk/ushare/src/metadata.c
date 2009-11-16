@@ -635,8 +635,8 @@ build_metadata_list (struct ushare_t *ut)
       continue;
     upnp_entry_add_child (ut, ut->root_entry, entry);
     metadata_add_container (ut, entry, ut->contentlist->content[i]);
-    if (!entry_stored(odbc_ptr,entry->fullpath) )
-	store_entry(odbc_ptr,entry);
+    if (entry_stored(odbc_ptr,entry->fullpath) == 0 )
+      store_entry(odbc_ptr,entry);
   }
   odbc_finish(odbc_ptr);
   log_info (_("Found %d files and subdirectories.\n"), ut->nr_entries);
