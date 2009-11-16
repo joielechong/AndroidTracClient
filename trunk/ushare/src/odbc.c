@@ -27,6 +27,8 @@ typedef struct ushare_odbc_t {
   SQLHDBC dbc;
   SQLCHAR outstr[1024];
   SQLSMALLINT outstrlen;
+  SQLSTMT es_stmt;
+  SQLSTMT store_stmt;
 } ushare_odbc;
 
 static ushare_odbc uo;	
@@ -46,6 +48,14 @@ int init_odbc(const char *dsn) {
       printf("Driver reported the following diagnostics\n");
       extract_error("SQLDriverConnect",uo.dbc,SQL_HANDLE_DBC);
     }
+	SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.es_stmt);
+    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.es_stmt,(SQLCHAR *)"SELECT id FROM ms.mediacontent WHERE fullpath=?",SQL_NTS))) {
+	  uo.es_stmt = NULL;
+	}
+	SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.stored_stmt);
+    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.stored_stmt,(SQLCHAR *)"INSERT INTO ms.mediacontent (id,fullpath,container,dlna_type,dlna_speed,dlna_conversion,dlna_operation,dlna_flags,dlna_mime,dlna_id,title,url,size,mime_type",SQL_NTS))) {
+	  uo.stored_stmt = NULL;
+	}
     return 1;
   } else {
 	SQLFreeHandle(SQL_HANDLE_DBC,uo.dbc);
@@ -67,28 +77,24 @@ long entry_stored(int odbc_ptr,char *path)
   SQLHSTMT stmt;
   SQLRETURN ret;
   SQLINTEGER rows;
-  long retval;
+  long retval = -1;
   SQLINTEGER indicator;
   char *lastcall = NULL;
 
   if (odbc_ptr < 0)
     return 0;
-  SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&stmt);
-  lastcall = "SQLPrepare";
-  if (SQL_SUCCEEDED(ret = SQLPrepare(stmt,(SQLCHAR *)"SELECT id FROM ms.mediacontent WHERE fullpath=?",SQL_NTS))) {
   lastcall = "SQLBindParameter";
-    if (SQL_SUCCEEDED(ret = SQLBindParameter(stmt, 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, path, strlen(path), NULL))) {
-      lastcall = "SQLBindCol";
-      if (SQL_SUCCEEDED(ret = SQLBindCol( stmt, 1, SQL_C_LONG, &retval,sizeof(retval),&indicator))) {
-        lastcall = "SQLExecute";
-   	    if (SQL_SUCCEEDED(ret = SQLExecute(stmt))) {
-          SQLRowCount(stmt,&rows);
-	      if (rows != 1) return -1;
-          lastcall = "SQLFetch";
-          if (SQL_SUCCEEDED(ret=SQLFetch(stmt))) {
-            if (indicator == SQL_NULL_DATA) return -1;
-	        return retval;
-	      }
+  if (SQL_SUCCEEDED(ret = SQLBindParameter(uo.es_stmt, 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, path, strlen(path), NULL))) {
+    lastcall = "SQLBindCol";
+    if (SQL_SUCCEEDED(ret = SQLBindCol( uo.es_stmt, 1, SQL_C_LONG, &retval,sizeof(retval),&indicator))) {
+      lastcall = "SQLExecute";
+      if (SQL_SUCCEEDED(ret = SQLExecute(uo.es_stmt))) {
+        SQLRowCount(uo.es_stmt,&rows);
+	    if (rows != 1) return -1;
+        lastcall = "SQLFetch";
+        if (SQL_SUCCEEDED(ret=SQLFetch(uo.es_stmt))) {
+          if (indicator == SQL_NULL_DATA) return -1;
+	      return retval;
 	    }
 	  }
 	}
