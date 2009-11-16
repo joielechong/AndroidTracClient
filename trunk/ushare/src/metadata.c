@@ -595,7 +595,7 @@ build_metadata_list (struct ushare_t *ut)
 
   log_info(_("Starting meta thread...\n"));
   if (pthread_create(&mtd.threadid,NULL,metathread,NULL))
-    { log_info(_("NMeta thread failed to start, no dynamic updates\n"));
+    { log_info(_("Meta thread failed to start, no dynamic updates\n"));
     }
   
   log_info (_("Building Metadata List ...\n"));
@@ -636,7 +636,7 @@ build_metadata_list (struct ushare_t *ut)
     upnp_entry_add_child (ut, ut->root_entry, entry);
     metadata_add_container (ut, entry, ut->contentlist->content[i]);
     if (!entry_stored(odbc_ptr,entry->fullpath) )
-	store_odbc(odbc_ptr,entry);
+	store_entry(odbc_ptr,entry);
   }
   odbc_finish(odbc_ptr);
   log_info (_("Found %d files and subdirectories.\n"), ut->nr_entries);
