@@ -445,8 +445,11 @@ metadata_add_file (struct ushare_t *ut, struct upnp_entry_t *entry,
     struct upnp_entry_t *child = NULL;
 
     child = upnp_entry_new (ut, name, file, entry, st_ptr->st_size, false);
-    if (child)
+    if (child) {
       upnp_entry_add_child (ut, entry, child);
+      if (entry_stored(odbc_ptr,child->fullpath) == 0 )
+        store_entry(odbc_ptr,child);
+	}
   }
 }
 
@@ -501,6 +504,8 @@ metadata_add_container (struct ushare_t *ut,
       {
         metadata_add_container (ut, child, fullpath);
         upnp_entry_add_child (ut, entry, child);
+        if (entry_stored(odbc_ptr,child->fullpath) == 0 )
+          store_entry(odbc_ptr,child);
       }
     }
     else
