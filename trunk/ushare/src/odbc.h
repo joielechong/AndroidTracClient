@@ -3,9 +3,9 @@
 
 #include "metadata.h"
 
-int init_odbc(char *);
+int init_odbc(const char *);
 void odbc_finish(int);
-int entry_stored(int,char *);
+long entry_stored(int,char *);
 int store_entry(int,struct upnp_entry_t *);
 
 #endif
