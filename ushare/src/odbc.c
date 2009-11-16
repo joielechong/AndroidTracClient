@@ -27,8 +27,8 @@ typedef struct ushare_odbc_t {
   SQLHDBC dbc;
   SQLCHAR outstr[1024];
   SQLSMALLINT outstrlen;
-  SQLSTMT es_stmt;
-  SQLSTMT store_stmt;
+  SQLHSTMT es_stmt;
+  SQLHSTMT store_stmt;
 } ushare_odbc;
 
 static ushare_odbc uo;	
@@ -74,7 +74,6 @@ void odbc_finish(int odbc_ptr) {
 
 long entry_stored(int odbc_ptr,char *path)
 {
-  SQLHSTMT stmt;
   SQLRETURN ret;
   SQLINTEGER rows;
   long retval = -1;
