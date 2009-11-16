@@ -47,24 +47,63 @@ int init_odbc(char *dsn) {
     }
     return 1;
   } else {
+	SQLFreeHandle(SQL_HANDLE_DBC,uo.dbc);
+	SQLFreeHandle(SQL_HANDLE_ENV,uo.env);
     return -1;
   }
 }
 
 void odbc_finish(int odbc_ptr) {
-  if (odbc_ptr >=0) SQLDisconnect(uo.dbc);
-  SQLFreeHandle(SQL_HANDLE_DBC,uo.dbc);
-  SQLFreeHandle(SQL_HANDLE_ENV,uo.env);
+  if (odbc_ptr >=0) {
+	SQLDisconnect(uo.dbc);
+	SQLFreeHandle(SQL_HANDLE_DBC,uo.dbc);
+	SQLFreeHandle(SQL_HANDLE_ENV,uo.env);
+  }
 }
 
 int entry_stored(int odbc_ptr,char *path)
 {
-  return 0;
+  SQLHSTMT stmt;
+  SQLRETURN ret;
+  SQLINTEGER rows;
+  int retval;
+  SQLINTEGER indicator;
+  char *lastcall = NULL;
+
+  if (odbc_ptr < 0)
+    return 0;
+  SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&stmt);
+  lastcall = "SQLPrepare";
+  if (SQL_SUCCEEDED(ret = SQLPrepare(stmt,"SELECT id FROM ms.mediacontent WHERE fullpath=?",SQL_NTS))) {
+  lastcall = "SQLBindParameter";
+    if (SQL_SUCCEEDED(ret = SQLBindParameter(stmt, 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, path, strlen(path), NULL))) {
+      lastcall = "SQLBindCol";
+      if (SQL_SUCCEEDED(ret = SQLBindCol( stmt, 1, SQL_C_INT, &retval,sizeof(retval),&indicator))) {
+        lastcall = "SQLExecute";
+   	    if (SQL_SUCCEEDED(ret = SQLExecute(stmt))) {
+          SQLRowCount(stmt,&rows);
+	      if (rows != 1) return -1;
+          lastcall = "SQLFetch";
+          if (SQL_SUCCEEDED(ret=SQLFetch(stmt))) {
+            if (indicator == SQL_NULL_DATA) return -1;
+	        return retval;
+	      }
+	    }
+	  }
+	}
+  }
+ 
+  printf("Driver reported the following diagnostics\n");
+  extract_error(lastcall,uo.dbc,SQL_HANDLE_DBC);
+  return -1;
 }
 
 int store_entry(int odbc_entry,strict upnp_entry_t *entry)
 {
-  return 1;
+  if (odbc_ptr < 0)
+    return 0;
+  
+  return 0;
 }
 
 #ifdef ODBC_DEBUG
