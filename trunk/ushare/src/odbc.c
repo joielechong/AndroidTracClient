@@ -89,7 +89,7 @@ long entry_stored(int odbc_ptr,char *path)
       lastcall = "SQLExecute";
       if (SQL_SUCCEEDED(ret = SQLExecute(uo.es_stmt))) {
         SQLRowCount(uo.es_stmt,&rows);
-	    if (rows != 1) return -1;
+	    if (rows != 1) return 0;
         lastcall = "SQLFetch";
         if (SQL_SUCCEEDED(ret=SQLFetch(uo.es_stmt))) {
           if (indicator == SQL_NULL_DATA) return -1;
