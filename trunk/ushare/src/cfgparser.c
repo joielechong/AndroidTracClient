@@ -126,6 +126,16 @@ ushare_set_cfg_file (struct ushare_t *ut, const char *file)
 }
 
 static void
+ushare_set_dsn (struct ushare_t *ut, const char *dsn)
+{
+  if (!ut || !dsn)
+    return;
+
+  if (stricmp(dsn,"no") != 0)
+    ut->dsn = strdup (dsn);
+}
+
+static void
 ushare_set_dir (struct ushare_t *ut, const char *dirlist)
 {
   char *x = NULL, *token = NULL;
@@ -342,7 +352,7 @@ int
 parse_command_line (struct ushare_t *ut, int argc, char **argv)
 {
   int c, index;
-  char short_options[] = "VhvDowtxdn:i:p:q:c:f:";
+  char short_options[] = "VhvDowtxdn:i:p:q:c:f:z:";
   struct option long_options [] = {
     {"version", no_argument, 0, 'V' },
     {"help", no_argument, 0, 'h' },
@@ -361,6 +371,7 @@ parse_command_line (struct ushare_t *ut, int argc, char **argv)
     {"dlna", no_argument, 0, 'd' },
 #endif /* HAVE_DLNA */
     {"cfg", required_argument, 0, 'f' },
+    {"dsn",required_argument,0, 'z' },
     {0, 0, 0, 0 }
   };
 
@@ -439,6 +450,10 @@ parse_command_line (struct ushare_t *ut, int argc, char **argv)
       
     case 'f':
       ushare_set_cfg_file (ut, optarg);
+      break;
+
+    case 'z':
+      ushare_set_dsn_file (ut, optarg);
       break;
 
     default:

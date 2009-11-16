@@ -20,7 +20,8 @@ sub printData {
 #my $dbhPg = DBI->connect("dbi:Pg:dbname=mfvl","","");
 
 #my $dbh=DBI->connect("dbi:SQLite:dbname=iGO-20091016.db","","");
-my $dbh=DBI->connect("dbi:SQLite:dbname=iGO.db","","");
+#my $dbh=DBI->connect("dbi:SQLite:dbname=iGO.db","","");
+my $dbh=DBI->connect("dbi:SQLite:dbname=iGOxx.db","","");
 my $sth1 = $dbh->prepare("SELECT * from WPOIGLOUP_V1");
 my $sth2 = $dbh->prepare("SELECT * from WPOILABEL_V1");
 my $sth3 = $dbh->prepare("SELECT * from WPOITREE_V1");
