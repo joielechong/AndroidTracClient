@@ -53,6 +53,7 @@ typedef struct meta_thread_data_t {
 } meta_thread_data;
 
 static meta_thread_data mtd;
+static int odbc_ptr;  /* moet hier weer weg */
 
 static
 void print_entry(FILE *in,struct upnp_entry_t *entry) {
@@ -591,7 +592,6 @@ void
 build_metadata_list (struct ushare_t *ut)
 {
   int i;
-  int odbc_ptr;
 
   mtd.ut = ut;
   mtd.hold = 1;
