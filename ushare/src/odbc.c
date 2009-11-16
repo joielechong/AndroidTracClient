@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include "metadata.h"
 #include <sql.h>
 #include <sqlext.h>
 #include "odbc.h"
@@ -30,14 +31,14 @@ typedef struct ushare_odbc_t {
 
 static ushare_odbc uo;	
 
-int init_odbc(char *dsn) {
+int init_odbc(const char *dsn) {
   SQLRETURN ret;
   
   SQLAllocHandle(SQL_HANDLE_ENV,SQL_NULL_HANDLE, &uo.env);
   SQLSetEnvAttr(uo.env,SQL_ATTR_ODBC_VERSION, (void *)SQL_OV_ODBC3,0);
   
   SQLAllocHandle(SQL_HANDLE_DBC,uo.env,&uo.dbc);
-  ret=SQLDriverConnect(uo.dbc,NULL,dsn, SQL_NTS, uo.outstr,sizeof(uo.outstr),&uo.outstrlen,SQL_DRIVER_COMPLETE);
+  ret=SQLDriverConnect(uo.dbc,NULL,(SQLCHAR *)dsn, SQL_NTS, uo.outstr,sizeof(uo.outstr),&uo.outstrlen,SQL_DRIVER_COMPLETE);
   if (SQL_SUCCEEDED(ret)) {
     printf("Connected\n");
     printf("Returned connection string was:\n\t%s\n", uo.outstr);
@@ -61,12 +62,12 @@ void odbc_finish(int odbc_ptr) {
   }
 }
 
-int entry_stored(int odbc_ptr,char *path)
+long entry_stored(int odbc_ptr,char *path)
 {
   SQLHSTMT stmt;
   SQLRETURN ret;
   SQLINTEGER rows;
-  int retval;
+  long retval;
   SQLINTEGER indicator;
   char *lastcall = NULL;
 
@@ -74,11 +75,11 @@ int entry_stored(int odbc_ptr,char *path)
     return 0;
   SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&stmt);
   lastcall = "SQLPrepare";
-  if (SQL_SUCCEEDED(ret = SQLPrepare(stmt,"SELECT id FROM ms.mediacontent WHERE fullpath=?",SQL_NTS))) {
+  if (SQL_SUCCEEDED(ret = SQLPrepare(stmt,(SQLCHAR *)"SELECT id FROM ms.mediacontent WHERE fullpath=?",SQL_NTS))) {
   lastcall = "SQLBindParameter";
     if (SQL_SUCCEEDED(ret = SQLBindParameter(stmt, 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, path, strlen(path), NULL))) {
       lastcall = "SQLBindCol";
-      if (SQL_SUCCEEDED(ret = SQLBindCol( stmt, 1, SQL_C_INT, &retval,sizeof(retval),&indicator))) {
+      if (SQL_SUCCEEDED(ret = SQLBindCol( stmt, 1, SQL_C_LONG, &retval,sizeof(retval),&indicator))) {
         lastcall = "SQLExecute";
    	    if (SQL_SUCCEEDED(ret = SQLExecute(stmt))) {
           SQLRowCount(stmt,&rows);
@@ -98,7 +99,7 @@ int entry_stored(int odbc_ptr,char *path)
   return -1;
 }
 
-int store_entry(int odbc_entry,strict upnp_entry_t *entry)
+int store_entry(int odbc_ptr,struct upnp_entry_t *entry)
 {
   if (odbc_ptr < 0)
     return 0;

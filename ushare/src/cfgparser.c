@@ -126,12 +126,12 @@ ushare_set_cfg_file (struct ushare_t *ut, const char *file)
 }
 
 static void
-ushare_set_dsn (struct ushare_t *ut, const char *dsn)
+ushare_set_dsn_file (struct ushare_t *ut, const char *dsn)
 {
   if (!ut || !dsn)
     return;
 
-  if (stricmp(dsn,"no") != 0)
+  if (strcasecmp(dsn,"no") != 0)
     ut->dsn = strdup (dsn);
 }
 
