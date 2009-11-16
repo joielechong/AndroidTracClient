@@ -28,7 +28,7 @@ typedef struct ushare_odbc_t {
   SQLCHAR outstr[1024];
   SQLSMALLINT outstrlen;
   SQLHSTMT es_stmt;
-  SQLHSTMT stored_stmt;
+  SQLHSTMT store_stmt;
 } ushare_odbc;
 
 static ushare_odbc uo;	
