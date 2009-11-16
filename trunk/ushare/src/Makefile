@@ -25,7 +25,7 @@ EXTRADIST = ushare.1 \
 	ushare.h \
 	gettext.h \
 	minmax.h \
-
+    odbc_h
 
 SRCS = \
         cds.c \

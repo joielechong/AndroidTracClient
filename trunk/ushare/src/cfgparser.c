@@ -253,6 +253,7 @@ static u_configline_t configline[] = {
   { USHARE_ENABLE_TELNET,        ushare_use_telnet              },
   { USHARE_ENABLE_XBOX,          ushare_use_xbox                },
   { USHARE_ENABLE_DLNA,          ushare_use_dlna                },
+  { USHARE_DSN,                  ushare_set_dsn_file            },
   { NULL,                        NULL                           },
 };
 
