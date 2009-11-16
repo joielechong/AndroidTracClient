@@ -41,6 +41,56 @@
 
 #define MAX_URL_SIZE 32
 
+#include <pthread.h>
+#include "odbc.h"
+
+typedef struct meta_thread_data_t {
+  pthread_t threadid;
+  struct ushare *ut;
+  int initial_wait;
+  int loop_wait;
+  int hold;
+} meta_thread_data;
+
+static meta_thread_data mtd;
+
+static
+void print_entry(FILE *in,struct upnp_entry_t *entry) {
+  int i;
+
+  if (entry->child_count == -1) {
+    fprintf(in,"%s %s\n",entry->url,entry->fullpath);
+  } else {
+    for (i=0; i<entry->child_count; i++) {
+      print_entry(in,entry->childs[i]);
+    }
+  }
+}
+
+static 
+void *metathread(void *a __attribute__ ((unused)))
+{
+  FILE *in;
+  struct ushare_t *ut;
+
+  sleep(mtd.initial_wait);
+  while (1) {
+    log_verbose(_("Starting threadloop\n"));
+    if (!mtd.hold
+) {
+      in = fopen("/tmp/entrydump.txt","w");
+      if (in != NULL) {
+	ut = mtd.ut;
+	print_entry(in,ut->root_entry);
+	fclose(in);
+      }
+      log_verbose(_("Ending threadloop\n"));
+    }
+    sleep(mtd.loop_wait);
+  }
+  return NULL;
+}
+
 struct upnp_entry_lookup_t {
   int id;
   struct upnp_entry_t *entry_ptr;
@@ -535,56 +585,6 @@ free_metadata_list (struct ushare_t *ut)
   ut->rb = rbinit (rb_compare, NULL);
   if (!ut->rb)
     log_error (_("Cannot create RB tree for lookups\n"));
-}
-
-#include <pthread.h>
-#include "odbc.h"
-
-typedef struct meta_thread_data_t {
-  pthread_t threadid;
-  struct ushare *ut;
-  int initial_wait;
-  int loop_wait;
-  int hold;
-} meta_thread_data;
-
-static meta_thread_data mtd;
-
-static
-void print_entry(FILE *in,struct upnp_entry_t *entry) {
-  int i;
-
-  if (entry->child_count == -1) {
-    fprintf(in,"%s %s\n",entry->url,entry->fullpath);
-  } else {
-    for (i=0; i<entry->child_count; i++) {
-      print_entry(in,entry->childs[i]);
-    }
-  }
-}
-
-static 
-void *metathread(void *a __attribute__ ((unused)))
-{
-  FILE *in;
-  struct ushare_t *ut;
-
-  sleep(mtd.initial_wait);
-  while (1) {
-    log_verbose(_("Starting threadloop\n"));
-    if (!mtd.hold
-) {
-      in = fopen("/tmp/entrydump.txt","w");
-      if (in != NULL) {
-	ut = mtd.ut;
-	print_entry(in,ut->root_entry);
-	fclose(in);
-      }
-      log_verbose(_("Ending threadloop\n"));
-    }
-    sleep(mtd.loop_wait);
-  }
-  return NULL;
 }
 
 void
