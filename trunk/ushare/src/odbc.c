@@ -28,7 +28,7 @@ typedef struct ushare_odbc_t {
   SQLCHAR outstr[1024];
   SQLSMALLINT outstrlen;
   SQLHSTMT es_stmt;
-  SQLHSTMT store_stmt;
+  SQLHSTMT stored_stmt;
 } ushare_odbc;
 
 static ushare_odbc uo;	
@@ -106,9 +106,13 @@ long entry_stored(int odbc_ptr,char *path)
 
 int store_entry(int odbc_ptr,struct upnp_entry_t *entry)
 {
+  char *container = "Test";
+	
   if (odbc_ptr < 0)
     return 0;
-  
+  SQLBindParameter(uo.store_stmt,1,SQL_PARAM_INPUT,SQL_C_LONG, SQL_INTEGER,sizeof(long),0,&(entry->id),sizeof(int),NULL);
+  SQLBindParameter(uo.store_stmt, 2, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, entry->fullpath, strlen(entry->fullpath), NULL);
+  SQLBindParameter(uo.store_stmt, 3, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, container, strlen(container), NULL);
   return 0;
 }
 
