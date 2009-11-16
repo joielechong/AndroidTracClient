@@ -43,6 +43,7 @@ SRCS = \
         trace.c \
         redblack.c \
         osdep.c \
+        odbc.c \
         ctrl_telnet.c \
         ushare.c
 

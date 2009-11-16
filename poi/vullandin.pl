@@ -9,19 +9,31 @@ my %vertaal = ('France'=>'F',
 	       'Belgium'=>'B',
 	       'The Netherlands' => 'NL',
 	       'Austria'=>'A',
+	       'Romania'=>'RO',
 	       'Spain' => 'E',
 	       'UK'=>'GB',
 	       'Portugal'=>'P',
+	       'Slovakia'=>'SK',
+	       'Slovenia'=>'SLO',
 	       'Italy'=>'I',
+	       'Montenegro'=>'MNE',
 	       'Poland'=>'PL',
+	       'Croatia'=>'HR',
 	       'Finland'=>'SF',
 	       'Germany'=>'D',
+	       'Ireland'=>'IRL',
 	       'Denmark'=>'DK',
 	       'Norway' => 'N',
+	       'Hungary' => 'H',
 	       'Luxembourg'=>'L',
+	       'Andorra'=>'AND',
 	       'Switzerland'=>'CH',
 	       'Sweden'=>'S',
 	       'Czech Republic'=>'CZ',
+	       'Martinique'=>'F',
+	       'Guadeloupe'=>'F',
+	       'French Guiana'=>'F',
+	       'Reunion'=>'F',
     );
 
 my $keyfile='/home/mfvl/download/google_maps_key.txt';
@@ -42,7 +54,7 @@ $reverseURL .= "&$google_key";
 
 my $dbh=DBI->connect("dbi:Pg:dbname=mfvl");
 
-my $sth1 = $dbh->prepare("SELECT id,lat,lon FROM  pois.posten where land IS NULL and rel_id IS NULL and updated ORDER BY id");
+my $sth1 = $dbh->prepare("SELECT id,lat,lon FROM  pois.posten where land IS NULL and rel_id IS NULL  ORDER BY id");
 my $sth2 = $dbh->prepare("UPDATE pois.posten set land=? where id=?");
 $sth1->execute();
 

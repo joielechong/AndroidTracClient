@@ -533,6 +533,7 @@ free_metadata_list (struct ushare_t *ut)
 }
 
 #include <pthread.h>
+#include "odbc.h"
 
 typedef struct meta_thread_data_t {
   pthread_t threadid;
@@ -585,6 +586,7 @@ void
 build_metadata_list (struct ushare_t *ut)
 {
   int i;
+  int odbc_ptr;
 
   mtd.ut = ut;
   mtd.hold = 1;
@@ -597,6 +599,8 @@ build_metadata_list (struct ushare_t *ut)
     }
   
   log_info (_("Building Metadata List ...\n"));
+  if (ut->dsn != NULL)
+    odbc_ptr = init_odbc(ut->dsn);
 
   /* build root entry */
   if (!ut->root_entry)
@@ -631,8 +635,10 @@ build_metadata_list (struct ushare_t *ut)
       continue;
     upnp_entry_add_child (ut, ut->root_entry, entry);
     metadata_add_container (ut, entry, ut->contentlist->content[i]);
+    if (!entry_stored(odbc_ptr,entry->fullpath) )
+	store_odbc(odbc_ptr,entry);
   }
-
+  odbc_finish(odbc_ptr);
   log_info (_("Found %d files and subdirectories.\n"), ut->nr_entries);
   ut->init = 1;
   mtd.hold = 0;
