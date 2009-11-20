@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "metadata.h"
 #include <sql.h>
@@ -52,9 +53,9 @@ int init_odbc(const char *dsn) {
     if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.es_stmt,(SQLCHAR *)"SELECT id FROM ms.mediacontent WHERE fullpath=?",SQL_NTS))) {
 	  uo.es_stmt = NULL;
 	}
-	SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.stored_stmt);
-    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.stored_stmt,(SQLCHAR *)"INSERT INTO ms.mediacontent (id,fullpath,container,dlna_type,dlna_speed,dlna_conversion,dlna_operation,dlna_flags,dlna_mime,dlna_id,title,url,size,mime_type",SQL_NTS))) {
-	  uo.stored_stmt = NULL;
+	SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.store_stmt);
+    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.store_stmt,(SQLCHAR *)"INSERT INTO ms.mediacontent (id,fullpath,container,dlna_mime,dlna_id,title,url,size) VALUES (?,?,?,?,?,?,?,?)",SQL_NTS))) {
+	  uo.store_stmt = NULL;
 	}
     return 1;
   } else {
@@ -82,6 +83,8 @@ long entry_stored(int odbc_ptr,char *path)
 
   if (odbc_ptr < 0)
     return 0;
+
+  SQLFreeStmt(uo.es_stmt,SQL_CLOSE);
   lastcall = "SQLBindParameter";
   if (SQL_SUCCEEDED(ret = SQLBindParameter(uo.es_stmt, 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, path, strlen(path), NULL))) {
     lastcall = "SQLBindCol";
@@ -106,13 +109,51 @@ long entry_stored(int odbc_ptr,char *path)
 
 int store_entry(int odbc_ptr,struct upnp_entry_t *entry)
 {
-  char *container = "Test";
+  char *container,*c;
+  SQLRETURN ret;
+  SQLINTEGER null = SQL_NULL_DATA;
+
 	
   if (odbc_ptr < 0)
     return 0;
-  SQLBindParameter(uo.store_stmt,1,SQL_PARAM_INPUT,SQL_C_LONG, SQL_INTEGER,sizeof(long),0,&(entry->id),sizeof(int),NULL);
+
+  container = strdup(entry->fullpath);
+  if (container[strlen(container)-1] == '/')
+    container[strlen(container)-1] = 0;
+  c = strrchr(container,'/');
+  if (c == NULL) {
+    free(container);
+    container = "Ongedefinieerd";
+  } else {
+    *c = 0;
+  }
+
+  SQLFreeStmt(uo.store_stmt,SQL_CLOSE);
+  SQLBindParameter(uo.store_stmt,1,SQL_PARAM_INPUT,SQL_C_LONG, SQL_INTEGER,sizeof(long),0,&(entry->id),sizeof(entry->id),NULL);
   SQLBindParameter(uo.store_stmt, 2, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, entry->fullpath, strlen(entry->fullpath), NULL);
   SQLBindParameter(uo.store_stmt, 3, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, container, strlen(container), NULL);
+  if (entry->dlna_profile != NULL) {
+    SQLBindParameter(uo.store_stmt, 4, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, (char *)entry->dlna_profile->mime, strlen(entry->dlna_profile->mime), NULL);
+    SQLBindParameter(uo.store_stmt, 5, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, (char *)entry->dlna_profile->id, strlen(entry->dlna_profile->id), NULL);
+  } else {
+    SQLBindParameter(uo.store_stmt, 4, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, NULL, 0, &null);
+    SQLBindParameter(uo.store_stmt, 5, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, NULL, 0, &null);
+  }
+  SQLBindParameter(uo.store_stmt, 6, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, (char *)entry->title, strlen(entry->title), NULL);
+  if (entry->url != NULL) {
+    SQLBindParameter(uo.store_stmt, 7, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, (char *)entry->url, strlen(entry->url), NULL);
+  } else {
+    SQLBindParameter(uo.store_stmt, 7, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, NULL, 0, &null);
+  }
+  if (entry->size >= 0) {
+    SQLBindParameter(uo.store_stmt, 8, SQL_PARAM_INPUT, SQL_C_UBIGINT, SQL_BIGINT, sizeof(long long), 0, &entry->size, sizeof(entry->size), NULL);
+  } else {
+    SQLBindParameter(uo.store_stmt, 8, SQL_PARAM_INPUT, SQL_C_UBIGINT, SQL_BIGINT, sizeof(long long), 0, NULL, 0, &null);
+  }
+  if (!SQL_SUCCEEDED(ret = SQLExecute(uo.store_stmt))) {
+    printf("Driver reported the following diagnostics\n");
+    extract_error("SQLExecute",uo.dbc,SQL_HANDLE_DBC);
+  }
   return 0;
 }
 
@@ -131,7 +172,7 @@ int main (int argc, char **argv) {
   odbc_ptr=init_odbc("DSN=mediaserver;");
   if (odbc_ptr>=0) {
     SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&stmt);
-    if (SQL_SUCCEEDED(ret = SQLPrepare(stmt,"SELECT id,fullpath,container,dlna_type,dlna_speed,dlna_conversion,dlna_operation,dlna_flags,dlna_mime,dlna_id,title,url,size,mime_type FROM ms.mediacontent",SQL_NTS))) {
+    if (SQL_SUCCEEDED(ret = SQLPrepare(stmt,"SELECT id,fullpath,container,dlna_flags,dlna_mime,dlna_id,title,url,size FROM ms.mediacontent",SQL_NTS))) {
       if (SQL_SUCCEEDED(ret = SQLExecute(stmt))) {
 	SQLNumResultCols(stmt,&columns);
 	SQLRowCount(stmt,&rows);

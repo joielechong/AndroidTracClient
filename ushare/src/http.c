@@ -133,6 +133,9 @@ http_get_info (const char *filename, struct File_Info *info)
   if (!entry)
     return -1;
 
+  if (entry->deleted)
+    return -1;
+
   if (!entry->fullpath)
     return -1;
 

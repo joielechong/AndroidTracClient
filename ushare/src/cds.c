@@ -295,7 +295,7 @@ didl_add_item (struct buffer_t *out, int item_id,
     {
       extern struct ushare_t *ut;
       buffer_appendf (out, "http://%s:%d%s/%s",
-                      UpnpGetServerIpAddress (), ut->port, VIRTUAL_DIR, url);
+		      UpnpGetServerIpAddress (), ut->port, VIRTUAL_DIR, url);
     }
     buffer_appendf (out, "</%s>", DIDL_RES);
   }

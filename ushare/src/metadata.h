@@ -44,6 +44,7 @@ struct upnp_entry_t {
   char *url;
   off_t size;
   int fd;
+  int deleted;
 };
 
 typedef struct xml_convert_s {

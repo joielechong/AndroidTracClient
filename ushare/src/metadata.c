@@ -58,9 +58,12 @@ static int odbc_ptr;  /* moet hier weer weg */
 static
 void print_entry(FILE *in,struct upnp_entry_t *entry) {
   int i;
-
+  
   if (entry->child_count == -1) {
-    fprintf(in,"%s %s\n",entry->url,entry->fullpath);
+    fprintf(in,"%s %s",entry->url,entry->fullpath);
+    if (entry->deleted) 
+      fprintf(in," (DELETED)");
+    fprintf(in,"\n");
   } else {
     for (i=0; i<entry->child_count; i++) {
       print_entry(in,entry->childs[i]);
@@ -73,12 +76,11 @@ void *metathread(void *a __attribute__ ((unused)))
 {
   FILE *in;
   struct ushare_t *ut;
-
+  
   sleep(mtd.initial_wait);
   while (1) {
     log_verbose(_("Starting threadloop\n"));
-    if (!mtd.hold
-) {
+    if (!mtd.hold) {
       in = fopen("/tmp/entrydump.txt","w");
       if (in != NULL) {
 	ut = mtd.ut;
@@ -101,11 +103,11 @@ static char *
 getExtension (const char *filename)
 {
   char *str = NULL;
-
+  
   str = strrchr (filename, '.');
   if (str)
     str++;
-
+  
   return str;
 }
 
@@ -114,18 +116,18 @@ getMimeType (const char *extension)
 {
   extern struct mime_type_t MIME_Type_List[];
   struct mime_type_t *list;
-
+  
   if (!extension)
     return NULL;
-
+  
   list = MIME_Type_List;
   while (list->extension)
-  {
-    if (!strcasecmp (list->extension, extension))
-      return list;
-    list++;
-  }
-
+    {
+      if (!strcasecmp (list->extension, extension))
+	return list;
+      list++;
+    }
+  
   return NULL;
 }
 
@@ -134,10 +136,10 @@ is_valid_extension (const char *extension)
 {
   if (!extension)
     return false;
-
+  
   if (getMimeType (extension))
     return true;
-
+  
   return false;
 }
 
@@ -146,10 +148,10 @@ get_list_length (void *list)
 {
   void **l = list;
   int n = 0;
-
+  
   while (*(l++))
     n++;
-
+  
   return n;
 }
 
@@ -170,10 +172,10 @@ get_xmlconvert (int c)
 {
   int j;
   for (j = 0; xml_convert[j].xml; j++)
-  {
-    if (c == xml_convert[j].charac)
-      return xml_convert[j].xml;
-  }
+    {
+      if (c == xml_convert[j].charac)
+	return xml_convert[j].xml;
+    }
   return NULL;
 }
 
@@ -182,32 +184,32 @@ convert_xml (const char *title)
 {
   char *newtitle, *s, *t, *xml;
   int nbconvert = 0;
-
+  
   /* calculate extra size needed */
   for (t = (char*) title; *t; t++)
-  {
-    xml = get_xmlconvert (*t);
-    if (xml)
-      nbconvert += strlen (xml) - 1;
-  }
+    {
+      xml = get_xmlconvert (*t);
+      if (xml)
+	nbconvert += strlen (xml) - 1;
+    }
   if (!nbconvert)
     return NULL;
 
   newtitle = s = (char*) malloc (strlen (title) + nbconvert + 1);
-
+  
   for (t = (char*) title; *t; t++)
-  {
-    xml = get_xmlconvert (*t);
-    if (xml)
     {
-      strcpy (s, xml);
-      s += strlen (xml);
+      xml = get_xmlconvert (*t);
+      if (xml)
+	{
+	  strcpy (s, xml);
+	  s += strlen (xml);
+	}
+      else
+	*s++ = *t;
     }
-    else
-      *s++ = *t;
-  }
   *s = '\0';
-
+  
   return newtitle;
 }
 
@@ -222,36 +224,36 @@ upnp_entry_new (struct ushare_t *ut, const char *name, const char *fullpath,
   char *title = NULL, *x = NULL;
   char url_tmp[MAX_URL_SIZE] = { '\0' };
   char *title_or_name = NULL;
-
+  
   if (!name)
     return NULL;
-
+  
   entry = (struct upnp_entry_t *) malloc (sizeof (struct upnp_entry_t));
-
+  
 #ifdef HAVE_DLNA
   entry->dlna_profile = NULL;
   entry->url = NULL;
   if (ut->dlna_enabled && fullpath && !dir)
-  {
-    dlna_profile_t *p = dlna_guess_media_profile (ut->dlna, fullpath);
-    if (!p)
     {
-      free (entry);
-      log_error("Cannot determine file type for  %s\n",fullpath);
-      return NULL;
+      dlna_profile_t *p = dlna_guess_media_profile (ut->dlna, fullpath);
+      if (!p)
+	{
+	  free (entry);
+	  log_error("Cannot determine file type for  %s\n",fullpath);
+	  return NULL;
+	}
+      entry->dlna_profile = p;
+      fprintf(stderr,"%s: id=%s, mime=%s, label=%s,class=%d\n",fullpath,p->id,p->mime,p->label,p->class);
     }
-    entry->dlna_profile = p;
-    fprintf(stderr,"%s: id=%s, mime=%s, label=%s,class=%d\n",fullpath,p->id,p->mime,p->label,p->class);
-  }
 #endif /* HAVE_DLNA */
- 
+  
   if (ut->xbox360)
-  {
-    if (ut->root_entry)
-      entry->id = ut->starting_id + ut->nr_entries++;
-    else
-      entry->id = 0; /* Creating the root node so don't use the usual IDs */
-  }
+    {
+      if (ut->root_entry)
+	entry->id = ut->starting_id + ut->nr_entries++;
+      else
+	entry->id = 0; /* Creating the root node so don't use the usual IDs */
+    }
   else
     entry->id = ut->starting_id + ut->nr_entries++;
   
@@ -259,36 +261,36 @@ upnp_entry_new (struct ushare_t *ut, const char *name, const char *fullpath,
   entry->parent = parent;
   entry->child_count =  dir ? 0 : -1;
   entry->title = NULL;
+  entry->deleted = 0;
 
-  entry->childs = (struct upnp_entry_t **)
-    malloc (sizeof (struct upnp_entry_t *));
+  entry->childs = (struct upnp_entry_t **) malloc (sizeof (struct upnp_entry_t *));
   *(entry->childs) = NULL;
-
+  
   if (!dir) /* item */
     {
 #ifdef HAVE_DLNA
       if (ut->dlna_enabled)
         entry->mime_type = NULL;
       else
-      {
+	{
 #endif /* HAVE_DLNA */
-      struct mime_type_t *mime = getMimeType (getExtension (name));
-      if (!mime)
-      {
-        --ut->nr_entries; 
-        upnp_entry_free (ut, entry);
-        log_error ("Invalid Mime type for %s, entry ignored", name);
-        return NULL;
-      }
-      entry->mime_type = mime;
+	  struct mime_type_t *mime = getMimeType (getExtension (name));
+	  if (!mime)
+	    {
+	      --ut->nr_entries; 
+	      upnp_entry_free (ut, entry);
+	      log_error ("Invalid Mime type for %s, entry ignored", name);
+	      return NULL;
+	    }
+	  entry->mime_type = mime;
 #ifdef HAVE_DLNA
-      }
+	}
 #endif /* HAVE_DLNA */
       
       if (snprintf (url_tmp, MAX_URL_SIZE, "%d.%s",
                     entry->id, getExtension (name)) >= MAX_URL_SIZE)
         log_error ("URL string too long for id %d, truncated!!", entry->id);
-
+      
       /* Only malloc() what we really need */
       entry->url = strdup (url_tmp);
     }
@@ -297,53 +299,53 @@ upnp_entry_new (struct ushare_t *ut, const char *name, const char *fullpath,
       entry->mime_type = &Container_MIME_Type;
       entry->url = NULL;
     }
-
+  
   /* Try Iconv'ing the name but if it fails the end device
      may still be able to handle it */
   title = iconv_convert (name);
   if (title)
     title_or_name = title;
   else
-  {
-    if (ut->override_iconv_err)
     {
-      title_or_name = strdup (name);
-      log_error ("Entry invalid name id=%d [%s]\n", entry->id, name);
+      if (ut->override_iconv_err)
+	{
+	  title_or_name = strdup (name);
+	  log_error ("Entry invalid name id=%d [%s]\n", entry->id, name);
+	}
+      else
+	{
+	  upnp_entry_free (ut, entry);
+	  log_error ("Freeing entry invalid name id=%d [%s]\n", entry->id, name);
+	  return NULL;
+	}
     }
-    else
-    {
-      upnp_entry_free (ut, entry);
-      log_error ("Freeing entry invalid name id=%d [%s]\n", entry->id, name);
-      return NULL;
-    }
-  }
-
+  
   if (!dir)
-  {
-    x = strrchr (title_or_name, '.');
-    if (x)  /* avoid displaying file extension */
-      *x = '\0';
-  }
+    {
+      x = strrchr (title_or_name, '.');
+      if (x)  /* avoid displaying file extension */
+	*x = '\0';
+    }
   x = convert_xml (title_or_name);
   if (x)
-  {
-    free (title_or_name);
-    title_or_name = x;
-  }
+    {
+      free (title_or_name);
+      title_or_name = x;
+    }
   entry->title = title_or_name;
-
+  
   if (!strcmp (title_or_name, "")) /* DIDL dc:title can't be empty */
-  {
-    free (title_or_name);
-    entry->title = strdup (TITLE_UNKNOWN);
-  }
-
+    {
+      free (title_or_name);
+      entry->title = strdup (TITLE_UNKNOWN);
+    }
+  
   entry->size = size;
   entry->fd = -1;
-
+  
   if (entry->id && entry->url)
     log_verbose ("Entry->URL (%d): %s\n", entry->id, entry->url);
-
+  
   return entry;
 }
 
@@ -355,7 +357,7 @@ static void
 _upnp_entry_free (struct upnp_entry_t *entry)
 {
   struct upnp_entry_t **childs;
-
+  
   if (!entry)
     return;
 
@@ -369,7 +371,7 @@ _upnp_entry_free (struct upnp_entry_t *entry)
   if (entry->dlna_profile)
     entry->dlna_profile = NULL;
 #endif /* HAVE_DLNA */
-
+  
   for (childs = entry->childs; *childs; childs++)
     _upnp_entry_free (*childs);
   free (entry->childs);
@@ -380,47 +382,47 @@ upnp_entry_free (struct ushare_t *ut, struct upnp_entry_t *entry)
 {
   if (!ut || !entry)
     return;
-
+  
   /* Free all entries (i.e. children) */
   if (entry == ut->root_entry)
-  {
-    struct upnp_entry_t *entry_found = NULL;
-    struct upnp_entry_lookup_t *lk = NULL;
-    RBLIST *rblist;
-    int i = 0;
-
-    rblist = rbopenlist (ut->rb);
-    lk = (struct upnp_entry_lookup_t *) rbreadlist (rblist);
-
-    while (lk)
     {
-      entry_found = lk->entry_ptr;
-      if (entry_found)
-      {
- 	if (entry_found->fullpath)
- 	  free (entry_found->fullpath);
- 	if (entry_found->title)
- 	  free (entry_found->title);
- 	if (entry_found->url)
- 	  free (entry_found->url);
-
-	free (entry_found);
- 	i++;
-      }
-
-      free (lk); /* delete the lookup */
+      struct upnp_entry_t *entry_found = NULL;
+      struct upnp_entry_lookup_t *lk = NULL;
+      RBLIST *rblist;
+      int i = 0;
+      
+      rblist = rbopenlist (ut->rb);
       lk = (struct upnp_entry_lookup_t *) rbreadlist (rblist);
+      
+      while (lk)
+	{
+	  entry_found = lk->entry_ptr;
+	  if (entry_found)
+	    {
+	      if (entry_found->fullpath)
+		free (entry_found->fullpath);
+	      if (entry_found->title)
+		free (entry_found->title);
+	      if (entry_found->url)
+		free (entry_found->url);
+	      
+	      free (entry_found);
+	      i++;
+	    }
+	  
+	  free (lk); /* delete the lookup */
+	  lk = (struct upnp_entry_lookup_t *) rbreadlist (rblist);
+	}
+      
+      rbcloselist (rblist);
+      rbdestroy (ut->rb);
+      ut->rb = NULL;
+      
+      log_verbose ("Freed [%d] entries\n", i);
     }
-
-    rbcloselist (rblist);
-    rbdestroy (ut->rb);
-    ut->rb = NULL;
-
-    log_verbose ("Freed [%d] entries\n", i);
-  }
   else
     _upnp_entry_free (entry);
-
+  
   free (entry);
 }
 
@@ -494,13 +496,13 @@ metadata_add_file (struct ushare_t *ut, struct upnp_entry_t *entry,
 #endif
   {
     struct upnp_entry_t *child = NULL;
-
+    
     child = upnp_entry_new (ut, name, file, entry, st_ptr->st_size, false);
     if (child) {
       upnp_entry_add_child (ut, entry, child);
       if (entry_stored(odbc_ptr,child->fullpath) == 0 )
         store_entry(odbc_ptr,child);
-	}
+    }
   }
 }
 
@@ -598,9 +600,9 @@ build_metadata_list (struct ushare_t *ut)
   mtd.initial_wait=60;
   mtd.loop_wait=30;   /* this must become configurable */
 
-  log_info(_("Starting meta thread...\n"));
+  log_info(_("Starting metadata thread...\n"));
   if (pthread_create(&mtd.threadid,NULL,metathread,NULL))
-    { log_info(_("Meta thread failed to start, no dynamic updates\n"));
+    { log_info(_("Metadata thread failed to start, no dynamic updates\n"));
     }
   
   log_info (_("Building Metadata List ...\n"));
