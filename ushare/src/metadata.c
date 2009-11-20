@@ -46,7 +46,7 @@
 
 typedef struct meta_thread_data_t {
   pthread_t threadid;
-  struct ushare *ut;
+  struct ushare_t *ut;
   int initial_wait;
   int loop_wait;
   int hold;
@@ -599,45 +599,43 @@ build_metadata_list (struct ushare_t *ut)
   mtd.hold = 1;
   mtd.initial_wait=60;
   mtd.loop_wait=30;   /* this must become configurable */
-
+  
+  /* build root entry */
+  if (!ut->root_entry)
+    ut->root_entry = upnp_entry_new (ut, "root", NULL, NULL, -1, true);
+  
   log_info(_("Starting metadata thread...\n"));
-  if (pthread_create(&mtd.threadid,NULL,metathread,NULL))
-    { log_info(_("Metadata thread failed to start, no dynamic updates\n"));
-    }
+  if (pthread_create(&mtd.threadid,NULL,metathread,NULL)) { 	
+    log_info(_("Metadata thread failed to start, no dy	namic updates\n"));
+  }	
   
   log_info (_("Building Metadata List ...\n"));
   if (ut->dsn != NULL)
     odbc_ptr = init_odbc(ut->dsn);
-
-  /* build root entry */
-  if (!ut->root_entry)
-    ut->root_entry = upnp_entry_new (ut, "root", NULL, NULL, -1, true);
-
+  
   /* add files from content directory */
-  for (i=0 ; i < ut->contentlist->count ; i++)
-  {
+  for (i=0 ; i < ut->contentlist->count ; i++) {
     struct upnp_entry_t *entry = NULL;
     char *title = NULL;
     int size = 0;
-
+    
     log_info (_("Looking for files in content directory : %s\n"),
-              ut->contentlist->content[i]);
-
+	      ut->contentlist->content[i]);
+    
     size = strlen (ut->contentlist->content[i]);
     if (ut->contentlist->content[i][size - 1] == '/')
       ut->contentlist->content[i][size - 1] = '\0';
     title = strrchr (ut->contentlist->content[i], '/');
-    if (title)
+    if (title) {
       title++;
-    else
-    {
+    } else {
       /* directly use content directory name if no '/' before basename */
       title = ut->contentlist->content[i];
     }
-
+    
     entry = upnp_entry_new (ut, title, ut->contentlist->content[i],
                             ut->root_entry, -1, true);
-
+    
     if (!entry)
       continue;
     upnp_entry_add_child (ut, ut->root_entry, entry);
@@ -668,4 +666,3 @@ rb_compare (const void *pa, const void *pb,
 
   return 0;
 }
-
