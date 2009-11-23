@@ -626,13 +626,12 @@ cds_browse (struct action_event_t *event)
   }
 
   out = buffer_new ();
-  if (!out)
-  {
+  if (!out) {
     free (filter);
-	free(entry)
+    free(entry);
     return false;
   }
-
+  
   if (metadata)
     result_count =
       cds_browse_metadata (event, out, index, count, entry, filter);
