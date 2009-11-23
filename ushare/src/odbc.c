@@ -249,7 +249,7 @@ struct upnp_entry_t **fetch_children(int odbc_ptr,struct upnp_entry_t *parent)
   
   SQLFreeStmt(uo.child_stmt,SQL_CLOSE);
   ret = SQLBindParameter(uo.child_stmt, 1, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, sizeof(long), 0, &parent->id, sizeof(parent->id), NULL);
-  ret =  SQLBindCol( uo.child_stmt, 1, SQL_C_ULONG, &size,sizeof(size),&indicator[1]);
+  ret =  SQLBindCol( uo.child_stmt, 1, SQL_C_ULONG, &id,sizeof(id),&indicator[1]);
   ret =  SQLBindCol( uo.child_stmt, 2, SQL_C_CHAR, &fullpath,sizeof(fullpath),&indicator[2]);
   ret =  SQLBindCol( uo.child_stmt, 3, SQL_C_CHAR, &dlna_mime,sizeof(dlna_mime),&indicator[3]);
   ret =  SQLBindCol( uo.child_stmt, 4, SQL_C_CHAR, &dlna_id,sizeof(dlna_id),&indicator[4]);
