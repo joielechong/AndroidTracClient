@@ -121,7 +121,7 @@ void print_entry(FILE *in,struct upnp_entry_t *entry) {
 static void
 _upnp_entry_free (struct upnp_entry_t *entry)
 {
-  struct upnp_entry_t **childs;
+//  struct upnp_entry_t **childs;
   
   if (!entry)
     return;
@@ -133,13 +133,15 @@ _upnp_entry_free (struct upnp_entry_t *entry)
   if (entry->url)
     free (entry->url);
 #ifdef HAVE_DLNA
-  if (entry->dlna_profile)
+  if (entry->dlna_profile) {
+    free(entry->dlna_profile);
     entry->dlna_profile = NULL;
+  }
 #endif /* HAVE_DLNA */
   
-  for (childs = entry->childs; *childs; childs++)
-    _upnp_entry_free (*childs);
-  free (entry->childs);
+//  for (childs = entry->childs; *childs; childs++)
+//    _upnp_entry_free (*childs);
+//  free (entry->childs);
 }
 
 struct upnp_entry_lookup_t {
@@ -155,6 +157,7 @@ upnp_entry_free (struct ushare_t *ut, struct upnp_entry_t *entry)
     return;
   
   /* Free all entries (i.e. children) */
+#if 0
   if (entry == ut->root_entry)
     {
       struct upnp_entry_t *entry_found = NULL;
@@ -192,7 +195,8 @@ upnp_entry_free (struct ushare_t *ut, struct upnp_entry_t *entry)
       log_verbose ("Freed [%d] entries\n", i);
     }
   else
-    _upnp_entry_free (entry);
+#endif
+  _upnp_entry_free (entry);
   
   free (entry);
 }
