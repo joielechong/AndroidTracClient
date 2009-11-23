@@ -168,7 +168,7 @@ struct upnp_entry_t *fetch_entry(int odbc_ptr,int id) {
   char title[512];
   char url[512];
   long size;
-
+  
   if (odbc_ptr < 0)
     return NULL;
   
@@ -184,10 +184,10 @@ struct upnp_entry_t *fetch_entry(int odbc_ptr,int id) {
   ret =  SQLBindCol( uo.fetch_stmt, 6, SQL_C_ULONG, &size,sizeof(size),&indicator[7]);
   ret = SQLExecute(uo.fetch_stmt);
   ret = SQLFetch(uo.fetch_stmt);
-
+  
   entry->dlna_profile=malloc(sizeof(dlna_profile_t));
   memset(entry->dlna_profile,0,sizeof(entry->dlna_profile));
-
+  
   entry->id=id;
   if (indicator[1] == SQL_NULL_DATA)
     entry->fullpath = NULL;
@@ -198,35 +198,35 @@ struct upnp_entry_t *fetch_entry(int odbc_ptr,int id) {
     entry->dlna_profile->mime = NULL;
   else
     entry->dlna_profile->mime=strdup(dlna_mime);
- 
- if (indicator[3] == SQL_NULL_DATA)
+  
+  if (indicator[3] == SQL_NULL_DATA)
     entry->dlna_profile->id = NULL;
   else
     entry->dlna_profile->id=strdup(dlna_id);
-
- if (indicator[4] == SQL_NULL_DATA)
+  
+  if (indicator[4] == SQL_NULL_DATA)
     entry->title = NULL;
   else
     entry->title=strdup(title);
- 
- if (indicator[5] == SQL_NULL_DATA) {
-   entry->url = NULL;
-   entry->child_count=get_child_count(odbc_ptr,id);
-   entry->mime_type = &Container_MIME_Type;
- } else {
-   entry->url=strdup(url);
-   entry->child_count = -1;
-   entry->mime_type = NULL;
- }
- 
- if (indicator[6] == SQL_NULL_DATA)
-   entry->size = 0;
- else
-   entry->size=size;
- 
- entry->childs = NULL;
- 
- return entry;
+  
+  if (indicator[5] == SQL_NULL_DATA) {
+    entry->url = NULL;
+    entry->child_count=get_child_count(odbc_ptr,id);
+    entry->mime_type = &Container_MIME_Type;
+  } else {
+    entry->url=strdup(url);
+    entry->child_count = -1;
+    entry->mime_type = NULL;
+  }
+  
+  if (indicator[6] == SQL_NULL_DATA)
+    entry->size = 0;
+  else
+    entry->size=size;
+  
+  entry->childs = NULL;
+  
+  return entry;
 }
 
 struct upnp_entry_t **fetch_children(int odbc_ptr,struct upnp_entry_t *parent)
@@ -242,12 +242,12 @@ struct upnp_entry_t **fetch_children(int odbc_ptr,struct upnp_entry_t *parent)
   SQLINTEGER i,rows;
   char url[512];
   long size,id;
-
+  
   if (odbc_ptr < 0)
     return NULL;
   
   SQLFreeStmt(uo.child_stmt,SQL_CLOSE);
-  ret = SQLBindParameter(uo.child_stmt, 1, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, sizeof(long), 0, &entry->id, sizeof(entry->id), NULL);
+  ret = SQLBindParameter(uo.child_stmt, 1, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, sizeof(long), 0, &parent->id, sizeof(parent->id), NULL);
   ret =  SQLBindCol( uo.child_stmt, 1, SQL_C_ULONG, &size,sizeof(size),&indicator[1]);
   ret =  SQLBindCol( uo.child_stmt, 2, SQL_C_CHAR, &fullpath,sizeof(fullpath),&indicator[2]);
   ret =  SQLBindCol( uo.child_stmt, 3, SQL_C_CHAR, &dlna_mime,sizeof(dlna_mime),&indicator[3]);
@@ -259,55 +259,55 @@ struct upnp_entry_t **fetch_children(int odbc_ptr,struct upnp_entry_t *parent)
   
   SQLRowCount(uo.child_stmt,&rows);
   childs = (struct upnp_entry_t **) calloc (sizeof (struct upnp_entry_t *),rows);
-
-  for (i=1;i<=rows;i++) {
-  ret = SQLFetch(uo.child_stmt);
-  entry = (struct upnp_entry_t *) malloc (sizeof (struct upnp_entry_t));
-  memset(entry,0,sizeof(*entry));
-  entry->dlna_profile=malloc(sizeof(dlna_profile_t));
-  memset(entry->dlna_profile,0,sizeof(entry->dlna_profile));
-
-  entry->id=id;
-  if (indicator[2] == SQL_NULL_DATA)
-    entry->fullpath = NULL;
-  else
-    entry->fullpath=strdup(fullpath);
   
-  if (indicator[3] == SQL_NULL_DATA)
-    entry->dlna_profile->mime = NULL;
-  else
-    entry->dlna_profile->mime=strdup(dlna_mime);
- 
- if (indicator[4] == SQL_NULL_DATA)
-    entry->dlna_profile->id = NULL;
-  else
-    entry->dlna_profile->id=strdup(dlna_id);
-
- if (indicator[5] == SQL_NULL_DATA)
-    entry->title = NULL;
-  else
-    entry->title=strdup(title);
- 
- if (indicator[6] == SQL_NULL_DATA) {
-   entry->url = NULL;
-   entry->child_count=get_child_count(odbc_ptr,id);
-   entry->mime_type = &Container_MIME_Type;
- } else {
-   entry->url=strdup(url);
-   entry->child_count = -1;
-   entry->mime_type = NULL;
- }
- 
- if (indicator[7] == SQL_NULL_DATA)
-   entry->size = 0;
- else
-   entry->size=size;
- 
- entry->childs = NULL;
- childs[i-1]=entry;
- }
- 
- return childs;
+  for (i=1;i<=rows;i++) {
+    ret = SQLFetch(uo.child_stmt);
+    entry = (struct upnp_entry_t *) malloc (sizeof (struct upnp_entry_t));
+    memset(entry,0,sizeof(*entry));
+    entry->dlna_profile=malloc(sizeof(dlna_profile_t));
+    memset(entry->dlna_profile,0,sizeof(entry->dlna_profile));
+    
+    entry->id=id;
+    if (indicator[2] == SQL_NULL_DATA)
+      entry->fullpath = NULL;
+    else
+      entry->fullpath=strdup(fullpath);
+    
+    if (indicator[3] == SQL_NULL_DATA)
+      entry->dlna_profile->mime = NULL;
+    else
+      entry->dlna_profile->mime=strdup(dlna_mime);
+    
+    if (indicator[4] == SQL_NULL_DATA)
+      entry->dlna_profile->id = NULL;
+    else
+      entry->dlna_profile->id=strdup(dlna_id);
+    
+    if (indicator[5] == SQL_NULL_DATA)
+      entry->title = NULL;
+    else
+      entry->title=strdup(title);
+    
+    if (indicator[6] == SQL_NULL_DATA) {
+      entry->url = NULL;
+      entry->child_count=get_child_count(odbc_ptr,id);
+      entry->mime_type = &Container_MIME_Type;
+    } else {
+      entry->url=strdup(url);
+      entry->child_count = -1;
+      entry->mime_type = NULL;
+    }
+    
+    if (indicator[7] == SQL_NULL_DATA)
+      entry->size = 0;
+    else
+      entry->size=size;
+    
+    entry->childs = NULL;
+    childs[i-1]=entry;
+  }
+  
+  return childs;
 }
 
 int store_entry(int odbc_ptr,struct upnp_entry_t *entry,int parent_id)
