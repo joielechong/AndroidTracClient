@@ -461,7 +461,7 @@ cds_browse_directchildren (struct action_event_t *event,
       }
       result_count++;
     }
-	upnp_entry_free(*childs);
+	upnp_entry_free(ut,*childs);
   }
 
   didl_add_footer (out);
