@@ -33,6 +33,7 @@ typedef struct ushare_odbc_t {
   SQLHSTMT es_stmt;
   SQLHSTMT store_stmt;
   SQLHSTMT fetch_stmt;
+  SQLHSTMT child_stmt;
   SQLHSTMT count_stmt;
 } ushare_odbc;
 
@@ -65,6 +66,10 @@ int init_odbc(const char *dsn) {
     SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.fetch_stmt);
     if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.fetch_stmt,(SQLCHAR *)"SELECT fullpath,parent_id,dlna_mime,dlna_id,title,url,size FROM ms.mediacontent where id=?",SQL_NTS))) {
       uo.fetch_stmt = NULL;
+    }
+    SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.child_stmt);
+    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.child_stmt,(SQLCHAR *)"SELECT id,fullpath,dlna_mime,dlna_id,title,url,size FROM ms.mediacontent where parent_id=?",SQL_NTS))) {
+      uo.child_stmt = NULL;
     }
     SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.count_stmt);
     if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.count_stmt,(SQLCHAR *)"SELECT count(*) FROM ms.mediacontent where parent_id=?",SQL_NTS))) {
@@ -173,7 +178,7 @@ struct upnp_entry_t *fetch_entry(int odbc_ptr,int id) {
   SQLFreeStmt(uo.fetch_stmt,SQL_CLOSE);
   ret = SQLBindParameter(uo.fetch_stmt, 1, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, sizeof(long), 0, &id, sizeof(id), NULL);
   ret =  SQLBindCol( uo.fetch_stmt, 1, SQL_C_CHAR, &fullpath,sizeof(fullpath),&indicator[1]);
-  ret =  SQLBindCol( uo.fetch_stmt, 2, SQL_C_CHAR, &container,sizeof(container),&indicator[2]);
+  ret =  SQLBindCol( uo.fetch_stmt, 3, SQL_C_LONG, &parent_id,sizeof(parent_id),&indicator[2]);
   ret =  SQLBindCol( uo.fetch_stmt, 3, SQL_C_CHAR, &dlna_mime,sizeof(dlna_mime),&indicator[3]);
   ret =  SQLBindCol( uo.fetch_stmt, 4, SQL_C_CHAR, &dlna_id,sizeof(dlna_id),&indicator[4]);
   ret =  SQLBindCol( uo.fetch_stmt, 5, SQL_C_CHAR, &title,sizeof(title),&indicator[5]);
@@ -190,6 +195,11 @@ struct upnp_entry_t *fetch_entry(int odbc_ptr,int id) {
     entry->fullpath = NULL;
   else
     entry->fullpath=strdup(fullpath);
+  
+  if (indicator[2] == SQL_NULL_DATA)
+    entry->parent_id = NULL;
+  else
+    entry->parent_id=parent_id;
   
   if (indicator[3] == SQL_NULL_DATA)
     entry->dlna_profile->mime = NULL;
@@ -224,6 +234,92 @@ struct upnp_entry_t *fetch_entry(int odbc_ptr,int id) {
  entry->childs = NULL;
  
  return entry;
+}
+
+struct upnp_entry_t **fetch_children(int odbc_ptr,struct upnp_entry_t *parent)
+{
+  SQLRETURN ret;
+  SQLINTEGER indicator[8];
+  struct upnp_entry_t *entry;
+  struct upnp_entry_t **childs;
+  char fullpath[512];
+  char dlna_mime[512];
+  char dlna_id[512];
+  char title[512];
+  SQLINTEGER i,rows;
+  char url[512];
+  long size;
+  long parent_id;
+  if (odbc_ptr < 0)
+    return NULL;
+  
+  SQLFreeStmt(uo.child_stmt,SQL_CLOSE);
+  ret = SQLBindParameter(uo.child_stmt, 1, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, sizeof(long), 0, &entry->id, sizeof(entry->id), NULL);
+  ret =  SQLBindCol( uo.child_stmt, 2, SQL_C_CHAR, &fullpath,sizeof(fullpath),&indicator[1]);
+  ret =  SQLBindCol( uo.child_stmt, 3, SQL_C_LONG, &parent_id,sizeof(parent_id),&indicator[2]);
+  ret =  SQLBindCol( uo.child_stmt, 4, SQL_C_CHAR, &dlna_mime,sizeof(dlna_mime),&indicator[3]);
+  ret =  SQLBindCol( uo.child_stmt, 5, SQL_C_CHAR, &dlna_id,sizeof(dlna_id),&indicator[4]);
+  ret =  SQLBindCol( uo.child_stmt, 6, SQL_C_CHAR, &title,sizeof(title),&indicator[5]);
+  ret =  SQLBindCol( uo.child_stmt, 7, SQL_C_CHAR, &url,sizeof(url),&indicator[6]);
+  ret =  SQLBindCol( uo.child_stmt, 8, SQL_C_ULONG, &size,sizeof(size),&indicator[7]);
+  ret = SQLExecute(uo.child_stmt);
+  
+  SQLRowCount(uo.child_stmt,&rows);
+  childs = (struct upnp_entry_t **) calloc (sizeof (struct upnp_entry_t *),rows);
+
+  for (i=1;i<=rows;i++) {
+  ret = SQLFetch(uo.child_stmt);
+  entry = (struct upnp_entry_t *) malloc (sizeof (struct upnp_entry_t));
+  memset(entry,0,sizeof(*entry));
+  entry->dlna_profile=malloc(sizeof(dlna_profile_t));
+  memset(entry->dlna_profile,0,sizeof(entry->dlna_profile));
+
+  entry->id=id;
+  if (indicator[1] == SQL_NULL_DATA)
+    entry->fullpath = NULL;
+  else
+    entry->fullpath=strdup(fullpath);
+  
+  if (indicator[2] == SQL_NULL_DATA)
+    entry->parent_id = NULL;
+  else
+    entry->parent_id=parent_id;
+  
+  if (indicator[3] == SQL_NULL_DATA)
+    entry->dlna_profile->mime = NULL;
+  else
+    entry->dlna_profile->mime=strdup(dlna_mime);
+ 
+ if (indicator[4] == SQL_NULL_DATA)
+    entry->dlna_profile->id = NULL;
+  else
+    entry->dlna_profile->id=strdup(dlna_id);
+
+ if (indicator[5] == SQL_NULL_DATA)
+    entry->title = NULL;
+  else
+    entry->title=strdup(title);
+ 
+ if (indicator[6] == SQL_NULL_DATA) {
+   entry->url = NULL;
+   entry->child_count=get_child_count(odbc_ptr,id);
+   entry->mime_type = &Container_MIME_Type;
+ } else {
+   entry->url=strdup(url);
+   entry->child_count = -1;
+   entry->mime_type = NULL;
+ }
+ 
+ if (indicator[7] == SQL_NULL_DATA)
+   entry->size = 0;
+ else
+   entry->size=size;
+ 
+ entry->childs = NULL;
+ childs[i-1]=entry;
+ }
+ 
+ return childs;
 }
 
 int store_entry(int odbc_ptr,struct upnp_entry_t *entry,int parent_id)

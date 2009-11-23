@@ -399,6 +399,92 @@ cds_browse_directchildren (struct action_event_t *event,
   struct upnp_entry_t **childs;
   int s, result_count = 0;
   char tmp[32];
+#ifdef HAVE_DLNA
+  extern struct ushare_t *ut;
+#endif /* HAVE_DLNA */
+  
+  if (entry->child_count == -1) /* item : file */
+    return -1;
+
+  didl_add_header (out);
+  childs = fetch_children(ut->odbc_ptr,entry);
+
+  for (s = 0; s < index; s++)
+    if (*childs)
+      childs++;
+
+  /* UPnP CDS compliance : If starting index = 0 and requested count = 0
+     then all children must be returned */
+  if (index == 0 && count == 0)
+    count = entry->child_count;
+
+  for (; *childs; childs++)
+  {
+    if (count == 0 || result_count < count)
+      /* only fetch the requested count number or all entries if count = 0 */
+    {
+      if ((*childs)->child_count >= 0) /* container */
+        didl_add_container (out, (*childs)->id, (*childs)->parent ?
+                            (*childs)->parent->id : -1,
+                            (*childs)->child_count, "true", NULL,
+                            (*childs)->title,
+                            (*childs)->mime_type->mime_class);
+      else /* item */
+      {
+        char *protocol =
+#ifdef HAVE_DLNA
+          (*childs)->dlna_profile ?
+          dlna_write_protocol_info (DLNA_PROTOCOL_INFO_TYPE_HTTP,
+                                    DLNA_ORG_PLAY_SPEED_NORMAL,
+                                    DLNA_ORG_CONVERSION_NONE,
+                                    DLNA_ORG_OPERATION_RANGE,
+                                    ut->dlna_flags, (*childs)->dlna_profile) :
+#endif /* HAVE_DLNA */
+          mime_get_protocol ((*childs)->mime_type);
+
+#ifdef HAVE_DLNA
+        (*childs)->dlna_profile ?
+          didl_add_item (out, (*childs)->id,
+                         (*childs)->parent ? (*childs)->parent->id : -1,
+                         "true", dlna_profile_upnp_object_item ((*childs)->dlna_profile),
+                         (*childs)->title, protocol,
+                         (*childs)->size, (*childs)->url, filter) :
+#endif /* HAVE_DLNA */
+          didl_add_item (out, (*childs)->id,
+                         (*childs)->parent ? (*childs)->parent->id : -1,
+                         "true", (*childs)->mime_type->mime_class,
+                         (*childs)->title, protocol,
+                         (*childs)->size, (*childs)->url, filter);
+
+        free (protocol);
+      }
+      result_count++;
+    }
+  }
+
+  didl_add_footer (out);
+
+  upnp_add_response (event, SERVICE_CDS_DIDL_RESULT, out->buf);
+  sprintf (tmp, "%d", result_count);
+  upnp_add_response (event, SERVICE_CDS_DIDL_NUM_RETURNED, tmp);
+  sprintf (tmp, "%d", entry->child_count);
+  upnp_add_response (event, SERVICE_CDS_DIDL_TOTAL_MATCH, tmp);
+
+  // free childs
+  
+  return result_count;
+ 
+  
+}
+
+static int
+cds_browse_directchildren_old (struct action_event_t *event,
+                           struct buffer_t *out, int index,
+                           int count, struct upnp_entry_t *entry, char *filter)
+{
+  struct upnp_entry_t **childs;
+  int s, result_count = 0;
+  char tmp[32];
 
   if (entry->child_count == -1) /* item : file */
     return -1;
