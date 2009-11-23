@@ -68,7 +68,7 @@ int init_odbc(const char *dsn) {
       uo.fetch_stmt = NULL;
     }
     SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.child_stmt);
-    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.child_stmt,(SQLCHAR *)"SELECT id,fullpath,dlna_mime,dlna_id,title,url,size FROM ms.mediacontent where parent_id=?",SQL_NTS))) {
+    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.child_stmt,(SQLCHAR *)"SELECT id,fullpath,dlna_mime,dlna_id,title,url,size FROM ms.mediacontent where parent_id=? ORDER BY title",SQL_NTS))) {
       uo.child_stmt = NULL;
     }
     SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.count_stmt);
