@@ -68,7 +68,7 @@ int init_odbc(const char *dsn) {
       uo.fetch_stmt = NULL;
     }
     SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.child_stmt);
-    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.child_stmt,(SQLCHAR *)"SELECT id,fullpath,dlna_mime,dlna_id,title,url,size FROM ms.mediacontent where parent_id=? ORDER BY title",SQL_NTS))) {
+    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.child_stmt,(SQLCHAR *)"SELECT id,fullpath,dlna_mime,dlna_id,title,url,size FROM ms.mediacontent where parent_id=? ORDER BY upper(title)",SQL_NTS))) {
       uo.child_stmt = NULL;
     }
     SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.count_stmt);
@@ -172,8 +172,6 @@ struct upnp_entry_t *fetch_entry(int odbc_ptr,int id) {
   if (odbc_ptr < 0)
     return NULL;
   
-  entry = (struct upnp_entry_t *) malloc (sizeof (struct upnp_entry_t));
-  memset(entry,0,sizeof(*entry));
   SQLFreeStmt(uo.fetch_stmt,SQL_CLOSE);
   ret = SQLBindParameter(uo.fetch_stmt, 1, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, sizeof(long), 0, &id, sizeof(id), NULL);
   ret =  SQLBindCol( uo.fetch_stmt, 1, SQL_C_CHAR, &fullpath,sizeof(fullpath),&indicator[1]);
@@ -185,6 +183,8 @@ struct upnp_entry_t *fetch_entry(int odbc_ptr,int id) {
   ret = SQLExecute(uo.fetch_stmt);
   ret = SQLFetch(uo.fetch_stmt);
   
+  entry = (struct upnp_entry_t *) malloc (sizeof (struct upnp_entry_t));
+  memset(entry,0,sizeof(*entry));
   entry->dlna_profile=malloc(sizeof(dlna_profile_t));
   memset(entry->dlna_profile,0,sizeof(entry->dlna_profile));
   
@@ -260,7 +260,7 @@ struct upnp_entry_t **fetch_children(int odbc_ptr,struct upnp_entry_t *parent)
   
   SQLRowCount(uo.child_stmt,&rows);
   
-  childs = (struct upnp_entry_t **) calloc (sizeof (struct upnp_entry_t *),rows);
+  childs = (struct upnp_entry_t **) calloc (sizeof (struct upnp_entry_t *),rows+1);
   
   for (i=1;i<=rows;i++) {
     ret = SQLFetch(uo.child_stmt);
@@ -308,7 +308,7 @@ struct upnp_entry_t **fetch_children(int odbc_ptr,struct upnp_entry_t *parent)
     entry->childs = NULL;
     childs[i-1]=entry;
   }
-  
+  childs[rows] = NULL;
   return childs;
 }
 
