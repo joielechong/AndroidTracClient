@@ -472,7 +472,7 @@ cds_browse_directchildren (struct action_event_t *event,
   sprintf (tmp, "%d", entry->child_count);
   upnp_add_response (event, SERVICE_CDS_DIDL_TOTAL_MATCH, tmp);
 
-  //  free(childs);  /* dit gaat dus fout */
+  free(childs);  /* dit gaat dus fout */
   
   return result_count;
  
@@ -629,6 +629,7 @@ cds_browse (struct action_event_t *event)
   if (!out)
   {
     free (filter);
+	free(entry)
     return false;
   }
 
@@ -639,6 +640,8 @@ cds_browse (struct action_event_t *event)
     result_count =
       cds_browse_directchildren (event, out, index, count, entry, filter);
   free (filter);
+  
+  free(entry);
 
   if (result_count < 0)
   {
