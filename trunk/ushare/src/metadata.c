@@ -121,11 +121,11 @@ void print_entry(FILE *in,struct upnp_entry_t *entry) {
 static void
 _upnp_entry_free (struct upnp_entry_t *entry)
 {
-//  struct upnp_entry_t **childs;
+  //  struct upnp_entry_t **childs;
   
   if (!entry)
     return;
-
+  
   if (entry->fullpath)
     free (entry->fullpath);
   if (entry->title)
@@ -139,9 +139,9 @@ _upnp_entry_free (struct upnp_entry_t *entry)
   }
 #endif /* HAVE_DLNA */
   
-//  for (childs = entry->childs; *childs; childs++)
-//    _upnp_entry_free (*childs);
-//  free (entry->childs);
+  //  for (childs = entry->childs; *childs; childs++)
+  //    _upnp_entry_free (*childs);
+  //  free (entry->childs);
 }
 
 struct upnp_entry_lookup_t {
@@ -196,7 +196,7 @@ upnp_entry_free (struct ushare_t *ut, struct upnp_entry_t *entry)
     }
   else
 #endif
-  _upnp_entry_free (entry);
+    _upnp_entry_free (entry);
   
   free (entry);
 }
@@ -240,7 +240,7 @@ convert_xml (const char *title)
     }
   if (!nbconvert)
     return NULL;
-
+  
   newtitle = s = (char*) malloc (strlen (title) + nbconvert + 1);
   
   for (t = (char*) title; *t; t++)
@@ -308,38 +308,36 @@ upnp_entry_new (struct ushare_t *ut, const char *name, const char *fullpath,
   entry->child_count =  dir ? 0 : -1;
   entry->title = NULL;
   entry->deleted = 0;
-
+  
   entry->childs = (struct upnp_entry_t **) malloc (sizeof (struct upnp_entry_t *));
   *(entry->childs) = NULL;
   
-  if (!dir) /* item */
-    {
+  if (!dir) {/* item */
 #ifdef HAVE_DLNA
-      if (ut->dlna_enabled)
-        entry->mime_type = NULL;
-      else
+    if (ut->dlna_enabled)
+      entry->mime_type = NULL;
+    else {
+#endif /* HAVE_DLNA */
+      struct mime_type_t *mime = getMimeType (getExtension (name));
+      if (!mime)
 	{
-#endif /* HAVE_DLNA */
-	  struct mime_type_t *mime = getMimeType (getExtension (name));
-	  if (!mime)
-	    {
-	      --ut->nr_entries; 
-	      upnp_entry_free (ut, entry);
-	      log_error ("Invalid Mime type for %s, entry ignored", name);
-	      return NULL;
-	    }
-	  entry->mime_type = mime;
-#ifdef HAVE_DLNA
+	  --ut->nr_entries; 
+	  upnp_entry_free (ut, entry);
+	  log_error ("Invalid Mime type for %s, entry ignored", name);
+	  return NULL;
 	}
-#endif /* HAVE_DLNA */
-      
-      if (snprintf (url_tmp, MAX_URL_SIZE, "%d.%s",
-                    entry->id, getExtension (name)) >= MAX_URL_SIZE)
-        log_error ("URL string too long for id %d, truncated!!", entry->id);
-      
-      /* Only malloc() what we really need */
-      entry->url = strdup (url_tmp);
+      entry->mime_type = mime;
+#ifdef HAVE_DLNA
     }
+#endif /* HAVE_DLNA */
+    
+    if (snprintf (url_tmp, MAX_URL_SIZE, "%d.%s",
+		  entry->id, getExtension (name)) >= MAX_URL_SIZE)
+      log_error ("URL string too long for id %d, truncated!!", entry->id);
+    
+    /* Only malloc() what we really need */
+    entry->url = strdup (url_tmp);
+  }
   else /* container */
     {
       entry->mime_type = &Container_MIME_Type;
@@ -402,7 +400,7 @@ static void fill_container(struct ushare_t *ut,char * path,int parent_id) {
   int newparent;
   
   log_verbose (_("Looking for files in content directory : %s\n"),
-	    path);
+	       path);
   
   size = strlen (path);
   if (path[size - 1] == '/')
@@ -421,56 +419,56 @@ static void fill_container(struct ushare_t *ut,char * path,int parent_id) {
     if (entry) 
       newparent = store_entry(ut->odbc_ptr,entry,parent_id);
   }
-
+  
   struct dirent **namelist;
   int n,i;
-
+  
   n = scandir (path, &namelist, 0, alphasort);
   if (n < 0)
-  {
-    perror ("scandir");
-    return;
-  }
-
+    {
+      perror ("scandir");
+      return;
+    }
+  
   for (i = 0; i < n; i++)
-  {
-    struct stat st;
-    char *fullpath = NULL;
-
-    if (namelist[i]->d_name[0] == '.')
     {
-      free (namelist[i]);
-      continue;
-    }
-
-    fullpath = (char *)
-      malloc (strlen (path) + strlen (namelist[i]->d_name) + 2);
-    sprintf (fullpath, "%s/%s", path, namelist[i]->d_name);
-
-    log_verbose ("%s\n", fullpath);
-
-    if (stat (fullpath, &st) < 0)
-    {
-      free (namelist[i]);
-      free (fullpath);
-      continue;
-    }
-
-    if (S_ISDIR (st.st_mode)) {
-      fill_container(ut,fullpath,newparent);
-    } else {
-      if (ut->dlna_enabled || is_valid_extension (getExtension (fullpath))) {
-	if (entry_stored(odbc_ptr,fullpath) == -1 ) {
-	  struct upnp_entry_t *child = NULL;
-	  child = upnp_entry_new (ut, namelist[i]->d_name, fullpath, NULL, st.st_size, false);
-	  if (child) 
-	    store_entry(odbc_ptr,child,newparent);
+      struct stat st;
+      char *fullpath = NULL;
+      
+      if (namelist[i]->d_name[0] == '.')
+	{
+	  free (namelist[i]);
+	  continue;
+	}
+      
+      fullpath = (char *)
+	malloc (strlen (path) + strlen (namelist[i]->d_name) + 2);
+      sprintf (fullpath, "%s/%s", path, namelist[i]->d_name);
+      
+      log_verbose ("%s\n", fullpath);
+      
+      if (stat (fullpath, &st) < 0)
+	{
+	  free (namelist[i]);
+	  free (fullpath);
+	  continue;
+	}
+      
+      if (S_ISDIR (st.st_mode)) {
+	fill_container(ut,fullpath,newparent);
+      } else {
+	if (ut->dlna_enabled || is_valid_extension (getExtension (fullpath))) {
+	  if (entry_stored(odbc_ptr,fullpath) == -1 ) {
+	    struct upnp_entry_t *child = NULL;
+	    child = upnp_entry_new (ut, namelist[i]->d_name, fullpath, NULL, st.st_size, false);
+	    if (child) 
+	      store_entry(odbc_ptr,child,newparent);
+	  }
 	}
       }
+      free (namelist[i]);
+      free (fullpath);
     }
-    free (namelist[i]);
-    free (fullpath);
-  }
   free (namelist);
 }
 
@@ -480,13 +478,13 @@ void *metathread(void *a __attribute__ ((unused)))
   FILE *in;
   struct ushare_t *ut=mtd.ut;
   int i;
-
+  
   sleep(mtd.initial_wait);
   while (1) {
     log_verbose(_("Starting threadloop\n"));
-
+    
     /* process contentlist change */
-
+    
     /* process new files */
     for (i=0 ; i < ut->contentlist->count ; i++) {
       fill_container(ut,ut->contentlist->content[i],0);
@@ -516,26 +514,26 @@ upnp_entry_add_child (struct ushare_t *ut,
   struct upnp_entry_lookup_t *entry_lookup_ptr = NULL;
   struct upnp_entry_t **childs;
   int n;
-
+  
   if (!entry || !child)
     return;
-
+  
   for (childs = entry->childs; *childs; childs++)
     if (*childs == child)
       return;
-
+  
   n = get_list_length ((void *) entry->childs) + 1;
   entry->childs = (struct upnp_entry_t **)
     realloc (entry->childs, (n + 1) * sizeof (*(entry->childs)));
   entry->childs[n] = NULL;
   entry->childs[n - 1] = child;
   entry->child_count++;
-
+  
   entry_lookup_ptr = (struct upnp_entry_lookup_t *)
     malloc (sizeof (struct upnp_entry_lookup_t));
   entry_lookup_ptr->id = child->id;
   entry_lookup_ptr->entry_ptr = child;
-
+  
   if (rbsearch ((void *) entry_lookup_ptr, ut->rb) == NULL)
     log_info (_("Failed to add the RB lookup tree\n"));
 }
