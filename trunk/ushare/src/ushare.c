@@ -707,6 +707,7 @@ reload_config (int s __attribute__ ((unused)))
     }
   }
 
+#if 0
   if (ut->contentlist)
     content_free (ut->contentlist);
   ut->contentlist = ut2->contentlist;
@@ -723,6 +724,7 @@ reload_config (int s __attribute__ ((unused)))
     log_error (_("Error: no content directory to be shared.\n"));
     raise (SIGINT);
   }
+#endif
 }
 
 inline void
@@ -872,7 +874,7 @@ main (int argc, char **argv)
     return EXIT_FAILURE;
   }
 
-  build_metadata_list (ut);
+  build_metadata_db (ut);
 
   /* Let main sleep until it's time to die... */
   pthread_mutex_lock (&ut->termination_mutex);
@@ -882,7 +884,7 @@ main (int argc, char **argv)
   if (ut->use_telnet)
     ctrl_telnet_stop ();
   finish_upnp (ut);
-  free_metadata_list (ut);
+  free_metadata_db (ut);
   ushare_free (ut);
   finish_iconv ();
 

@@ -118,6 +118,7 @@ struct ushare_t {
   bool override_iconv_err;
   char *cfg_file;
   char *dsn;
+  int odbc_ptr;
   pthread_mutex_t termination_mutex;
   pthread_cond_t termination_cond;
 };
