@@ -31,6 +31,7 @@
 #include "mime.h"
 #include "buffer.h"
 #include "minmax.h"
+#include "odbc.h"
 
 /* Represent the CDS GetSearchCapabilities action. */
 #define SERVICE_CDS_ACTION_SEARCH_CAPS "GetSearchCapabilities"
