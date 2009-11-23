@@ -300,11 +300,12 @@ struct upnp_entry_t **fetch_children(int odbc_ptr,struct upnp_entry_t *parent)
       entry->mime_type = NULL;
     }
     
-    if (indicator[7] == SQL_NULL_DATA)
+    if (indicator[7] == SQL_NULL_DATA) {
       entry->size = 0;
-    else
+    } else {
       entry->size=size;
-    
+    }
+	
     entry->childs = NULL;
     childs[i-1]=entry;
   }
