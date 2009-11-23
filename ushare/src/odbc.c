@@ -177,11 +177,11 @@ struct upnp_entry_t *fetch_entry(int odbc_ptr,int id) {
   SQLFreeStmt(uo.fetch_stmt,SQL_CLOSE);
   ret = SQLBindParameter(uo.fetch_stmt, 1, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, sizeof(long), 0, &id, sizeof(id), NULL);
   ret =  SQLBindCol( uo.fetch_stmt, 1, SQL_C_CHAR, &fullpath,sizeof(fullpath),&indicator[1]);
-  ret =  SQLBindCol( uo.fetch_stmt, 2, SQL_C_CHAR, &dlna_mime,sizeof(dlna_mime),&indicator[3]);
-  ret =  SQLBindCol( uo.fetch_stmt, 3, SQL_C_CHAR, &dlna_id,sizeof(dlna_id),&indicator[4]);
-  ret =  SQLBindCol( uo.fetch_stmt, 4, SQL_C_CHAR, &title,sizeof(title),&indicator[5]);
-  ret =  SQLBindCol( uo.fetch_stmt, 5, SQL_C_CHAR, &url,sizeof(url),&indicator[6]);
-  ret =  SQLBindCol( uo.fetch_stmt, 6, SQL_C_ULONG, &size,sizeof(size),&indicator[7]);
+  ret =  SQLBindCol( uo.fetch_stmt, 2, SQL_C_CHAR, &dlna_mime,sizeof(dlna_mime),&indicator[2]);
+  ret =  SQLBindCol( uo.fetch_stmt, 3, SQL_C_CHAR, &dlna_id,sizeof(dlna_id),&indicator[3]);
+  ret =  SQLBindCol( uo.fetch_stmt, 4, SQL_C_CHAR, &title,sizeof(title),&indicator[4]);
+  ret =  SQLBindCol( uo.fetch_stmt, 5, SQL_C_CHAR, &url,sizeof(url),&indicator[5]);
+  ret =  SQLBindCol( uo.fetch_stmt, 6, SQL_C_ULONG, &size,sizeof(size),&indicator[6]);
   ret = SQLExecute(uo.fetch_stmt);
   ret = SQLFetch(uo.fetch_stmt);
   
@@ -194,10 +194,15 @@ struct upnp_entry_t *fetch_entry(int odbc_ptr,int id) {
   else
     entry->fullpath=strdup(fullpath);
   
-  if (indicator[2] == SQL_NULL_DATA)
+  if (indicator[2] == SQL_NULL_DATA) {
     entry->dlna_profile->mime = NULL;
-  else
+    entry->child_count=get_child_count(odbc_ptr,id);
+    entry->mime_type = &Container_MIME_Type;
+  } else {
     entry->dlna_profile->mime=strdup(dlna_mime);
+    entry->child_count = -1;
+    entry->mime_type = NULL;
+  }
   
   if (indicator[3] == SQL_NULL_DATA)
     entry->dlna_profile->id = NULL;
@@ -211,12 +216,8 @@ struct upnp_entry_t *fetch_entry(int odbc_ptr,int id) {
   
   if (indicator[5] == SQL_NULL_DATA) {
     entry->url = NULL;
-    entry->child_count=get_child_count(odbc_ptr,id);
-    entry->mime_type = &Container_MIME_Type;
   } else {
     entry->url=strdup(url);
-    entry->child_count = -1;
-    entry->mime_type = NULL;
   }
   
   if (indicator[6] == SQL_NULL_DATA)
