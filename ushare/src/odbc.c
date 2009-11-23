@@ -8,7 +8,7 @@
 #include "mime.h"
 #include "trace.h"
 
-static void extract_error (char *fn, SQLHANDLE handle, SQLSMALLINT type) {
+static void extract_error (char *caller,char *fn, SQLHANDLE handle, SQLSMALLINT type) {
   SQLINTEGER i=0;
   SQLINTEGER native;
   SQLCHAR state[7];
@@ -16,7 +16,7 @@ static void extract_error (char *fn, SQLHANDLE handle, SQLSMALLINT type) {
   SQLSMALLINT len;
   SQLRETURN ret;
   
-  fprintf(stderr,"\nThe driver reported the following diagnostics whilst running %s\n\n",fn);
+  fprintf(stderr,"\nThe driver reported the following diagnostics whilst running %s - %s\n\n",caller,fn);
   do {
     ret = SQLGetDiagRec(type,handle,++i,state,&native,text,sizeof(text),&len);
     if (SQL_SUCCEEDED(ret))
@@ -53,7 +53,7 @@ int init_odbc(const char *dsn) {
     
     if (ret == SQL_SUCCESS_WITH_INFO) {
       printf("Driver reported the following diagnostics\n");
-      extract_error("SQLDriverConnect",uo.dbc,SQL_HANDLE_DBC);
+      extract_error("init_odbc","SQLDriverConnect",uo.dbc,SQL_HANDLE_DBC);
     }
     SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.es_stmt);
     if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.es_stmt,(SQLCHAR *)"SELECT id FROM ms.mediacontent WHERE fullpath=?",SQL_NTS))) {
@@ -121,7 +121,7 @@ long entry_stored(int odbc_ptr,char *path)
   }
   
   printf("Driver reported the following diagnostics\n");
-  extract_error(lastcall,uo.dbc,SQL_HANDLE_DBC);
+  extract_error("entry_stored",lastcall,uo.dbc,SQL_HANDLE_DBC);
   return -1;
 }
 
@@ -151,7 +151,7 @@ static long get_child_count(int odbc_ptr,long id) {
   }
   
   printf("Driver reported the following diagnostics\n");
-  extract_error(lastcall,uo.dbc,SQL_HANDLE_DBC);
+  extract_error("get_child_count",lastcall,uo.dbc,SQL_HANDLE_DBC);
   return 0;
 }
 
@@ -259,6 +259,7 @@ struct upnp_entry_t **fetch_children(int odbc_ptr,struct upnp_entry_t *parent)
   ret = SQLExecute(uo.child_stmt);
   
   SQLRowCount(uo.child_stmt,&rows);
+  
   childs = (struct upnp_entry_t **) calloc (sizeof (struct upnp_entry_t *),rows);
   
   for (i=1;i<=rows;i++) {
@@ -350,7 +351,7 @@ int store_entry(int odbc_ptr,struct upnp_entry_t *entry,int parent_id)
   }
   if (!SQL_SUCCEEDED(ret = SQLExecute(stmt))) {
     printf("Driver reported the following diagnostics\n");
-    extract_error("SQLExecute",uo.dbc,SQL_HANDLE_DBC);
+    extract_error("store_entry","SQLExecute",uo.dbc,SQL_HANDLE_DBC);
   }
   entry->id = entry_stored(odbc_ptr,entry->fullpath);
   return entry->id;
