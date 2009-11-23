@@ -134,7 +134,7 @@ static long get_child_count(int odbc_ptr,long id) {
   if (odbc_ptr < 0)
     return -1;
   
-  SQLFreeStmt(uo.es_stmt,SQL_CLOSE);
+  SQLFreeStmt(uo.count_stmt,SQL_CLOSE);
   lastcall = "SQLBindParameter";
   if (SQL_SUCCEEDED(ret = SQLBindParameter(uo.count_stmt, 1, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, sizeof(id), 0, &id, sizeof(id), NULL))) {
     lastcall = "SQLBindCol";
