@@ -62,7 +62,7 @@ process_cgi (struct ushare_t *ut, char *cgiargs)
     {
       ut->contentlist = content_add (ut->contentlist,
                                      path + strlen (CGI_PATH) + 1);
-      refresh = 1;
+      refresh = 0;
     }
   }
   else if (!strncmp (action, CGI_ACTION_DEL, strlen (CGI_ACTION_DEL)))
@@ -86,7 +86,7 @@ process_cgi (struct ushare_t *ut, char *cgiargs)
       free (m_buffer);
     }
 
-    refresh = 1;
+    refresh = 0;
     free (shares);
   }
   else if (!strncmp (action, CGI_ACTION_REFRESH, strlen (CGI_ACTION_REFRESH)))

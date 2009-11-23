@@ -235,6 +235,9 @@ http_open (const char *filename, enum UpnpOpenFileMode mode)
   if (!entry)
     return NULL;
 
+  if (entry->deleted)
+    return -1;
+
   if (!entry->fullpath)
     return NULL;
 

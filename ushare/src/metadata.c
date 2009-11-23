@@ -49,55 +49,10 @@ typedef struct meta_thread_data_t {
   struct ushare_t *ut;
   int initial_wait;
   int loop_wait;
-  int hold;
 } meta_thread_data;
 
 static meta_thread_data mtd;
 static int odbc_ptr;  /* moet hier weer weg */
-
-static
-void print_entry(FILE *in,struct upnp_entry_t *entry) {
-  int i;
-  
-  if (entry->child_count == -1) {
-    fprintf(in,"%s %s",entry->url,entry->fullpath);
-    if (entry->deleted) 
-      fprintf(in," (DELETED)");
-    fprintf(in,"\n");
-  } else {
-    for (i=0; i<entry->child_count; i++) {
-      print_entry(in,entry->childs[i]);
-    }
-  }
-}
-
-static 
-void *metathread(void *a __attribute__ ((unused)))
-{
-  FILE *in;
-  struct ushare_t *ut;
-  
-  sleep(mtd.initial_wait);
-  while (1) {
-    log_verbose(_("Starting threadloop\n"));
-    if (!mtd.hold) {
-      in = fopen("/tmp/entrydump.txt","w");
-      if (in != NULL) {
-	ut = mtd.ut;
-	print_entry(in,ut->root_entry);
-	fclose(in);
-      }
-      log_verbose(_("Ending threadloop\n"));
-    }
-    sleep(mtd.loop_wait);
-  }
-  return NULL;
-}
-
-struct upnp_entry_lookup_t {
-  int id;
-  struct upnp_entry_t *entry_ptr;
-};
 
 static char *
 getExtension (const char *filename)
@@ -143,16 +98,103 @@ is_valid_extension (const char *extension)
   return false;
 }
 
-static int
-get_list_length (void *list)
+static
+void print_entry(FILE *in,struct upnp_entry_t *entry) {
+  int i;
+  
+  if (entry->child_count == -1) {
+    fprintf(in,"%s %s",entry->url,entry->fullpath);
+    if (entry->deleted) 
+      fprintf(in," (DELETED)");
+    fprintf(in,"\n");
+  } else {
+    for (i=0; i<entry->child_count; i++) {
+      print_entry(in,entry->childs[i]);
+    }
+  }
+}
+
+/* Seperate recursive free() function in order to avoid freeing off
+ * the parents child list within the freeing of the first child, as
+ * the only entry which is not part of a childs list is the root entry
+ */
+static void
+_upnp_entry_free (struct upnp_entry_t *entry)
 {
-  void **l = list;
-  int n = 0;
+  struct upnp_entry_t **childs;
   
-  while (*(l++))
-    n++;
+  if (!entry)
+    return;
+
+  if (entry->fullpath)
+    free (entry->fullpath);
+  if (entry->title)
+    free (entry->title);
+  if (entry->url)
+    free (entry->url);
+#ifdef HAVE_DLNA
+  if (entry->dlna_profile)
+    entry->dlna_profile = NULL;
+#endif /* HAVE_DLNA */
   
-  return n;
+  for (childs = entry->childs; *childs; childs++)
+    _upnp_entry_free (*childs);
+  free (entry->childs);
+}
+
+struct upnp_entry_lookup_t {
+  int id;
+  struct upnp_entry_t *entry_ptr;
+};
+
+
+void
+upnp_entry_free (struct ushare_t *ut, struct upnp_entry_t *entry)
+{
+  if (!ut || !entry)
+    return;
+  
+  /* Free all entries (i.e. children) */
+  if (entry == ut->root_entry)
+    {
+      struct upnp_entry_t *entry_found = NULL;
+      struct upnp_entry_lookup_t *lk = NULL;
+      RBLIST *rblist;
+      int i = 0;
+      
+      rblist = rbopenlist (ut->rb);
+      lk = (struct upnp_entry_lookup_t *) rbreadlist (rblist);
+      
+      while (lk)
+	{
+	  entry_found = lk->entry_ptr;
+	  if (entry_found)
+	    {
+	      if (entry_found->fullpath)
+		free (entry_found->fullpath);
+	      if (entry_found->title)
+		free (entry_found->title);
+	      if (entry_found->url)
+		free (entry_found->url);
+	      
+	      free (entry_found);
+	      i++;
+	    }
+	  
+	  free (lk); /* delete the lookup */
+	  lk = (struct upnp_entry_lookup_t *) rbreadlist (rblist);
+	}
+      
+      rbcloselist (rblist);
+      rbdestroy (ut->rb);
+      ut->rb = NULL;
+      
+      log_verbose ("Freed [%d] entries\n", i);
+    }
+  else
+    _upnp_entry_free (entry);
+  
+  free (entry);
 }
 
 static xml_convert_t xml_convert[] = {
@@ -239,7 +281,7 @@ upnp_entry_new (struct ushare_t *ut, const char *name, const char *fullpath,
       if (!p)
 	{
 	  free (entry);
-	  log_error("Cannot determine file type for  %s\n",fullpath);
+	  log_verbose("Cannot determine file type for  %s\n",fullpath);
 	  return NULL;
 	}
       entry->dlna_profile = p;
@@ -349,81 +391,118 @@ upnp_entry_new (struct ushare_t *ut, const char *name, const char *fullpath,
   return entry;
 }
 
-/* Seperate recursive free() function in order to avoid freeing off
- * the parents child list within the freeing of the first child, as
- * the only entry which is not part of a childs list is the root entry
- */
-static void
-_upnp_entry_free (struct upnp_entry_t *entry)
-{
-  struct upnp_entry_t **childs;
+static void fill_container(struct ushare_t *ut,char * path,int parent_id) {
+  struct upnp_entry_t *entry = NULL;
+  char *title = NULL;
+  int size = 0;
+  int newparent;
   
-  if (!entry)
-    return;
+  log_verbose (_("Looking for files in content directory : %s\n"),
+	    path);
+  
+  size = strlen (path);
+  if (path[size - 1] == '/')
+    path[size - 1] = '\0';
+  title = strrchr (path, '/');
+  if (title) {
+    title++;
+  } else {
+    /* directly use content directory name if no '/' before basename */
+    title = path;
+  }
+  
+  newparent = entry_stored(ut->odbc_ptr,path);
+  if (newparent == -1 ) {
+    entry = upnp_entry_new (ut, title, path,NULL, -1, true);
+    if (entry) 
+      newparent = store_entry(ut->odbc_ptr,entry,parent_id);
+  }
 
-  if (entry->fullpath)
-    free (entry->fullpath);
-  if (entry->title)
-    free (entry->title);
-  if (entry->url)
-    free (entry->url);
-#ifdef HAVE_DLNA
-  if (entry->dlna_profile)
-    entry->dlna_profile = NULL;
-#endif /* HAVE_DLNA */
-  
-  for (childs = entry->childs; *childs; childs++)
-    _upnp_entry_free (*childs);
-  free (entry->childs);
+  struct dirent **namelist;
+  int n,i;
+
+  n = scandir (path, &namelist, 0, alphasort);
+  if (n < 0)
+  {
+    perror ("scandir");
+    return;
+  }
+
+  for (i = 0; i < n; i++)
+  {
+    struct stat st;
+    char *fullpath = NULL;
+
+    if (namelist[i]->d_name[0] == '.')
+    {
+      free (namelist[i]);
+      continue;
+    }
+
+    fullpath = (char *)
+      malloc (strlen (path) + strlen (namelist[i]->d_name) + 2);
+    sprintf (fullpath, "%s/%s", path, namelist[i]->d_name);
+
+    log_verbose ("%s\n", fullpath);
+
+    if (stat (fullpath, &st) < 0)
+    {
+      free (namelist[i]);
+      free (fullpath);
+      continue;
+    }
+
+    if (S_ISDIR (st.st_mode)) {
+      fill_container(ut,fullpath,newparent);
+    } else {
+      if (ut->dlna_enabled || is_valid_extension (getExtension (fullpath))) {
+	if (entry_stored(odbc_ptr,fullpath) == -1 ) {
+	  struct upnp_entry_t *child = NULL;
+	  child = upnp_entry_new (ut, namelist[i]->d_name, fullpath, NULL, st.st_size, false);
+	  if (child) 
+	    store_entry(odbc_ptr,child,newparent);
+	}
+      }
+    }
+    free (namelist[i]);
+    free (fullpath);
+  }
+  free (namelist);
 }
 
-void
-upnp_entry_free (struct ushare_t *ut, struct upnp_entry_t *entry)
+static 
+void *metathread(void *a __attribute__ ((unused)))
 {
-  if (!ut || !entry)
-    return;
-  
-  /* Free all entries (i.e. children) */
-  if (entry == ut->root_entry)
-    {
-      struct upnp_entry_t *entry_found = NULL;
-      struct upnp_entry_lookup_t *lk = NULL;
-      RBLIST *rblist;
-      int i = 0;
-      
-      rblist = rbopenlist (ut->rb);
-      lk = (struct upnp_entry_lookup_t *) rbreadlist (rblist);
-      
-      while (lk)
-	{
-	  entry_found = lk->entry_ptr;
-	  if (entry_found)
-	    {
-	      if (entry_found->fullpath)
-		free (entry_found->fullpath);
-	      if (entry_found->title)
-		free (entry_found->title);
-	      if (entry_found->url)
-		free (entry_found->url);
-	      
-	      free (entry_found);
-	      i++;
-	    }
-	  
-	  free (lk); /* delete the lookup */
-	  lk = (struct upnp_entry_lookup_t *) rbreadlist (rblist);
-	}
-      
-      rbcloselist (rblist);
-      rbdestroy (ut->rb);
-      ut->rb = NULL;
-      
-      log_verbose ("Freed [%d] entries\n", i);
+  FILE *in;
+  struct ushare_t *ut=mtd.ut;
+  int i;
+
+  sleep(mtd.initial_wait);
+  while (1) {
+    log_verbose(_("Starting threadloop\n"));
+
+    /* process contentlist change */
+
+    /* process new files */
+    for (i=0 ; i < ut->contentlist->count ; i++) {
+      fill_container(ut,ut->contentlist->content[i],0);
     }
-  else
-    _upnp_entry_free (entry);
+    
+    sleep(mtd.loop_wait);
+  }
+  return NULL;
+}
+
+static int
+get_list_length (void *list)
+{
+  void **l = list;
+  int n = 0;
   
-  free (entry);
+  while (*(l++))
+    n++;
+  
+  return n;
 }
 
 static void
@@ -459,6 +538,16 @@ upnp_entry_add_child (struct ushare_t *ut,
 
 struct upnp_entry_t *
 upnp_get_entry (struct ushare_t *ut, int id)
+{
+  struct upnp_entry_t *entry;
+
+  log_verbose ("Looking for entry id %d\n", id);
+  entry = fetch_entry(ut->odbc_ptr,id);
+  return entry;
+}
+
+struct upnp_entry_t *
+upnp_get_entry_old(struct ushare_t *ut, int id)
 {
   struct upnp_entry_lookup_t *res, entry_lookup;
 
@@ -500,8 +589,8 @@ metadata_add_file (struct ushare_t *ut, struct upnp_entry_t *entry,
     child = upnp_entry_new (ut, name, file, entry, st_ptr->st_size, false);
     if (child) {
       upnp_entry_add_child (ut, entry, child);
-      if (entry_stored(odbc_ptr,child->fullpath) == 0 )
-        store_entry(odbc_ptr,child);
+      //      if (entry_stored(odbc_ptr,child->fullpath) == 0 )
+      //        store_entry(odbc_ptr,child);
     }
   }
 }
@@ -557,8 +646,8 @@ metadata_add_container (struct ushare_t *ut,
       {
         metadata_add_container (ut, child, fullpath);
         upnp_entry_add_child (ut, entry, child);
-        if (entry_stored(odbc_ptr,child->fullpath) == 0 )
-          store_entry(odbc_ptr,child);
+	//        if (entry_stored(odbc_ptr,child->fullpath) == 0 )
+	//          store_entry(odbc_ptr,child);
       }
     }
     else
@@ -590,14 +679,38 @@ free_metadata_list (struct ushare_t *ut)
     log_error (_("Cannot create RB tree for lookups\n"));
 }
 
+void free_metadata_db(struct ushare_t *ut) {
+}
+
+void build_metadata_db(struct ushare_t *ut) {
+  struct upnp_entry_t *root_entry;
+
+  log_info (_("Building Metadata List ...\n"));
+  ut->odbc_ptr = init_odbc(ut->dsn);
+  if (entry_stored(ut->odbc_ptr,"") != 0) {
+    root_entry = upnp_entry_new (ut, "root", "", NULL, -1, true);
+    store_entry(ut->odbc_ptr,root_entry,-1);
+  }
+  
+  ut->init = 1;
+
+  mtd.ut = ut;
+  mtd.initial_wait=5;
+  mtd.loop_wait=30;   /* this must become configurable */
+  
+  log_info(_("Starting metadata thread...\n"));
+  if (pthread_create(&mtd.threadid,NULL,metathread,NULL)) { 	
+    log_info(_("Metadata thread failed to start, no dynamic updates\n"));
+  }	
+}
+
 void
 build_metadata_list (struct ushare_t *ut)
 {
   int i;
 
   mtd.ut = ut;
-  mtd.hold = 1;
-  mtd.initial_wait=60;
+  mtd.initial_wait=5;
   mtd.loop_wait=30;   /* this must become configurable */
   
   /* build root entry */
@@ -606,7 +719,7 @@ build_metadata_list (struct ushare_t *ut)
   
   log_info(_("Starting metadata thread...\n"));
   if (pthread_create(&mtd.threadid,NULL,metathread,NULL)) { 	
-    log_info(_("Metadata thread failed to start, no dy	namic updates\n"));
+    log_info(_("Metadata thread failed to start, no dynamic updates\n"));
   }	
   
   log_info (_("Building Metadata List ...\n"));
@@ -640,13 +753,12 @@ build_metadata_list (struct ushare_t *ut)
       continue;
     upnp_entry_add_child (ut, ut->root_entry, entry);
     metadata_add_container (ut, entry, ut->contentlist->content[i]);
-    if (entry_stored(odbc_ptr,entry->fullpath) == 0 )
-      store_entry(odbc_ptr,entry);
+    //    if (entry_stored(odbc_ptr,entry->fullpath) == 0 )
+    //  store_entry(odbc_ptr,entry);
   }
   odbc_finish(odbc_ptr);
   log_info (_("Found %d files and subdirectories.\n"), ut->nr_entries);
   ut->init = 1;
-  mtd.hold = 0;
 }
 
 int
