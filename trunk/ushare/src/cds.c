@@ -613,9 +613,9 @@ cds_browse (struct action_event_t *event)
   }
   free (flag);
 
-  entry = upnp_get_entry (ut, id);
+  entry = upnp_get_entry_db (ut, id);
   if (!entry && (id < ut->starting_id))
-    entry = upnp_get_entry (ut, ut->starting_id);
+    entry = upnp_get_entry_db (ut, ut->starting_id);
 
   if (!entry)
   {
@@ -915,10 +915,10 @@ cds_search (struct action_event_t *event)
   if (!search_criteria || !filter)
     return false;
 
-  entry = upnp_get_entry (ut, id);
+  entry = upnp_get_entry_db (ut, id);
 
   if (!entry && (id < ut->starting_id))
-    entry = upnp_get_entry (ut, ut->starting_id);
+    entry = upnp_get_entry_db (ut, ut->starting_id);
 
   if (!entry)
     return false;
