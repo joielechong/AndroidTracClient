@@ -60,15 +60,15 @@ int init_odbc(const char *dsn) {
       uo.es_stmt = NULL;
     }
     SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.store_stmt);
-    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.store_stmt,(SQLCHAR *)"INSERT INTO ms.mediacontent (id,fullpath,parent_id,dlna_mime,dlna_id,title,url,size,dlna_class) VALUES ((select max(id)+1 from ms.mediacontent),?,?,?,?,?,?,?,?)",SQL_NTS))) {
+    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.store_stmt,(SQLCHAR *)"INSERT INTO ms.mediacontent (id,fullpath,parent_id,dlna_mime,dlna_id,title,size,dlna_class) VALUES ((select max(id)+1 from ms.mediacontent),?,?,?,?,?,?,?)",SQL_NTS))) {
       uo.store_stmt = NULL;
     }
     SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.fetch_stmt);
-    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.fetch_stmt,(SQLCHAR *)"SELECT fullpath,dlna_mime,dlna_id,title,url,size,dlna_class FROM ms.mediacontent where id=?",SQL_NTS))) {
+    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.fetch_stmt,(SQLCHAR *)"SELECT fullpath,dlna_mime,dlna_id,title,size,dlna_class FROM ms.mediacontent where id=?",SQL_NTS))) {
       uo.fetch_stmt = NULL;
     }
     SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.child_stmt);
-    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.child_stmt,(SQLCHAR *)"SELECT id,fullpath,dlna_mime,dlna_id,title,url,size,dlna_class FROM ms.mediacontent where parent_id=? ORDER BY upper(title)",SQL_NTS))) {
+    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.child_stmt,(SQLCHAR *)"SELECT id,fullpath,dlna_mime,dlna_id,title,size,dlna_class FROM ms.mediacontent where parent_id=? ORDER BY upper(title)",SQL_NTS))) {
       uo.child_stmt = NULL;
     }
     SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.count_stmt);
@@ -197,9 +197,8 @@ struct upnp_entry_t *fetch_entry(int odbc_ptr,int id) {
   ret =  SQLBindCol( uo.fetch_stmt, 2, SQL_C_CHAR, &dlna_mime,sizeof(dlna_mime),&indicator[2]);
   ret =  SQLBindCol( uo.fetch_stmt, 3, SQL_C_CHAR, &dlna_id,sizeof(dlna_id),&indicator[3]);
   ret =  SQLBindCol( uo.fetch_stmt, 4, SQL_C_CHAR, &title,sizeof(title),&indicator[4]);
-  ret =  SQLBindCol( uo.fetch_stmt, 5, SQL_C_CHAR, &url,sizeof(url),&indicator[5]);
-  ret =  SQLBindCol( uo.fetch_stmt, 6, SQL_C_ULONG, &size,sizeof(size),&indicator[6]);
-  ret =  SQLBindCol( uo.fetch_stmt, 7, SQL_C_ULONG, &dlna_class,sizeof(dlna_class),&indicator[7]);
+  ret =  SQLBindCol( uo.fetch_stmt, 5, SQL_C_ULONG, &size,sizeof(size),&indicator[5]);
+  ret =  SQLBindCol( uo.fetch_stmt, 6, SQL_C_ULONG, &dlna_class,sizeof(dlna_class),&indicator[6]);
   ret = SQLExecute(uo.fetch_stmt);
   ret = SQLFetch(uo.fetch_stmt);
   
@@ -234,18 +233,12 @@ struct upnp_entry_t *fetch_entry(int odbc_ptr,int id) {
   else
     entry->title=strdup(title);
   
-  if (indicator[5] == SQL_NULL_DATA) {
-    entry->url = NULL;
-  } else {
-    entry->url=strdup(url);
-  }
-  
-  if (indicator[6] == SQL_NULL_DATA)
+  if (indicator[5] == SQL_NULL_DATA)
     entry->size = 0;
   else
     entry->size=size;
   
-  if (indicator[7] == SQL_NULL_DATA)
+  if (indicator[6] == SQL_NULL_DATA)
     entry->dlna_profile->class = 0;
   else
     entry->dlna_profile->class = dlna_class;
@@ -280,9 +273,8 @@ struct upnp_entry_t **fetch_children(int odbc_ptr,struct upnp_entry_t *parent)
   ret =  SQLBindCol( uo.child_stmt, 3, SQL_C_CHAR, &dlna_mime,sizeof(dlna_mime),&indicator[3]);
   ret =  SQLBindCol( uo.child_stmt, 4, SQL_C_CHAR, &dlna_id,sizeof(dlna_id),&indicator[4]);
   ret =  SQLBindCol( uo.child_stmt, 5, SQL_C_CHAR, &title,sizeof(title),&indicator[5]);
-  ret =  SQLBindCol( uo.child_stmt, 6, SQL_C_CHAR, &url,sizeof(url),&indicator[6]);
-  ret =  SQLBindCol( uo.child_stmt, 7, SQL_C_ULONG, &size,sizeof(size),&indicator[7]);
-  ret =  SQLBindCol( uo.child_stmt, 8, SQL_C_ULONG, &dlna_class,sizeof(dlna_class),&indicator[8]);
+  ret =  SQLBindCol( uo.child_stmt, 7, SQL_C_ULONG, &size,sizeof(size),&indicator[6]);
+  ret =  SQLBindCol( uo.child_stmt, 8, SQL_C_ULONG, &dlna_class,sizeof(dlna_class),&indicator[7]);
   ret = SQLExecute(uo.child_stmt);
   
   SQLRowCount(uo.child_stmt,&rows);
@@ -302,10 +294,15 @@ struct upnp_entry_t **fetch_children(int odbc_ptr,struct upnp_entry_t *parent)
     else
       entry->fullpath=strdup(fullpath);
     
-    if (indicator[3] == SQL_NULL_DATA)
+    if (indicator[3] == SQL_NULL_DATA) {
       entry->dlna_profile->mime = NULL;
-    else
+      entry->child_count=get_child_count(odbc_ptr,id);
+      entry->mime_type = &Container_MIME_Type;
+    } else {
       entry->dlna_profile->mime=strdup(dlna_mime);
+      entry->child_count = -1;
+      entry->mime_type = NULL;
+    }
     
     if (indicator[4] == SQL_NULL_DATA)
       entry->dlna_profile->id = NULL;
@@ -318,22 +315,12 @@ struct upnp_entry_t **fetch_children(int odbc_ptr,struct upnp_entry_t *parent)
       entry->title=strdup(title);
     
     if (indicator[6] == SQL_NULL_DATA) {
-      entry->url = NULL;
-      entry->child_count=get_child_count(odbc_ptr,id);
-      entry->mime_type = &Container_MIME_Type;
-    } else {
-      entry->url=strdup(url);
-      entry->child_count = -1;
-      entry->mime_type = NULL;
-    }
-    
-    if (indicator[7] == SQL_NULL_DATA) {
       entry->size = 0;
     } else {
       entry->size=size;
     }
 	
-    if (indicator[8] == SQL_NULL_DATA)
+    if (indicator[7] == SQL_NULL_DATA)
       entry->dlna_profile->class = 0;
     else
       entry->dlna_profile->class = dlna_class;
@@ -356,7 +343,7 @@ int store_entry(int odbc_ptr,struct upnp_entry_t *entry,int parent_id)
 
   if (entry->id == 0) {
     SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&stmt);
-    ret=SQLPrepare(stmt,(SQLCHAR *)"INSERT INTO ms.mediacontent (id,fullpath,parent_id,dlna_mime,dlna_id,title,url,size,dlna_class) VALUES (0,?,?,?,?,?,?,?,?)",SQL_NTS);
+    ret=SQLPrepare(stmt,(SQLCHAR *)"INSERT INTO ms.mediacontent (id,fullpath,parent_id,dlna_mime,dlna_id,title,size,dlna_class) VALUES (0,?,?,?,?,?,?,?)",SQL_NTS);
   } else {
     stmt = uo.store_stmt;
   }
@@ -367,22 +354,17 @@ int store_entry(int odbc_ptr,struct upnp_entry_t *entry,int parent_id)
   if (entry->dlna_profile != NULL) {
     SQLBindParameter(stmt, 3, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, (char *)entry->dlna_profile->mime, strlen(entry->dlna_profile->mime), NULL);
     SQLBindParameter(stmt, 4, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, (char *)entry->dlna_profile->id, strlen(entry->dlna_profile->id), NULL);
-    SQLBindParameter(stmt, 8, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, sizeof(long), 0, &entry->dlna_profile->class, sizeof(entry->dlna_profile->class), NULL);
+    SQLBindParameter(stmt, 7, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, sizeof(long), 0, &entry->dlna_profile->class, sizeof(entry->dlna_profile->class), NULL);
   } else {
     SQLBindParameter(stmt, 3, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, NULL, 0, &null);
     SQLBindParameter(stmt, 4, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, NULL, 0, &null);
-    SQLBindParameter(stmt, 8, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, sizeof(long), 0, NULL, 0, &null);
+    SQLBindParameter(stmt, 7, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, sizeof(long), 0, NULL, 0, &null);
   }
   SQLBindParameter(stmt, 5, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, (char *)entry->title, strlen(entry->title), NULL);
-  if (entry->url != NULL) {
-    SQLBindParameter(stmt, 6, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, (char *)entry->url, strlen(entry->url), NULL);
-  } else {
-    SQLBindParameter(stmt, 6, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, NULL, 0, &null);
-  }
   if (entry->size >= 0) {
-    SQLBindParameter(stmt, 7, SQL_PARAM_INPUT, SQL_C_UBIGINT, SQL_BIGINT, sizeof(long long), 0, &entry->size, sizeof(entry->size), NULL);
+    SQLBindParameter(stmt, 6, SQL_PARAM_INPUT, SQL_C_UBIGINT, SQL_BIGINT, sizeof(long long), 0, &entry->size, sizeof(entry->size), NULL);
   } else {
-    SQLBindParameter(stmt, 7, SQL_PARAM_INPUT, SQL_C_UBIGINT, SQL_BIGINT, sizeof(long long), 0, NULL, 0, &null);
+    SQLBindParameter(stmt, 6, SQL_PARAM_INPUT, SQL_C_UBIGINT, SQL_BIGINT, sizeof(long long), 0, NULL, 0, &null);
   }
   if (!SQL_SUCCEEDED(ret = SQLExecute(stmt))) {
     printf("Driver reported the following diagnostics\n");
