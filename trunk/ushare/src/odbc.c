@@ -7,7 +7,6 @@
 #include "odbc.h"
 #include "mime.h"
 #include "trace.h"
-#include "util_iconv.h"
 
 static void extract_error (char *caller,char *fn, SQLHANDLE handle, SQLSMALLINT type) {
   SQLINTEGER i=0;
@@ -99,25 +98,22 @@ long entry_stored(int odbc_ptr,char *path)
   long retval = -1;
   SQLINTEGER indicator;
   char *lastcall = NULL;
-  char *path_utf8;
 
   if (odbc_ptr < 0)
     return -1;
   
-  path_utf8 = iconv_convert_to_utf8(path);
   SQLFreeStmt(uo.es_stmt,SQL_CLOSE);
   lastcall = "SQLBindParameter";
-  if (SQL_SUCCEEDED(ret = SQLBindParameter(uo.es_stmt, 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, path_utf8, strlen(path_utf8), NULL))) {
+  if (SQL_SUCCEEDED(ret = SQLBindParameter(uo.es_stmt, 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, path, strlen(path), NULL))) {
     lastcall = "SQLBindCol";
     if (SQL_SUCCEEDED(ret = SQLBindCol( uo.es_stmt, 1, SQL_C_LONG, &retval,sizeof(retval),&indicator))) {
       lastcall = "SQLExecute";
       if (SQL_SUCCEEDED(ret = SQLExecute(uo.es_stmt))) {
         SQLRowCount(uo.es_stmt,&rows);
-	if (rows != 1) { free(path_utf8);return -1;}
+	if (rows != 1) return -1;
         lastcall = "SQLFetch";
         if (SQL_SUCCEEDED(ret=SQLFetch(uo.es_stmt))) {
-          if (indicator == SQL_NULL_DATA) retval = -1;
-		  free(path_utf8);
+          if (indicator == SQL_NULL_DATA) return -1;
 	  return retval;
 	}
       }
@@ -126,7 +122,6 @@ long entry_stored(int odbc_ptr,char *path)
   
   printf("Driver reported the following diagnostics\n");
   extract_error("entry_stored",lastcall,uo.dbc,SQL_HANDLE_DBC);
-  free(path_utf8);
   return -1;
 }
 
@@ -171,7 +166,7 @@ long get_last_entry(int odbc_ptr) {
   
   SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&hstmt);
   ret=SQLPrepare(hstmt,(SQLCHAR *)"SELECT max(id) FROM ms.mediacontent",SQL_NTS);
-  ret=SQLBindCol(hstmt, 1, SQL_C_LONG, &retval,sizeof(retval),&indicator);
+  ret = SQLBindCol(hstmt, 1, SQL_C_LONG, &retval,sizeof(retval),&indicator);
   SQLExecute(hstmt);
   SQLFetch(hstmt);
   if (indicator == SQL_NULL_DATA) return 0;
@@ -217,7 +212,7 @@ struct upnp_entry_t *fetch_entry(int odbc_ptr,int id) {
   if (indicator[1] == SQL_NULL_DATA)
     entry->fullpath = NULL;
   else
-    entry->fullpath=iconv_convert_from_utf8(fullpath);
+    entry->fullpath=strdup(fullpath);
   
   if (indicator[2] == SQL_NULL_DATA) {
     entry->dlna_profile->mime = NULL;
@@ -305,7 +300,7 @@ struct upnp_entry_t **fetch_children(int odbc_ptr,struct upnp_entry_t *parent)
     if (indicator[2] == SQL_NULL_DATA)
       entry->fullpath = NULL;
     else
-      entry->fullpath=iconv_convert_from_utf8(fullpath);
+      entry->fullpath=strdup(fullpath);
     
     if (indicator[3] == SQL_NULL_DATA)
       entry->dlna_profile->mime = NULL;
@@ -355,7 +350,6 @@ int store_entry(int odbc_ptr,struct upnp_entry_t *entry,int parent_id)
   SQLRETURN ret;
   SQLINTEGER null = SQL_NULL_DATA;
   SQLHSTMT stmt;
-  char *fullpath;
  
   if (odbc_ptr < 0)
     return 0;
@@ -367,10 +361,8 @@ int store_entry(int odbc_ptr,struct upnp_entry_t *entry,int parent_id)
     stmt = uo.store_stmt;
   }
   
-  fullpath=iconv_convert_to_utf8(entry->fullpath);
-
   SQLFreeStmt(stmt,SQL_CLOSE);
-  SQLBindParameter(stmt, 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, fullpath, strlen(fullpath), NULL);
+  SQLBindParameter(stmt, 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, entry->fullpath, strlen(entry->fullpath), NULL);
   SQLBindParameter(stmt, 2, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,sizeof(parent_id), 0, &parent_id, sizeof(parent_id), NULL);
   if (entry->dlna_profile != NULL) {
     SQLBindParameter(stmt, 3, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, (char *)entry->dlna_profile->mime, strlen(entry->dlna_profile->mime), NULL);
