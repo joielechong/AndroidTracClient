@@ -60,15 +60,15 @@ int init_odbc(const char *dsn) {
       uo.es_stmt = NULL;
     }
     SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.store_stmt);
-    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.store_stmt,(SQLCHAR *)"INSERT INTO ms.mediacontent (id,fullpath,parent_id,dlna_mime,dlna_id,title,url,size) VALUES ((select max(id)+1 from ms.mediacontent),?,?,?,?,?,?,?)",SQL_NTS))) {
+    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.store_stmt,(SQLCHAR *)"INSERT INTO ms.mediacontent (id,fullpath,parent_id,dlna_mime,dlna_id,title,url,size,dlna_class) VALUES ((select max(id)+1 from ms.mediacontent),?,?,?,?,?,?,?,?)",SQL_NTS))) {
       uo.store_stmt = NULL;
     }
     SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.fetch_stmt);
-    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.fetch_stmt,(SQLCHAR *)"SELECT fullpath,dlna_mime,dlna_id,title,url,size FROM ms.mediacontent where id=?",SQL_NTS))) {
+    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.fetch_stmt,(SQLCHAR *)"SELECT fullpath,dlna_mime,dlna_id,title,url,size,dlna_class FROM ms.mediacontent where id=?",SQL_NTS))) {
       uo.fetch_stmt = NULL;
     }
     SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.child_stmt);
-    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.child_stmt,(SQLCHAR *)"SELECT id,fullpath,dlna_mime,dlna_id,title,url,size FROM ms.mediacontent where parent_id=? ORDER BY upper(title)",SQL_NTS))) {
+    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.child_stmt,(SQLCHAR *)"SELECT id,fullpath,dlna_mime,dlna_id,title,url,size,dlna_class FROM ms.mediacontent where parent_id=? ORDER BY upper(title)",SQL_NTS))) {
       uo.child_stmt = NULL;
     }
     SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.count_stmt);
@@ -155,6 +155,24 @@ static long get_child_count(int odbc_ptr,long id) {
   return 0;
 }
 
+long get_last_entry(int odbc_ptr) {
+  SQLRETURN ret;
+  long retval;
+  SQLINTEGER indicator;
+  SQLHSTMT hstmt;
+
+  if (odbc_ptr < 0)
+    return -1;
+  
+  SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&hstmt);
+  ret=SQLPrepare(hstmt,(SQLCHAR *)"SELECT max(id) FROM ms.mediacontent",SQL_NTS);
+  ret = SQLBindCol(hstmt, 1, SQL_C_LONG, &retval,sizeof(retval),&indicator);
+  SQLExecute(hstmt);
+  SQLFetch(hstmt);
+  if (indicator == SQL_NULL_DATA) return 0;
+  return retval;
+}
+
 static struct mime_type_t Container_MIME_Type =
   { NULL, "object.container.storageFolder", NULL};
 
@@ -165,6 +183,7 @@ struct upnp_entry_t *fetch_entry(int odbc_ptr,int id) {
   char fullpath[512];
   char dlna_mime[512];
   char dlna_id[512];
+  long dlna_class;
   char title[512];
   char url[512];
   long size;
@@ -180,6 +199,7 @@ struct upnp_entry_t *fetch_entry(int odbc_ptr,int id) {
   ret =  SQLBindCol( uo.fetch_stmt, 4, SQL_C_CHAR, &title,sizeof(title),&indicator[4]);
   ret =  SQLBindCol( uo.fetch_stmt, 5, SQL_C_CHAR, &url,sizeof(url),&indicator[5]);
   ret =  SQLBindCol( uo.fetch_stmt, 6, SQL_C_ULONG, &size,sizeof(size),&indicator[6]);
+  ret =  SQLBindCol( uo.fetch_stmt, 7, SQL_C_ULONG, &dlna_class,sizeof(dlna_class),&indicator[7]);
   ret = SQLExecute(uo.fetch_stmt);
   ret = SQLFetch(uo.fetch_stmt);
   
@@ -225,6 +245,11 @@ struct upnp_entry_t *fetch_entry(int odbc_ptr,int id) {
   else
     entry->size=size;
   
+  if (indicator[7] == SQL_NULL_DATA)
+    entry->dlna_profile->class = 0;
+  else
+    entry->dlna_profile->class = dlna_class;
+
   entry->childs = NULL;
   
   return entry;
@@ -233,12 +258,13 @@ struct upnp_entry_t *fetch_entry(int odbc_ptr,int id) {
 struct upnp_entry_t **fetch_children(int odbc_ptr,struct upnp_entry_t *parent)
 {
   SQLRETURN ret;
-  SQLINTEGER indicator[8];
+  SQLINTEGER indicator[9];
   struct upnp_entry_t *entry;
   struct upnp_entry_t **childs;
   char fullpath[512];
   char dlna_mime[512];
   char dlna_id[512];
+  long dlna_class;
   char title[512];
   SQLINTEGER i,rows;
   char url[512];
@@ -256,6 +282,7 @@ struct upnp_entry_t **fetch_children(int odbc_ptr,struct upnp_entry_t *parent)
   ret =  SQLBindCol( uo.child_stmt, 5, SQL_C_CHAR, &title,sizeof(title),&indicator[5]);
   ret =  SQLBindCol( uo.child_stmt, 6, SQL_C_CHAR, &url,sizeof(url),&indicator[6]);
   ret =  SQLBindCol( uo.child_stmt, 7, SQL_C_ULONG, &size,sizeof(size),&indicator[7]);
+  ret =  SQLBindCol( uo.child_stmt, 8, SQL_C_ULONG, &dlna_class,sizeof(dlna_class),&indicator[8]);
   ret = SQLExecute(uo.child_stmt);
   
   SQLRowCount(uo.child_stmt,&rows);
@@ -306,6 +333,11 @@ struct upnp_entry_t **fetch_children(int odbc_ptr,struct upnp_entry_t *parent)
       entry->size=size;
     }
 	
+    if (indicator[8] == SQL_NULL_DATA)
+      entry->dlna_profile->class = 0;
+    else
+      entry->dlna_profile->class = dlna_class;
+    
     entry->childs = NULL;
     childs[i-1]=entry;
   }
@@ -324,7 +356,7 @@ int store_entry(int odbc_ptr,struct upnp_entry_t *entry,int parent_id)
 
   if (entry->id == 0) {
     SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&stmt);
-    ret=SQLPrepare(stmt,(SQLCHAR *)"INSERT INTO ms.mediacontent (id,fullpath,parent_id,dlna_mime,dlna_id,title,url,size) VALUES (0,?,?,?,?,?,?,?)",SQL_NTS);
+    ret=SQLPrepare(stmt,(SQLCHAR *)"INSERT INTO ms.mediacontent (id,fullpath,parent_id,dlna_mime,dlna_id,title,url,size,dlna_class) VALUES (0,?,?,?,?,?,?,?,?)",SQL_NTS);
   } else {
     stmt = uo.store_stmt;
   }
@@ -335,9 +367,11 @@ int store_entry(int odbc_ptr,struct upnp_entry_t *entry,int parent_id)
   if (entry->dlna_profile != NULL) {
     SQLBindParameter(stmt, 3, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, (char *)entry->dlna_profile->mime, strlen(entry->dlna_profile->mime), NULL);
     SQLBindParameter(stmt, 4, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, (char *)entry->dlna_profile->id, strlen(entry->dlna_profile->id), NULL);
+    SQLBindParameter(stmt, 8, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, sizeof(long), 0, &entry->dlna_profile->class, sizeof(entry->dlna_profile->class), NULL);
   } else {
     SQLBindParameter(stmt, 3, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, NULL, 0, &null);
     SQLBindParameter(stmt, 4, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, NULL, 0, &null);
+    SQLBindParameter(stmt, 8, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, sizeof(long), 0, NULL, 0, &null);
   }
   SQLBindParameter(stmt, 5, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, (char *)entry->title, strlen(entry->title), NULL);
   if (entry->url != NULL) {

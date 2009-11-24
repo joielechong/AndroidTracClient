@@ -98,22 +98,6 @@ is_valid_extension (const char *extension)
   return false;
 }
 
-static
-void print_entry(FILE *in,struct upnp_entry_t *entry) {
-  int i;
-  
-  if (entry->child_count == -1) {
-    fprintf(in,"%s %s",entry->url,entry->fullpath);
-    if (entry->deleted) 
-      fprintf(in," (DELETED)");
-    fprintf(in,"\n");
-  } else {
-    for (i=0; i<entry->child_count; i++) {
-      print_entry(in,entry->childs[i]);
-    }
-  }
-}
-
 /* Seperate recursive free() function in order to avoid freeing off
  * the parents child list within the freeing of the first child, as
  * the only entry which is not part of a childs list is the root entry
@@ -289,7 +273,7 @@ upnp_entry_new (struct ushare_t *ut, const char *name, const char *fullpath,
 	  return NULL;
 	}
       entry->dlna_profile = p;
-      fprintf(stderr,"%s: id=%s, mime=%s, label=%s,class=%d\n",fullpath,p->id,p->mime,p->label,p->class);
+      log_verbose("%s: id=%s, mime=%s, label=%s,class=%d\n",fullpath,p->id,p->mime,p->label,p->class);
     }
 #endif /* HAVE_DLNA */
   
@@ -475,7 +459,6 @@ static void fill_container(struct ushare_t *ut,char * path,int parent_id) {
 static 
 void *metathread(void *a __attribute__ ((unused)))
 {
-  FILE *in;
   struct ushare_t *ut=mtd.ut;
   int i;
   
@@ -681,9 +664,6 @@ free_metadata_list (struct ushare_t *ut)
     log_error (_("Cannot create RB tree for lookups\n"));
 }
 
-void free_metadata_db(struct ushare_t *ut) {
-}
-
 void build_metadata_db(struct ushare_t *ut) {
   struct upnp_entry_t *root_entry;
 
@@ -693,12 +673,14 @@ void build_metadata_db(struct ushare_t *ut) {
     root_entry = upnp_entry_new (ut, "root", "", NULL, -1, true);
     store_entry(ut->odbc_ptr,root_entry,-1);
   }
+
+  ut->nr_entries = get_last_entry(ut->odbc_ptr)+1;
   
   ut->init = 1;
 
   mtd.ut = ut;
   mtd.initial_wait=5;
-  mtd.loop_wait=30;   /* this must become configurable */
+  mtd.loop_wait=1800;   /* this must become configurable */
   
   log_info(_("Starting metadata thread...\n"));
   if (pthread_create(&mtd.threadid,NULL,metathread,NULL)) { 	
