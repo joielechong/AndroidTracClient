@@ -330,7 +330,7 @@ upnp_entry_new (struct ushare_t *ut, const char *name, const char *fullpath,
   
   /* Try Iconv'ing the name but if it fails the end device
      may still be able to handle it */
-  title = iconv_convert (name);
+  title = iconv_convert_to_utf8 (name);
   if (title)
     title_or_name = title;
   else
