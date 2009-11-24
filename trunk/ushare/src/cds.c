@@ -32,6 +32,7 @@
 #include "buffer.h"
 #include "minmax.h"
 #include "odbc.h"
+#include "trace.h"
 
 /* Represent the CDS GetSearchCapabilities action. */
 #define SERVICE_CDS_ACTION_SEARCH_CAPS "GetSearchCapabilities"
@@ -295,8 +296,10 @@ didl_add_item (struct buffer_t *out, int item_id,
     if (url)
     {
       extern struct ushare_t *ut;
-      buffer_appendf (out, "http://%s:%d%s/%s",
-		      UpnpGetServerIpAddress (), ut->port, VIRTUAL_DIR, url);
+      //      buffer_appendf (out, "http://%s:%d%s/%s",
+      //		      UpnpGetServerIpAddress (), ut->port, VIRTUAL_DIR, url);
+      buffer_appendf (out, "http://%s:%d%s/%d",
+		      UpnpGetServerIpAddress (), ut->port, VIRTUAL_DIR, item_id);
     }
     buffer_appendf (out, "</%s>", DIDL_RES);
   }
@@ -400,6 +403,7 @@ cds_browse_directchildren (struct action_event_t *event,
   struct upnp_entry_t **childs;
   int s, result_count = 0;
   char tmp[32];
+  int parent_id;
 #ifdef HAVE_DLNA
   extern struct ushare_t *ut;
 #endif /* HAVE_DLNA */
@@ -407,6 +411,7 @@ cds_browse_directchildren (struct action_event_t *event,
   if (entry->child_count == -1) /* item : file */
     return -1;
 
+  parent_id = entry->id;
   didl_add_header (out);
   childs = fetch_children(ut->odbc_ptr,entry);
 
@@ -425,8 +430,7 @@ cds_browse_directchildren (struct action_event_t *event,
       /* only fetch the requested count number or all entries if count = 0 */
     {
       if ((*childs)->child_count >= 0) /* container */
-        didl_add_container (out, (*childs)->id, (*childs)->parent ?
-                            (*childs)->parent->id : -1,
+        didl_add_container (out, (*childs)->id, parent_id,
                             (*childs)->child_count, "true", NULL,
                             (*childs)->title,
                             (*childs)->mime_type->mime_class);
@@ -443,16 +447,17 @@ cds_browse_directchildren (struct action_event_t *event,
 #endif /* HAVE_DLNA */
           mime_get_protocol ((*childs)->mime_type);
 
+
+	log_verbose("protocol = %s\n",protocol);
+
 #ifdef HAVE_DLNA
         (*childs)->dlna_profile ?
-          didl_add_item (out, (*childs)->id,
-                         (*childs)->parent ? (*childs)->parent->id : -1,
+          didl_add_item (out, (*childs)->id,parent_id,
                          "true", dlna_profile_upnp_object_item ((*childs)->dlna_profile),
                          (*childs)->title, protocol,
                          (*childs)->size, (*childs)->url, filter) :
 #endif /* HAVE_DLNA */
-          didl_add_item (out, (*childs)->id,
-                         (*childs)->parent ? (*childs)->parent->id : -1,
+          didl_add_item (out, (*childs)->id, parent_id,
                          "true", (*childs)->mime_type->mime_class,
                          (*childs)->title, protocol,
                          (*childs)->size, (*childs)->url, filter);
@@ -472,11 +477,9 @@ cds_browse_directchildren (struct action_event_t *event,
   sprintf (tmp, "%d", entry->child_count);
   upnp_add_response (event, SERVICE_CDS_DIDL_TOTAL_MATCH, tmp);
 
-  free(childs);  /* dit gaat dus fout */
+  // free(childs);  /* dit gaat dus fout */
   
   return result_count;
- 
-  
 }
 
 static int

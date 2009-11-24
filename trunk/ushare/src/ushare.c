@@ -56,6 +56,11 @@
 #include <upnp/upnp.h>
 #include <upnp/upnptools.h>
 
+#ifdef HAVE_DLNA
+#include <libavutil/log.h>
+#endif
+
+
 #include "config.h"
 
 #if (defined(HAVE_SETLOCALE) && defined(CONFIG_NLS))
@@ -285,6 +290,7 @@ init_upnp (struct ushare_t *ut)
 #ifdef HAVE_DLNA
   if (ut->dlna_enabled)
   {
+    av_log_set_level(AV_LOG_FATAL);
     len = 0;
     description =
       dlna_dms_description_get (ut->name,
@@ -884,7 +890,7 @@ main (int argc, char **argv)
   if (ut->use_telnet)
     ctrl_telnet_stop ();
   finish_upnp (ut);
-  free_metadata_db (ut);
+  //  free_metadata_db (ut);
   ushare_free (ut);
   finish_iconv ();
 

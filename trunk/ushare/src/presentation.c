@@ -91,13 +91,13 @@ process_cgi (struct ushare_t *ut, char *cgiargs)
   }
   else if (!strncmp (action, CGI_ACTION_REFRESH, strlen (CGI_ACTION_REFRESH)))
     refresh = 1;
-
+#if 0
   if (refresh && ut->contentlist)
   {
     free_metadata_list (ut);
     build_metadata_list (ut);
   }
-
+#endif
   if (ut->presentation)
     buffer_free (ut->presentation);
   ut->presentation = buffer_new ();
