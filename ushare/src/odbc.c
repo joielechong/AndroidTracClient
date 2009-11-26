@@ -185,7 +185,7 @@ static char *make_time(long duration) {
   mins = secs / 60;
   secs = secs % 60;
   
-  sprintf(result,"%d:%2.2d%2.2d",hours,mins,secs);
+  sprintf(result,"%ld:%2.2ld%2.2ld",hours,mins,secs);
   return strdup(result);
 }
 
@@ -206,7 +206,7 @@ struct upnp_entry_t *fetch_entry(int odbc_ptr,int id) {
   char artist[64];
   char album[255];
   char resolution[255];
-  char duration[255];
+  long duration;
   char genre[255];
   
   if (odbc_ptr < 0)
@@ -224,7 +224,7 @@ struct upnp_entry_t *fetch_entry(int odbc_ptr,int id) {
   ret =  SQLBindCol( uo.fetch_stmt, 8, SQL_C_CHAR, &artist,sizeof(artist),&indicator[8]);
   ret =  SQLBindCol( uo.fetch_stmt, 9, SQL_C_CHAR, &album,sizeof(album),&indicator[9]);
   ret =  SQLBindCol( uo.fetch_stmt, 10, SQL_C_CHAR, &resolution,sizeof(resolution),&indicator[10]);
-  ret =  SQLBindCol( uo.fetch_stmt, 11, SQL_C_CHAR, &duration,sizeof(duration),&indicator[11]);
+  ret =  SQLBindCol( uo.fetch_stmt, 11, SQL_C_ULONG, &duration,sizeof(duration),&indicator[11]);
   ret =  SQLBindCol( uo.fetch_stmt, 12, SQL_C_CHAR, &genre,sizeof(genre),&indicator[12]);
   ret = SQLExecute(uo.fetch_stmt);
   ret = SQLFetch(uo.fetch_stmt);
@@ -247,7 +247,7 @@ struct upnp_entry_t *fetch_entry(int odbc_ptr,int id) {
   }
   entry->dlna_profile->id = indicator[3] == SQL_NULL_DATA ? NULL : strdup(dlna_id);
   entry->title = indicator[4] == SQL_NULL_DATA ? NULL : strdup(title);
-  entry->size = indicator[5] == SQL_NULL_DATA ? 0 : size=size;
+  entry->size = indicator[5] == SQL_NULL_DATA ? 0 : size;
   entry->dlna_profile->class = indicator[6] == SQL_NULL_DATA ? 0 : dlna_class;
   entry->date = indicator[7] == SQL_NULL_DATA? NULL : strdup(date);
   entry->artist = indicator[8] == SQL_NULL_DATA? NULL : strdup(artist);
@@ -278,7 +278,7 @@ struct upnp_entry_t **fetch_children(int odbc_ptr,struct upnp_entry_t *parent)
   char artist[64];
   char album[255];
   char resolution[255];
-  char duration[255];
+  long duration;
   char genre[255];
   
   if (odbc_ptr < 0)
@@ -297,7 +297,7 @@ struct upnp_entry_t **fetch_children(int odbc_ptr,struct upnp_entry_t *parent)
   ret =  SQLBindCol( uo.child_stmt, 9, SQL_C_CHAR, &artist,sizeof(artist),&indicator[9]);
   ret =  SQLBindCol( uo.child_stmt, 10, SQL_C_CHAR, &album,sizeof(album),&indicator[10]);
   ret =  SQLBindCol( uo.child_stmt, 11, SQL_C_CHAR, &resolution,sizeof(resolution),&indicator[11]);
-  ret =  SQLBindCol( uo.child_stmt, 12, SQL_C_CHAR, &duration,sizeof(duration),&indicator[12]);
+  ret =  SQLBindCol( uo.child_stmt, 12, SQL_C_ULONG, &duration,sizeof(duration),&indicator[12]);
   ret =  SQLBindCol( uo.child_stmt, 13, SQL_C_CHAR, &genre,sizeof(genre),&indicator[13]);
   ret = SQLExecute(uo.child_stmt);
   
@@ -326,7 +326,7 @@ struct upnp_entry_t **fetch_children(int odbc_ptr,struct upnp_entry_t *parent)
   }
   entry->dlna_profile->id = indicator[4] == SQL_NULL_DATA ? NULL : strdup(dlna_id);
   entry->title = indicator[5] == SQL_NULL_DATA ? NULL : strdup(title);
-  entry->size = indicator[6] == SQL_NULL_DATA ? 0 : size=size;
+  entry->size = indicator[6] == SQL_NULL_DATA ? 0 : size;
   entry->dlna_profile->class = indicator[7] == SQL_NULL_DATA ? 0 : dlna_class;
   entry->date = indicator[8] == SQL_NULL_DATA? NULL : strdup(date);
   entry->artist = indicator[9] == SQL_NULL_DATA? NULL : strdup(artist);
