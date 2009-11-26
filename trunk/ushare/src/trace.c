@@ -51,7 +51,8 @@ print_log (log_level level, const char *format, ...)
   }
   else
   {
-    FILE *output = level == ULOG_ERROR ? stderr : stdout;
+//    FILE *output = level == ULOG_ERROR ? stderr : stdout;
+    FILE *output = stderr;
     vfprintf (output, format, va);
   }
   va_end (va);

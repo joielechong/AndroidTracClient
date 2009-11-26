@@ -133,9 +133,6 @@ http_get_info (const char *filename, struct File_Info *info)
   if (!entry)
     return -1;
 
-  if (entry->deleted)
-    return -1;
-
   if (!entry->fullpath)
     return -1;
 
@@ -234,9 +231,6 @@ http_open (const char *filename, enum UpnpOpenFileMode mode)
   entry = upnp_get_entry (ut, upnp_id);
   if (!entry)
     return NULL;
-
-  if (entry->deleted)
-    return -1;
 
   if (!entry->fullpath)
     return NULL;

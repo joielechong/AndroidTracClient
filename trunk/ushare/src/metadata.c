@@ -114,8 +114,6 @@ _upnp_entry_free (struct upnp_entry_t *entry)
     free (entry->fullpath);
   if (entry->title)
     free (entry->title);
-  if (entry->url)
-    free (entry->url);
 #ifdef HAVE_DLNA
   if (entry->dlna_profile) {
     free(entry->dlna_profile);
@@ -128,12 +126,6 @@ _upnp_entry_free (struct upnp_entry_t *entry)
   //  free (entry->childs);
 }
 
-struct upnp_entry_lookup_t {
-  int id;
-  struct upnp_entry_t *entry_ptr;
-};
-
-
 void
 upnp_entry_free (struct ushare_t *ut, struct upnp_entry_t *entry)
 {
@@ -141,46 +133,7 @@ upnp_entry_free (struct ushare_t *ut, struct upnp_entry_t *entry)
     return;
   
   /* Free all entries (i.e. children) */
-#if 0
-  if (entry == ut->root_entry)
-    {
-      struct upnp_entry_t *entry_found = NULL;
-      struct upnp_entry_lookup_t *lk = NULL;
-      RBLIST *rblist;
-      int i = 0;
-      
-      rblist = rbopenlist (ut->rb);
-      lk = (struct upnp_entry_lookup_t *) rbreadlist (rblist);
-      
-      while (lk)
-	{
-	  entry_found = lk->entry_ptr;
-	  if (entry_found)
-	    {
-	      if (entry_found->fullpath)
-		free (entry_found->fullpath);
-	      if (entry_found->title)
-		free (entry_found->title);
-	      if (entry_found->url)
-		free (entry_found->url);
-	      
-	      free (entry_found);
-	      i++;
-	    }
-	  
-	  free (lk); /* delete the lookup */
-	  lk = (struct upnp_entry_lookup_t *) rbreadlist (rblist);
-	}
-      
-      rbcloselist (rblist);
-      rbdestroy (ut->rb);
-      ut->rb = NULL;
-      
-      log_verbose ("Freed [%d] entries\n", i);
-    }
-  else
-#endif
-    _upnp_entry_free (entry);
+  _upnp_entry_free (entry);
   
   free (entry);
 }
@@ -252,7 +205,6 @@ upnp_entry_new (struct ushare_t *ut, const char *name, const char *fullpath,
 {
   struct upnp_entry_t *entry = NULL;
   char *title = NULL, *x = NULL;
-  char url_tmp[MAX_URL_SIZE] = { '\0' };
   char *title_or_name = NULL;
   
   if (!name)
@@ -262,7 +214,6 @@ upnp_entry_new (struct ushare_t *ut, const char *name, const char *fullpath,
   
 #ifdef HAVE_DLNA
   entry->dlna_profile = NULL;
-  entry->url = NULL;
   if (ut->dlna_enabled && fullpath && !dir)
     {
       dlna_profile_t *p = dlna_guess_media_profile (ut->dlna, fullpath);
@@ -291,7 +242,6 @@ upnp_entry_new (struct ushare_t *ut, const char *name, const char *fullpath,
   entry->parent = parent;
   entry->child_count =  dir ? 0 : -1;
   entry->title = NULL;
-  entry->deleted = 0;
   
   entry->childs = (struct upnp_entry_t **) malloc (sizeof (struct upnp_entry_t *));
   *(entry->childs) = NULL;
@@ -314,18 +264,10 @@ upnp_entry_new (struct ushare_t *ut, const char *name, const char *fullpath,
 #ifdef HAVE_DLNA
     }
 #endif /* HAVE_DLNA */
-    
-    if (snprintf (url_tmp, MAX_URL_SIZE, "%d.%s",
-		  entry->id, getExtension (name)) >= MAX_URL_SIZE)
-      log_error ("URL string too long for id %d, truncated!!", entry->id);
-    
-    /* Only malloc() what we really need */
-    entry->url = strdup (url_tmp);
   }
   else /* container */
     {
       entry->mime_type = &Container_MIME_Type;
-      entry->url = NULL;
     }
   
   /* Try Iconv'ing the name but if it fails the end device
@@ -369,10 +311,9 @@ upnp_entry_new (struct ushare_t *ut, const char *name, const char *fullpath,
     }
   
   entry->size = size;
-  entry->fd = -1;
-  
-  if (entry->id && entry->url)
-    log_verbose ("Entry->URL (%d): %s\n", entry->id, entry->url);
+
+  if (entry->id )
+    log_verbose ("Entry->title (%d): %s\n", entry->id, entry->title);
   
   return entry;
 }
@@ -478,49 +419,6 @@ void *metathread(void *a __attribute__ ((unused)))
   return NULL;
 }
 
-static int
-get_list_length (void *list)
-{
-  void **l = list;
-  int n = 0;
-  
-  while (*(l++))
-    n++;
-  
-  return n;
-}
-
-static void
-upnp_entry_add_child (struct ushare_t *ut,
-                      struct upnp_entry_t *entry, struct upnp_entry_t *child)
-{
-  struct upnp_entry_lookup_t *entry_lookup_ptr = NULL;
-  struct upnp_entry_t **childs;
-  int n;
-  
-  if (!entry || !child)
-    return;
-  
-  for (childs = entry->childs; *childs; childs++)
-    if (*childs == child)
-      return;
-  
-  n = get_list_length ((void *) entry->childs) + 1;
-  entry->childs = (struct upnp_entry_t **)
-    realloc (entry->childs, (n + 1) * sizeof (*(entry->childs)));
-  entry->childs[n] = NULL;
-  entry->childs[n - 1] = child;
-  entry->child_count++;
-  
-  entry_lookup_ptr = (struct upnp_entry_lookup_t *)
-    malloc (sizeof (struct upnp_entry_lookup_t));
-  entry_lookup_ptr->id = child->id;
-  entry_lookup_ptr->entry_ptr = child;
-  
-  if (rbsearch ((void *) entry_lookup_ptr, ut->rb) == NULL)
-    log_info (_("Failed to add the RB lookup tree\n"));
-}
-
 struct upnp_entry_t *
 upnp_get_entry (struct ushare_t *ut, int id)
 {
@@ -529,139 +427,6 @@ upnp_get_entry (struct ushare_t *ut, int id)
   log_verbose ("Looking for entry id %d\n", id);
   entry = fetch_entry(ut->odbc_ptr,id);
   return entry;
-}
-
-struct upnp_entry_t *
-upnp_get_entry_old(struct ushare_t *ut, int id)
-{
-  struct upnp_entry_lookup_t *res, entry_lookup;
-
-  log_verbose ("Looking for entry id %d\n", id);
-  if (id == 0) /* We do not store the root (id 0) as it is not a child */
-    return ut->root_entry;
-
-  entry_lookup.id = id;
-  res = (struct upnp_entry_lookup_t *)
-    rbfind ((void *) &entry_lookup, ut->rb);
-
-  if (res)
-  {
-    log_verbose ("Found at %p\n",
-                 ((struct upnp_entry_lookup_t *) res)->entry_ptr);
-    return ((struct upnp_entry_lookup_t *) res)->entry_ptr;
-  }
-
-  log_verbose ("Not Found\n");
-
-  return NULL;
-}
-
-static void
-metadata_add_file (struct ushare_t *ut, struct upnp_entry_t *entry,
-                   const char *file, const char *name, struct stat *st_ptr)
-{
-  if (!entry || !file || !name)
-    return;
-
-#ifdef HAVE_DLNA
-  if (ut->dlna_enabled || is_valid_extension (getExtension (file)))
-#else
-  if (is_valid_extension (getExtension (file)))
-#endif
-  {
-    struct upnp_entry_t *child = NULL;
-    
-    child = upnp_entry_new (ut, name, file, entry, st_ptr->st_size, false);
-    if (child) {
-      upnp_entry_add_child (ut, entry, child);
-      //      if (entry_stored(odbc_ptr,child->fullpath) == 0 )
-      //        store_entry(odbc_ptr,child);
-    }
-  }
-}
-
-static void
-metadata_add_container (struct ushare_t *ut,
-                        struct upnp_entry_t *entry, const char *container)
-{
-  struct dirent **namelist;
-  int n,i;
-
-  if (!entry || !container)
-    return;
-
-  n = scandir (container, &namelist, 0, alphasort);
-  if (n < 0)
-  {
-    perror ("scandir");
-    return;
-  }
-
-  for (i = 0; i < n; i++)
-  {
-    struct stat st;
-    char *fullpath = NULL;
-
-    if (namelist[i]->d_name[0] == '.')
-    {
-      free (namelist[i]);
-      continue;
-    }
-
-    fullpath = (char *)
-      malloc (strlen (container) + strlen (namelist[i]->d_name) + 2);
-    sprintf (fullpath, "%s/%s", container, namelist[i]->d_name);
-
-    log_verbose ("%s\n", fullpath);
-
-    if (stat (fullpath, &st) < 0)
-    {
-      free (namelist[i]);
-      free (fullpath);
-      continue;
-    }
-
-    if (S_ISDIR (st.st_mode))
-    {
-      struct upnp_entry_t *child = NULL;
-
-      child = upnp_entry_new (ut, namelist[i]->d_name,
-                              fullpath, entry, 0, true);
-      if (child)
-      {
-        metadata_add_container (ut, child, fullpath);
-        upnp_entry_add_child (ut, entry, child);
-	//        if (entry_stored(odbc_ptr,child->fullpath) == 0 )
-	//          store_entry(odbc_ptr,child);
-      }
-    }
-    else
-      metadata_add_file (ut, entry, fullpath, namelist[i]->d_name, &st);
-
-    free (namelist[i]);
-    free (fullpath);
-  }
-  free (namelist);
-}
-
-void
-free_metadata_list (struct ushare_t *ut)
-{
-  ut->init = 0;
-  if (ut->root_entry)
-    upnp_entry_free (ut, ut->root_entry);
-  ut->root_entry = NULL;
-  ut->nr_entries = 0;
-
-  if (ut->rb)
-  {
-    rbdestroy (ut->rb);
-    ut->rb = NULL;
-  }
-
-  ut->rb = rbinit (rb_compare, NULL);
-  if (!ut->rb)
-    log_error (_("Cannot create RB tree for lookups\n"));
 }
 
 void build_metadata_db(struct ushare_t *ut) {
@@ -679,86 +444,11 @@ void build_metadata_db(struct ushare_t *ut) {
   ut->init = 1;
 
   mtd.ut = ut;
-  mtd.initial_wait=5;
-  mtd.loop_wait=1800;   /* this must become configurable */
+  mtd.initial_wait=10000;
+  mtd.loop_wait=3600;   /* this must become configurable */
   
   log_info(_("Starting metadata thread...\n"));
   if (pthread_create(&mtd.threadid,NULL,metathread,NULL)) { 	
     log_info(_("Metadata thread failed to start, no dynamic updates\n"));
   }	
-}
-
-void
-build_metadata_list (struct ushare_t *ut)
-{
-  int i;
-
-  mtd.ut = ut;
-  mtd.initial_wait=5;
-  mtd.loop_wait=30;   /* this must become configurable */
-  
-  /* build root entry */
-  if (!ut->root_entry)
-    ut->root_entry = upnp_entry_new (ut, "root", NULL, NULL, -1, true);
-  
-  log_info(_("Starting metadata thread...\n"));
-  if (pthread_create(&mtd.threadid,NULL,metathread,NULL)) { 	
-    log_info(_("Metadata thread failed to start, no dynamic updates\n"));
-  }	
-  
-  log_info (_("Building Metadata List ...\n"));
-  if (ut->dsn != NULL)
-    odbc_ptr = init_odbc(ut->dsn);
-  
-  /* add files from content directory */
-  for (i=0 ; i < ut->contentlist->count ; i++) {
-    struct upnp_entry_t *entry = NULL;
-    char *title = NULL;
-    int size = 0;
-    
-    log_info (_("Looking for files in content directory : %s\n"),
-	      ut->contentlist->content[i]);
-    
-    size = strlen (ut->contentlist->content[i]);
-    if (ut->contentlist->content[i][size - 1] == '/')
-      ut->contentlist->content[i][size - 1] = '\0';
-    title = strrchr (ut->contentlist->content[i], '/');
-    if (title) {
-      title++;
-    } else {
-      /* directly use content directory name if no '/' before basename */
-      title = ut->contentlist->content[i];
-    }
-    
-    entry = upnp_entry_new (ut, title, ut->contentlist->content[i],
-                            ut->root_entry, -1, true);
-    
-    if (!entry)
-      continue;
-    upnp_entry_add_child (ut, ut->root_entry, entry);
-    metadata_add_container (ut, entry, ut->contentlist->content[i]);
-    //    if (entry_stored(odbc_ptr,entry->fullpath) == 0 )
-    //  store_entry(odbc_ptr,entry);
-  }
-  odbc_finish(odbc_ptr);
-  log_info (_("Found %d files and subdirectories.\n"), ut->nr_entries);
-  ut->init = 1;
-}
-
-int
-rb_compare (const void *pa, const void *pb,
-            const void *config __attribute__ ((unused)))
-{
-  struct upnp_entry_lookup_t *a, *b;
-
-  a = (struct upnp_entry_lookup_t *) pa;
-  b = (struct upnp_entry_lookup_t *) pb;
-
-  if (a->id < b->id)
-    return -1;
-
-  if (a->id > b->id)
-    return 1;
-
-  return 0;
 }

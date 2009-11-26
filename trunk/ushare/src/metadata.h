@@ -41,10 +41,13 @@ struct upnp_entry_t {
   struct upnp_entry_t **childs;
   struct mime_type_t *mime_type;
   char *title;
-  char *url;
+//  char *url;
   off_t size;
-  int fd;
-  int deleted;
+  char *artist;
+  char *album;
+  char *date;
+  char *resultion;
+  char *duration;
 };
 
 typedef struct xml_convert_s {

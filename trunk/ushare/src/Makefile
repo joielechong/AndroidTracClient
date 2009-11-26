@@ -19,7 +19,6 @@ EXTRADIST = ushare.1 \
 	content.h \
 	cfgparser.h \
 	trace.h \
-	redblack.h \
 	osdep.h \
 	ctrl_telnet.h \
 	ushare.h \
@@ -41,7 +40,6 @@ SRCS = \
         content.c \
         cfgparser.c \
         trace.c \
-        redblack.c \
         osdep.c \
         odbc.c \
         ctrl_telnet.c \

@@ -16,11 +16,11 @@ static void extract_error (char *caller,char *fn, SQLHANDLE handle, SQLSMALLINT 
   SQLSMALLINT len;
   SQLRETURN ret;
   
-  fprintf(stderr,"\nThe driver reported the following diagnostics whilst running %s - %s\n\n",caller,fn);
+  log_info("\nThe driver reported the following diagnostics whilst running %s - %s\n\n",caller,fn);
   do {
     ret = SQLGetDiagRec(type,handle,++i,state,&native,text,sizeof(text),&len);
     if (SQL_SUCCEEDED(ret))
-      printf("%s:%ld:%ld:%s\n",state,i,native,text);
+      log_info("%s:%ld:%ld:%s\n",state,i,native,text);
   }
   while (ret == SQL_SUCCESS);
 }
@@ -49,30 +49,33 @@ int init_odbc(const char *dsn) {
   ret=SQLDriverConnect(uo.dbc,NULL,(SQLCHAR *)dsn, SQL_NTS, uo.outstr,sizeof(uo.outstr),&uo.outstrlen,SQL_DRIVER_COMPLETE);
   if (SQL_SUCCEEDED(ret)) {
     log_verbose("Connected\n");
-    log_verbose("Returned connection string was:\n\t%s\n", uo.outstr);
-    
-    if (ret == SQL_SUCCESS_WITH_INFO) {
-      printf("Driver reported the following diagnostics\n");
+    log_verbose("Returned connection string was:\n\t%s\n", uo.outstr);    
+    if (ret == SQL_SUCCESS_WITH_INFO)
       extract_error("init_odbc","SQLDriverConnect",uo.dbc,SQL_HANDLE_DBC);
-    }
+    
     SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.es_stmt);
     if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.es_stmt,(SQLCHAR *)"SELECT id FROM ms.mediacontent WHERE fullpath=?",SQL_NTS))) {
+      extract_error("init_odbc","SQLPrepare es",uo.dbc,SQL_HANDLE_DBC);
       uo.es_stmt = NULL;
     }
     SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.store_stmt);
     if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.store_stmt,(SQLCHAR *)"INSERT INTO ms.mediacontent (id,fullpath,parent_id,dlna_mime,dlna_id,title,size,dlna_class) VALUES ((select max(id)+1 from ms.mediacontent),?,?,?,?,?,?,?)",SQL_NTS))) {
+      extract_error("init_odbc","SQLPrepare store",uo.dbc,SQL_HANDLE_DBC);
       uo.store_stmt = NULL;
     }
     SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.fetch_stmt);
     if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.fetch_stmt,(SQLCHAR *)"SELECT fullpath,dlna_mime,dlna_id,title,size,dlna_class FROM ms.mediacontent where id=?",SQL_NTS))) {
+      extract_error("init_odbc","SQLPrepare fetch",uo.dbc,SQL_HANDLE_DBC);
       uo.fetch_stmt = NULL;
     }
     SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.child_stmt);
     if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.child_stmt,(SQLCHAR *)"SELECT id,fullpath,dlna_mime,dlna_id,title,size,dlna_class FROM ms.mediacontent where parent_id=? ORDER BY upper(title)",SQL_NTS))) {
+      extract_error("init_odbc","SQLPrepare child",uo.dbc,SQL_HANDLE_DBC);
       uo.child_stmt = NULL;
     }
     SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.count_stmt);
     if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.count_stmt,(SQLCHAR *)"SELECT count(*) FROM ms.mediacontent where parent_id=?",SQL_NTS))) {
+      extract_error("init_odbc","SQLPrepare count",uo.dbc,SQL_HANDLE_DBC);
       uo.count_stmt = NULL;
     }
     return 1;
@@ -98,7 +101,7 @@ long entry_stored(int odbc_ptr,char *path)
   long retval = -1;
   SQLINTEGER indicator;
   char *lastcall = NULL;
-
+  
   if (odbc_ptr < 0)
     return -1;
   
@@ -110,19 +113,20 @@ long entry_stored(int odbc_ptr,char *path)
       lastcall = "SQLExecute";
       if (SQL_SUCCEEDED(ret = SQLExecute(uo.es_stmt))) {
         SQLRowCount(uo.es_stmt,&rows);
-	if (rows != 1) return -1;
-        lastcall = "SQLFetch";
-        if (SQL_SUCCEEDED(ret=SQLFetch(uo.es_stmt))) {
-          if (indicator == SQL_NULL_DATA) return -1;
-	  return retval;
+	if (rows == 1) {
+	  lastcall = "SQLFetch";
+	  if (SQL_SUCCEEDED(ret=SQLFetch(uo.es_stmt))) {
+	    if (indicator != SQL_NULL_DATA) lastcall=NULL;
+	  }
+	} else {
+	  lastcall = NULL;
 	}
       }
     }
   }
-  
-  printf("Driver reported the following diagnostics\n");
-  extract_error("entry_stored",lastcall,uo.dbc,SQL_HANDLE_DBC);
-  return -1;
+  if (lastcall)
+    extract_error("entry_stored",lastcall,uo.dbc,SQL_HANDLE_DBC);
+  return retval;
 }
 
 static long get_child_count(int odbc_ptr,long id) {
@@ -149,8 +153,6 @@ static long get_child_count(int odbc_ptr,long id) {
       }
     }
   }
-  
-  printf("Driver reported the following diagnostics\n");
   extract_error("get_child_count",lastcall,uo.dbc,SQL_HANDLE_DBC);
   return 0;
 }
@@ -185,7 +187,6 @@ struct upnp_entry_t *fetch_entry(int odbc_ptr,int id) {
   char dlna_id[512];
   long dlna_class;
   char title[512];
-  char url[512];
   long size;
   
   if (odbc_ptr < 0)
@@ -260,7 +261,6 @@ struct upnp_entry_t **fetch_children(int odbc_ptr,struct upnp_entry_t *parent)
   long dlna_class;
   char title[512];
   SQLINTEGER i,rows;
-  char url[512];
   long size,id;
   
   if (odbc_ptr < 0)
@@ -273,8 +273,8 @@ struct upnp_entry_t **fetch_children(int odbc_ptr,struct upnp_entry_t *parent)
   ret =  SQLBindCol( uo.child_stmt, 3, SQL_C_CHAR, &dlna_mime,sizeof(dlna_mime),&indicator[3]);
   ret =  SQLBindCol( uo.child_stmt, 4, SQL_C_CHAR, &dlna_id,sizeof(dlna_id),&indicator[4]);
   ret =  SQLBindCol( uo.child_stmt, 5, SQL_C_CHAR, &title,sizeof(title),&indicator[5]);
-  ret =  SQLBindCol( uo.child_stmt, 7, SQL_C_ULONG, &size,sizeof(size),&indicator[6]);
-  ret =  SQLBindCol( uo.child_stmt, 8, SQL_C_ULONG, &dlna_class,sizeof(dlna_class),&indicator[7]);
+  ret =  SQLBindCol( uo.child_stmt, 6, SQL_C_ULONG, &size,sizeof(size),&indicator[6]);
+  ret =  SQLBindCol( uo.child_stmt, 7, SQL_C_ULONG, &dlna_class,sizeof(dlna_class),&indicator[7]);
   ret = SQLExecute(uo.child_stmt);
   
   SQLRowCount(uo.child_stmt,&rows);
@@ -367,7 +367,7 @@ int store_entry(int odbc_ptr,struct upnp_entry_t *entry,int parent_id)
     SQLBindParameter(stmt, 6, SQL_PARAM_INPUT, SQL_C_UBIGINT, SQL_BIGINT, sizeof(long long), 0, NULL, 0, &null);
   }
   if (!SQL_SUCCEEDED(ret = SQLExecute(stmt))) {
-    printf("Driver reported the following diagnostics\n");
+    fprintf(stderr,"Driver reported the following diagnostics\n");
     extract_error("store_entry","SQLExecute",uo.dbc,SQL_HANDLE_DBC);
   }
   entry->id = entry_stored(odbc_ptr,entry->fullpath);
