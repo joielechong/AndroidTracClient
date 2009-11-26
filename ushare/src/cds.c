@@ -296,13 +296,6 @@ didl_add_item (struct buffer_t *out, int item_id,
 			   char *album, char *date, char *duration, char *resolution,
 			   char *genre)
 {
-  char *duration = NULL;
-  char *artist = NULL;
-  char *genre = NULL;
-  char *date = NULL;
-  char *album = NULL;
-  char *resolution = NULL;
-  
   buffer_appendf (out, "<%s", DIDL_ITEM);
   didl_add_value (out, DIDL_ITEM_ID, item_id);
   didl_add_value (out, DIDL_ITEM_PARENT_ID, parent_id);
