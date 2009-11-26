@@ -64,12 +64,12 @@ int init_odbc(const char *dsn) {
       uo.store_stmt = NULL;
     }
     SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.fetch_stmt);
-    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.fetch_stmt,(SQLCHAR *)"SELECT fullpath,dlna_mime,dlna_id,title,size,dlna_class FROM ms.mediacontent where id=?",SQL_NTS))) {
+    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.fetch_stmt,(SQLCHAR *)"SELECT fullpath,dlna_mime,dlna_id,title,size,dlna_class,date,artist,album,resolution,duration,genre FROM ms.mediacontent where id=?",SQL_NTS))) {
       extract_error("init_odbc","SQLPrepare fetch",uo.dbc,SQL_HANDLE_DBC);
       uo.fetch_stmt = NULL;
     }
     SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.child_stmt);
-    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.child_stmt,(SQLCHAR *)"SELECT id,fullpath,dlna_mime,dlna_id,title,size,dlna_class FROM ms.mediacontent where parent_id=? ORDER BY upper(title)",SQL_NTS))) {
+    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.child_stmt,(SQLCHAR *)"SELECT id,fullpath,dlna_mime,dlna_id,title,size,dlna_class,date,artist,album,resolution,duration,genre FROM ms.mediacontent where parent_id=? ORDER BY upper(title)",SQL_NTS))) {
       extract_error("init_odbc","SQLPrepare child",uo.dbc,SQL_HANDLE_DBC);
       uo.child_stmt = NULL;
     }
@@ -175,12 +175,26 @@ long get_last_entry(int odbc_ptr) {
   return retval;
 }
 
+static char *make_time(long duration) {
+  long hours, mins, secs;
+  char result[20];
+  
+  secs=duration;
+  hours = secs / 3600;
+  secs = secs % 3600;
+  mins = secs / 60;
+  secs = secs % 60;
+  
+  sprintf(result,"%d:%2.2d%2.2d",hours,mins,secs);
+  return strdup(result);
+}
+
 static struct mime_type_t Container_MIME_Type =
   { NULL, "object.container.storageFolder", NULL};
 
 struct upnp_entry_t *fetch_entry(int odbc_ptr,int id) {
   SQLRETURN ret;
-  SQLINTEGER indicator[8];
+  SQLINTEGER indicator[13];
   struct upnp_entry_t *entry;
   char fullpath[512];
   char dlna_mime[512];
@@ -188,6 +202,12 @@ struct upnp_entry_t *fetch_entry(int odbc_ptr,int id) {
   long dlna_class;
   char title[512];
   long size;
+  char date[20];
+  char artist[64];
+  char album[255];
+  char resolution[255];
+  char duration[255];
+  char genre[255];
   
   if (odbc_ptr < 0)
     return NULL;
@@ -200,6 +220,12 @@ struct upnp_entry_t *fetch_entry(int odbc_ptr,int id) {
   ret =  SQLBindCol( uo.fetch_stmt, 4, SQL_C_CHAR, &title,sizeof(title),&indicator[4]);
   ret =  SQLBindCol( uo.fetch_stmt, 5, SQL_C_ULONG, &size,sizeof(size),&indicator[5]);
   ret =  SQLBindCol( uo.fetch_stmt, 6, SQL_C_ULONG, &dlna_class,sizeof(dlna_class),&indicator[6]);
+  ret =  SQLBindCol( uo.fetch_stmt, 7, SQL_C_CHAR, &date,sizeof(date),&indicator[7]);
+  ret =  SQLBindCol( uo.fetch_stmt, 8, SQL_C_CHAR, &artist,sizeof(artist),&indicator[8]);
+  ret =  SQLBindCol( uo.fetch_stmt, 9, SQL_C_CHAR, &album,sizeof(album),&indicator[9]);
+  ret =  SQLBindCol( uo.fetch_stmt, 10, SQL_C_CHAR, &resolution,sizeof(resolution),&indicator[10]);
+  ret =  SQLBindCol( uo.fetch_stmt, 11, SQL_C_CHAR, &duration,sizeof(duration),&indicator[11]);
+  ret =  SQLBindCol( uo.fetch_stmt, 12, SQL_C_CHAR, &genre,sizeof(genre),&indicator[12]);
   ret = SQLExecute(uo.fetch_stmt);
   ret = SQLFetch(uo.fetch_stmt);
   
@@ -209,11 +235,7 @@ struct upnp_entry_t *fetch_entry(int odbc_ptr,int id) {
   memset(entry->dlna_profile,0,sizeof(entry->dlna_profile));
   
   entry->id=id;
-  if (indicator[1] == SQL_NULL_DATA)
-    entry->fullpath = NULL;
-  else
-    entry->fullpath=strdup(fullpath);
-  
+  entry->fullpath = indicator[1] == SQL_NULL_DATA ? NULL : strdup(fullpath);
   if (indicator[2] == SQL_NULL_DATA) {
     entry->dlna_profile->mime = NULL;
     entry->child_count=get_child_count(odbc_ptr,id);
@@ -223,26 +245,16 @@ struct upnp_entry_t *fetch_entry(int odbc_ptr,int id) {
     entry->child_count = -1;
     entry->mime_type = NULL;
   }
-  
-  if (indicator[3] == SQL_NULL_DATA)
-    entry->dlna_profile->id = NULL;
-  else
-    entry->dlna_profile->id=strdup(dlna_id);
-  
-  if (indicator[4] == SQL_NULL_DATA)
-    entry->title = NULL;
-  else
-    entry->title=strdup(title);
-  
-  if (indicator[5] == SQL_NULL_DATA)
-    entry->size = 0;
-  else
-    entry->size=size;
-  
-  if (indicator[6] == SQL_NULL_DATA)
-    entry->dlna_profile->class = 0;
-  else
-    entry->dlna_profile->class = dlna_class;
+  entry->dlna_profile->id = indicator[3] == SQL_NULL_DATA ? NULL : strdup(dlna_id);
+  entry->title = indicator[4] == SQL_NULL_DATA ? NULL : strdup(title);
+  entry->size = indicator[5] == SQL_NULL_DATA ? 0 : size=size;
+  entry->dlna_profile->class = indicator[6] == SQL_NULL_DATA ? 0 : dlna_class;
+  entry->date = indicator[7] == SQL_NULL_DATA? NULL : strdup(date);
+  entry->artist = indicator[8] == SQL_NULL_DATA? NULL : strdup(artist);
+  entry->album = indicator[9] == SQL_NULL_DATA? NULL : strdup(album);
+  entry->resolution = indicator[10] == SQL_NULL_DATA ? NULL : strdup(resolution);
+  entry->duration = indicator[11] == SQL_NULL_DATA ? NULL : make_time(duration);
+  entry->genre = indicator[12] == SQL_NULL_DATA ? NULL : strdup(genre);
 
   entry->childs = NULL;
   
@@ -252,7 +264,7 @@ struct upnp_entry_t *fetch_entry(int odbc_ptr,int id) {
 struct upnp_entry_t **fetch_children(int odbc_ptr,struct upnp_entry_t *parent)
 {
   SQLRETURN ret;
-  SQLINTEGER indicator[9];
+  SQLINTEGER indicator[14];
   struct upnp_entry_t *entry;
   struct upnp_entry_t **childs;
   char fullpath[512];
@@ -262,6 +274,12 @@ struct upnp_entry_t **fetch_children(int odbc_ptr,struct upnp_entry_t *parent)
   char title[512];
   SQLINTEGER i,rows;
   long size,id;
+  char date[20];
+  char artist[64];
+  char album[255];
+  char resolution[255];
+  char duration[255];
+  char genre[255];
   
   if (odbc_ptr < 0)
     return NULL;
@@ -275,6 +293,12 @@ struct upnp_entry_t **fetch_children(int odbc_ptr,struct upnp_entry_t *parent)
   ret =  SQLBindCol( uo.child_stmt, 5, SQL_C_CHAR, &title,sizeof(title),&indicator[5]);
   ret =  SQLBindCol( uo.child_stmt, 6, SQL_C_ULONG, &size,sizeof(size),&indicator[6]);
   ret =  SQLBindCol( uo.child_stmt, 7, SQL_C_ULONG, &dlna_class,sizeof(dlna_class),&indicator[7]);
+  ret =  SQLBindCol( uo.child_stmt, 8, SQL_C_CHAR, &date,sizeof(date),&indicator[8]);
+  ret =  SQLBindCol( uo.child_stmt, 9, SQL_C_CHAR, &artist,sizeof(artist),&indicator[9]);
+  ret =  SQLBindCol( uo.child_stmt, 10, SQL_C_CHAR, &album,sizeof(album),&indicator[10]);
+  ret =  SQLBindCol( uo.child_stmt, 11, SQL_C_CHAR, &resolution,sizeof(resolution),&indicator[11]);
+  ret =  SQLBindCol( uo.child_stmt, 12, SQL_C_CHAR, &duration,sizeof(duration),&indicator[12]);
+  ret =  SQLBindCol( uo.child_stmt, 13, SQL_C_CHAR, &genre,sizeof(genre),&indicator[13]);
   ret = SQLExecute(uo.child_stmt);
   
   SQLRowCount(uo.child_stmt,&rows);
@@ -289,41 +313,27 @@ struct upnp_entry_t **fetch_children(int odbc_ptr,struct upnp_entry_t *parent)
     memset(entry->dlna_profile,0,sizeof(entry->dlna_profile));
     
     entry->id=id;
-    if (indicator[2] == SQL_NULL_DATA)
-      entry->fullpath = NULL;
-    else
-      entry->fullpath=strdup(fullpath);
-    
-    if (indicator[3] == SQL_NULL_DATA) {
-      entry->dlna_profile->mime = NULL;
-      entry->child_count=get_child_count(odbc_ptr,id);
-      entry->mime_type = &Container_MIME_Type;
-    } else {
-      entry->dlna_profile->mime=strdup(dlna_mime);
-      entry->child_count = -1;
-      entry->mime_type = NULL;
-    }
-    
-    if (indicator[4] == SQL_NULL_DATA)
-      entry->dlna_profile->id = NULL;
-    else
-      entry->dlna_profile->id=strdup(dlna_id);
-    
-    if (indicator[5] == SQL_NULL_DATA)
-      entry->title = NULL;
-    else
-      entry->title=strdup(title);
-    
-    if (indicator[6] == SQL_NULL_DATA) {
-      entry->size = 0;
-    } else {
-      entry->size=size;
-    }
-	
-    if (indicator[7] == SQL_NULL_DATA)
-      entry->dlna_profile->class = 0;
-    else
-      entry->dlna_profile->class = dlna_class;
+  entry->id=id;
+  entry->fullpath = indicator[2] == SQL_NULL_DATA ? NULL : strdup(fullpath);
+  if (indicator[3] == SQL_NULL_DATA) {
+    entry->dlna_profile->mime = NULL;
+    entry->child_count=get_child_count(odbc_ptr,id);
+    entry->mime_type = &Container_MIME_Type;
+  } else {
+    entry->dlna_profile->mime=strdup(dlna_mime);
+    entry->child_count = -1;
+    entry->mime_type = NULL;
+  }
+  entry->dlna_profile->id = indicator[4] == SQL_NULL_DATA ? NULL : strdup(dlna_id);
+  entry->title = indicator[5] == SQL_NULL_DATA ? NULL : strdup(title);
+  entry->size = indicator[6] == SQL_NULL_DATA ? 0 : size=size;
+  entry->dlna_profile->class = indicator[7] == SQL_NULL_DATA ? 0 : dlna_class;
+  entry->date = indicator[8] == SQL_NULL_DATA? NULL : strdup(date);
+  entry->artist = indicator[9] == SQL_NULL_DATA? NULL : strdup(artist);
+  entry->album = indicator[10] == SQL_NULL_DATA? NULL : strdup(album);
+  entry->resolution = indicator[11] == SQL_NULL_DATA ? NULL : strdup(resolution);
+  entry->duration = indicator[12] == SQL_NULL_DATA ? NULL : make_time(duration);
+  entry->genre = indicator[13] == SQL_NULL_DATA ? NULL : strdup(genre);
     
     entry->childs = NULL;
     childs[i-1]=entry;

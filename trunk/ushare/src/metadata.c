@@ -114,6 +114,16 @@ _upnp_entry_free (struct upnp_entry_t *entry)
     free (entry->fullpath);
   if (entry->title)
     free (entry->title);
+  if (entry->artist)
+    free (entry->artist);
+  if (entry->album)
+    free (entry->album);
+  if (entry->date)
+    free (entry->date);
+  if (entry->resolution)
+    free (entry->resolution);
+  if (entry->duration)
+    free (entry->duration);
 #ifdef HAVE_DLNA
   if (entry->dlna_profile) {
     free(entry->dlna_profile);
