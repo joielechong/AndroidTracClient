@@ -107,7 +107,7 @@ void odbc_finish(int odbc_ptr) {
   }
 }
 
-char *get_next(long from_id,long *new_id) {
+char *get_next(int odbc_ptr,long from_id,long *new_id) {
   SQLRETURN ret;
   SQLINTEGER indicator[3];
   char filename[255];
