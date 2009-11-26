@@ -46,8 +46,9 @@ struct upnp_entry_t {
   char *artist;
   char *album;
   char *date;
-  char *resultion;
+  char *resolution;
   char *duration;
+  char *genre;
 };
 
 typedef struct xml_convert_s {
