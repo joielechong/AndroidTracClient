@@ -185,7 +185,7 @@ static char *make_time(long duration) {
   mins = secs / 60;
   secs = secs % 60;
   
-  sprintf(result,"%ld:%2.2ld%2.2ld",hours,mins,secs);
+  sprintf(result,"%ld:%2.2ld:%2.2ld",hours,mins,secs);
   return strdup(result);
 }
 

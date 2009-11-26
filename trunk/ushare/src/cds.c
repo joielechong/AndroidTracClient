@@ -485,7 +485,7 @@ cds_browse_directchildren (struct action_event_t *event,
                          (*childs)->title, protocol,
                          (*childs)->size,                      
 						 filter, 
-						 entry->artist, entry->album, entry->date, entry->duration, entry->resolution, entry->genre) :
+						 (*childs)->artist, (*childs)->album, (*childs)->date, (*childs)->duration, (*childs)->resolution, (*childs)->genre) :
 
 #endif /* HAVE_DLNA */
           didl_add_item (out, (*childs)->id, parent_id,
@@ -493,7 +493,7 @@ cds_browse_directchildren (struct action_event_t *event,
                          (*childs)->title, protocol,
                          (*childs)->size, 
 						 filter, 
-						 entry->artist, entry->album, entry->date, entry->duration, entry->resolution, entry->genre);
+						 (*childs)->artist, (*childs)->album, (*childs)->date, (*childs)->duration, (*childs)->resolution, (*childs)->genre);
 
         free (protocol);
       }
@@ -731,7 +731,7 @@ cds_search_directchildren_recursive (struct buffer_t *out, int count,
                            (*childs)->title, protocol,
                            (*childs)->size,                      
 						   filter, 					 
-						   entry->artist, entry->album, entry->date, entry->duration, entry->resolution, entry->genre) :
+						   (*childs)->artist, (*childs)->album, (*childs)->date, (*childs)->duration, (*childs)->resolution, (*childs)->genre) :
 #endif /* HAVE_DLNA */
             didl_add_item (out, (*childs)->id,
                            (*childs)->parent ? (*childs)->parent->id : -1,
@@ -739,7 +739,7 @@ cds_search_directchildren_recursive (struct buffer_t *out, int count,
                            (*childs)->title, protocol,
                            (*childs)->size, 
 						   filter, 
-						   entry->artist, entry->album, entry->date, entry->duration, entry->resolution, entry->genre);
+						   (*childs)->artist, (*childs)->album, (*childs)->date, (*childs)->duration, (*childs)->resolution, (*childs)->genre);
           free (protocol);
           result_count++;
         }
@@ -817,7 +817,7 @@ cds_search_directchildren (struct action_event_t *event,
                            (*childs)->title, protocol,
                            (*childs)->size,  
 						   filter, 
-						   entry->artist, entry->album, entry->date, entry->duration, entry->resolution, entry->genre) :
+						   (*childs)->artist, (*childs)->album, (*childs)->date, (*childs)->duration, (*childs)->resolution, (*childs)->genre) :
 #endif /* HAVE_DLNA */
             didl_add_item (out, (*childs)->id,
                            (*childs)->parent ? (*childs)->parent->id : -1,
@@ -825,7 +825,7 @@ cds_search_directchildren (struct action_event_t *event,
                            (*childs)->title, protocol,
                            (*childs)->size,
 						   filter, 
-						   entry->artist, entry->album, entry->date, entry->duration, entry->resolution, entry->genre);
+						   (*childs)->artist, (*childs)->album, (*childs)->date, (*childs)->duration, (*childs)->resolution, (*childs)->genre);
           free (protocol);
           result_count++;
         }
