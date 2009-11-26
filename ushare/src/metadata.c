@@ -45,14 +45,15 @@
 #include "odbc.h"
 
 typedef struct meta_thread_data_t {
-  pthread_t threadid;
+  pthread_t threadid1;
+  pthread_t threadid2;
   struct ushare_t *ut;
   int initial_wait;
   int loop_wait;
+  int verify_wait;
 } meta_thread_data;
 
 static meta_thread_data mtd;
-static int odbc_ptr;  /* moet hier weer weg */
 
 static char *
 getExtension (const char *filename)
@@ -377,7 +378,7 @@ static void fill_container(struct ushare_t *ut,char * path,int parent_id) {
 	}
       
       fullpath = (char *)
-	malloc (strlen (path) + strlen (namelist[i]->d_name) + 2);
+	  malloc (strlen (path) + strlen (namelist[i]->d_name) + 2);
       sprintf (fullpath, "%s/%s", path, namelist[i]->d_name);
       
       log_verbose ("%s\n", fullpath);
@@ -408,25 +409,40 @@ static void fill_container(struct ushare_t *ut,char * path,int parent_id) {
 }
 
 static 
-void *metathread(void *a __attribute__ ((unused)))
+void *newfilesthread(void *a __attribute__ ((unused)))
 {
   struct ushare_t *ut=mtd.ut;
   int i;
   
   sleep(mtd.initial_wait);
   while (1) {
-    log_verbose(_("Starting threadloop\n"));
-    
-    /* process contentlist change */
-    
+    log_verbose(_("Starting threadloop\n"));    
     /* process new files */
+	
+    pthread_mutex_lock (&mtd.db_mutex);
     for (i=0 ; i < ut->contentlist->count ; i++) {
       fill_container(ut,ut->contentlist->content[i],0);
     }
+    pthread_mutex_unlock (&mtd.db_mutex);
     
     sleep(mtd.loop_wait);
   }
   return NULL;
+}
+
+static void *verifythread(void *a __attribute__ ((unused)))
+{
+	long last_id = 0, new_id;
+	char *filename;
+	
+	while(1) {
+      pthread_mutex_lock (&mtd.db_mutex);
+	  filename = get_next(last_id,&new_id);
+      pthread_mutex_unlock (&mtd.db_mutex);
+	  printf("verify loop: %ld %ld %s\n",last_id,new_id,filename)
+	  last_id = new_id;
+	  sleep(mtd.verify_wait);
+	}
 }
 
 struct upnp_entry_t *
@@ -454,11 +470,15 @@ void build_metadata_db(struct ushare_t *ut) {
   ut->init = 1;
 
   mtd.ut = ut;
-  mtd.initial_wait=10000;
+  mtd.initial_wait=300;
   mtd.loop_wait=3600;   /* this must become configurable */
+  mtd.verify_wait=10;
   
-  log_info(_("Starting metadata thread...\n"));
-  if (pthread_create(&mtd.threadid,NULL,metathread,NULL)) { 	
+  pthread_mutex_init (&mtd.db_mutex, NULL);
+
+  log_verbose(_("Starting newfilesdata thread...\n"));
+  if (pthread_create(&mtd.threadid1,NULL,newfilesthread,NULL))
+    log_info(_("New files thread failed to start, no dynamic updates\n"));
+  if (pthread_create(&mtd.threadid2,NULL,verifythread,NULL))
     log_info(_("Metadata thread failed to start, no dynamic updates\n"));
-  }	
 }

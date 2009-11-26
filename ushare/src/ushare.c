@@ -78,6 +78,7 @@
 #include "trace.h"
 #include "buffer.h"
 #include "ctrl_telnet.h"
+#include "odbc.h"
 
 struct ushare_t *ut = NULL;
 
@@ -890,6 +891,7 @@ main (int argc, char **argv)
   if (ut->use_telnet)
     ctrl_telnet_stop ();
   finish_upnp (ut);
+  odbc_finish(ut->odbc_ptr);
   //  free_metadata_db (ut);
   ushare_free (ut);
   finish_iconv ();
