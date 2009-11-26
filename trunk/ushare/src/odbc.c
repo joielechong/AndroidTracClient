@@ -35,6 +35,9 @@ typedef struct ushare_odbc_t {
   SQLHSTMT fetch_stmt;
   SQLHSTMT child_stmt;
   SQLHSTMT count_stmt;
+  SQLHSTMT del_stmt;
+  SQLHSTMT loop_stmt;
+  pthread_mutex_t db_mutex;
 } ushare_odbc;
 
 static ushare_odbc uo;	
@@ -78,6 +81,16 @@ int init_odbc(const char *dsn) {
       extract_error("init_odbc","SQLPrepare count",uo.dbc,SQL_HANDLE_DBC);
       uo.count_stmt = NULL;
     }
+    SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.del_stmt);
+    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.del_stmt,(SQLCHAR *)"DELETE FROM ms.mediacontent where id=?",SQL_NTS))) {
+      extract_error("init_odbc","SQLPrepare del",uo.dbc,SQL_HANDLE_DBC);
+      uo.del_stmt = NULL;
+    }
+    SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.loop_stmt);
+    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.loop_stmt,(SQLCHAR *)"SELECT fullpath,id FROM ms.mediacontent where id = (SELECT min(id) FROM ms.mediacontent WHERE id>?)",SQL_NTS))) {
+      extract_error("init_odbc","SQLPrepare loop",uo.dbc,SQL_HANDLE_DBC);
+      uo.loop_stmt = NULL;
+    }
     return 1;
   } else {
     SQLFreeHandle(SQL_HANDLE_DBC,uo.dbc);
@@ -92,6 +105,25 @@ void odbc_finish(int odbc_ptr) {
     SQLFreeHandle(SQL_HANDLE_DBC,uo.dbc);
     SQLFreeHandle(SQL_HANDLE_ENV,uo.env);
   }
+}
+
+char *get_next(long from_id,long *new_id) {
+  SQLRETURN ret;
+  SQLINTEGER indicator[3];
+  char filename[255];
+  
+  if (odbc_ptr < 0)
+    return -1;
+  
+  SQLFreeStmt(uo.loop_stmt,SQL_CLOSE);
+  ret = SQLBindParameter(uo.loop_stmt, 1, SQL_PARAM_INPUT, SQL_C_ULONG, SQL_INTEGER, sizeof(long), 0, &from_id, sizeof(from_id), NULL);
+  ret = SQLBindCol( uo.loop_stmt, 1, SQL_C_CHAR, filename,255,&indicator[1]);
+  ret = SQLBindCol( uo.loop_stmt, 2, SQL_C_LONG, new_id,sizeof(*new_id),&indicator[2]);
+  ret = SQLExecute(uo.loop_stmt);
+  ret = SQLFetch(uo.loop_stmt);
+  if (indicatopr[2] == SQL_NULL_DATA)
+    *new_id = 0
+  return indicator[1] == SQL_NULL_DATA ? NULL : strdup(filename);
 }
 
 long entry_stored(int odbc_ptr,char *path)
