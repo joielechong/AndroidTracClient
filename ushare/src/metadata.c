@@ -440,7 +440,7 @@ static void *verifythread(void *a __attribute__ ((unused)))
       pthread_mutex_lock (&mtd.db_mutex);
 	  filename = get_next(last_id,&new_id);
       pthread_mutex_unlock (&mtd.db_mutex);
-	  printf("verify loop: %ld %ld %s\n",last_id,new_id,filename)
+	  printf("verify loop: %ld %ld %s\n",last_id,new_id,filename);
 	  last_id = new_id;
 	  sleep(mtd.verify_wait);
 	}
