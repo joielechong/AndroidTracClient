@@ -51,6 +51,7 @@ typedef struct meta_thread_data_t {
   int initial_wait;
   int loop_wait;
   int verify_wait;
+  pthread_mutex_t db_mutex;
 } meta_thread_data;
 
 static meta_thread_data mtd;
@@ -394,11 +395,11 @@ static void fill_container(struct ushare_t *ut,char * path,int parent_id) {
 	fill_container(ut,fullpath,newparent);
       } else {
 	if (ut->dlna_enabled || is_valid_extension (getExtension (fullpath))) {
-	  if (entry_stored(odbc_ptr,fullpath) == -1 ) {
+	  if (entry_stored(ut->odbc_ptr,fullpath) == -1 ) {
 	    struct upnp_entry_t *child = NULL;
 	    child = upnp_entry_new (ut, namelist[i]->d_name, fullpath, NULL, st.st_size, false);
 	    if (child) 
-	      store_entry(odbc_ptr,child,newparent);
+	      store_entry(ut->odbc_ptr,child,newparent);
 	  }
 	}
       }
