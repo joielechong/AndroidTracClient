@@ -292,7 +292,9 @@ didl_add_value (struct buffer_t *out, char *param, off_t value)
 static void
 didl_add_item (struct buffer_t *out, int item_id,
                int parent_id, char *restricted, char *class, char *title,
-               char *protocol_info, off_t size, char *filter)
+               char *protocol_info, off_t size, char *filter, char *artist,
+			   char *album, char *date, char *duration, char *resulotion,
+			   char *genre)
 {
   char *duration = NULL;
   char *artist = NULL;
@@ -395,13 +397,15 @@ cds_browse_metadata (struct action_event_t *event, struct buffer_t *out,
                      dlna_profile_upnp_object_item (entry->dlna_profile),
                      entry->title,
                      protocol, entry->size,
-                     filter) :
+                     filter, 
+					 entry->artist, entry->album, entry->date, entry->duration, entry->resulotion, entry->genre) :
 #endif /* HAVE_DLNA */
       didl_add_item (out, entry->id, entry->parent
                      ? entry->parent->id : -1, "false",
                      entry->mime_type->mime_class, entry->title,
                      protocol, entry->size,
-                     filter);
+                     filter, 
+					 entry->artist, entry->album, entry->date, entry->duration, entry->resulotion, entry->genre);
     
     didl_add_footer (out);
     free (protocol);
@@ -486,12 +490,17 @@ cds_browse_directchildren (struct action_event_t *event,
           didl_add_item (out, (*childs)->id,parent_id,
                          "true", dlna_profile_upnp_object_item ((*childs)->dlna_profile),
                          (*childs)->title, protocol,
-                         (*childs)->size, filter) :
+                         (*childs)->size,                      
+						 filter, 
+						 entry->artist, entry->album, entry->date, entry->duration, entry->resulotion, entry->genre) :
+
 #endif /* HAVE_DLNA */
           didl_add_item (out, (*childs)->id, parent_id,
                          "true", (*childs)->mime_type->mime_class,
                          (*childs)->title, protocol,
-                         (*childs)->size, filter);
+                         (*childs)->size, 
+						 filter, 
+						 entry->artist, entry->album, entry->date, entry->duration, entry->resulotion, entry->genre);
 
         free (protocol);
       }
@@ -727,13 +736,17 @@ cds_search_directchildren_recursive (struct buffer_t *out, int count,
                            (*childs)->parent ? (*childs)->parent->id : -1,
                            "true", dlna_profile_upnp_object_item ((*childs)->dlna_profile),
                            (*childs)->title, protocol,
-                           (*childs)->size, filter) :
+                           (*childs)->size,                      
+						   filter, 					 
+						   entry->artist, entry->album, entry->date, entry->duration, entry->resulotion, entry->genre) :
 #endif /* HAVE_DLNA */
             didl_add_item (out, (*childs)->id,
                            (*childs)->parent ? (*childs)->parent->id : -1,
                            "true", (*childs)->mime_type->mime_class,
                            (*childs)->title, protocol,
-                           (*childs)->size, filter);
+                           (*childs)->size, 
+						   filter, 
+						   entry->artist, entry->album, entry->date, entry->duration, entry->resulotion, entry->genre);
           free (protocol);
           result_count++;
         }
@@ -809,13 +822,17 @@ cds_search_directchildren (struct action_event_t *event,
                            (*childs)->parent ? (*childs)->parent->id : -1,
                            "true", dlna_profile_upnp_object_item ((*childs)->dlna_profile),
                            (*childs)->title, protocol,
-                           (*childs)->size,  filter) :
+                           (*childs)->size,  
+						   filter, 
+						   entry->artist, entry->album, entry->date, entry->duration, entry->resulotion, entry->genre) :
 #endif /* HAVE_DLNA */
             didl_add_item (out, (*childs)->id,
                            (*childs)->parent ? (*childs)->parent->id : -1,
                            "true", (*childs)->mime_type->mime_class,
                            (*childs)->title, protocol,
-                           (*childs)->size,  filter);
+                           (*childs)->size,
+						   filter, 
+						   entry->artist, entry->album, entry->date, entry->duration, entry->resulotion, entry->genre);
           free (protocol);
           result_count++;
         }
