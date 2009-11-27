@@ -63,7 +63,7 @@
       
       // perform query and get result feed
       //$query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full?max-results=2048');
-      $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full');
+      $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full?max-results=1');
       $feed = $gdata->getFeed($query);
       
       // display title and result count
@@ -81,12 +81,12 @@
       foreach($feed as $entry){
         $xml = simplexml_load_string($entry->getXML());
    	echo("<!--\n");
-	//print_r($entry);
+    	print_r($entry);
 	print_r($xml);
 	echo("-->\n");
         $obj = new stdClass;
         $obj->name = (string) $entry->title;
-		$obj->content = $entry->getContent()->getText();
+	$obj->content = (string) $entry->content;
         $obj->orgName = (string) $xml->organization->orgName; 
         $obj->orgTitle = (string) $xml->organization->orgTitle; 
       
@@ -134,7 +134,7 @@
             <td><?php echo @join(', ', $r->website); ?></td>
           </tr>
           <tr>
-            <td>Id</td>
+            <td>Content</td>
             <td><?php echo @join(', ', $r->content); ?></td>
           </tr>
         </table>
