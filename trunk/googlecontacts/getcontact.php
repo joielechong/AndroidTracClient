@@ -69,8 +69,8 @@
       $gdata->setMajorProtocolVersion(3);
       
       // perform query and get result feed
-      $query = new Zend_Gdata_Query(
-        'http://www.google.com/m8/feeds/contacts/default/full?max-results=2048');
+//      $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full?max-results=2048');
+      $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full);
       $feed = $gdata->getFeed($query);
       
       // display title and result count
@@ -86,6 +86,9 @@
       // into simpler objects
       $results = array();
       foreach($feed as $entry){
+		echo "<!--\n";
+		print_r($entry);
+		echo "-->\n";
         $xml = simplexml_load_string($entry->getXML());
         $obj = new stdClass;
         $obj->name = (string) $entry->title;
