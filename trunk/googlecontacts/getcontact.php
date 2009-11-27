@@ -42,8 +42,23 @@
     #Zend_Loader::loadClass('Zend_Gdata_Feed');
     
     // set credentials for ClientLogin authentication
-    $user = "mfvloon@gmail.com";
-    $pass = "mikel02";
+	$user = '** invalid **';                                                        
+	$pass = '** invalid **';                                                        
+                                                                                
+	$cred = fopen("/home/mfvl/download/credentials.PC","r");                        
+	while (!feof($cred)) {                                                          
+		$buffer = fgets($cred);                                                       
+		if ($buffer[0] !== "#" && strstr($buffer,"=") != FALSE) {                     
+			list($key,$val) = explode('=',$buffer);                                     
+			if ($key === "username") {                                                  
+				$user = chop($val);                                                       
+			}                                                                           
+			if ($key === "password") {                                                  
+				$pass = chop($val);                                                       
+			}                                                                           
+		}                                                                             
+	}                                                                               
+	fclose($cred);                                                                  
     
     try {
       // perform login and set protocol version to 3.0
