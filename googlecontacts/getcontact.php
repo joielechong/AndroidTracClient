@@ -69,7 +69,7 @@ ini_set('memory_limit', '50M');
       $gdata->setMajorProtocolVersion(3);
       
       // perform query and get result feed
-//      $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full?max-results=2048');
+      //$query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full?max-results=2048');
       $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full');
       $feed = $gdata->getFeed($query);
       
@@ -86,10 +86,11 @@ ini_set('memory_limit', '50M');
       // into simpler objects
       $results = array();
       foreach($feed as $entry){
-	echo("<!--\n");
-	print_r($entry);
-	echo("-->\n");
         $xml = simplexml_load_string($entry->getXML());
+   	echo("<!--\n");
+	print_r($entry);
+	print_r($xml);
+	echo("-->\n");
         $obj = new stdClass;
         $obj->name = (string) $entry->title;
         $obj->orgName = (string) $xml->organization->orgName; 
