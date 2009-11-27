@@ -170,7 +170,8 @@ long entry_stored(int odbc_ptr,char *path)
   }
   if (lastcall) {
     extract_error("entry_stored",lastcall,uo.dbc,SQL_HANDLE_DBC);
-	log_info("   path = %s\n",path);
+    log_info("   path = %s\n",path);
+  }
   return retval;
 }
 
@@ -179,7 +180,7 @@ static long get_child_count(int odbc_ptr,long id) {
   long retval;
   SQLINTEGER indicator;
   char *lastcall = NULL;
-
+  
   if (odbc_ptr < 0)
     return -1;
   
@@ -207,7 +208,7 @@ long get_last_entry(int odbc_ptr) {
   long retval;
   SQLINTEGER indicator;
   SQLHSTMT hstmt;
-
+  
   if (odbc_ptr < 0)
     return -1;
   
