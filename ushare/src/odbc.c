@@ -168,8 +168,9 @@ long entry_stored(int odbc_ptr,char *path)
       }
     }
   }
-  if (lastcall)
+  if (lastcall) {
     extract_error("entry_stored",lastcall,uo.dbc,SQL_HANDLE_DBC);
+	log_info("   path = %s\n",path);
   return retval;
 }
 
