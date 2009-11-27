@@ -2,11 +2,21 @@
 -- PostgreSQL database dump
 --
 
+SET statement_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = off;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 SET escape_string_warning = off;
+
+--
+-- Name: ms; Type: SCHEMA; Schema: -; Owner: mfvl
+--
+
+CREATE SCHEMA ms;
+
+
+ALTER SCHEMA ms OWNER TO mfvl;
 
 --
 -- Name: pois; Type: SCHEMA; Schema: -; Owner: mfvl
@@ -25,18 +35,13 @@ COMMENT ON SCHEMA pois IS 'alle tabellen etc. voor de flitspalen';
 
 
 --
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
---
-
-COMMENT ON SCHEMA public IS 'Standard public schema';
-
-
---
 -- Name: plperl; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: postgres
 --
 
 CREATE PROCEDURAL LANGUAGE plperl;
 
+
+ALTER PROCEDURAL LANGUAGE plperl OWNER TO postgres;
 
 --
 -- Name: plperlu; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: postgres
@@ -45,12 +50,16 @@ CREATE PROCEDURAL LANGUAGE plperl;
 CREATE PROCEDURAL LANGUAGE plperlu;
 
 
+ALTER PROCEDURAL LANGUAGE plperlu OWNER TO postgres;
+
 --
 -- Name: plpgsql; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: postgres
 --
 
 CREATE PROCEDURAL LANGUAGE plpgsql;
 
+
+ALTER PROCEDURAL LANGUAGE plpgsql OWNER TO postgres;
 
 SET search_path = public, pg_catalog;
 
@@ -74,9 +83,9 @@ SET search_path = pois, pg_catalog;
 --
 
 CREATE FUNCTION "ResetChanged"() RETURNS void
+    LANGUAGE sql
     AS $$UPDATE pois.posten SET changed = 'No'
-WHERE changed= 'Yes'$$
-    LANGUAGE sql;
+WHERE changed= 'Yes'$$;
 
 
 ALTER FUNCTION pois."ResetChanged"() OWNER TO mfvl;
@@ -85,7 +94,8 @@ ALTER FUNCTION pois."ResetChanged"() OWNER TO mfvl;
 -- Name: create_poi(); Type: FUNCTION; Schema: pois; Owner: mfvl
 --
 
-CREATE FUNCTION create_poi() RETURNS "trigger"
+CREATE FUNCTION create_poi() RETURNS trigger
+    LANGUAGE plpgsql
     AS $$begin
   new.insert_date:=now();
   new.update_date:=now();
@@ -95,8 +105,7 @@ CREATE FUNCTION create_poi() RETURNS "trigger"
 	select land into new.land from pois.inputfiles where naam=new.file;
   end if;
   return new;
-end;$$
-    LANGUAGE plpgsql;
+end;$$;
 
 
 ALTER FUNCTION pois.create_poi() OWNER TO mfvl;
@@ -105,7 +114,8 @@ ALTER FUNCTION pois.create_poi() OWNER TO mfvl;
 -- Name: maaknaam(); Type: FUNCTION; Schema: pois; Owner: mfvl
 --
 
-CREATE FUNCTION maaknaam() RETURNS "trigger"
+CREATE FUNCTION maaknaam() RETURNS trigger
+    LANGUAGE plperl
     AS $_X$my @naam;
 
 my $lat=$_TD->{new}->{lat};
@@ -152,8 +162,7 @@ $comment =~ s/\$0x.*\$//;
 $_TD->{new}->{descr} = $comment;
 $_TD->{new}->{naam}=$naam;
 
-return "MODIFY";$_X$
-    LANGUAGE plperl;
+return "MODIFY";$_X$;
 
 
 ALTER FUNCTION pois.maaknaam() OWNER TO mfvl;
@@ -163,6 +172,7 @@ ALTER FUNCTION pois.maaknaam() OWNER TO mfvl;
 --
 
 CREATE FUNCTION mtcstring(character varying, integer, integer, integer, boolean) RETURNS character varying
+    LANGUAGE plperl
     AS $_$my $type=shift;
 my $id=shift;
 my $snelheid=shift;
@@ -183,8 +193,7 @@ $typ = "GATSO" unless defined($typ);
 my $retstr="\"$typ:$id\@$snelheid\"";
 $retstr .= ",$richting,".($bidirectioneel eq 't' ? "2" : "1" ) if defined($richting);
 
-return $retstr;$_$
-    LANGUAGE plperl;
+return $retstr;$_$;
 
 
 ALTER FUNCTION pois.mtcstring(character varying, integer, integer, integer, boolean) OWNER TO mfvl;
@@ -222,8 +231,8 @@ ALTER TABLE pois.posten OWNER TO mfvl;
 --
 
 CREATE FUNCTION relatedpois(reqid integer) RETURNS SETOF posten
-    AS $_$SELECT * FROM pois.posten WHERE id=$1 or rel_id=$1 order by rel_id,id;$_$
-    LANGUAGE sql;
+    LANGUAGE sql
+    AS $_$SELECT * FROM pois.posten WHERE id=$1 or rel_id=$1 order by rel_id,id;$_$;
 
 
 ALTER FUNCTION pois.relatedpois(reqid integer) OWNER TO mfvl;
@@ -233,10 +242,10 @@ ALTER FUNCTION pois.relatedpois(reqid integer) OWNER TO mfvl;
 --
 
 CREATE FUNCTION setrelid(integer, integer) RETURNS integer
+    LANGUAGE sql
     AS $_$UPDATE pois.posten set rel_id=$2 where id=$1;
 UPDATE pois.posten set changed='y' where id in ($1,$2);
-select $1;$_$
-    LANGUAGE sql;
+select $1;$_$;
 
 
 ALTER FUNCTION pois.setrelid(integer, integer) OWNER TO mfvl;
@@ -246,9 +255,9 @@ ALTER FUNCTION pois.setrelid(integer, integer) OWNER TO mfvl;
 --
 
 CREATE FUNCTION setrichting(integer, integer, boolean) RETURNS integer
+    LANGUAGE sql
     AS $_$UPDATE pois.posten set richting=$2,bidirectioneel=$3,changed='y'  where id=$1;
-select $1;$_$
-    LANGUAGE sql;
+select $1;$_$;
 
 
 ALTER FUNCTION pois.setrichting(integer, integer, boolean) OWNER TO root;
@@ -257,7 +266,8 @@ ALTER FUNCTION pois.setrichting(integer, integer, boolean) OWNER TO root;
 -- Name: update_poi(); Type: FUNCTION; Schema: pois; Owner: mfvl
 --
 
-CREATE FUNCTION update_poi() RETURNS "trigger"
+CREATE FUNCTION update_poi() RETURNS trigger
+    LANGUAGE plpgsql
     AS $$begin
   if ( (new.id != old.id)  or
        (new.lat != old.lat) or
@@ -274,8 +284,7 @@ CREATE FUNCTION update_poi() RETURNS "trigger"
     new.changed:='t';
  end if;
   return new;
-end;$$
-    LANGUAGE plpgsql;
+end;$$;
 
 
 ALTER FUNCTION pois.update_poi() OWNER TO mfvl;
@@ -287,8 +296,8 @@ SET search_path = public, pg_catalog;
 --
 
 CREATE FUNCTION aantalmail(integer) RETURNS integer
-    AS $_$SELECT max(priority) from mail where contact_id = $1$_$
-    LANGUAGE sql;
+    LANGUAGE sql
+    AS $_$SELECT max(priority) from mail where contact_id = $1$_$;
 
 
 ALTER FUNCTION public.aantalmail(integer) OWNER TO mfvl;
@@ -297,7 +306,8 @@ ALTER FUNCTION public.aantalmail(integer) OWNER TO mfvl;
 -- Name: af_contact_del(); Type: FUNCTION; Schema: public; Owner: mfvl
 --
 
-CREATE FUNCTION af_contact_del() RETURNS "trigger"
+CREATE FUNCTION af_contact_del() RETURNS trigger
+    LANGUAGE plpgsql
     AS $$begin
 	delete from naw where contact_id=old.id;
 	delete from catcontact where contact_id=old.id;
@@ -307,8 +317,7 @@ CREATE FUNCTION af_contact_del() RETURNS "trigger"
 	delete from relaties where contact_id=old.id;
 	update relaties set relatie_id = null where relatie_id=old.id;
 return old;
-end;$$
-    LANGUAGE plpgsql;
+end;$$;
 
 
 ALTER FUNCTION public.af_contact_del() OWNER TO mfvl;
@@ -317,12 +326,12 @@ ALTER FUNCTION public.af_contact_del() OWNER TO mfvl;
 -- Name: af_contact_updtime(); Type: FUNCTION; Schema: public; Owner: mfvl
 --
 
-CREATE FUNCTION af_contact_updtime() RETURNS "trigger"
+CREATE FUNCTION af_contact_updtime() RETURNS trigger
+    LANGUAGE plpgsql
     AS $$begin
   new.updatetime=now();
   return new;
-end;$$
-    LANGUAGE plpgsql;
+end;$$;
 
 
 ALTER FUNCTION public.af_contact_updtime() OWNER TO mfvl;
@@ -331,12 +340,12 @@ ALTER FUNCTION public.af_contact_updtime() OWNER TO mfvl;
 -- Name: af_updtime(); Type: FUNCTION; Schema: public; Owner: mfvl
 --
 
-CREATE FUNCTION af_updtime() RETURNS "trigger"
+CREATE FUNCTION af_updtime() RETURNS trigger
+    LANGUAGE plpgsql
     AS $$begin
   update contacts set updatetime=now() where id=new.contact_id;
   return new;
-end;$$
-    LANGUAGE plpgsql;
+end;$$;
 
 
 ALTER FUNCTION public.af_updtime() OWNER TO mfvl;
@@ -345,12 +354,12 @@ ALTER FUNCTION public.af_updtime() OWNER TO mfvl;
 -- Name: af_updtime1(); Type: FUNCTION; Schema: public; Owner: mfvl
 --
 
-CREATE FUNCTION af_updtime1() RETURNS "trigger"
+CREATE FUNCTION af_updtime1() RETURNS trigger
+    LANGUAGE plpgsql
     AS $$begin
   update contacts set updatetime=now() where id=old.contact_id;
   return old;
-end;$$
-    LANGUAGE plpgsql;
+end;$$;
 
 
 ALTER FUNCTION public.af_updtime1() OWNER TO mfvl;
@@ -360,14 +369,14 @@ ALTER FUNCTION public.af_updtime1() OWNER TO mfvl;
 --
 
 CREATE FUNCTION array_to_set(arr anyarray) RETURNS SETOF anyelement
+    LANGUAGE plpgsql
     AS $$
 BEGIN
     FOR idx IN array_lower(arr, 1)..array_upper(arr, 1) LOOP
         RETURN NEXT arr[idx];
     END LOOP;
 END;
-$$
-    LANGUAGE plpgsql;
+$$;
 
 
 ALTER FUNCTION public.array_to_set(arr anyarray) OWNER TO mfvl;
@@ -377,6 +386,7 @@ ALTER FUNCTION public.array_to_set(arr anyarray) OWNER TO mfvl;
 --
 
 CREATE FUNCTION bepaal_tel_prio(text, text) RETURNS integer
+    LANGUAGE plpgsql STABLE
     AS $_$Declare
 	aantal integer;
 	retval integer;
@@ -388,8 +398,7 @@ begin
 		retval = 1;
 	end if;
 	return retval;
-end;$_$
-    LANGUAGE plpgsql STABLE;
+end;$_$;
 
 
 ALTER FUNCTION public.bepaal_tel_prio(text, text) OWNER TO mfvl;
@@ -399,8 +408,8 @@ ALTER FUNCTION public.bepaal_tel_prio(text, text) OWNER TO mfvl;
 --
 
 CREATE FUNCTION connectby(text, text, text, text, integer, text) RETURNS SETOF record
-    AS '$libdir/tablefunc', 'connectby_text'
-    LANGUAGE c STABLE STRICT;
+    LANGUAGE c STABLE STRICT
+    AS '$libdir/tablefunc', 'connectby_text';
 
 
 ALTER FUNCTION public.connectby(text, text, text, text, integer, text) OWNER TO mfvl;
@@ -410,8 +419,8 @@ ALTER FUNCTION public.connectby(text, text, text, text, integer, text) OWNER TO 
 --
 
 CREATE FUNCTION connectby(text, text, text, text, integer) RETURNS SETOF record
-    AS '$libdir/tablefunc', 'connectby_text'
-    LANGUAGE c STABLE STRICT;
+    LANGUAGE c STABLE STRICT
+    AS '$libdir/tablefunc', 'connectby_text';
 
 
 ALTER FUNCTION public.connectby(text, text, text, text, integer) OWNER TO mfvl;
@@ -421,8 +430,8 @@ ALTER FUNCTION public.connectby(text, text, text, text, integer) OWNER TO mfvl;
 --
 
 CREATE FUNCTION connectby(text, text, text, text, text, integer, text) RETURNS SETOF record
-    AS '$libdir/tablefunc', 'connectby_text_serial'
-    LANGUAGE c STABLE STRICT;
+    LANGUAGE c STABLE STRICT
+    AS '$libdir/tablefunc', 'connectby_text_serial';
 
 
 ALTER FUNCTION public.connectby(text, text, text, text, text, integer, text) OWNER TO mfvl;
@@ -432,8 +441,8 @@ ALTER FUNCTION public.connectby(text, text, text, text, text, integer, text) OWN
 --
 
 CREATE FUNCTION connectby(text, text, text, text, text, integer) RETURNS SETOF record
-    AS '$libdir/tablefunc', 'connectby_text_serial'
-    LANGUAGE c STABLE STRICT;
+    LANGUAGE c STABLE STRICT
+    AS '$libdir/tablefunc', 'connectby_text_serial';
 
 
 ALTER FUNCTION public.connectby(text, text, text, text, text, integer) OWNER TO mfvl;
@@ -443,8 +452,8 @@ ALTER FUNCTION public.connectby(text, text, text, text, text, integer) OWNER TO 
 --
 
 CREATE FUNCTION crosstab(text) RETURNS SETOF record
-    AS '$libdir/tablefunc', 'crosstab'
-    LANGUAGE c STABLE STRICT;
+    LANGUAGE c STABLE STRICT
+    AS '$libdir/tablefunc', 'crosstab';
 
 
 ALTER FUNCTION public.crosstab(text) OWNER TO mfvl;
@@ -454,8 +463,8 @@ ALTER FUNCTION public.crosstab(text) OWNER TO mfvl;
 --
 
 CREATE FUNCTION crosstab(text, integer) RETURNS SETOF record
-    AS '$libdir/tablefunc', 'crosstab'
-    LANGUAGE c STABLE STRICT;
+    LANGUAGE c STABLE STRICT
+    AS '$libdir/tablefunc', 'crosstab';
 
 
 ALTER FUNCTION public.crosstab(text, integer) OWNER TO mfvl;
@@ -465,8 +474,8 @@ ALTER FUNCTION public.crosstab(text, integer) OWNER TO mfvl;
 --
 
 CREATE FUNCTION crosstab(text, text) RETURNS SETOF record
-    AS '$libdir/tablefunc', 'crosstab_hash'
-    LANGUAGE c STABLE STRICT;
+    LANGUAGE c STABLE STRICT
+    AS '$libdir/tablefunc', 'crosstab_hash';
 
 
 ALTER FUNCTION public.crosstab(text, text) OWNER TO mfvl;
@@ -476,11 +485,11 @@ ALTER FUNCTION public.crosstab(text, text) OWNER TO mfvl;
 --
 
 CREATE FUNCTION display_field(text) RETURNS text
+    LANGUAGE sql IMMUTABLE
     AS $_$select case
 when $1 is null then ''
 else $1
-end$_$
-    LANGUAGE sql IMMUTABLE;
+end$_$;
 
 
 ALTER FUNCTION public.display_field(text) OWNER TO mfvl;
@@ -490,13 +499,13 @@ ALTER FUNCTION public.display_field(text) OWNER TO mfvl;
 --
 
 CREATE FUNCTION getfirstlow(text) RETURNS text
+    LANGUAGE plperl
     AS $_$ 
 my $value = shift;
 $value =~ s/^\W+//;
 $value =~ s/^$/inconnu/;
 return substr(lc($value),0,1);
-$_$
-    LANGUAGE plperl;
+$_$;
 
 
 ALTER FUNCTION public.getfirstlow(text) OWNER TO mfvl;
@@ -505,13 +514,13 @@ ALTER FUNCTION public.getfirstlow(text) OWNER TO mfvl;
 -- Name: insert_cat(); Type: FUNCTION; Schema: public; Owner: mfvl
 --
 
-CREATE FUNCTION insert_cat() RETURNS "trigger"
+CREATE FUNCTION insert_cat() RETURNS trigger
+    LANGUAGE plpgsql
     AS $$begin
 new.class='CAT';
 return new;
 end;
-$$
-    LANGUAGE plpgsql;
+$$;
 
 
 ALTER FUNCTION public.insert_cat() OWNER TO mfvl;
@@ -520,14 +529,14 @@ ALTER FUNCTION public.insert_cat() OWNER TO mfvl;
 -- Name: insert_fax(); Type: FUNCTION; Schema: public; Owner: mfvl
 --
 
-CREATE FUNCTION insert_fax() RETURNS "trigger"
+CREATE FUNCTION insert_fax() RETURNS trigger
+    LANGUAGE plpgsql
     AS $$begin
 new.class='FAX';
 new.number=normtel(new.number);
 return new;
 end;
-$$
-    LANGUAGE plpgsql;
+$$;
 
 
 ALTER FUNCTION public.insert_fax() OWNER TO mfvl;
@@ -536,14 +545,14 @@ ALTER FUNCTION public.insert_fax() OWNER TO mfvl;
 -- Name: insert_mail(); Type: FUNCTION; Schema: public; Owner: mfvl
 --
 
-CREATE FUNCTION insert_mail() RETURNS "trigger"
+CREATE FUNCTION insert_mail() RETURNS trigger
+    LANGUAGE plpgsql
     AS $$begin
 new.class='MAIL';
 new.mailaddress = lower(new.mailaddress);
 return new;
 end;
-$$
-    LANGUAGE plpgsql;
+$$;
 
 
 ALTER FUNCTION public.insert_mail() OWNER TO mfvl;
@@ -552,13 +561,13 @@ ALTER FUNCTION public.insert_mail() OWNER TO mfvl;
 -- Name: insert_naw(); Type: FUNCTION; Schema: public; Owner: mfvl
 --
 
-CREATE FUNCTION insert_naw() RETURNS "trigger"
+CREATE FUNCTION insert_naw() RETURNS trigger
+    LANGUAGE plpgsql
     AS $$begin
 new.class='NAW';
 return new;
 end;
-$$
-    LANGUAGE plpgsql;
+$$;
 
 
 ALTER FUNCTION public.insert_naw() OWNER TO mfvl;
@@ -567,13 +576,13 @@ ALTER FUNCTION public.insert_naw() OWNER TO mfvl;
 -- Name: insert_rek(); Type: FUNCTION; Schema: public; Owner: mfvl
 --
 
-CREATE FUNCTION insert_rek() RETURNS "trigger"
+CREATE FUNCTION insert_rek() RETURNS trigger
+    LANGUAGE plpgsql
     AS $$begin
 new.class='REK';
 return new;
 end;
-$$
-    LANGUAGE plpgsql;
+$$;
 
 
 ALTER FUNCTION public.insert_rek() OWNER TO mfvl;
@@ -582,13 +591,13 @@ ALTER FUNCTION public.insert_rek() OWNER TO mfvl;
 -- Name: insert_rel(); Type: FUNCTION; Schema: public; Owner: mfvl
 --
 
-CREATE FUNCTION insert_rel() RETURNS "trigger"
+CREATE FUNCTION insert_rel() RETURNS trigger
+    LANGUAGE plpgsql
     AS $$begin
 new.class='REL';
 return new;
 end;
-$$
-    LANGUAGE plpgsql;
+$$;
 
 
 ALTER FUNCTION public.insert_rel() OWNER TO mfvl;
@@ -597,13 +606,13 @@ ALTER FUNCTION public.insert_rel() OWNER TO mfvl;
 -- Name: insert_tel(); Type: FUNCTION; Schema: public; Owner: mfvl
 --
 
-CREATE FUNCTION insert_tel() RETURNS "trigger"
+CREATE FUNCTION insert_tel() RETURNS trigger
+    LANGUAGE plpgsql
     AS $$begin
 new.class='TEL';
 new.number=normtel(new.number);
 return new;
-end;$$
-    LANGUAGE plpgsql;
+end;$$;
 
 
 ALTER FUNCTION public.insert_tel() OWNER TO mfvl;
@@ -612,12 +621,12 @@ ALTER FUNCTION public.insert_tel() OWNER TO mfvl;
 -- Name: ldap_create(); Type: FUNCTION; Schema: public; Owner: mfvl
 --
 
-CREATE FUNCTION ldap_create() RETURNS "trigger"
+CREATE FUNCTION ldap_create() RETURNS trigger
+    LANGUAGE plpgsql
     AS $$begin
 insert into ldap_entries (dn,oc_map_id,parent,keyval) values ('cn='||new.cn||',o=outlook',1,1,new.id);
 return new; 
-end;$$
-    LANGUAGE plpgsql;
+end;$$;
 
 
 ALTER FUNCTION public.ldap_create() OWNER TO mfvl;
@@ -626,12 +635,12 @@ ALTER FUNCTION public.ldap_create() OWNER TO mfvl;
 -- Name: ldap_delete(); Type: FUNCTION; Schema: public; Owner: mfvl
 --
 
-CREATE FUNCTION ldap_delete() RETURNS "trigger"
+CREATE FUNCTION ldap_delete() RETURNS trigger
+    LANGUAGE plpgsql
     AS $$begin
 delete from ldap_entries where keyval = old.id;
 return old;
-end; $$
-    LANGUAGE plpgsql;
+end; $$;
 
 
 ALTER FUNCTION public.ldap_delete() OWNER TO mfvl;
@@ -640,28 +649,42 @@ ALTER FUNCTION public.ldap_delete() OWNER TO mfvl;
 -- Name: ldap_update(); Type: FUNCTION; Schema: public; Owner: mfvl
 --
 
-CREATE FUNCTION ldap_update() RETURNS "trigger"
+CREATE FUNCTION ldap_update() RETURNS trigger
+    LANGUAGE plpgsql
     AS $$begin
 if (old.cn != new.cn) then
 update ldap_entries set dn='cn='||new.cn||',o=outlook' where keyval=new.id;
 end if;
-return new;end;$$
-    LANGUAGE plpgsql;
+return new;end;$$;
 
 
 ALTER FUNCTION public.ldap_update() OWNER TO mfvl;
+
+--
+-- Name: maaksn(text, text); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION maaksn(text, text) RETURNS text
+    LANGUAGE sql
+    AS $_$select case
+when $2 is null then $1
+else $1 || ', ' || $2
+end$_$;
+
+
+ALTER FUNCTION public.maaksn(text, text) OWNER TO mfvl;
 
 --
 -- Name: nonull_append_strings(text, text); Type: FUNCTION; Schema: public; Owner: mfvl
 --
 
 CREATE FUNCTION nonull_append_strings(text, text) RETURNS text
+    LANGUAGE sql IMMUTABLE
     AS $_$select case
 when $1 is null then $2
 when $2 is null then $1
 else $1 || ' ' || $2
-end$_$
-    LANGUAGE sql IMMUTABLE;
+end$_$;
 
 
 ALTER FUNCTION public.nonull_append_strings(text, text) OWNER TO mfvl;
@@ -671,8 +694,8 @@ ALTER FUNCTION public.nonull_append_strings(text, text) OWNER TO mfvl;
 --
 
 CREATE FUNCTION normal_rand(integer, double precision, double precision) RETURNS SETOF double precision
-    AS '$libdir/tablefunc', 'normal_rand'
-    LANGUAGE c STRICT;
+    LANGUAGE c STRICT
+    AS '$libdir/tablefunc', 'normal_rand';
 
 
 ALTER FUNCTION public.normal_rand(integer, double precision, double precision) OWNER TO mfvl;
@@ -682,12 +705,12 @@ ALTER FUNCTION public.normal_rand(integer, double precision, double precision) O
 --
 
 CREATE FUNCTION normtel(text) RETURNS text
+    LANGUAGE plperl
     AS $_$my $nr = shift;
 
 $nr =~s/[ \-\(\)]//g;
 
-return $nr;$_$
-    LANGUAGE plperl;
+return $nr;$_$;
 
 
 ALTER FUNCTION public.normtel(text) OWNER TO mfvl;
@@ -697,8 +720,8 @@ ALTER FUNCTION public.normtel(text) OWNER TO mfvl;
 --
 
 CREATE FUNCTION plpgsql_call_handler() RETURNS language_handler
-    AS '$libdir/plpgsql', 'plpgsql_call_handler'
-    LANGUAGE c;
+    LANGUAGE c
+    AS '$libdir/plpgsql', 'plpgsql_call_handler';
 
 
 ALTER FUNCTION public.plpgsql_call_handler() OWNER TO mfvl;
@@ -708,13 +731,13 @@ ALTER FUNCTION public.plpgsql_call_handler() OWNER TO mfvl;
 --
 
 CREATE FUNCTION tolower(text) RETURNS text
+    LANGUAGE plperl
     AS $_$ 
 my $value = shift;
 $value =~ s/^\W+//;
 $value =~ s/^$/inconnu/;
 return lc($value);
-$_$
-    LANGUAGE plperl;
+$_$;
 
 
 ALTER FUNCTION public.tolower(text) OWNER TO mfvl;
@@ -723,15 +746,15 @@ ALTER FUNCTION public.tolower(text) OWNER TO mfvl;
 -- Name: upd_naw(); Type: FUNCTION; Schema: public; Owner: mfvl
 --
 
-CREATE FUNCTION upd_naw() RETURNS "trigger"
+CREATE FUNCTION upd_naw() RETURNS trigger
+    LANGUAGE plpgsql
     AS $$begin
 if ((new.straat != old.straat ) or (new.postcode != old.postcode) or (new.stad!=old.stad) or (new.land!=old.land)) then
 	new.lat=null;
 	new.lon=null;
 end if;
 return new;
-end;$$
-    LANGUAGE plpgsql;
+end;$$;
 
 
 ALTER FUNCTION public.upd_naw() OWNER TO mfvl;
@@ -740,13 +763,13 @@ ALTER FUNCTION public.upd_naw() OWNER TO mfvl;
 -- Name: update_mail(); Type: FUNCTION; Schema: public; Owner: mfvl
 --
 
-CREATE FUNCTION update_mail() RETURNS "trigger"
+CREATE FUNCTION update_mail() RETURNS trigger
+    LANGUAGE plpgsql
     AS $$begin
 new.mailaddress = lower(new.mailaddress);
 return new;
 end;
-$$
-    LANGUAGE plpgsql;
+$$;
 
 
 ALTER FUNCTION public.update_mail() OWNER TO mfvl;
@@ -755,13 +778,13 @@ ALTER FUNCTION public.update_mail() OWNER TO mfvl;
 -- Name: update_number(); Type: FUNCTION; Schema: public; Owner: mfvl
 --
 
-CREATE FUNCTION update_number() RETURNS "trigger"
+CREATE FUNCTION update_number() RETURNS trigger
+    LANGUAGE plpgsql
     AS $$begin
 new.number=normtel(new.number);
 return new;
 end;
-$$
-    LANGUAGE plpgsql;
+$$;
 
 
 ALTER FUNCTION public.update_number() OWNER TO mfvl;
@@ -778,6 +801,27 @@ CREATE OPERATOR ||+ (
 
 
 ALTER OPERATOR public.||+ (text, text) OWNER TO mfvl;
+
+SET search_path = ms, pg_catalog;
+
+--
+-- Name: mediacontent; Type: TABLE; Schema: ms; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE mediacontent (
+    id integer NOT NULL,
+    fullpath text NOT NULL,
+    dlna_mime text,
+    dlna_id text,
+    title text NOT NULL,
+    url text,
+    size bigint,
+    parent_id integer,
+    dlna_class integer
+);
+
+
+ALTER TABLE ms.mediacontent OWNER TO mfvl;
 
 SET search_path = pois, pg_catalog;
 
@@ -834,7 +878,7 @@ CREATE TABLE inputfiles (
     id integer NOT NULL,
     naam character varying NOT NULL,
     snelheid integer,
-    "type" character varying,
+    type character varying,
     xmlurl character varying,
     lastupdate timestamp without time zone,
     land character varying,
@@ -849,7 +893,7 @@ ALTER TABLE pois.inputfiles OWNER TO mfvl;
 --
 
 CREATE VIEW disthelp AS
-    SELECT p.id, p.lon, p.lat, p.commentaar, p.file, i."type", i.snelheid FROM posten p, inputfiles i WHERE ((((p.rel_id IS NULL) AND p.updated) AND ((p.file)::text = (i.naam)::text)) AND (NOT (i."type" IS NULL)));
+    SELECT p.id, p.lon, p.lat, p.commentaar, p.file, i.type, i.snelheid FROM posten p, inputfiles i WHERE ((((p.rel_id IS NULL) AND p.updated) AND ((p.file)::text = (i.naam)::text)) AND (NOT (i.type IS NULL)));
 
 
 ALTER TABLE pois.disthelp OWNER TO mfvl;
@@ -879,7 +923,7 @@ ALTER TABLE pois.eigen OWNER TO mfvl;
 --
 
 CREATE VIEW flitspalen AS
-    SELECT "if".snelheid, COALESCE("if"."type", 'Overig'::character varying) AS "type", p.lon, p.lat, p.commentaar, p.id, p.rel_id, p.richting, p.bidirectioneel, p.land FROM (inputfiles "if" JOIN posten p ON ((("if".naam)::text = (p.file)::text))) WHERE ((((p.rel_id IS NULL) AND (p.updated = true)) AND ((p.file)::text !~~* '%goedkop%'::text)) AND "if".inmio) ORDER BY p.lon, p.lat;
+    SELECT if.snelheid, COALESCE(if.type, 'Overig'::character varying) AS type, p.lon, p.lat, p.commentaar, p.id, p.rel_id, p.richting, p.bidirectioneel, p.land FROM (inputfiles if JOIN posten p ON (((if.naam)::text = (p.file)::text))) WHERE ((((p.rel_id IS NULL) AND (p.updated = true)) AND ((p.file)::text !~~* '%goedkop%'::text)) AND if.inmio) ORDER BY p.lon, p.lat;
 
 
 ALTER TABLE pois.flitspalen OWNER TO mfvl;
@@ -899,6 +943,7 @@ ALTER TABLE pois.gewijzigd OWNER TO mfvl;
 --
 
 CREATE SEQUENCE inputfiles_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -929,7 +974,7 @@ ALTER TABLE pois."laatste week" OWNER TO mfvl;
 --
 
 CREATE VIEW miolijst AS
-    SELECT flitspalen.lon, flitspalen.lat, mtcstring(flitspalen."type", flitspalen.id, flitspalen.snelheid, flitspalen.richting, flitspalen.bidirectioneel) AS mtcstring FROM flitspalen WHERE ((flitspalen."type")::text <> 'Overig'::text) ORDER BY flitspalen.lon, flitspalen.lat;
+    SELECT flitspalen.lon, flitspalen.lat, mtcstring(flitspalen.type, flitspalen.id, flitspalen.snelheid, flitspalen.richting, flitspalen.bidirectioneel) AS mtcstring FROM flitspalen WHERE ((flitspalen.type)::text <> 'Overig'::text) ORDER BY flitspalen.lon, flitspalen.lat;
 
 
 ALTER TABLE pois.miolijst OWNER TO mfvl;
@@ -947,7 +992,7 @@ CREATE TABLE poisupdate (
     veld3 integer,
     veld4 integer,
     lon double precision NOT NULL,
-    "type" text,
+    type text,
     snelheid integer
 );
 
@@ -959,6 +1004,7 @@ ALTER TABLE pois.poisupdate OWNER TO mfvl;
 --
 
 CREATE SEQUENCE posten_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -978,7 +1024,7 @@ ALTER SEQUENCE posten_id_seq OWNED BY posten.id;
 -- Name: temp; Type: TABLE; Schema: pois; Owner: mfvl; Tablespace: 
 --
 
-CREATE TABLE "temp" (
+CREATE TABLE temp (
     lat double precision,
     lon double precision,
     descr character varying,
@@ -987,14 +1033,14 @@ CREATE TABLE "temp" (
 );
 
 
-ALTER TABLE pois."temp" OWNER TO mfvl;
+ALTER TABLE pois.temp OWNER TO mfvl;
 
 --
 -- Name: vergelijk poisupdate; Type: VIEW; Schema: pois; Owner: mfvl
 --
 
 CREATE VIEW "vergelijk poisupdate" AS
-    SELECT pu.id AS pu_id, pu.lat, pu.lon, pu."type" AS pu_type, pu.snelheid AS pu_snelheid, i.snelheid, i."type", p.id, p.rel_id, pu.veld1, pu.veld2, pu.veld3, pu.veld4, (pu.veld1 - 27392) AS t1, p.richting, p.bidirectioneel, pu.ruwedata FROM (inputfiles i RIGHT JOIN (poisupdate pu LEFT JOIN posten p ON (((pu.lon = p.lon) AND (pu.lat = p.lat)))) ON (((i.naam)::text = (p.file)::text))) ORDER BY pu.id;
+    SELECT pu.id AS pu_id, pu.lat, pu.lon, pu.type AS pu_type, pu.snelheid AS pu_snelheid, i.snelheid, i.type, p.id, p.rel_id, pu.veld1, pu.veld2, pu.veld3, pu.veld4, (pu.veld1 - 27392) AS t1, p.richting, p.bidirectioneel, pu.ruwedata FROM (inputfiles i RIGHT JOIN (poisupdate pu LEFT JOIN posten p ON (((pu.lon = p.lon) AND (pu.lat = p.lat)))) ON (((i.naam)::text = (p.file)::text))) ORDER BY pu.id;
 
 
 ALTER TABLE pois."vergelijk poisupdate" OWNER TO mfvl;
@@ -1032,7 +1078,7 @@ ALTER TABLE public.adr_types OWNER TO mfvl;
 CREATE TABLE attr (
     id integer NOT NULL,
     contact_id integer NOT NULL,
-    "class" character varying NOT NULL
+    class character varying NOT NULL
 );
 
 
@@ -1043,6 +1089,7 @@ ALTER TABLE public.attr OWNER TO mfvl;
 --
 
 CREATE SEQUENCE attr_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -1075,8 +1122,8 @@ CREATE TABLE contacts (
     cn character varying NOT NULL,
     geslacht character(1),
     uid character varying,
-    "password" character varying,
-    "function" character varying,
+    password character varying,
+    function character varying,
     voorletters character varying,
     tussenvoegsel character varying,
     geboortedatum date,
@@ -1186,7 +1233,7 @@ ALTER TABLE public.adressen OWNER TO mfvl;
 CREATE TABLE apacherealm (
     uid character varying NOT NULL,
     realm character varying NOT NULL,
-    "password" character varying NOT NULL
+    password character varying NOT NULL
 );
 
 
@@ -1233,6 +1280,7 @@ ALTER TABLE public.categorielijst OWNER TO mfvl;
 --
 
 CREATE SEQUENCE categories_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -1272,6 +1320,7 @@ ALTER TABLE public.chansons OWNER TO mfvl;
 --
 
 CREATE SEQUENCE chansons_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -1292,6 +1341,7 @@ ALTER SEQUENCE chansons_id_seq OWNED BY chansons.id;
 --
 
 CREATE SEQUENCE contacts_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -1353,7 +1403,7 @@ SET default_with_oids = true;
 CREATE TABLE mail (
     mailaddress character varying NOT NULL,
     priority integer,
-    "type" character varying
+    type character varying
 )
 INHERITS (attr);
 
@@ -1365,7 +1415,7 @@ ALTER TABLE public.mail OWNER TO mfvl;
 --
 
 CREATE VIEW email AS
-    SELECT contacts.naam, mail.mailaddress, mail."type", mail.priority FROM contacts, mail WHERE (contacts.id = mail.contact_id) ORDER BY contacts.fileas;
+    SELECT contacts.naam, mail.mailaddress, mail.type, mail.priority FROM contacts, mail WHERE (contacts.id = mail.contact_id) ORDER BY contacts.fileas;
 
 
 ALTER TABLE public.email OWNER TO mfvl;
@@ -1403,7 +1453,7 @@ SET default_with_oids = false;
 CREATE TABLE guestbook (
     id integer NOT NULL,
     email character varying(32) DEFAULT 'php'::character varying NOT NULL,
-    "comment" text,
+    comment text,
     created timestamp without time zone NOT NULL
 );
 
@@ -1415,6 +1465,7 @@ ALTER TABLE public.guestbook OWNER TO mfvl;
 --
 
 CREATE SEQUENCE guestbook_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -1435,7 +1486,7 @@ ALTER SEQUENCE guestbook_id_seq OWNED BY guestbook.id;
 --
 
 CREATE VIEW invoer AS
-    SELECT contacts.voornaam, contacts.voorletters, contacts.tussenvoegsel, contacts.achternaam, contacts.company, contacts."function", contacts.geboortedatum, contacts.geslacht, contacts.webpagina FROM contacts ORDER BY contacts.fileas;
+    SELECT contacts.voornaam, contacts.voorletters, contacts.tussenvoegsel, contacts.achternaam, contacts.company, contacts.function, contacts.geboortedatum, contacts.geslacht, contacts.webpagina FROM contacts ORDER BY contacts.fileas;
 
 
 ALTER TABLE public.invoer OWNER TO mfvl;
@@ -1478,6 +1529,7 @@ ALTER TABLE public.ldap_attr_mappings OWNER TO mfvl;
 --
 
 CREATE SEQUENCE ldap_attr_mappings_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -1513,6 +1565,7 @@ ALTER TABLE public.ldap_entries OWNER TO mfvl;
 --
 
 CREATE SEQUENCE ldap_entries_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -1562,6 +1615,7 @@ ALTER TABLE public.ldap_oc_mappings OWNER TO mfvl;
 --
 
 CREATE SEQUENCE ldap_oc_mappings_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -1672,18 +1726,18 @@ ALTER TABLE public.linkedin OWNER TO mfvl;
 -- Name: login; Type: VIEW; Schema: public; Owner: mfvl
 --
 
-CREATE VIEW "login" AS
-    SELECT contacts.uid, contacts."password", contacts.naam FROM contacts WHERE (NOT (contacts.uid IS NULL));
+CREATE VIEW login AS
+    SELECT contacts.uid, contacts.password, contacts.naam FROM contacts WHERE (NOT (contacts.uid IS NULL));
 
 
-ALTER TABLE public."login" OWNER TO mfvl;
+ALTER TABLE public.login OWNER TO mfvl;
 
 --
 -- Name: login1; Type: VIEW; Schema: public; Owner: mfvl
 --
 
 CREATE VIEW login1 AS
-    SELECT a.uid, a."password", a.realm, c.naam FROM (apacherealm a LEFT JOIN contacts c ON (((a.uid)::text = (c.uid)::text)));
+    SELECT a.uid, a.password, a.realm, c.naam FROM (apacherealm a LEFT JOIN contacts c ON (((a.uid)::text = (c.uid)::text)));
 
 
 ALTER TABLE public.login1 OWNER TO mfvl;
@@ -1693,7 +1747,7 @@ ALTER TABLE public.login1 OWNER TO mfvl;
 --
 
 CREATE VIEW match_linkedin AS
-    SELECT l.linked_naam, l.linked_mailaddr, l.linked_company, l.linked_functie, c.id, c.fileas, c.naam, c.outlooktime, c.voornaam, c.achternaam, c.webpagina, c.company, c.updatetime, c.cn, c.geslacht, c.uid, c."password", c."function", c.voorletters, c.tussenvoegsel, c.geboortedatum, c.inipaq FROM (linkedin l LEFT JOIN contacts c ON ((l.linked_naam = (c.cn)::text))) ORDER BY l.linked_naam;
+    SELECT l.linked_naam, l.linked_mailaddr, l.linked_company, l.linked_functie, c.id, c.fileas, c.naam, c.outlooktime, c.voornaam, c.achternaam, c.webpagina, c.company, c.updatetime, c.cn, c.geslacht, c.uid, c.password, c.function, c.voorletters, c.tussenvoegsel, c.geboortedatum, c.inipaq FROM (linkedin l LEFT JOIN contacts c ON ((l.linked_naam = (c.cn)::text))) ORDER BY l.linked_naam;
 
 
 ALTER TABLE public.match_linkedin OWNER TO mfvl;
@@ -1720,8 +1774,8 @@ CREATE TABLE mp3 (
     song character varying,
     track character varying,
     genre character varying,
-    "comment" character varying,
-    "year" character varying,
+    comment character varying,
+    year character varying,
     duur character varying,
     filesize character varying
 );
@@ -1734,6 +1788,7 @@ ALTER TABLE public.mp3 OWNER TO mfvl;
 --
 
 CREATE SEQUENCE mp3_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -1750,15 +1805,28 @@ ALTER SEQUENCE mp3_id_seq OWNED BY mp3.id;
 
 
 --
--- Name: mp3invoer; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+-- Name: mp3cd; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
 --
 
-CREATE TABLE mp3invoer (
-    filename character varying
+CREATE TABLE mp3cd (
+    cdnr integer,
+    directory character varying,
+    track integer,
+    mp3id integer
 );
 
 
-ALTER TABLE public.mp3invoer OWNER TO mfvl;
+ALTER TABLE public.mp3cd OWNER TO mfvl;
+
+--
+-- Name: mp3cdcontents; Type: VIEW; Schema: public; Owner: mfvl
+--
+
+CREATE VIEW mp3cdcontents AS
+    SELECT c.cdnr, c.directory, c.track, m.artist, m.song, m.filename FROM mp3cd c, mp3 m WHERE (c.mp3id = m.id) ORDER BY c.cdnr, c.directory, c.track;
+
+
+ALTER TABLE public.mp3cdcontents OWNER TO mfvl;
 
 SET default_with_oids = true;
 
@@ -1819,6 +1887,7 @@ ALTER TABLE public.sendmailmta OWNER TO mfvl;
 --
 
 CREATE SEQUENCE sendmailmta_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -1930,7 +1999,7 @@ ALTER TABLE public.telephone OWNER TO mfvl;
 
 CREATE TABLE telfort (
     tijd timestamp without time zone,
-    "type" character varying,
+    type character varying,
     nummer character varying,
     bedrag bigint,
     mb double precision,
@@ -2004,7 +2073,7 @@ SET default_with_oids = false;
 -- Name: temp; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
 --
 
-CREATE TABLE "temp" (
+CREATE TABLE temp (
     "First Name" character varying,
     "Middle Name" character varying,
     "Last Name" character varying,
@@ -2016,7 +2085,7 @@ CREATE TABLE "temp" (
 );
 
 
-ALTER TABLE public."temp" OWNER TO mfvl;
+ALTER TABLE public.temp OWNER TO mfvl;
 
 SET default_with_oids = true;
 
@@ -2158,6 +2227,16 @@ ALTER TABLE mp3 ALTER COLUMN id SET DEFAULT nextval('mp3_id_seq'::regclass);
 --
 
 ALTER TABLE sendmailmta ALTER COLUMN id SET DEFAULT nextval('sendmailmta_id_seq'::regclass);
+
+
+SET search_path = ms, pg_catalog;
+
+--
+-- Name: mediacontent_pkey; Type: CONSTRAINT; Schema: ms; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY mediacontent
+    ADD CONSTRAINT mediacontent_pkey PRIMARY KEY (id);
 
 
 SET search_path = pois, pg_catalog;
@@ -2541,6 +2620,14 @@ ALTER TABLE ONLY telfort_zakelijk
 
 
 --
+-- Name: track; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY mp3cd
+    ADD CONSTRAINT track UNIQUE (cdnr, directory, track);
+
+
+--
 -- Name: uninaw; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
 --
 
@@ -2564,13 +2651,29 @@ ALTER TABLE ONLY videos
     ADD CONSTRAINT videos_pkey PRIMARY KEY (tijdstip);
 
 
+SET search_path = ms, pg_catalog;
+
+--
+-- Name: med_fn_idx; Type: INDEX; Schema: ms; Owner: mfvl; Tablespace: 
+--
+
+CREATE UNIQUE INDEX med_fn_idx ON mediacontent USING btree (fullpath);
+
+
+--
+-- Name: med_id_odx; Type: INDEX; Schema: ms; Owner: mfvl; Tablespace: 
+--
+
+CREATE UNIQUE INDEX med_id_odx ON mediacontent USING btree (id);
+
+
 SET search_path = pois, pg_catalog;
 
 --
 -- Name: if_001; Type: INDEX; Schema: pois; Owner: mfvl; Tablespace: 
 --
 
-CREATE INDEX if_001 ON inputfiles USING btree ("type");
+CREATE INDEX if_001 ON inputfiles USING btree (type);
 
 
 --
@@ -2591,7 +2694,7 @@ CREATE UNIQUE INDEX if_003 ON inputfiles USING btree (id);
 -- Name: inputfiles_type; Type: INDEX; Schema: pois; Owner: mfvl; Tablespace: 
 --
 
-CREATE INDEX inputfiles_type ON inputfiles USING btree ("type");
+CREATE INDEX inputfiles_type ON inputfiles USING btree (type);
 
 
 --
@@ -2677,14 +2780,14 @@ CREATE INDEX id ON guestbook USING btree (id);
 -- Name: telfort_001; Type: INDEX; Schema: public; Owner: mfvl; Tablespace: 
 --
 
-CREATE UNIQUE INDEX telfort_001 ON telfort USING btree (tijd, "type", nummer);
+CREATE UNIQUE INDEX telfort_001 ON telfort USING btree (tijd, type, nummer);
 
 
 --
 -- Name: telfort_002; Type: INDEX; Schema: public; Owner: mfvl; Tablespace: 
 --
 
-CREATE UNIQUE INDEX telfort_002 ON telfort USING btree (tijd, "type", bedrag) WHERE (("type")::text = 'GPRS dataverkeer'::text);
+CREATE UNIQUE INDEX telfort_002 ON telfort USING btree (tijd, type, bedrag) WHERE ((type)::text = 'GPRS dataverkeer'::text);
 
 
 SET search_path = pois, pg_catalog;
@@ -2795,6 +2898,13 @@ CREATE RULE upd_vergelijk AS ON UPDATE TO "vergelijk poisupdate" DO INSTEAD NOTH
 
 
 --
+-- Name: upd_vergelijk_relid; Type: RULE; Schema: pois; Owner: mfvl
+--
+
+CREATE RULE upd_vergelijk_relid AS ON UPDATE TO "vergelijk poisupdate" WHERE (((new.rel_id <> old.rel_id) OR ((NOT (new.rel_id IS NULL)) AND (old.rel_id IS NULL))) OR ((new.rel_id IS NULL) AND (NOT (old.rel_id IS NULL)))) DO INSTEAD UPDATE posten p SET rel_id = new.rel_id WHERE (p.id = old.id);
+
+
+--
 -- Name: upd_vergelijk_richting; Type: RULE; Schema: pois; Owner: mfvl
 --
 
@@ -2884,7 +2994,7 @@ CREATE RULE email_del AS ON DELETE TO email DO INSTEAD DELETE FROM mail m WHERE 
 -- Name: email_ins; Type: RULE; Schema: public; Owner: mfvl
 --
 
-CREATE RULE email_ins AS ON INSERT TO email DO INSTEAD INSERT INTO mail (contact_id, mailaddress, "type", priority) SELECT c.id, new.mailaddress, new."type", new.priority FROM contacts c WHERE ((c.naam)::text = (new.naam)::text);
+CREATE RULE email_ins AS ON INSERT TO email DO INSTEAD INSERT INTO mail (contact_id, mailaddress, type, priority) SELECT c.id, new.mailaddress, new.type, new.priority FROM contacts c WHERE ((c.naam)::text = (new.naam)::text);
 
 
 --
@@ -2905,14 +3015,14 @@ CREATE RULE email_upd_mailaddress AS ON UPDATE TO email WHERE ((old.mailaddress)
 -- Name: email_upd_priority; Type: RULE; Schema: public; Owner: mfvl
 --
 
-CREATE RULE email_upd_priority AS ON UPDATE TO email WHERE (old.priority <> new.priority) DO INSTEAD UPDATE mail m SET priority = new.priority WHERE ((m.mailaddress)::text = (old.mailaddress)::text);
+CREATE RULE email_upd_priority AS ON UPDATE TO email WHERE (((old.priority <> new.priority) OR ((old.priority IS NULL) AND (NOT (new.priority IS NULL)))) OR ((new.priority IS NULL) AND (NOT (old.priority IS NULL)))) DO INSTEAD UPDATE mail m SET priority = new.priority WHERE ((m.mailaddress)::text = (old.mailaddress)::text);
 
 
 --
 -- Name: email_upd_type; Type: RULE; Schema: public; Owner: mfvl
 --
 
-CREATE RULE email_upd_type AS ON UPDATE TO email WHERE ((old."type")::text <> (new."type")::text) DO INSTEAD UPDATE mail m SET "type" = new."type" WHERE ((m.mailaddress)::text = (old.mailaddress)::text);
+CREATE RULE email_upd_type AS ON UPDATE TO email WHERE ((((old.type)::text <> (new.type)::text) OR ((old.type IS NULL) AND (NOT (new.type IS NULL)))) OR ((new.type IS NULL) AND (NOT (old.type IS NULL)))) DO INSTEAD UPDATE mail m SET type = new.type WHERE ((m.mailaddress)::text = (old.mailaddress)::text);
 
 
 --
@@ -2954,14 +3064,14 @@ CREATE RULE invoer_ins AS ON INSERT TO invoer DO INSTEAD NOTHING;
 -- Name: invoer_ins_company; Type: RULE; Schema: public; Owner: mfvl
 --
 
-CREATE RULE invoer_ins_company AS ON INSERT TO invoer WHERE (((new.voornaam IS NULL) AND (new.achternaam IS NULL)) AND (NOT (new.company IS NULL))) DO INSTEAD INSERT INTO contacts (fileas, naam, cn, voornaam, voorletters, tussenvoegsel, achternaam, company, "function", geboortedatum, geslacht, webpagina) VALUES (new.company, new.company, new.company, new.voornaam, new.voorletters, new.tussenvoegsel, new.achternaam, new.company, new."function", new.geboortedatum, new.geslacht, new.webpagina);
+CREATE RULE invoer_ins_company AS ON INSERT TO invoer WHERE (((new.voornaam IS NULL) AND (new.achternaam IS NULL)) AND (NOT (new.company IS NULL))) DO INSTEAD INSERT INTO contacts (fileas, naam, cn, voornaam, voorletters, tussenvoegsel, achternaam, company, function, geboortedatum, geslacht, webpagina) VALUES (new.company, new.company, new.company, new.voornaam, new.voorletters, new.tussenvoegsel, new.achternaam, new.company, new.function, new.geboortedatum, new.geslacht, new.webpagina);
 
 
 --
 -- Name: invoer_ins_person; Type: RULE; Schema: public; Owner: mfvl
 --
 
-CREATE RULE invoer_ins_person AS ON INSERT TO invoer WHERE (NOT ((new.voornaam IS NULL) OR (new.achternaam IS NULL))) DO INSTEAD INSERT INTO contacts (fileas, naam, cn, voornaam, voorletters, tussenvoegsel, achternaam, company, "function", geboortedatum, geslacht, webpagina) VALUES (nonull_append_strings((((new.achternaam)::text || ', '::text) || (new.voornaam)::text), (new.tussenvoegsel)::text), ((nonull_append_strings((new.voornaam)::text, (new.tussenvoegsel)::text) || ' '::text) || (new.achternaam)::text), ((nonull_append_strings((new.voornaam)::text, (new.tussenvoegsel)::text) || ' '::text) || (new.achternaam)::text), new.voornaam, new.voorletters, new.tussenvoegsel, new.achternaam, new.company, new."function", new.geboortedatum, new.geslacht, new.webpagina);
+CREATE RULE invoer_ins_person AS ON INSERT TO invoer WHERE (NOT ((new.voornaam IS NULL) OR (new.achternaam IS NULL))) DO INSTEAD INSERT INTO contacts (fileas, naam, cn, voornaam, voorletters, tussenvoegsel, achternaam, company, function, geboortedatum, geslacht, webpagina) VALUES (nonull_append_strings((((new.achternaam)::text || ', '::text) || (new.voornaam)::text), (new.tussenvoegsel)::text), ((nonull_append_strings((new.voornaam)::text, (new.tussenvoegsel)::text) || ' '::text) || (new.achternaam)::text), ((nonull_append_strings((new.voornaam)::text, (new.tussenvoegsel)::text) || ' '::text) || (new.achternaam)::text), new.voornaam, new.voorletters, new.tussenvoegsel, new.achternaam, new.company, new.function, new.geboortedatum, new.geslacht, new.webpagina);
 
 
 --
@@ -3003,21 +3113,21 @@ CREATE RULE login1_upd AS ON UPDATE TO login1 DO INSTEAD NOTHING;
 -- Name: login1_upd_password; Type: RULE; Schema: public; Owner: mfvl
 --
 
-CREATE RULE login1_upd_password AS ON UPDATE TO login1 WHERE ((((old.uid)::text = (new.uid)::text) AND ((old.realm)::text = (new.realm)::text)) AND ((old."password")::text <> (new."password")::text)) DO INSTEAD UPDATE apacherealm SET "password" = new."password" WHERE (((apacherealm.uid)::text = (old.uid)::text) AND ((apacherealm.realm)::text = (old.realm)::text));
+CREATE RULE login1_upd_password AS ON UPDATE TO login1 WHERE ((((old.uid)::text = (new.uid)::text) AND ((old.realm)::text = (new.realm)::text)) AND ((old.password)::text <> (new.password)::text)) DO INSTEAD UPDATE apacherealm SET password = new.password WHERE (((apacherealm.uid)::text = (old.uid)::text) AND ((apacherealm.realm)::text = (old.realm)::text));
 
 
 --
 -- Name: login_upd; Type: RULE; Schema: public; Owner: mfvl
 --
 
-CREATE RULE login_upd AS ON UPDATE TO "login" DO INSTEAD NOTHING;
+CREATE RULE login_upd AS ON UPDATE TO login DO INSTEAD NOTHING;
 
 
 --
 -- Name: login_upd_password; Type: RULE; Schema: public; Owner: mfvl
 --
 
-CREATE RULE login_upd_password AS ON UPDATE TO "login" WHERE ((((old."password" IS NULL) AND (NOT (new."password" IS NULL))) OR ((new."password" IS NULL) AND (NOT (old."password" IS NULL)))) OR ((old."password")::text <> (new."password")::text)) DO INSTEAD UPDATE contacts SET "password" = new."password" WHERE ((contacts.uid)::text = (old.uid)::text);
+CREATE RULE login_upd_password AS ON UPDATE TO login WHERE ((((old.password IS NULL) AND (NOT (new.password IS NULL))) OR ((new.password IS NULL) AND (NOT (old.password IS NULL)))) OR ((old.password)::text <> (new.password)::text)) DO INSTEAD UPDATE contacts SET password = new.password WHERE ((contacts.uid)::text = (old.uid)::text);
 
 
 --
@@ -3031,7 +3141,7 @@ CREATE RULE match_l_upd AS ON UPDATE TO match_linkedin DO INSTEAD NOTHING;
 -- Name: match_l_upd_contact; Type: RULE; Schema: public; Owner: mfvl
 --
 
-CREATE RULE match_l_upd_contact AS ON UPDATE TO match_linkedin WHERE (((((old.company)::text <> (new.company)::text) OR ((old.company IS NULL) AND (NOT (new.company IS NULL)))) OR ((new.company IS NULL) AND (NOT (old.company IS NULL)))) OR ((((old."function")::text <> (new."function")::text) OR ((old."function" IS NULL) AND (NOT (new."function" IS NULL)))) OR ((new."function" IS NULL) AND (NOT (old."function" IS NULL))))) DO INSTEAD UPDATE contacts c SET company = new.company, "function" = new."function" WHERE ((c.naam)::text = (old.naam)::text);
+CREATE RULE match_l_upd_contact AS ON UPDATE TO match_linkedin WHERE (((((old.company)::text <> (new.company)::text) OR ((old.company IS NULL) AND (NOT (new.company IS NULL)))) OR ((new.company IS NULL) AND (NOT (old.company IS NULL)))) OR ((((old.function)::text <> (new.function)::text) OR ((old.function IS NULL) AND (NOT (new.function IS NULL)))) OR ((new.function IS NULL) AND (NOT (old.function IS NULL))))) DO INSTEAD UPDATE contacts c SET company = new.company, function = new.function WHERE ((c.naam)::text = (old.naam)::text);
 
 
 --
@@ -3083,6 +3193,13 @@ CREATE RULE upd_telnummer2 AS ON UPDATE TO telnummer WHERE ((old.tel_type)::text
 CREATE RULE upd_telnummer3 AS ON UPDATE TO telnummer WHERE (((old.prio <> new.prio) OR ((old.prio IS NULL) AND (NOT (new.prio IS NULL)))) OR ((new.prio IS NULL) AND (NOT (old.prio IS NULL)))) DO INSTEAD UPDATE telephone t SET prio = new.prio FROM contacts c WHERE ((((c.naam)::text = (old.naam)::text) AND (c.id = t.contact_id)) AND ((t.number)::text = (old.number)::text));
 
 
+--
+-- Name: upd_telnummer4; Type: RULE; Schema: public; Owner: mfvl
+--
+
+CREATE RULE upd_telnummer4 AS ON UPDATE TO telnummer WHERE (((old.list <> new.list) OR ((old.list IS NULL) AND (NOT (new.list IS NULL)))) OR ((new.list IS NULL) AND (NOT (old.list IS NULL)))) DO INSTEAD UPDATE telephone t SET list = new.list FROM contacts c WHERE ((((c.naam)::text = (old.naam)::text) AND (c.id = t.contact_id)) AND ((t.number)::text = (old.number)::text));
+
+
 SET search_path = pois, pg_catalog;
 
 --
@@ -3100,7 +3217,7 @@ CREATE TRIGGER create_poi
 --
 
 CREATE TRIGGER maaknaam
-    BEFORE INSERT OR UPDATE ON "temp"
+    BEFORE INSERT OR UPDATE ON temp
     FOR EACH ROW
     EXECUTE PROCEDURE maaknaam();
 
@@ -3522,7 +3639,15 @@ ALTER TABLE ONLY mail
 --
 
 ALTER TABLE ONLY mail
-    ADD CONSTRAINT mail_type_fkey FOREIGN KEY ("type") REFERENCES adr_types(adr_type);
+    ADD CONSTRAINT mail_type_fkey FOREIGN KEY (type) REFERENCES adr_types(adr_type);
+
+
+--
+-- Name: mp3cd_mp3id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY mp3cd
+    ADD CONSTRAINT mp3cd_mp3id_fkey FOREIGN KEY (mp3id) REFERENCES mp3(id);
 
 
 --
@@ -3738,10 +3863,10 @@ GRANT SELECT,UPDATE ON SEQUENCE posten_id_seq TO httpd;
 -- Name: temp; Type: ACL; Schema: pois; Owner: mfvl
 --
 
-REVOKE ALL ON TABLE "temp" FROM PUBLIC;
-REVOKE ALL ON TABLE "temp" FROM mfvl;
-GRANT ALL ON TABLE "temp" TO mfvl;
-GRANT ALL ON TABLE "temp" TO httpd;
+REVOKE ALL ON TABLE temp FROM PUBLIC;
+REVOKE ALL ON TABLE temp FROM mfvl;
+GRANT ALL ON TABLE temp TO mfvl;
+GRANT ALL ON TABLE temp TO httpd;
 
 
 --
