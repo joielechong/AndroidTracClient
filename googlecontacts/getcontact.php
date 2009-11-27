@@ -31,16 +31,10 @@
      
     <?php
 	set_include_path('/web/ZendFramework/library'.PATH_SEPARATOR.get_include_path());                                                                               
-ini_set('memory_limit', '50M');
+    ini_set('memory_limit', '50M');
 	
 	require_once 'Zend/Loader/Autoloader.php';                                      
 	$autoloader = Zend_loader_Autoloader::getInstance();              // load Zend Gdata libraries
-    #require_once 'Zend/Loader.php';
-    #Zend_Loader::loadClass('Zend_Gdata');
-    #end_Loader::loadClass('Zend_Gdata_ClientLogin');
-    #end_Loader::loadClass('Zend_Http_Client');
-    #Zend_Loader::loadClass('Zend_Gdata_Query');
-    #Zend_Loader::loadClass('Zend_Gdata_Feed');
     
     // set credentials for ClientLogin authentication
 	$user = '** invalid **';                                                        
@@ -63,8 +57,7 @@ ini_set('memory_limit', '50M');
     
     try {
       // perform login and set protocol version to 3.0
-      $client = Zend_Gdata_ClientLogin::getHttpClient(
-        $user, $pass, 'cp');
+      $client = Zend_Gdata_ClientLogin::getHttpClient($user, $pass, 'cp');
       $gdata = new Zend_Gdata($client);
       $gdata->setMajorProtocolVersion(3);
       
@@ -88,11 +81,12 @@ ini_set('memory_limit', '50M');
       foreach($feed as $entry){
         $xml = simplexml_load_string($entry->getXML());
    	echo("<!--\n");
-	print_r($entry);
+	//print_r($entry);
 	print_r($xml);
 	echo("-->\n");
         $obj = new stdClass;
         $obj->name = (string) $entry->title;
+		$obj->content = $entry->getContent()->getText();
         $obj->orgName = (string) $xml->organization->orgName; 
         $obj->orgTitle = (string) $xml->organization->orgTitle; 
       
@@ -138,6 +132,10 @@ ini_set('memory_limit', '50M');
           <tr>
             <td>Web</td>
             <td><?php echo @join(', ', $r->website); ?></td>
+          </tr>
+          <tr>
+            <td>Id</td>
+            <td><?php echo @join(', ', $r->content); ?></td>
           </tr>
         </table>
       </div>
