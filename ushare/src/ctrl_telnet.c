@@ -892,6 +892,6 @@ ctrl_telnet_register_internals (void)
   ctrl_telnet_register ("help", help, "Display help");
   ctrl_telnet_register ("banner", banner, NULL);
   ctrl_telnet_register ("exit", ctrl_telnet_exit, "Exits this interface (Or CTRL+D then Enter)");
-  /* CTRL+D... But it has to be fallowd by a new line */
+  /* CTRL+D... But it has to be followed by a new line */
   ctrl_telnet_register ("\4", ctrl_telnet_exit, NULL);
 }

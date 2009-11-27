@@ -10,5 +10,6 @@ int store_entry(int,struct upnp_entry_t *,int);
 struct upnp_entry_t *fetch_entry(int,int);
 struct upnp_entry_t **fetch_children(int,struct upnp_entry_t *);
 long get_last_entry(int);
-char *get_next(long,long *);
+char *get_next(int,long,long *);
+void del_entry(int,char *);
 #endif

@@ -181,28 +181,26 @@ convert_xml (const char *title)
   int nbconvert = 0;
   
   /* calculate extra size needed */
-  for (t = (char*) title; *t; t++)
-    {
-      xml = get_xmlconvert (*t);
-      if (xml)
-	nbconvert += strlen (xml) - 1;
-    }
+  for (t = (char*) title; *t; t++) {
+    xml = get_xmlconvert (*t);
+    if (xml)
+      nbconvert += strlen (xml) - 1;
+  }
   if (!nbconvert)
     return NULL;
   
   newtitle = s = (char*) malloc (strlen (title) + nbconvert + 1);
   
-  for (t = (char*) title; *t; t++)
-    {
-      xml = get_xmlconvert (*t);
-      if (xml)
-	{
-	  strcpy (s, xml);
-	  s += strlen (xml);
-	}
-      else
-	*s++ = *t;
-    }
+  for (t = (char*) title; *t; t++) {
+    xml = get_xmlconvert (*t);
+    if (xml)
+      {
+	strcpy (s, xml);
+	s += strlen (xml);
+      }
+    else
+      *s++ = *t;
+  }
   *s = '\0';
   
   return newtitle;
@@ -323,7 +321,7 @@ upnp_entry_new (struct ushare_t *ut, const char *name, const char *fullpath,
     }
   
   entry->size = size;
-
+  
   if (entry->id )
     log_verbose ("Entry->title (%d): %s\n", entry->id, entry->title);
   
@@ -336,8 +334,7 @@ static void fill_container(struct ushare_t *ut,char * path,int parent_id) {
   int size = 0;
   int newparent;
   
-  log_verbose (_("Looking for files in content directory : %s\n"),
-	       path);
+  log_verbose (_("Looking for files in content directory : %s\n"),path);
   
   size = strlen (path);
   if (path[size - 1] == '/')
@@ -379,7 +376,7 @@ static void fill_container(struct ushare_t *ut,char * path,int parent_id) {
 	}
       
       fullpath = (char *)
-	  malloc (strlen (path) + strlen (namelist[i]->d_name) + 2);
+	malloc (strlen (path) + strlen (namelist[i]->d_name) + 2);
       sprintf (fullpath, "%s/%s", path, namelist[i]->d_name);
       
       log_verbose ("%s\n", fullpath);
@@ -419,7 +416,7 @@ void *newfilesthread(void *a __attribute__ ((unused)))
   while (1) {
     log_verbose(_("Starting threadloop\n"));    
     /* process new files */
-	
+    
     pthread_mutex_lock (&mtd.db_mutex);
     for (i=0 ; i < ut->contentlist->count ; i++) {
       fill_container(ut,ut->contentlist->content[i],0);
@@ -433,24 +430,38 @@ void *newfilesthread(void *a __attribute__ ((unused)))
 
 static void *verifythread(void *a __attribute__ ((unused)))
 {
-	long last_id = 0, new_id;
-	char *filename;
-	
-	while(1) {
-      pthread_mutex_lock (&mtd.db_mutex);
-	  filename = get_next(mtd.ut,last_id,&new_id);
-      pthread_mutex_unlock (&mtd.db_mutex);
-	  printf("verify loop: %ld %ld %s\n",last_id,new_id,filename);
-	  last_id = new_id;
-	  sleep(mtd.verify_wait);
-	}
+  long last_id = 0, new_id;
+  char *filename;
+  int odbc_ptr = mtd.ut->odbc_ptr;
+  struct stat buf;
+  int res;
+  
+  pthread_mutex_lock (&mtd.db_mutex);
+  last_id = get_last_entry(odbc_ptr);
+  pthread_mutex_unlock (&mtd.db_mutex);
+
+  last_id = rand()*((double)last_id)/((double)RAND_MAX);
+  log_info("Verification starting at %ld\n",last_id);
+
+  while(1) {
+    pthread_mutex_lock (&mtd.db_mutex);
+    filename = get_next(odbc_ptr,last_id,&new_id);
+    if ((res=stat(filename,&buf)) == -1) {
+	del_entry(odbc_ptr,filename);
+        log_info("removed: id=%ld path=%s\n",new_id,filename);
+    }
+    pthread_mutex_unlock (&mtd.db_mutex);
+    free(filename);
+    last_id = new_id;
+    sleep(mtd.verify_wait);
+  }
 }
 
 struct upnp_entry_t *
 upnp_get_entry (struct ushare_t *ut, int id)
 {
   struct upnp_entry_t *entry;
-
+  
   log_verbose ("Looking for entry id %d\n", id);
   entry = fetch_entry(ut->odbc_ptr,id);
   return entry;
@@ -458,22 +469,22 @@ upnp_get_entry (struct ushare_t *ut, int id)
 
 void build_metadata_db(struct ushare_t *ut) {
   struct upnp_entry_t *root_entry;
-
+  
   log_info (_("Building Metadata List ...\n"));
   ut->odbc_ptr = init_odbc(ut->dsn);
   if (entry_stored(ut->odbc_ptr,"") != 0) {
     root_entry = upnp_entry_new (ut, "root", "", NULL, -1, true);
     store_entry(ut->odbc_ptr,root_entry,-1);
   }
-
+  
   ut->nr_entries = get_last_entry(ut->odbc_ptr)+1;
   
   ut->init = 1;
-
+  
   mtd.ut = ut;
   mtd.initial_wait=300;
   mtd.loop_wait=3600;   /* this must become configurable */
-  mtd.verify_wait=10;
+  mtd.verify_wait=1;
   
   pthread_mutex_init (&mtd.db_mutex, NULL);
 
