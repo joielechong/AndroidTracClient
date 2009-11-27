@@ -31,7 +31,7 @@
      
     <?php
 	set_include_path('/web/ZendFramework/library'.PATH_SEPARATOR.get_include_path());                                                                               
-	ini_set('memory_limit', '20M');   
+ini_set('memory_limit', '50M');
 	
 	require_once 'Zend/Loader/Autoloader.php';                                      
 	$autoloader = Zend_loader_Autoloader::getInstance();              // load Zend Gdata libraries
@@ -70,7 +70,7 @@
       
       // perform query and get result feed
 //      $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full?max-results=2048');
-      $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full);
+      $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full');
       $feed = $gdata->getFeed($query);
       
       // display title and result count
@@ -86,9 +86,9 @@
       // into simpler objects
       $results = array();
       foreach($feed as $entry){
-		echo "<!--\n";
-		print_r($entry);
-		echo "-->\n";
+	echo("<!--\n");
+	print_r($entry);
+	echo("-->\n");
         $xml = simplexml_load_string($entry->getXML());
         $obj = new stdClass;
         $obj->name = (string) $entry->title;
