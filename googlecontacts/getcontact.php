@@ -30,13 +30,16 @@
   <body>
      
     <?php
-    // load Zend Gdata libraries
-    require_once 'Zend/Loader.php';
-    Zend_Loader::loadClass('Zend_Gdata');
-    Zend_Loader::loadClass('Zend_Gdata_ClientLogin');
-    Zend_Loader::loadClass('Zend_Http_Client');
-    Zend_Loader::loadClass('Zend_Gdata_Query');
-    Zend_Loader::loadClass('Zend_Gdata_Feed');
+	set_include_path('/web/ZendFramework/library'.PATH_SEPARATOR.get_include_path());                                                                               
+                                                                                
+	require_once 'Zend/Loader/Autoloader.php';                                      
+	$autoloader = Zend_loader_Autoloader::getInstance();              // load Zend Gdata libraries
+    #require_once 'Zend/Loader.php';
+    #Zend_Loader::loadClass('Zend_Gdata');
+    #end_Loader::loadClass('Zend_Gdata_ClientLogin');
+    #end_Loader::loadClass('Zend_Http_Client');
+    #Zend_Loader::loadClass('Zend_Gdata_Query');
+    #Zend_Loader::loadClass('Zend_Gdata_Feed');
     
     // set credentials for ClientLogin authentication
     $user = "mfvloon@gmail.com";
