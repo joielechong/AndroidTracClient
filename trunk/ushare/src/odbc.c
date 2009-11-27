@@ -82,7 +82,7 @@ int init_odbc(const char *dsn) {
       uo.count_stmt = NULL;
     }
     SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.del_stmt);
-    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.del_stmt,(SQLCHAR *)"DELETE FROM ms.mediacontent where id=?",SQL_NTS))) {
+    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.del_stmt,(SQLCHAR *)"DELETE FROM ms.mediacontent where fullpath=?",SQL_NTS))) {
       extract_error("init_odbc","SQLPrepare del",uo.dbc,SQL_HANDLE_DBC);
       uo.del_stmt = NULL;
     }
@@ -113,7 +113,7 @@ char *get_next(int odbc_ptr,long from_id,long *new_id) {
   char filename[255];
   
   if (odbc_ptr < 0)
-    return -1;
+    return NULL;
   
   SQLFreeStmt(uo.loop_stmt,SQL_CLOSE);
   ret = SQLBindParameter(uo.loop_stmt, 1, SQL_PARAM_INPUT, SQL_C_ULONG, SQL_INTEGER, sizeof(long), 0, &from_id, sizeof(from_id), NULL);
@@ -121,9 +121,21 @@ char *get_next(int odbc_ptr,long from_id,long *new_id) {
   ret = SQLBindCol( uo.loop_stmt, 2, SQL_C_LONG, new_id,sizeof(*new_id),&indicator[2]);
   ret = SQLExecute(uo.loop_stmt);
   ret = SQLFetch(uo.loop_stmt);
-  if (indicatopr[2] == SQL_NULL_DATA)
-    *new_id = 0
+  if (indicator[2] == SQL_NULL_DATA)
+    *new_id = 0;
   return indicator[1] == SQL_NULL_DATA ? NULL : strdup(filename);
+}
+
+void del_entry(int odbc_ptr,char *filename) {
+  SQLRETURN ret;
+  
+  if (odbc_ptr < 0)
+    return;
+  
+  SQLFreeStmt(uo.del_stmt,SQL_CLOSE);
+  ret = SQLBindParameter(uo.del_stmt, 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, filename, strlen(filename), NULL);
+  ret = SQLExecute(uo.del_stmt);
+  return;
 }
 
 long entry_stored(int odbc_ptr,char *path)
