@@ -9,6 +9,8 @@ use LWP::ConnCache;
 use HTTP::Cookies;
 use Data::Dumper;
 
+my $poi66=1;
+
 my @xmlsrc=( 
     "http://www.flitspaal.nl/poi_flitspalen.xml",
     "http://www.bruxelles5.info/POI/poi_bruxelles5.xml",
@@ -225,25 +227,26 @@ for (my $i=$start;$i<=$eind;$i++) {
 if ($start != $eind) {
     my ($cookie_jar,$nfreq,$nfres,$content);
     $cookie_jar = HTTP::Cookies->new();
-	
+
+    if ($poi66) {
 # www.poi66.com
-$nfreq = HTTP::Request->new(POST => 'http://www.poi66.com/maps/export');
-    $cookie_jar->add_cookie_header($nfreq);
-    $ua->cookie_jar($cookie_jar);
-    
-    $nfreq->content_type('application/x-www-form-urlencoded');
-    $nfreq->content('abbrev_be=1&abbrev_de=1&abbrev_nl=1&addcity=1&addcountry=0&album=flits&ext=asc&button=Download+ASC');
-    $nfres = $ua->request($nfreq);
-    
-    if ($nfres->is_success) {
-	$cookie_jar->extract_cookies($nfres);
-	print "\n\n================\n",$cookie_jar->as_string,"\n";
-	$content = $nfres->content;
+	$nfreq = HTTP::Request->new(POST => 'http://www.poi66.com/maps/export');
+	$cookie_jar->add_cookie_header($nfreq);
+	$ua->cookie_jar($cookie_jar);
 	
-	my @lines = split("\n",$content);
-	my %speeds;
+	$nfreq->content_type('application/x-www-form-urlencoded');
+	$nfreq->content('abbrev_be=1&abbrev_de=1&abbrev_nl=1&addcity=1&type_%3F=1&album=flits&ext=asc&button=Download+ASC');
+	$nfres = $ua->request($nfreq);
 	
-	foreach (@lines) {
+	if ($nfres->is_success) {
+	    $cookie_jar->extract_cookies($nfres);
+	    print "\n\n================\n",$cookie_jar->as_string,"\n";
+	    $content = $nfres->content;
+	    
+	    my @lines = split("\n",$content);
+	    my %speeds;
+	    
+	    foreach (@lines) {
 		chomp;
 		next if /^;/;
 		s/^ *//;
@@ -259,19 +262,20 @@ $nfreq = HTTP::Request->new(POST => 'http://www.poi66.com/maps/export');
 		    $rest = $2;
 		}
 		unless (exists($speeds{$speed})) {
-			$speeds{$speed} = ();
+		    $speeds{$speed} = ();
 		}
 		push @{$speeds{$speed}},"$lon,$lat,\"$lon $lat $rest\"";
-	}
-	
-	foreach my $speed (keys(%speeds))
-	{
+	    }
+	    
+	    foreach my $speed (keys(%speeds)) {
 		open P,">poi66_$speed.asc" or die "Kan poi66_$speed.asc niet openen: $@\n";
 		print P join("\n",@{$speeds{$speed}});
 		close P;
+	    }
+	    
 	}
-	
     }
+
 # www.navifriends.de 
     
     $nfreq = HTTP::Request->new(GET => 'http://www.navifriends.de/');
