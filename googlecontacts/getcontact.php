@@ -31,7 +31,8 @@
      
     <?php
 	set_include_path('/web/ZendFramework/library'.PATH_SEPARATOR.get_include_path());                                                                               
-                                                                                
+	ini_set('memory_limit', '20M');   
+	
 	require_once 'Zend/Loader/Autoloader.php';                                      
 	$autoloader = Zend_loader_Autoloader::getInstance();              // load Zend Gdata libraries
     #require_once 'Zend/Loader.php';
