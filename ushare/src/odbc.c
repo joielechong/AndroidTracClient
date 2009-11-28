@@ -37,6 +37,7 @@ typedef struct ushare_odbc_t {
   SQLHSTMT count_stmt;
   SQLHSTMT del_stmt;
   SQLHSTMT loop_stmt;
+  SQLHSTMT size_stmt;
   pthread_mutex_t db_mutex;
 } ushare_odbc;
 
@@ -86,8 +87,13 @@ int init_odbc(const char *dsn) {
       extract_error("init_odbc","SQLPrepare del",uo.dbc,SQL_HANDLE_DBC);
       uo.del_stmt = NULL;
     }
+    SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.size_stmt);
+    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.size_stmt,(SQLCHAR *)"UPDATE ms.mediacontent set size=? where fullpath=?",SQL_NTS))) {
+      extract_error("init_odbc","SQLPrepare size",uo.dbc,SQL_HANDLE_DBC);
+      uo.size_stmt = NULL;
+    }
     SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.loop_stmt);
-    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.loop_stmt,(SQLCHAR *)"SELECT fullpath,id FROM ms.mediacontent where id = (SELECT min(id) FROM ms.mediacontent WHERE id>?)",SQL_NTS))) {
+    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.loop_stmt,(SQLCHAR *)"SELECT fullpath,id,size FROM ms.mediacontent where id = (SELECT min(id) FROM ms.mediacontent WHERE id>?)",SQL_NTS))) {
       extract_error("init_odbc","SQLPrepare loop",uo.dbc,SQL_HANDLE_DBC);
       uo.loop_stmt = NULL;
     }
@@ -107,11 +113,12 @@ void odbc_finish(int odbc_ptr) {
   }
 }
 
-char *get_next(int odbc_ptr,long from_id,long *new_id) {
+char *get_next(int odbc_ptr,long from_id,long *new_id, long *size) {
   SQLRETURN ret;
-  SQLINTEGER indicator[3];
+  SQLINTEGER indicator[4];
   char filename[255];
-  
+  SQLINTEGER rows;
+
   if (odbc_ptr < 0)
     return NULL;
   
@@ -119,10 +126,19 @@ char *get_next(int odbc_ptr,long from_id,long *new_id) {
   ret = SQLBindParameter(uo.loop_stmt, 1, SQL_PARAM_INPUT, SQL_C_ULONG, SQL_INTEGER, sizeof(long), 0, &from_id, sizeof(from_id), NULL);
   ret = SQLBindCol( uo.loop_stmt, 1, SQL_C_CHAR, filename,255,&indicator[1]);
   ret = SQLBindCol( uo.loop_stmt, 2, SQL_C_LONG, new_id,sizeof(*new_id),&indicator[2]);
+  ret = SQLBindCol( uo.loop_stmt, 3, SQL_C_LONG, size,sizeof(*size),&indicator[3]);
   ret = SQLExecute(uo.loop_stmt);
+  SQLRowCount(uo.loop_stmt,&rows);
+  if (rows == 0) {
+    *new_id = 0;
+    *size = 0;
+    return NULL;
+  }
   ret = SQLFetch(uo.loop_stmt);
   if (indicator[2] == SQL_NULL_DATA)
     *new_id = 0;
+  if (indicator[3] == SQL_NULL_DATA)
+    *size = 0;
   return indicator[1] == SQL_NULL_DATA ? NULL : strdup(filename);
 }
 
@@ -135,6 +151,19 @@ void del_entry(int odbc_ptr,char *filename) {
   SQLFreeStmt(uo.del_stmt,SQL_CLOSE);
   ret = SQLBindParameter(uo.del_stmt, 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, filename, strlen(filename), NULL);
   ret = SQLExecute(uo.del_stmt);
+  return;
+}
+
+void upd_size(int odbc_ptr,char *filename,long size) {
+  SQLRETURN ret;
+  
+  if (odbc_ptr < 0)
+    return;
+  
+  SQLFreeStmt(uo.size_stmt,SQL_CLOSE);
+  ret = SQLBindParameter(uo.size_stmt, 1, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, sizeof(size), 0, &size, sizeof(size), NULL);
+  ret = SQLBindParameter(uo.size_stmt, 2, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, filename, strlen(filename), NULL);
+  ret = SQLExecute(uo.size_stmt);
   return;
 }
 
