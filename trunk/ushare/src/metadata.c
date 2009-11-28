@@ -350,8 +350,10 @@ static void fill_container(struct ushare_t *ut,char * path,int parent_id) {
   newparent = entry_stored(ut->odbc_ptr,path);
   if (newparent == -1 ) {
     entry = upnp_entry_new (ut, title, path,NULL, -1, true);
+    pthread_mutex_lock (&mtd.db_mutex);
     if (entry) 
       newparent = store_entry(ut->odbc_ptr,entry,parent_id);
+    pthread_mutex_unlock (&mtd.db_mutex);
   }
   
   struct dirent **namelist;
@@ -375,8 +377,7 @@ static void fill_container(struct ushare_t *ut,char * path,int parent_id) {
 	  continue;
 	}
       
-      fullpath = (char *)
-	malloc (strlen (path) + strlen (namelist[i]->d_name) + 2);
+      fullpath = (char *)malloc (strlen (path) + strlen (namelist[i]->d_name) + 2);
       sprintf (fullpath, "%s/%s", path, namelist[i]->d_name);
       
       log_verbose ("%s\n", fullpath);
@@ -392,12 +393,14 @@ static void fill_container(struct ushare_t *ut,char * path,int parent_id) {
 	fill_container(ut,fullpath,newparent);
       } else {
 	if (ut->dlna_enabled || is_valid_extension (getExtension (fullpath))) {
+    pthread_mutex_lock (&mtd.db_mutex);
 	  if (entry_stored(ut->odbc_ptr,fullpath) == -1 ) {
 	    struct upnp_entry_t *child = NULL;
 	    child = upnp_entry_new (ut, namelist[i]->d_name, fullpath, NULL, st.st_size, false);
 	    if (child) 
 	      store_entry(ut->odbc_ptr,child,newparent);
 	  }
+    pthread_mutex_unlock (&mtd.db_mutex);
 	}
       }
       free (namelist[i]);
@@ -417,11 +420,9 @@ void *newfilesthread(void *a __attribute__ ((unused)))
     log_verbose(_("Starting threadloop\n"));    
     /* process new files */
     
-    pthread_mutex_lock (&mtd.db_mutex);
     for (i=0 ; i < ut->contentlist->count ; i++) {
       fill_container(ut,ut->contentlist->content[i],0);
     }
-    pthread_mutex_unlock (&mtd.db_mutex);
     
     sleep(mtd.loop_wait);
   }
@@ -430,7 +431,7 @@ void *newfilesthread(void *a __attribute__ ((unused)))
 
 static void *verifythread(void *a __attribute__ ((unused)))
 {
-  long last_id = 0, new_id;
+  long last_id = 0, new_id, size;
   char *filename;
   int odbc_ptr = mtd.ut->odbc_ptr;
   struct stat buf;
@@ -445,13 +446,16 @@ static void *verifythread(void *a __attribute__ ((unused)))
 
   while(1) {
     pthread_mutex_lock (&mtd.db_mutex);
-    filename = get_next(odbc_ptr,last_id,&new_id);
-    if ((res=stat(filename,&buf)) == -1) {
+    filename = get_next(odbc_ptr,last_id,&new_id,&size);
+    if ((filename != NULL) && ((res=stat(filename,&buf)) == -1)) {
 	del_entry(odbc_ptr,filename);
-        log_info("removed: id=%ld path=%s\n",new_id,filename);
+        log_info("removed: last_id=%ld new_id=%ld path=%s\n",last_id,new_id,filename);
     }
+    if (filename && !res && size && size != buf.st_size)
+	upd_size(odbc_ptr,filename,size);
     pthread_mutex_unlock (&mtd.db_mutex);
-    free(filename);
+    if (filename)
+      free(filename);
     last_id = new_id;
     sleep(mtd.verify_wait);
   }
