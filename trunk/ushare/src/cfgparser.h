@@ -33,7 +33,7 @@
 #define USHARE_ENABLE_TELNET      "USHARE_ENABLE_TELNET"
 #define USHARE_ENABLE_XBOX        "USHARE_ENABLE_XBOX"
 #define USHARE_ENABLE_DLNA        "USHARE_ENABLE_DLNA"
-#define USHARE_DSN                "USHARE_DSN"
+#define USHARE_DSN                "USHARE_ODBC_DSN"
 
 #define USHARE_CONFIG_FILE        "ushare.conf"
 #define DEFAULT_USHARE_NAME       "uShare"

@@ -347,14 +347,14 @@ static void fill_container(struct ushare_t *ut,char * path,int parent_id) {
     title = path;
   }
   
+  pthread_mutex_lock (&mtd.db_mutex);
   newparent = entry_stored(ut->odbc_ptr,path);
   if (newparent == -1 ) {
     entry = upnp_entry_new (ut, title, path,NULL, -1, true);
-    pthread_mutex_lock (&mtd.db_mutex);
     if (entry) 
       newparent = store_entry(ut->odbc_ptr,entry,parent_id);
-    pthread_mutex_unlock (&mtd.db_mutex);
   }
+  pthread_mutex_unlock (&mtd.db_mutex);
   
   struct dirent **namelist;
   int n,i;
@@ -467,7 +467,9 @@ upnp_get_entry (struct ushare_t *ut, int id)
   struct upnp_entry_t *entry;
   
   log_verbose ("Looking for entry id %d\n", id);
+  pthread_mutex_lock (&mtd.db_mutex);
   entry = fetch_entry(ut->odbc_ptr,id);
+  pthread_mutex_unlock (&mtd.db_mutex);
   return entry;
 }
 
