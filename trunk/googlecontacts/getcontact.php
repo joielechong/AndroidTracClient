@@ -65,9 +65,9 @@ class Contacts {
 	  $this->entry->naw = $this->getnaw->fetchAll(PDO::FETCH_ASSOC);
       $this->getnaw->closeCursor();
 	  
-	  echo "<!-->\n";
+	  echo "<!--\n";
 	  print_r($this->entry);
-	  echo "-->\n";
+	  echo " -->\n";
 	  
 	  $this->changed = 0;
 	  $this->currid = $id;
@@ -177,9 +177,11 @@ try {
       list($key,$val) = explode('=',$obj->content);                                     
 	  if ($key === "id") {
 	    $cdb->loadId($val);
-        $obj->dbName = $cdb->getName();
 	  }
 	}
+	echo "<!--\n";
+	print_r($obj);
+	echo " -->\n";
 
     $results[] = $obj;  
   }
@@ -208,9 +210,6 @@ foreach ($results as $r) {
   echo "</td></tr>\n";
   echo "<tr><td>Content</td><td>";
   echo $r->content;
-  echo "</td></tr>\n";
-  echo "<tr><td>DB Naam</td><td>";
-  echo $r->dbName;
   echo "</td></tr>\n";
   echo "</table>\n</div>\n</div>\n</body>\n</html>\n";
 }
