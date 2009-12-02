@@ -127,11 +127,16 @@ try {
     $obj = new stdClass;
     $obj->name = (string) $entry->title;
     $obj->content = (string) $entry->content;
+	$obj->updated = (string) $entry->updated;
     $obj->orgName = (string) $xml->organization->orgName; 
-    $obj->orgTitle = (string) $xml->organization->orgTitle; 
+    $obj->orgTitle = (string) $xml->organization->orgTitle;
+	$obj->fullName = (string) $xml->fullName;
+	$obj->givenName = (string) $xml->givenName;
+	$obj->additionalName = (string) $xml->additionalName;
+	$obj->familyName = (string) $xml->familyName;
     
     foreach ($xml->email as $e) {
-      $obj->emailAddress[] = (string) $e['address'];
+      $obj->emailAddress[] = (string) $e['rel'] . "  ".(string) $e['address'];
     }
     
     foreach ($xml->phoneNumber as $p) {
