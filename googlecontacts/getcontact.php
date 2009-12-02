@@ -9,6 +9,13 @@ $autoloader = Zend_loader_Autoloader::getInstance();              // load Zend G
 class Contacts {
 
   private $dbh, $getname, $setname;
+  private $currid,$changed;
+  
+  private $name;
+  private $company;
+  private $function;
+  private $website;
+  private $birthday;
   
   function __construct() {
     $cred = fopen("/home/mfvl/download/credentials.pg","r");
@@ -27,18 +34,38 @@ class Contacts {
     fclose($cred);
   
     $dbh = new PDO("pgsql:dbname=mfvl",$user,$pass);
-    $getname = $dbh->prepare('SELECT naam FROM contacts WHERE id=:id');
-	$setname = $dbh->prepare('UPDATE contacts set naam=:naam WHERE id=:id');
+    $getname = $dbh->prepare('SELECT naam,company,geboortedatum,webpagina FROM contacts WHERE id=:id');
+	$currid = -1;
+  }
+  
+  function loadId($id) {
+	if ($currid != $id) {
+      $getname->bindParam(':id',$id,PDO::PARAM_INT);
+      $getname->bindColumn('naam',$naam);
+      $getname->bindColumn('company',$company);
+      $getname->bindColumn('geboortedatum',$birthday);
+      $getname->bindColumn('webpagina',$website);
+      $getname->execute();
+      $rowsCount = $getname->fetch(PDO::FETCH_BOUND);
+      $getname->closeCursor();
+	  $changed = 0;
+	  $currid = $id;
+	}
   }
 
-  function getName($getname,$id)
+  function getId()
   {
-    $getname->bindParam(':id',$id,PDO::PARAM_INT);
-    $getname->bindColumn('naam',$naam);
-    $getname->execute();
-    $rowsCount = $getname->fetch(PDO::FETCH_BOUND);
-    $getname->closeCursor();
+    return $currid;
+  }
+
+  function getName()
+  {
     return $naam;
+  }
+
+  function getCompany()
+  {
+    return $company;
   }
 }
 $cdb = new Contacts;
@@ -87,7 +114,7 @@ try {
   // display title and result count
   
   echo "<h2>".$feed->title."</h2>\n<div>\n";
-  echo $feed->totalResults."contact(s) found.\n</div>\n";
+  echo $feed->totalResults." contact(s) found.\n</div>\n";
   
   // parse feed and extract contact information
   // into simpler objects
@@ -116,7 +143,10 @@ try {
     }
     
     list($key,$val) = explode('=',$obj->content);                                     
-    $obj->dbName = cdb->getName($val);
+	if ($key === "id") {
+	  $cdb->oadId($val);
+      $obj->dbName = $cdb->getName();
+	}
 
     $results[] = $obj;  
   }
