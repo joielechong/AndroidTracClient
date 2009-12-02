@@ -11,11 +11,7 @@ class Contacts {
   private $dbh, $getname, $setname;
   private $currid,$changed;
   
-  private $name;
-  private $company;
-  private $function;
-  private $website;
-  private $birthday;
+  private $entry;
   
   function __construct() {
     $cred = fopen("/home/mfvl/download/credentials.pg","r");
@@ -34,22 +30,26 @@ class Contacts {
     fclose($cred);
   
     $this->dbh = new PDO("pgsql:dbname=mfvl",$user,$pass);
-    $this->getname = $this->dbh->prepare('SELECT naam,company,geboortedatum,webpagina FROM contacts WHERE id=:id');
+    $this->getname = $this->dbh->prepare('SELECT * FROM contacts WHERE id=:id');
+    $this->getmail = $this->dbh->prepare('SELECT * FROM mail WHERE contact_id=:id');
 	$this->currid = -1;
   }
   
   function loadId($id) {
 	if ($this->currid != $id) {
       $this->getname->bindParam(':id',$id,PDO::PARAM_INT);
-      $this->getname->bindColumn('naam',$this->naam);
-      $this->getname->bindColumn('company',$this->company);
-      $this->getname->bindColumn('geboortedatum',$this->birthday);
-      $this->getname->bindColumn('webpagina',$this->website);
       $this->getname->execute();
-      $rowsCount = $this->getname->fetch(PDO::FETCH_BOUND);
+      $this->entry->contact = $this->getname->fetch_object();
       $this->getname->closeCursor();
 	  $this->changed = 0;
 	  $this->currid = $id;
+      $this->getmail->bindParam(':id',$id,PDO::PARAM_INT);
+	  $this->getmail->execute();
+	  $this->entry->mail = $this->getmail->fetch_all();
+	  
+	  echo "<!-->\n";
+	  print_r($this->entry);
+	  echo "-->\n";
 	}
   }
 
@@ -95,7 +95,7 @@ echo "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">\
 echo "<head><title>Listing contacts</title><style>\n";
 echo "body {font-family: Verdana;}\n";
 echo "div.name {color: red; text-decoration: none; font-weight: bolder;}\n";
-echo "div.entry {display: inline; float: left; width: 400px; height: 150px; border: 2px solid; margin: 10px; padding: 5px;}\n";
+echo "div.entry {display: inline; float: left; width: 450px; height: 200px; border: 2px solid; margin: 10px; padding: 5px;}\n";
 echo "td {vertical-align: top;}\n";
 echo "</style></head>\n";
 echo "<body>\n";
