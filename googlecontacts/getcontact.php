@@ -143,7 +143,7 @@ try {
     }
     
 	$obj->dbName = '*** No Id ***';
-	if (exists($obj->content) {
+	if (isset($obj->content)) {
       list($key,$val) = explode('=',$obj->content);                                     
 	  if ($key === "id") {
 	    $cdb->loadId($val);
