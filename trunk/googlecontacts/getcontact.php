@@ -171,7 +171,6 @@ try {
       $obj->website[] = (string) $w['href'];
     }
     
-	$obj->dbName = '*** No Id ***';
 	if (isset($obj->content)) {
 	  
       list($key,$val) = explode('=',$obj->content);                                     
