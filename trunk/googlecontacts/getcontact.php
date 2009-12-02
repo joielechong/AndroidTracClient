@@ -33,18 +33,18 @@ class Contacts {
     }
     fclose($cred);
   
-    $dbh = new PDO("pgsql:dbname=mfvl",$user,$pass);
-    $getname = $dbh->prepare('SELECT naam,company,geboortedatum,webpagina FROM contacts WHERE id=:id');
-	$currid = -1;
+    $this->dbh = new PDO("pgsql:dbname=mfvl",$user,$pass);
+    $this->getname = $dbh->prepare('SELECT naam,company,geboortedatum,webpagina FROM contacts WHERE id=:id');
+	$this->currid = -1;
   }
   
   function loadId($id) {
 	if ($this->currid != $id) {
       $this->getname->bindParam(':id',$id,PDO::PARAM_INT);
-      $this->getname->bindColumn('naam',$naam);
-      $this->getname->bindColumn('company',$company);
-      $this->getname->bindColumn('geboortedatum',$birthday);
-      $this->getname->bindColumn('webpagina',$website);
+      $this->getname->bindColumn('naam',$this->naam);
+      $this->getname->bindColumn('company',$this->company);
+      $this->getname->bindColumn('geboortedatum',$this->birthday);
+      $this->getname->bindColumn('webpagina',$this->website);
       $this->getname->execute();
       $rowsCount = $this->getname->fetch(PDO::FETCH_BOUND);
       $this->getname->closeCursor();
