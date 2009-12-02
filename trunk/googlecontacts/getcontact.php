@@ -81,12 +81,12 @@ class Contacts {
 
   function getName()
   {
-    return $this->entry[contact][naam];
+    return $this->entry->contact['naam'];
   }
 
   function getCompany()
   {
-    return $this->entry->contact[company];
+    return $this->entry->contact['company'];
   }
 }
 $cdb = new Contacts;
