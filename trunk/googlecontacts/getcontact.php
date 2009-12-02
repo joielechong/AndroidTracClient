@@ -34,7 +34,7 @@ class Contacts {
     fclose($cred);
   
     $this->dbh = new PDO("pgsql:dbname=mfvl",$user,$pass);
-    $this->getname = $dbh->prepare('SELECT naam,company,geboortedatum,webpagina FROM contacts WHERE id=:id');
+    $this->getname = $this->dbh->prepare('SELECT naam,company,geboortedatum,webpagina FROM contacts WHERE id=:id');
 	$this->currid = -1;
   }
   
@@ -49,7 +49,7 @@ class Contacts {
       $rowsCount = $this->getname->fetch(PDO::FETCH_BOUND);
       $this->getname->closeCursor();
 	  $this->changed = 0;
-	  $$this->currid = $id;
+	  $this->currid = $id;
 	}
   }
 
@@ -146,6 +146,8 @@ try {
 	if ($key === "id") {
 	  $cdb->loadId($val);
       $obj->dbName = $cdb->getName();
+	} else {
+	  $obj->dbName = '*** No Id ***';
 	}
 
     $results[] = $obj;  
