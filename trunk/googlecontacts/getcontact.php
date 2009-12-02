@@ -136,7 +136,9 @@ try {
 	$obj->familyName = (string) $xml->familyName;
     
     foreach ($xml->email as $e) {
-      $obj->emailAddress[] = (string) $e['rel'] . "  ".(string) $e['address'];
+	  $relstr = (string) $e['rel'];
+	  list($g,$rel) = explode("#",$relstr);
+      $obj->emailAddress[] =  $rel.": ".(string) $e['address'];
     }
     
     foreach ($xml->phoneNumber as $p) {
