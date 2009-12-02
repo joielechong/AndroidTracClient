@@ -60,12 +60,12 @@ class Contacts {
 
   function getName()
   {
-    return $this->naam;
+    return $this->entry->contact->naam;
   }
 
   function getCompany()
   {
-    return $this->company;
+    return $this->entry->contact->company;
   }
 }
 $cdb = new Contacts;
