@@ -32,6 +32,9 @@ class Contacts {
     $this->dbh = new PDO("pgsql:dbname=mfvl",$user,$pass);
     $this->getname = $this->dbh->prepare('SELECT * FROM contacts WHERE id=:id');
     $this->getmail = $this->dbh->prepare('SELECT * FROM mail WHERE contact_id=:id');
+    $this->getphone = $this->dbh->prepare('SELECT * FROM mail WHERE contact_id=:id');
+    $this->getfax = $this->dbh->prepare('SELECT * FROM fax WHERE contact_id=:id');
+    $this->getnaw = $this->dbh->prepare('SELECT * FROM naw WHERE contact_id=:id');
 	$this->currid = -1;
   }
   
@@ -41,15 +44,33 @@ class Contacts {
       $this->getname->execute();
       $this->entry->contact = $this->getname->fetch(PDO::FETCH_ASSOC);
       $this->getname->closeCursor();
-	  $this->changed = 0;
-	  $this->currid = $id;
+	  
       $this->getmail->bindParam(':id',$id,PDO::PARAM_INT);
 	  $this->getmail->execute();
 	  $this->entry->mail = $this->getmail->fetchAll(PDO::FETCH_ASSOC);
+      $this->getname->closeCursor();
+	  
+      $this->getphone->bindParam(':id',$id,PDO::PARAM_INT);
+	  $this->getphone->execute();
+	  $this->entry->phone = $this->getphone->fetchAll(PDO::FETCH_ASSOC);
+      $this->getphone->closeCursor();
+	  
+      $this->getfax->bindParam(':id',$id,PDO::PARAM_INT);
+	  $this->getfax->execute();
+	  $this->entry->fax = $this->getfax->fetchAll(PDO::FETCH_ASSOC);
+      $this->getfax->closeCursor();
+	  
+      $this->getnaw->bindParam(':id',$id,PDO::PARAM_INT);
+	  $this->getnaw->execute();
+	  $this->entry->naw = $this->getnaw->fetchAll(PDO::FETCH_ASSOC);
+      $this->getnaw->closeCursor();
 	  
 	  echo "<!-->\n";
 	  print_r($this->entry);
 	  echo "-->\n";
+	  
+	  $this->changed = 0;
+	  $this->currid = $id;
 	}
   }
 
@@ -60,12 +81,12 @@ class Contacts {
 
   function getName()
   {
-    return $this->entry->contact->naam;
+    return $this->entry[contact][naam];
   }
 
   function getCompany()
   {
-    return $this->entry->contact->company;
+    return $this->entry->contact[company];
   }
 }
 $cdb = new Contacts;
