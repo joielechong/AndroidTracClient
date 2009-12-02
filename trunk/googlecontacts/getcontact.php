@@ -39,13 +39,13 @@ class Contacts {
 	if ($this->currid != $id) {
       $this->getname->bindParam(':id',$id,PDO::PARAM_INT);
       $this->getname->execute();
-      $this->entry->contact = $this->getname->fetch_object();
+      $this->entry->contact = $this->getname->fetch(PDO::FETCH_ASSOC);
       $this->getname->closeCursor();
 	  $this->changed = 0;
 	  $this->currid = $id;
       $this->getmail->bindParam(':id',$id,PDO::PARAM_INT);
 	  $this->getmail->execute();
-	  $this->entry->mail = $this->getmail->fetch_all();
+	  $this->entry->mail = $this->getmail->fetchAll(PDO::FETCH_ASSOC);
 	  
 	  echo "<!-->\n";
 	  print_r($this->entry);
