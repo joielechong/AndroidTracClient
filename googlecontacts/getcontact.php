@@ -142,7 +142,7 @@ try {
     }
     
     foreach ($xml->phoneNumber as $p) {
-	  $relstr = (string) $e['rel'];
+	  $relstr = (string) $p['rel'];
 	  list($g,$rel) = explode("#",$relstr);
       $obj->phoneNumber[] = $rel.": ".(string) $p;
     }
