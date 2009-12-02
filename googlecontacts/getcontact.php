@@ -6,38 +6,42 @@ ini_set('memory_limit', '50M');
 require_once 'Zend/Loader/Autoloader.php';                                      
 $autoloader = Zend_loader_Autoloader::getInstance();              // load Zend Gdata libraries
 
-function openDB() {
-  $cred = fopen("/home/mfvl/download/credentials.pg","r");
-  while (!feof($cred)) {
-    $buffer = fgets($cred);
-    if ($buffer[0] !== "#" && strstr($buffer,"=") != FALSE) {
-      list($key,$val) = explode('=',$buffer);
-      if ($key === "username") {
-	$user = chop($val);
-      }
-      if ($key === "password") {
-	$pass = chop($val);
+class Contacts {
+
+  private $dbh, $getname, $setname;
+  
+  function __construct() {
+    $cred = fopen("/home/mfvl/download/credentials.pg","r");
+    while (!feof($cred)) {
+      $buffer = fgets($cred);
+      if ($buffer[0] !== "#" && strstr($buffer,"=") != FALSE) {
+        list($key,$val) = explode('=',$buffer);
+        if ($key === "username") {
+  	      $user = chop($val);
+        }
+        if ($key === "password") {
+	      $pass = chop($val);
+        }
       }
     }
-  }
-  fclose($cred);
+    fclose($cred);
   
-  $dbh = new PDO("pgsql:dbname=mfvl",$user,$pass);
-  return $dbh;
-}
+    $dbh = new PDO("pgsql:dbname=mfvl",$user,$pass);
+    $getname = $dbh->prepare('SELECT naam FROM contacts WHERE id=:id');
+	$setname = $dbh->prepare('UPDATE contacts set naam=:naam WHERE id=:id');
+  }
 
-function getName($getname,$id)
-{
-  $getname->bindParam(':id',$id,PDO::PARAM_INT);
-  $getname->bindColumn('naam',$naam);
-  $getname->execute();
-  $rowsCount = $getname->fetch(PDO::FETCH_BOUND);
-  $getname->closeCursor();
-  return $naam;
+  function getName($getname,$id)
+  {
+    $getname->bindParam(':id',$id,PDO::PARAM_INT);
+    $getname->bindColumn('naam',$naam);
+    $getname->execute();
+    $rowsCount = $getname->fetch(PDO::FETCH_BOUND);
+    $getname->closeCursor();
+    return $naam;
+  }
 }
-
-$dbh = openDB();
-$getname = $dbh->prepare('SELECT naam FROM contacts WHERE id=:id');
+$cdb = new Contacts;
 
 
 // set credentials for ClientLogin authentication
@@ -112,7 +116,7 @@ try {
     }
     
     list($key,$val) = explode('=',$obj->content);                                     
-    $obj->dbName = getName($getname,$val);
+    $obj->dbName = cdb->getName($val);
 
     $results[] = $obj;  
   }
