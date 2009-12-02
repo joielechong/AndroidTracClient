@@ -110,6 +110,9 @@ try {
   //$query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full?max-results=2048');
   $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full');
   $feed = $gdata->getFeed($query);
+  echo("<!--\n");
+  print_r($feed);
+  echo("-->\n");
   
   // display title and result count
   
@@ -121,10 +124,6 @@ try {
   $results = array();
   foreach($feed as $entry){
     $xml = simplexml_load_string($entry->getXML());
-    echo("<!--\n");
-    print_r($entry);
-    print_r($xml);
-    echo("-->\n");
     $obj = new stdClass;
     $obj->name = (string) $entry->title;
     $obj->content = (string) $entry->content;
@@ -144,6 +143,7 @@ try {
     
 	$obj->dbName = '*** No Id ***';
 	if (isset($obj->content)) {
+	  
       list($key,$val) = explode('=',$obj->content);                                     
 	  if ($key === "id") {
 	    $cdb->loadId($val);
