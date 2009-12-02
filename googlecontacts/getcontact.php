@@ -142,12 +142,13 @@ try {
       $obj->website[] = (string) $w['href'];
     }
     
-    list($key,$val) = explode('=',$obj->content);                                     
-	if ($key === "id") {
-	  $cdb->loadId($val);
-      $obj->dbName = $cdb->getName();
-	} else {
-	  $obj->dbName = '*** No Id ***';
+	$obj->dbName = '*** No Id ***';
+	if (exists($obj->content) {
+      list($key,$val) = explode('=',$obj->content);                                     
+	  if ($key === "id") {
+	    $cdb->loadId($val);
+        $obj->dbName = $cdb->getName();
+	  }
 	}
 
     $results[] = $obj;  
