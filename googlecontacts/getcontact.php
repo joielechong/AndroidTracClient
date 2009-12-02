@@ -39,33 +39,33 @@ class Contacts {
   }
   
   function loadId($id) {
-	if ($currid != $id) {
-      $getname->bindParam(':id',$id,PDO::PARAM_INT);
-      $getname->bindColumn('naam',$naam);
-      $getname->bindColumn('company',$company);
-      $getname->bindColumn('geboortedatum',$birthday);
-      $getname->bindColumn('webpagina',$website);
-      $getname->execute();
-      $rowsCount = $getname->fetch(PDO::FETCH_BOUND);
-      $getname->closeCursor();
-	  $changed = 0;
-	  $currid = $id;
+	if ($this->currid != $id) {
+      $this->getname->bindParam(':id',$id,PDO::PARAM_INT);
+      $this->getname->bindColumn('naam',$naam);
+      $this->getname->bindColumn('company',$company);
+      $this->getname->bindColumn('geboortedatum',$birthday);
+      $this->getname->bindColumn('webpagina',$website);
+      $this->getname->execute();
+      $rowsCount = $this->getname->fetch(PDO::FETCH_BOUND);
+      $this->getname->closeCursor();
+	  $this->changed = 0;
+	  $$this->currid = $id;
 	}
   }
 
   function getId()
   {
-    return $currid;
+    return $this->currid;
   }
 
   function getName()
   {
-    return $naam;
+    return $this->naam;
   }
 
   function getCompany()
   {
-    return $company;
+    return $this->company;
   }
 }
 $cdb = new Contacts;
