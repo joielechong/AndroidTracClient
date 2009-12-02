@@ -32,7 +32,7 @@ class Contacts {
     $this->dbh = new PDO("pgsql:dbname=mfvl",$user,$pass);
     $this->getname = $this->dbh->prepare('SELECT * FROM contacts WHERE id=:id');
     $this->getmail = $this->dbh->prepare('SELECT * FROM mail WHERE contact_id=:id');
-    $this->getphone = $this->dbh->prepare('SELECT * FROM mail WHERE contact_id=:id');
+    $this->getphone = $this->dbh->prepare('SELECT * FROM telephone WHERE contact_id=:id');
     $this->getfax = $this->dbh->prepare('SELECT * FROM fax WHERE contact_id=:id');
     $this->getnaw = $this->dbh->prepare('SELECT * FROM naw WHERE contact_id=:id');
 	$this->currid = -1;
