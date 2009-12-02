@@ -144,7 +144,7 @@ try {
     
     list($key,$val) = explode('=',$obj->content);                                     
 	if ($key === "id") {
-	  $cdb->oadId($val);
+	  $cdb->loadId($val);
       $obj->dbName = $cdb->getName();
 	}
 
