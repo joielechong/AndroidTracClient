@@ -142,7 +142,9 @@ try {
     }
     
     foreach ($xml->phoneNumber as $p) {
-      $obj->phoneNumber[] = (string) $p;
+	  $relstr = (string) $e['rel'];
+	  list($g,$rel) = explode("#",$relstr);
+      $obj->phoneNumber[] = $rel.": ".(string) $p;
     }
     foreach ($xml->website as $w) {
       $obj->website[] = (string) $w['href'];
