@@ -177,7 +177,7 @@ try {
   $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full?max-results=2048');
   //$query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full');
   $feed = $gdata->getFeed($query);
-  echo "<!--\n";var_dump($feed);echo " -->\n";
+  //echo "<!--\n";var_dump($feed);echo " -->\n";
  
   // display title and result count
   
@@ -221,12 +221,7 @@ try {
       $obj->phoneNumber[] = $rel.": ".(string) $p;
     }
     foreach ($xml->website as $w) {
-	  $relstr = (string) $p['rel'];
-	  if (strstr($relstr,"#") != FALSE) {
-	    list($g,$rel) = explode("#",$relstr);
-	  } else {
-	    $rel = "work";
-	  }
+	  $rel = (string) $p['rel'];
       $obj->website[] = $rel .": ".(string) $w['href'];
     }
     
