@@ -81,7 +81,7 @@ class Contacts {
   }
   
   private function print_diff($field,$t1,$t2) {
-    it (isset($t1) &&$t1 === ''){
+    if (isset($t1) &&$t1 === ''){
 	  $t1==NULL;
 	}
     if (isset($t1) && isset($t2) && $t1 !== $t2) {
