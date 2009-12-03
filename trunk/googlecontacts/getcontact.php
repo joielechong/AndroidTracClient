@@ -193,7 +193,7 @@ try {
     $results[] = $obj;  
   }
 } catch (Exception $e) {
-  die('ERROR:' . $e->getMessage());  
+  die('ERROR:' . $e->getMessage()."\n".$e->getTraceAsString());  
   }
 
 // display results
