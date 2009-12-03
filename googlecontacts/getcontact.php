@@ -127,8 +127,8 @@ try {
   $gdata->setMajorProtocolVersion(3);
   
   // perform query and get result feed
-  //$query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full?max-results=2048');
-  $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full');
+  $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full?max-results=2048');
+  //$query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full');
   $feed = $gdata->getFeed($query);
   //  echo("<!--\n");
   //  print_r($feed);
@@ -196,7 +196,6 @@ try {
 
 // display results
 foreach ($results as $r) {
-  echo "<!--\n";print_r($r);echo " -->\n";
   echo "<div class=\"entry\">\n";
   echo "<div class=\"name\">";
   echo (!empty($r->name)) ? $r->name : 'Name not available'; 
