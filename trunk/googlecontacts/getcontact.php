@@ -196,6 +196,7 @@ try {
 
 // display results
 foreach ($results as $r) {
+  echo "<!--\n";print_r($r);echo " -->\n";
   echo "<div class=\"entry\">\n";
   echo "<div class=\"name\">";
   echo (!empty($r->name)) ? $r->name : 'Name not available'; 
