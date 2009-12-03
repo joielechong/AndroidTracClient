@@ -206,7 +206,7 @@ foreach ($results as $r) {
   echo $r->orgName;
   echo "</td></tr>\n";
   echo "<tr><td>Email</td><td>";
-  if (is_array($r->emailAddress)) {
+  if (isset($r->emailAddress) && is_array($r->emailAddress)) {
     echo @join(', ', $r->emailAddress);
   }
   echo "</td></tr>\n";
@@ -216,7 +216,7 @@ foreach ($results as $r) {
   }
   echo "</td></tr>\n";
   echo "<tr><td>Web</td><td>";
-  if (is_array($r->website)) {
+  if (isset($r->website) && is_array($r->website)) {
     echo @join(', ', $r->website);
   }
   echo "</td></tr>\n";
