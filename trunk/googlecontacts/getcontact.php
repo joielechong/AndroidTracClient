@@ -88,14 +88,26 @@ class Contacts {
 	  $t2 = NULL;
 	}
     if (isset($t1) && isset($t2) && $t1 !== $t2) {
-      echo "<tr class=\"diff\"><td>$field</td><td>";var_dump($t1);echo "</td><td>";var_dump($t2);echo "</td></tr>\n";
+      echo "<tr class=\"diff\"><td>$field</td><td>$t1</td><td>$t2</td></tr>\n";
 	}
 	if (isset($t1) xor isset($t2)) {
-      echo "<tr class=\"diff\"><td>$field</td><td>";var_dump($t1);echo "</td><td>";var_dump($t2); echo "</td></tr>\n";
+      echo "<tr class=\"diff\"><td>$field</td><td>$t1</td><td>$t2</td></tr>\n";
 	}
   }
   
   private function print_difflist($field,$g,$d) {
+	if (is_null($d)) {
+	  if (is_null($g)) {
+	    // do nothing
+	  } else {
+		echo "<tr class=\"diff\"><td>$field</td><td>".join(", ",$g)."</td><td></td></tr>\n";
+	  }
+	} else {
+	  // decode email address
+	  if (is_null($g)) {
+	  } else {
+	  }
+	}
   }
   
   function compare($r) {
