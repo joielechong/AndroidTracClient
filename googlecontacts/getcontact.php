@@ -73,7 +73,7 @@ class Contacts {
   }
   
   private function print_diff($field,$t1,$t2) {
-    if ($t1 !== $t2) {
+    if ((isset($1) && isset($2) && $t1 !== $t2) || !(isset($t1) && isset($t2))) {
       echo "<tr class=\"diff\"><td>$field</td><td>$t1</td><td>$t2</td></tr>\n";
 	}
   }
@@ -152,8 +152,8 @@ try {
   $gdata->setMajorProtocolVersion(3);
   
   // perform query and get result feed
-  $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full?max-results=2048');
-  //$query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full');
+  //$query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full?max-results=2048');
+  $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full');
   $feed = $gdata->getFeed($query);
   
   // display title and result count
