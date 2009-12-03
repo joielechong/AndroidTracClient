@@ -81,7 +81,7 @@ class Contacts {
   }
   
   private function print_diff($field,$t1,$t2) {
-	if (isset($t1) && length($t1) == 0) {
+	if (isset($t1) && strleng($t1) == 0) {
 	  $t1 = NULL;
 	}
     if (isset($t1) && isset($t2) && $t1 !== $t2) {
@@ -158,8 +158,8 @@ try {
   $gdata->setMajorProtocolVersion(3);
   
   // perform query and get result feed
-  //$query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full?max-results=2048');
-  $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full');
+  $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full?max-results=2048');
+  //$query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full');
   $feed = $gdata->getFeed($query);
   
   // display title and result count
