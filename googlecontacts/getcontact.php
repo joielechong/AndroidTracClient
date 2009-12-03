@@ -99,8 +99,8 @@ class Contacts {
   echo "<div class=\"name\">";
   echo (!empty($r->name)) ? $r->name : 'Name not available'; 
   echo "</div>\n";
-  if ($r->name !== $entry->contact['naam']) {
-    echo "<div class=\"diff\">\n".$entry->contact['naam']."</div>\n";
+  if ($r->name !== $entry->contact['cn']) {
+    echo "<div class=\"diff\">\n".$entry->contact['cn']."</div>\n";
   }
   echo "<div class=\"data\">\n";
   echo "<table>\n";
