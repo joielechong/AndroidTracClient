@@ -36,6 +36,7 @@ class Contacts {
     $this->getphone = $this->dbh->prepare('SELECT * FROM telephone WHERE contact_id=:id');
     $this->getfax = $this->dbh->prepare('SELECT * FROM fax WHERE contact_id=:id');
     $this->getnaw = $this->dbh->prepare('SELECT * FROM naw WHERE contact_id=:id');
+    $this->getweb = $this->dbh->prepare('SELECT * FROM website WHERE contact_id=:id');
 	$this->currid = -1;
   }
   
@@ -67,14 +68,26 @@ class Contacts {
 	  $this->entry->naw = $this->getnaw->fetchAll(PDO::FETCH_ASSOC);
       $this->getnaw->closeCursor();
 	  
-	  $this->changed = 0;
+      $this->getweb->bindParam(':id',$id,PDO::PARAM_INT);
+	  $this->getweb->execute();
+	  $this->entry->web = $this->getweb->fetchAll(PDO::FETCH_ASSOC);
+      $this->getweb->closeCursor();
+	  
+	  $this->entry->dbchanged = 0;
+	  $this->entry->gglchanged = 0;
+	  $this->entry->time = strtotime($this->entry->contact['updatetime']);
 	  $this->currid = $id;
 	}
   }
   
   private function print_diff($field,$t1,$t2) {
-    if ((isset($t1) && isset($t2) && $t1 !== $t2) || !(isset($t1) && isset($t2))) {
+    if ((isset($t1) && isset($t2) && $t1 !== $t2) || (isset($t1) xor isset($t2))) {
       echo "<tr class=\"diff\"><td>$field</td><td>$t1</td><td>$t2</td></tr>\n";
+	}
+  }
+  
+  private function print_difflist($field,$g,$d) {
+	if (isset($g) && isset($d)) {
 	}
   }
   
@@ -93,6 +106,7 @@ class Contacts {
   $this->print_diff("Organization",$r->orgName,$entry->contact['company']);
   $this->print_diff("Function",$r->orgTitle,$entry->contact['function']);
   echo "<tr class=\"diff\"><td>Updated</td><td>".$r->updated."</td><td>".$entry->contact['updatetime']."</td></tr>\n";
+  print_difflist('Email',$r->emailAddress,$entry->mail);
   echo "<tr><td>Email</td><td>";
   if (isset($r->emailAddress) && is_array($r->emailAddress)) {
     echo @join(', ', $r->emailAddress);
@@ -170,6 +184,7 @@ try {
     $obj->name = (string) $entry->title;
     $obj->content = (string) $entry->content;
 	$obj->updated = (string) $entry->updated;
+	$obj->time = strtotime($entry->updated);
     $obj->orgName = (string) $xml->organization->orgName; 
     $obj->orgTitle = (string) $xml->organization->orgTitle;
 	$obj->fullName = (string) $xml->fullName;
