@@ -1,5 +1,8 @@
 <?php
 
+set_include_path('/web/ZendFramework/library'.PATH_SEPARATOR.get_include_path());
+ini_set('memory_limit', '50M');
+
 require_once 'Zend/Loader/Autoloader.php';                                      
 $autoloader = Zend_loader_Autoloader::getInstance();              // load Zend Gdata libraries
 
@@ -91,8 +94,6 @@ function exception_error_handler($errno, $errstr, $errfile, $errline ) {
     throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
 }
 
-set_include_path('/web/ZendFramework/library'.PATH_SEPARATOR.get_include_path());
-ini_set('memory_limit', '50M');
 set_error_handler("exception_error_handler");
 
 
