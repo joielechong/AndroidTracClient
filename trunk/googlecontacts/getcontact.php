@@ -74,6 +74,7 @@ class Contacts {
   
   function compare($r) {
   $entry=$this->entry;
+  echo "<!--\n";print_r($r);print_r($entry);echo " -->\n";
   echo "<div class=\"entry\">\n";
   echo "<div class=\"name\">";
   echo (!empty($r->name)) ? $r->name : 'Name not available'; 
