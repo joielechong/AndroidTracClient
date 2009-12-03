@@ -1,8 +1,5 @@
 <?php
 
-set_include_path('/web/ZendFramework/library'.PATH_SEPARATOR.get_include_path());
-ini_set('memory_limit', '50M');
-
 require_once 'Zend/Loader/Autoloader.php';                                      
 $autoloader = Zend_loader_Autoloader::getInstance();              // load Zend Gdata libraries
 
@@ -89,6 +86,17 @@ class Contacts {
     return $this->entry->contact['company'];
   }
 }
+
+function exception_error_handler($errno, $errstr, $errfile, $errline ) {
+    throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+}
+
+set_include_path('/web/ZendFramework/library'.PATH_SEPARATOR.get_include_path());
+ini_set('memory_limit', '50M');
+set_error_handler("exception_error_handler");
+
+
+
 $cdb = new Contacts;
 
 
@@ -96,20 +104,6 @@ $cdb = new Contacts;
 $user = '** invalid **';                                                        
 $pass = '** invalid **';                                                        
 
-$cred = fopen("/home/mfvl/download/credentials.PC","r");                        
-while (!feof($cred)) {                                                          
-  $buffer = fgets($cred);                                                       
-  if ($buffer[0] !== "#" && strstr($buffer,"=") != FALSE) {                     
-    list($key,$val) = explode('=',$buffer);                                     
-    if ($key === "username") {                                                  
-      $user = chop($val);                                                       
-    }                                                                           
-    if ($key === "password") {                                                  
-      $pass = chop($val);                                                       
-    }                                                                           
-  }                                                                             
- }
-fclose($cred);
 
 echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
 echo "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">\n";
@@ -122,6 +116,20 @@ echo "</style></head>\n";
 echo "<body>\n";
 
 try {
+  $cred = fopen("/home/mfvl/download/credentials.PC","r");                        
+  while (!feof($cred)) {                                                          
+    $buffer = fgets($cred);                                                       
+    if ($buffer[0] !== "#" && strstr($buffer,"=") != FALSE) {                     
+      list($key,$val) = explode('=',$buffer);                                     
+      if ($key === "username") {                                                  
+        $user = chop($val);                                                       
+      }                                                                           
+      if ($key === "password") {                                                  
+        $pass = chop($val);                                                       
+      }                                                                           
+    }                                                                             
+   }
+  fclose($cred);
   // perform login and set protocol version to 3.0
   $client = Zend_Gdata_ClientLogin::getHttpClient($user, $pass, 'cp');
   $gdata = new Zend_Gdata($client);
