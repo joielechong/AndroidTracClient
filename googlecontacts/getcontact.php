@@ -112,7 +112,7 @@ class Contacts {
   
   function compare($r) {
   $entry=$this->entry;
-  //echo "<!--\n";print_r($r);print_r($entry);echo " -->\n";
+  echo "<!--\n";print_r($r);print_r($entry);echo " -->\n";
   echo "<div class=\"entry\">\n";
   echo "<div class=\"name\">";
   echo (!empty($r->name)) ? $r->name : 'Name not available'; 
@@ -127,7 +127,8 @@ class Contacts {
 //  echo "<tr class=\"diff\"><td>Updated</td><td>".$r->time."</td><td>".$entry->time."</td></tr>\n";
   $this->print_difflist('Email',(isset($r->emailAddress)?$r->emailAddress:NULL),(isset($entry->mail)?$entry->mail:NULL));
   $this->print_difflist('Phone',(isset($r->phoneNumber)?$r->phoneNumber:NULL),(isset($entry->phone)?$entry->phone:NULL));
-  $this->print_difflist('Web',(isset($r->website)?$r->website:NULL),(isset($entry->web)?$entry->web:NULL));
+  //$this->print_difflist('Web',(isset($r->website)?$r->website:NULL),(isset($entry->web)?$entry->web:NULL));
+  $this->print_difflist('Web',(isset($r->website)?$r->website:NULL),(NULL));
   echo "</td></tr>\n";
   echo "<tr><td>Content</td><td>".$r->content."</td></tr>\n";
   
