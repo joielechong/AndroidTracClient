@@ -42,6 +42,7 @@ class Contacts {
 	if ($this->currid != $id) {
       $this->getname->bindParam(':id',$id,PDO::PARAM_INT);
       $this->getname->execute();
+	  $this->entry = new stdClass;
       $this->entry->contact = $this->getname->fetch(PDO::FETCH_ASSOC);
       $this->getname->closeCursor();
 	  
