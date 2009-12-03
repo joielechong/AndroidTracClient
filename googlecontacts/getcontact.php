@@ -211,7 +211,7 @@ foreach ($results as $r) {
   }
   echo "</td></tr>\n";
   echo "<tr><td>Phone</td><td>";
-  if (is_array($r->phoneNumber)) {
+  if (isset($r->phoneNumber) && is_array($r->phoneNumber)) {
     echo @join(', ', $r->phoneNumber);
   }
   echo "</td></tr>\n";
