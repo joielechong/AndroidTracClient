@@ -211,7 +211,7 @@ try {
 // display results
 foreach ($results as $r) {
   if (isset($r->id)) {
-    $cdb->loadId($val);
+    $cdb->loadId($r->id);
 	echo $cdb->compare($r);
   } else {
   echo "<div class=\"entry\">\n";
