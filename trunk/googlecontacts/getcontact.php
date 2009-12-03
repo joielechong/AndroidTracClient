@@ -90,8 +90,8 @@ class Contacts {
   }
   echo "<div class=\"data\">\n";
   echo "<table>\n";
-  print_diff("Organization",$r->orgName,$entry->contact['company']);
-  print_diff("Function",$r->orgTitle,$entry->contact['function']);
+  $this->print_diff("Organization",$r->orgName,$entry->contact['company']);
+  $this->print_diff("Function",$r->orgTitle,$entry->contact['function']);
   echo "<tr class=\"diff\"><td>Updated</td><td>".$r->updated."</td><td>".$entry->contact['updatetime']."</td></tr>\n";
   echo "<tr><td>Email</td><td>";
   if (isset($r->emailAddress) && is_array($r->emailAddress)) {
