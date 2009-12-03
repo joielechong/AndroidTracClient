@@ -21,15 +21,15 @@ class Contacts {
       if ($buffer[0] !== "#" && strstr($buffer,"=") != FALSE) {
         list($key,$val) = explode('=',$buffer);
         if ($key === "username") {
-	  $user = chop($val);
+  	      $user = chop($val);
         }
         if ($key === "password") {
-	  $pass = chop($val);
+	      $pass = chop($val);
         }
       }
     }
     fclose($cred);
-    
+  
     $this->dbh = new PDO("pgsql:dbname=mfvl",$user,$pass);
     $this->getname = $this->dbh->prepare('SELECT * FROM contacts WHERE id=:id');
     $this->getmail = $this->dbh->prepare('SELECT * FROM mail WHERE contact_id=:id');
@@ -37,87 +37,84 @@ class Contacts {
     $this->getfax = $this->dbh->prepare('SELECT * FROM fax WHERE contact_id=:id');
     $this->getnaw = $this->dbh->prepare('SELECT * FROM naw WHERE contact_id=:id');
     $this->getweb = $this->dbh->prepare('SELECT * FROM website WHERE contact_id=:id');
-    $this->currid = -1;
+	$this->currid = -1;
   }
   
   function loadId($id) {
-    if ($this->currid != $id) {
+	if ($this->currid != $id) {
       $this->getname->bindParam(':id',$id,PDO::PARAM_INT);
       $this->getname->execute();
-      $this->entry = new stdClass;
+	  $this->entry = new stdClass;
       $this->entry->contact = $this->getname->fetch(PDO::FETCH_ASSOC);
       $this->getname->closeCursor();
-      
+	  
       $this->getmail->bindParam(':id',$id,PDO::PARAM_INT);
-      $this->getmail->execute();
-      $this->entry->mail = $this->getmail->fetchAll(PDO::FETCH_ASSOC);
+	  $this->getmail->execute();
+	  $this->entry->mail = $this->getmail->fetchAll(PDO::FETCH_ASSOC);
       $this->getname->closeCursor();
-      
+	  
       $this->getphone->bindParam(':id',$id,PDO::PARAM_INT);
-      $this->getphone->execute();
-      $this->entry->phone = $this->getphone->fetchAll(PDO::FETCH_ASSOC);
+	  $this->getphone->execute();
+	  $this->entry->phone = $this->getphone->fetchAll(PDO::FETCH_ASSOC);
       $this->getphone->closeCursor();
-      
+	  
       $this->getfax->bindParam(':id',$id,PDO::PARAM_INT);
-      $this->getfax->execute();
-      $this->entry->fax = $this->getfax->fetchAll(PDO::FETCH_ASSOC);
+	  $this->getfax->execute();
+	  $this->entry->fax = $this->getfax->fetchAll(PDO::FETCH_ASSOC);
       $this->getfax->closeCursor();
-      
+	  
       $this->getnaw->bindParam(':id',$id,PDO::PARAM_INT);
-      $this->getnaw->execute();
-      $this->entry->naw = $this->getnaw->fetchAll(PDO::FETCH_ASSOC);
+	  $this->getnaw->execute();
+	  $this->entry->naw = $this->getnaw->fetchAll(PDO::FETCH_ASSOC);
       $this->getnaw->closeCursor();
-      
+	  
       $this->getweb->bindParam(':id',$id,PDO::PARAM_INT);
-      $this->getweb->execute();
-      $this->entry->web = $this->getweb->fetchAll(PDO::FETCH_ASSOC);
+	  $this->getweb->execute();
+	  $this->entry->web = $this->getweb->fetchAll(PDO::FETCH_ASSOC);
       $this->getweb->closeCursor();
-      
-      $this->entry->dbchanged = 0;
-      $this->entry->gglchanged = 0;
-      $this->entry->time = strtotime($this->entry->contact['updatetime']);
-      $this->currid = $id;
-    }
+	  
+	  $this->entry->dbchanged = 0;
+	  $this->entry->gglchanged = 0;
+	  $this->entry->time = strtotime($this->entry->contact['updatetime']);
+	  $this->currid = $id;
+	}
   }
   
   private function print_diff($field,$t1,$t2) {
-    if (isset($t1) &&$t1 === ''){
-      $t1==NULL;
-    }
     if (isset($t1) && isset($t2) && $t1 !== $t2) {
       echo "<tr class=\"diff\"><td>$field</td><td>$t1</td><td>$t2</td></tr>\n";
-    }
-    if (isset($t1) xor isset($t2)) {
+	}
+	if (isset($t1) xor isset($t2)) {
       echo "<tr class=\"diff\"><td>$field</td><td>".var_dump($t1)."</td><td>".var_dump($t2)."</td></tr>\n";
-    }
+	}
   }
   
   private function print_difflist($field,$g,$d) {
   }
   
   function compare($r) {
-    $entry=$this->entry;
-    echo "<!--\n";print_r($r);print_r($entry);echo " -->\n";
-    echo "<div class=\"entry\">\n";
-    echo "<div class=\"name\">";
-    echo (!empty($r->name)) ? $r->name : 'Name not available'; 
-    echo "</div>\n";
-    if ($r->name !== $entry->contact['naam']) {
-      echo "<div class=\"diff\">\n".$entry->contact['naam']."</div>\n";
-    }
-    echo "<div class=\"data\">\n";
-    echo "<table>\n";
-    $this->print_diff("Organization",$r->orgName,$entry->contact['company']);
-    $this->print_diff("Function",$r->orgTitle,$entry->contact['function']);
-    echo "<tr class=\"diff\"><td>Updated</td><td>".$r->time."</td><td>".$entry->time."</td></tr>\n";
-    $this->print_difflist('Email',(isset($r->emailAddress)?$r->emailAddress:NULL),(isset($entry->mail)?$entry->mail:NULL));
-    $this->print_difflist('Phone',(isset($r->phoneNumber)?$r->phoneNumber:NULL),(isset($entry->phone)?$entry->phone:NULL));
-    $this->print_difflist('Web',(isset($r->website)?$r->website:NULL),(isset($entry->web)?$entry->web:NULL));
-    echo "</td></tr>\n";
-    echo "<tr><td>Content</td><td>".$r->content."</td></tr>\n";
-    
-    echo "</table>\n</div>\n";
-    echo "</div>\n\n";	
+  $entry=$this->entry;
+  echo "<!--\n";print_r($r);print_r($entry);echo " -->\n";
+  echo "<div class=\"entry\">\n";
+  echo "<div class=\"name\">";
+  echo (!empty($r->name)) ? $r->name : 'Name not available'; 
+  echo "</div>\n";
+  if ($r->name !== $entry->contact['naam']) {
+    echo "<div class=\"diff\">\n".$entry->contact['naam']."</div>\n";
+  }
+  echo "<div class=\"data\">\n";
+  echo "<table>\n";
+  $this->print_diff("Organization",$r->orgName,$entry->contact['company']);
+  $this->print_diff("Function",$r->orgTitle,$entry->contact['function']);
+  echo "<tr class=\"diff\"><td>Updated</td><td>".$r->time."</td><td>".$entry->time."</td></tr>\n";
+  $this->print_difflist('Email',(isset($r->emailAddress)?$r->emailAddress:NULL),(isset($entry->mail)?$entry->mail:NULL));
+  $this->print_difflist('Phone',(isset($r->phoneNumber)?$r->phoneNumber:NULL),(isset($entry->phone)?$entry->phone:NULL));
+  $this->print_difflist('Web',(isset($r->website)?$r->website:NULL),(isset($entry->web)?$entry->web:NULL));
+  echo "</td></tr>\n";
+  echo "<tr><td>Content</td><td>".$r->content."</td></tr>\n";
+  
+  echo "</table>\n</div>\n";
+  echo "</div>\n\n";	
   }
   
 }
@@ -145,7 +142,7 @@ try {
       list($key,$val) = explode('=',$buffer);
       if ($key === "username") {
 	$user = chop($val);
-      }
+   }
       if ($key === "password") {
 	$pass = chop($val);
       }
@@ -175,50 +172,50 @@ try {
     $obj = new stdClass;
     $obj->name = (string) $entry->title;
     $obj->content = (string) $entry->content;
-    $obj->updated = (string) $entry->updated;
-    $obj->time = strtotime($entry->updated);
+	$obj->updated = (string) $entry->updated;
+	$obj->time = strtotime($entry->updated);
     $obj->orgName = (string) $xml->organization->orgName; 
     $obj->orgTitle = (string) $xml->organization->orgTitle;
-    $obj->fullName = (string) $xml->fullName;
-    $obj->givenName = (string) $xml->givenName;
-    $obj->additionalName = (string) $xml->additionalName;
-    $obj->familyName = (string) $xml->familyName;
+	$obj->fullName = (string) $xml->fullName;
+	$obj->givenName = (string) $xml->givenName;
+	$obj->additionalName = (string) $xml->additionalName;
+	$obj->familyName = (string) $xml->familyName;
     
     foreach ($xml->email as $e) {
-      $relstr = (string) $e['rel'];
-      if (strstr($relstr,"#") != FALSE) {
-	list($g,$rel) = explode("#",$relstr);
-      } else {
-	$rel = "??";
-      }
+	  $relstr = (string) $e['rel'];
+	  if (strstr($relstr,"#") != FALSE) {
+	    list($g,$rel) = explode("#",$relstr);
+	  } else {
+	    $rel = "??";
+	  }
       $obj->emailAddress[] =  $rel.": ".(string) $e['address'];
     }
     
     foreach ($xml->phoneNumber as $p) {
-      $relstr = (string) $p['rel'];
-      if (strstr($relstr,"#") != FALSE) {
-	list($g,$rel) = explode("#",$relstr);
-      } else {
-	$rel = "mobile";
-      }
+	  $relstr = (string) $p['rel'];
+	  if (strstr($relstr,"#") != FALSE) {
+	    list($g,$rel) = explode("#",$relstr);
+	  } else {
+	    $rel = "mobile";
+	  }
       $obj->phoneNumber[] = $rel.": ".(string) $p;
     }
     foreach ($xml->website as $w) {
-      $relstr = (string) $p['rel'];
-      if (strstr($relstr,"#") != FALSE) {
-	list($g,$rel) = explode("#",$relstr);
-      } else {
-	$rel = "work";
-      }
+	  $relstr = (string) $p['rel'];
+	  if (strstr($relstr,"#") != FALSE) {
+	    list($g,$rel) = explode("#",$relstr);
+	  } else {
+	    $rel = "work";
+	  }
       $obj->website[] = $rel .": ".(string) $w['href'];
     }
     
-    if (isset($obj->content) && strstr($obj->content,"=") != FALSE) {
+	if (isset($obj->content) && strstr($obj->content,"=") != FALSE) {
       list($key,$val) = explode('=',$obj->content);                                     
-      if (isset($key) && ($key === "id")) {
-	$obj->id = $val;
-      }
-    }
+	  if (isset($key) && ($key === "id")) {
+	    $obj->id = $val;
+	  }
+	}
     $results[] = $obj;  
   }
 } catch (Exception $e) {
@@ -229,35 +226,35 @@ try {
 foreach ($results as $r) {
   if (isset($r->id)) {
     $cdb->loadId($r->id);
-    echo $cdb->compare($r);
+	echo $cdb->compare($r);
   } else {
-    echo "<div class=\"entry\">\n";
-    echo "<div class=\"name\">";
-    echo (!empty($r->name)) ? $r->name : 'Name not available'; 
-    echo "</div>\n";
-    echo "<div class=\"data\">\n";
-    echo "<table>\n<tr><td>Organization</td><td>";
-    echo $r->orgName;
-    echo "</td></tr>\n";
-    echo "<tr><td>Email</td><td>";
-    if (isset($r->emailAddress) && is_array($r->emailAddress)) {
-      echo @join(', ', $r->emailAddress);
-    }
-    echo "</td></tr>\n";
-    echo "<tr><td>Phone</td><td>";
-    if (isset($r->phoneNumber) && is_array($r->phoneNumber)) {
-      echo @join(', ', $r->phoneNumber);
-    }
-    echo "</td></tr>\n";
-    echo "<tr><td>Web</td><td>";
-    if (isset($r->website) && is_array($r->website)) {
-      echo @join(', ', $r->website);
-    }
-    echo "</td></tr>\n";
-    echo "<tr><td>Content</td><td>";
-    echo $r->content;
-    echo "</td></tr>\n";
-    echo "</table>\n</div>\n</div>\n\n";
+  echo "<div class=\"entry\">\n";
+  echo "<div class=\"name\">";
+  echo (!empty($r->name)) ? $r->name : 'Name not available'; 
+  echo "</div>\n";
+  echo "<div class=\"data\">\n";
+  echo "<table>\n<tr><td>Organization</td><td>";
+  echo $r->orgName;
+  echo "</td></tr>\n";
+  echo "<tr><td>Email</td><td>";
+  if (isset($r->emailAddress) && is_array($r->emailAddress)) {
+    echo @join(', ', $r->emailAddress);
+  }
+  echo "</td></tr>\n";
+  echo "<tr><td>Phone</td><td>";
+  if (isset($r->phoneNumber) && is_array($r->phoneNumber)) {
+    echo @join(', ', $r->phoneNumber);
+  }
+  echo "</td></tr>\n";
+  echo "<tr><td>Web</td><td>";
+  if (isset($r->website) && is_array($r->website)) {
+    echo @join(', ', $r->website);
+  }
+  echo "</td></tr>\n";
+  echo "<tr><td>Content</td><td>";
+  echo $r->content;
+  echo "</td></tr>\n";
+  echo "</table>\n</div>\n</div>\n\n";
   }
 }
 echo "</body>\n</html>\n";
