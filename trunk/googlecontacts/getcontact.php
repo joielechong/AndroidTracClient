@@ -221,7 +221,7 @@ try {
       $obj->phoneNumber[] = $rel.": ".(string) $p;
     }
     foreach ($xml->website as $w) {
-	  $rel = (string) $p['rel'];
+	  $rel = (string) $w['rel'];
       $obj->website[] = $rel .": ".(string) $w['href'];
     }
     
