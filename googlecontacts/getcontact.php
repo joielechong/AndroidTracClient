@@ -67,36 +67,56 @@ class Contacts {
 	  $this->entry->naw = $this->getnaw->fetchAll(PDO::FETCH_ASSOC);
       $this->getnaw->closeCursor();
 	  
-	  echo "<!--\n";
-	  print_r($this->entry);
-	  echo " -->\n";
-	  
 	  $this->changed = 0;
 	  $this->currid = $id;
 	}
   }
-
-  function getId()
-  {
-    return $this->currid;
+  
+  function compare($r) {
+  $entry=$this->entry;
+  echo "<div class=\"entry\">\n";
+  echo "<div class=\"name\">";
+  echo (!empty($r->name)) ? $r->name : 'Name not available'; 
+  echo "</div>\n";
+  if ($r-name !== $entry->contact[naam]) {
+    echo "<div class=\"diff\">\n".$entry->contact[naam]."</div>\n";
+  }
+  echo "<div class=\"data\">\n";
+  echo "<table>\n";
+  if ($r->orgName !== $entry->contact[company]) {
+    echo "<tr class=\"diff\"><td>Organization</td><td>".$r->orgName."</td><td>".$entry->contact[company]."</td></tr>\n";
+  }
+  echo "<tr><td>Function</td><td>".$r->orgTitle."</td></tr>\n";
+  echo "<tr><td>Email</td><td>";
+  if (isset($r->emailAddress) && is_array($r->emailAddress)) {
+    echo @join(', ', $r->emailAddress);
+  }
+  echo "</td></tr>\n";
+  echo "<tr><td>Phone</td><td>";
+  if (isset($r->phoneNumber) && is_array($r->phoneNumber)) {
+    echo @join(', ', $r->phoneNumber);
+  }
+  echo "</td></tr>\n";
+  echo "<tr><td>Web</td><td>";
+  if (isset($r->website) && is_array($r->website)) {
+    echo @join(', ', $r->website);
+  }
+  echo "</td></tr>\n";
+  echo "<tr><td>Content</td><td>".$r->content."</td></tr>\n";
+  echo "<tr><td>Updated</td><td>".$r->updated."</td></tr>\n";
+  
+  echo "</table>\n</div>\n";
+  echo "</div>\n\n";	
   }
 
-  function getName()
-  {
-    return $this->entry->contact['naam'];
-  }
-
-  function getCompany()
-  {
-    return $this->entry->contact['company'];
-  }
 }
 
 echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
 echo "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">\n";
 echo "<head><title>Listing contacts</title><style>\n";
 echo "body {font-family: Verdana;}\n";
-echo "div.name {color: red; text-decoration: none; font-weight: bolder;}\n";
+echo "div.name {color: blue; text-decoration: none; font-weight: bolder;}\n";
+echo ".diff {color: red; text-decoration: none; font-weight: bolder;}\n";
 echo "div.entry {display: inline; float: left; width: 450px; height: 200px; border: 2px solid; margin: 10px; padding: 5px;}\n";
 echo "td {vertical-align: top;}\n";
 echo "</style></head>\n";
@@ -130,9 +150,6 @@ try {
   $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full?max-results=2048');
   //$query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full');
   $feed = $gdata->getFeed($query);
-  //  echo("<!--\n");
-  //  print_r($feed);
-  //  echo("-->\n");
   
   // display title and result count
   
@@ -170,7 +187,7 @@ try {
 	  if (strstr($relstr,"#") != FALSE) {
 	    list($g,$rel) = explode("#",$relstr);
 	  } else {
-	    $rel = "??";
+	    $rel = "mobile";
 	  }
       $obj->phoneNumber[] = $rel.": ".(string) $p;
     }
@@ -181,13 +198,9 @@ try {
 	if (isset($obj->content) && strstr($obj->content,"=") != FALSE) {
       list($key,$val) = explode('=',$obj->content);                                     
 	  if (isset($key) && ($key === "id")) {
-	    $cdb->loadId($val);
+	    $obj->id = $val;
 	  }
 	}
-	echo "<!--\n";
-	print_r($obj);
-	echo " -->\n";
-
     $results[] = $obj;  
   }
 } catch (Exception $e) {
@@ -196,6 +209,10 @@ try {
 
 // display results
 foreach ($results as $r) {
+  if (isset($r->id)) {
+    $cdb->loadId($val);
+	echo $cdb->compare($r);
+  } else {
   echo "<div class=\"entry\">\n";
   echo "<div class=\"name\">";
   echo (!empty($r->name)) ? $r->name : 'Name not available'; 
@@ -222,6 +239,8 @@ foreach ($results as $r) {
   echo "<tr><td>Content</td><td>";
   echo $r->content;
   echo "</td></tr>\n";
-  echo "</table>\n</div>\n</div>\n</body>\n</html>\n";
+  echo "</table>\n</div>\n</div>\n\n";
+  }
 }
+echo "</body>\n</html>\n";
 ?>
