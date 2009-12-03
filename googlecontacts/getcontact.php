@@ -106,7 +106,9 @@ class Contacts {
   $this->print_diff("Organization",$r->orgName,$entry->contact['company']);
   $this->print_diff("Function",$r->orgTitle,$entry->contact['function']);
   echo "<tr class=\"diff\"><td>Updated</td><td>".$r->updated."</td><td>".$entry->contact['updatetime']."</td></tr>\n";
-  print_difflist('Email',$r->emailAddress,$entry->mail);
+  $this->print_difflist('Email',$r->emailAddress,$entry->mail);
+  $this->print_difflist('Phone',$r->phoneNumber,$entry->phone);
+  $this->print_difflist('Web',$r->website,$entry->web);
   echo "<tr><td>Email</td><td>";
   if (isset($r->emailAddress) && is_array($r->emailAddress)) {
     echo @join(', ', $r->emailAddress);
@@ -212,7 +214,13 @@ try {
       $obj->phoneNumber[] = $rel.": ".(string) $p;
     }
     foreach ($xml->website as $w) {
-      $obj->website[] = (string) $w['href'];
+	  $relstr = (string) $p['rel'];
+	  if (strstr($relstr,"#") != FALSE) {
+	    list($g,$rel) = explode("#",$relstr);
+	  } else {
+	    $rel = "work";
+	  }
+      $obj->website[] = $rel .": ".(string) $w['href'];
     }
     
 	if (isset($obj->content) && strstr($obj->content,"=") != FALSE) {
