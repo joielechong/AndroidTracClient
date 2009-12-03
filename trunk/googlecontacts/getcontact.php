@@ -104,15 +104,9 @@ class Contacts {
   $this->print_diff("Organization",$r->orgName,$entry->contact['company']);
   $this->print_diff("Function",$r->orgTitle,$entry->contact['function']);
   echo "<tr class=\"diff\"><td>Updated</td><td>".$r->time."</td><td>".$entry->time."</td></tr>\n";
-  if (isset($r->emailAddress) && isset($entry->mail)) {
-    $this->print_difflist('Email',$r->emailAddress,$entry->mail);
-  }
-  if (isset($r->phoneNumber) && isset($entry->phone)) {
-    $this->print_difflist('Phone',$r->phoneNumber,$entry->phone);
-  }
-  if (isset($r->emailAddress) && isset($entry->mail)) {
-    $this->print_difflist('Web',$r->website,$entry->web);
-  }
+  $this->print_difflist('Email',(isset($r->emailAddress)?$r->emailAddress,undef),(isset($entry->mail)?$entry->mail,undef));
+  $this->print_difflist('Phone',(isset($r->phoneNumber)?$r->phoneNumber,undef),(isset($entry->phone)?$entry->phone,undef));
+  $this->print_difflist('Web',(isset($r->website)?$r->website,undef),(isset($entry->web)?$entry->web,undef));
   echo "</td></tr>\n";
   echo "<tr><td>Content</td><td>".$r->content."</td></tr>\n";
   
