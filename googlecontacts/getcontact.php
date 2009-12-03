@@ -78,13 +78,13 @@ class Contacts {
   echo "<div class=\"name\">";
   echo (!empty($r->name)) ? $r->name : 'Name not available'; 
   echo "</div>\n";
-  if ($r-name !== $entry->contact[naam]) {
-    echo "<div class=\"diff\">\n".$entry->contact[naam]."</div>\n";
+  if ($r->name !== $entry->contact['naam']) {
+    echo "<div class=\"diff\">\n".$entry->contact['naam']."</div>\n";
   }
   echo "<div class=\"data\">\n";
   echo "<table>\n";
-  if ($r->orgName !== $entry->contact[company]) {
-    echo "<tr class=\"diff\"><td>Organization</td><td>".$r->orgName."</td><td>".$entry->contact[company]."</td></tr>\n";
+  if ($r->orgName !== $entry->contact['company']) {
+    echo "<tr class=\"diff\"><td>Organization</td><td>".$r->orgName."</td><td>".$entry->contact['company']."</td></tr>\n";
   }
   echo "<tr><td>Function</td><td>".$r->orgTitle."</td></tr>\n";
   echo "<tr><td>Email</td><td>";
