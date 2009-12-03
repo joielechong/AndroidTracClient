@@ -81,6 +81,9 @@ class Contacts {
   }
   
   private function print_diff($field,$t1,$t2) {
+	if (isset($t1) && length($t1) == 0) {
+	  $t1 = NULL;
+	}
     if (isset($t1) && isset($t2) && $t1 !== $t2) {
       echo "<tr class=\"diff\"><td>$field</td><td>$t1</td><td>$t2</td></tr>\n";
 	}
@@ -106,7 +109,7 @@ class Contacts {
   echo "<table>\n";
   $this->print_diff("Organization",$r->orgName,$entry->contact['company']);
   $this->print_diff("Function",$r->orgTitle,$entry->contact['function']);
-  echo "<tr class=\"diff\"><td>Updated</td><td>".$r->time."</td><td>".$entry->time."</td></tr>\n";
+//  echo "<tr class=\"diff\"><td>Updated</td><td>".$r->time."</td><td>".$entry->time."</td></tr>\n";
   $this->print_difflist('Email',(isset($r->emailAddress)?$r->emailAddress:NULL),(isset($entry->mail)?$entry->mail:NULL));
   $this->print_difflist('Phone',(isset($r->phoneNumber)?$r->phoneNumber:NULL),(isset($entry->phone)?$entry->phone:NULL));
   $this->print_difflist('Web',(isset($r->website)?$r->website:NULL),(isset($entry->web)?$entry->web:NULL));
