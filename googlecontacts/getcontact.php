@@ -172,9 +172,8 @@ try {
     }
     
 	if (isset($obj->content)) {
-	  
       list($key,$val) = explode('=',$obj->content);                                     
-	  if ($key === "id") {
+	  if (isset($key) && ($key === "id")) {
 	    $cdb->loadId($val);
 	  }
 	}
