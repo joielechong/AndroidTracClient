@@ -2,6 +2,7 @@
 
 set_include_path('/web/ZendFramework/library'.PATH_SEPARATOR.get_include_path());
 ini_set('memory_limit', '50M');
+set_error_handler(create_function('$a, $b, $c, $d', 'throw new ErrorException($b, 0, $a, $c, $d);'), E_ALL);
 
 require_once 'Zend/Loader/Autoloader.php';                                      
 $autoloader = Zend_loader_Autoloader::getInstance();              // load Zend Gdata libraries
@@ -91,22 +92,6 @@ class Contacts {
   }
 }
 
-function exception_error_handler($errno, $errstr, $errfile, $errline ) {
-    throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
-}
-
-set_error_handler("exception_error_handler");
-
-
-
-$cdb = new Contacts;
-
-
-// set credentials for ClientLogin authentication
-$user = '** invalid **';                                                        
-$pass = '** invalid **';                                                        
-
-
 echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
 echo "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">\n";
 echo "<head><title>Listing contacts</title><style>\n";
@@ -118,6 +103,10 @@ echo "</style></head>\n";
 echo "<body>\n";
 
 try {
+  $cdb = new Contacts;
+  // set credentials for ClientLogin authentication
+  $user = '** invalid **';                                                        
+  $pass = '** invalid **';                                                        
   $cred = fopen("/home/mfvl/download/credentials.PC","r");                        
   while (!feof($cred)) {                                                          
     $buffer = fgets($cred);                                                       
@@ -168,13 +157,21 @@ try {
     
     foreach ($xml->email as $e) {
 	  $relstr = (string) $e['rel'];
-	  list($g,$rel) = explode("#",$relstr);
+	  if (strstr($relstr,"#") != FALSE) {
+	    list($g,$rel) = explode("#",$relstr);
+	  } else {
+	    $rel = "??";
+	  }
       $obj->emailAddress[] =  $rel.": ".(string) $e['address'];
     }
     
     foreach ($xml->phoneNumber as $p) {
 	  $relstr = (string) $p['rel'];
-	  list($g,$rel) = explode("#",$relstr);
+	  if (strstr($relstr,"#") != FALSE) {
+	    list($g,$rel) = explode("#",$relstr);
+	  } else {
+	    $rel = "??";
+	  }
       $obj->phoneNumber[] = $rel.": ".(string) $p;
     }
     foreach ($xml->website as $w) {
