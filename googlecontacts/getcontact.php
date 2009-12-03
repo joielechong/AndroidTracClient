@@ -205,13 +205,19 @@ foreach ($results as $r) {
   echo $r->orgName;
   echo "</td></tr>\n";
   echo "<tr><td>Email</td><td>";
-  echo @join(', ', $r->emailAddress);
+  if (is_array($r->emailAddress) {
+    echo @join(', ', $r->emailAddress);
+  }
   echo "</td></tr>\n";
   echo "<tr><td>Phone</td><td>";
-  echo @join(', ', $r->phoneNumber);
+  if (is_array($r->phoneNumber) {
+    echo @join(', ', $r->phoneNumber);
+  }
   echo "</td></tr>\n";
   echo "<tr><td>Web</td><td>";
-  echo @join(', ', $r->website);
+  if (is_array($r->website) {
+    echo @join(', ', $r->website);
+  }
   echo "</td></tr>\n";
   echo "<tr><td>Content</td><td>";
   echo $r->content;
