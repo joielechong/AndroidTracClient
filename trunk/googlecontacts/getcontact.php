@@ -84,6 +84,9 @@ class Contacts {
 	if (isset($t1) && strlen($t1) == 0) {
 	  $t1 = NULL;
 	}
+	if (isset($t2) && strlen($t2) == 0) {
+	  $t2 = NULL;
+	}
     if (isset($t1) && isset($t2) && $t1 !== $t2) {
       echo "<tr class=\"diff\"><td>$field</td><td>$t1</td><td>$t2</td></tr>\n";
 	}
@@ -97,18 +100,18 @@ class Contacts {
   
   function compare($r) {
   $entry=$this->entry;
-  echo "<!--\n";print_r($r);print_r($entry);echo " -->\n";
+  //echo "<!--\n";print_r($r);print_r($entry);echo " -->\n";
   echo "<div class=\"entry\">\n";
   echo "<div class=\"name\">";
   echo (!empty($r->name)) ? $r->name : 'Name not available'; 
   echo "</div>\n";
   if ($r->name !== $entry->contact['cn']) {
-    echo "<div class=\"diff\">\n".$entry->contact['cn']."</div>\n";
+    echo "<div class=\"diff\">\n".utf8_decode($entry->contact['cn'])."</div>\n";
   }
   echo "<div class=\"data\">\n";
   echo "<table>\n";
-  $this->print_diff("Organization",$r->orgName,$entry->contact['company']);
-  $this->print_diff("Function",$r->orgTitle,$entry->contact['function']);
+  $this->print_diff("Organization",$r->orgName,utf8_decode($entry->contact['company']));
+  $this->print_diff("Function",$r->orgTitle,utf8_decode($entry->contact['function']));
 //  echo "<tr class=\"diff\"><td>Updated</td><td>".$r->time."</td><td>".$entry->time."</td></tr>\n";
   $this->print_difflist('Email',(isset($r->emailAddress)?$r->emailAddress:NULL),(isset($entry->mail)?$entry->mail:NULL));
   $this->print_difflist('Phone',(isset($r->phoneNumber)?$r->phoneNumber:NULL),(isset($entry->phone)?$entry->phone:NULL));
