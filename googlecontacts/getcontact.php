@@ -178,7 +178,7 @@ try {
       $obj->website[] = (string) $w['href'];
     }
     
-	if (isset($obj->content)) {
+	if (isset($obj->content) && strstr($obj->content,"=") != FALSE) {
       list($key,$val) = explode('=',$obj->content);                                     
 	  if (isset($key) && ($key === "id")) {
 	    $cdb->loadId($val);
