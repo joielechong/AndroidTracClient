@@ -87,8 +87,6 @@ class Contacts {
   }
   
   private function print_difflist($field,$g,$d) {
-	if (isset($g) && isset($d)) {
-	}
   }
   
   function compare($r) {
@@ -105,23 +103,15 @@ class Contacts {
   echo "<table>\n";
   $this->print_diff("Organization",$r->orgName,$entry->contact['company']);
   $this->print_diff("Function",$r->orgTitle,$entry->contact['function']);
-  echo "<tr class=\"diff\"><td>Updated</td><td>".$r->updated."</td><td>".$entry->contact['updatetime']."</td></tr>\n";
-  $this->print_difflist('Email',$r->emailAddress,$entry->mail);
-  $this->print_difflist('Phone',$r->phoneNumber,$entry->phone);
-  $this->print_difflist('Web',$r->website,$entry->web);
-  echo "<tr><td>Email</td><td>";
-  if (isset($r->emailAddress) && is_array($r->emailAddress)) {
-    echo @join(', ', $r->emailAddress);
+  echo "<tr class=\"diff\"><td>Updated</td><td>".$r->time."</td><td>".$entry->time."</td></tr>\n";
+  if (isset($r->emailAddress) && isset($entry->mail)) {
+    $this->print_difflist('Email',$r->emailAddress,$entry->mail);
   }
-  echo "</td></tr>\n";
-  echo "<tr><td>Phone</td><td>";
-  if (isset($r->phoneNumber) && is_array($r->phoneNumber)) {
-    echo @join(', ', $r->phoneNumber);
+  if (isset($r->phoneNumber) && isset($entry->phone)) {
+    $this->print_difflist('Phone',$r->phoneNumber,$entry->phone);
   }
-  echo "</td></tr>\n";
-  echo "<tr><td>Web</td><td>";
-  if (isset($r->website) && is_array($r->website)) {
-    echo @join(', ', $r->website);
+  if (isset($r->emailAddress) && isset($entry->mail)) {
+    $this->print_difflist('Web',$r->website,$entry->web);
   }
   echo "</td></tr>\n";
   echo "<tr><td>Content</td><td>".$r->content."</td></tr>\n";
