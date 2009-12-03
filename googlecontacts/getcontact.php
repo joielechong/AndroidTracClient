@@ -72,6 +72,12 @@ class Contacts {
 	}
   }
   
+  private function print_diff($field,$t1,$t2) {
+    if ($t1 !== $t2) {
+      echo "<tr class=\"diff\"><td>$field</td><td>$t1</td><td>$t2</td></tr>\n";
+	}
+  }
+  
   function compare($r) {
   $entry=$this->entry;
   echo "<!--\n";print_r($r);print_r($entry);echo " -->\n";
@@ -84,10 +90,9 @@ class Contacts {
   }
   echo "<div class=\"data\">\n";
   echo "<table>\n";
-  if ($r->orgName !== $entry->contact['company']) {
-    echo "<tr class=\"diff\"><td>Organization</td><td>".$r->orgName."</td><td>".$entry->contact['company']."</td></tr>\n";
-  }
-  echo "<tr><td>Function</td><td>".$r->orgTitle."</td></tr>\n";
+  print_diff("Organization",$r->orgName,$entry->contact['company']);
+  print_diff("Function",$r->orgTitle,$entry->contact['function']);
+  echo "<tr class=\"diff\"><td>Updated</td><td>".$r->updated."</td><td>".$entry->contact['updatetime']."</td></tr>\n";
   echo "<tr><td>Email</td><td>";
   if (isset($r->emailAddress) && is_array($r->emailAddress)) {
     echo @join(', ', $r->emailAddress);
@@ -104,7 +109,6 @@ class Contacts {
   }
   echo "</td></tr>\n";
   echo "<tr><td>Content</td><td>".$r->content."</td></tr>\n";
-  echo "<tr><td>Updated</td><td>".$r->updated."</td></tr>\n";
   
   echo "</table>\n</div>\n";
   echo "</div>\n\n";	
