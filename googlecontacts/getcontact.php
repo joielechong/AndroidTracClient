@@ -75,6 +75,7 @@ class Contacts {
   }
   
   private function print_diff($field,$t1,$t2) {
+    $outstr = "";
 	if (isset($t1) && strlen($t1) == 0) {
 	  $t1 = NULL;
 	}
@@ -82,11 +83,12 @@ class Contacts {
 	  $t2 = NULL;
 	}
     if (isset($t1) && isset($t2) && $t1 !== $t2) {
-      echo "<tr class=\"diff\"><td>$field</td><td>$t1</td><td>$t2</td></tr>\n";
+      $outstr .= "<tr class=\"diff\"><td>$field</td><td>$t1</td><td>$t2</td></tr>\n";
 	}
 	if (isset($t1) xor isset($t2)) {
-      echo "<tr class=\"diff\"><td>$field</td><td>$t1</td><td>$t2</td></tr>\n";
+      $outstr .= "<tr class=\"diff\"><td>$field</td><td>$t1</td><td>$t2</td></tr>\n";
 	}
+	return $outstr;
   }
   
   private $tabel = array(
@@ -97,6 +99,7 @@ class Contacts {
 					);
   
   private function print_difflist($field,$g,$d,$f1,$f2) {
+    $outstr = "";
     //echo "<!--\n";var_dump($g);var_dump($d);echo " -->\n";
 	$ng=array();
 	$nd=array();
@@ -136,35 +139,41 @@ class Contacts {
 	}
     //echo "<!--\n";var_dump($ng);var_dump($nd);echo " -->\n";
 	if (count($ng) || count($nd)) {
-	  echo "<tr class=\"diff\"><td>$field</td><td>".join(", ",$ng)."</td><td>".join(", ",$nd)."</td></tr>\n";
+	  outstr .= "<tr class=\"diff\"><td>$field</td><td>".join(", ",$ng)."</td><td>".join(", ",$nd)."</td></tr>\n";
 	}
+	return $outstr;
   }
   
   function compare($r) {
   $entry=$this->entry;
+  $entry->printit = 0;
   //echo "<!--\n";print_r($r);print_r($entry);echo " -->\n";
-  echo "<div class=\"entry\">\n";
-  echo "<div class=\"name\">";
-  echo (!empty($r->name)) ? $r->name : 'Name not available'; 
-  echo "</div>\n";
+  $outstr = "<div class=\"entry\">\n";
+  $outstr .= "<div class=\"name\">";
+  $outstr .= (!empty($r->name)) ? $r->name : 'Name not available'; 
+  $outstr .= "</div>\n";
   if ($r->name !== utf8_decode($entry->contact['cn'])) {
-    echo "<div class=\"diff\">\n".utf8_decode($entry->contact['cn'])."</div>\n";
+    $outstr .= "<div class=\"diff\">\n".utf8_decode($entry->contact['cn'])."</div>\n";
+	$entry->printit = 1;
   }
-  echo "<div class=\"data\">\n";
-  echo "<table>\n";
-  $this->print_diff("Organization",$r->orgName,utf8_decode($entry->contact['company']));
-  $this->print_diff("Function",$r->orgTitle,utf8_decode($entry->contact['function']));
-    //  echo "<tr class=\"diff\"><td>Updated</td><td>".$r->time."</td><td>".$entry->time."</td></tr>\n";
-  $this->print_difflist('Email',(isset($r->emailAddress)?$r->emailAddress:NULL),(isset($entry->mail)?$entry->mail:NULL),'type','mailaddress');
-  $this->print_difflist('Phone',(isset($r->phoneNumber)?$r->phoneNumber:NULL),(isset($entry->phone)?$entry->phone:NULL),'tel_type','number');
-  $this->print_difflist('Fax',(isset($r->faxNumber)?$r->faxNumber:NULL),(isset($entry->fax)?$entry->fax:NULL),'fax_type','number');
-  $this->print_difflist('Web',(isset($r->website)?$r->website:NULL),(isset($entry->web)?$entry->web:NULL),'type','webpagina');
+  $outstr .= "<div class=\"data\">\n";
+  $outstr .= "<table>\n";
+  $outstr .= $this->print_diff("Organization",$r->orgName,utf8_decode($entry->contact['company']));
+  $outstr .= $this->print_diff("Function",$r->orgTitle,utf8_decode($entry->contact['function']));
+  $outstr .= "<tr class=\"diff\"><td>Updated</td><td>".$r->time."</td><td>".$entry->time."</td></tr>\n";
+  $outstr .= $this->print_difflist('Email',(isset($r->emailAddress)?$r->emailAddress:NULL),(isset($entry->mail)?$entry->mail:NULL),'type','mailaddress');
+  $outstr .= $this->print_difflist('Phone',(isset($r->phoneNumber)?$r->phoneNumber:NULL),(isset($entry->phone)?$entry->phone:NULL),'tel_type','number');
+  $outstr .= $this->print_difflist('Fax',(isset($r->faxNumber)?$r->faxNumber:NULL),(isset($entry->fax)?$entry->fax:NULL),'fax_type','number');
+  $outstr .= $this->print_difflist('Web',(isset($r->website)?$r->website:NULL),(isset($entry->web)?$entry->web:NULL),'type','webpagina');
   //$this->print_difflist('Web',(isset($r->website)?$r->website:NULL),(NULL));
-  echo "</td></tr>\n";
-  echo "<tr><td>Content</td><td>".$r->content."</td></tr>\n";
+  $outstr .= "</td></tr>\n";
+  $outstr .= "<tr><td>Content</td><td>".$r->content."</td></tr>\n";
   
-  echo "</table>\n</div>\n";
-  echo "</div>\n\n";	
+  $outstr .= "</table>\n</div>\n";
+  $outstr .= "</div>\n\n";
+  if ($entry->printit) {
+    echo $outstr;
+  }
   }
   
 }
