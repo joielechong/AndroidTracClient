@@ -104,8 +104,13 @@ class Contacts {
 	  }
 	} else {
 	  // decode email address
+	  foreach($d as $e) {
+	    $a[] = $e[type].": ".$e[mailaddress];
+      }
 	  if (is_null($g)) {
+		echo "<tr class=\"diff\"><td>$field</td><td></td><td>".join(", ",$a)."</td></tr>\n";
 	  } else {
+		echo "<tr class=\"diff\"><td>$field</td><td>".join(", ",$g)."</td><td>".join(", ",$a)."</td></tr>\n";
 	  }
 	}
   }
@@ -174,8 +179,8 @@ try {
   $gdata->setMajorProtocolVersion(3);
   
   // perform query and get result feed
-  $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full?max-results=2048');
-  //$query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full');
+  //$query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full?max-results=2048');
+  $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full');
   $feed = $gdata->getFeed($query);
   //echo "<!--\n";var_dump($feed);echo " -->\n";
  
