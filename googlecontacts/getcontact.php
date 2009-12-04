@@ -96,10 +96,10 @@ class Contacts {
   }
   
   private tabel[] = Array(
-                     ['Mobiel'] => 'mobile',
-					 ['Werk'] => 'work',
-					 ['Prive'] => 'home',
-					 ['Anders'] => 'other'
+                     'Mobiel' => 'mobile',
+					 'Werk' => 'work',
+					 'Prive' => 'home',
+					 'Anders' => 'other'
 					);
   
   private function print_difflist($field,$g,$d,$f1,$f2) {
