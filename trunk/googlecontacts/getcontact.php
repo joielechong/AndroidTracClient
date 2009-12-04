@@ -104,6 +104,7 @@ class Contacts {
 	  }
 	} else {
 	  // decode email address
+	  $a=array();
 	  foreach($d as $e) {
 	    $a[] = $e[$f1].": ".$e[$f2];
       }
@@ -130,7 +131,7 @@ class Contacts {
   $this->print_diff("Organization",$r->orgName,utf8_decode($entry->contact['company']));
   $this->print_diff("Function",$r->orgTitle,utf8_decode($entry->contact['function']));
 //  echo "<tr class=\"diff\"><td>Updated</td><td>".$r->time."</td><td>".$entry->time."</td></tr>\n";
-  $this->print_difflist('Email',(isset($r->emailAddress)?$r->emailAddress:NULL),(isset($entry->mail)?$entry->mail:NULL),'type'm'mailaddress');
+  $this->print_difflist('Email',(isset($r->emailAddress)?$r->emailAddress:NULL),(isset($entry->mail)?$entry->mail:NULL),'type','mailaddress');
   $this->print_difflist('Phone',(isset($r->phoneNumber)?$r->phoneNumber:NULL),(isset($entry->phone)?$entry->phone:NULL),'tel_type','number');
   $this->print_difflist('Web',(isset($r->website)?$r->website:NULL),(isset($entry->web)?$entry->web:NULL),'type','webpagina');
   //$this->print_difflist('Web',(isset($r->website)?$r->website:NULL),(NULL));
