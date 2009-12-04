@@ -103,12 +103,13 @@ class Contacts {
 					);
   
   private function print_difflist($field,$g,$d,$f1,$f2) {
-  echo "<!--\n";var_dump($g);var_dump($d);echo " -->\n";
+    echo "<!--\n";var_dump($g);var_dump($d);echo " -->\n";
+	$ng=array();
+	$nd=array();
 	if (is_null($d) || count($d) == 0) {
 	  if (is_null($g) || count($g) == 0) {
-	    // do nothing
 	  } else {
-		echo "<tr class=\"diff\"><td>$field</td><td>".join(", ",$g)."</td><td></td></tr>\n";
+		$ng=$g;
 	  }
 	} else {
 	  // decode email address
@@ -122,10 +123,22 @@ class Contacts {
 	    $a[] = $t.": ".$e[$f2];
       }
 	  if (is_null($g) || count($g) == 0) {
-		echo "<tr class=\"diff\"><td>$field</td><td></td><td>".join(", ",$a)."</td></tr>\n";
+		$nd=$a;
 	  } else {
-		echo "<tr class=\"diff\"><td>$field</td><td>".join(", ",$g)."</td><td>".join(", ",$a)."</td></tr>\n";
+		foreach ($a as $e) {
+		  if (array_search($e,$g) == FALSE) {
+			$nd[] = $e;
+		  }
+		}
+		foreach ($g as $e) {
+		  if (array_search($e,$a) == FALSE) {
+		    $ng[] = $e;
+		  }
+		}
 	  }
+	}
+	if (count($ng) || count($nd)) {
+	  echo "<tr class=\"diff\"><td>$field</td><td>".join(", ",$ng)."</td><td>".join(", ",$nd)."</td></tr>\n";
 	}
   }
   
