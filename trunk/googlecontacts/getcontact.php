@@ -145,8 +145,8 @@ class Contacts {
   }
   
   function compare($r) {
+  $printit = 0;
   $entry=$this->entry;
-  $entry->printit = 0;
   //echo "<!--\n";print_r($r);print_r($entry);echo " -->\n";
   $outstr = "<div class=\"entry\">\n";
   $outstr .= "<div class=\"name\">";
@@ -154,20 +154,20 @@ class Contacts {
   $outstr .= "</div>\n";
   if ($r->name !== utf8_decode($entry->contact['cn'])) {
     $outstr .= "<div class=\"diff\">\n".utf8_decode($entry->contact['cn'])."</div>\n";
-	$entry->printit = 1;
+	$printit = 1;
   }
   $outstr .= "<div class=\"data\">\n";
   $outstr .= "<table>\n";
+  $l = len($outstr);
   $outstr .= $this->print_diff("Organization",$r->orgName,utf8_decode($entry->contact['company']));
   $outstr .= $this->print_diff("Function",$r->orgTitle,utf8_decode($entry->contact['function']));
-  $outstr .= "<tr class=\"diff\"><td>Updated</td><td>".$r->time."</td><td>".$entry->time."</td></tr>\n";
   $outstr .= $this->print_difflist('Email',(isset($r->emailAddress)?$r->emailAddress:NULL),(isset($entry->mail)?$entry->mail:NULL),'type','mailaddress');
   $outstr .= $this->print_difflist('Phone',(isset($r->phoneNumber)?$r->phoneNumber:NULL),(isset($entry->phone)?$entry->phone:NULL),'tel_type','number');
-  $outstr .= $this->print_difflist('Fax',(isset($r->faxNumber)?$r->faxNumber:NULL),(isset($entry->fax)?$entry->fax:NULL),'fax_type','number');
   $outstr .= $this->print_difflist('Web',(isset($r->website)?$r->website:NULL),(isset($entry->web)?$entry->web:NULL),'type','webpagina');
-  //$this->print_difflist('Web',(isset($r->website)?$r->website:NULL),(NULL));
-  $outstr .= "</td></tr>\n";
+  
+  $printit = ($l != len($outstr);
   $outstr .= "<tr><td>Content</td><td>".$r->content."</td></tr>\n";
+  $outstr .= "<tr class=\"diff\"><td>Updated</td><td>".$r->time."</td><td>".$entry->time."</td></tr>\n";
   
   $outstr .= "</table>\n</div>\n";
   $outstr .= "</div>\n\n";
