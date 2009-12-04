@@ -119,7 +119,7 @@ class Contacts {
 	if (isset($this->tabel[$t])) {
 	  $t = $this->tabel[$t];
 		}
-	echo "<!-- ".$e[$f1]." $t -->\n";
+	//echo "<!-- ".$e[$f1]." $t -->\n";
 	    $a[] = $t.": ".$e[$f2];
       }
 	  if (is_null($g) || count($g) == 0) {
@@ -137,6 +137,7 @@ class Contacts {
 		}
 	  }
 	}
+    echo "<!--\n";var_dump($ng);var_dump($nd);echo " -->\n";
 	if (count($ng) || count($nd)) {
 	  echo "<tr class=\"diff\"><td>$field</td><td>".join(", ",$ng)."</td><td>".join(", ",$nd)."</td></tr>\n";
 	}
@@ -144,7 +145,7 @@ class Contacts {
   
   function compare($r) {
   $entry=$this->entry;
-  echo "<!--\n";print_r($r);print_r($entry);echo " -->\n";
+  //echo "<!--\n";print_r($r);print_r($entry);echo " -->\n";
   echo "<div class=\"entry\">\n";
   echo "<div class=\"name\">";
   echo (!empty($r->name)) ? $r->name : 'Name not available'; 
