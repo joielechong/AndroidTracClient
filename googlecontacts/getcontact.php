@@ -104,8 +104,8 @@ class Contacts {
   
   private function print_difflist($field,$g,$d,$f1,$f2) {
   echo "<!--\n";var_dump($g);var_dump($d);echo " -->\n";
-	if (is_null($d)) {
-	  if (is_null($g)) {
+	if (is_null($d) || count($d) == 0) {
+	  if (is_null($g) || count($g) == 0) {
 	    // do nothing
 	  } else {
 		echo "<tr class=\"diff\"><td>$field</td><td>".join(", ",$g)."</td><td></td></tr>\n";
@@ -121,7 +121,7 @@ class Contacts {
 	echo "<!-- ".$e[$f1]." $t -->\n";
 	    $a[] = $t.": ".$e[$f2];
       }
-	  if (is_null($g)) {
+	  if (is_null($g) || count($g) == 0) {
 		echo "<tr class=\"diff\"><td>$field</td><td></td><td>".join(", ",$a)."</td></tr>\n";
 	  } else {
 		echo "<tr class=\"diff\"><td>$field</td><td>".join(", ",$g)."</td><td>".join(", ",$a)."</td></tr>\n";
