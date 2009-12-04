@@ -172,7 +172,7 @@ class Contacts {
   
   $outstr .= "</table>\n</div>\n";
   $outstr .= "</div>\n\n";
-  if ($entry->printit) {
+  if ($printit) {
     echo $outstr;
   }
   }
