@@ -95,7 +95,7 @@ class Contacts {
 	}
   }
   
-  private tabel[] = (
+  private tabel[] = Array(
                      ['Mobiel'] => 'mobile',
 					 ['Werk'] => 'work',
 					 ['Prive'] => 'home',
