@@ -105,7 +105,7 @@ class Contacts {
 	} else {
 	  // decode email address
 	  foreach($d as $e) {
-	    $a[] = $e[type].": ".$e[mailaddress];
+	    $a[] = $e['type'].": ".$e['mailaddress'];
       }
 	  if (is_null($g)) {
 		echo "<tr class=\"diff\"><td>$field</td><td></td><td>".join(", ",$a)."</td></tr>\n";
