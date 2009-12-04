@@ -33,7 +33,7 @@ class Contacts {
     $this->dbh = new PDO("pgsql:dbname=mfvl",$user,$pass);
     $this->getname = $this->dbh->prepare('SELECT * FROM contacts WHERE id=:id');
     $this->getmail = $this->dbh->prepare('SELECT * FROM mail WHERE contact_id=:id');
-    $this->getphone = $this->dbh->prepare('SELECT * FROM (SELECT * FROM telephone UNION SELECT *,'f' FROM fax) as tele WHERE contact_id=:id');
+    $this->getphone = $this->dbh->prepare("SELECT * FROM (SELECT * FROM telephone UNION SELECT *,'f' FROM fax) as tele WHERE contact_id=:id");
     $this->getnaw = $this->dbh->prepare('SELECT * FROM naw WHERE contact_id=:id');
     $this->getweb = $this->dbh->prepare('SELECT * FROM website WHERE contact_id=:id');
 	$this->currid = -1;
@@ -148,6 +148,7 @@ class Contacts {
   $printit = 0;
   $entry=$this->entry;
   //echo "<!--\n";print_r($r);print_r($entry);echo " -->\n";
+  echo "<!-- ".$r->name."-->\n";
   $outstr = "<div class=\"entry\">\n";
   $outstr .= "<div class=\"name\">";
   $outstr .= (!empty($r->name)) ? $r->name : 'Name not available'; 
@@ -158,14 +159,14 @@ class Contacts {
   }
   $outstr .= "<div class=\"data\">\n";
   $outstr .= "<table>\n";
-  $l = len($outstr);
+  $l = strlen($outstr);
   $outstr .= $this->print_diff("Organization",$r->orgName,utf8_decode($entry->contact['company']));
   $outstr .= $this->print_diff("Function",$r->orgTitle,utf8_decode($entry->contact['function']));
   $outstr .= $this->print_difflist('Email',(isset($r->emailAddress)?$r->emailAddress:NULL),(isset($entry->mail)?$entry->mail:NULL),'type','mailaddress');
   $outstr .= $this->print_difflist('Phone',(isset($r->phoneNumber)?$r->phoneNumber:NULL),(isset($entry->phone)?$entry->phone:NULL),'tel_type','number');
   $outstr .= $this->print_difflist('Web',(isset($r->website)?$r->website:NULL),(isset($entry->web)?$entry->web:NULL),'type','webpagina');
   
-  $printit = ($l != len($outstr));
+  $printit = ($l != strlen($outstr));
   $outstr .= "<tr><td>Content</td><td>".$r->content."</td></tr>\n";
   $outstr .= "<tr class=\"diff\"><td>Updated</td><td>".$r->time."</td><td>".$entry->time."</td></tr>\n";
   
