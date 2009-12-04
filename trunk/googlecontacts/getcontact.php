@@ -139,7 +139,7 @@ class Contacts {
 	}
     //echo "<!--\n";var_dump($ng);var_dump($nd);echo " -->\n";
 	if (count($ng) || count($nd)) {
-	  outstr .= "<tr class=\"diff\"><td>$field</td><td>".join(", ",$ng)."</td><td>".join(", ",$nd)."</td></tr>\n";
+	  $outstr .= "<tr class=\"diff\"><td>$field</td><td>".join(", ",$ng)."</td><td>".join(", ",$nd)."</td></tr>\n";
 	}
 	return $outstr;
   }
