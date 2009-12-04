@@ -126,12 +126,12 @@ class Contacts {
 		$nd=$a;
 	  } else {
 		foreach ($a as $e) {
-		  if (array_search($e,$g) == FALSE) {
+		  if (array_search($e,$g) === FALSE) {
 			$nd[] = $e;
 		  }
 		}
 		foreach ($g as $e) {
-		  if (array_search($e,$a) == FALSE) {
+		  if (array_search($e,$a) === FALSE) {
 		    $ng[] = $e;
 		  }
 		}
