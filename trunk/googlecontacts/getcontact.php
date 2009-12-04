@@ -165,7 +165,7 @@ class Contacts {
   $outstr .= $this->print_difflist('Phone',(isset($r->phoneNumber)?$r->phoneNumber:NULL),(isset($entry->phone)?$entry->phone:NULL),'tel_type','number');
   $outstr .= $this->print_difflist('Web',(isset($r->website)?$r->website:NULL),(isset($entry->web)?$entry->web:NULL),'type','webpagina');
   
-  $printit = ($l != len($outstr);
+  $printit = ($l != len($outstr));
   $outstr .= "<tr><td>Content</td><td>".$r->content."</td></tr>\n";
   $outstr .= "<tr class=\"diff\"><td>Updated</td><td>".$r->time."</td><td>".$entry->time."</td></tr>\n";
   
