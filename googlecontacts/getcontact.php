@@ -211,7 +211,7 @@ try {
   $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full?max-results=2048');
   //$query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full');
   $feed = $gdata->getFeed($query);
-  //echo "<!--\n";var_dump($feed);echo " -->\n";
+  echo "<!--\n";var_dump($feed);echo " -->\n";
  
   // display title and result count
   
