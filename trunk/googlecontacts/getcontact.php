@@ -95,6 +95,13 @@ class Contacts {
 	}
   }
   
+  private tabel[] = (
+                     ['Mobiel'] => 'mobile',
+					 ['Werk'] => 'work',
+					 ['Prive'] => 'home',
+					 ['Anders'] => 'other'
+					);
+  
   private function print_difflist($field,$g,$d,$f1,$f2) {
 	if (is_null($d)) {
 	  if (is_null($g)) {
@@ -106,7 +113,11 @@ class Contacts {
 	  // decode email address
 	  $a=array();
 	  foreach($d as $e) {
-	    $a[] = $e[$f1].": ".$e[$f2];
+		$t = $e[$f1];
+		if (isset($tabel[$t])) {
+		  $t = $tabel[$t];
+		}
+	    $a[] = $tabel[$e[$f1]].": ".$e[$f2];
       }
 	  if (is_null($g)) {
 		echo "<tr class=\"diff\"><td>$field</td><td></td><td>".join(", ",$a)."</td></tr>\n";
