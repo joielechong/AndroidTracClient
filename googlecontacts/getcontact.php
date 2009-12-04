@@ -117,7 +117,7 @@ class Contacts {
 		if (isset($tabel[$t])) {
 		  $t = $tabel[$t];
 		}
-	    $a[] = $tabel[$e[$f1]].": ".$e[$f2];
+	    $a[] = $t.": ".$e[$f2];
       }
 	  if (is_null($g)) {
 		echo "<tr class=\"diff\"><td>$field</td><td></td><td>".join(", ",$a)."</td></tr>\n";
