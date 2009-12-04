@@ -103,7 +103,7 @@ class Contacts {
 					);
   
   private function print_difflist($field,$g,$d,$f1,$f2) {
-    echo "<!--\n";var_dump($g);var_dump($d);echo " -->\n";
+    //echo "<!--\n";var_dump($g);var_dump($d);echo " -->\n";
 	$ng=array();
 	$nd=array();
 	if (is_null($d) || count($d) == 0) {
@@ -137,7 +137,7 @@ class Contacts {
 		}
 	  }
 	}
-    echo "<!--\n";var_dump($ng);var_dump($nd);echo " -->\n";
+    //echo "<!--\n";var_dump($ng);var_dump($nd);echo " -->\n";
 	if (count($ng) || count($nd)) {
 	  echo "<tr class=\"diff\"><td>$field</td><td>".join(", ",$ng)."</td><td>".join(", ",$nd)."</td></tr>\n";
 	}
@@ -207,8 +207,8 @@ try {
   $gdata->setMajorProtocolVersion(3);
   
   // perform query and get result feed
-  //$query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full?max-results=2048');
-  $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full');
+  $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full?max-results=2048');
+  //$query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full');
   $feed = $gdata->getFeed($query);
   //echo "<!--\n";var_dump($feed);echo " -->\n";
  
