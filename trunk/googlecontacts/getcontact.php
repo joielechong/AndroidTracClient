@@ -33,8 +33,7 @@ class Contacts {
     $this->dbh = new PDO("pgsql:dbname=mfvl",$user,$pass);
     $this->getname = $this->dbh->prepare('SELECT * FROM contacts WHERE id=:id');
     $this->getmail = $this->dbh->prepare('SELECT * FROM mail WHERE contact_id=:id');
-    $this->getphone = $this->dbh->prepare('SELECT * FROM telephone WHERE contact_id=:id');
-    $this->getfax = $this->dbh->prepare('SELECT * FROM fax WHERE contact_id=:id');
+    $this->getphone = $this->dbh->prepare('SELECT * FROM (SELECT * FROM telephone UNION SELECT *,'f' FROM fax) as tele WHERE contact_id=:id');
     $this->getnaw = $this->dbh->prepare('SELECT * FROM naw WHERE contact_id=:id');
     $this->getweb = $this->dbh->prepare('SELECT * FROM website WHERE contact_id=:id');
 	$this->currid = -1;
@@ -57,11 +56,6 @@ class Contacts {
 	  $this->getphone->execute();
 	  $this->entry->phone = $this->getphone->fetchAll(PDO::FETCH_ASSOC);
       $this->getphone->closeCursor();
-	  
-      $this->getfax->bindParam(':id',$id,PDO::PARAM_INT);
-	  $this->getfax->execute();
-	  $this->entry->fax = $this->getfax->fetchAll(PDO::FETCH_ASSOC);
-      $this->getfax->closeCursor();
 	  
       $this->getnaw->bindParam(':id',$id,PDO::PARAM_INT);
 	  $this->getnaw->execute();
@@ -119,6 +113,9 @@ class Contacts {
 	if (isset($this->tabel[$t])) {
 	  $t = $this->tabel[$t];
 		}
+		if ($e['class'] === 'FAX') {
+		  $t = $t."_fax";
+		}
 	//echo "<!-- ".$e[$f1]." $t -->\n";
 	    $a[] = $t.": ".$e[$f2];
       }
@@ -145,7 +142,7 @@ class Contacts {
   
   function compare($r) {
   $entry=$this->entry;
-  echo "<!--\n";print_r($r);print_r($entry);echo " -->\n";
+  //echo "<!--\n";print_r($r);print_r($entry);echo " -->\n";
   echo "<div class=\"entry\">\n";
   echo "<div class=\"name\">";
   echo (!empty($r->name)) ? $r->name : 'Name not available'; 
@@ -211,7 +208,7 @@ try {
   $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full?max-results=2048');
   //$query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full');
   $feed = $gdata->getFeed($query);
-  echo "<!--\n";var_dump($feed);echo " -->\n";
+  //echo "<!--\n";var_dump($feed);echo " -->\n";
  
   // display title and result count
   
@@ -254,6 +251,17 @@ try {
 	  }
       $obj->phoneNumber[] = $rel.": ".(string) $p;
     }
+
+    foreach ($xml->structuredPostalAddress as $a) {
+	  $relstr = (string) $a['rel'];
+	  if (strstr($relstr,"#") != FALSE) {
+	    list($g,$rel) = explode("#",$relstr);
+	  } else {
+	    $rel = "mobile";
+	  }
+      $obj->Address[] = $rel.": ".(string) $a->formattedAddress;
+    }
+
     foreach ($xml->website as $w) {
 	  $rel = (string) $w['rel'];
       $obj->website[] = $rel .": ".(string) $w['href'];
