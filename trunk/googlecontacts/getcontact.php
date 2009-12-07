@@ -47,22 +47,22 @@ class GMail_Contacts extends Contacts {
     return strtotime($entry->updated);
   }
   public function getOrgName() {
-    return (string) $xml->organization->orgName;
+    return (string) $this->xml->organization->orgName;
   }
   public function getOrgTitle() {
-    return (string) $xml->organization->orgTitle;
+    return (string) $this->xml->organization->orgTitle;
   }
   public function getFullName() {
-    return (string) $xml->fullName;
+    return (string) $this->xml->fullName;
   }
   public function getGivenName() {
-    return (string) $xml->givenName;
+    return (string) $this->xml->givenName;
   }
   public function getAdditionalName() {
-    return (string) $xml->additionalName;
+    return (string) $this->xml->additionalName;
   }
   public function getFamilyName() {
-    return (string) $xml->familyName;
+    return (string) $this->xml->familyName;
   }
   public function getMail() {
     $emailAddress = array();
