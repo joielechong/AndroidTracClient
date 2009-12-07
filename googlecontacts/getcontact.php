@@ -9,30 +9,31 @@ $autoloader = Zend_loader_Autoloader::getInstance();              // load Zend G
 
 class Contacts {
   public function printme() {
-    echo "<div class=\"entry\">\n";
-    echo "<div class=\"name\">";
-    echo $this->getName() !== FALSE ? $this->getName() : 'Name not available'; 
-    echo "</div>\n";
-    echo "<div class=\"data\">\n";
-    echo "<table>\n<tr><td>Organization</td><td>";
-    echo $this->getOrgName();
-    echo "</td></tr>\n";
-    echo "<tr><td>Email</td><td>";
-    echo @join(', ', $this->getMail());
-    echo "</td></tr>\n";
-    echo "<tr><td>Phone</td><td>";
-    echo @join(', ', $this->getPhoneNumber());
-    echo "</td></tr>\n";
-    echo "<tr><td>Address</td><td>";
-    echo @join(', ', $this->getAddress());
-    echo "</td></tr>\n";
-    echo "<tr><td>Web</td><td>";
-    echo @join(', ', $this->getWebsite());
-    echo "</td></tr>\n";
-    echo "<tr><td>Content</td><td>";
-    echo $this->getContent();
-    echo "</td></tr>\n";
-    echo "</table>\n</div>\n</div>\n\n";
+    $outstr = "<div class=\"entry\">\n";
+    $outstr .= "<div class=\"name\">";
+    $outstr .= $this->getName() !== FALSE ? $this->getName() : 'Name not available'; 
+    $outstr .= "</div>\n";
+    $outstr .= "<div class=\"data\">\n";
+    $outstr .= "<table>\n<tr><td>Organization</td><td>";
+    $outstr .= $this->getOrgName();
+    $outstr .= "</td></tr>\n";
+    $outstr .= "<tr><td>Email</td><td>";
+    $outstr .= @join(', ', $this->getMail());
+    $outstr .= "</td></tr>\n";
+    $outstr .= "<tr><td>Phone</td><td>";
+    $outstr .= @join(', ', $this->getPhoneNumber());
+    $outstr .= "</td></tr>\n";
+    $outstr .= "<tr><td>Address</td><td>";
+    $outstr .= @join(', ', $this->getAddress());
+    $outstr .= "</td></tr>\n";
+    $outstr .= "<tr><td>Web</td><td>";
+    $outstr .= @join(', ', $this->getWebsite());
+    $outstr .= "</td></tr>\n";
+    $outstr .= "<tr><td>Content</td><td>";
+    $outstr .= $this->getContent();
+    $outstr .= "</td></tr>\n";
+    $outstr .= "</table>\n</div>\n</div>\n\n";
+	return $outstr;
   }
   public function getName() {
     return FALSE;
@@ -325,16 +326,49 @@ class DB {
 
 class DB_Contacts  extends Contacts {
   private $entry;
-  
+  private $tabel = array('Mobiel' => 'mobile',
+			 'Werk' => 'work',
+			 'Prive' => 'home',
+			 'Anders' => 'other'
+			 );
+    
   public function __construct($entry) {
 	$this->entry = $entry;
   }
+  private function generic_array($d,$f1,$f2) {  
+    $a=array();
+    foreach($d as $e) {
+	  $t = $e[$f1];
+	  if(isset($this->tabel[$t])) {
+	    $t = $this->tabel[$t];
+	  }
+	  if ($e['class'] === 'FAX') {
+	    $t = $t."_fax";
+	  }
+	//echo "<!-- ".$e[$f1]." $t -->\n";
+	  $a[] = $t.": ".$e[$f2];
+    }
+	return $a;
+  }
+
   
   public function getName() {
     return utf8_decode($this->entry->contact['cn']);
   }
   public function getOrgName() {
     return utf8_decode($this->entry->contact['company']);
+  }
+  public function getMail() {
+    return  generic_array($this->entry->mail,'type','mailaddress');
+  }
+  public function getPhoneNumber() {
+    return  generic_array($this->entry->phone,'tel_type','number');
+  }
+  public function getWebsite() {
+    return  generic_array($this->entry->web,'type','webpagina');
+  }
+  public function getAddress() {
+    return  generic_array($this->entry->naw,'addr_type','woonplaats');
   }
 }
 
