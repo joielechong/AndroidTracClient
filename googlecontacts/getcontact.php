@@ -41,9 +41,10 @@ class Contacts {
   
   function loadId($id) {
 	if ($this->currid != $id) {
-      $this->getname->bindParam(':id',$id,PDO::PARAM_INT);
-      $this->getname->execute();
 	  $this->entry = new stdClass;
+
+      $this->getname->bindParam(':id',$id,PDO::PARAM_INT);
+      $this->getname->execute();	  
       $this->entry->contact = $this->getname->fetch(PDO::FETCH_ASSOC);
       $this->getname->closeCursor();
 	  
@@ -176,7 +177,6 @@ class Contacts {
     echo $outstr;
   }
   }
-  
 }
 
 echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
