@@ -361,7 +361,7 @@ class DB_Contacts  extends Contacts {
     return utf8_decode($this->entry->contact['company']);
   }
   public function getMail() {
-    echo "<!-- getMail\n";var_dump($this);echo "-->\n";
+    echo "<!-- getMail\n";var_dump($this->entry->mail);echo "-->\n";
     return  generic_array($this->entry->mail,'type','mailaddress');
   }
   public function getPhoneNumber() {
@@ -421,8 +421,8 @@ try {
   $gdata->setMajorProtocolVersion(3);
   
   // perform query and get result feed
-  $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full?max-results=2048');
-  //$query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full');
+  //$query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full?max-results=2048');
+  $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full');
   $feed = $gdata->getFeed($query);
   //echo "<!--\n";var_dump($feed);echo " -->\n";
   
