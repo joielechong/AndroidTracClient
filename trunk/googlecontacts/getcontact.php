@@ -348,29 +348,29 @@ try {
 
 // display results
 foreach ($results as $r) {
-//  if ($r->getId !== FALSE) {
-//    $cdb->loadId($r->getId);
+//  if ($r->getId() !== FALSE) {
+//    $cdb->loadId($r->getId());
 //    echo $cdb->compare($r);
 //  } else {
     echo "<div class=\"entry\">\n";
     echo "<div class=\"name\">";
-    echo (!empty($r->getName)) ? $r->getName : 'Name not available'; 
+    echo (!empty($r->getName())) ? $r->getName() : 'Name not available'; 
     echo "</div>\n";
     echo "<div class=\"data\">\n";
     echo "<table>\n<tr><td>Organization</td><td>";
-    echo $r->getOrgName;
+    echo $r->getOrgName();
     echo "</td></tr>\n";
     echo "<tr><td>Email</td><td>";
-    echo @join(', ', $r->getMail);
+    echo @join(', ', $r->getMail());
     echo "</td></tr>\n";
     echo "<tr><td>Phone</td><td>";
-    echo @join(', ', $r->getPhoneNumber);
+    echo @join(', ', $r->getPhoneNumber());
     echo "</td></tr>\n";
     echo "<tr><td>Web</td><td>";
-    echo @join(', ', $r->getWebsite);
+    echo @join(', ', $r->getWebsite());
     echo "</td></tr>\n";
     echo "<tr><td>Content</td><td>";
-    echo $r->content;
+    echo $r->content();
     echo "</td></tr>\n";
     echo "</table>\n</div>\n</div>\n\n";
 //  }
