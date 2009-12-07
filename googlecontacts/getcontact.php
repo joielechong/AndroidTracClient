@@ -362,16 +362,16 @@ class DB_Contacts  extends Contacts {
   }
   public function getMail() {
     echo "<!-- getMail\n";var_dump($this->entry->mail);echo "-->\n";
-    return  generic_array($this->entry->mail,'type','mailaddress');
+    return  $this->generic_array($this->entry->mail,'type','mailaddress');
   }
   public function getPhoneNumber() {
-    return  generic_array($this->entry->phone,'tel_type','number');
+    return  $this->generic_array($this->entry->phone,'tel_type','number');
   }
   public function getWebsite() {
-    return  generic_array($this->entry->web,'type','webpagina');
+    return  $this->generic_array($this->entry->web,'type','webpagina');
   }
   public function getAddress() {
-    return  generic_array($this->entry->naw,'addr_type','woonplaats');
+    return  $this->generic_array($this->entry->naw,'addr_type','woonplaats');
   }
 }
 
