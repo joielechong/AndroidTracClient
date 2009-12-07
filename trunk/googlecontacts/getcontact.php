@@ -23,7 +23,7 @@ class GMail_Contacts extends Contacts {
   private $familyName;
   
   public function getName() {
-    if (empty((string)$entry->title)) {
+    if (empty($entry->title)) {
 	  return FALSE;
 	}
     return (string) $entry->title;
