@@ -1,5 +1,5 @@
 <?php
-require_once 'Contacts.php'
+require_once 'Contacts.php';
 
 class GMail_Contacts extends Contacts {
   private $entry;
