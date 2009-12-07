@@ -8,6 +8,119 @@ require_once 'Zend/Loader/Autoloader.php';
 $autoloader = Zend_loader_Autoloader::getInstance();              // load Zend Gdata libraries
 
 class Contacts {
+  public function maillist();
+}
+
+class GMail_Contacts extends Contacts {
+  private $entry;
+  private $xml;
+  private $name;
+  private $content;
+  private $updated;
+  private $orgName;
+  private $orgTitle;
+  private $fullName;
+  private $additionalName;
+  private $familyName;
+  
+  public function getName() {
+    return (string) $entry->title);
+  }
+  public function getContent() {
+    return (string) $entry->content;
+  }
+  public function getId() {
+    if (isset($this->entry->content) && strstr($this->entry->content,"=") != FALSE) {
+      list($key,$val) = explode('=',$this->entry->content);                                     
+      if (isset($key) && ($key === "id")) {
+	    return $val;
+      }
+    }
+	return FALSE;
+  }
+  public function getUpdated() {
+    return (string) $entry->updated;
+  }
+  public function getTime() {
+    return strtotime($entry->updated);
+  }
+  public function getOrgName() {
+    return (string) $xml->organization->orgName;
+  }
+  public function getOrgTitle() {
+    return (string) $xml->organization->orgTitle;
+  }
+  public function getFullName() {
+    return (string) $xml->fullName;
+  }
+  public function getGivenName() {
+    return (string) $xml->givenName;
+  }
+  public function getAdditionalName() {
+    return (string) $xml->additionalName;
+  }
+  public function getFamilyName() {
+    return (string) $xml->familyName;
+  }
+  public getMail() {
+    private $emailAddress = array();
+	
+    foreach ($this->xml->email as $e) {
+      $relstr = (string) $e['rel'];
+      if (strstr($relstr,"#") != FALSE) {
+	list($g,$rel) = explode("#",$relstr);
+      } else {
+	$rel = "??";
+      }
+      $emailAddress[] =  $rel.": ".(string) $e['address'];
+    }  
+    return $emailAddress;
+  }
+  public getPhoneNumber() {
+    private $phoneNumber = array();
+	
+    foreach ($this->xml->phoneNumber as $p) {
+      $relstr = (string) $p['rel'];
+      if (strstr($relstr,"#") != FALSE) {
+	list($g,$rel) = explode("#",$relstr);
+      } else {
+	$rel = "mobile";
+      }
+      $phoneNumber[] = $rel.": ".(string) $p;
+    }
+	return $phoneNumber;
+  }
+  public getAddress () {
+    private $Address = array();
+	
+    foreach ($this->xml->structuredPostalAddress as $a) {
+      $relstr = (string) $a['rel'];
+      if (strstr($relstr,"#") != FALSE) {
+	list($g,$rel) = explode("#",$relstr);
+      } else {
+	$rel = "other";
+      }
+      $Address[] = $rel.": ".(string) $a->formattedAddress;
+    }
+	return $Address
+  }
+  public function get Website() {
+    private $website = array();
+	
+    foreach ($this->xml->website as $w) {
+      $rel = (string) $w['rel'];
+      $website[] = $rel .": ".(string) $w['href'];
+    }
+	return $website;
+  } 
+ 
+  public function storeEntry(mixed $entry) {
+	$this->entry = $entry;
+	$this->xml = simplexml_load_string($entry->getXML());
+  }
+}
+
+class DB_Contacts  extends Contacts {
   
   private $dbh, $getname, $setname;
   private $currid,$changed;
@@ -190,7 +303,7 @@ echo "</style></head>\n";
 echo "<body>\n";
 
 try {
-  $cdb = new Contacts;
+  $cdb = new DB_Contacts;
   // set credentials for ClientLogin authentication
   $user = '** invalid **';
   $pass = '** invalid **';
@@ -228,60 +341,10 @@ try {
   // into simpler objects
   $results = array();
   foreach($feed as $entry){
-    $xml = simplexml_load_string($entry->getXML());
-    $obj = new stdClass;
-    $obj->name = (string) $entry->title;
-    $obj->content = (string) $entry->content;
-    $obj->updated = (string) $entry->updated;
-    $obj->time = strtotime($entry->updated);
-    $obj->orgName = (string) $xml->organization->orgName; 
-    $obj->orgTitle = (string) $xml->organization->orgTitle;
-    $obj->fullName = (string) $xml->fullName;
-    $obj->givenName = (string) $xml->givenName;
-    $obj->additionalName = (string) $xml->additionalName;
-    $obj->familyName = (string) $xml->familyName;
+    $obj = new GMail_Contacts;	
+	$obj->storeEntry($entry);
     
-    foreach ($xml->email as $e) {
-      $relstr = (string) $e['rel'];
-      if (strstr($relstr,"#") != FALSE) {
-	list($g,$rel) = explode("#",$relstr);
-      } else {
-	$rel = "??";
-      }
-      $obj->emailAddress[] =  $rel.": ".(string) $e['address'];
-    }
     
-    foreach ($xml->phoneNumber as $p) {
-      $relstr = (string) $p['rel'];
-      if (strstr($relstr,"#") != FALSE) {
-	list($g,$rel) = explode("#",$relstr);
-      } else {
-	$rel = "mobile";
-      }
-      $obj->phoneNumber[] = $rel.": ".(string) $p;
-    }
-    
-    foreach ($xml->structuredPostalAddress as $a) {
-      $relstr = (string) $a['rel'];
-      if (strstr($relstr,"#") != FALSE) {
-	list($g,$rel) = explode("#",$relstr);
-      } else {
-	$rel = "mobile";
-      }
-      $obj->Address[] = $rel.": ".(string) $a->formattedAddress;
-    }
-    
-    foreach ($xml->website as $w) {
-      $rel = (string) $w['rel'];
-      $obj->website[] = $rel .": ".(string) $w['href'];
-    }
-    
-    if (isset($obj->content) && strstr($obj->content,"=") != FALSE) {
-      list($key,$val) = explode('=',$obj->content);                                     
-      if (isset($key) && ($key === "id")) {
-	$obj->id = $val;
-      }
-    }
     $results[] = $obj;  
   }
 } catch (Exception $e) {
@@ -290,38 +353,32 @@ try {
 
 // display results
 foreach ($results as $r) {
-  if (isset($r->id)) {
-    $cdb->loadId($r->id);
-    echo $cdb->compare($r);
-  } else {
+//  if ($r->getId !== FALSE) {
+//    $cdb->loadId($r->getId);
+//    echo $cdb->compare($r);
+//  } else {
     echo "<div class=\"entry\">\n";
     echo "<div class=\"name\">";
-    echo (!empty($r->name)) ? $r->name : 'Name not available'; 
+    echo (!empty($r->getName)) ? $r->getName : 'Name not available'; 
     echo "</div>\n";
     echo "<div class=\"data\">\n";
     echo "<table>\n<tr><td>Organization</td><td>";
-    echo $r->orgName;
+    echo $r->getOrgName;
     echo "</td></tr>\n";
     echo "<tr><td>Email</td><td>";
-    if (isset($r->emailAddress) && is_array($r->emailAddress)) {
-      echo @join(', ', $r->emailAddress);
-    }
+    echo @join(', ', $r->emailAddress);
     echo "</td></tr>\n";
     echo "<tr><td>Phone</td><td>";
-    if (isset($r->phoneNumber) && is_array($r->phoneNumber)) {
-      echo @join(', ', $r->phoneNumber);
-    }
+    echo @join(', ', $r->phoneNumber);
     echo "</td></tr>\n";
     echo "<tr><td>Web</td><td>";
-    if (isset($r->website) && is_array($r->website)) {
-      echo @join(', ', $r->website);
-    }
+    echo @join(', ', $r->website);
     echo "</td></tr>\n";
     echo "<tr><td>Content</td><td>";
     echo $r->content;
     echo "</td></tr>\n";
     echo "</table>\n</div>\n</div>\n\n";
-  }
+//  }
 }
 echo "</body>\n</html>\n";
 ?>
