@@ -24,7 +24,7 @@ class Contacts {
     echo @join(', ', $this->getPhoneNumber());
     echo "</td></tr>\n";
     echo "<tr><td>Address</td><td>";
-    echo @join(', ', $this->getAdress());
+    echo @join(', ', $this->getAddress());
     echo "</td></tr>\n";
     echo "<tr><td>Web</td><td>";
     echo @join(', ', $this->getWebsite());
