@@ -32,6 +32,9 @@ class Contacts {
     $outstr .= "<tr><td>Content</td><td>";
     $outstr .= $this->getContent();
     $outstr .= "</td></tr>\n";
+    $outstr .= "<tr><td>Id</td><td>";
+    $outstr .= $this->getId();
+    $outstr .= "</td></tr>\n";
     $outstr .= "</table>\n</div>\n</div>\n\n";
 	return $outstr;
   }
@@ -56,6 +59,9 @@ class Contacts {
   public function getContent() {
     return FALSE;
   }
+  public function getId() {
+    return FALSE;
+  }
 }
 
 class GMail_Contacts extends Contacts {
@@ -78,7 +84,7 @@ class GMail_Contacts extends Contacts {
 	    return $val;
       }
     }
-	return FALSE;
+	return -1;
   }
   public function getUpdated() {
     return (string) $this->entry->updated;
@@ -216,7 +222,6 @@ class DB {
       $entry->web = $this->getweb->fetchAll(PDO::FETCH_ASSOC);
       $this->getweb->closeCursor();
       
-      $entry->time = strtotime($entry->contact['updatetime']);
 	  return $entry;
     }
   
@@ -350,8 +355,6 @@ class DB_Contacts  extends Contacts {
     }
 	return $a;
   }
-
-  
   public function getName() {
     return utf8_decode($this->entry->contact['cn']);
   }
@@ -370,6 +373,12 @@ class DB_Contacts  extends Contacts {
   public function getAddress() {
     return  $this->generic_array($this->entry->naw,'adr_type','adres');
   }
+  public function getTime() {
+    return strtotime($this->entry->contact['updatetime']);
+ }
+ public fucntion getId() {
+   return utf8_decode($this->entry->contact['id']);
+ }
 }
 
 echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
@@ -387,12 +396,10 @@ try {
   $cdb = new DB;
   $ids=$cdb->getIds();
   $db_results=array();
-  $results=array();
   foreach ($ids as $id) {
 //    echo "Loading $id\r";
     $e = new DB_Contacts($cdb->getId($id));
     $db_results[$id] = $e;
-	$results[] = $e;
   } 
   echo "\n";  
   // set credentials for ClientLogin authentication
@@ -435,7 +442,6 @@ try {
 //	echo "Loading ".$entry->content."\r";
     $obj = new GMail_Contacts($entry);
     $gm_results[] = $obj;  
-	$results[]=$obj;
   }
   echo "\n";
 } catch (Exception $e) {
@@ -445,7 +451,7 @@ try {
   echo "<h3>All contacts</h3>\n";
   
 // display results
-foreach ($results as $r) {
+foreach ($gm_results as $r) {
 //  if ($r->getId() !== FALSE) {
 //    $cdb->loadId($r->getId());
 //    echo $cdb->compare($r);
