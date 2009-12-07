@@ -171,7 +171,7 @@ class DB {
       $entry->time = strtotime($this->entry->contact['updatetime']);
 	  return $entry;
     }
-  }
+  
   
   private function print_diff($field,$t1,$t2) {
     $outstr = "";
