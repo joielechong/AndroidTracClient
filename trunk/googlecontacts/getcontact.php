@@ -168,7 +168,7 @@ class DB {
       $entry->web = $this->getweb->fetchAll(PDO::FETCH_ASSOC);
       $this->getweb->closeCursor();
       
-      $entry->time = strtotime($this->entry->contact['updatetime']);
+      $entry->time = strtotime($entry->contact['updatetime']);
 	  return $entry;
     }
   
