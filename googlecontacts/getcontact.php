@@ -23,13 +23,13 @@ class GMail_Contacts extends Contacts {
   private $familyName;
   
   public function getName() {
-    if (empty($entry->title)) {
+    if (empty($this->entry->title)) {
 	  return FALSE;
 	}
-    return (string) $entry->title;
+    return (string) $this->entry->title;
   }
   public function getContent() {
-    return (string) $entry->content;
+    return (string) $this->entry->content;
   }
   public function getId() {
     if (isset($this->entry->content) && strstr($this->entry->content,"=") != FALSE) {
@@ -101,7 +101,7 @@ class GMail_Contacts extends Contacts {
       }
       $Address[] = $rel.": ".(string) $a->formattedAddress;
     }
-	return $Address;
+    return $Address;
   }
   public function getWebsite() {
     $website = array();
@@ -325,8 +325,8 @@ try {
   $gdata->setMajorProtocolVersion(3);
   
   // perform query and get result feed
-  //$query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full?max-results=2048');
-  $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full');
+  $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full?max-results=2048');
+  //$query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full');
   $feed = $gdata->getFeed($query);
   //echo "<!--\n";var_dump($feed);echo " -->\n";
   
@@ -373,7 +373,7 @@ foreach ($results as $r) {
     echo @join(', ', $r->getWebsite());
     echo "</td></tr>\n";
     echo "<tr><td>Content</td><td>";
-    echo $r->content();
+    echo $r->getContent();
     echo "</td></tr>\n";
     echo "</table>\n</div>\n</div>\n\n";
 //  }
