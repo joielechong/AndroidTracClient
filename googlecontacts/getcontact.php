@@ -8,7 +8,6 @@ require_once 'Zend/Loader/Autoloader.php';
 $autoloader = Zend_loader_Autoloader::getInstance();              // load Zend Gdata libraries
 
 class Contacts {
-  public function maillist();
 }
 
 class GMail_Contacts extends Contacts {
@@ -62,7 +61,7 @@ class GMail_Contacts extends Contacts {
   public function getFamilyName() {
     return (string) $xml->familyName;
   }
-  public getMail() {
+  public function getMail() {
     private $emailAddress = array();
 	
     foreach ($this->xml->email as $e) {
@@ -76,7 +75,7 @@ class GMail_Contacts extends Contacts {
     }  
     return $emailAddress;
   }
-  public getPhoneNumber() {
+  public function getPhoneNumber() {
     private $phoneNumber = array();
 	
     foreach ($this->xml->phoneNumber as $p) {
@@ -90,7 +89,7 @@ class GMail_Contacts extends Contacts {
     }
 	return $phoneNumber;
   }
-  public getAddress () {
+  public function getAddress () {
     private $Address = array();
 	
     foreach ($this->xml->structuredPostalAddress as $a) {
@@ -104,7 +103,7 @@ class GMail_Contacts extends Contacts {
     }
 	return $Address
   }
-  public function get Website() {
+  public function getWebsite() {
     private $website = array();
 	
     foreach ($this->xml->website as $w) {
@@ -366,13 +365,13 @@ foreach ($results as $r) {
     echo $r->getOrgName;
     echo "</td></tr>\n";
     echo "<tr><td>Email</td><td>";
-    echo @join(', ', $r->emailAddress);
+    echo @join(', ', $r->getMail);
     echo "</td></tr>\n";
     echo "<tr><td>Phone</td><td>";
-    echo @join(', ', $r->phoneNumber);
+    echo @join(', ', $r->getPhoneNumber);
     echo "</td></tr>\n";
     echo "<tr><td>Web</td><td>";
-    echo @join(', ', $r->website);
+    echo @join(', ', $r->getWebsite);
     echo "</td></tr>\n";
     echo "<tr><td>Content</td><td>";
     echo $r->content;
