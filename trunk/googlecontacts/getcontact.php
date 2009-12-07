@@ -355,7 +355,7 @@ try {
   $db_results=array();
   $results=array();
   foreach ($ids as $id) {
-    echo "Loading $id\r";
+//    echo "Loading $id\r";
     $e = new DB_Contacts($cdb->getId($id));
     $db_results[$id] = $e;
 	$results[] = $e;
@@ -398,7 +398,7 @@ try {
   // into simpler objects
   $gm_results = array();
   foreach($feed as $entry){
-	echo "Loading ".$entry->content."\r";
+//	echo "Loading ".$entry->content."\r";
     $obj = new GMail_Contacts($entry);
     $gm_results[] = $obj;  
 	$results[]=$e;
