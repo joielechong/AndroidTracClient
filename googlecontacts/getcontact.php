@@ -23,6 +23,9 @@ class GMail_Contacts extends Contacts {
   private $familyName;
   
   public function getName() {
+    if (empty((string)$entry->title)) {
+	  return FALSE;
+	}
     return (string) $entry->title;
   }
   public function getContent() {
@@ -354,7 +357,7 @@ foreach ($results as $r) {
 //  } else {
     echo "<div class=\"entry\">\n";
     echo "<div class=\"name\">";
-    echo (!empty($r->getName())) ? $r->getName() : 'Name not available'; 
+    echo ($r->getName() !== FALSE ? $r->getName() : 'Name not available'; 
     echo "</div>\n";
     echo "<div class=\"data\">\n";
     echo "<table>\n<tr><td>Organization</td><td>";
