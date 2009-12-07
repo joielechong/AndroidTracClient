@@ -9,7 +9,6 @@ $autoloader = Zend_loader_Autoloader::getInstance();              // load Zend G
 
 class Contacts {
   public function printme() {
-  echo "<!--\n";var_dump($this);echo "-->\n";
     $outstr = "<div class=\"entry\">\n";
     $outstr .= "<div class=\"name\">";
     $outstr .= $this->getName() !== FALSE ? $this->getName() : 'Name not available'; 
@@ -337,6 +336,7 @@ class DB_Contacts  extends Contacts {
 	$this->entry = $entry;
   }
   private function generic_array($d,$f1,$f2) {  
+  echo "<!-- Voor\n";var_dump($this);echo "-->\n";
     $a=array();
     foreach($d as $e) {
 	  $t = $e[$f1];
@@ -349,6 +349,7 @@ class DB_Contacts  extends Contacts {
 	//echo "<!-- ".$e[$f1]." $t -->\n";
 	  $a[] = $t.": ".$e[$f2];
     }
+  echo "<!-- Na\n";var_dump($this);echo "-->\n";
 	return $a;
   }
 
