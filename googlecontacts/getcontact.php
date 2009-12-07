@@ -361,6 +361,7 @@ class DB_Contacts  extends Contacts {
     return utf8_decode($this->entry->contact['company']);
   }
   public function getMail() {
+    echo "<!-- getMail\n";var_dump($this);echo "-->\n";
     return  generic_array($this->entry->mail,'type','mailaddress');
   }
   public function getPhoneNumber() {
