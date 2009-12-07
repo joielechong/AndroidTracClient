@@ -23,7 +23,7 @@ class GMail_Contacts extends Contacts {
   private $familyName;
   
   public function getName() {
-    return (string) $entry->title);
+    return (string) $entry->title;
   }
   public function getContent() {
     return (string) $entry->content;
@@ -62,8 +62,7 @@ class GMail_Contacts extends Contacts {
     return (string) $xml->familyName;
   }
   public function getMail() {
-    private $emailAddress = array();
-	
+    $emailAddress = array();
     foreach ($this->xml->email as $e) {
       $relstr = (string) $e['rel'];
       if (strstr($relstr,"#") != FALSE) {
@@ -76,8 +75,7 @@ class GMail_Contacts extends Contacts {
     return $emailAddress;
   }
   public function getPhoneNumber() {
-    private $phoneNumber = array();
-	
+    $phoneNumber = array();
     foreach ($this->xml->phoneNumber as $p) {
       $relstr = (string) $p['rel'];
       if (strstr($relstr,"#") != FALSE) {
@@ -90,8 +88,7 @@ class GMail_Contacts extends Contacts {
 	return $phoneNumber;
   }
   public function getAddress () {
-    private $Address = array();
-	
+    $Address = array();
     foreach ($this->xml->structuredPostalAddress as $a) {
       $relstr = (string) $a['rel'];
       if (strstr($relstr,"#") != FALSE) {
@@ -104,8 +101,7 @@ class GMail_Contacts extends Contacts {
 	return $Address
   }
   public function getWebsite() {
-    private $website = array();
-	
+    $website = array();
     foreach ($this->xml->website as $w) {
       $rel = (string) $w['rel'];
       $website[] = $rel .": ".(string) $w['href'];
