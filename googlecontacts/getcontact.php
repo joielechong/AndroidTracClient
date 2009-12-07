@@ -401,7 +401,7 @@ try {
 //	echo "Loading ".$entry->content."\r";
     $obj = new GMail_Contacts($entry);
     $gm_results[] = $obj;  
-	$results[]=$e;
+	$results[]=$obj;
   }
   echo "\n";
 } catch (Exception $e) {
