@@ -371,7 +371,7 @@ class DB_Contacts  extends Contacts {
     return  $this->generic_array($this->entry->web,'type','webpagina');
   }
   public function getAddress() {
-    return  $this->generic_array($this->entry->naw,'adr_type','woonplaats');
+    return  $this->generic_array($this->entry->naw,'adr_type','stad');
   }
 }
 
