@@ -336,7 +336,6 @@ class DB_Contacts  extends Contacts {
 	$this->entry = $entry;
   }
   private function generic_array($d,$f1,$f2) {  
-  echo "<!-- Voor\n";var_dump($this);echo "-->\n";
     $a=array();
     foreach($d as $e) {
 	  $t = $e[$f1];
@@ -349,7 +348,6 @@ class DB_Contacts  extends Contacts {
 	//echo "<!-- ".$e[$f1]." $t -->\n";
 	  $a[] = $t.": ".$e[$f2];
     }
-  echo "<!-- Na\n";var_dump($this);echo "-->\n";
 	return $a;
   }
 
@@ -361,7 +359,6 @@ class DB_Contacts  extends Contacts {
     return utf8_decode($this->entry->contact['company']);
   }
   public function getMail() {
-    echo "<!-- getMail\n";var_dump($this->entry->mail);echo "-->\n";
     return  $this->generic_array($this->entry->mail,'type','mailaddress');
   }
   public function getPhoneNumber() {
