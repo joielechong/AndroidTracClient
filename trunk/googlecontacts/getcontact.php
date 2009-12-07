@@ -98,7 +98,7 @@ class GMail_Contacts extends Contacts {
       }
       $Address[] = $rel.": ".(string) $a->formattedAddress;
     }
-	return $Address
+	return $Address;
   }
   public function getWebsite() {
     $website = array();
@@ -109,7 +109,7 @@ class GMail_Contacts extends Contacts {
 	return $website;
   } 
  
-  public function storeEntry(mixed $entry) {
+  public function storeEntry($entry) {
 	$this->entry = $entry;
 	$this->xml = simplexml_load_string($entry->getXML());
   }
@@ -322,8 +322,8 @@ try {
   $gdata->setMajorProtocolVersion(3);
   
   // perform query and get result feed
-  $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full?max-results=2048');
-  //$query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full');
+  //$query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full?max-results=2048');
+  $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full');
   $feed = $gdata->getFeed($query);
   //echo "<!--\n";var_dump($feed);echo " -->\n";
   
