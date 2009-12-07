@@ -8,6 +8,53 @@ require_once 'Zend/Loader/Autoloader.php';
 $autoloader = Zend_loader_Autoloader::getInstance();              // load Zend Gdata libraries
 
 class Contacts {
+  public function print() {
+    echo "<div class=\"entry\">\n";
+    echo "<div class=\"name\">";
+    echo $this->getName() !== FALSE ? $this->getName() : 'Name not available'; 
+    echo "</div>\n";
+    echo "<div class=\"data\">\n";
+    echo "<table>\n<tr><td>Organization</td><td>";
+    echo $this->getOrgName();
+    echo "</td></tr>\n";
+    echo "<tr><td>Email</td><td>";
+    echo @join(', ', $this->getMail());
+    echo "</td></tr>\n";
+    echo "<tr><td>Phone</td><td>";
+    echo @join(', ', $this->getPhoneNumber());
+    echo "</td></tr>\n";
+    echo "<tr><td>Address</td><td>";
+    echo @join(', ', $this->getAdress());
+    echo "</td></tr>\n";
+    echo "<tr><td>Web</td><td>";
+    echo @join(', ', $this->getWebsite());
+    echo "</td></tr>\n";
+    echo "<tr><td>Content</td><td>";
+    echo $this->getContent();
+    echo "</td></tr>\n";
+    echo "</table>\n</div>\n</div>\n\n";
+  }
+  public function getName() {
+    return FALSE;
+  }
+  public function getOrgName() {
+    return FALSE;
+  }
+  public function getMail() {
+    return array();;
+  }
+  public function getPhoneNumber() {
+    return array();
+  }
+  public function getAddress() {
+    return array();
+  }
+  public function getWebsite() {
+    return array();
+  }
+  public function getContent() {
+    return FALSE;
+  }
 }
 
 class GMail_Contacts extends Contacts {
@@ -282,6 +329,13 @@ class DB_Contacts  extends Contacts {
   public function __construct($entry) {
 	$this->entry = $entry;
   }
+  
+  public function getName() {
+    return utf8_decode($this->contact['cn'])
+  }
+  public function getOrgName() {
+    return utf8_decode($this->contact['company'])
+  }
 }
 
 echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
@@ -299,10 +353,12 @@ try {
   $cdb = new DB;
   $ids=$cdb->getIds();
   $db_results=array();
+  $results=array();
   foreach ($ids as $id) {
     echo "Loading $id\r";
     $e = new DB_Contacts($cdb->getId($id));
     $db_results[$id] = $e;
+	$results[] = $e;
   } 
   echo "\n";  
   // set credentials for ClientLogin authentication
@@ -345,45 +401,20 @@ try {
 	echo "Loading ".$entry->content."\r";
     $obj = new GMail_Contacts($entry);
     $gm_results[] = $obj;  
+	$results[]=$e;
   }
   echo "\n";
 } catch (Exception $e) {
   die('ERROR:' . $e->getMessage()."\n".$e->getTraceAsString()."\n");  
   }
   
-  var_dump(db_results);
-  var_dump(gm_results);
-
 // display results
-foreach ($gm_results as $r) {
+foreach ($results as $r) {
 //  if ($r->getId() !== FALSE) {
 //    $cdb->loadId($r->getId());
 //    echo $cdb->compare($r);
 //  } else {
-    echo "<div class=\"entry\">\n";
-    echo "<div class=\"name\">";
-    echo $r->getName() !== FALSE ? $r->getName() : 'Name not available'; 
-    echo "</div>\n";
-    echo "<div class=\"data\">\n";
-    echo "<table>\n<tr><td>Organization</td><td>";
-    echo $r->getOrgName();
-    echo "</td></tr>\n";
-    echo "<tr><td>Email</td><td>";
-    echo @join(', ', $r->getMail());
-    echo "</td></tr>\n";
-    echo "<tr><td>Phone</td><td>";
-    echo @join(', ', $r->getPhoneNumber());
-    echo "</td></tr>\n";
-    echo "<tr><td>Address</td><td>";
-    echo @join(', ', $r->getAdress());
-    echo "</td></tr>\n";
-    echo "<tr><td>Web</td><td>";
-    echo @join(', ', $r->getWebsite());
-    echo "</td></tr>\n";
-    echo "<tr><td>Content</td><td>";
-    echo $r->getContent();
-    echo "</td></tr>\n";
-    echo "</table>\n</div>\n</div>\n\n";
+	  echo $r->print();
 //  }
 }
 echo "</body>\n</html>\n";
