@@ -8,7 +8,7 @@ require_once 'Zend/Loader/Autoloader.php';
 $autoloader = Zend_loader_Autoloader::getInstance();              // load Zend Gdata libraries
 
 class Contacts {
-  public function print() {
+  public function Print() {
     echo "<div class=\"entry\">\n";
     echo "<div class=\"name\">";
     echo $this->getName() !== FALSE ? $this->getName() : 'Name not available'; 
@@ -414,7 +414,7 @@ foreach ($results as $r) {
 //    $cdb->loadId($r->getId());
 //    echo $cdb->compare($r);
 //  } else {
-	  echo $r->print();
+	  echo $r->Print();
 //  }
 }
 echo "</body>\n</html>\n";
