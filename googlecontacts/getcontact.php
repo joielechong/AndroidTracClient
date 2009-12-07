@@ -442,6 +442,8 @@ try {
   die('ERROR:' . $e->getMessage()."\n".$e->getTraceAsString()."\n");  
   }
   
+  echo "<h3>All contacts</h3>\n";
+  
 // display results
 foreach ($results as $r) {
 //  if ($r->getId() !== FALSE) {
