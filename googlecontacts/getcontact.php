@@ -357,7 +357,7 @@ foreach ($results as $r) {
 //  } else {
     echo "<div class=\"entry\">\n";
     echo "<div class=\"name\">";
-    echo ($r->getName() !== FALSE ? $r->getName() : 'Name not available'; 
+    echo $r->getName() !== FALSE ? $r->getName() : 'Name not available'; 
     echo "</div>\n";
     echo "<div class=\"data\">\n";
     echo "<table>\n<tr><td>Organization</td><td>";
