@@ -179,7 +179,7 @@ class DB {
     $this->getname = $this->dbh->prepare('SELECT * FROM contacts WHERE id=:id');
     $this->getmail = $this->dbh->prepare('SELECT * FROM mail WHERE contact_id=:id');
     $this->getphone = $this->dbh->prepare("SELECT * FROM (SELECT * FROM telephone UNION SELECT *,'f' FROM fax) as tele WHERE contact_id=:id");
-    $this->getnaw = $this->dbh->prepare('SELECT * FROM naw WHERE contact_id=:id');
+    $this->getnaw = $this->dbh->prepare('SELECT * FROM naw1 WHERE contact_id=:id');
     $this->getweb = $this->dbh->prepare('SELECT * FROM website WHERE contact_id=:id');
   }
   
@@ -371,7 +371,7 @@ class DB_Contacts  extends Contacts {
     return  $this->generic_array($this->entry->web,'type','webpagina');
   }
   public function getAddress() {
-    return  $this->generic_array($this->entry->naw,'adr_type','stad');
+    return  $this->generic_array($this->entry->naw,'adr_type','adres');
   }
 }
 
