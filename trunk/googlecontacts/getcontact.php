@@ -9,6 +9,7 @@ $autoloader = Zend_loader_Autoloader::getInstance();              // load Zend G
 
 class Contacts {
   public function printme() {
+  echo "<!--\n";var_dump($this);echo "-->\n";
     $outstr = "<div class=\"entry\">\n";
     $outstr .= "<div class=\"name\">";
     $outstr .= $this->getName() !== FALSE ? $this->getName() : 'Name not available'; 
