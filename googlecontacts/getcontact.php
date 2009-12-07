@@ -13,14 +13,6 @@ class Contacts {
 class GMail_Contacts extends Contacts {
   private $entry;
   private $xml;
-  private $name;
-  private $content;
-  private $updated;
-  private $orgName;
-  private $orgTitle;
-  private $fullName;
-  private $additionalName;
-  private $familyName;
   
   public function getName() {
     if (empty($this->entry->title)) {
@@ -41,10 +33,10 @@ class GMail_Contacts extends Contacts {
 	return FALSE;
   }
   public function getUpdated() {
-    return (string) $entry->updated;
+    return (string) $this->entry->updated;
   }
   public function getTime() {
-    return strtotime($entry->updated);
+    return strtotime($this->entry->updated);
   }
   public function getOrgName() {
     return (string) $this->xml->organization->orgName;
@@ -112,20 +104,14 @@ class GMail_Contacts extends Contacts {
 	return $website;
   } 
  
-  public function storeEntry($entry) {
+  public function __construct($entry) {
 	$this->entry = $entry;
 	$this->xml = simplexml_load_string($entry->getXML());
   }
 }
 
-class DB_Contacts  extends Contacts {
-  
-  private $dbh, $getname, $setname;
-  private $currid,$changed;
-  
-  private $entry;
-  
-  function __construct() {
+class DB {
+    function __construct() {
     $cred = fopen("/home/mfvl/download/credentials.pg","r");
     while (!feof($cred)) {
       $buffer = fgets($cred);
@@ -147,42 +133,43 @@ class DB_Contacts  extends Contacts {
     $this->getphone = $this->dbh->prepare("SELECT * FROM (SELECT * FROM telephone UNION SELECT *,'f' FROM fax) as tele WHERE contact_id=:id");
     $this->getnaw = $this->dbh->prepare('SELECT * FROM naw WHERE contact_id=:id');
     $this->getweb = $this->dbh->prepare('SELECT * FROM website WHERE contact_id=:id');
-    $this->currid = -1;
   }
   
-  function loadId($id) {
-    if ($this->currid != $id) {
-      $this->entry = new stdClass;
+  function getIds() {
+    $result = $this->dbh->query("SELECT id FROM contacts");
+	return $result->fetchAll(PDO::FETCH_COLUMN,0);
+  }
+  
+  function getId($id) {
+      $entry = new stdClass;
       
       $this->getname->bindParam(':id',$id,PDO::PARAM_INT);
       $this->getname->execute();	  
-      $this->entry->contact = $this->getname->fetch(PDO::FETCH_ASSOC);
+      $entry->contact = $this->getname->fetch(PDO::FETCH_ASSOC);
       $this->getname->closeCursor();
       
       $this->getmail->bindParam(':id',$id,PDO::PARAM_INT);
       $this->getmail->execute();
-      $this->entry->mail = $this->getmail->fetchAll(PDO::FETCH_ASSOC);
+      $entry->mail = $this->getmail->fetchAll(PDO::FETCH_ASSOC);
       $this->getname->closeCursor();
       
       $this->getphone->bindParam(':id',$id,PDO::PARAM_INT);
       $this->getphone->execute();
-      $this->entry->phone = $this->getphone->fetchAll(PDO::FETCH_ASSOC);
+      $entry->phone = $this->getphone->fetchAll(PDO::FETCH_ASSOC);
       $this->getphone->closeCursor();
       
       $this->getnaw->bindParam(':id',$id,PDO::PARAM_INT);
       $this->getnaw->execute();
-      $this->entry->naw = $this->getnaw->fetchAll(PDO::FETCH_ASSOC);
+      $entry->naw = $this->getnaw->fetchAll(PDO::FETCH_ASSOC);
       $this->getnaw->closeCursor();
 	  
       $this->getweb->bindParam(':id',$id,PDO::PARAM_INT);
       $this->getweb->execute();
-      $this->entry->web = $this->getweb->fetchAll(PDO::FETCH_ASSOC);
+      $entry->web = $this->getweb->fetchAll(PDO::FETCH_ASSOC);
       $this->getweb->closeCursor();
       
-      $this->entry->dbchanged = 0;
-      $this->entry->gglchanged = 0;
-      $this->entry->time = strtotime($this->entry->contact['updatetime']);
-      $this->currid = $id;
+      $entry->time = strtotime($this->entry->contact['updatetime']);
+	  return $entry;
     }
   }
   
@@ -289,6 +276,14 @@ class DB_Contacts  extends Contacts {
   }
 }
 
+class DB_Contacts  extends Contacts {
+  private $entry;
+  
+  public function __construct($entry) {
+	$this->entry = $entry;
+  }
+}
+
 echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
 echo "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">\n";
 echo "<head><title>Listing contacts</title><style>\n";
@@ -301,7 +296,15 @@ echo "</style></head>\n";
 echo "<body>\n";
 
 try {
-  $cdb = new DB_Contacts;
+  $cdb = new DB;
+  $ids=$cdb->getIds();
+  $db_results=array();
+  foreach ($ids as $id) {
+    echo "Loading $id\r";
+    $e = new DB_Contacts(cdb->getId($id));
+	db_results[$id] = $e;
+  } 
+  echo "\n";  
   // set credentials for ClientLogin authentication
   $user = '** invalid **';
   $pass = '** invalid **';
@@ -337,20 +340,22 @@ try {
   
   // parse feed and extract contact information
   // into simpler objects
-  $results = array();
+  $gm_results = array();
   foreach($feed as $entry){
-    $obj = new GMail_Contacts;	
-	$obj->storeEntry($entry);
-    
-    
-    $results[] = $obj;  
+	echo "Loading ".$entry->content."\r";
+    $obj = new GMail_Contacts($entry);
+    $gm_results[] = $obj;  
   }
+  echo "\n";
 } catch (Exception $e) {
   die('ERROR:' . $e->getMessage()."\n".$e->getTraceAsString()."\n");  
   }
+  
+  var_dump(db_results);
+  var_dump(gm_results);
 
 // display results
-foreach ($results as $r) {
+foreach ($gm_results as $r) {
 //  if ($r->getId() !== FALSE) {
 //    $cdb->loadId($r->getId());
 //    echo $cdb->compare($r);
@@ -368,6 +373,9 @@ foreach ($results as $r) {
     echo "</td></tr>\n";
     echo "<tr><td>Phone</td><td>";
     echo @join(', ', $r->getPhoneNumber());
+    echo "</td></tr>\n";
+    echo "<tr><td>Address</td><td>";
+    echo @join(', ', $r->getAdress());
     echo "</td></tr>\n";
     echo "<tr><td>Web</td><td>";
     echo @join(', ', $r->getWebsite());
