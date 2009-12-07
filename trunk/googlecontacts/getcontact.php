@@ -301,8 +301,8 @@ try {
   $db_results=array();
   foreach ($ids as $id) {
     echo "Loading $id\r";
-    $e = new DB_Contacts(cdb->getId($id));
-	db_results[$id] = $e;
+    $e = new DB_Contacts($cdb->getId($id));
+    $db_results[$id] = $e;
   } 
   echo "\n";  
   // set credentials for ClientLogin authentication
