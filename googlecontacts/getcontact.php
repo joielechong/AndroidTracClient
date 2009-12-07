@@ -331,10 +331,10 @@ class DB_Contacts  extends Contacts {
   }
   
   public function getName() {
-    return utf8_decode($this->contact['cn'])
+    return utf8_decode($this->contact['cn']);
   }
   public function getOrgName() {
-    return utf8_decode($this->contact['company'])
+    return utf8_decode($this->contact['company']);
   }
 }
 
