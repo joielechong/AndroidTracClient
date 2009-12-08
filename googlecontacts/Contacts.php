@@ -57,7 +57,7 @@ class Contacts {
   public function getTime() {
     return FALSE;
   }
-  public function getBirthday()
+  public function getBirthday() {
     return FALSE;
   }
   public function setName() {
