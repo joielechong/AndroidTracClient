@@ -70,6 +70,7 @@ class CDB {
 	$entry->contact['company']=$r->getOrgName();
 	$entry->contact['function']=$r->getOrgTitle();
 	$entry->contact['geboortedatum']=$r->getBirthday();
+	echo "<!--\n";var_dump($this->entry);echo "-->\n";
   }
   
   

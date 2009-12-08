@@ -29,6 +29,9 @@ class GMail_Contacts extends Contacts {
   public function getTime() {
     return strtotime($this->entry->updated);
   }
+  public function getBirthday() {
+	return (string) $this->entry->birthday->when;
+  } 
   public function getOrgName() {
     return (string) $this->xml->organization->orgName;
   }
