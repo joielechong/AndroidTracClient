@@ -99,7 +99,7 @@ class GMail_Contacts extends Contacts {
 	$this->entry = $entry;
 	$this->xml = simplexml_load_string($entry->getXML());
 	if ($this->entry->title == 'Michiel van Loon') {
-	  echo "<!--\n";var_dump($xml);echo "-->\n";
+	  echo "<!--\n";var_dump($this);echo "-->\n";
 	}
   }
 }
