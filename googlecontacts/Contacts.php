@@ -57,6 +57,9 @@ class Contacts {
   public function getTime() {
     return FALSE;
   }
+  public function getBirthday()
+    return FALSE;
+  }
   public function setName() {
     return FALSE;
   }

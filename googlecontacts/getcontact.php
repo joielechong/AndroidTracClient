@@ -72,9 +72,8 @@ try {
     $obj = new GMail_Contacts($entry);
     $gm_results[] = $obj;  
   }
-  echo "\n";
 
-echo "<h3>All contacts</h3>\n";
+  echo "<h3>All contacts</h3>\n";
 
 // display results
 foreach ($gm_results as $r) {
