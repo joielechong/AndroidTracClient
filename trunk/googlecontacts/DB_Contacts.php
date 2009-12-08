@@ -30,8 +30,17 @@ class DB_Contacts  extends Contacts {
   public function getName() {
     return utf8_decode($this->entry->contact['cn']);
   }
+  public function getGivenName() {
+    return utf8_decode($this->entry->contact['voornaam']);
+  }
+  public function getFamilyName() {
+    return utf8_decode($this->entry->contact['achternaam']);
+  }
   public function getOrgName() {
     return utf8_decode($this->entry->contact['company']);
+  }
+  public function getOrgTitle() {
+    return utf8_decode($this->entry->contact['function']);
   }
   public function getMail() {
     return  $this->generic_array($this->entry->mail,'type','mailaddress');

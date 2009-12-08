@@ -1,6 +1,6 @@
 <?php
 
-require 'Contacts.php';
+require_once 'Contacts.php';
 
 class CDB {
     function __construct() {
@@ -63,8 +63,13 @@ class CDB {
 	  return $entry;
     }
   public function createContact(Contacts $r) {
-    echo "<--\n";var_dump($r);echo "-->\n";
-	exit(0);
+    $entry = new stdClass;
+	$entry->contact['cn']=$r->getName();
+	$entry->contact['voornaam']=$r->getGivenName();
+    $entry->contact['achternaam']=$r->getFamilyName();
+	$entry->contact['company']=$r->getOrgName();
+	$entry->contact['function']=$r->getOrgTitle();
+	$entry->contact['geboortedatum']=$r->getBirthday();
   }
   
   
