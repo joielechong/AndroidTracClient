@@ -1,4 +1,7 @@
 <?php
+
+require 'Contacts.php';
+
 class CDB {
     function __construct() {
     $cred = fopen("/home/mfvl/download/credentials.pg","r");
@@ -59,6 +62,10 @@ class CDB {
       
 	  return $entry;
     }
+  public function createContact(Contacts $r) {
+    echo "<--\n";var_dump($r);echo "-->\n";
+	exit(0);
+  }
   
   
   private function print_diff($field,$t1,$t2) {

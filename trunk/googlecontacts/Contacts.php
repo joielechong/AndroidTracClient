@@ -57,5 +57,8 @@ class Contacts {
   public function getTime() {
     return FALSE;
   }
+  public function setName() {
+    return FALSE;
+  }
 }
 ?>

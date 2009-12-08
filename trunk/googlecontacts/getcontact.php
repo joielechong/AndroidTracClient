@@ -54,8 +54,8 @@ try {
   $gdata->setMajorProtocolVersion(3);
   
   // perform query and get result feed
-  //$query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full?max-results=2048');
-  $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full');
+  $query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full?max-results=2048');
+  //$query = new Zend_Gdata_Query('http://www.google.com/m8/feeds/contacts/default/full');
   $feed = $gdata->getFeed($query);
   //echo "<!--\n";var_dump($feed);echo " -->\n";
   
@@ -73,14 +73,18 @@ try {
     $gm_results[] = $obj;  
   }
   echo "\n";
-} catch (Exception $e) {
-  die('ERROR:' . $e->getMessage()."\n".$e->getTraceAsString()."\n");  
-  }
 
 echo "<h3>All contacts</h3>\n";
 
 // display results
 foreach ($gm_results as $r) {
+	$id = $r->getId();
+	if ($id === FALSE) {
+	  throw new Exception('GMail contacts not loaded?');
+	} else if ($id == -1) {
+	  CDB->createContact($r);
+	} else {
+	}
   //  if ($r->getId() !== FALSE) {
   //    $cdb->loadId($r->getId());
   //    echo $cdb->compare($r);
@@ -89,4 +93,7 @@ foreach ($gm_results as $r) {
   //  }
 }
 echo "</body>\n</html>\n";
+} catch (Exception $e) {
+  die('ERROR:' . $e->getMessage()."\n".$e->getTraceAsString()."\n");  
+  }
 ?>
