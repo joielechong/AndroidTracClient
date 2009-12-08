@@ -101,9 +101,9 @@ class GMail_Contacts extends Contacts {
   public function __construct($entry) {
 	$this->entry = $entry;
 	$this->xml = simplexml_load_string($entry->getXML());
-	if ($this->entry->title == 'Michiel van Loon') {
-	  echo "<!--\n";var_dump($this);echo "-->\n";
-	}
+//	if ($this->entry->title == 'Michiel van Loon') {
+//	  echo "<!--\n";var_dump($this);echo "-->\n";
+//	}
   }
 }
 ?>
