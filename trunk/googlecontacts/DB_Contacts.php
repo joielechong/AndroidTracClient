@@ -36,6 +36,9 @@ class DB_Contacts  extends Contacts {
   public function getFamilyName() {
     return utf8_decode($this->entry->contact['achternaam']);
   }
+  public function getBirthday() {
+    return utf8_decode($this->entry->contact['geboortedatum']);
+  }
   public function getOrgName() {
     return utf8_decode($this->entry->contact['company']);
   }
