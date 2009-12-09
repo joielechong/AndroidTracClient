@@ -32,9 +32,6 @@ class CDB {
 	$this->createfax = $this->dbh->prepare('INSERT INTO fax (contact_id,number,fax_type) VALUES (?,?,?)');
 	$this->createnaw = $this->dbh->prepare('INSERT INTO naw (contact_id,straat,postcode,stad,land,adr_type) VALUES (?,?,?,?,?,?)');
 	$this->createweb = $this->dbh->prepare('INSERT INTO website (contact_id,webpagina,type) VALUES (?,?,?)');
-
-	$result = $this->dbh->query('SELECT DISTINCT tussenvoegsel FROM contacts WHERE NOT tussenvoegsel IS NULL');
-	$this->tussenvoegsels = $result->fetchAll(PDO::FETCH_COLUMN,0);
   }
   
   function getIds() {
@@ -86,6 +83,8 @@ class CDB {
 	$c->setAddress($r->getAddress(1));
 	$c->setWebsite($r->getWebsite(1));
 	echo "<!--\n";var_dump($c);echo "-->\n";
+	
+	
   }
   
   
