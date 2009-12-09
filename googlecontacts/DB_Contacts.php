@@ -55,6 +55,7 @@ class DB_Contacts  extends Contacts {
 	  }
 	  $m[$f1]=$rel;
 	  $m[$f2]= (string)$e->$f2;
+	  $m['dirty']=1;
 	  $a[] = $m;
 	}
 	return $a;
