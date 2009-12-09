@@ -63,6 +63,7 @@ class CDB {
 	  return $entry;
     }
   public function createContact(Contacts $r) {
+    echo "<!--\n";var_dump($r);echo "-->\n";
     $entry = new stdClass;
 	$c = new DB_Contacts($entry);
 	$c->setName($r->getName());
