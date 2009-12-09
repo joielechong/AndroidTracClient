@@ -43,7 +43,7 @@ class DB_Contacts  extends Contacts {
     $a=array();
 	foreach ($s as $e) {
 	  $m=array();
-	  $fax = strstr($e->rel,'_fax');
+	  $fax = strpos($e->rel,'_fax');
 	  if ($fax !== FALSE) {
 	    $rel = substr($e->rel,0,$fax);
 		$m['class'] = 'FAX';

@@ -96,7 +96,7 @@ class GMail_Contacts extends Contacts {
 	$rel = "other";
       }
       $obj->rel = $rel;
-      $obj->addres = (string) $a->formattedAddress;
+      $obj->adres = (string) $a->formattedAddress;
       $obj->asString = $rel.": ".(string) $a->formattedAddress;
       $Address[] = $o==0 ? $obj->asString : $obj;
     }
