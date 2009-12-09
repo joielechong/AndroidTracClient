@@ -3,13 +3,13 @@ require_once 'Contacts.php';
 
 class DB_Contacts  extends Contacts {
   private $entry;
-  private $tabel = array('Mobiel' => 'mobile',
+  static private $tabel = array('Mobiel' => 'mobile',
 			 'Werk' => 'work',
 			 'Prive' => 'home',
 			 'Anders' => 'other'
 			 );
     
-  private $tabelterug = array('mobile' => 'Mobiel',
+  static private $tabelterug = array('mobile' => 'Mobiel',
 			  'work' => 'Werk',
 			  'home' => 'Prive',
 			  'other' => 'Anders'
@@ -44,14 +44,14 @@ class DB_Contacts  extends Contacts {
 	foreach ($s as $e) {
 	  $m=array();
 	  $fax = strstr($e->rel,'_fax');
-	  if ($fax === FALSE) {
-	    $rel = substr($e->rel,0,$fax-1);
+	  if ($fax !== FALSE) {
+	    $rel = substr($e->rel,0,$fax);
 		$m['class'] = 'FAX';
 	  } else {
 	    $rel = $e->rel;
 	  }
-	  if (isset($tabelterug[$rel])) {
-	    $rel=$tabelterug[$rel];
+	  if (isset($this->tabelterug[$rel])) {
+	    $rel=$this->tabelterug[$rel];
 	  }
 	  $m[$f1]=$rel;
 	  $m[f2]=$e->$f2;
@@ -103,6 +103,9 @@ class DB_Contacts  extends Contacts {
   }
   public function getPhoneNumber($o=0) {
     return  $this->get_generic_array($this->entry->phone,'tel_type','number',$o);
+  }
+  public function setPhoneNumber($s) {
+    $this->entry->phone = $this->set_generic_array('tel_type','number',$s);
   }
   public function getWebsite($o=0) {
     return  $this->get_generic_array($this->entry->web,'type','webpagina',$o);
