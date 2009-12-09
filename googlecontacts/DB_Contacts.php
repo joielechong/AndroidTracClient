@@ -73,10 +73,24 @@ class DB_Contacts  extends Contacts {
     $this->entry->contact['voornaam'] = utf8_encode($s);
   }
   public function getFamilyName() {
-    return utf8_decode($this->entry->contact['achternaam']);
+    return utf8_decode(is_null($this->entry->contact['tussenvoegsel']) ? $this->entry->contact['achternaam'] : $this->entry->contact['tussenvoegsel'].' '.$this->entry->contact['achternaam']);
   }
   public function setFamilyName($s) {
-    $this->entry->contact['achternaam'] = utf8_encode($s);
+    $tvs = array('van der','den',"in 't",'von','vanden','van den',"van 't",'van de','van','te','de','ter');
+	$tv = NULL;
+	$a=$s;
+	foreach($tvs as $t) {
+	  $t1=$t." ";
+	  if (substr($a,0,strlen($t1)) == $t1) {
+	    $tv = $t;
+		$a = substr($a,strlen($t1));
+		break;
+	  }
+	}
+	if (!is_null($tv)) {
+      $this->entry->contact['tussenvoegsel'] = utf8_encode(%tv);
+	}
+    $this->entry->contact['achternaam'] = utf8_encode($a);
   }
   public function getBirthday() {
     return utf8_decode($this->entry->contact['geboortedatum']);

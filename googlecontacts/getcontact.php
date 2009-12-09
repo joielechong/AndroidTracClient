@@ -30,7 +30,7 @@ try {
     $e = new DB_Contacts($cdb->getId($id));
     $db_results[$id] = $e;
   } 
-  echo "<!--\n";var_dump($db_results);echo "-->\n";  
+  //echo "<!--\n";var_dump($db_results);echo "-->\n";  
   // set credentials for ClientLogin authentication
   $user = '** invalid **';
   $pass = '** invalid **';
