@@ -50,8 +50,8 @@ class DB_Contacts  extends Contacts {
 	  } else {
 	    $rel = $e->rel;
 	  }
-	  if (array_key_exists($rel,$this->tabelterug)) {
-	    $rel=$this->tabelterug[$rel];
+	  if (array_key_exists($rel,$tabelterug)) {
+	    $rel=$tabelterug[$rel];
 	  }
 	  $m[$f1]=$rel;
 	  $m[$f2]=$e->$f2;
