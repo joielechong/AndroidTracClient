@@ -110,8 +110,14 @@ class DB_Contacts  extends Contacts {
   public function getWebsite($o=0) {
     return  $this->get_generic_array($this->entry->web,'type','webpagina',$o);
   }
+  public function setWebsite($s) {
+    $this->entry->web = $this->set_generic_array('type','webpagina',$s);
+  }
   public function getAddress($o=0) {
     return  $this->get_generic_array($this->entry->naw,'adr_type','adres',$o);
+  }
+  public function setAddress($s) {
+    $this->entry->web = $this->set_generic_array('adr_type','adres',$s);
   }
   public function getTime() {
     return strtotime($this->entry->contact['updatetime']);
