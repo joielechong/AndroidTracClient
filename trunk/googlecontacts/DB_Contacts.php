@@ -50,11 +50,11 @@ class DB_Contacts  extends Contacts {
 	  } else {
 	    $rel = $e->rel;
 	  }
-	  if (isset($this->tabelterug[$rel])) {
+	  if (array_key_exists($rel,$this->tabelterug)) {
 	    $rel=$this->tabelterug[$rel];
 	  }
 	  $m[$f1]=$rel;
-	  $m[f2]=$e->$f2;
+	  $m[$f2]=$e->$f2;
 	  $a[] = $m;
 	}
 	return $a;
@@ -117,7 +117,7 @@ class DB_Contacts  extends Contacts {
     return  $this->get_generic_array($this->entry->naw,'adr_type','adres',$o);
   }
   public function setAddress($s) {
-    $this->entry->web = $this->set_generic_array('adr_type','adres',$s);
+    $this->entry->naw = $this->set_generic_array('adr_type','adres',$s);
   }
   public function getTime() {
     return strtotime($this->entry->contact['updatetime']);
