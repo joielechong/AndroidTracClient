@@ -54,7 +54,7 @@ class DB_Contacts  extends Contacts {
 	    $rel=$this->tabelterug[$rel];
 	  }
 	  $m[$f1]=$rel;
-	  $m[$f2]=$e->$f2;
+	  $m[$f2]= (string)$e->$f2;
 	  $a[] = $m;
 	}
 	return $a;
