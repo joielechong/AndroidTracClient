@@ -63,7 +63,7 @@ class GMail_Contacts extends Contacts {
       }
       $obj->rel = $rel;
       $obj->mailaddress = $e['address'];
-      $obj->asstring =  $rel.": ".(string) $e['address'];
+      $obj->asString =  $rel.": ".(string) $e['address'];
       $emailAddress[] = $o==0 ? $obj->asString : $obj;
     }  
     return $emailAddress;
