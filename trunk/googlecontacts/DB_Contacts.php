@@ -74,7 +74,7 @@ class DB_Contacts  extends Contacts {
   public function getFamilyName() {
     return utf8_decode($this->entry->contact['achternaam']);
   }
-  public function setFamiliyName($s) {
+  public function setFamilyName($s) {
     $this->entry->contact['achternaam'] = utf8_encode($s);
   }
   public function getBirthday() {
