@@ -108,7 +108,7 @@ class GMail_Contacts extends Contacts {
       $rel = (string) $w['rel'];
       $obj = new stdClass;
       $obj->rel = $rel;
-      $obj->web = (string) $w['href'];
+      $obj->webpagina = (string) $w['href'];
       $obj->asString = $rel .": ".(string) $w['href'];
       $website[] = $o==0 ? $obj->asString : $obj;
     }
