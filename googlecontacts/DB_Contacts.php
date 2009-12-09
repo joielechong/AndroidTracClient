@@ -3,13 +3,13 @@ require_once 'Contacts.php';
 
 class DB_Contacts  extends Contacts {
   private $entry;
-  static private $tabel = array('Mobiel' => 'mobile',
+  private $tabel = array('Mobiel' => 'mobile',
 			 'Werk' => 'work',
 			 'Prive' => 'home',
 			 'Anders' => 'other'
 			 );
     
-  static private $tabelterug = array('mobile' => 'Mobiel',
+  private $tabelterug = array('mobile' => 'Mobiel',
 			  'work' => 'Werk',
 			  'home' => 'Prive',
 			  'other' => 'Anders'
@@ -50,8 +50,8 @@ class DB_Contacts  extends Contacts {
 	  } else {
 	    $rel = $e->rel;
 	  }
-	  if (array_key_exists($rel,$tabelterug)) {
-	    $rel=$tabelterug[$rel];
+	  if (array_key_exists($rel,$this->tabelterug)) {
+	    $rel=$this->tabelterug[$rel];
 	  }
 	  $m[$f1]=$rel;
 	  $m[$f2]=$e->$f2;
