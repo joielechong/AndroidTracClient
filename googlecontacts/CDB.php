@@ -64,14 +64,15 @@ class CDB {
     }
   public function createContact(Contacts $r) {
     $entry = new stdClass;
-	$entry->contact['cn']=$r->getName();
-	$entry->contact['voornaam']=$r->getGivenName();
-    $entry->contact['achternaam']=$r->getFamilyName();
-	$entry->contact['company']=$r->getOrgName();
-	$entry->contact['function']=$r->getOrgTitle();
-	$entry->contact['geboortedatum']=$r->getBirthday();
-	$entry->mail=$r->getMail(1);
-	echo "<!--\n";var_dump($entry);echo "-->\n";
+	$c = new DB_Contacts($entry);
+	$c->setName($r->getName());
+	$c->setGivenName($r->getGivenName());
+	$c->setFamilyName($r->getFamilyName());
+	$c->setOrgName($r->getOrgName());
+	$c->setOrgTitle($r->getOrgTitle());
+	$c->setBirthday($r->getBirthday());
+	$c->setMail($r->getMail(1));
+	echo "<!--\n";var_dump($c);echo "-->\n";
   }
   
   

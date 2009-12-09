@@ -9,13 +9,19 @@ class DB_Contacts  extends Contacts {
 			 'Anders' => 'other'
 			 );
     
+  private $tabelterug = array('mobile' => 'Mobiel',
+			  'work' => 'Werk',
+			  'home' => 'Prive',
+			  'other' => 'Anders'
+			 );
+    
   public function __construct($entry) {
 	$this->entry = $entry;
   }
-  private function generic_array($d,$f1,$f2,$o) {  
+  private function get_generic_array($d,$f1,$f2,$o) {  
     $a=array();
-	$obj = new stdClass;
     foreach($d as $e) {
+	  $obj = new stdClass;
 	  $t = $e[$f1];
 	  if(isset($this->tabel[$t])) {
 	    $t = $this->tabel[$t];
@@ -33,35 +39,76 @@ class DB_Contacts  extends Contacts {
     }
 	return $a;
   }
+  private function set_generic_array($f1,$f2,$s) {
+    $a=array();
+	foreach ($s as $e) {
+	  $m=array();
+	  $fax = strstr($e->rel,'_fax');
+	  if ($fax === FALSE) {
+	    $rel = substr($e->rel,0,$fax-1);
+		$m['class'] = 'FAX';
+	  } else {
+	    $rel = $e->rel;
+	  }
+	  if (isset($tabelterug[$rel])) {
+	    $rel=$tabelterug[$rel];
+	  }
+	  $m[$f1]=$rel;
+	  $m[f2]=$e->$f2;
+	  $a[] = $m;
+	}
+	return $a;
+  }
   public function getName() {
     return utf8_decode($this->entry->contact['cn']);
+  }
+  public function setName($s) {
+    $this->entry->contact['cn'] = utf8_encode($s);
   }
   public function getGivenName() {
     return utf8_decode($this->entry->contact['voornaam']);
   }
+  public function setGivenName($s) {
+    $this->entry->contact['voornaam'] = utf8_encode($s);
+  }
   public function getFamilyName() {
     return utf8_decode($this->entry->contact['achternaam']);
+  }
+  public function setFamiliyName($s) {
+    $this->entry->contact['achternaam'] = utf8_encode($s);
   }
   public function getBirthday() {
     return utf8_decode($this->entry->contact['geboortedatum']);
   }
+  public function setBirthday($s) {
+    $this->entry->contact['geboortedatum'] = utf8_encode($s);
+  }
   public function getOrgName() {
     return utf8_decode($this->entry->contact['company']);
+  }
+  public function setOrgName($s) {
+    $this->entry->contact['company'] = utf8_encode($s);
   }
   public function getOrgTitle() {
     return utf8_decode($this->entry->contact['function']);
   }
+  public function setOrgTitle($s) {
+    $this->entry->contact['function'] = utf8_encode($s);
+  }
   public function getMail($o=0) {
-    return  $this->generic_array($this->entry->mail,'type','mailaddress',$o);
+    return  $this->get_generic_array($this->entry->mail,'type','mailaddress',$o);
+  }
+  public function setMail($s) {
+    $this->entry->mail = $this->set_generic_array('type','mailaddress',$s);
   }
   public function getPhoneNumber($o=0) {
-    return  $this->generic_array($this->entry->phone,'tel_type','number',$o);
+    return  $this->get_generic_array($this->entry->phone,'tel_type','number',$o);
   }
   public function getWebsite($o=0) {
-    return  $this->generic_array($this->entry->web,'type','webpagina',$o);
+    return  $this->get_generic_array($this->entry->web,'type','webpagina',$o);
   }
   public function getAddress($o=0) {
-    return  $this->generic_array($this->entry->naw,'adr_type','adres',$o);
+    return  $this->get_generic_array($this->entry->naw,'adr_type','adres',$o);
   }
   public function getTime() {
     return strtotime($this->entry->contact['updatetime']);
