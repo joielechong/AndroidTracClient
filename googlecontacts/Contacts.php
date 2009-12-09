@@ -28,7 +28,7 @@ class Contacts {
     $outstr .= (string) $this->getId();
     $outstr .= "</td></tr>\n";
     $outstr .= "</table>\n</div>\n</div>\n\n";
-	return $outstr;
+    return $outstr;
   }
   public function getName() {
     return FALSE;
@@ -36,8 +36,8 @@ class Contacts {
   public function getOrgName() {
     return FALSE;
   }
-  public function getMail() {
-    return array();;
+  public function getMail($o) {
+    return array();
   }
   public function getPhoneNumber() {
     return array();

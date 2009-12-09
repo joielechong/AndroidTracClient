@@ -30,8 +30,9 @@ class GMail_Contacts extends Contacts {
     return strtotime($this->entry->updated);
   }
   public function getBirthday() {
-	return (string) $this->entry->birthday->when;
-  } 
+    echo "<!--\n";var_dump($this->xml);echo "-->\n";
+    return (string) $this->xml->birthday['when'];
+ } 
   public function getOrgName() {
     return (string) $this->xml->organization->orgName;
   }
@@ -50,60 +51,76 @@ class GMail_Contacts extends Contacts {
   public function getFamilyName() {
     return (string) $this->xml->familyName;
   }
-  public function getMail() {
+  public function getMail($o=0) {
     $emailAddress = array();
     foreach ($this->xml->email as $e) {
+      $obj = new stdClass;
       $relstr = (string) $e['rel'];
       if (strstr($relstr,"#") != FALSE) {
 	list($g,$rel) = explode("#",$relstr);
       } else {
 	$rel = "??";
       }
-      $emailAddress[] =  $rel.": ".(string) $e['address'];
+      $obj->rel = $rel;
+      $obj->address = $e['address'];
+      $obj->asstring =  $rel.": ".(string) $e['address'];
+      $emailAddress[] = $o==0 ? $obj->asstring : $obj;
     }  
     return $emailAddress;
   }
-  public function getPhoneNumber() {
+  public function getPhoneNumber($o=0) {
     $phoneNumber = array();
     foreach ($this->xml->phoneNumber as $p) {
+      $obj = new stdClass;
       $relstr = (string) $p['rel'];
       if (strstr($relstr,"#") != FALSE) {
 	list($g,$rel) = explode("#",$relstr);
       } else {
 	$rel = "mobile";
       }
-      $phoneNumber[] = $rel.": ".(string) $p;
+      $obj->rel = $rel;
+      $obj->number= $p;
+      $obj->asstring = $rel.": ".(string) $p;
+      $phoneNumber[] = $o==0 ? $obj->asstring : $obj;
     }
-	return $phoneNumber;
+    return $phoneNumber;
   }
-  public function getAddress () {
+  public function getAddress ($o=0) {
     $Address = array();
     foreach ($this->xml->structuredPostalAddress as $a) {
+      $obj = new stdClass;
       $relstr = (string) $a['rel'];
       if (strstr($relstr,"#") != FALSE) {
 	list($g,$rel) = explode("#",$relstr);
       } else {
 	$rel = "other";
       }
-      $Address[] = $rel.": ".(string) $a->formattedAddress;
+      $obj->rel = $rel;
+      $obj->address = (string) $a->formattedAddress;
+      $obj->asstring = $rel.": ".(string) $a->formattedAddress;
+      $Address[] = $o==0 ? $obj->asstring : $obj;
     }
     return $Address;
   }
-  public function getWebsite() {
+  public function getWebsite($o=0) {
     $website = array();
     foreach ($this->xml->website as $w) {
       $rel = (string) $w['rel'];
-      $website[] = $rel .": ".(string) $w['href'];
+      $obj = new stdClass;
+      $obj->rel = $rel;
+      $obj->web = (string) $w['href'];
+      $obj->asstring = $rel .": ".(string) $w['href'];
+      $website[] = $o==0 ? $obj->asstring : $obj;
     }
-	return $website;
+    return $website;
   } 
- 
+  
   public function __construct($entry) {
-	$this->entry = $entry;
-	$this->xml = simplexml_load_string($entry->getXML());
-//	if ($this->entry->title == 'Michiel van Loon') {
-//	  echo "<!--\n";var_dump($this);echo "-->\n";
-//	}
+    $this->entry = $entry;
+    $this->xml = simplexml_load_string($entry->getXML());
+    //	if ($this->entry->title == 'Michiel van Loon') {
+    //	  echo "<!--\n";var_dump($this);echo "-->\n";
+    //	}
   }
 }
 ?>
