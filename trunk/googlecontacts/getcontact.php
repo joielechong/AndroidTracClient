@@ -30,7 +30,7 @@ try {
     $e = new DB_Contacts($cdb->getId($id));
     $db_results[$id] = $e;
   } 
-  echo "\n";  
+  echo "<!--\n";var_dump($db_results);echo "-->\n";  
   // set credentials for ClientLogin authentication
   $user = '** invalid **';
   $pass = '** invalid **';
@@ -81,7 +81,7 @@ foreach ($gm_results as $r) {
 	if ($id === FALSE) {
 	  throw new Exception('GMail contacts not loaded?');
 	} else if ($id == -1) {
-	  $cdb->createContact($r);
+	  $newid = $cdb->createContact($r);
 	} else {
 	}
   //  if ($r->getId() !== FALSE) {

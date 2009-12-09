@@ -25,6 +25,16 @@ class CDB {
     $this->getphone = $this->dbh->prepare("SELECT * FROM (SELECT * FROM telephone UNION SELECT *,'f' FROM fax) as tele WHERE contact_id=:id");
     $this->getnaw = $this->dbh->prepare('SELECT * FROM naw1 WHERE contact_id=:id');
     $this->getweb = $this->dbh->prepare('SELECT * FROM website WHERE contact_id=:id');
+	$this->createcontact = $this->dbh->prepare('INSERT INTO contacts (voornaam,tussenvoegsel,achternaam,company,function,geboortedatum) VALUES (?,?,?,?,?,?)');
+	$this->getid = $this->dbh->prepare('SELECT id FROM contacts where cn=?');
+	$this->createmail = $this->dbh->prepare('INSERT INTO mail (contact_id,mailaddress,type) VALUES (?,?,?)');
+	$this->createphone = $this->dbh->prepare('INSERT INTO phone (contact_id,number,tel_type) VALUES (?,?,?)');
+	$this->createfax = $this->dbh->prepare('INSERT INTO fax (contact_id,number,fax_type) VALUES (?,?,?)');
+	$this->createnaw = $this->dbh->prepare('INSERT INTO naw (contact_id,straat,postcode,stad,land,adr_type) VALUES (?,?,?,?,?,?)');
+	$this->createweb = $this->dbh->prepare('INSERT INTO website (contact_id,webpagina,type) VALUES (?,?,?)');
+
+	$result = $this->dbh->query('SELECT DISTINCT tussenvoegsel FROM contacts WHERE NOT tussenvoegsel IS NULL');
+	$this->tussenvoegsels = $result->fetchAll(PDO::FETCH_COLUMN,0);
   }
   
   function getIds() {
