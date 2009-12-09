@@ -62,9 +62,9 @@ class GMail_Contacts extends Contacts {
 	$rel = "??";
       }
       $obj->rel = $rel;
-      $obj->address = $e['address'];
+      $obj->mailaddress = $e['address'];
       $obj->asstring =  $rel.": ".(string) $e['address'];
-      $emailAddress[] = $o==0 ? $obj->asstring : $obj;
+      $emailAddress[] = $o==0 ? $obj->asString : $obj;
     }  
     return $emailAddress;
   }
@@ -80,8 +80,8 @@ class GMail_Contacts extends Contacts {
       }
       $obj->rel = $rel;
       $obj->number= $p;
-      $obj->asstring = $rel.": ".(string) $p;
-      $phoneNumber[] = $o==0 ? $obj->asstring : $obj;
+      $obj->asString = $rel.": ".(string) $p;
+      $phoneNumber[] = $o==0 ? $obj->asString : $obj;
     }
     return $phoneNumber;
   }
@@ -96,9 +96,9 @@ class GMail_Contacts extends Contacts {
 	$rel = "other";
       }
       $obj->rel = $rel;
-      $obj->address = (string) $a->formattedAddress;
-      $obj->asstring = $rel.": ".(string) $a->formattedAddress;
-      $Address[] = $o==0 ? $obj->asstring : $obj;
+      $obj->addres = (string) $a->formattedAddress;
+      $obj->asString = $rel.": ".(string) $a->formattedAddress;
+      $Address[] = $o==0 ? $obj->asString : $obj;
     }
     return $Address;
   }
@@ -109,8 +109,8 @@ class GMail_Contacts extends Contacts {
       $obj = new stdClass;
       $obj->rel = $rel;
       $obj->web = (string) $w['href'];
-      $obj->asstring = $rel .": ".(string) $w['href'];
-      $website[] = $o==0 ? $obj->asstring : $obj;
+      $obj->asString = $rel .": ".(string) $w['href'];
+      $website[] = $o==0 ? $obj->asString : $obj;
     }
     return $website;
   } 
