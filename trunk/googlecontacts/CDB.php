@@ -26,7 +26,6 @@ class CDB {
     $this->getnaw = $this->dbh->prepare('SELECT * FROM naw1 WHERE contact_id=:id');
     $this->getweb = $this->dbh->prepare('SELECT * FROM website WHERE contact_id=:id');
 	$this->createcontact = $this->dbh->prepare('INSERT INTO invoer (voornaam,tussenvoegsel,achternaam,company,function,geboortedatum) VALUES (:vn,:tv,:an,:com,:fun,:gb)');
-	$this->getid = $this->dbh->prepare('SELECT max(id) FROM contacts');
 	$this->createmail = $this->dbh->prepare('INSERT INTO mail (contact_id,mailaddress,type) VALUES (?,?,?)');
 	$this->createphone = $this->dbh->prepare('INSERT INTO phone (contact_id,number,tel_type) VALUES (?,?,?)');
 	$this->createfax = $this->dbh->prepare('INSERT INTO fax (contact_id,number,fax_type) VALUES (?,?,?)');
@@ -81,9 +80,9 @@ class CDB {
 		$this->createcontact->bindParam(':fun',$entry->contact['function']);
 		$this->createcontact->bindParam(':gb',$entry->contact['geboortedatum']);
 		$result = $this->createcontact->execute();
-		echo "<--\n";var_dump($result);echo " -->\n";
-		$this->getid->execute();
-	  $id = $this->getid->fetchAll(PDO::FETCH_COLUMN,0);
+		echo "<!-- result\n";var_dump($result);echo " -->\n";
+    $result = $this->dbh->query("SELECT max(id) FROM contacts");
+	  $id = $result->fetchAll(PDO::FETCH_COLUMN,0);
 		$dbh->commit();
 		return $id;
 	}
@@ -105,7 +104,7 @@ class CDB {
 	
 	$entry = $c->getEntry();
 	$id = $this->storeNewContact($entry);
-	echo "<!--\n";var_dump($id);echo "-->\n";
+	echo "<!-- id\n";var_dump($id);echo "-->\n";
 	$this->storeNewMail($id,$entry);
 #	$this->storeNewPhone($id,$entry);
 #	$this->storeNewFax($id,$entry);
