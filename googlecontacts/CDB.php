@@ -79,12 +79,15 @@ class CDB {
 		$this->createcontact->bindParam(':com',$entry->contact['company']);
 		$this->createcontact->bindParam(':fun',$entry->contact['function']);
 		$this->createcontact->bindParam(':gb',$entry->contact['geboortedatum']);
-		$result = $this->createcontact->execute();
-		echo "<!-- result\n";var_dump($result);echo " -->\n";
+		if ($this->createcontact->execute()) {
     $result = $this->dbh->query("SELECT max(id) FROM contacts");
+		echo "<!-- result\n";var_dump($result);echo " -->\n";
 	  $id = $result->fetchAll(PDO::FETCH_COLUMN,0);
 		$dbh->commit();
 		return $id;
+		} else {
+		return FALSE;
+		}
 	}
 		
   public function createContact(Contacts $r) {
