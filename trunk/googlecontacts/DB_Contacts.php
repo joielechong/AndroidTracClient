@@ -88,7 +88,7 @@ class DB_Contacts  extends Contacts {
 	  }
 	}
 	if (!is_null($tv)) {
-      $this->entry->contact['tussenvoegsel'] = utf8_encode(%tv);
+      $this->entry->contact['tussenvoegsel'] = utf8_encode($tv);
 	}
     $this->entry->contact['achternaam'] = utf8_encode($a);
   }
