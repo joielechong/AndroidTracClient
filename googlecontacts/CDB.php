@@ -25,8 +25,8 @@ class CDB {
     $this->getphone = $this->dbh->prepare("SELECT * FROM (SELECT * FROM telephone UNION SELECT *,'f' FROM fax) as tele WHERE contact_id=:id");
     $this->getnaw = $this->dbh->prepare('SELECT * FROM naw1 WHERE contact_id=:id');
     $this->getweb = $this->dbh->prepare('SELECT * FROM website WHERE contact_id=:id');
-	$this->createcontact = $this->dbh->prepare('INSERT INTO contacts (voornaam,tussenvoegsel,achternaam,company,function,geboortedatum) VALUES (?,?,?,?,?,?)');
-	$this->getid = $this->dbh->prepare('SELECT id FROM contacts where cn=?');
+	$this->createcontact = $this->dbh->prepare('INSERT INTO invoer (voornaam,tussenvoegsel,achternaam,company,function,geboortedatum) VALUES (:vn,:tv,:an,:com,:fun,:gb)');
+	$this->getid = $this->dbh->prepare('SELECT id FROM contacts where voornaam=:vn AND tussenvoegsel=:tv AND achternaam=:an AND company=:com AND function=:fun AND geboortedatum=:gb);
 	$this->createmail = $this->dbh->prepare('INSERT INTO mail (contact_id,mailaddress,type) VALUES (?,?,?)');
 	$this->createphone = $this->dbh->prepare('INSERT INTO phone (contact_id,number,tel_type) VALUES (?,?,?)');
 	$this->createfax = $this->dbh->prepare('INSERT INTO fax (contact_id,number,fax_type) VALUES (?,?,?)');
@@ -69,6 +69,25 @@ class CDB {
       
 	  return $entry;
     }
+		
+	private function storeNewContact($entry) {
+		$this->createcontact->bindParam(':vn',$entry->contact['voornaam']);
+		$this->createcontact->bindParam(':tv',$entry->contact['tussenvoegsel']);
+		$this->createcontact->bindParam(':an',$entry->contact['achternaam']);
+		$this->createcontact->bindParam(':com',$entry->contact['company']);
+		$this->createcontact->bindParam(':fun',$entry->contact['function']);
+		$this->createcontact->bindParam(':gb',$entry->contact['geboortedatum']);
+		$this->createcontact->execute();
+		$this->getid->bindParam(':vn',$entry->contact['voornaam']);
+		$this->getid->bindParam(':tv',$entry->contact['tussenvoegsel']);
+		$this->getid->bindParam(':an',$entry->contact['achternaam']);
+		$this->getid->bindParam(':com',$entry->contact['company']);
+		$this->getid->bindParam(':fun',$entry->contact['function']);
+		$this->getid->bindParam(':gb',$entry->contact['geboortedatum']);
+		$this->getid->execute();
+	  return $this->getid->fetchAll(PDO::FETCH_COLUMN,0);
+	}
+		
   public function createContact(Contacts $r) {
     $entry = new stdClass;
 	$c = new DB_Contacts($entry);
@@ -84,7 +103,14 @@ class CDB {
 	$c->setWebsite($r->getWebsite(1));
 	echo "<!--\n";var_dump($c);echo "-->\n";
 	
-	
+	$entry = $c->getEntry();
+	$id = $this->storeNewContact($entry);
+	echo "<!--\n";var_dump($id);echo "-->\n";
+	$this->storeNewMail($id,$entry);
+#	$this->storeNewPhone($id,$entry);
+#	$this->storeNewFax($id,$entry);
+#	$this->storeNewNAW($id,$entry);
+#	$this->storeNewWeb($id,$entry);
   }
   
   
