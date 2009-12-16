@@ -108,10 +108,10 @@ class CDB {
 		
 	private function storeNewWeb($id,$entry) {
 		foreach ($entry->web as $m) {
-			$this->createmail->bindParam(':id',$id);
-			$this->createmail->bindParam(':wp',$m['webpagina']);
-			$this->createmail->bindParam(':tp',$m['type']);
-			$this->createmail->execute();
+			$this->createweb->bindParam(':id',$id);
+			$this->createweb->bindParam(':wp',$m['webpagina']);
+			$this->createweb->bindParam(':tp',$m['type']);
+			$this->createweb->execute();
 		}
 	}
 		
