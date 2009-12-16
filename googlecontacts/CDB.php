@@ -83,6 +83,7 @@ class CDB {
     $result = $this->dbh->query("SELECT max(id) FROM contacts");
 		echo "<!-- result\n";var_dump($result);echo " -->\n";
 	  $id = $result->fetchAll(PDO::FETCH_COLUMN,0);
+		echo "<!-- id\n";var_dump($id);echo " -->\n";
 		$dbh->commit();
 		return $id;
 		} else {
