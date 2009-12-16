@@ -103,7 +103,7 @@ class DB_Contacts  extends Contacts {
     return utf8_decode($this->entry->contact['geboortedatum']);
   }
   public function setBirthday($s) {
-    $this->entry->contact['geboortedatum'] = $s=='' ? NULL : utf8_encode($s);
+    $this->entry->contact['geboortedatum'] = is_null($s)'' ? NULL : utf8_encode($s);
   }
   public function getOrgName() {
     return utf8_decode($this->entry->contact['company']);
