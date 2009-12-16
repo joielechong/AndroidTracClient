@@ -26,7 +26,7 @@ class CDB {
     $this->getnaw = $this->dbh->prepare('SELECT * FROM naw1 WHERE contact_id=:id');
     $this->getweb = $this->dbh->prepare('SELECT * FROM website WHERE contact_id=:id');
 	$this->createcontact = $this->dbh->prepare('INSERT INTO invoer (voornaam,tussenvoegsel,achternaam,company,function,geboortedatum) VALUES (:vn,:tv,:an,:com,:fun,:gb)');
-	$this->getid = $this->dbh->prepare('SELECT id FROM contacts where voornaam=:vn AND tussenvoegsel=:tv AND achternaam=:an AND company=:com AND function=:fun AND geboortedatum=:gb);
+	$this->getid = $this->dbh->prepare('SELECT id FROM contacts where voornaam=:vn AND tussenvoegsel=:tv AND achternaam=:an AND company=:com AND function=:fun AND geboortedatum=:gb');
 	$this->createmail = $this->dbh->prepare('INSERT INTO mail (contact_id,mailaddress,type) VALUES (?,?,?)');
 	$this->createphone = $this->dbh->prepare('INSERT INTO phone (contact_id,number,tel_type) VALUES (?,?,?)');
 	$this->createfax = $this->dbh->prepare('INSERT INTO fax (contact_id,number,fax_type) VALUES (?,?,?)');

@@ -68,13 +68,13 @@ class DB_Contacts  extends Contacts {
     return utf8_decode($this->entry->contact['cn']);
   }
   public function setName($s) {
-    $this->entry->contact['cn'] = utf8_encode($s);
+    $this->entry->contact['cn'] = $s=='' ? NULL : utf8_encode($s);
   }
   public function getGivenName() {
     return utf8_decode($this->entry->contact['voornaam']);
   }
   public function setGivenName($s) {
-    $this->entry->contact['voornaam'] = utf8_encode($s);
+    $this->entry->contact['voornaam'] = $s=='' ? NULL : utf8_encode($s);
   }
   public function getFamilyName() {
     return utf8_decode(is_null($this->entry->contact['tussenvoegsel']) ? $this->entry->contact['achternaam'] : $this->entry->contact['tussenvoegsel'].' '.$this->entry->contact['achternaam']);
@@ -82,6 +82,10 @@ class DB_Contacts  extends Contacts {
   public function setFamilyName($s) {
     $tvs = array('van der','den',"in 't",'von','vanden','van den',"van 't",'van de','van','te','de','ter');
 	$tv = NULL;
+	if ($s === NULL) {
+	  $this->entry->contact['tussenvoegsel'] = NULL;
+	  $this->entry->contact['achternaam'] = NULL;
+	} else {
 	$a=$s;
 	foreach($tvs as $t) {
 	  $t1=$t." ";
@@ -91,28 +95,26 @@ class DB_Contacts  extends Contacts {
 		break;
 	  }
 	}
-	if (!is_null($tv)) {
-      $this->entry->contact['tussenvoegsel'] = utf8_encode($tv);
-	}
+    $this->entry->contact['tussenvoegsel'] = $tv ===NULL ? NULL : utf8_encode($tv);
     $this->entry->contact['achternaam'] = utf8_encode($a);
   }
   public function getBirthday() {
     return utf8_decode($this->entry->contact['geboortedatum']);
   }
   public function setBirthday($s) {
-    $this->entry->contact['geboortedatum'] = utf8_encode($s);
+    $this->entry->contact['geboortedatum'] = $s=='' ? NULL : utf8_encode($s);
   }
   public function getOrgName() {
     return utf8_decode($this->entry->contact['company']);
   }
   public function setOrgName($s) {
-    $this->entry->contact['company'] = utf8_encode($s);
+    $this->entry->contact['company'] = $s=='' ? NULL : utf8_encode($s);
   }
   public function getOrgTitle() {
     return utf8_decode($this->entry->contact['function']);
   }
   public function setOrgTitle($s) {
-    $this->entry->contact['function'] = utf8_encode($s);
+    $this->entry->contact['function'] = $s=='' ? NULL : utf8_encode($s);
   }
   public function getMail($o=0) {
     return  $this->get_generic_array($this->entry->mail,'type','mailaddress',$o);
