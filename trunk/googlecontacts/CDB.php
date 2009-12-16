@@ -88,29 +88,29 @@ class CDB {
 	}
 	
 	private function storeNewMail($id,$entry) {
-		foreach ($$entry->mail as $m) {
-			$this->createmail->bindParameter(':id',$id);
-			$this->createmail->bindParameter(':ma',$m['mailaddress']);
-			$this->createmail->bindParameter(':tp',$m['type']);
+		foreach ($entry->mail as $m) {
+			$this->createmail->bindParamr(':id',$id);
+			$this->createmail->bindParam(':ma',$m['mailaddress']);
+			$this->createmail->bindParam(':tp',$m['type']);
 			$this->createmail->execute();
 		}
 	}
 		
 	private function storeNewPhone($id,$entry) {
 	  $h = $entry->class=='FAX' ? $this->createfax : $this->createphone;
-		foreach ($$entry->mail as $m) {
-			$h->bindParameter(':id',$id);
-			$h->bindParameter(':nm',$m['number']);
-			$h->bindParameter(':tp',$m['tel_type']);
+		foreach ($entry->phone as $m) {
+			$h->bindParam(':id',$id);
+			$h->bindParam(':nm',$m['number']);
+			$h->bindParam(':tp',$m['tel_type']);
 			$h->execute();
 		}
 	}
 		
 	private function storeNewWeb($id,$entry) {
-		foreach ($$entry->web as $m) {
-			$this->createmail->bindParameter(':id',$id);
-			$this->createmail->bindParameter(':url',$m['webpagina']);
-			$this->createmail->bindParameter(':tp',$m['type']);
+		foreach ($entry->web as $m) {
+			$this->createmail->bindParam(':id',$id);
+			$this->createmail->bindParam(':url',$m['webpagina']);
+			$this->createmail->bindParam(':tp',$m['type']);
 			$this->createmail->execute();
 		}
 	}
