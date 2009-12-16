@@ -97,8 +97,8 @@ class CDB {
 	}
 		
 	private function storeNewPhone($id,$entry) {
-	  $h = $entry->class=='FAX' ? $this->createfax : $this->createphone;
 		foreach ($entry->phone as $m) {
+	    $h = $m['class']=='FAX' ? $this->createfax : $this->createphone;
 			$h->bindParam(':id',$id);
 			$h->bindParam(':nm',$m['number']);
 			$h->bindParam(':tp',$m['tel_type']);
