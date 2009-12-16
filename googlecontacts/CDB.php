@@ -88,6 +88,7 @@ class CDB {
 	}
 	
 	private function storeNewMail($id,$entry) {
+	echo "<!-- storeNewMail\n";var_dump($id);var_dump($entry);echo "-->\n";
 		foreach ($entry->mail as $m) {
 			$this->createmail->bindParam(':id',$id);
 			$this->createmail->bindParam(':ma',$m['mailaddress']);
