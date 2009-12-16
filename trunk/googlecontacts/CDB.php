@@ -26,7 +26,7 @@ class CDB {
     $this->getnaw = $this->dbh->prepare('SELECT * FROM naw1 WHERE contact_id=:id');
     $this->getweb = $this->dbh->prepare('SELECT * FROM website WHERE contact_id=:id');
 	$this->createcontact = $this->dbh->prepare('INSERT INTO invoer (voornaam,tussenvoegsel,achternaam,company,function,geboortedatum) VALUES (:vn,:tv,:an,:com,:fun,:gb)');
-	$this->getid = $this->dbh->prepare('SELECT id FROM contacts where voornaam=:vn AND tussenvoegsel=:tv AND achternaam=:an AND company=:com AND function=:fun AND geboortedatum=:gb');
+	$this->getid = $this->dbh->prepare('SELECT max(id) FROM contacts');
 	$this->createmail = $this->dbh->prepare('INSERT INTO mail (contact_id,mailaddress,type) VALUES (?,?,?)');
 	$this->createphone = $this->dbh->prepare('INSERT INTO phone (contact_id,number,tel_type) VALUES (?,?,?)');
 	$this->createfax = $this->dbh->prepare('INSERT INTO fax (contact_id,number,fax_type) VALUES (?,?,?)');
@@ -66,26 +66,26 @@ class CDB {
       $this->getweb->execute();
       $entry->web = $this->getweb->fetchAll(PDO::FETCH_ASSOC);
       $this->getweb->closeCursor();
+			
+			
       
 	  return $entry;
     }
 		
 	private function storeNewContact($entry) {
+		$this->dbh->beginTransaction();
 		$this->createcontact->bindParam(':vn',$entry->contact['voornaam']);
 		$this->createcontact->bindParam(':tv',$entry->contact['tussenvoegsel']);
 		$this->createcontact->bindParam(':an',$entry->contact['achternaam']);
 		$this->createcontact->bindParam(':com',$entry->contact['company']);
 		$this->createcontact->bindParam(':fun',$entry->contact['function']);
 		$this->createcontact->bindParam(':gb',$entry->contact['geboortedatum']);
-		$this->createcontact->execute();
-		$this->getid->bindParam(':vn',$entry->contact['voornaam']);
-		$this->getid->bindParam(':tv',$entry->contact['tussenvoegsel']);
-		$this->getid->bindParam(':an',$entry->contact['achternaam']);
-		$this->getid->bindParam(':com',$entry->contact['company']);
-		$this->getid->bindParam(':fun',$entry->contact['function']);
-		$this->getid->bindParam(':gb',$entry->contact['geboortedatum']);
+		$result = $this->createcontact->execute();
+		echo "<--\n";var_dump($result);echo " -->\n";
 		$this->getid->execute();
-	  return $this->getid->fetchAll(PDO::FETCH_COLUMN,0);
+	  $id = $this->getid->fetchAll(PDO::FETCH_COLUMN,0);
+		$dbh->commit();
+		return $id;
 	}
 		
   public function createContact(Contacts $r) {
