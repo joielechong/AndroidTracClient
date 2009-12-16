@@ -53,6 +53,7 @@ class DB_Contacts  extends Contacts {
 		$m['class'] = 'FAX';
 	  } else {
 	    $rel = $e->rel;
+			$m['class'] = 'TEL';
 	  }
 	  if (array_key_exists($rel,$this->tabelterug)) {
 	    $rel=$this->tabelterug[$rel];
