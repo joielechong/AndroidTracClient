@@ -84,8 +84,8 @@ class CDB {
 		echo "<!-- result\n";var_dump($result);echo " -->\n";
 	  $id = $result->fetchAll(PDO::FETCH_COLUMN,0);
 		echo "<!-- id\n";var_dump($id);echo " -->\n";
-		$dbh->commit();
-		return $id;
+		$this->dbh->commit();
+		return $id[0];
 		} else {
 		return FALSE;
 		}
