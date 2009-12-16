@@ -30,7 +30,7 @@ class CDB {
 	$this->createphone = $this->dbh->prepare('INSERT INTO phone (contact_id,number,tel_type) VALUES (:id,:nm,:tp)');
 	$this->createfax = $this->dbh->prepare('INSERT INTO fax (contact_id,number,fax_type) VALUES (:id,:nm,:tp)');
 	$this->createnaw = $this->dbh->prepare('INSERT INTO naw (contact_id,straat,postcode,stad,land,adr_type) VALUES (?,?,?,?,?,?)');
-	$this->createweb = $this->dbh->prepare('INSERT INTO website (contact_id,webpagina,type) VALUES (:id,:url,:tp)');
+	$this->createweb = $this->dbh->prepare('INSERT INTO website (contact_id,webpagina,type) VALUES (:id,:wp,:tp)');
   }
   
   function getIds() {
@@ -109,7 +109,7 @@ class CDB {
 	private function storeNewWeb($id,$entry) {
 		foreach ($entry->web as $m) {
 			$this->createmail->bindParam(':id',$id);
-			$this->createmail->bindParam(':url',$m['webpagina']);
+			$this->createmail->bindParam(':wp',$m['webpagina']);
 			$this->createmail->bindParam(':tp',$m['type']);
 			$this->createmail->execute();
 		}
