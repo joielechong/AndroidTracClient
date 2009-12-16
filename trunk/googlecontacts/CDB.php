@@ -106,7 +106,7 @@ class CDB {
 	$entry = $c->getEntry();
 	$id = $this->storeNewContact($entry);
 	echo "<!--\n";var_dump($id);echo "-->\n";
-#	$this->storeNewMail($id,$entry);
+	$this->storeNewMail($id,$entry);
 #	$this->storeNewPhone($id,$entry);
 #	$this->storeNewFax($id,$entry);
 #	$this->storeNewNAW($id,$entry);
