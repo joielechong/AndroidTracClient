@@ -27,7 +27,7 @@ class CDB {
     $this->getweb = $this->dbh->prepare('SELECT * FROM website WHERE contact_id=:id');
 	$this->createcontact = $this->dbh->prepare('INSERT INTO invoer (voornaam,tussenvoegsel,achternaam,company,function,geboortedatum) VALUES (:vn,:tv,:an,:com,:fun,:gb)');
 	$this->createmail = $this->dbh->prepare('INSERT INTO mail (contact_id,mailaddress,type) VALUES (:id,:ma,:tp)');
-	$this->createphone = $this->dbh->prepare('INSERT INTO telephonephone (contact_id,number,tel_type) VALUES (:id,:nm,:tp)');
+	$this->createphone = $this->dbh->prepare('INSERT INTO telephone (contact_id,number,tel_type) VALUES (:id,:nm,:tp)');
 	$this->createfax = $this->dbh->prepare('INSERT INTO fax (contact_id,number,fax_type) VALUES (:id,:nm,:tp)');
 	$this->createnaw = $this->dbh->prepare('INSERT INTO naw (contact_id,straat,postcode,stad,land,adr_type) VALUES (?,?,?,?,?,?)');
 	$this->createweb = $this->dbh->prepare('INSERT INTO website (contact_id,webpagina,type) VALUES (:id,:wp,:tp)');
