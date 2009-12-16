@@ -18,6 +18,10 @@ class DB_Contacts  extends Contacts {
   public function __construct($entry) {
 	$this->entry = $entry;
   }
+	public function getentry() {
+	  return $this->entry;
+	}
+	
   private function get_generic_array($d,$f1,$f2,$o) {  
     $a=array();
     foreach($d as $e) {
