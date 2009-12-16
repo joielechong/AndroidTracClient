@@ -26,11 +26,11 @@ class CDB {
     $this->getnaw = $this->dbh->prepare('SELECT * FROM naw1 WHERE contact_id=:id');
     $this->getweb = $this->dbh->prepare('SELECT * FROM website WHERE contact_id=:id');
 	$this->createcontact = $this->dbh->prepare('INSERT INTO invoer (voornaam,tussenvoegsel,achternaam,company,function,geboortedatum) VALUES (:vn,:tv,:an,:com,:fun,:gb)');
-	$this->createmail = $this->dbh->prepare('INSERT INTO mail (contact_id,mailaddress,type) VALUES (?,?,?)');
-	$this->createphone = $this->dbh->prepare('INSERT INTO phone (contact_id,number,tel_type) VALUES (?,?,?)');
-	$this->createfax = $this->dbh->prepare('INSERT INTO fax (contact_id,number,fax_type) VALUES (?,?,?)');
+	$this->createmail = $this->dbh->prepare('INSERT INTO mail (contact_id,mailaddress,type) VALUES (:id,:ma,:tp)');
+	$this->createphone = $this->dbh->prepare('INSERT INTO phone (contact_id,number,tel_type) VALUES (:id,:nm,:tp)');
+	$this->createfax = $this->dbh->prepare('INSERT INTO fax (contact_id,number,fax_type) VALUES (:id,:nm,:tp)');
 	$this->createnaw = $this->dbh->prepare('INSERT INTO naw (contact_id,straat,postcode,stad,land,adr_type) VALUES (?,?,?,?,?,?)');
-	$this->createweb = $this->dbh->prepare('INSERT INTO website (contact_id,webpagina,type) VALUES (?,?,?)');
+	$this->createweb = $this->dbh->prepare('INSERT INTO website (contact_id,webpagina,type) VALUES (:id,:url,:tp)');
   }
   
   function getIds() {
@@ -65,9 +65,6 @@ class CDB {
       $this->getweb->execute();
       $entry->web = $this->getweb->fetchAll(PDO::FETCH_ASSOC);
       $this->getweb->closeCursor();
-			
-			
-      
 	  return $entry;
     }
 		
@@ -81,13 +78,40 @@ class CDB {
 		$this->createcontact->bindParam(':gb',$entry->contact['geboortedatum']);
 		if ($this->createcontact->execute()) {
     $result = $this->dbh->query("SELECT max(id) FROM contacts");
-		echo "<!-- result\n";var_dump($result);echo " -->\n";
 	  $id = $result->fetchAll(PDO::FETCH_COLUMN,0);
-		echo "<!-- id\n";var_dump($id);echo " -->\n";
 		$this->dbh->commit();
 		return $id[0];
 		} else {
+		$this->dbh->rollBack();
 		return FALSE;
+		}
+	}
+	
+	private function storeNewMail($id,$entry) {
+		foreach ($$entry->mail as $m) {
+			$this->createmail->bindParameter(':id',$id);
+			$this->createmail->bindParameter(':ma',$m['mailaddress']);
+			$this->createmail->bindParameter(':tp',$m['type']);
+			$this->createmail->execute();
+		}
+	}
+		
+	private function storeNewPhone($id,$entry) {
+	  $h = $entry->class=='FAX' ? $this->createfax : $this->createphone;
+		foreach ($$entry->mail as $m) {
+			$h->bindParameter(':id',$id);
+			$h->bindParameter(':nm',$m['number']);
+			$h->bindParameter(':tp',$m['tel_type']);
+			$h->execute();
+		}
+	}
+		
+	private function storeNewWeb($id,$entry) {
+		foreach ($$entry->web as $m) {
+			$this->createmail->bindParameter(':id',$id);
+			$this->createmail->bindParameter(':url',$m['webpagina']);
+			$this->createmail->bindParameter(':tp',$m['type']);
+			$this->createmail->execute();
 		}
 	}
 		
@@ -110,10 +134,9 @@ class CDB {
 	$id = $this->storeNewContact($entry);
 	echo "<!-- id\n";var_dump($id);echo "-->\n";
 	$this->storeNewMail($id,$entry);
-#	$this->storeNewPhone($id,$entry);
-#	$this->storeNewFax($id,$entry);
+	$this->storeNewPhone($id,$entry);
 #	$this->storeNewNAW($id,$entry);
-#	$this->storeNewWeb($id,$entry);
+	$this->storeNewWeb($id,$entry);
   }
   
   
