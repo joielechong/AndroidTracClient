@@ -94,6 +94,7 @@ class DB_Contacts  extends Contacts {
 		$a = substr($a,strlen($t1));
 		break;
 	  }
+		}
 	}
     $this->entry->contact['tussenvoegsel'] = $tv ===NULL ? NULL : utf8_encode($tv);
     $this->entry->contact['achternaam'] = utf8_encode($a);
