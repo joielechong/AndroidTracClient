@@ -82,7 +82,7 @@ class DB_Contacts  extends Contacts {
   public function setFamilyName($s) {
     $tvs = array('van der','den',"in 't",'von','vanden','van den',"van 't",'van de','van','te','de','ter');
 	$tv = NULL;
-	if ($s === NULL) {
+	if ($s === NULL || $s == '') {
 	  $this->entry->contact['tussenvoegsel'] = NULL;
 	  $this->entry->contact['achternaam'] = NULL;
 	} else {
