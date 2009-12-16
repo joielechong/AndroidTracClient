@@ -95,9 +95,9 @@ class DB_Contacts  extends Contacts {
 		break;
 	  }
 		}
-	}
     $this->entry->contact['tussenvoegsel'] = $tv ===NULL ? NULL : utf8_encode($tv);
     $this->entry->contact['achternaam'] = utf8_encode($a);
+		}
   }
   public function getBirthday() {
     return utf8_decode($this->entry->contact['geboortedatum']);
