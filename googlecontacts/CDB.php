@@ -129,6 +129,8 @@ class CDB {
 	$c->setPhoneNumber($r->getPhoneNumber(1));
 	$c->setAddress($r->getAddress(1));
 	$c->setWebsite($r->getWebsite(1));
+	$x=$r->getXML();
+	echo "<!--\n";var_dump($x);echo "-->\n";
 	echo "<!--\n";var_dump($c);echo "-->\n";
 	
 	$entry = $c->getEntry();
