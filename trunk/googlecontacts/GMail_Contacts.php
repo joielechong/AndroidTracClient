@@ -5,6 +5,10 @@ class GMail_Contacts extends Contacts {
   private $entry;
   private $xml;
   
+  public function getXML() {
+    return $this->xml;
+  }
+  
   public function getName() {
     if (empty($this->entry->title)) {
 	  return FALSE;
@@ -40,16 +44,13 @@ class GMail_Contacts extends Contacts {
     return (string) $this->xml->organization->orgTitle;
   }
   public function getFullName() {
-    return (string) $this->xml->fullName;
+    return (string) $this->xml->name->fullName;
   }
   public function getGivenName() {
-    return (string) $this->xml->givenName;
-  }
-  public function getAdditionalName() {
-    return (string) $this->xml->additionalName;
+    return (string) $this->xml->name->givenName;
   }
   public function getFamilyName() {
-    return (string) $this->xml->familyName;
+    return (string) $this->xml->name->familyName;
   }
   public function getMail($o=0) {
     $emailAddress = array();
