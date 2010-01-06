@@ -248,7 +248,7 @@ http_open (const char *filename, enum UpnpOpenFileMode mode)
     getcmd = malloc(strlen(GETCMD)+strlen(entry->fullpath)+2);
     if (getcmd == NULL)
       return NULL;
-    getcmd = sprintf("%s %s",GETCMD,entry->fullpath);
+    sprintf(getcmd,"%s %s",GETCMD,entry->fullpath);
     fid = popen(getcmd,"r");
     if (fid == NULL) {
       free(getcmd);
