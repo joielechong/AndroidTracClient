@@ -93,7 +93,7 @@ int init_odbc(const char *dsn) {
       uo.size_stmt = NULL;
     }
     SQLAllocHandle(SQL_HANDLE_STMT,uo.dbc,&uo.loop_stmt);
-    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.loop_stmt,(SQLCHAR *)"SELECT fullpath,id,size FROM ms.mediacontent where id = (SELECT min(id) FROM ms.mediacontent WHERE id>?)",SQL_NTS))) {
+    if (!SQL_SUCCEEDED(ret=SQLPrepare(uo.loop_stmt,(SQLCHAR *)"SELECT fullpath,id,size FROM ms.mediacontent where (NOT (fullpath like 'http://%') OR (fullpath like 'https://%') OR (fullpath like 'ftp://%')) AND id = (SELECT min(id) FROM ms.mediacontent WHERE id>?)",SQL_NTS))) {
       extract_error("init_odbc","SQLPrepare loop",uo.dbc,SQL_HANDLE_DBC);
       uo.loop_stmt = NULL;
     }
