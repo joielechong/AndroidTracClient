@@ -236,8 +236,29 @@ http_open (const char *filename, enum UpnpOpenFileMode mode)
     return NULL;
 
   log_verbose ("Fullpath : %s\n", entry->fullpath);
-
-  fd = open (entry->fullpath, O_RDONLY | O_NONBLOCK | O_SYNC | O_NDELAY);
+  
+  if ((strncmp(entry->fullpath,"http://",7) == 0) ||
+      (strncmp(entry->fullpath,"https://",8) == 0) ||
+      (strncmp(entry->fullpath,"ftp://",6) == 0)) {
+    FILE *fid;
+    char *getcmd;
+    
+#define GETCMD "/usr/local/bin/GET"    
+    
+    getcmd = malloc(strlen(GETCMD)+strlen(entry->fullpath)+2);
+    if (getcmd == NULL)
+      return NULL;
+    getcmd = sprintf("%s %s",GETCMD,entry->fullpath);
+    fid = popen(getcmd,"r");
+    if (fid == NULL) {
+      free(getcmd);
+      return NULL;
+    }
+    fd = fileno(fid);
+    free(getcmd);
+  } else {
+    fd = open (entry->fullpath, O_RDONLY | O_NONBLOCK | O_SYNC | O_NDELAY);
+  }
   if (fd < 0)
     return NULL;
 
