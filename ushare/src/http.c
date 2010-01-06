@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
+#include <limits.h>
 
 #include <upnp/upnp.h>
 #include <upnp/upnptools.h>
@@ -75,6 +76,13 @@ set_info_file (struct File_Info *info, const size_t length,
   info->is_directory = 0;
   info->is_readable = 1;
   info->content_type = ixmlCloneDOMString (content_type);
+}
+
+int urlpath(const char *s) {
+  int i;
+  
+  i=(!strncmp(s,"http://",7) || !strncmp(s,"https://",8) || !strncmp(s,"ftp://",6));
+  return i;
 }
 
 static int
@@ -136,6 +144,7 @@ http_get_info (const char *filename, struct File_Info *info)
   if (!entry->fullpath)
     return -1;
 
+  if (!urlpath(entry->fullpath)) {
   if (stat (entry->fullpath, &st) < 0)
     return -1;
 
@@ -152,7 +161,12 @@ http_get_info (const char *filename, struct File_Info *info)
   info->file_length = st.st_size;
   info->last_modified = st.st_mtime;
   info->is_directory = S_ISDIR (st.st_mode);
-
+} else {
+  info->is_readable = 1;
+  info->file_length = UINT_MAX;
+  info->last_modified = 0;
+  info->is_directory = 0;
+}
   protocol = 
 #ifdef HAVE_DLNA
     entry->dlna_profile ?
@@ -237,21 +251,23 @@ http_open (const char *filename, enum UpnpOpenFileMode mode)
 
   log_verbose ("Fullpath : %s\n", entry->fullpath);
   
-  if ((strncmp(entry->fullpath,"http://",7) == 0) ||
-      (strncmp(entry->fullpath,"https://",8) == 0) ||
-      (strncmp(entry->fullpath,"ftp://",6) == 0)) {
+  if (urlpath(entry->fullpath)) {
     FILE *fid;
     char *getcmd;
     
-#define GETCMD "/usr/local/bin/GET"    
+#define GETCMD "/usr/bin/wget -q -O - "    
     
     getcmd = malloc(strlen(GETCMD)+strlen(entry->fullpath)+2);
-    if (getcmd == NULL)
+    if (getcmd == NULL) {
+      fprintf(stderr,"Kan commando niet creeren\n");
       return NULL;
+    }
     sprintf(getcmd,"%s %s",GETCMD,entry->fullpath);
+    fprintf(stderr,"%s\n",getcmd);
     fid = popen(getcmd,"r");
     if (fid == NULL) {
       free(getcmd);
+      fprintf(stderr,"popen mislukt\n");
       return NULL;
     }
     fd = fileno(fid);
@@ -278,7 +294,7 @@ http_read (UpnpWebFileHandle fh, char *buf, size_t buflen)
   struct web_file_t *file = (struct web_file_t *) fh;
   ssize_t len = -1;
 
-  log_verbose ("http_read\n");
+  log_verbose ("http_read buflen = %ld\n",(long)buflen);
 
   if (!file)
     return -1;
