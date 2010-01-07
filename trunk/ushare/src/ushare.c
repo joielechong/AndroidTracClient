@@ -861,7 +861,8 @@ main (int argc, char **argv)
 
   signal (SIGINT, UPnPBreak);
   signal (SIGHUP, reload_config);
-
+  signal (SIGCHLD,SIG_IGN);   /* prevent childs to become zombies */
+  
   if (ut->use_telnet)
   {
     if (ctrl_telnet_start (ut->telnet_port) < 0)
