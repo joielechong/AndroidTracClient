@@ -259,15 +259,15 @@ http_open (const char *filename, enum UpnpOpenFileMode mode)
     
     getcmd = malloc(strlen(GETCMD)+strlen(entry->fullpath)+2);
     if (getcmd == NULL) {
-      fprintf(stderr,"Kan commando niet creeren\n");
+      log_verbose("Kan commando niet creeren\n");
       return NULL;
     }
     sprintf(getcmd,"%s %s",GETCMD,entry->fullpath);
-    fprintf(stderr,"%s\n",getcmd);
+    log_verbose("%s\n",getcmd);
     fid = popen(getcmd,"r");
     if (fid == NULL) {
       free(getcmd);
-      fprintf(stderr,"popen mislukt\n");
+      log_verbose("popen mislukt\n");
       return NULL;
     }
     fd = fileno(fid);
