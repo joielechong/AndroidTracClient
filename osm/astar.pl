@@ -15,6 +15,14 @@ my @bbox = (4.83,52.28,4.88,52.31);
 my $getmapcmd ="http://api.openstreetmap.org/api/0.6/map?bbox=";
 
 my $geo=new Geo::Distance;
+my $ua = LWP::UserAgent->new;
+
+sub getmapdata {
+  my @bbox = @_;
+  if ($#bbox != 3) 
+    return undef;
+  my $url = $getmapcmd.join(",",@bbox);
+}
 
 sub distance {
     my $n1 = shift;
@@ -211,7 +219,6 @@ sub usable_way {
 
 my %sources;
 
-my $ua = LWP::UserAQgent->new;
 print "Inlezen map.osm\n";
 my $doc = XMLin('map.osm', ForceArray=>['tag']);
 #open DUMP,">map.osm.txt";
