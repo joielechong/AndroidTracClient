@@ -1,6 +1,7 @@
 #! /usr/bin/perl -w
 
 use strict;
+use LWP::UserAgent;
 use Data::Dumper;
 use XML::Simple;
 use Geo::Distance;
@@ -9,6 +10,9 @@ my $nodes;
 my $ways;
 my $dist;
 my $infinity = 100000000;
+
+my @bbox = (4.83,52.28,4.88,52.31);
+my $getmapcmd ="http://api.openstreetmap.org/api/0.6/map?bbox=";
 
 my $geo=new Geo::Distance;
 
@@ -206,6 +210,8 @@ sub usable_way {
 }
 
 my %sources;
+
+my $ua = LWP::UserAQgent->new;
 print "Inlezen map.osm\n";
 my $doc = XMLin('map.osm', ForceArray=>['tag']);
 #open DUMP,">map.osm.txt";
