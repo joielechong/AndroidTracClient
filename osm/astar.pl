@@ -204,6 +204,7 @@ sub print_path {
 	print "$p : ";
 	my @ws = @{$$nodes{$p}->{ways}};
 	for my $w (@ws) {
+	    print $w,": ";
 	    print $$ways{$w}->{tag}->{name}," " if defined($$ways{$w}->{tag}->{name});
 	    print $$ways{$w}->{tag}->{highway}," " if defined($$ways{$w}->{tag}->{highway});
 	    print $$ways{$w}->{tag}->{maxspeed}," " if defined($$ways{$w}->{tag}->{maxspeed});
