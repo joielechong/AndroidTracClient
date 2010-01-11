@@ -203,6 +203,7 @@ sub print_path {
     for my $p (@p1) {
 	print "$p : ";
 	my @ws = @{$$nodes{$p}->{ways}};
+	my $oldw;
 	for my $w (@ws) {
 	    print $w,": ";
 	    print $$ways{$w}->{tag}->{name}," " if defined($$ways{$w}->{tag}->{name});
@@ -212,6 +213,7 @@ sub print_path {
 #	    for my $t (@tags) {
 #		print $t->{v}," " if ($t->{k} eq 'name') or ($t->{k} eq 'highway') or ($t->{k} eq 'maxspeed');
 #	    }
+            $oldw=$w;
 	}
 	print "\n";
     }
