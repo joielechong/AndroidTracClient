@@ -8,13 +8,16 @@ use Geo::Distance;
 
 my %profiles = ('foot' =>    {allowed => ['footway','pedestrian','cycleway','service','residential','unclassified','tertiary','secondary','primary'],
                               boete => [0,0,10,20,0,20,30,30,30],
-			      maxsnelheid => 5},
+			      maxsnelheid => 5,
+			      oneway=>0},
 		'bicycle' => {allowed => ['cycleway','service','residential','unclassified','tertiary','secondary','primary'],
                               boete => [0,20,0,20,30,30,30],
-			      maxsnelheid => 15},
+			      maxsnelheid => 15,
+			      oneway => 1},
 		'car' =>      {allowed => ['service','residential','unclassified','tertiary','secondary','primary','motorway_link','motorway'],
                               boete => [30,30,20,20,10,0,0,0],
-			      maxsnelheid => 160}
+			      maxsnelheid => 160,
+			      oneway =>1}
 	       );
 			   
 my %highways = (footway =>5,
@@ -82,6 +85,7 @@ sub Astar {
     my $start = shift;
     my $goal  = shift;
     my $vehicle = shift;
+    $vehicle = 'car' unless defined($vehicle);
     
     my %closedset;
     my %openset;
@@ -345,6 +349,9 @@ close DUMP;
 print "Initialisatie is klaar\n";
 
 print_path(Astar('46071276','294062118'));
+print_path(Astar('46070723','294062118','foot'));
+print_path(Astar('46070723','294062118','car'));
+print_path(Astar('46070723','294062118','bicycle'));
 print_path(Astar('46071276','294062059'));
 print_path(Astar('46071276','46051999'));
 print_path(Astar('46070723','46051999'));
