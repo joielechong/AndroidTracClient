@@ -200,34 +200,53 @@ sub print_path {
     print join(", ",@p1);
     print " ",$$nodes{$p1[0]}->{length} if defined($$nodes{$p1[0]}->{length});
     print "\n";
+    my $oldp;
+    my $oldw;
     for my $p (@p1) {
-	print "$p : ";
+        my $w;
+	print "$p -> ";
 	my @ws = @{$$nodes{$p}->{ways}};
-	my $oldw;
-	for my $w (@ws) {
+	if ($#ws == 0) {
+	    $w = $ws[0];
+	} else {
+	    if (defined($oldp)) {  
+	        if (defined($oldw)) {
+	            for my $w1 (@ws) {
+		        if ($w1==$oldw) {
+			    $w=$w1;
+			    last;
+			}
+	            }
+		}
+		unless (defined($w)) {
+	            my @ws1 = @{$$nodes{$oldp}->{ways}};
+		    for my $w1 (@ws) {
+		        for my $w2 (@ws1) {
+			    if ($w1==$w2) {
+			      $w=$w1;
+			      last;
+			    }
+			}
+			last if defined($w);
+		    }
+		}
+	    }
+	}
+	if (defined($w)) {
 	    print $w,": ";
 	    print $$ways{$w}->{tag}->{name}," " if defined($$ways{$w}->{tag}->{name});
 	    print $$ways{$w}->{tag}->{highway}," " if defined($$ways{$w}->{tag}->{highway});
 	    print $$ways{$w}->{tag}->{maxspeed}," " if defined($$ways{$w}->{tag}->{maxspeed});
-#	    my @tags = @{$$ways{$w}->{tag}};
-#	    for my $t (@tags) {
-#		print $t->{v}," " if ($t->{k} eq 'name') or ($t->{k} eq 'highway') or ($t->{k} eq 'maxspeed');
-#	    }
             $oldw=$w;
 	}
+	$oldp=$p;
 	print "\n";
     }
 }
 
 sub usable_way {
     my $w = shift;
-#    return 0 unless defined($w->{tag});
     return exists($w->{tag}->{highway});
-#    my @tags = @{$w->{tag}};
-#    for my $t (@tags) {
-#	return 1 if ($t->{k} eq 'highway');
-#    }
-#    return 0;
 }
 
 my %sources;
