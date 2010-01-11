@@ -304,15 +304,15 @@ foreach my $w (keys %$ways) {
 	delete($$ways{$w});
 	next;
     }
-    my $oneway = $ways->{$w}->{oneway};
+    my $oneway = $ways->{$w}->{tag}->{oneway};
     $oneway = "no" unless defined $oneway;
     $oneway = "yes" if $oneway eq "true";
     $oneway = "yes" if $oneway eq "1";
     $oneway = "rev" if $oneway eq "-1";
     if ($oneway eq "no") {
-	delete $ways->{$w}->{oneway} if exists($ways->{$w}->{oneway});
+	delete $ways->{$w}->{tag}->{oneway} if exists($ways->{$w}->{tag}->{oneway});
     } else {
-        $ways->{$w}->{oneway} = $oneway;
+        $ways->{$w}->{tag}->{oneway} = $oneway;
     }
     
 #    print Dumper($ways->{$w}->{nd});
