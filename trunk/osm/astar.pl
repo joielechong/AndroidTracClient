@@ -6,10 +6,33 @@ use Data::Dumper;
 use XML::Simple;
 use Geo::Distance;
 
+my %profiles = ('foot' =>    {allowed => ['footway','pedestrian','cycleway','service','residential','unclassified','tertiary','secondary','primary'],
+                              boete => [0,0,10,20,0,20,30,30,30],
+			      maxsnelheid => 5},
+		'bicycle' => {allowed => ['cycleway','service','residential','unclassified','tertiary','secondary','primary'],
+                              boete => [0,20,0,20,30,30,30],
+			      maxsnelheid => 15},
+		'car' =>      {allowed => ['service','residential','unclassified','tertiary','secondary','primary','motorway_link','motorway'],
+                              boete => [30,30,20,20,10,0,0,0],
+			      maxsnelheid => 160}
+	       );
+			   
+my %highways = (footway =>5,
+                pedestrian=>5,
+		cycleway=>15,
+		service=>30,
+		residential=>30,
+		unclassified=>50,
+		tertiary=>50,
+		secondary=>50,
+		primary=>50,
+		motorway_link=>100,
+		motorway=>120);
+
 my $nodes;
 my $ways;
 my $dist;
-my $infinity = 100000000;
+my $infinity = 9999999999;
 
 my @bbox = (4.83,52.28,4.88,52.31);
 my $getmapcmd ="http://api.openstreetmap.org/api/0.6/map?bbox=";
@@ -58,6 +81,7 @@ sub Astar {
     
     my $start = shift;
     my $goal  = shift;
+    my $vehicle = shift;
     
     my %closedset;
     my %openset;
@@ -175,7 +199,8 @@ sub shortest_path {
 #	}
 #	print("\n");
 	$k1=$k;
-	$k=0;$min=$infinity;
+	$k=0;
+	$min=$infinity;
 #	for $I (keys %{$dist->{$k1}}) {
 	for $I (keys %$nodes) {
 	    if ($$nodes{$I}->{label} eq "tentative" && $$nodes{$I}->{length} < $min) {
@@ -279,6 +304,12 @@ foreach my $w (keys %$ways) {
 	delete($$ways{$w});
 	next;
     }
+    my $oneway = $ways->{$w}->{oneway};
+    $oneway = "no" unless defined $oneway;
+    $oneway = "yes" if $oneway eq "true";
+    $oneway = "yes" if $oneway eq "1";
+    $oneway = "rev" if $oneway eq "-1";
+    $ways->{$w}->{oneway} = $oneway;
     
 #    print Dumper($ways->{$w}->{nd});
     $nrnodes = $#{$ways->{$w}->{nd}}+1;
