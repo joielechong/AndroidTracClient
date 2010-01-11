@@ -18,10 +18,16 @@ my $geo=new Geo::Distance;
 my $ua = LWP::UserAgent->new;
 
 sub getmapdata {
-  my @bbox = @_;
-  if ($#bbox != 3) 
-    return undef;
-  my $url = $getmapcmd.join(",",@bbox);
+    my @bbox = @_;
+    return -1  if $#bbox != 3 ;
+    
+    my $url = $getmapcmd.join(",",@bbox);
+    print "url = $url\n";
+    my $req = HTTP::Request->new(GET =>$url);
+    my $result = $ua->request($req);
+    print "Data is binnengehaald\n";
+    return -1 unless $result->code == 200;
+    return $result->content;
 }
 
 sub distance {
@@ -38,15 +44,15 @@ sub distance {
 #     else
 #         return the empty path
 sub reconstruct_path {
-  my $came_from = shift;
-  my $current_node = shift;
-  
-  my @path = ();  
-  if (defined($came_from->{$current_node})) {
-  @path = reconstruct_path($came_from,$came_from->{$current_node});
-  }
-  push @path,$current_node;
-  return  @path;
+    my $came_from = shift;
+    my $current_node = shift;
+    
+    my @path = ();  
+    if (defined($came_from->{$current_node})) {
+	@path = reconstruct_path($came_from,$came_from->{$current_node});
+    }
+    push @path,$current_node;
+    return  @path;
 }
 sub Astar {
     
@@ -178,7 +184,7 @@ sub shortest_path {
 	    }
 	}
 	$$nodes{$k}->{label}="permanent";
-    }while ($k!=$s && $k != 0);
+    } while ($k!=$s && $k != 0);
     
     $I=0;
     $k=$s;
@@ -198,10 +204,13 @@ sub print_path {
 	print "$p : ";
 	my @ws = @{$$nodes{$p}->{ways}};
 	for my $w (@ws) {
-	    my @tags = @{$$ways{$w}->{tag}};
-	    for my $t (@tags) {
-		print $t->{v}," " if ($t->{k} eq 'name') or ($t->{k} eq 'highway') or ($t->{k} eq 'maxspeed');
-	    }
+	    print $$ways{$w}->{tag}->{name}," " if defined($$ways{$w}->{tag}->{name});
+	    print $$ways{$w}->{tag}->{highway}," " if defined($$ways{$w}->{tag}->{highway});
+	    print $$ways{$w}->{tag}->{maxspeed}," " if defined($$ways{$w}->{tag}->{maxspeed});
+#	    my @tags = @{$$ways{$w}->{tag}};
+#	    for my $t (@tags) {
+#		print $t->{v}," " if ($t->{k} eq 'name') or ($t->{k} eq 'highway') or ($t->{k} eq 'maxspeed');
+#	    }
 	}
 	print "\n";
     }
@@ -209,21 +218,33 @@ sub print_path {
 
 sub usable_way {
     my $w = shift;
-    return 0 unless defined($w->{tag});
-    my @tags = @{$w->{tag}};
-    for my $t (@tags) {
-	return 1 if ($t->{k} eq 'highway');
-    }
-    return 0;
+#    return 0 unless defined($w->{tag});
+    return exists($w->{tag}->{highway});
+#    my @tags = @{$w->{tag}};
+#    for my $t (@tags) {
+#	return 1 if ($t->{k} eq 'highway');
+#    }
+#    return 0;
 }
 
 my %sources;
 
-print "Inlezen map.osm\n";
-my $doc = XMLin('map.osm', ForceArray=>['tag']);
-#open DUMP,">map.osm.txt";
-#print DUMP Dumper($doc);
-#close DUMP;
+my $arg = shift;
+my $doc;
+if (defined($arg) && ($arg eq "net")) {
+    my $data = getmapdata(@bbox);
+    die "Cannot connect\n" if $data eq "-1";
+    open MAP, ">newmap.osm";
+    print MAP $data;
+    close MAP;
+    $doc = XMLin('newmap.osm', ForceArray=>['tag'],KeyAttr=>{tag => 'k', way=>'id','node'=>'id',relation=>'id'},ContentKey => "-v");
+} else {
+    print "Inlezen map.osm\n";
+    $doc = XMLin('map.osm', ForceArray=>['tag'],KeyAttr=>{tag => 'k', way=>'id','node'=>'id',relation=>'id'},ContentKey => "-v");
+}
+open DUMP,">dump1.map.osm.txt";
+print DUMP Dumper($doc);
+close DUMP;
 
 $nodes = $doc->{node};
 $ways = $doc->{way};
@@ -253,6 +274,16 @@ foreach my $w (keys %$ways) {
     }
     push @{$$nodes{$n2}->{ways}},$w;
 }
+
+foreach my $n (keys %$nodes) {
+    delete $$nodes{$n} unless exists($$nodes{$n}->{ways});
+}
+
+
+open DUMP,">dump2.map.osm.txt";
+print DUMP Dumper($doc);
+close DUMP;
+
 #print Dumper($nodes);
 print "Initialisatie is klaar\n";
 
