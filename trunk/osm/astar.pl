@@ -309,7 +309,11 @@ foreach my $w (keys %$ways) {
     $oneway = "yes" if $oneway eq "true";
     $oneway = "yes" if $oneway eq "1";
     $oneway = "rev" if $oneway eq "-1";
-    $ways->{$w}->{oneway} = $oneway;
+    if ($oneway eq "no") {
+	delete $ways->{$w}->{oneway} if exists($ways->{$w}->{oneway});
+    } else {
+        $ways->{$w}->{oneway} = $oneway;
+    }
     
 #    print Dumper($ways->{$w}->{nd});
     $nrnodes = $#{$ways->{$w}->{nd}}+1;
