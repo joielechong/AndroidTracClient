@@ -80,12 +80,14 @@ sub reconstruct_path {
     push @path,$current_node;
     return  @path;
 }
+
 sub Astar {
     
     my $start = shift;
     my $goal  = shift;
     my $vehicle = shift;
-    $vehicle = 'car' unless defined($vehicle);
+    my $snelheid = defined($vehicle) ? $profiles{$vehicle}->{maxsnelheid} : 1;
+      
     
     my %closedset;
     my %openset;
@@ -167,61 +169,6 @@ sub Astar {
     }
 #     return failure
     return "foutje";
-}
-
-sub shortest_path {
-    my $n = shift;
-    my $s = shift;    #start node
-    my $t = shift;    #end node
-    
-    my ($I,$j,$k,$min);
-    my @path;
-    
-    for $k (keys %$nodes) {
-	$$nodes{$k}->{predecessor} = -1;
-	$$nodes{$k}->{length} = $infinity;
-	$$nodes{$k}->{label}='tentative';
-    }
-    $$nodes{$t}->{length} = 0;
-    $$nodes{$t}->{label}='permanent';
-    
-    my $k1;
-    $k = $t;
-    do {
-#	print "k=$k  loop1\n";
-	for $I (keys %{$dist->{$k}}) {
-#	    print "I=$I, k=$k  loop2\n";
-	    if ($$nodes{$I}->{label} eq 'tentative') {
-		$$nodes{$I}->{predecessor}=$k;
-		$$nodes{$I}->{length} = $$nodes{$k}->{length}+$dist->{$k}->{$I};
-#		print "     I=$I, k=$k, length=",$$nodes{$I}->{length},"\n";
-	    }
-	}
-#	print("I=$I, k=$k: ");
-#	for $j (sort keys %$nodes) {
-#	    printf("{%d %d %s}",$$nodes{$j}->{predecessor},$$nodes{$j}->{length},$$nodes{$j}->{label});
-#	}
-#	print("\n");
-	$k1=$k;
-	$k=0;
-	$min=$infinity;
-#	for $I (keys %{$dist->{$k1}}) {
-	for $I (keys %$nodes) {
-	    if ($$nodes{$I}->{label} eq "tentative" && $$nodes{$I}->{length} < $min) {
-		$min=$$nodes{$I}->{length};
-		$k=$I;
-	    }
-	}
-	$$nodes{$k}->{label}="permanent";
-    } while ($k!=$s && $k != 0);
-    
-    $I=0;
-    $k=$s;
-    do {
-	$path[$I++]=$k;
-	$k=$$nodes{$k}->{predecessor};
-    } while ($k gt '0');
-    return @path;
 }
 
 sub print_path {
