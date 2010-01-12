@@ -6,32 +6,8 @@ use Data::Dumper;
 use XML::Simple;
 use Geo::Distance;
 
-my %profiles = ('foot' =>    {allowed => ['footway','pedestrian','cycleway','service','residential','unclassified','tertiary','secondary','primary'],
-                              boete => [0,0,10,20,0,20,30,30,30],
-			      maxsnelheid => 5,
-			      oneway=>0},
-		'bicycle' => {allowed => ['cycleway','service','residential','unclassified','tertiary','secondary','primary'],
-                              boete => [0,20,0,20,30,30,30],
-			      maxsnelheid => 15,
-			      oneway => 1},
-		'car' =>      {allowed => ['service','residential','unclassified','tertiary','secondary','primary','motorway_link','motorway'],
-			       boete => [30,30,20,20,10,0,0,0],
-			       maxsnelheid => 160,
-			       oneway =>1}
-    );
-
-my %highways = (footway =>5,
-                pedestrian=>5,
-		cycleway=>15,
-		service=>30,
-		residential=>30,
-		unclassified=>50,
-		tertiary=>50,
-		secondary=>50,
-		primary=>50,
-		motorway_link=>100,
-		motorway=>120);
-
+my %highways;
+my %profiles;
 my $nodes;
 my $ways;
 my $dist;
@@ -81,12 +57,28 @@ sub reconstruct_path {
     return  @path;
 }
 
+sub calc_g_score {
+	my $x = shift;
+	my $y = shift;
+	my $vehicle = shift;
+	
+	return $dist->{$x}->{$y};# unless defined($vehicle);
+}
+
+sub calc_h_score {
+	my $x = shift;
+	my $y = shift;
+	my $vehicle = shift;
+	
+	return distance($x,$y);# unless defined($vehicle);
+}
+
 sub Astar {
     
     my $start = shift;
     my $goal  = shift;
     my $vehicle = shift;
-    my $snelheid = defined($vehicle) ? $profiles{$vehicle}->{maxsnelheid} : 1;
+    my $snelheid = (defined($vehicle) && exists($profiles{$vehicle}->{maxspeed})) ? $profiles{$vehicle}->{maxspeed} : 1;
     
     my %closedset;
     my %openset;
@@ -107,7 +99,7 @@ sub Astar {
 #     f_score[start] := h_score[start]           % Estimated total distance from start to goal through y.
     
     $g_score{$start} = 0;
-    $f_score{$start} = $h_score{$start} = distance($start,$goal);
+    $f_score{$start} = $h_score{$start} = calc_h_score($start,$goal,$vehicle);
     
 #     while openset is not empty
     while (keys(%openset) != 0) {
@@ -134,7 +126,7 @@ sub Astar {
 #                 continue
 	    next if (defined($closedset{$y}));
 #             tentative_g_score := g_score[x] + dist_between(x,y)
-	    my $tentative_g_score = $g_score{$x} + $dist->{$x}->{$y};
+	    my $tentative_g_score = $g_score{$x} + calc_g_score($x,$y,$vehicle);
 # 
 #             if y not in openset
 #                 add y to openset
@@ -157,11 +149,11 @@ sub Astar {
 #                 came_from[y] := x
 #                 g_score[y] := tentative_g_score
 #                 h_score[y] := heuristic_estimate_of_distance(y, goal)
-#                 f_score[y] := g_score[y] + h_score[y]
+#                 f_score[y] := g_score[y] r+ h_score[y]
 	    if ($tentative_is_better) {
 		$came_from{$y} = $x;
 		$g_score{$y} = $tentative_g_score;
-		$h_score{$y} = distance($y,$goal);
+		$h_score{$y} = calc_h_score($y,$goal);
 		$f_score{$y} = $g_score{$y}+$h_score{$y};
 	    }
 	}
@@ -228,6 +220,12 @@ my %sources;
 
 my $arg = shift;
 my $doc;
+
+my $conf = XMLin('astarconf.xml',ForceArray=>['highway','profile'],KeyAttr=>{profile=>'name',highway=>'name'});
+#print Dumper($conf);
+%profiles=%{${$$conf{profiles}}{profile}};
+%highways=%{${$$conf{highways}}{highway}};
+
 if (defined($arg) && ($arg eq "net")) {
     my $data = getmapdata(@bbox);
     die "Cannot connect\n" if $data eq "-1";
@@ -294,13 +292,13 @@ close DUMP;
 #print Dumper($nodes);
 print "Initialisatie is klaar\n";
 
-print_path(Astar('46071276','294062118'));
+#print_path(Astar('46071276','294062118'));
 print_path(Astar('46070723','294062118','foot'));
 print_path(Astar('46070723','294062118','car'));
 print_path(Astar('46070723','294062118','bicycle'));
-print_path(Astar('46071276','294062059'));
-print_path(Astar('46071276','46051999'));
-print_path(Astar('46070723','46051999'));
-print_path(Astar('46070723','46026341'));
-print_path(Astar('46071276','46026341'));
-print_path(Astar('46071276','289899699'));
+#print_path(Astar('46071276','294062059'));
+#print_path(Astar('46071276','46051999'));
+#print_path(Astar('46070723','46051999'));
+#print_path(Astar('46070723','46026341'));
+#print_path(Astar('46071276','46026341'));
+#print_path(Astar('46071276','289899699'));
