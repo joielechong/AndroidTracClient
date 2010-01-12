@@ -19,12 +19,12 @@
 		<highway name="steps" speed="5"/>
 		<highway name="tertiary" speed="50"/>
 		<highway name="track" speed="15"/>
-		<highway name="traffic_signals" extracost="20"/>
+		<highway name="traffic_signals" extracost="30"/>
 		<highway name="turning_circle"/>
 		<highway name="unclassified" speed="50"/>
 	</highways>
 	<profiles>
-		<profile name="foot" maxspeed="5" ignore_oneway="1">
+		<profile name="foot" maxspeed="4" ignore_oneway="1">
 			<allowed highway="footway" extracost="0" />
 			<allowed highway="pedestrian" extracost="0" />
 			<allowed highway="path" extracost="0" />
@@ -39,7 +39,7 @@
 			<allowed highway="secondary" extracost="30" />
 			<allowed highway="tertiary" extracost="30" />
 		</profile>
-		<profile name="bicycle" maxspeed="15" ignore_oneway="0">
+		<profile name="bicycle" maxspeed="12" ignore_oneway="0">
 			<allowed highway="track" extracost="5" />
 			<allowed highway="cycleway" extracost="0" />
 			<allowed highway="residential" extracost="0" />
