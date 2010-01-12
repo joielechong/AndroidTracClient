@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<astar>
+"highway" v="bus_stop"/>
+"highway" v="crossing"/>
+"highway" v="cycleway"/>
+"highway" v="footway"/>
+"highway" v="living_street"/>
+"highway" v="motorway"/>
+"highway" v="motorway_junction"/>
+"highway" v="motorway_link"/>
+"highway" v="path"/>
+"highway" v="pedestrian"/>
+"highway" v="primary"/>
+"highway" v="residential"/>
+"highway" v="secondary"/>
+"highway" v="service"/>
+"highway" v="services"/>
+"highway" v="steps"/>
+"highway" v="tertiary"/>
+"highway" v="track"/>
+"highway" v="traffic_signals"/>
+"highway" v="turning_circle"/>
+"highway" v="unclassified"/>
+</astar>
