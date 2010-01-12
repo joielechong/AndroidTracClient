@@ -15,11 +15,11 @@ my %profiles = ('foot' =>    {allowed => ['footway','pedestrian','cycleway','ser
 			      maxsnelheid => 15,
 			      oneway => 1},
 		'car' =>      {allowed => ['service','residential','unclassified','tertiary','secondary','primary','motorway_link','motorway'],
-                              boete => [30,30,20,20,10,0,0,0],
-			      maxsnelheid => 160,
-			      oneway =>1}
-	       );
-			   
+			       boete => [30,30,20,20,10,0,0,0],
+			       maxsnelheid => 160,
+			       oneway =>1}
+    );
+
 my %highways = (footway =>5,
                 pedestrian=>5,
 		cycleway=>15,
@@ -87,7 +87,6 @@ sub Astar {
     my $goal  = shift;
     my $vehicle = shift;
     my $snelheid = defined($vehicle) ? $profiles{$vehicle}->{maxsnelheid} : 1;
-      
     
     my %closedset;
     my %openset;
@@ -199,8 +198,8 @@ sub print_path {
 		    for my $w1 (@ws) {
 		        for my $w2 (@ws1) {
 			    if ($w1==$w2) {
-			      $w=$w1;
-			      last;
+				$w=$w1;
+				last;
 			    }
 			}
 			last if defined($w);
