@@ -58,6 +58,21 @@ sub reconstruct_path {
     return  @path;
 }
 
+sub wrong_direction {
+	my ($x,$y,$w,$onew) = @_;
+	my @nd = @{$$ways{$w}{nd}};
+	
+	foreach my $n (@nd) {
+	    if ($n->{ref} == $y) {
+	        return ($onew ne "rev");
+	    }
+	    if ($n->{ref} == $x) {
+	        return ($onew eq "rev");
+	    }
+	}
+	die "nodes not found in wrong direction $x $y $w\n";
+}
+
 sub calc_g_score {
 	my $x = shift;
 	my $y = shift;
@@ -78,7 +93,34 @@ sub calc_g_score {
 	my $cost = $d * 3.6 / $speed;
 	my $extracost = $profiles{$vehicle}->{allowed}->{$hw}->{extracost};
 	$extracost = 0 unless defined $extracost;
-	$extracost = 0 if (($vehicle eq "bicycle") and (defined($$ways{$w}->{tag}->{cycleway})));
+	if ($vehicle eq "foot") {
+	if (defined($$nodes{$y}->{highway}) and $$nodes{$y}->{highway} eq 'traffic_signals') {
+	    $extracost += $highways{$$nodes{$y}->{highway}};
+	}
+	}
+	my $onew = $$ways{$w}->{tag}->{oneway};
+	if ($vehicle eq "bicycle") {
+	    my $cw = $$ways{$w}->{tag}->{cycleway};
+	    $extracost = 0 if defined($cw);
+	      if (defined($onew)) {
+	        if (!defined($cw) or $cw ne "opposite") {
+	           return $infinity if wrong_direction($x,$y,$w,$onew);
+		}
+              }
+	if (defined($$nodes{$y}->{highway})) {
+	    $extracost += $highways{$$nodes{$y}->{highway}};
+	}
+	}
+	if ($vehicle eq "car") {
+	    $extracost += 10 if defined($$nodes{$y}->{traffic_calming});
+	    return $infinity if defined($onew) and wrong_direction($x,$y,$w,$onew);
+	if (defined($$nodes{$y}->{highway})) {
+	    $extracost += $highways{$$nodes{$y}->{highway}};
+	}
+	}
+	if (defined($$nodes{$y}->{highway})) {
+	    $extracost += $highways{$$nodes{$y}->{highway}};
+	}
 #	print "$x $y $cost $extracost\n";
 	return $cost + $extracost;
 }
@@ -97,7 +139,6 @@ sub Astar {
     my $start = shift;
     my $goal  = shift;
     my $vehicle = shift;
-    my $snelheid = (defined($vehicle) && exists($profiles{$vehicle}->{maxspeed})) ? $profiles{$vehicle}->{maxspeed} : 1;
     
     my %closedset;
     my %openset;
@@ -139,6 +180,7 @@ sub Astar {
 	delete($openset{$x});
 #         add x to closedset
 	$closedset{$x} = 1;
+#	print "close $x\n";
 #         foreach y in neighbor_nodes(x)
 	for my $y (keys(%{$$dist{$x}})) {
 #             if y in closedset
@@ -172,9 +214,10 @@ sub Astar {
 	    if ($tentative_is_better) {
 		$came_from{$y} = $x;
 		$g_score{$y} = $tentative_g_score;
-		$h_score{$y} = calc_h_score($y,$goal);
+		$h_score{$y} = calc_h_score($y,$goal,$vehicle);
 		$f_score{$y} = $g_score{$y}+$h_score{$y};
 #		print "$x $y ",$g_score{$y}," ",$h_score{$y}," ",$f_score{$y},"\n";
+#		print "openset=",join(", ",keys(%openset)),"\n";
 	    }
 	}
     }
@@ -305,4 +348,7 @@ print_path(Astar('46070723','294062118','car'));
 #print_path(Astar('46070723','46051999'));
 #print_path(Astar('46070723','46026341'));
 #print_path(Astar('46071276','46026341'));
-#print_path(Astar('46071276','289899699'));
+print_path(Astar('46071276','289899699'));
+print_path(Astar('46071276','289899699','foot'));
+print_path(Astar('46071276','289899699','bicycle'));
+print_path(Astar('46071276','289899699','car'));
