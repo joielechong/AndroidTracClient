@@ -11,6 +11,7 @@ my %profiles;
 my $nodes;
 my $ways;
 my $dist;
+my $way;
 my $infinity = 9999999999;
 
 my @bbox = (4.83,52.28,4.88,52.31);
@@ -62,7 +63,24 @@ sub calc_g_score {
 	my $y = shift;
 	my $vehicle = shift;
 	
-	return $dist->{$x}->{$y};# unless defined($vehicle);
+	my $d = $dist->{$x}->{$y};
+	return $d unless defined($vehicle);
+	my $speed = $profiles{$vehicle}->{maxspeed};
+	my $w = $way->{$x}->{$y};
+	my $hw = $$ways{$w}->{tag}->{highway};
+	return $infinity unless defined $profiles{$vehicle}->{allowed}->{$hw};
+	if (defined($$ways{$w}->{maxspeed})) {
+	    $speed = $$ways{$w}->{maxspeed} if $$ways{$w}->{maxspeed} < $speed;
+	} else {
+	    my $defspeed = $highways{$hw}->{speed};
+	    $speed = $defspeed if $defspeed < $speed;
+	}
+	my $cost = $d * 3.6 / $speed;
+	my $extracost = $profiles{$vehicle}->{allowed}->{$hw}->{extracost};
+	$extracost = 0 unless defined $extracost;
+	$extracost = 0 if (($vehicle eq "bicycle") and (defined($$ways{$w}->{tag}->{cycleway})));
+#	print "$x $y $cost $extracost\n";
+	return $cost + $extracost;
 }
 
 sub calc_h_score {
@@ -70,7 +88,8 @@ sub calc_h_score {
 	my $y = shift;
 	my $vehicle = shift;
 	
-	return distance($x,$y);# unless defined($vehicle);
+	my $d=distance($x,$y);
+	return defined($vehicle) ? $d *3.6/$profiles{$vehicle}->{maxspeed} : $d;
 }
 
 sub Astar {
@@ -155,6 +174,7 @@ sub Astar {
 		$g_score{$y} = $tentative_g_score;
 		$h_score{$y} = calc_h_score($y,$goal);
 		$f_score{$y} = $g_score{$y}+$h_score{$y};
+#		print "$x $y ",$g_score{$y}," ",$h_score{$y}," ",$f_score{$y},"\n";
 	    }
 	}
     }
@@ -176,27 +196,8 @@ sub print_path {
 	if ($#ws == 0) {
 	    $w = $ws[0];
 	} else {
-	    if (defined($oldp)) {  
-	        if (defined($oldw)) {
-	            for my $w1 (@ws) {
-		        if ($w1==$oldw) {
-			    $w=$w1;
-			    last;
-			}
-	            }
-		}
-		unless (defined($w)) {
-	            my @ws1 = @{$$nodes{$oldp}->{ways}};
-		    for my $w1 (@ws) {
-		        for my $w2 (@ws1) {
-			    if ($w1==$w2) {
-				$w=$w1;
-				last;
-			    }
-			}
-			last if defined($w);
-		    }
-		}
+	    if (defined($oldp)) {
+	        $w=$way->{$oldp}->{$p};
 	    }
 	}
 	if (defined($w)) {
@@ -221,7 +222,7 @@ my %sources;
 my $arg = shift;
 my $doc;
 
-my $conf = XMLin('astarconf.xml',ForceArray=>['highway','profile'],KeyAttr=>{profile=>'name',highway=>'name'});
+my $conf = XMLin('astarconf.xml',ForceArray=>['highway','profile'],KeyAttr=>{allowed=>'highway',profile=>'name',highway=>'name'});
 #print Dumper($conf);
 %profiles=%{${$$conf{profiles}}{profile}};
 %highways=%{${$$conf{highways}}{highway}};
@@ -273,6 +274,8 @@ foreach my $w (keys %$ways) {
 #	print "$w :".$$nodes{$n1}->{lon}.",".$$nodes{$n1}->{lat}." ".$$nodes{$n2}->{lon}.",".$$nodes{$n2}->{lat}." $distance\n";
 	$dist->{$n1}->{$n2}=$distance;
 	$dist->{$n2}->{$n1}=$distance;
+	$way->{$n1}->{$n2}=$w;
+	$way->{$n2}->{$n1}=$w;
 	$$nodes{$n1}->{ways} = () if (!defined($$nodes{$n1}));
 	$$nodes{$n2}->{ways} = () if (!defined($$nodes{$n2}));
 	push @{$$nodes{$n1}->{ways}},$w;
@@ -293,9 +296,10 @@ close DUMP;
 print "Initialisatie is klaar\n";
 
 #print_path(Astar('46071276','294062118'));
+print_path(Astar('46070723','294062118'));
 print_path(Astar('46070723','294062118','foot'));
-print_path(Astar('46070723','294062118','car'));
 print_path(Astar('46070723','294062118','bicycle'));
+print_path(Astar('46070723','294062118','car'));
 #print_path(Astar('46071276','294062059'));
 #print_path(Astar('46071276','46051999'));
 #print_path(Astar('46070723','46051999'));
