@@ -85,7 +85,9 @@ sub calc_g_score {
     my $hw = $$ways{$w}->{tag}->{highway};
     my $cw = $$ways{$w}->{tag}->{cycleway};
     my $fa = $$ways{$w}->{tag}->{foot};
-    return $infinity unless defined $profiles{$vehicle}->{allowed}->{$hw};
+    my $onew = $$ways{$w}->{tag}->{oneway};
+    return $infinity unless (defined $profiles{$vehicle}->{allowed}->{$hw}) or (defined($fa) and $vehicle eq "foot") or (defined($cw) and $vehicle eq "bicycle");
+
     if (defined($$ways{$w}->{maxspeed})) {
 	$speed = $$ways{$w}->{maxspeed} if $$ways{$w}->{maxspeed} < $speed;
     } else {
@@ -95,12 +97,12 @@ sub calc_g_score {
     my $cost = $d * 3.6 / $speed;
     my $extracost = $profiles{$vehicle}->{allowed}->{$hw}->{extracost};
     $extracost = 0 unless defined $extracost;
+
     if ($vehicle eq "foot") {
 	if (defined($$nodes{$y}->{highway}) and $$nodes{$y}->{highway} eq 'traffic_signals') {
 	    $extracost += $highways{$$nodes{$y}->{highway}};
 	}
     }
-    my $onew = $$ways{$w}->{tag}->{oneway};
     if ($vehicle eq "bicycle") {
 	$extracost = 0 if defined($cw);
 	if (defined($onew)) {
@@ -112,6 +114,7 @@ sub calc_g_score {
 	    $extracost += $highways{$$nodes{$y}->{highway}};
 	}
     }
+
     if ($vehicle eq "car") {
 	$extracost += 10 if defined($$nodes{$y}->{traffic_calming});
 	return $infinity if defined($onew) and wrong_direction($x,$y,$w,$onew);
@@ -119,6 +122,7 @@ sub calc_g_score {
 	    $extracost += $highways{$$nodes{$y}->{highway}};
 	}
     }
+
     if (defined($$nodes{$y}->{highway})) {
 	$extracost += $highways{$$nodes{$y}->{highway}};
     }
