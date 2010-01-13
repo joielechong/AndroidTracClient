@@ -44,7 +44,7 @@
 			<allowed highway="cycleway" extracost="0" />
 			<allowed highway="residential" extracost="0" />
 			<allowed highway="living_street" extracost="0" />
-			<allowed highway="unclassified" extracost="0" />
+			<allowed highway="unclassified" extracost="5" />
 			<allowed highway="service" extracost="10" />
 			<allowed highway="primary" extracost="30" />
 			<allowed highway="secondary" extracost="30" />
