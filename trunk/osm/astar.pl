@@ -59,80 +59,80 @@ sub reconstruct_path {
 }
 
 sub wrong_direction {
-	my ($x,$y,$w,$onew) = @_;
-	my @nd = @{$$ways{$w}{nd}};
-	
-	foreach my $n (@nd) {
-	    if ($n->{ref} == $y) {
-	        return ($onew ne "rev");
-	    }
-	    if ($n->{ref} == $x) {
-	        return ($onew eq "rev");
-	    }
+    my ($x,$y,$w,$onew) = @_;
+    my @nd = @{$$ways{$w}{nd}};
+    
+    foreach my $n (@nd) {
+	if ($n->{ref} == $y) {
+	    return ($onew ne "rev");
 	}
-	die "nodes not found in wrong direction $x $y $w\n";
+	if ($n->{ref} == $x) {
+	    return ($onew eq "rev");
+	}
+    }
+    die "nodes not found in wrong direction $x $y $w\n";
 }
 
 sub calc_g_score {
-	my $x = shift;
-	my $y = shift;
-	my $vehicle = shift;
-	
-	my $d = $dist->{$x}->{$y};
-	return $d unless defined($vehicle);
-	my $speed = $profiles{$vehicle}->{maxspeed};
-	my $w = $way->{$x}->{$y};
-	my $hw = $$ways{$w}->{tag}->{highway};
-	    my $cw = $$ways{$w}->{tag}->{cycleway};
-	    my $fa = $$ways{$w}->{tag}->{foot};
-	return $infinity unless defined $profiles{$vehicle}->{allowed}->{$hw};
-	if (defined($$ways{$w}->{maxspeed})) {
-	    $speed = $$ways{$w}->{maxspeed} if $$ways{$w}->{maxspeed} < $speed;
-	} else {
-	    my $defspeed = $highways{$hw}->{speed};
-	    $speed = $defspeed if $defspeed < $speed;
-	}
-	my $cost = $d * 3.6 / $speed;
-	my $extracost = $profiles{$vehicle}->{allowed}->{$hw}->{extracost};
-	$extracost = 0 unless defined $extracost;
-	if ($vehicle eq "foot") { htt
-	if (defined($$nodes{$y}->{highway}) and $$nodes{$y}->{highway} eq 'traffic_signals') {
-	    $extracost += $highways{$$nodes{$y}->{highway}};
-	}
-	}
-	my $onew = $$ways{$w}->{tag}->{oneway};
-	if ($vehicle eq "bicycle") {
-	    $extracost = 0 if defined($cw);
-	      if (defined($onew)) {
-	        if (!defined($cw) or $cw ne "opposite") {
-	           return $infinity if wrong_direction($x,$y,$w,$onew);
-		}
-              }
-	if (defined($$nodes{$y}->{highway})) {
-	    $extracost += $highways{$$nodes{$y}->{highway}};
-	}
-	}
-	if ($vehicle eq "car") {
-	    $extracost += 10 if defined($$nodes{$y}->{traffic_calming});
-	    return $infinity if defined($onew) and wrong_direction($x,$y,$w,$onew);
-	if (defined($$nodes{$y}->{highway})) {
-	    $extracost += $highways{$$nodes{$y}->{highway}};
-	}
+    my $x = shift;
+    my $y = shift;
+    my $vehicle = shift;
+    
+    my $d = $dist->{$x}->{$y};
+    return $d unless defined($vehicle);
+    my $speed = $profiles{$vehicle}->{maxspeed};
+    my $w = $way->{$x}->{$y};
+    my $hw = $$ways{$w}->{tag}->{highway};
+    my $cw = $$ways{$w}->{tag}->{cycleway};
+    my $fa = $$ways{$w}->{tag}->{foot};
+    return $infinity unless defined $profiles{$vehicle}->{allowed}->{$hw};
+    if (defined($$ways{$w}->{maxspeed})) {
+	$speed = $$ways{$w}->{maxspeed} if $$ways{$w}->{maxspeed} < $speed;
+    } else {
+	my $defspeed = $highways{$hw}->{speed};
+	$speed = $defspeed if $defspeed < $speed;
+    }
+    my $cost = $d * 3.6 / $speed;
+    my $extracost = $profiles{$vehicle}->{allowed}->{$hw}->{extracost};
+    $extracost = 0 unless defined $extracost;
+    if ($vehicle eq "foot") { htt
+				  if (defined($$nodes{$y}->{highway}) and $$nodes{$y}->{highway} eq 'traffic_signals') {
+				      $extracost += $highways{$$nodes{$y}->{highway}};
+			      }
+    }
+    my $onew = $$ways{$w}->{tag}->{oneway};
+    if ($vehicle eq "bicycle") {
+	$extracost = 0 if defined($cw);
+	if (defined($onew)) {
+	    if (!defined($cw) or $cw ne "opposite") {
+		return $infinity if wrong_direction($x,$y,$w,$onew);
+	    }
 	}
 	if (defined($$nodes{$y}->{highway})) {
 	    $extracost += $highways{$$nodes{$y}->{highway}};
 	}
+    }
+    if ($vehicle eq "car") {
+	$extracost += 10 if defined($$nodes{$y}->{traffic_calming});
+	return $infinity if defined($onew) and wrong_direction($x,$y,$w,$onew);
+	if (defined($$nodes{$y}->{highway})) {
+	    $extracost += $highways{$$nodes{$y}->{highway}};
+	}
+    }
+    if (defined($$nodes{$y}->{highway})) {
+	$extracost += $highways{$$nodes{$y}->{highway}};
+    }
 #	print "$x $y $cost $extracost\n";
-	return $cost + $extracost;
+    return $cost + $extracost;
 }
 
 sub calc_h_score {
-	my $x = shift;
-	my $y = shift;
-	my $vehicle = shift;
-	
-	my $d=distance($x,$y);
-	return defined($vehicle) ? $d *3.6/$profiles{$vehicle}->{maxspeed} : $d;
+    my $x = shift;
+    my $y = shift;
+    my $vehicle = shift;
+    
+    my $d=distance($x,$y);
+    return defined($vehicle) ? $d *3.6/$profiles{$vehicle}->{maxspeed} : $d;
 }
 
 sub Astar {
