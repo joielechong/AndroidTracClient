@@ -96,9 +96,9 @@ sub calc_g_score {
     my $extracost = $profiles{$vehicle}->{allowed}->{$hw}->{extracost};
     $extracost = 0 unless defined $extracost;
     if ($vehicle eq "foot") {
-				  if (defined($$nodes{$y}->{highway}) and $$nodes{$y}->{highway} eq 'traffic_signals') {
-				      $extracost += $highways{$$nodes{$y}->{highway}};
-			      }
+	if (defined($$nodes{$y}->{highway}) and $$nodes{$y}->{highway} eq 'traffic_signals') {
+	    $extracost += $highways{$$nodes{$y}->{highway}};
+	}
     }
     my $onew = $$ways{$w}->{tag}->{oneway};
     if ($vehicle eq "bicycle") {
