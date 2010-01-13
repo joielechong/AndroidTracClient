@@ -95,7 +95,7 @@ sub calc_g_score {
     my $cost = $d * 3.6 / $speed;
     my $extracost = $profiles{$vehicle}->{allowed}->{$hw}->{extracost};
     $extracost = 0 unless defined $extracost;
-    if ($vehicle eq "foot") { htt
+    if ($vehicle eq "foot") {
 				  if (defined($$nodes{$y}->{highway}) and $$nodes{$y}->{highway} eq 'traffic_signals') {
 				      $extracost += $highways{$$nodes{$y}->{highway}};
 			      }
