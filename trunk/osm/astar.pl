@@ -179,6 +179,7 @@ sub Astar {
 #             return reconstruct_path(came_from,goal)
 	if ($x == $goal) {
 	    my @p = reconstruct_path(\%came_from,$goal);
+	    print Dumper \%h_score;
 	    return @p;
 	}
 #         remove x from openset
@@ -347,12 +348,12 @@ print "Initialisatie is klaar\n";
 print_path(Astar('46070723','294062118'));
 print_path(Astar('46070723','294062118','foot'));
 print_path(Astar('46070723','294062118','bicycle'));
-print_path(Astar('46070723','294062118','car'));
-#print_path(Astar('46071276','294062059'));
 #print_path(Astar('46071276','46051999'));
 #print_path(Astar('46070723','46051999'));
-print_path(Astar('46070723','46026341','bicycle'));
-print_path(Astar('46071276','46026341','car'));
+#print_path(Astar('46070723','46026341','bicycle'));
+#print_path(Astar('46071276','46026341','car'));
+#print_path(Astar('46070723','294062118','car'));
+#print_path(Astar('46070723','294062118','car'));
 #print_path(Astar('46071276','289899699'));
 #print_path(Astar('46071276','289899699','foot'));
 #print_path(Astar('46071276','289899699','bicycle'));
