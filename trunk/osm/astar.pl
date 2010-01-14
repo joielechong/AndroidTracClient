@@ -181,7 +181,7 @@ sub Astar {
 #             return reconstruct_path(came_from,goal)
 	if ($x == $goal or $d_score{$x}<10) {
 	    my @p = reconstruct_path(\%came_from,$x);
-	    print Dumper \%d_score;
+#	    print Dumper \%d_score;
 	    return @p;
 	}
 #         remove x from openset
