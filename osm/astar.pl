@@ -150,6 +150,7 @@ sub Astar {
     my %g_score;
     my %h_score;
     my %f_score;
+    my %d_score;
     my %came_from;
     
     return "foutje" unless defined($$nodes{$start}) and defined($$nodes{$goal});
@@ -165,6 +166,7 @@ sub Astar {
     
     $g_score{$start} = 0;
     $f_score{$start} = $h_score{$start} = calc_h_score($start,$goal,$vehicle);
+    $d_score{$start} = distance($start,$goal);
     
 #     while openset is not empty
     while (keys(%openset) != 0) {
@@ -177,9 +179,9 @@ sub Astar {
 	}
 #         if x = goal
 #             return reconstruct_path(came_from,goal)
-	if ($x == $goal) {
-	    my @p = reconstruct_path(\%came_from,$goal);
-	    print Dumper \%h_score;
+	if ($x == $goal or $d_score{$x}<10) {
+	    my @p = reconstruct_path(\%came_from,$x);
+	    print Dumper \%d_score;
 	    return @p;
 	}
 #         remove x from openset
@@ -221,6 +223,7 @@ sub Astar {
 		$came_from{$y} = $x;
 		$g_score{$y} = $tentative_g_score;
 		$h_score{$y} = calc_h_score($y,$goal,$vehicle);
+		$d_score{$y} = distance($y,$goal);
 		$f_score{$y} = $g_score{$y}+$h_score{$y};
 #		print "$x $y ",$g_score{$y}," ",$h_score{$y}," ",$f_score{$y},"\n";
 #		print "openset=",join(", ",keys(%openset)),"\n";
@@ -354,7 +357,7 @@ print_path(Astar('46070723','294062118','bicycle'));
 #print_path(Astar('46071276','46026341','car'));
 #print_path(Astar('46070723','294062118','car'));
 #print_path(Astar('46070723','294062118','car'));
-#print_path(Astar('46071276','289899699'));
-#print_path(Astar('46071276','289899699','foot'));
-#print_path(Astar('46071276','289899699','bicycle'));
-#print_path(Astar('46071276','289899699','car'));
+print_path(Astar('46071276','289899699'));
+print_path(Astar('46071276','289899699','foot'));
+print_path(Astar('46071276','289899699','bicycle'));
+print_path(Astar('46071276','289899699','car'));
