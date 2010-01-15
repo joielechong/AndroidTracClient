@@ -79,6 +79,7 @@ sub calc_g_score {
     my $vehicle = shift;
     
     my $d = $dist->{$x}->{$y};
+    $d = $dist->{x}->{$y} = $dist->{$y}->{$x} = distance($x,$y) unless defined($d);
     return $d unless defined($vehicle);
     my $speed = $profiles{$vehicle}->{maxspeed};
     my $w = $way->{$x}->{$y};
@@ -86,6 +87,9 @@ sub calc_g_score {
     my $cw = $$ways{$w}->{tag}->{cycleway};
     my $fa = $$ways{$w}->{tag}->{foot};
     my $onew = $$ways{$w}->{tag}->{oneway};
+    my $access = $$ways{$w}->{tag}->{access};
+    return $infinity if $vehicle eq "foot" and defined($fa) and $fa eq "no";
+    return $infinity if defined($access) and $access eq "no";
     return $infinity unless (defined $profiles{$vehicle}->{allowed}->{$hw}) or (defined($fa) and $vehicle eq "foot") or (defined($cw) and $vehicle eq "bicycle");
 
     if (defined($$ways{$w}->{maxspeed})) {
@@ -127,7 +131,7 @@ sub calc_g_score {
 	$extracost += $highways{$$nodes{$y}->{highway}};
     }
 #	print "$x $y $cost $extracost\n";
-    return $cost + $extracost;
+    return $cost * (100.0 +$extracost)/100.0;
 }
 
 sub calc_h_score {
@@ -190,7 +194,7 @@ sub Astar {
 	$closedset{$x} = 1;
 #	print "close $x\n";
 #         foreach y in neighbor_nodes(x)
-	for my $y (keys(%{$$dist{$x}})) {
+	for my $y (keys(%{$$way{$x}})) {
 #             if y in closedset
 #                 continue
 	    next if (defined($closedset{$y}));
@@ -275,7 +279,7 @@ my $arg = shift;
 my $doc;
 
 my $conf = XMLin('astarconf.xml',ForceArray=>['highway','profile'],KeyAttr=>{allowed=>'highway',profile=>'name',highway=>'name'});
-#print Dumper($conf);
+print Dumper($conf);
 %profiles=%{${$$conf{profiles}}{profile}};
 %highways=%{${$$conf{highways}}{highway}};
 
