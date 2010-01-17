@@ -48,7 +48,7 @@ sub Astar {
     
 #    return "foutje" unless defined($$nodes{$start}) and defined($$nodes{$goal});
     return "foutje" unless defined($map->node($start)) and defined($map->node($goal));
-
+    
     
     $map->setVehicle($vehicle);
     
