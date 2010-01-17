@@ -4,12 +4,7 @@ use strict;
 
 use OSM::Map;
 
-use LWP::UserAgent;
 use Data::Dumper;
-use XML::Simple;
-use Geo::Distance;
-
-$XML::Simple::PREFERRED_PARSER = "XML::Parser";
 
 my @bbox = (4.83,52.28,4.88,52.31);
 
@@ -143,7 +138,7 @@ sub print_path {
     for my $p (@p1) {
         my $w;
 	print "$p -> ";
-	my @ws = @{$map->node($p)->{ways}};
+	my @ws = $map->getways($p);
 	if ($#ws == 0) {
 	    $w = $ws[0];
 	} else {
