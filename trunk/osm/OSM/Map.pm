@@ -14,17 +14,19 @@
 
     my $getmapcmd;
     my $infinity;
+    my $geo;
+    my $ua;
     
     BEGIN  {
         $OSM::Map::VERSION = "0.1";
         $XML::Simple::PREFERRED_PARSER = "XML::Parser";
         $getmapcmd ="http://api.openstreetmap.org/api/0.6/map?bbox=";
         $infinity = 9999999999;
+        $geo=new Geo::Distance;
+        $ua = LWP::UserAgent->new;
     }
 
     my $vehicle;
-    my $geo;
-    my $ua;
     my %highways;
     my %profiles;
     my $nodes;
@@ -69,8 +71,6 @@
 #        print Dumper($conf);
         %profiles=%{${$$conf{profiles}}{profile}};
         %highways=%{${$$conf{highways}}{highway}};
-        $geo=new Geo::Distance;
-        $ua = LWP::UserAgent->new;
     }
     
     sub usable_way {
