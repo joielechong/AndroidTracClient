@@ -3,15 +3,15 @@
     
     use strict;
     use vars qw(@ISA $VERSION);
-
+    
     use LWP::UserAgent;
     use Data::Dumper;
     use XML::Simple;
     use Geo::Distance;
-
+    
     require Exporter;
     @ISA = qw(Exporter);
-
+    
     my $getmapcmd;
     my $infinity;
     my $geo;
@@ -25,7 +25,7 @@
         $geo=new Geo::Distance;
         $ua = LWP::UserAgent->new;
     }
-
+    
     my $vehicle;
     my %highways;
     my %profiles;
@@ -50,7 +50,7 @@
 	my $n = shift;
 	return $$ways{$n};
     }
-
+    
     sub new {
         my $this = shift;
 	my $conffile = shift;
@@ -63,7 +63,7 @@
     
     sub initialize {
         my $self = shift;
-
+	
 	my $conffile = shift;
 	$conffile = "astarconf.xml" unless defined $conffile;
 	
@@ -77,7 +77,7 @@
         my $w = shift;
         return exists($w->{tag}->{highway});
     }
-
+    
     sub distance {
         my $self = shift;
         my $n1 = shift;
@@ -93,7 +93,7 @@
         $ways = $doc->{way};
 #print Dumper($ways);
         my $nrnodes;
-
+	
         print "Start met initialiseren\n";
         foreach my $w (keys %$ways) {
             unless (usable_way($ways->{$w})) {
@@ -110,7 +110,7 @@
             } else {
                 $ways->{$w}->{tag}->{oneway} = $oneway;
             }
-    
+	    
 #    print Dumper($ways->{$w}->{nd});
             $nrnodes = $#{$ways->{$w}->{nd}}+1;
             my ($n1,$n2);
@@ -125,13 +125,13 @@
             }
             push @{$$nodes{$n2}->{ways}},$w;
         }
-
+	
         foreach my $n (keys %$nodes) {
             delete $$nodes{$n} unless exists($$nodes{$n}->{ways});
         } 
     }
     
-
+    
     sub loadOSMdata {
         my $this = shift;
 	my $data = shift;
@@ -145,12 +145,12 @@
 	my $doc = $this->loadOSMdata($filename);
         $this->procesdata($doc);
     }
-
+    
     sub useNetdata {
         my $this =  shift;
 	my @bbox = @_;
         return -1  if $#bbox != 3 ;
-    
+	
         my $url = $getmapcmd.join(",",@bbox);
         print "url = $url\n";
         my $req = HTTP::Request->new(GET =>$url);
@@ -160,92 +160,92 @@
 	my $doc = $this->loadOSMdata($result->content);
         $this->procesdata($doc);
     }
-
+    
     sub calc_h_score {
         my $self = shift;
         my $x = shift;
         my $y = shift;
-    
+	
         my $d=$self->distance($x,$y);
         return defined($vehicle) ? $d *3.6/$profiles{$vehicle}->{maxspeed} : $d;
     }
-
-sub wrong_direction {
-    my ($self,$x,$y,$w,$onew) = @_;
-    my @nd = @{$$ways{$w}{nd}};
     
-    foreach my $n (@nd) {
-	if ($n->{ref} == $y) {
-	    return ($onew ne "rev");
-	}
-	if ($n->{ref} == $x) {
-	    return ($onew eq "rev");
-	}
-    }
-    die "nodes not found in wrong direction $x $y $w\n";
-}
-
-sub cost {
-    my $self=shift;
-    my $x = shift;
-    my $y = shift;
-    
-    my $d = $dist->{$x}->{$y};
-    $d = $dist->{x}->{$y} = $dist->{$y}->{$x} = $self->distance($x,$y) unless defined($d);
-    return $d unless defined($vehicle);
-    my $speed = $profiles{$vehicle}->{maxspeed};
-    my $w = $way->{$x}->{$y};
-    my $hw = $$ways{$w}->{tag}->{highway};
-    my $cw = $$ways{$w}->{tag}->{cycleway};
-    my $fa = $$ways{$w}->{tag}->{foot};
-    my $onew = $$ways{$w}->{tag}->{oneway};
-    my $access = $$ways{$w}->{tag}->{access};
-    return $infinity if $vehicle eq "foot" and defined($fa) and $fa eq "no";
-    return $infinity if defined($access) and $access eq "no";
-    return $infinity unless (defined $profiles{$vehicle}->{allowed}->{$hw}) or (defined($fa) and $vehicle eq "foot") or (defined($cw) and $vehicle eq "bicycle");
-
-    if (defined($$ways{$w}->{maxspeed})) {
-	$speed = $$ways{$w}->{maxspeed} if $$ways{$w}->{maxspeed} < $speed;
-    } else {
-	my $defspeed = $highways{$hw}->{speed};
-	$speed = $defspeed if $defspeed < $speed;
-    }
-    my $cost = $d * 3.6 / $speed;
-    my $extracost = $profiles{$vehicle}->{allowed}->{$hw}->{extracost};
-    $extracost = 0 unless defined $extracost;
-
-    if ($vehicle eq "foot") {
-	if (defined($$nodes{$y}->{highway}) and $$nodes{$y}->{highway} eq 'traffic_signals') {
-	    $extracost += $highways{$$nodes{$y}->{highway}};
-	}
-    }
-    if ($vehicle eq "bicycle") {
-	$extracost = 0 if defined($cw);
-	if (defined($onew)) {
-	    if (!defined($cw) or $cw ne "opposite") {
-		return $infinity if $self->wrong_direction($x,$y,$w,$onew);
+    sub wrong_direction {
+	my ($self,$x,$y,$w,$onew) = @_;
+	my @nd = @{$$ways{$w}{nd}};
+	
+	foreach my $n (@nd) {
+	    if ($n->{ref} == $y) {
+		return ($onew ne "rev");
+	    }
+	    if ($n->{ref} == $x) {
+		return ($onew eq "rev");
 	    }
 	}
+	die "nodes not found in wrong direction $x $y $w\n";
+    }
+    
+    sub cost {
+	my $self=shift;
+	my $x = shift;
+	my $y = shift;
+	
+	my $d = $dist->{$x}->{$y};
+	$d = $dist->{x}->{$y} = $dist->{$y}->{$x} = $self->distance($x,$y) unless defined($d);
+	return $d unless defined($vehicle);
+	my $speed = $profiles{$vehicle}->{maxspeed};
+	my $w = $way->{$x}->{$y};
+	my $hw = $$ways{$w}->{tag}->{highway};
+	my $cw = $$ways{$w}->{tag}->{cycleway};
+	my $fa = $$ways{$w}->{tag}->{foot};
+	my $onew = $$ways{$w}->{tag}->{oneway};
+	my $access = $$ways{$w}->{tag}->{access};
+	return $infinity if $vehicle eq "foot" and defined($fa) and $fa eq "no";
+	return $infinity if defined($access) and $access eq "no";
+	return $infinity unless (defined $profiles{$vehicle}->{allowed}->{$hw}) or (defined($fa) and $vehicle eq "foot") or (defined($cw) and $vehicle eq "bicycle");
+	
+	if (defined($$ways{$w}->{maxspeed})) {
+	    $speed = $$ways{$w}->{maxspeed} if $$ways{$w}->{maxspeed} < $speed;
+	} else {
+	    my $defspeed = $highways{$hw}->{speed};
+	    $speed = $defspeed if $defspeed < $speed;
+	}
+	my $cost = $d * 3.6 / $speed;
+	my $extracost = $profiles{$vehicle}->{allowed}->{$hw}->{extracost};
+	$extracost = 0 unless defined $extracost;
+	
+	if ($vehicle eq "foot") {
+	    if (defined($$nodes{$y}->{highway}) and $$nodes{$y}->{highway} eq 'traffic_signals') {
+		$extracost += $highways{$$nodes{$y}->{highway}};
+	    }
+	}
+	if ($vehicle eq "bicycle") {
+	    $extracost = 0 if defined($cw);
+	    if (defined($onew)) {
+		if (!defined($cw) or $cw ne "opposite") {
+		    return $infinity if $self->wrong_direction($x,$y,$w,$onew);
+		}
+	    }
+	    if (defined($$nodes{$y}->{highway})) {
+		$extracost += $highways{$$nodes{$y}->{highway}};
+	    }
+	}
+	
+	if ($vehicle eq "car") {
+	    $extracost += 10 if defined($$nodes{$y}->{traffic_calming});
+	    return $infinity if defined($onew) and $self->wrong_direction($x,$y,$w,$onew);
+	    if (defined($$nodes{$y}->{highway})) {
+		$extracost += $highways{$$nodes{$y}->{highway}};
+	    }
+	}
+	
 	if (defined($$nodes{$y}->{highway})) {
 	    $extracost += $highways{$$nodes{$y}->{highway}};
 	}
-    }
-
-    if ($vehicle eq "car") {
-	$extracost += 10 if defined($$nodes{$y}->{traffic_calming});
-	return $infinity if defined($onew) and $self->wrong_direction($x,$y,$w,$onew);
-	if (defined($$nodes{$y}->{highway})) {
-	    $extracost += $highways{$$nodes{$y}->{highway}};
-	}
-    }
-
-    if (defined($$nodes{$y}->{highway})) {
-	$extracost += $highways{$$nodes{$y}->{highway}};
-    }
 #	print "$x $y $cost $extracost\n";
-    return $cost * (100.0 +$extracost)/100.0;
-}
-
+	return $cost * (100.0 +$extracost)/100.0;
+    }
+    
     sub neighbours {
         my $self = shift;
 	my $x = shift;
