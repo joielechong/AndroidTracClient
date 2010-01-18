@@ -4,13 +4,13 @@
 		<highway name="bus_stop"/>
 		<highway name="crossing" extracost="10"/>
 		<highway name="cycleway" speed="15"/>
-		<highway name="footway" speed="5"/>
+		<highway name="footway" speed="10"/>
 		<highway name="living_street" speed="30"/>
 		<highway name="motorway" speed="120"/>
 		<highway name="motorway_junction"/>
 		<highway name="motorway_link" speed="100"/>
 		<highway name="path" speed="5"/>
-		<highway name="pedestrian" speed="5"/>
+		<highway name="pedestrian" speed="10"/>
 		<highway name="primary" speed="50"/>
 		<highway name="residential" speed="30"/>
 		<highway name="secondary" speed="50"/>

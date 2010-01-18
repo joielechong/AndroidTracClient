@@ -31,6 +31,7 @@
     my %profiles;
     my $nodes;
     my $ways;
+    my $bounds;
     my $dist;
     my $way;
     
@@ -88,9 +89,10 @@
     sub procesdata {
         my $this = shift;
 	my $doc = shift;
-	
+
         $nodes = $doc->{node};
         $ways = $doc->{way};
+	$bounds = $doc->{bounds};
 #        print Dumper($ways);
         my $nrnodes;
 	
@@ -126,13 +128,23 @@
         }
     }
     
-    
+    sub saveOSMdata {
+        my $doc;
+	$doc->{node}=$nodes;
+	$doc->{way}=$ways;
+	$doc->{bounds} = $bounds;
+	if (open NEW,">saveddata.osm") {
+	    print NEW XMLout($doc, KeyAttr=>{tag => 'k', way=>'id','node'=>'id',relation=>'id'},ContentKey => "-v");
+	    close NEW;
+	}
+    }
+
     sub loadOSMdata {
         my $this = shift;
 	my $data = shift;
         return XMLin($data, ForceArray=>['tag'],KeyAttr=>{tag => 'k', way=>'id','node'=>'id',relation=>'id'},ContentKey => "-v");
     }
-    
+
     sub useLocaldata {
         my $this =  shift;
 	my $filename = shift;
@@ -152,10 +164,14 @@
         my $result = $ua->request($req);
         print "Data is binnengehaald\n";
         return -1 unless $result->code == 200;
+	if (open NEW,">newmap.osm") {
+	    print NEW $result->content;
+	    close NEW;
+	}
 	my $doc = $this->loadOSMdata($result->content);
         $this->procesdata($doc);
     }
-    
+
     sub calc_h_score {
         my $self = shift;
         my $x = shift;
@@ -164,7 +180,7 @@
         my $d=$self->distance($x,$y);
         return defined($vehicle) ? $d *3.6/$profiles{$vehicle}->{maxspeed} : $d;
     }
-    
+
     sub wrong_direction {
     my ($self,$x,$y,$w,$onew) = @_;
     my @nd = @{$$ways{$w}{nd}};
@@ -179,7 +195,7 @@
     }
     die "nodes not found in wrong direction $x $y $w\n";
     }
-    
+
     sub cost {
     my $self=shift;
     my $x = shift;
@@ -193,12 +209,10 @@
     my $hw = $$ways{$w}->{tag}->{highway};
     my $cw = $$ways{$w}->{tag}->{cycleway};
     my $fa = $$ways{$w}->{tag}->{foot};
+    my $ca = $$ways{$w}->{tag}->{bicycle};
     my $onew = $$ways{$w}->{tag}->{oneway};
     my $access = $$ways{$w}->{tag}->{access};
-    return $infinity if $vehicle eq "foot" and defined($fa) and $fa eq "no";
-    return $infinity if defined($access) and $access eq "no";
-    return $infinity unless (defined $profiles{$vehicle}->{allowed}->{$hw}) or (defined($fa) and $vehicle eq "foot") or (defined($cw) and $vehicle eq "bicycle");
-	
+
     if (defined($$ways{$w}->{maxspeed})) {
 	$speed = $$ways{$w}->{maxspeed} if $$ways{$w}->{maxspeed} < $speed;
     } else {
@@ -209,13 +223,25 @@
     my $extracost = $profiles{$vehicle}->{allowed}->{$hw}->{extracost};
     $extracost = 0 unless defined $extracost;
 	
+
     if ($vehicle eq "foot") {
-	if (defined($$nodes{$y}->{highway}) and $$nodes{$y}->{highway} eq 'traffic_signals') {
-	    $extracost += $highways{$$nodes{$y}->{highway}};
+        if (defined($fa)) {
+	     return $infinity if $fa eq "no";
+	} elsif (defined($access)) {
+	    return $infinity if $access eq "no";
+	} elsif (!defined($profiles{$vehicle}->{allowed}->{$hw})) {
+            return $infinity;
 	}
-    }
-    if ($vehicle eq "bicycle") {
+    } elsif ($vehicle eq "bicycle") {
+        if (defined($ca)) {
+	     return $infinity if $ca eq "no";
+	} elsif (defined($access)) {
+	    return $infinity if $access eq "no";
+	} elsif (!defined($profiles{$vehicle}->{allowed}->{$hw})) {
+            return $infinity;
+	}
 	$extracost = 0 if defined($cw);
+	$extracost += 5 if defined($$nodes{$y}->{traffic_calming});
 	if (defined($onew)) {
 	    if (!defined($cw) or $cw ne "opposite") {
 		return $infinity if $self->wrong_direction($x,$y,$w,$onew);
@@ -224,16 +250,21 @@
 	if (defined($$nodes{$y}->{highway})) {
 	    $extracost += $highways{$$nodes{$y}->{highway}};
 	}
-    }
-	
-    if ($vehicle eq "car") {
+    } elsif ($vehicle eq "car") {
+        return $infinity if defined($access) and $access eq "no";
 	$extracost += 10 if defined($$nodes{$y}->{traffic_calming});
 	return $infinity if defined($onew) and $self->wrong_direction($x,$y,$w,$onew);
+        return $infinity unless (defined $profiles{$vehicle}->{allowed}->{$hw});
 	if (defined($$nodes{$y}->{highway})) {
 	    $extracost += $highways{$$nodes{$y}->{highway}};
 	}
+    } else {
+        die "Onbekend voertuig\n";
     }
 	
+    if (defined($$nodes{$y}->{highway}) and $$nodes{$y}->{highway} eq 'traffic_signals') {
+	$extracost += $highways{$$nodes{$y}->{highway}};
+    }
     if (defined($$nodes{$y}->{highway})) {
 	$extracost += $highways{$$nodes{$y}->{highway}};
     }
