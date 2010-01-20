@@ -7,8 +7,9 @@
 		<highway name="footway" speed="10"/>
 		<highway name="living_street" speed="30"/>
 		<highway name="motorway" speed="120"/>
+		<highway name="trunk" speed="100"/>
 		<highway name="motorway_junction"/>
-		<highway name="motorway_link" speed="100"/>
+		<highway name="motorway_link" speed="120"/>
 		<highway name="path" speed="5"/>
 		<highway name="pedestrian" speed="10"/>
 		<highway name="primary" speed="50"/>
@@ -19,7 +20,7 @@
 		<highway name="steps" speed="5"/>
 		<highway name="tertiary" speed="50"/>
 		<highway name="track" speed="15"/>
-		<highway name="traffic_signals" extracost="30"/>
+		<highway name="traffic_signals" extracost="10"/>
 		<highway name="turning_circle"/>
 		<highway name="unclassified" speed="50"/>
 	</highways>
@@ -54,6 +55,7 @@
 		</profile>
 		<profile name="car" maxspeed="160" ignore_oneway="0">
 			<allowed highway="motorway" extracost="0" />
+			<allowed highway="trunk" extracost="0" />
 			<allowed highway="motorway_link" extracost="0" />
 			<allowed highway="living_street" extracost="50" />
 			<allowed highway="residential" extracost="50" />
