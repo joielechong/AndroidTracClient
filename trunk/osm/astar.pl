@@ -29,8 +29,10 @@ sub reconstruct_path {
 
 sub Astar {
     my $map = shift;
-    my $start = shift;
-    my $goal  = shift;
+    my $startlat = shift;
+    my $startlon = shift;
+    my $goallat  = shift;
+    my $goallon  = shift;
     my $vehicle = shift;
     
     my %closedset;
@@ -42,8 +44,12 @@ sub Astar {
     my %came_from;
     
 #    return "foutje" unless defined($$nodes{$start}) and defined($$nodes{$goal});
-    return "foutje" unless defined($map->node($start)) and defined($map->node($goal));
-    
+ 
+    $map->fetchCoor($startlat,$startlon) unless $map->inboundCoor($startlat,$startlon);
+    $map->fetchCoor($goallat,$goallon) unless $map->inboundCoor($goallat,$goallon);
+    my $start = $map->findNode($startlat,$startlon);
+    my $goal = $map->findNode($goallat,$goallon);
+    print "start = $start, goal = $goal\n";
     
     $map->setVehicle($vehicle);
     
@@ -84,6 +90,7 @@ sub Astar {
 #         foreach y in neighbor_nodes(x)
 #	for my $y (keys(%{$$way{$x}})) {
 	for my $y ($map->neighbours($x)) {
+	    $map->fetchNode($x) unless $map->inboundNode($x);
 #             if y in closedset
 #                 continue
 	    next if (defined($closedset{$y}));
@@ -160,24 +167,28 @@ sub print_path {
 
 my $arg = shift;
 my $map = OSM::Map->new();
-if (defined($arg) && ($arg eq "net")) {
-    $map->useNetdata(@bbox);
-} else {
-    $map->useLocaldata("map.osm");
-}
+#if (defined($arg) && ($arg eq "net")) {
+#    $map->useNetdata(@bbox);
+#} else {
+#    $map->useLocaldata("map.osm");
+#}
 
-print_path($map,Astar($map,'46071276','294062118'));
-print_path($map,Astar($map,'46070723','294062118'));
-print_path($map,Astar($map,'46070723','294062118','foot'));
-print_path($map,Astar($map,'46070723','294062118','bicycle'));
-print_path($map,Astar($map,'46070723','294062118','car'));
-print_path($map,Astar($map,'46071276','46051999'));
-print_path($map,Astar($map,'46070723','46051999'));
-print_path($map,Astar($map,'46070723','46026341','bicycle'));
-print_path($map,Astar($map,'46071276','46026341','car'));
-print_path($map,Astar($map,'46070723','294062118','car'));
-print_path($map,Astar($map,'46071276','289899699'));
-print_path($map,Astar($map,'46071276','289899699','foot'));
-print_path($map,Astar($map,'46071276','289899699','bicycle'));
-print_path($map,Astar($map,'46071276','289899699','car'));
+print_path($map,Astar($map,52.2973,4.8620,52.2933,4.8588));
+print_path($map,Astar($map,52.2972,4.8620,52.2886,4.8508));
+print_path($map,Astar($map,52.2972,4.8620,52.2886,4.8508,'foot'));
+print_path($map,Astar($map,52.2972,4.8620,52.2886,4.8508,'bicycle'));
+print_path($map,Astar($map,52.2972,4.8620,52.2886,4.8508,'car'));
+#print_path($map,Astar($map,'46070723','294062118'));
+#print_path($map,Astar($map,'46070723','294062118','foot'));
+#print_path($map,Astar($map,'46070723','294062118','bicycle'));
+#print_path($map,Astar($map,'46070723','294062118','car'));
+#print_path($map,Astar($map,'46071276','46051999'));
+#print_path($map,Astar($map,'46070723','46051999'));
+#print_path($map,Astar($map,'46070723','46026341','bicycle'));
+#print_path($map,Astar($map,'46071276','46026341','car'));
+#print_path($map,Astar($map,'46070723','294062118','car'));
+#print_path($map,Astar($map,'46071276','289899699'));
+#print_path($map,Astar($map,'46071276','289899699','foot'));
+#print_path($map,Astar($map,'46071276','289899699','bicycle'));
+#print_path($map,Astar($map,'46071276','289899699','car'));
 $map->saveOSMdata();

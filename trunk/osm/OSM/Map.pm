@@ -31,7 +31,7 @@
     my %profiles;
     my $nodes;
     my $ways;
-    my $bounds;
+    my @bounds;
     my $dist;
     my $way;
     
@@ -41,13 +41,13 @@
     }
     
     sub node {
-        my $this = shift;
+        my $self = shift;
 	my $n = shift;
 	return $$nodes{$n};
     }
     
     sub way {
-	my $this = shift;
+	my $self = shift;
 	my $n = shift;
 	return $$ways{$n};
     }
@@ -79,6 +79,11 @@
         return exists($w->{tag}->{highway});
     }
     
+    sub distanceCoor {
+        my ($self,$lat1,$lon1,$lat2,$lon2) = @_;
+        return $geo->distance('meter',$lon1,$lat1,$lon2,$lat2);
+    }
+    
     sub distance {
         my $self = shift;
         my $n1 = shift;
@@ -86,9 +91,39 @@
         return $geo->distance('meter',$$nodes{$n1}->{lon},$$nodes{$n1}->{lat}=>$$nodes{$n2}->{lon},$$nodes{$n2}->{lat});
     }
     
+    sub store {
+	my ($self,$newnodes,$newways,$newbounds) = @_;
+	for my $n (keys %$newnodes) {
+	    $$nodes{$n} = $$newnodes{$n} unless exists($$nodes{$n});
+	}
+	for my $w (keys %$newways) {
+	    $$ways{$w} = $$newways{$w} unless exists($$ways{$w});
+	}
+	push @bounds,$newbounds;
+    }
+    
+    sub inboundCoor {
+        my ($self,$lat,$lon) = @_;
+	
+	for my $b (@bounds) {
+	   return 1 if ($lat<=$b->{maxlat} && $lat >=$b->{minlat} && $lon<=$b->{maxlon} && $lon>=$b->{minlon});
+	}
+	return 0;
+    }
+    
+    sub inboundNode {
+        my ($self,$node) = @_;
+	my $lat = $$nodes{$node}->{lat};
+	my $lon = $$nodes{$node}->{lon};
+	return $self->inboundCoor($lat,$lon);
+    }
+    
     sub procesdata {
-        my $this = shift;
+        my $self = shift;
 	my $doc = shift;
+	my $nodes;
+	my $ways;
+	my $bounds;
 
         $nodes = $doc->{node};
         $ways = $doc->{way};
@@ -126,13 +161,14 @@
         foreach my $n (keys %$nodes) {
             delete $$nodes{$n} unless exists($way->{$n});
         }
+	$self->store($nodes,$ways,$bounds);
     }
     
     sub saveOSMdata {
         my $doc;
 	$doc->{node}=$nodes;
 	$doc->{way}=$ways;
-	$doc->{bounds} = $bounds;
+	$doc->{bounds}=\@bounds;
 	if (open NEW,">saveddata.osm") {
 	    print NEW XMLout($doc, KeyAttr=>{tag => 'k', way=>'id','node'=>'id',relation=>'id'},ContentKey => "-v");
 	    close NEW;
@@ -140,21 +176,21 @@
     }
 
     sub loadOSMdata {
-        my $this = shift;
+        my $self = shift;
 	my $data = shift;
         return XMLin($data, ForceArray=>['tag'],KeyAttr=>{tag => 'k', way=>'id','node'=>'id',relation=>'id'},ContentKey => "-v");
     }
 
     sub useLocaldata {
-        my $this =  shift;
+        my $self =  shift;
 	my $filename = shift;
 	$filename = "map.osm" unless defined $filename;
-	my $doc = $this->loadOSMdata($filename);
-        $this->procesdata($doc);
+	my $doc = $self->loadOSMdata($filename);
+        $self->procesdata($doc);
     }
     
     sub useNetdata {
-        my $this =  shift;
+        my $self =  shift;
 	my @bbox = @_;
         return -1  if $#bbox != 3 ;
     
@@ -164,12 +200,40 @@
         my $result = $ua->request($req);
         print "Data is binnengehaald\n";
         return -1 unless $result->code == 200;
-	if (open NEW,">newmap.osm") {
-	    print NEW $result->content;
-	    close NEW;
+#	if (open NEW,">newmap.osm") {
+#	    print NEW $result->content;
+#	    close NEW;
+#	}
+	my $doc = $self->loadOSMdata($result->content);
+        $self->procesdata($doc);
+    }
+    
+    sub fetchCoor {
+	my ($self,$lat,$lon) = @_;
+	my @bbox = ($lon-0.01,$lat-0.01,$lon+0.01,$lat+0.01);
+	$self->useNetdata(@bbox);
+    }
+    
+    sub findNode {
+        my ($self,$lat,$lon) = @_;
+	my $node = undef;
+	my $distance=$infinity;
+	
+	for my $n (keys %$nodes) {
+	        my $d = $self->distanceCoor($lat,$lon,$$nodes{$n}->{lat},$$nodes{$n}->{lon});
+		if ($d < $distance) {
+		    $distance=$d;
+		    $node = $n;
+		}
 	}
-	my $doc = $this->loadOSMdata($result->content);
-        $this->procesdata($doc);
+	return $node;
+    }
+
+    sub fetchNode {
+	my ($self,$node) = @_;
+	my $lat = $$nodes{$node}->{lat};
+	my $lon = $$nodes{$node}->{lon};
+	$self->fetchCoor($lat,$lon);
     }
 
     sub calc_h_score {
