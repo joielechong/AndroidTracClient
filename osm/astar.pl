@@ -178,6 +178,7 @@ print_path($map,Astar($map,52.2972,4.8620,52.2886,4.8508));
 print_path($map,Astar($map,52.2972,4.8620,52.2886,4.8508,'foot'));
 print_path($map,Astar($map,52.2972,4.8620,52.2886,4.8508,'bicycle'));
 print_path($map,Astar($map,52.2972,4.8620,52.2886,4.8508,'car'));
+print_path($map,Astar($map,52.2972,4.8620,52.311311,4.8468799,'car'));
 #print_path($map,Astar($map,'46070723','294062118'));
 #print_path($map,Astar($map,'46070723','294062118','foot'));
 #print_path($map,Astar($map,'46070723','294062118','bicycle'));
