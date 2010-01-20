@@ -76,7 +76,7 @@
     
     sub usable_way {
         my $w = shift;
-        return exists($w->{tag}->{highway});
+        return exists($w->{tag}->{highway}) || (exists($w->{tag}->{route}) or $w->{tag}->{route} eq "ferry");
     }
     
     sub distanceCoor {
@@ -131,7 +131,6 @@
 #        print Dumper($ways);
         my $nrnodes;
 	
-        print "Start met initialiseren\n";
         foreach my $w (keys %$ways) {
             unless (usable_way($ways->{$w})) {
 	        delete($$ways{$w});
@@ -198,7 +197,6 @@
         print "url = $url\n";
         my $req = HTTP::Request->new(GET =>$url);
         my $result = $ua->request($req);
-        print "Data is binnengehaald\n";
         return -1 unless $result->code == 200;
 #	if (open NEW,">newmap.osm") {
 #	    print NEW $result->content;
@@ -279,9 +277,11 @@
 
     if (defined($$ways{$w}->{maxspeed})) {
 	$speed = $$ways{$w}->{maxspeed} if $$ways{$w}->{maxspeed} < $speed;
-    } else {
+    } elsif (defined($highways{$hw}->{speed})) {
 	my $defspeed = $highways{$hw}->{speed};
 	$speed = $defspeed if $defspeed < $speed;
+    } else {
+        die "Geen snelheid voor $hw op weg $w\n";
     }
     my $cost = $d * 3.6 / $speed;
     my $extracost = $profiles{$vehicle}->{allowed}->{$hw}->{extracost};
@@ -311,27 +311,21 @@
 		return $infinity if $self->wrong_direction($x,$y,$w,$onew);
 	    }
 	}
-	if (defined($$nodes{$y}->{highway})) {
-	    $extracost += $highways{$$nodes{$y}->{highway}};
+	if (defined($highways{$$nodes{$y}->{highway}}->{extracost})) {
+	    $extracost += $highways{$$nodes{$y}->{highway}}->{extracost};
 	}
     } elsif ($vehicle eq "car") {
         return $infinity if defined($access) and $access eq "no";
 	$extracost += 10 if defined($$nodes{$y}->{traffic_calming});
 	return $infinity if defined($onew) and $self->wrong_direction($x,$y,$w,$onew);
         return $infinity unless (defined $profiles{$vehicle}->{allowed}->{$hw});
-	if (defined($$nodes{$y}->{highway})) {
-	    $extracost += $highways{$$nodes{$y}->{highway}};
+	if (defined($highways{$$nodes{$y}->{highway}}->{extracost})) {
+	    $extracost += $highways{$$nodes{$y}->{highway}}->{extracost};
 	}
     } else {
         die "Onbekend voertuig\n";
     }
 	
-    if (defined($$nodes{$y}->{highway}) and $$nodes{$y}->{highway} eq 'traffic_signals') {
-	$extracost += $highways{$$nodes{$y}->{highway}};
-    }
-    if (defined($$nodes{$y}->{highway})) {
-	$extracost += $highways{$$nodes{$y}->{highway}};
-    }
 #	print "$x $y $cost $extracost\n";
     return $cost * (100.0 +$extracost)/100.0;
     }
