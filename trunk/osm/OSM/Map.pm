@@ -210,7 +210,7 @@
     
     sub fetchCoor {
 	my ($self,$lat,$lon) = @_;
-	my @bbox = ($lon-0.01,$lat-0.01,$lon+0.01,$lat+0.01);
+	my @bbox = ($lon-0.02,$lat-0.02,$lon+0.02,$lat+0.02);
 	$self->useNetdata(@bbox);
     }
     
