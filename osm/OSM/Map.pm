@@ -304,7 +304,7 @@
     my $speed = $profiles{$vehicle}->{maxspeed};
     my $w = $way->{$x}->{$y};
     my $hw = $$ways{$w}->{tag}->{highway};
-    $hw = "unclassified" if (!defined($hw) && defined($$ways{$w}->{tag}->{route}) &&$$ways{$w}->{tag}->{route} eq "ferry";
+    $hw = "unclassified" if !defined($hw) && defined($$ways{$w}->{tag}->{route}) && $$ways{$w}->{tag}->{route} eq "ferry";
     my $cw = $$ways{$w}->{tag}->{cycleway};
     my $fa = $$ways{$w}->{tag}->{foot};
     my $ca = $$ways{$w}->{tag}->{bicycle};
