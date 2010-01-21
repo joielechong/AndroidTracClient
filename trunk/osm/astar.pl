@@ -173,13 +173,13 @@ my $map = OSM::Map->new();
 #    $map->useLocaldata("map.osm");
 #}
 
-print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588));
-print_path($map,Astar($map,52.297275,4.8616077,52.2886,4.8508));
-print_path($map,Astar($map,52.297752,4.8616077,52.2886,4.8508,'foot'));
-print_path($map,Astar($map,52.297275,4.8616077,52.2886,4.8508,'bicycle'));
-print_path($map,Astar($map,52.297275,4.8616077,52.2886,4.8508,'car'));
-print_path($map,Astar($map,52.297275,4.8616077,52.311311,4.8468799,'car'));
-print_path($map,Astar($map,52.297275,4.8616077,52.4176385,4.8708703,'bicycle'));
+#print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588));
+#print_path($map,Astar($map,52.297275,4.8616077,52.2886,4.8508));
+#print_path($map,Astar($map,52.297752,4.8616077,52.2886,4.8508,'foot'));
+#print_path($map,Astar($map,52.297275,4.8616077,52.2886,4.8508,'bicycle'));
+#print_path($map,Astar($map,52.297275,4.8616077,52.2886,4.8508,'car'));
+#print_path($map,Astar($map,52.297275,4.8616077,52.311311,4.8468799,'car'));
+#print_path($map,Astar($map,52.297275,4.8616077,52.4176385,4.8708703,'bicycle'));
 print_path($map,Astar($map,52.297275,4.8616077,52.4176385,4.8708703,'car'));
 #print_path($map,Astar($map,'46070723','294062118'));
 #print_path($map,Astar($map,'46070723','294062118','foot'));
