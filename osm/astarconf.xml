@@ -3,7 +3,10 @@
 	<highways>
 		<highway name="bus_stop"/>
 		<highway name="crossing" extracost="10"/>
+		<highway name="bridleway" speed="5"/> <!-- ruiterpad -->
 		<highway name="cycleway" speed="15"/>
+		<highway name="primary_link" speed="15"/>
+		<highway name="construction" speed="15"/>
 		<highway name="footway" speed="10"/>
 		<highway name="living_street" speed="30"/>
 		<highway name="motorway" speed="120"/>
@@ -37,6 +40,7 @@
 			<allowed highway="service" extracost="10" />
 			<allowed highway="unclassified" extracost="0" />
 			<allowed highway="primary" extracost="30" />
+			<allowed highway="primary_link" extracost="30" />
 			<allowed highway="secondary" extracost="30" />
 			<allowed highway="tertiary" extracost="30" />
 			<traffic_calming type="table" extracost="0" />
@@ -49,6 +53,7 @@
 			<allowed highway="unclassified" extracost="10" />
 			<allowed highway="service" extracost="10" />
 			<allowed highway="primary" extracost="30" />
+			<allowed highway="primary_link" extracost="30" />
 			<allowed highway="secondary" extracost="30" />
 			<allowed highway="tertiary" extracost="30" />
 			<traffic_calming type="table" extracost="1" />
@@ -62,6 +67,7 @@
 			<allowed highway="unclassified" extracost="0" />
 			<allowed highway="service" extracost="30" />
 			<allowed highway="primary" extracost="0" />
+ 			<allowed highway="primary_link" extracost="0" />
 			<allowed highway="secondary" extracost="0" />
 			<allowed highway="tertiary" extracost="0" />
 			<traffic_calming type="table" extracost="10" />

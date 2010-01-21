@@ -76,7 +76,7 @@
     
     sub usable_way {
         my $w = shift;
-        return exists($w->{tag}->{highway}) || (exists($w->{tag}->{route}) or $w->{tag}->{route} eq "ferry");
+        return exists($w->{tag}->{highway}) || (exists($w->{tag}->{route}) and $w->{tag}->{route} eq "ferry");
     }
     
     sub distanceCoor {
@@ -204,11 +204,46 @@
 #	}
 	my $doc = $self->loadOSMdata($result->content);
         $self->procesdata($doc);
+	print "\n";
     }
     
     sub fetchCoor {
 	my ($self,$lat,$lon) = @_;
-	my @bbox = ($lon-0.02,$lat-0.02,$lon+0.02,$lat+0.02);
+	my $minlon=$lon-0.015;
+	my $maxlon=$lon+0.015;
+	my $minlat=$lat-0.015;
+	my $maxlat=$lat+0.015;
+	for my $b (@bounds) {
+            if ($minlat<=$b->{maxlat} && $minlat >=$b->{minlat} && $minlon<=$b->{maxlon} && $minlon>=$b->{minlon}) {
+	        if ($lon > $b->{maxlon}) {
+    	            $minlon = $b->{maxlon};
+		} else { 
+		    $minlat = $b->{maxlat};
+		}
+	    }
+            if ($maxlat<=$b->{maxlat} && $maxlat >=$b->{minlat} && $minlon<=$b->{maxlon} && $minlon>=$b->{minlon}) {
+	        if ($lon > $b->{maxlon}) {
+    	            $minlon = $b->{maxlon};
+		} else { 
+		    $maxlat = $b->{minlat};
+		}
+	    }
+            if ($minlat<=$b->{maxlat} && $minlat >=$b->{minlat} && $maxlon<=$b->{maxlon} && $maxlon>=$b->{minlon}) {
+	        if ($lon < $b->{minlon}) {
+    	            $maxlon = $b->{minlon};
+		} else { 
+		    $minlat = $b->{maxlat};
+		}
+	    }
+            if ($maxlat<=$b->{maxlat} && $maxlat >=$b->{minlat} && $maxlon<=$b->{maxlon} && $maxlon>=$b->{minlon}) {
+	        if ($lon < $b->{minlon}) {
+    	            $maxlon = $b->{minlon};
+		} else { 
+		    $maxlat = $b->{minlat};
+		}
+	    }
+	}
+	my @bbox = ($minlon,$minlat,$maxlon,$maxlat);
 	$self->useNetdata(@bbox);
     }
     
@@ -269,6 +304,7 @@
     my $speed = $profiles{$vehicle}->{maxspeed};
     my $w = $way->{$x}->{$y};
     my $hw = $$ways{$w}->{tag}->{highway};
+    $hw = "unclassified" if (!defined($hw) && defined($$ways{$w}->{tag}->{route}) &&$$ways{$w}->{tag}->{route} eq "ferry";
     my $cw = $$ways{$w}->{tag}->{cycleway};
     my $fa = $$ways{$w}->{tag}->{foot};
     my $ca = $$ways{$w}->{tag}->{bicycle};
@@ -281,7 +317,9 @@
 	my $defspeed = $highways{$hw}->{speed};
 	$speed = $defspeed if $defspeed < $speed;
     } else {
-        die "Geen snelheid voor $hw op weg $w\n";
+	$self->saveOSMdata();
+        print "Geen snelheid voor $hw op weg $w\n";
+	return $infinity;
     }
     my $cost = $d * 3.6 / $speed;
     my $extracost = $profiles{$vehicle}->{allowed}->{$hw}->{extracost};
@@ -311,7 +349,7 @@
 		return $infinity if $self->wrong_direction($x,$y,$w,$onew);
 	    }
 	}
-	if (defined($highways{$$nodes{$y}->{highway}}->{extracost})) {
+	if (defined($$nodes{$y}->{highway}) and defined($highways{$$nodes{$y}->{highway}}->{extracost})) {
 	    $extracost += $highways{$$nodes{$y}->{highway}}->{extracost};
 	}
     } elsif ($vehicle eq "car") {
@@ -319,7 +357,7 @@
 	$extracost += 10 if defined($$nodes{$y}->{traffic_calming});
 	return $infinity if defined($onew) and $self->wrong_direction($x,$y,$w,$onew);
         return $infinity unless (defined $profiles{$vehicle}->{allowed}->{$hw});
-	if (defined($highways{$$nodes{$y}->{highway}}->{extracost})) {
+	if (defined($$nodes{$y}->{highway}) and defined($highways{$$nodes{$y}->{highway}}->{extracost})) {
 	    $extracost += $highways{$$nodes{$y}->{highway}}->{extracost};
 	}
     } else {
