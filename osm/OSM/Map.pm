@@ -209,10 +209,10 @@
     
     sub fetchCoor {
 	my ($self,$lat,$lon) = @_;
-	my $minlon=$lon-0.015;
-	my $maxlon=$lon+0.015;
-	my $minlat=$lat-0.015;
-	my $maxlat=$lat+0.015;
+	my $minlon=$lon-0.025;
+	my $maxlon=$lon+0.025;
+	my $minlat=$lat-0.025;
+	my $maxlat=$lat+0.025;
 	for my $b (@bounds) {
             if ($minlat<=$b->{maxlat} && $minlat >=$b->{minlat} && $minlon<=$b->{maxlon} && $minlon>=$b->{minlon}) {
 	        if ($lon > $b->{maxlon}) {
