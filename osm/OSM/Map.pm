@@ -38,6 +38,7 @@
     sub setVehicle {
         my $self = shift;
 	$vehicle = shift;
+	die "Geen profile voor $vehicle\n" unless defined($profiles{$vehicle});
     }
     
     sub node {
@@ -208,11 +209,13 @@
     }
     
     sub fetchCoor {
-	my ($self,$lat,$lon) = @_;
-	my $minlon=$lon-0.025;
-	my $maxlon=$lon+0.025;
-	my $minlat=$lat-0.025;
-	my $maxlat=$lat+0.025;
+	my ($self,$lat,$lon,$small) = @_;
+	my $delta = 0.025;
+	$delta = 0.01 if defined($small);
+	my $minlon=$lon-$delta;
+	my $maxlon=$lon+$delta;
+	my $minlat=$lat-$delta;
+	my $maxlat=$lat+$delta;
 	for my $b (@bounds) {
             if ($minlat<=$b->{maxlat} && $minlat >=$b->{minlat} && $minlon<=$b->{maxlon} && $minlon>=$b->{minlon}) {
 	        if ($lon > $b->{maxlon}) {
@@ -275,7 +278,7 @@
         my $y = shift;
     
         my $d=$self->distance($x,$y);
-        return defined($vehicle) ? $d *3.6/$profiles{$vehicle}->{maxspeed} : $d;
+        return defined($vehicle) ? $d *7.2/$profiles{$vehicle}->{maxspeed} : $d;
     }
 
     sub wrong_direction {
@@ -301,19 +304,35 @@
     my $d = $dist->{$x}->{$y};
     $d = $dist->{x}->{$y} = $dist->{$y}->{$x} = $self->distance($x,$y) unless defined($d);
     return $d unless defined($vehicle);
+    
     my $speed = $profiles{$vehicle}->{maxspeed};
+    
     my $w = $way->{$x}->{$y};
-    my $hw = $$ways{$w}->{tag}->{highway};
-    $hw = "unclassified" if !defined($hw) && defined($$ways{$w}->{tag}->{route}) && $$ways{$w}->{tag}->{route} eq "ferry";
-    my $cw = $$ways{$w}->{tag}->{cycleway};
-    my $fa = $$ways{$w}->{tag}->{foot};
-    my $ca = $$ways{$w}->{tag}->{bicycle};
-    my $onew = $$ways{$w}->{tag}->{oneway};
-    my $access = $$ways{$w}->{tag}->{access};
+    my $ww=$$ways{$w};
+    my $wwtag = $$ww{tag};
+    
+    my ($hw,$access,$cw,$fa,$ca,$onew,$ma);
+    if (defined($wwtag)) {
+        $hw = $$wwtag{highway} if exists($$wwtag{highway});
+        $hw = "unclassified" if !defined($hw) && exists($$wwtag{route}) && $$wwtag{route} eq "ferry";
+        $access = $$wwtag{access};
+        $cw = $$wwtag{cycleway};
+        $fa = $$wwtag{foot};
+        $ca = $$wwtag{bicycle};
+        $onew = $$wwtag{oneway};
+	$ma = $$wwtag{motorcar};
+    } else {
+        return $infinity;
+    }
+    return $infinity unless defined($hw);
+    $access = "yes" unless defined($access);
+    $fa="" unless defined($fa);
+    $ca="" unless defined($ca);
+    $ma="" unless defined($ma);
 
-    if (defined($$ways{$w}->{maxspeed})) {
-	$speed = $$ways{$w}->{maxspeed} if $$ways{$w}->{maxspeed} < $speed;
-    } elsif (defined($highways{$hw}->{speed})) {
+    if (defined($$wwtag{maxspeed})) {
+	$speed = $$wwtag{maxspeed} if $$wwtag{maxspeed} < $speed;
+    } elsif (exists($highways{$hw}->{speed})) {
 	my $defspeed = $highways{$hw}->{speed};
 	$speed = $defspeed if $defspeed < $speed;
     } else {
@@ -321,49 +340,49 @@
         print "Geen snelheid voor $hw op weg $w\n";
 	return $infinity;
     }
-    my $cost = $d * 3.6 / $speed;
-    my $extracost = $profiles{$vehicle}->{allowed}->{$hw}->{extracost};
-    $extracost = 0 unless defined $extracost;
-	
 
+    return $infinity if !defined($speed) or $speed == 0;
+    my $cost = $d * 3.6 / $speed;
+    my $extracost = 0;
+    $extracost = $profiles{$vehicle}->{allowed}->{$hw}->{extracost} if exists($profiles{$vehicle}->{allowed}->{$hw}) and exists($profiles{$vehicle}->{allowed}->{$hw}->{extracost});
+
+    my $nodey = $$nodes{$y};
+    
     if ($vehicle eq "foot") {
-        if (defined($fa)) {
-	     return $infinity if $fa eq "no";
-	} elsif (defined($access)) {
-	    return $infinity if $access eq "no";
-	} elsif (!defined($profiles{$vehicle}->{allowed}->{$hw})) {
-            return $infinity;
-	}
+        return $infinity if $fa eq "no";
+	return $infinity if $access eq "no" and $fa ne "yes";
+	return $infinity if (!exists($profiles{$vehicle}->{allowed}->{$hw}));
     } elsif ($vehicle eq "bicycle") {
-        if (defined($ca)) {
-	     return $infinity if $ca eq "no";
-	} elsif (defined($access)) {
-	    return $infinity if $access eq "no";
-	} elsif (!defined($profiles{$vehicle}->{allowed}->{$hw})) {
-            return $infinity;
-	}
+	return $infinity if $ca eq "no";
+	return $infinity if $access eq "no" and $ca ne "yes";
+	return $infinity if (!exists($profiles{$vehicle}->{allowed}->{$hw})) && !defined($cw);
 	$extracost = 0 if defined($cw);
-	$extracost += 5 if defined($$nodes{$y}->{traffic_calming});
-	if (defined($onew)) {
-	    if (!defined($cw) or $cw ne "opposite") {
-		return $infinity if $self->wrong_direction($x,$y,$w,$onew);
-	    }
+	if (defined($onew) and (!defined($cw) or $cw ne "opposite")) {
+	    return $infinity if $self->wrong_direction($x,$y,$w,$onew);
 	}
-	if (defined($$nodes{$y}->{highway}) and defined($highways{$$nodes{$y}->{highway}}->{extracost})) {
-	    $extracost += $highways{$$nodes{$y}->{highway}}->{extracost};
+	if (exists($$nodey{highway}) and exists($highways{$$nodey{highway}}->{extracost})) {
+	    $extracost += $highways{$$nodey{highway}}->{extracost};
 	}
+	$extracost += 5 if exists($$nodey{traffic_calming});
     } elsif ($vehicle eq "car") {
-        return $infinity if defined($access) and $access eq "no";
-	$extracost += 10 if defined($$nodes{$y}->{traffic_calming});
+        return $infinity if $ma eq "no";
+	return $infinity if $access eq "no" and $ma ne "yes";
+	return $infinity if (!exists($profiles{$vehicle}->{allowed}->{$hw}));
 	return $infinity if defined($onew) and $self->wrong_direction($x,$y,$w,$onew);
-        return $infinity unless (defined $profiles{$vehicle}->{allowed}->{$hw});
-	if (defined($$nodes{$y}->{highway}) and defined($highways{$$nodes{$y}->{highway}}->{extracost})) {
+	if (exists($$nodey{highway}) and exists($highways{$$nodey{highway}}->{extracost})) {
 	    $extracost += $highways{$$nodes{$y}->{highway}}->{extracost};
 	}
+	$extracost += 10 if defined($$nodey{traffic_calming});
     } else {
         die "Onbekend voertuig\n";
     }
-	
+    return $infinity if $access eq "no";
+    my $name=$$wwtag{name};
+    my $ref=$$wwtag{ref};
+    $ref="" unless defined($ref);
+    $name="" unless defined($name);
+    
+    print "$x $y $d $speed $hw $cost $extracost $ma $access $name $ref\n";
 #	print "$x $y $cost $extracost\n";
     return $cost * (100.0 +$extracost)/100.0;
     }

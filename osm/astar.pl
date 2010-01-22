@@ -45,8 +45,8 @@ sub Astar {
     
 #    return "foutje" unless defined($$nodes{$start}) and defined($$nodes{$goal});
  
-    $map->fetchCoor($startlat,$startlon) unless $map->inboundCoor($startlat,$startlon);
-    $map->fetchCoor($goallat,$goallon) unless $map->inboundCoor($goallat,$goallon);
+    $map->fetchCoor($startlat,$startlon,1) unless $map->inboundCoor($startlat,$startlon);
+    $map->fetchCoor($goallat,$goallon,1) unless $map->inboundCoor($goallat,$goallon);
     my $start = $map->findNode($startlat,$startlon);
     my $goal = $map->findNode($goallat,$goallon);
     print "start = $start, goal = $goal\n";
@@ -79,18 +79,23 @@ sub Astar {
 #             return reconstruct_path(came_from,goal)
 	if ($x == $goal or $d_score{$x}<10) {
 	    my @p = reconstruct_path(\%came_from,$x);
-#	    print Dumper \%d_score;
+	    my $scores;
+	    $scores->{d_score}=\%d_score;
+	    $scores->{g_score}=\%g_score;
+	    $scores->{h_score}=\%h_score;
+	    $scores->{f_score}=\%f_score;
+	    print Dumper $scores;
 	    return @p;
 	}
 #         remove x from openset
 	delete($openset{$x});
 #         add x to closedset
 	$closedset{$x} = 1;
-#	print "close $x\n";
+	print "close $x ".$f_score{$x}."\n";
 #         foreach y in neighbor_nodes(x)
 #	for my $y (keys(%{$$way{$x}})) {
 	for my $y ($map->neighbours($x)) {
-	    $map->fetchNode($x) unless $map->inboundNode($x);
+	    $map->fetchNode($y) unless $map->inboundNode($y);
 #             if y in closedset
 #                 continue
 	    next if (defined($closedset{$y}));
@@ -155,9 +160,11 @@ sub print_path {
 	}
 	if (defined($w)) {
 	    print $w,": ";
-	    print $map->way($w)->{tag}->{name}," " if defined($map->way($w)->{tag}->{name});
-	    print $map->way($w)->{tag}->{highway}," " if defined($map->way($w)->{tag}->{highway});
-	    print $map->way($w)->{tag}->{maxspeed}," " if defined($map->way($w)->{tag}->{maxspeed});
+	    my $mwt = $map->way($w)->{tag};
+	    print $$mwt{name}," " if defined($$mwt{name});
+	    print $$mwt{highway}," " if defined($$mwt{highway});
+	    print $$mwt{maxspeed}," " if defined($$mwt{maxspeed});
+	    print $$mwt{ref}," " if defined($$mwt{ref});
             $oldw=$w;
 	}
 	$oldp=$p;
