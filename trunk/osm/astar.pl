@@ -17,13 +17,21 @@ my @bbox = (4.83,52.28,4.88,52.31);
 #         return the empty path
 sub reconstruct_path {
     my $came_from = shift;
+    my $goes_to = shift;
     my $current_node = shift;
     
     my @path = ();  
     if (defined($came_from->{$current_node})) {
-	@path = reconstruct_path($came_from,$came_from->{$current_node});
+	@path = reconstruct_path($came_from,undef,$came_from->{$current_node});
     }
     push @path,$current_node;
+    my $x = $current_node;
+    if (defined($goes_to)) {
+	while (exists($$goes_to{$x})) {
+	    push @path,$$goes_to{$x};
+	    $x=$$goes_to{$x};
+	}
+    }
     return  @path;
 }
 
@@ -36,12 +44,14 @@ sub Astar {
     my $vehicle = shift;
     
     my %closedset;
-    my %openset;
+    my %goalset;
+    my %startset;
     my %g_score;
     my %h_score;
     my %f_score;
     my %d_score;
     my %came_from;
+    my %goes_to;
     
 #    return "foutje" unless defined($$nodes{$start}) and defined($$nodes{$goal});
  
@@ -51,12 +61,13 @@ sub Astar {
     my $goal = $map->findNode($goallat,$goallon);
     print "start = $start, goal = $goal\n";
     
-    $map->setVehicle($vehicle);
+    $map->initRoute($vehicle);
     
 #     closedset := the empty set                 % The set of nodes already evaluated.     
 #     openset := set containing the initial node % The set of tentative nodes to be evaluated.
     
-    $openset{$start} = 1;
+    $startset{$start} = 1;
+    $goalset{$goal} = 1;
     
 #     g_score[start] := 0                        % Distance from start along optimal path.
 #     h_score[start] := heuristic_estimate_of_distance(start, goal)
@@ -66,48 +77,53 @@ sub Astar {
     $f_score{$start} = $h_score{$start} = $map->calc_h_score($start,$goal,$vehicle);
     $d_score{$start} = $map->distance($start,$goal);
     
+    $g_score{$goal} = 0;
+    $f_score{$goal} = $h_score{$goal} = $map->calc_h_score($goal,$start,$vehicle);
+    $d_score{$goal} = $map->distance($goal,$start);
+    
 #     while openset is not empty
-    while (keys(%openset) != 0) {
+    while (keys(%startset) != 0 or keys(%goalset) != 0) {
 #         x := the node in openset having the lowest f_score[] value
-	my $x = -1;
+	my $xs = -1;
 	
-	for my $k (keys(%openset)) {
-	    $x=$k if $x == -1;
-	    $x=$k if ($f_score{$k} < $f_score{$x});
+	for my $k (keys(%startset)) {
+	    $xs=$k if $xs == -1;
+	    $xs=$k if ($f_score{$k} < $f_score{$xs});
 	}
+	if ($xs != -1) {
 #         if x = goal
 #             return reconstruct_path(came_from,goal)
-	if ($x == $goal or $d_score{$x}<10) {
-	    my @p = reconstruct_path(\%came_from,$x);
+#	if ($xs == $goal or $d_score{$xs}<10) {
+	if (exists($goalset{$xs})) {
+	    my @p = reconstruct_path(\%came_from,\%goes_to,$xs);
 	    my $scores;
 	    $scores->{d_score}=\%d_score;
 	    $scores->{g_score}=\%g_score;
 	    $scores->{h_score}=\%h_score;
 	    $scores->{f_score}=\%f_score;
-	    print Dumper $scores;
+#	    print Dumper $scores;
 	    return @p;
 	}
 #         remove x from openset
-	delete($openset{$x});
+	delete($startset{$xs});
 #         add x to closedset
-	$closedset{$x} = 1;
-	print "close $x ".$f_score{$x}."\n";
+	$closedset{$xs} = 1;
+#	print "close $xs ".$f_score{$xs}."\n";
 #         foreach y in neighbor_nodes(x)
 #	for my $y (keys(%{$$way{$x}})) {
-	for my $y ($map->neighbours($x)) {
+	for my $y ($map->neighbours($xs)) {
 	    $map->fetchNode($y) unless $map->inboundNode($y);
 #             if y in closedset
 #                 continue
 	    next if (defined($closedset{$y}));
 #             tentative_g_score := g_score[x] + dist_between(x,y)
-	    my $tentative_g_score = $g_score{$x} + $map->cost($x,$y);
+	    my $tentative_g_score = $g_score{$xs} + $map->cost($xs,$y);
 # 
 #             if y not in openset
 #                 add y to openset
 	    my $tentative_is_better;
-	    unless (defined($openset{$y})) {
-		$openset{$y} = 1 ;
-# 
+	    unless (defined($startset{$y})) {
+		$startset{$y} = 1 ;
 #                 tentative_is_better := true
 		$tentative_is_better = 1;
 #             elseif tentative_g_score < g_score[y]
@@ -125,15 +141,84 @@ sub Astar {
 #                 h_score[y] := heuristic_estimate_of_distance(y, goal)
 #                 f_score[y] := g_score[y] r+ h_score[y]
 	    if ($tentative_is_better) {
-		$came_from{$y} = $x;
+		$came_from{$y} = $xs;
 		$g_score{$y} = $tentative_g_score;
 		$h_score{$y} = $map->calc_h_score($y,$goal);
 		$d_score{$y} = $map->distance($y,$goal);
 		$f_score{$y} = $g_score{$y}+$h_score{$y};
-#		print "$x $y ",$g_score{$y}," ",$h_score{$y}," ",$f_score{$y},"\n";
+#		print "strt $y $xs ",$g_score{$y}," ",$h_score{$y}," ",$f_score{$y},"\n";
 #		print "openset=",join(", ",keys(%openset)),"\n";
 	    }
 	}
+	}
+	
+	$xs = -1;
+	
+	for my $k (keys(%goalset)) {
+	    $xs=$k if $xs == -1;
+	    $xs=$k if ($f_score{$k} < $f_score{$xs});
+	}
+	if ($xs != -1) {
+#         if x = goal
+#             return reconstruct_path(came_from,goal)
+#	if ($xs == $goal or $d_score{$xs}<10) {
+	if (exists($startset{$xs})) {
+	    my @p = reconstruct_path(\%came_from,\%goes_to,$xs);
+	    my $scores;
+	    $scores->{d_score}=\%d_score;
+	    $scores->{g_score}=\%g_score;
+	    $scores->{h_score}=\%h_score;
+	    $scores->{f_score}=\%f_score;
+#	    print Dumper $scores;
+	    return @p;
+	}
+#         remove x from openset
+	delete($goalset{$xs});
+#         add x to closedset
+	$closedset{$xs} = 1;
+#	print "close $xs ".$f_score{$xs}."\n";
+#         foreach y in neighbor_nodes(x)
+#	for my $y (keys(%{$$way{$x}})) {
+	for my $y ($map->neighbours($xs)) {
+	    $map->fetchNode($y) unless $map->inboundNode($y);
+#             if y in closedset
+#                 continue
+	    next if (defined($closedset{$y}));
+#             tentative_g_score := g_score[x] + dist_between(x,y)
+	    my $tentative_g_score = $g_score{$xs} + $map->cost($y,$xs);
+# 
+#             if y not in openset
+#                 add y to openset
+	    my $tentative_is_better;
+	    unless (defined($goalset{$y})) {
+		$goalset{$y} = 1 ;
+#                 tentative_is_better := true
+		$tentative_is_better = 1;
+#             elseif tentative_g_score < g_score[y]
+	    } elsif ($tentative_g_score < $g_score{$y}) {
+#                 tentative_is_better := true
+		$tentative_is_better = 1;
+#             else
+	    } else {
+#                 tentative_is_better := false
+		$tentative_is_better = 0;
+	    }
+#             if tentative_is_better = true
+#                 came_from[y] := x
+#                 g_score[y] := tentative_g_score
+#                 h_score[y] := heuristic_estimate_of_distance(y, goal)
+#                 f_score[y] := g_score[y] r+ h_score[y]
+	    if ($tentative_is_better) {
+		$goes_to{$y} = $xs;
+		$g_score{$y} = $tentative_g_score;
+		$h_score{$y} = $map->calc_h_score($start,$y);
+		$d_score{$y} = $map->distance($y,$start);
+		$f_score{$y} = $g_score{$y}+$h_score{$y};
+#		print "goal $xs $y ",$g_score{$y}," ",$h_score{$y}," ",$f_score{$y},"\n";
+#		print "openset=",join(", ",keys(%openset)),"\n";
+	    }
+	}
+    }
     }
 #     return failure
     return "foutje";
@@ -182,23 +267,25 @@ my $map = OSM::Map->new();
 
 #print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588));
 #print_path($map,Astar($map,52.297275,4.8616077,52.2886,4.8508));
-#print_path($map,Astar($map,52.297752,4.8616077,52.2886,4.8508,'foot'));
+#print_path($map,Astar($map,52.297275,4.8616077,52.2886,4.8508,'foot'));
 #print_path($map,Astar($map,52.297275,4.8616077,52.2886,4.8508,'bicycle'));
 #print_path($map,Astar($map,52.297275,4.8616077,52.2886,4.8508,'car'));
 #print_path($map,Astar($map,52.297275,4.8616077,52.311311,4.8468799,'car'));
 #print_path($map,Astar($map,52.297275,4.8616077,52.4176385,4.8708703,'bicycle'));
-print_path($map,Astar($map,52.297275,4.8616077,52.4176385,4.8708703,'car'));
-#print_path($map,Astar($map,'46070723','294062118'));
-#print_path($map,Astar($map,'46070723','294062118','foot'));
-#print_path($map,Astar($map,'46070723','294062118','bicycle'));
-#print_path($map,Astar($map,'46070723','294062118','car'));
-#print_path($map,Astar($map,'46071276','46051999'));
-#print_path($map,Astar($map,'46070723','46051999'));
-#print_path($map,Astar($map,'46070723','46026341','bicycle'));
-#print_path($map,Astar($map,'46071276','46026341','car'));
-#print_path($map,Astar($map,'46070723','294062118','car'));
-#print_path($map,Astar($map,'46071276','289899699'));
-#print_path($map,Astar($map,'46071276','289899699','foot'));
-#print_path($map,Astar($map,'46071276','289899699','bicycle'));
-#print_path($map,Astar($map,'46071276','289899699','car'));
+#print_path($map,Astar($map,52.297275,4.8616077,52.4176385,4.8708703,'car'));
+#print_path($map,Astar($map,52.297275,4.8616077,'294062118'));
+#print_path($map,Astar($map,52.297275,4.8616077,'294062118','foot'));
+#print_path($map,Astar($map,52.297275,4.8616077,'294062118','bicycle'));
+#print_path($map,Astar($map,52.297275,4.8616077,'294062118','car'));
+#print_path($map,Astar($map,52.2973969,4.8620826,'46051999'));
+#print_path($map,Astar($map,52.297275,4.8616077,'46051999'));
+#print_path($map,Astar($map,52.297275,4.8616077,'46026341','bicycle'));
+#print_path($map,Astar($map,52.2973969,4.8620826,'46026341','car'));
+#print_path($map,Astar($map,52.297275,4.8616077,'294062118','car'));
+#print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724));
+#print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724,'foot'));
+print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724,'car'));
+print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724,'bicycle'));
+print_path($map,Astar($map,52.4184,4.8724,52.2973969,4.8620826,'car'));
+print_path($map,Astar($map,52.4184,4.8724,52.2973969,4.8620826,'bicycle'));
 $map->saveOSMdata();

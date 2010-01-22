@@ -35,10 +35,12 @@
     my $dist;
     my $way;
     
-    sub setVehicle {
+    sub initRoute {
         my $self = shift;
 	$vehicle = shift;
-	die "Geen profile voor $vehicle\n" unless defined($profiles{$vehicle});
+	if (defined($vehicle)) {
+	    die "Geen profile voor $vehicle\n" unless defined($profiles{$vehicle});
+	}
     }
     
     sub node {
@@ -382,7 +384,7 @@
     $ref="" unless defined($ref);
     $name="" unless defined($name);
     
-    print "$x $y $d $speed $hw $cost $extracost $ma $access $name $ref\n";
+#    print "$x $y $d $speed $hw $cost $extracost $ma $access $name $ref\n";
 #	print "$x $y $cost $extracost\n";
     return $cost * (100.0 +$extracost)/100.0;
     }
