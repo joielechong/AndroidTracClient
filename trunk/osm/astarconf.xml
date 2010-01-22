@@ -46,13 +46,13 @@
 			<allowed highway="tertiary" extracost="30" />
 			<traffic_calming type="table" extracost="0" />
 		</profile>
-		<profile name="bicycle" maxspeed="12" ignore_oneway="0">
+		<profile name="bicycle" maxspeed="15" ignore_oneway="0">
 			<allowed highway="track" extracost="5" />
 			<allowed highway="cycleway" extracost="0" />
-			<allowed highway="residential" extracost="0" />
-			<allowed highway="living_street" extracost="0" />
-			<allowed highway="unclassified" extracost="10" />
-			<allowed highway="service" extracost="10" />
+			<allowed highway="residential" extracost="30" />
+			<allowed highway="living_street" extracost="30" />
+			<allowed highway="unclassified" extracost="30" />
+			<allowed highway="service" extracost="90" />
 			<allowed highway="primary" extracost="30" />
 			<allowed highway="primary_link" extracost="30" />
 			<allowed highway="secondary" extracost="30" />
@@ -61,17 +61,17 @@
 		</profile>
 		<profile name="car" maxspeed="160" ignore_oneway="0">
 			<allowed highway="motorway" extracost="0" />
-			<allowed highway="trunk" extracost="0" />
-			<allowed highway="trunk_link" extracost="0" />
+			<allowed highway="trunk" extracost="5" />
+			<allowed highway="trunk_link" extracost="5" />
 			<allowed highway="motorway_link" extracost="0" />
-			<allowed highway="living_street" extracost="50" />
-			<allowed highway="residential" extracost="50" />
-			<allowed highway="unclassified" extracost="0" />
-			<allowed highway="service" extracost="30" />
-			<allowed highway="primary" extracost="0" />
- 			<allowed highway="primary_link" extracost="0" />
-			<allowed highway="secondary" extracost="0" />
-			<allowed highway="tertiary" extracost="0" />
+			<allowed highway="living_street" extracost="90" />
+			<allowed highway="residential" extracost="90" />
+			<allowed highway="unclassified" extracost="50" />
+			<allowed highway="service" extracost="90" />
+			<allowed highway="primary" extracost="10" />
+ 			<allowed highway="primary_link" extracost="10" />
+			<allowed highway="secondary" extracost="20" />
+			<allowed highway="tertiary" extracost="30" />
 			<traffic_calming type="table" extracost="10" />
 		</profile>
 	</profiles>
