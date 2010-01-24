@@ -59,7 +59,7 @@ sub Astar {
     $map->fetchCoor($goallat,$goallon,1) unless $map->inboundCoor($goallat,$goallon);
     my $start = $map->findNode($startlat,$startlon);
     my $goal = $map->findNode($goallat,$goallon);
-    print "start = $start, goal = $goal\n";
+    print "start = $start, goal = $goal $vehicle\n";
     
     $map->initRoute($vehicle);
     
