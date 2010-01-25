@@ -46,80 +46,94 @@ sub Astar {
     my %closedset;
     my %goalset;
     my %startset;
-    my %g_score;
-    my %h_score;
-    my %f_score;
-    my %d_score;
+    my %gs_score;
+    my %hs_score;
+    my %fs_score;
+    my %ds_score;
+    my %gg_score;
+    my %hg_score;
+    my %fg_score;
+    my %dg_score;
     my %came_from;
     my %goes_to;
+    my @openset;
+    my @f;
+    my @g;
+    my @h;
+    my @d;
+    my @to;
     
-#    return "foutje" unless defined($$nodes{$start}) and defined($$nodes{$goal});
- 
+    $map->initRoute($vehicle);
+    
     $map->fetchCoor($startlat,$startlon,1) unless $map->inboundCoor($startlat,$startlon);
     $map->fetchCoor($goallat,$goallon,1) unless $map->inboundCoor($goallat,$goallon);
     my $start = $map->findNode($startlat,$startlon);
     my $goal = $map->findNode($goallat,$goallon);
     print "start = $start, goal = $goal ".(defined($vehicle)?$vehicle:"")."\n";
     
-    $map->initRoute($vehicle);
-    
 #     closedset := the empty set                 % The set of nodes already evaluated.     
 #     openset := set containing the initial node % The set of tentative nodes to be evaluated.
     
     $startset{$start} = 1;
-    $goalset{$goal} = 1;
+    $goalset{$goal} = 2;
+    
+    $openset[1] = \%startset;
+    $openset[2] = \%goalset;
+    $f[1] = \%fs_score;
+    $f[2] = \%fg_score;
+    $g[1] = \%gs_score;
+    $g[2] = \%gg_score;
+    $h[1] = \%hs_score;
+    $h[2] = \%hg_score;
+    $d[1] = \%ds_score;
+    $d[2] = \%dg_score;
+    $to[1] = \%came_from;
+    $to[2] = \%goes_to;
     
 #     g_score[start] := 0                        % Distance from start along optimal path.
 #     h_score[start] := heuristic_estimate_of_distance(start, goal)
 #     f_score[start] := h_score[start]           % Estimated total distance from start to goal through y.
     
-    $g_score{$start} = 0;
-    $f_score{$start} = $h_score{$start} = $map->calc_h_score($start,$goal,$vehicle);
-    $d_score{$start} = $map->distance($start,$goal);
+    $gs_score{$start} = 0;
+    $fs_score{$start} = $hs_score{$start} = $map->calc_h_score($start,$goal,$vehicle);
+    $ds_score{$start} = $map->distance($start,$goal);
     
-    $g_score{$goal} = 0;
-    $f_score{$goal} = $h_score{$goal} = $map->calc_h_score($goal,$start,$vehicle);
-    $d_score{$goal} = $map->distance($goal,$start);
+    $gg_score{$goal} = 0;
+    $fg_score{$goal} = $hg_score{$goal} = $map->calc_h_score($goal,$start,$vehicle);
+    $dg_score{$goal} = $map->distance($goal,$start);
 
 #
 # de twee sets moeten nog uitgebreid cq vervangen door een set die uitgaat van de werkelijke positie en locatie op een weg vlakbij en niet de dichstbijzijnde node.
 # dit vraagt het toevoegen van tijdelijke nodes en wegen. en dus een initiele set die mogelijk meer dan 1 node bevat.
 # er zou in een straal van x m om het punt gezocht moeten worden, mogelijk dat de straal zich uitbreid. Probleem is nog hoe je dat snel kan doen.
 #
-
     
 #     while openset is not empty
-    while (keys(%startset) != 0 or keys(%goalset) != 0) {
-#         x := the node in openset having the lowest f_score[] value
+  while (keys(%startset) != 0 or keys(%goalset) != 0) {
+    for (my $i=1;$i<=2;$i++) {
+	my %came_from = %{$to[$i]};
+
+	#         x := the node in openset having the lowest f_score[] value
 	my $xs = -1;
 	
-	for my $k (keys(%startset)) {
+	for my $k (keys(%{$openset[$i]})) {
 	    $xs=$k if $xs == -1;
-	    $xs=$k if ($f_score{$k} < $f_score{$xs});
+	    $xs=$k if (${$f[$i]}{$k} < ${$f[$i]}{$xs});
 	}
 	if ($xs != -1) {
 #         if x = goal
 #             return reconstruct_path(came_from,goal)
 #	if ($xs == $goal or $d_score{$xs}<10) {
 #
-# Dit is dus te simpel. Het is niet gegarandeerd dat de gevonden node ook werkelijk die van de beste route is, zelfs als deze op dat moment de laagste f_score heeft, kan er og een beter pad zijn. Mogelijk moeten we in de closed set zoeken.
-# Hoe langer de route hoe groter de kans dat het goed gaat.
-# Wat nu gebeurt is dat de twee langs elkaar heen werken en er toevallig een verbinding wordt gevonden.
 #
-	if (exists($goalset{$xs})) {
-	    my @p = reconstruct_path(\%came_from,\%goes_to,$xs);
-	    my $scores;
-	    $scores->{d_score}=\%d_score;
-	    $scores->{g_score}=\%g_score;
-	    $scores->{h_score}=\%h_score;
-	    $scores->{f_score}=\%f_score;
-#	    print Dumper $scores;
+	if (exists($closedset{$xs}) and $closedset{$xs} != $i) {
+	    my @p = reconstruct_path($to[1],$to[2],$xs);
 	    return @p;
 	}
 #         remove x from openset
-	delete($startset{$xs});
+	delete(${$openset[$i]}{$xs});
 #         add x to closedset
-	$closedset{$xs} = 1;
+	$closedset{$xs} = $i;
 #	print "close $xs ".$f_score{$xs}."\n";
 #         foreach y in neighbor_nodes(x)
 #	for my $y (keys(%{$$way{$x}})) {
@@ -129,17 +143,17 @@ sub Astar {
 #                 continue
 	    next if (defined($closedset{$y}));
 #             tentative_g_score := g_score[x] + dist_between(x,y)
-	    my $tentative_g_score = $g_score{$xs} + $map->cost($xs,$y);
+	    my $tentative_g_score = ${$g[$i]}{$xs} + ($i==1?$map->cost($xs,$y):$map->cost($y,$xs));
 # 
 #             if y not in openset
 #                 add y to openset
 	    my $tentative_is_better;
-	    unless (defined($startset{$y})) {
-		$startset{$y} = 1 ;
+	    unless (defined(${$openset[$i]}{$y})) {
+		${$openset[$i]}{$y} = 1 ;
 #                 tentative_is_better := true
 		$tentative_is_better = 1;
 #             elseif tentative_g_score < g_score[y]
-	    } elsif ($tentative_g_score < $g_score{$y}) {
+	    } elsif ($tentative_g_score < ${$g[$i]}{$y}) {
 #                 tentative_is_better := true
 		$tentative_is_better = 1;
 #             else
@@ -153,85 +167,19 @@ sub Astar {
 #                 h_score[y] := heuristic_estimate_of_distance(y, goal)
 #                 f_score[y] := g_score[y] r+ h_score[y]
 	    if ($tentative_is_better) {
-		$came_from{$y} = $xs;
-		$g_score{$y} = $tentative_g_score;
-		$h_score{$y} = $map->calc_h_score($y,$goal);
-		$d_score{$y} = $map->distance($y,$goal);
-		$f_score{$y} = $g_score{$y}+$h_score{$y};
-		print "strt $xs $y ",$g_score{$y}," ",$h_score{$y}," ",$f_score{$y},"\n";
+		${$to[$i]}{$y} = $xs;
+		${$g[$i]}{$y} = $tentative_g_score;
+		${$h[$i]}{$y} = $map->calc_h_score($y,$goal);
+		${$d[$i]}{$y} = $map->distance($y,$goal);
+		${$f[$i]}{$y} = ${$g[$i]}{$y}+${$h[$i]}{$y};
+		print "$i $xs $y ",${$g[$i]}{$y}," ",${$h[$i]}{$y}," ",${$f[$i]}{$y},"\n";
 #		print "openset=",join(", ",keys(%openset)),"\n";
 	    }
 	}
 	}
+	}
+	}
 	
-	$xs = -1;
-	
-	for my $k (keys(%goalset)) {
-	    $xs=$k if $xs == -1;
-	    $xs=$k if ($f_score{$k} < $f_score{$xs});
-	}
-	if ($xs != -1) {
-#         if x = goal
-#             return reconstruct_path(came_from,goal)
-#	if ($xs == $goal or $d_score{$xs}<10) {
-	if (exists($startset{$xs})) {
-	    my @p = reconstruct_path(\%came_from,\%goes_to,$xs);
-	    my $scores;
-	    $scores->{d_score}=\%d_score;
-	    $scores->{g_score}=\%g_score;
-	    $scores->{h_score}=\%h_score;
-	    $scores->{f_score}=\%f_score;
-#	    print Dumper $scores;
-	    return @p;
-	}
-#         remove x from openset
-	delete($goalset{$xs});
-#         add x to closedset
-	$closedset{$xs} = 1;
-#	print "close $xs ".$f_score{$xs}."\n";
-#         foreach y in neighbor_nodes(x)
-#	for my $y (keys(%{$$way{$x}})) {
-	for my $y ($map->neighbours($xs)) {
-	    $map->fetchNode($y) unless $map->inboundNode($y);
-#             if y in closedset
-#                 continue
-	    next if (defined($closedset{$y}));
-#             tentative_g_score := g_score[x] + dist_between(x,y)
-	    my $tentative_g_score = $g_score{$xs} + $map->cost($y,$xs);
-# 
-#             if y not in openset
-#                 add y to openset
-	    my $tentative_is_better;
-	    unless (defined($goalset{$y})) {
-		$goalset{$y} = 1 ;
-#                 tentative_is_better := true
-		$tentative_is_better = 1;
-#             elseif tentative_g_score < g_score[y]
-	    } elsif ($tentative_g_score < $g_score{$y}) {
-#                 tentative_is_better := true
-		$tentative_is_better = 1;
-#             else
-	    } else {
-#                 tentative_is_better := false
-		$tentative_is_better = 0;
-	    }
-#             if tentative_is_better = true
-#                 came_from[y] := x
-#                 g_score[y] := tentative_g_score
-#                 h_score[y] := heuristic_estimate_of_distance(y, goal)
-#                 f_score[y] := g_score[y] r+ h_score[y]
-	    if ($tentative_is_better) {
-		$goes_to{$y} = $xs;
-		$g_score{$y} = $tentative_g_score;
-		$h_score{$y} = $map->calc_h_score($start,$y);
-		$d_score{$y} = $map->distance($y,$start);
-		$f_score{$y} = $g_score{$y}+$h_score{$y};
-		print "goal $y $xs ",$g_score{$y}," ",$h_score{$y}," ",$f_score{$y},"\n";
-#		print "openset=",join(", ",keys(%openset)),"\n";
-	    }
-	}
-    }
-    }
 #     return failure
     return "foutje";
 }
