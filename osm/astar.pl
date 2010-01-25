@@ -146,7 +146,7 @@ sub Astar {
 		$h_score{$y} = $map->calc_h_score($y,$goal);
 		$d_score{$y} = $map->distance($y,$goal);
 		$f_score{$y} = $g_score{$y}+$h_score{$y};
-#		print "strt $y $xs ",$g_score{$y}," ",$h_score{$y}," ",$f_score{$y},"\n";
+		print "strt $xs $y ",$g_score{$y}," ",$h_score{$y}," ",$f_score{$y},"\n";
 #		print "openset=",join(", ",keys(%openset)),"\n";
 	    }
 	}
@@ -214,7 +214,7 @@ sub Astar {
 		$h_score{$y} = $map->calc_h_score($start,$y);
 		$d_score{$y} = $map->distance($y,$start);
 		$f_score{$y} = $g_score{$y}+$h_score{$y};
-#		print "goal $xs $y ",$g_score{$y}," ",$h_score{$y}," ",$f_score{$y},"\n";
+		print "goal $y $xs ",$g_score{$y}," ",$h_score{$y}," ",$f_score{$y},"\n";
 #		print "openset=",join(", ",keys(%openset)),"\n";
 	    }
 	}
