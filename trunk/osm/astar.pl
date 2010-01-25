@@ -80,6 +80,13 @@ sub Astar {
     $g_score{$goal} = 0;
     $f_score{$goal} = $h_score{$goal} = $map->calc_h_score($goal,$start,$vehicle);
     $d_score{$goal} = $map->distance($goal,$start);
+
+#
+# de twee sets moeten nog uitgebreid cq vervangen door een set die uitgaat van de werkelijke positie en locatie op een weg vlakbij en niet de dichstbijzijnde node.
+# dit vraagt het toevoegen van tijdelijke nodes en wegen. en dus een initiele set die mogelijk meer dan 1 node bevat.
+# er zou in een straal van x m om het punt gezocht moeten worden, mogelijk dat de straal zich uitbreid. Probleem is nog hoe je dat snel kan doen.
+#
+
     
 #     while openset is not empty
     while (keys(%startset) != 0 or keys(%goalset) != 0) {
@@ -94,6 +101,11 @@ sub Astar {
 #         if x = goal
 #             return reconstruct_path(came_from,goal)
 #	if ($xs == $goal or $d_score{$xs}<10) {
+#
+# Dit is dus te simpel. Het is niet gegarandeerd dat de gevonden node ook werkelijk die van de beste route is, zelfs als deze op dat moment de laagste f_score heeft, kan er og een beter pad zijn. Mogelijk moeten we in de closed set zoeken.
+# Hoe langer de route hoe groter de kans dat het goed gaat.
+# Wat nu gebeurt is dat de twee langs elkaar heen werken en er toevallig een verbinding wordt gevonden.
+#
 	if (exists($goalset{$xs})) {
 	    my @p = reconstruct_path(\%came_from,\%goes_to,$xs);
 	    my $scores;
