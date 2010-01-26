@@ -60,6 +60,7 @@ sub Astar {
     my @h;
     my @d;
     my @to;
+    my @gl;
     
     $map->initRoute($vehicle);
     
@@ -87,7 +88,9 @@ sub Astar {
     $d[2] = \%dg_score;
     $to[1] = \%came_from;
     $to[2] = \%goes_to;
-    
+    $gl[1] = $goal;
+    $gl[2] = $start;
+
 #     g_score[start] := 0                        % Distance from start along optimal path.
 #     h_score[start] := heuristic_estimate_of_distance(start, goal)
 #     f_score[start] := h_score[start]           % Estimated total distance from start to goal through y.
@@ -109,7 +112,7 @@ sub Astar {
 #     while openset is not empty
     while (keys(%startset) != 0 or keys(%goalset) != 0) {
 	for (my $i=1;$i<=2;$i++) {
-	    my %came_from = %{$to[$i]};
+	    my $goal = $gl[$i];
 	    
 	    #         x := the node in openset having the lowest f_score[] value
 	    my $xs = -1;
@@ -170,7 +173,8 @@ sub Astar {
 			${$h[$i]}{$y} = $map->calc_h_score($y,$goal);
 			${$d[$i]}{$y} = $map->distance($y,$goal);
 			${$f[$i]}{$y} = ${$g[$i]}{$y}+${$h[$i]}{$y};
-			print "$i $xs $y ",${$g[$i]}{$y}," ",${$h[$i]}{$y}," ",${$f[$i]}{$y},"\n";
+#			print "$i $xs $y ",${$g[$i]}{$y}," ",${$h[$i]}{$y}," ",${$f[$i]}{$y},"\n" if $i==1;
+#			print "$i $y $xs ",${$g[$i]}{$y}," ",${$h[$i]}{$y}," ",${$f[$i]}{$y},"\n" if $i==2;
 #		print "openset=",join(", ",keys(%openset)),"\n";
 		    }
 		}
@@ -226,7 +230,7 @@ if (defined($arg) && ($arg eq "local")) {
 #print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'bicycle'));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'car'));
 print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588));
-#print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588,'foot'));
+print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588,'foot'));
 #print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588,'bicycle'));
 #print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588,'car'));
 #print_path($map,Astar($map,52.297275,4.8616077,52.2886,4.8508));
@@ -251,9 +255,9 @@ print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.2871944,4.8503294,'car'));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724,'foot'));
-#print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724,'car'));
+print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724,'car'));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724,'bicycle'));
-#print_path($map,Astar($map,52.4184,4.8724,52.2973969,4.8620826,'car'));
+print_path($map,Astar($map,52.4184,4.8724,52.2973969,4.8620826,'car'));
 #print_path($map,Astar($map,52.4184,4.8724,52.2973969,4.8620826,'bicycle'));
 $map->saveOSMdata();
 
