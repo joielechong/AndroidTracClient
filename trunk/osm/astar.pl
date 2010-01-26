@@ -6,21 +6,21 @@ use Data::Dumper;
 
 my @bbox = (4.83,52.28,4.88,52.31);
 
-# 
-# function reconstruct_path(came_from,current_node)
-#     if came_from[current_node] is set
-#         p = reconstruct_path(came_from,came_from[current_node])
-#         return (p + current_node)
-#     else
-#         return the empty path
 sub reconstruct_path {
     my $came_from = shift;
     my $goes_to = shift;
     my $current_node = shift;
     
-    my @path = ();  
-    if (defined($came_from->{$current_node})) {
-	@path = reconstruct_path($came_from,undef,$came_from->{$current_node});
+    my @path = ();
+    my @rev;
+    my $cn = $current_node;
+    
+    while (defined($came_from->{$cn})) {
+	$cn = $came_from->{$cn};
+        push @rev,$cn;
+    }
+    while ($cn=pop(@rev)) {
+	push @path,$cn;
     }
     push @path,$current_node;
     my $x = $current_node;
@@ -70,9 +70,6 @@ sub Astar {
     my $goal = $map->findNode($goallat,$goallon);
     print "start = $start, goal = $goal ".(defined($vehicle)?$vehicle:"")."\n";
     
-#     closedset := the empty set                 % The set of nodes already evaluated.     
-#     openset := set containing the initial node % The set of tentative nodes to be evaluated.
-    
     $startset{$start} = 1;
     $goalset{$goal} = 2;
     
@@ -91,10 +88,6 @@ sub Astar {
     $gl[1] = $goal;
     $gl[2] = $start;
 
-#     g_score[start] := 0                        % Distance from start along optimal path.
-#     h_score[start] := heuristic_estimate_of_distance(start, goal)
-#     f_score[start] := h_score[start]           % Estimated total distance from start to goal through y.
-    
     $gs_score{$start} = 0;
     $fs_score{$start} = $hs_score{$start} = $map->calc_h_score($start,$goal,$vehicle);
     $ds_score{$start} = $map->distance($start,$goal);
@@ -109,12 +102,9 @@ sub Astar {
 # er zou in een straal van x m om het punt gezocht moeten worden, mogelijk dat de straal zich uitbreid. Probleem is nog hoe je dat snel kan doen.
 #
     
-#     while openset is not empty
     while (keys(%startset) != 0 or keys(%goalset) != 0) {
 	for (my $i=1;$i<=2;$i++) {
 	    my $goal = $gl[$i];
-	    
-	    #         x := the node in openset having the lowest f_score[] value
 	    my $xs = -1;
 	    
 	    for my $k (keys(%{$openset[$i]})) {
@@ -122,51 +112,26 @@ sub Astar {
 		$xs=$k if (${$f[$i]}{$k} < ${$f[$i]}{$xs});
 	    }
 	    if ($xs != -1) {
-#         if x = goal
-#             return reconstruct_path(came_from,goal)
-#	if ($xs == $goal or $d_score{$xs}<10) {
-#
-#
 		if (exists($closedset{$xs}) and $closedset{$xs} != $i) {
 		    my @p = reconstruct_path($to[1],$to[2],$xs);
 		    return @p;
 		}
-#         remove x from openset
 		delete(${$openset[$i]}{$xs});
-#         add x to closedset
 		$closedset{$xs} = $i;
-#	print "close $xs ".$f_score{$xs}."\n";
-#         foreach y in neighbor_nodes(x)
-#	for my $y (keys(%{$$way{$x}})) {
+#	        print "close $xs ".$f_score{$xs}."\n";                
 		for my $y ($map->neighbours($xs)) {
 		    $map->fetchNode($y) unless $map->inboundNode($y);
-#             if y in closedset
-#                 continue
 		    next if (defined($closedset{$y}));
-#             tentative_g_score := g_score[x] + dist_between(x,y)
 		    my $tentative_g_score = ${$g[$i]}{$xs} + ($i==1?$map->cost($xs,$y):$map->cost($y,$xs));
-# 
-#             if y not in openset
-#                 add y to openset
 		    my $tentative_is_better;
 		    unless (defined(${$openset[$i]}{$y})) {
 			${$openset[$i]}{$y} = 1 ;
-#                 tentative_is_better := true
 			$tentative_is_better = 1;
-#             elseif tentative_g_score < g_score[y]
 		    } elsif ($tentative_g_score < ${$g[$i]}{$y}) {
-#                 tentative_is_better := true
 			$tentative_is_better = 1;
-#             else
 		    } else {
-#                 tentative_is_better := false
 			$tentative_is_better = 0;
 		    }
-#             if tentative_is_better = true
-#                 came_from[y] := x
-#                 g_score[y] := tentative_g_score
-#                 h_score[y] := heuristic_estimate_of_distance(y, goal)
-#                 f_score[y] := g_score[y] r+ h_score[y]
 		    if ($tentative_is_better) {
 			${$to[$i]}{$y} = $xs;
 			${$g[$i]}{$y} = $tentative_g_score;
@@ -175,7 +140,7 @@ sub Astar {
 			${$f[$i]}{$y} = ${$g[$i]}{$y}+${$h[$i]}{$y};
 #			print "$i $xs $y ",${$g[$i]}{$y}," ",${$h[$i]}{$y}," ",${$f[$i]}{$y},"\n" if $i==1;
 #			print "$i $y $xs ",${$g[$i]}{$y}," ",${$h[$i]}{$y}," ",${$f[$i]}{$y},"\n" if $i==2;
-#		print "openset=",join(", ",keys(%openset)),"\n";
+#		        print "openset=",join(", ",keys(%openset)),"\n";
 		    }
 		}
 	    }
@@ -259,7 +224,7 @@ if (defined($arg) && ($arg eq "local")) {
 #print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724,'bicycle'));
 #print_path($map,Astar($map,52.4184,4.8724,52.2973969,4.8620826,'car'));
 #print_path($map,Astar($map,52.4184,4.8724,52.2973969,4.8620826,'bicycle'));
-print_path($map,Astar($map,52.2973969,4.8620826,51.9972199,4.3855367,'car'));
+#print_path($map,Astar($map,52.2973969,4.8620826,51.9972199,4.3855367,'car'));
 print_path($map,Astar($map,52.4184,4.8724,51.9972199,4.3855367,'car'));
 $map->saveOSMdata();
 
