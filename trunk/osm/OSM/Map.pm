@@ -280,7 +280,7 @@
         my $y = shift;
 	
         my $d=$self->distance($x,$y);
-        return defined($vehicle) ? $d *7.2/$profiles{$vehicle}->{maxspeed} : $d;
+        return defined($vehicle) ? $d *3.6/$profiles{$vehicle}->{avgspeed} : $d;
     }
     
     sub wrong_direction {
@@ -384,8 +384,8 @@
 	$ref="" unless defined($ref);
 	$name="" unless defined($name);
 	
-#    print "$x $y $d $speed $hw $cost $extracost $ma $access $name $ref\n";
-#	print "$x $y $cost $extracost\n";
+#	print "cost $x $y $d $speed $hw $cost $extracost $ma $access $name $ref\n";
+#	print "cost $x $y $d $speed $cost $extracost\n";
 	return $cost * (100.0 +$extracost)/100.0;
     }
     
