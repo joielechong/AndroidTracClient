@@ -38,6 +38,8 @@
     sub initRoute {
         my $self = shift;
 	$vehicle = shift;
+        $self->removetempways();
+        $self->removetempnodes();
 	if (defined($vehicle)) {
 	    die "Geen profile voor $vehicle\n" unless defined($profiles{$vehicle});
 	}
@@ -252,19 +254,87 @@
 	$self->useNetdata(@bbox);
     }
     
-    sub findNode {
+    sub tempnode {
         my ($self,$lat,$lon) = @_;
+        my $nr = $self->{tempnodes}++;
+        my $nodeid="TN$nr";
+        $$nodes{$nodeid}->{lat} = $lat;
+        $$nodes{$nodeid}->{lon} = $lon;
+        return $nodeid;
+    }
+    
+    sub tempway {
+        my $self = shift;
+        my @nds = @_;
+        my $nr = $self->{tempways}++;
+        my $wayid="WN$nr";
+        $$ways{$wayid}->{nd}=();
+        for (my $i=0;$i<=$#nds;$i++){
+             $$ways{$wayid}->{nd}->[$i]->{ref}=$nds[$i];
+             $way->{$nds[$i-1]}->{$nds[$i]}=$wayid if $i>0;
+             $way->{$nds[$i]}->{$nds[$i-1]}=$wayid if $i>0;
+        }
+        $$ways{$wayid}->{tag}->{highway}="service";
+        return $wayid;
+    }
+    
+    sub findNode {
+        my ($self,$lat,$lon,$maxdist) = @_;
 	my $node = undef;
 	my $distance=$infinity;
-	
+        my @retnodes;
+
 	for my $n (keys %$nodes) {
 	    my $d = $self->distanceCoor($lat,$lon,$$nodes{$n}->{lat},$$nodes{$n}->{lon});
 	    if ($d < $distance) {
 		$distance=$d;
 		$node = $n;
 	    }
+            push @retnodes,$n if (defined($maxdist) && $distance <= $maxdist);
 	}
-	return $node;
+        
+        if ($#retnodes > 0) {
+            my $nn = ($self->tempnode($lat,$lon);
+            for my $n (@retnodes) {
+               $self->tempway($n,$nn);
+            }
+            return $nn;
+        } elsif ($#retnodes == 0) {
+            return $retnode[0];
+        }
+	return @node if (defined($maxdist) && ($distance <= $maxdist));
+        
+        my @nb = $self->neighbours($node);
+        my $nn = ($self->tempnode($lat,$lon);
+        my $madeway = 0;
+        for my $n (@nb) {
+            my $dx = ($$nodes{$n}->{lon} - $$nodes{$node}->{lon});
+            my $dy = ($$nodes{$n}->{lat} - $$nodes{$node}->{lat});
+            my ($a,$b,$lat1,$lon1,$nt));
+            if (abs($dy) > abs($dx)) {
+                $a = $dx/$dy;
+                $b = $$nodes{$node}->{lon} - $a*$$nodes{$node}->{lat};
+                $lon1 = ($$nodes{$nn}->{lon}-$a*$$nodes{$nn}->{lat}-$a*$b)/($a*$a+1);
+                if (($lon1-$lon)/$dy > 0) {
+                    $lat1 = $lon1*$a+$b;
+                    $nt = $self->tempnode($lat1,$lon1);
+                    $self->tempway($nn,$nt,$node);
+                    $madeway = 1;
+                }
+            } else {
+                $a = $dy/$dx;
+                $b = $$nodes{$node}->{lat} - $a*$$nodes{$node}->{lon};
+                $lat1 = ($lat-$a*$lon-$a*$b)/($a*$a+1);
+                if (($lat1-$lat)/$dx > 0) {
+                    $lon1 = $lat1*$a+$b;
+                    $nt = $self->tempnode($lat1,$lon1);
+                    $self->tempway($nn,$nt,$node);
+                    $madeway = 1;
+                }
+            }
+        } 
+        $self->tempway($node,$nn) if $madeway == 0;
+        return $nn;
     }
     
     sub fetchNode {
