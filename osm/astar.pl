@@ -66,12 +66,26 @@ sub Astar {
     
     $map->fetchCoor($startlat,$startlon,1) unless $map->inboundCoor($startlat,$startlon);
     $map->fetchCoor($goallat,$goallon,1) unless $map->inboundCoor($goallat,$goallon);
-    my $start = $map->findNode($startlat,$startlon);
-    my $goal = $map->findNode($goallat,$goallon);
+    my @startnodes = $map->findNode($startlat,$startlon);
+    my @goalnodes = $map->findNode($goallat,$goallon);
+    my $start = $startnodes[0];
+    my $goal = $goalnodes[0];
     print "start = $start, goal = $goal ".(defined($vehicle)?$vehicle:"")."\n";
     
-    $startset{$start} = 1;
-    $goalset{$goal} = 2;
+    for my $n (@startnodes) {
+        unless (exists($startset{$n})) {
+            $startset{$n} = 1;
+            $gs_score{$n} = 0;
+            $fs_score{$n} = $hs_score{$n} = $map->calc_h_score($n,$goal,$vehicle);
+            $ds_score{$n} = $map->distance($n,$goal);
+        }
+    }
+    for my $n (@goalnodes) {
+        $goalset{$n} = 2;
+        $gg_score{$n} = 0;
+        $fg_score{$n} = $hg_score{$n} = $map->calc_h_score($n,$start,$vehicle);
+        $dg_score{$n} = $map->distance($n,$start);
+   }
     
     $openset[1] = \%startset;
     $openset[2] = \%goalset;
@@ -88,13 +102,6 @@ sub Astar {
     $gl[1] = $goal;
     $gl[2] = $start;
 
-    $gs_score{$start} = 0;
-    $fs_score{$start} = $hs_score{$start} = $map->calc_h_score($start,$goal,$vehicle);
-    $ds_score{$start} = $map->distance($start,$goal);
-    
-    $gg_score{$goal} = 0;
-    $fg_score{$goal} = $hg_score{$goal} = $map->calc_h_score($goal,$start,$vehicle);
-    $dg_score{$goal} = $map->distance($goal,$start);
     
 #
 # de twee sets moeten nog uitgebreid cq vervangen door een set die uitgaat van de werkelijke positie en locatie op een weg vlakbij en niet de dichstbijzijnde node.
