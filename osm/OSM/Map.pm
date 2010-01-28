@@ -312,9 +312,6 @@
         }
 	return $node if (defined($maxdist) && ($distance <= $maxdist));
 	
-	print "nn   = $lat , $lon\n";
-	print "node = ",$$nodes{$node}->{lat}," , ",$$nodes{$node}->{lon},"\n";
-        
         my @nb = $self->neighbours($node);
         my $nn = $self->tempnode($lat,$lon);
         my $madeway = 0;
@@ -325,33 +322,29 @@
         for my $n (@nb) {
             my $x3=$$nodes{$n}->{lon};
             my $y3=$$nodes{$n}->{lat};
-	    print "nb   = $x3 , $y3\n";
             my $dx = ($x2-$x3 );
             my $dy = ($y2-$y3);
-	    print "dx=$dx, dy=$dy\n";
             my ($a,$b,$lat1,$x4,$y4,$nt);
             if (abs($dy) > abs($dx)) {
                 $a = $dx/$dy;
                 $b = $x2 - $a*$y2;
                 $y4 = ($y1+$a*($x1-$b))/(1+$a**2);
-		print "a=$a, b=$b, y4=$y4\n";
                 if (($y4-$y2)/$dy < 0) {
                     $x4 = $y4*$a+$b;
                     $nt = $self->tempnode($y4,$x4);
-		    print "$nt, $y4 , $x4\n";
                     $self->tempway($nn,$nt,$node);
+                    $self->tempway($nn,$nt,$n);
                     $madeway = 1;
                 }
             } else {
                 $a = $dy/$dx;
                 $b = $y2 - $a*$x2;
                 $x4 = ($x1+$a*($y1-$b))/(1+$a**2);
-		print "a=$a, b=$b, x4=$x4\n";
                 if (($x4-$x2)/$dx < 0) {
                     $y4 = $x4*$a+$b;
                     $nt = $self->tempnode($y4,$x4);
-		    print "$nt, $y4 , $x4\n";
                     $self->tempway($nn,$nt,$node);
+                    $self->tempway($nn,$nt,$n);
                     $madeway = 1;
                 }
             }
