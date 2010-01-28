@@ -254,6 +254,12 @@
 	$self->useNetdata(@bbox);
     }
     
+    sub removetempnodes {
+    }
+    
+    sub removetempways {
+    }
+    
     sub tempnode {
         my ($self,$lat,$lon) = @_;
         my $nr = $self->{tempnodes}++;
@@ -294,40 +300,49 @@
 	}
         
         if ($#retnodes > 0) {
-            my $nn = ($self->tempnode($lat,$lon);
+            my $nn = $self->tempnode($lat,$lon);
             for my $n (@retnodes) {
                $self->tempway($n,$nn);
             }
             return $nn;
         } elsif ($#retnodes == 0) {
-            return $retnode[0];
+            return $retnodes[0];
         }
-	return @node if (defined($maxdist) && ($distance <= $maxdist));
+	return $node if (defined($maxdist) && ($distance <= $maxdist));
+	
+	print "nn   = $lat , $lon\n";
+	print "node = ",$$nodes{$node}->{lat}," , ",$$nodes{$node}->{lon},"\n";
         
         my @nb = $self->neighbours($node);
-        my $nn = ($self->tempnode($lat,$lon);
+        my $nn = $self->tempnode($lat,$lon);
         my $madeway = 0;
         for my $n (@nb) {
-            my $dx = ($$nodes{$n}->{lon} - $$nodes{$node}->{lon});
-            my $dy = ($$nodes{$n}->{lat} - $$nodes{$node}->{lat});
-            my ($a,$b,$lat1,$lon1,$nt));
+	    print "nb   = ",$$nodes{$n}->{lat}," , ",$$nodes{$n}->{lon},"\n";
+            my $dx = ($$nodes{$node}->{lon} - $$nodes{$n}->{lon});
+            my $dy = ($$nodes{$node}->{lat} - $$nodes{$n}->{lat});
+	    print "dx=$dx, dy=$dy\n";
+            my ($a,$b,$lat1,$lon1,$nt);
             if (abs($dy) > abs($dx)) {
                 $a = $dx/$dy;
                 $b = $$nodes{$node}->{lon} - $a*$$nodes{$node}->{lat};
-                $lon1 = ($$nodes{$nn}->{lon}-$a*$$nodes{$nn}->{lat}-$a*$b)/($a*$a+1);
+                $lon1 = ($lon+$a*$lat-$a*$b)/(1+$a^2);
+		print "a=$a, b=$b, lon1=$lon1\n";
                 if (($lon1-$lon)/$dy > 0) {
                     $lat1 = $lon1*$a+$b;
                     $nt = $self->tempnode($lat1,$lon1);
+		    print "$nt, $lat, $lon\n";
                     $self->tempway($nn,$nt,$node);
                     $madeway = 1;
                 }
             } else {
                 $a = $dy/$dx;
                 $b = $$nodes{$node}->{lat} - $a*$$nodes{$node}->{lon};
-                $lat1 = ($lat-$a*$lon-$a*$b)/($a*$a+1);
+                $lat1 = ($lat+$a*$lon-$a*$b)/($a*$a+1);
+		print "a=$a, b=$b, lat1=$lat1\n";
                 if (($lat1-$lat)/$dx > 0) {
                     $lon1 = $lat1*$a+$b;
                     $nt = $self->tempnode($lat1,$lon1);
+		    print "$nt, $lat, $lon\n";
                     $self->tempway($nn,$nt,$node);
                     $madeway = 1;
                 }
