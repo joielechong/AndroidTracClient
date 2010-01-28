@@ -41,26 +41,8 @@ sub Astar {
     my $goallon  = shift;
     my $vehicle = shift;
     
-    my %closedset;
-    my %goalset;
-    my %startset;
-    my %gs_score;
-    my %hs_score;
-    my %fs_score;
-    my %ds_score;
-    my %gg_score;
-    my %hg_score;
-    my %fg_score;
-    my %dg_score;
-    my %came_from;
-    my %goes_to;
-    my @openset;
-    my @f;
-    my @g;
-    my @h;
-    my @d;
-    my @to;
-    my @gl;
+    my (%closedset,%goalset,%startset,%gs_score,%hs_score,%fs_score,%ds_score,%gg_score,%hg_score,%fg_score,%dg_score,%came_from,%goes_to);
+    my (@openset,@f,@g,@h,@d,@to,@gl);
     
     $map->initRoute($vehicle);
     
