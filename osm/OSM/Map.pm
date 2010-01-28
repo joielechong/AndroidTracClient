@@ -266,6 +266,7 @@
         my $nodeid="TN$nr";
         $$nodes{$nodeid}->{lat} = $lat;
         $$nodes{$nodeid}->{lon} = $lon;
+	print "Created node $nodeid, $lat,$lon\n";
         return $nodeid;
     }
     
@@ -281,6 +282,7 @@
              $way->{$nds[$i]}->{$nds[$i-1]}=$wayid if $i>0;
         }
         $$ways{$wayid}->{tag}->{highway}="service";
+	print "Created way $wayid: nodes: ",join(", ",@nds),"\n";
         return $wayid;
     }
     
@@ -316,33 +318,39 @@
         my @nb = $self->neighbours($node);
         my $nn = $self->tempnode($lat,$lon);
         my $madeway = 0;
+        my $x1=$lon;
+        my $y1=$lat;
+        my $x2=$$nodes{$node}->{lon};
+        my $y2=$$nodes{$node}->{lat};
         for my $n (@nb) {
-	    print "nb   = ",$$nodes{$n}->{lat}," , ",$$nodes{$n}->{lon},"\n";
-            my $dx = ($$nodes{$node}->{lon} - $$nodes{$n}->{lon});
-            my $dy = ($$nodes{$node}->{lat} - $$nodes{$n}->{lat});
+            my $x3=$$nodes{$n}->{lon};
+            my $y3=$$nodes{$n}->{lat};
+	    print "nb   = $x3 , $y3\n";
+            my $dx = ($x2-$x3 );
+            my $dy = ($y2-$y3);
 	    print "dx=$dx, dy=$dy\n";
-            my ($a,$b,$lat1,$lon1,$nt);
+            my ($a,$b,$lat1,$x4,$y4,$nt);
             if (abs($dy) > abs($dx)) {
                 $a = $dx/$dy;
-                $b = $$nodes{$node}->{lon} - $a*$$nodes{$node}->{lat};
-                $lon1 = ($lon+$a*$lat-$a*$b)/(1+$a^2);
-		print "a=$a, b=$b, lon1=$lon1\n";
-                if (($lon1-$lon)/$dy > 0) {
-                    $lat1 = $lon1*$a+$b;
-                    $nt = $self->tempnode($lat1,$lon1);
-		    print "$nt, $lat, $lon\n";
+                $b = $x2 - $a*$y2;
+                $y4 = ($y1+$a*($x1-$b))/(1+$a**2);
+		print "a=$a, b=$b, y4=$y4\n";
+                if (($y4-$y2)/$dy < 0) {
+                    $x4 = $y4*$a+$b;
+                    $nt = $self->tempnode($y4,$x4);
+		    print "$nt, $y4 , $x4\n";
                     $self->tempway($nn,$nt,$node);
                     $madeway = 1;
                 }
             } else {
                 $a = $dy/$dx;
-                $b = $$nodes{$node}->{lat} - $a*$$nodes{$node}->{lon};
-                $lat1 = ($lat+$a*$lon-$a*$b)/(1+$a^2);
-		print "a=$a, b=$b, lat1=$lat1\n";
-                if (($lat1-$lat)/$dx > 0) {
-                    $lon1 = $lat1*$a+$b;
-                    $nt = $self->tempnode($lat1,$lon1);
-		    print "$nt, $lat, $lon\n";
+                $b = $y2 - $a*$x2;
+                $x4 = ($x1+$a*($y1-$b))/(1+$a**2);
+		print "a=$a, b=$b, x4=$x4\n";
+                if (($x4-$x2)/$dx < 0) {
+                    $y4 = $x4*$a+$b;
+                    $nt = $self->tempnode($y4,$x4);
+		    print "$nt, $y4 , $x4\n";
                     $self->tempway($nn,$nt,$node);
                     $madeway = 1;
                 }
