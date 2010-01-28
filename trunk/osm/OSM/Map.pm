@@ -337,7 +337,7 @@
             } else {
                 $a = $dy/$dx;
                 $b = $$nodes{$node}->{lat} - $a*$$nodes{$node}->{lon};
-                $lat1 = ($lat+$a*$lon-$a*$b)/($a*$a+1);
+                $lat1 = ($lat+$a*$lon-$a*$b)/(1+$a^2);
 		print "a=$a, b=$b, lat1=$lat1\n";
                 if (($lat1-$lat)/$dx > 0) {
                     $lon1 = $lat1*$a+$b;
