@@ -66,26 +66,21 @@ sub Astar {
     
     $map->fetchCoor($startlat,$startlon,1) unless $map->inboundCoor($startlat,$startlon);
     $map->fetchCoor($goallat,$goallon,1) unless $map->inboundCoor($goallat,$goallon);
-    my @startnodes = $map->findNode($startlat,$startlon);
-    my @goalnodes = $map->findNode($goallat,$goallon);
-    my $start = $startnodes[0];
-    my $goal = $goalnodes[0];
+    my $start = $map->findNode($startlat,$startlon);
+    my $goal = $map->findNode($goallat,$goallon);
     print "start = $start, goal = $goal ".(defined($vehicle)?$vehicle:"")."\n";
+
+    $startset{$start} = 1;
+    $goalset{$goal} = 2;
     
-    for my $n (@startnodes) {
-        unless (exists($startset{$n})) {
-            $startset{$n} = 1;
-            $gs_score{$n} = 0;
-            $fs_score{$n} = $hs_score{$n} = $map->calc_h_score($n,$goal,$vehicle);
-            $ds_score{$n} = $map->distance($n,$goal);
-        }
-    }
-    for my $n (@goalnodes) {
-        $goalset{$n} = 2;
-        $gg_score{$n} = 0;
-        $fg_score{$n} = $hg_score{$n} = $map->calc_h_score($n,$start,$vehicle);
-        $dg_score{$n} = $map->distance($n,$start);
-   }
+    $gs_score{$start} = 0;
+    $fs_score{$start} = $hs_score{$start} = $map->calc_h_score($start,$goal,$vehicle);
+    $ds_score{$start} = $map->distance($start,$goal);
+    
+    $gg_score{$goal} = 0;
+    $fg_score{$goal} = $hg_score{$goal} = $map->calc_h_score($goal,$start,$vehicle);
+    $dg_score{$goal} = $map->distance($goal,$start);
+    
     
     $openset[1] = \%startset;
     $openset[2] = \%goalset;
@@ -101,24 +96,17 @@ sub Astar {
     $to[2] = \%goes_to;
     $gl[1] = $goal;
     $gl[2] = $start;
-
-    
-#
-# de twee sets moeten nog uitgebreid cq vervangen door een set die uitgaat van de werkelijke positie en locatie op een weg vlakbij en niet de dichstbijzijnde node.
-# dit vraagt het toevoegen van tijdelijke nodes en wegen. en dus een initiele set die mogelijk meer dan 1 node bevat.
-# er zou in een straal van x m om het punt gezocht moeten worden, mogelijk dat de straal zich uitbreid. Probleem is nog hoe je dat snel kan doen.
-#
     
     while (keys(%startset) != 0 or keys(%goalset) != 0) {
 	for (my $i=1;$i<=2;$i++) {
 	    my $goal = $gl[$i];
-	    my $xs = -1;
+	    my $xs = undef;
 	    
 	    for my $k (keys(%{$openset[$i]})) {
-		$xs=$k if $xs == -1;
+		$xs=$k unless defined($xs);
 		$xs=$k if (${$f[$i]}{$k} < ${$f[$i]}{$xs});
 	    }
-	    if ($xs != -1) {
+	    if (defined($xs)) {
 		if (exists($closedset{$xs}) and $closedset{$xs} != $i) {
 		    my @p = reconstruct_path($to[1],$to[2],$xs);
 		    return @p;
@@ -197,7 +185,7 @@ if (defined($arg) && ($arg eq "local")) {
     $map->useLocaldata("map.osm");
 }
 
-#print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588));
+print_path($map,Astar($map,52.297277,4.862030,52.29334,4.85876));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'foot'));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'bicycle'));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'car'));
@@ -232,6 +220,6 @@ if (defined($arg) && ($arg eq "local")) {
 #print_path($map,Astar($map,52.4184,4.8724,52.2973969,4.8620826,'car'));
 #print_path($map,Astar($map,52.4184,4.8724,52.2973969,4.8620826,'bicycle'));
 #print_path($map,Astar($map,52.2973969,4.8620826,51.9972199,4.3855367,'car'));
-print_path($map,Astar($map,52.4184,4.8724,51.9972199,4.3855367,'car'));
+#print_path($map,Astar($map,52.4184,4.8724,51.9972199,4.3855367,'car'));
 $map->saveOSMdata();
 
