@@ -182,7 +182,7 @@
     sub loadOSMdata {
         my $self = shift;
 	my $data = shift;
-        return XMLin($data, ForceArray=>['tag','nd'],KeyAttr=>{tag => 'k', way=>'id','node'=>'id',relation=>'id'},ContentKey => "-v");
+        return XMLin($data, ForceArray=>['tag','nd','member'],KeyAttr=>{tag => 'k', way=>'id','node'=>'id',relation=>'id'},ContentKey => "-v");
     }
     
     sub useLocaldata {
