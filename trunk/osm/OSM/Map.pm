@@ -151,7 +151,7 @@
             } else {
                 $ways->{$w}->{tag}->{oneway} = $oneway;
             }
-#            print Dumper($ways->{$w}->{nd});
+            print Dumper($ways->{$w}->{nd});
             $nrnodes = $#{$ways->{$w}->{nd}}+1;
             my ($n1,$n2);
             for (my $i=0;$i<$nrnodes-1;$i++) {
@@ -182,7 +182,7 @@
     sub loadOSMdata {
         my $self = shift;
 	my $data = shift;
-        return XMLin($data, ForceArray=>['tag'],KeyAttr=>{tag => 'k', way=>'id','node'=>'id',relation=>'id'},ContentKey => "-v");
+        return XMLin($data, ForceArray=>['tag','nd'],KeyAttr=>{tag => 'k', way=>'id','node'=>'id',relation=>'id'},ContentKey => "-v");
     }
     
     sub useLocaldata {
