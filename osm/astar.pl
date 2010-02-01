@@ -48,8 +48,8 @@ sub Astar {
     
     $map->fetchCoor($startlat,$startlon,1) unless $map->inboundCoor($startlat,$startlon);
     $map->fetchCoor($goallat,$goallon,1) unless $map->inboundCoor($goallat,$goallon);
-    my $start = $map->findNode($startlat,$startlon);
-    my $goal = $map->findNode($goallat,$goallon);
+    my $start = $map->findNode($startlat,$startlon,10);
+    my $goal = $map->findNode($goallat,$goallon,10);
     print "start = $start, goal = $goal ".(defined($vehicle)?$vehicle:"")."\n";
 
     $startset{$start} = 1;
@@ -115,8 +115,11 @@ sub Astar {
 			${$h[$i]}{$y} = $map->calc_h_score($y,$goal);
 			${$d[$i]}{$y} = $map->distance($y,$goal);
 			${$f[$i]}{$y} = ${$g[$i]}{$y}+${$h[$i]}{$y};
+			my $w = $map->getway($xs,$y);
+#			if ($w eq '7446451' or $w eq '24513038' or $w eq '7449254' or $w eq '7449261' or $w eq '7449265') {
 #			print "$i $xs $y ",${$g[$i]}{$y}," ",${$h[$i]}{$y}," ",${$f[$i]}{$y},"\n" if $i==1;
 #			print "$i $y $xs ",${$g[$i]}{$y}," ",${$h[$i]}{$y}," ",${$f[$i]}{$y},"\n" if $i==2;
+#			}
 #		        print "openset=",join(", ",keys(%openset)),"\n";
 		    }
 		}
@@ -136,8 +139,10 @@ sub print_path {
     print "\n";
     my $oldp;
     my $oldw;
+    my $totdist=0;
     for my $p (@p1) {
         my $w;
+
 	print "$p -> ";
 	my @ws = $map->getways($p);
 	if ($#ws == 0) {
@@ -154,6 +159,12 @@ sub print_path {
 	    print $$mwt{highway}," " if defined($$mwt{highway});
 	    print $$mwt{maxspeed}," " if defined($$mwt{maxspeed});
 	    print $$mwt{ref}," " if defined($$mwt{ref});
+	    my $d = $map->dist($oldp,$p);
+	    if (defined($d)) {
+		print $d," ";
+		$totdist += $d;
+	    }
+	    print $totdist," ";
             $oldw=$w;
 	}
 	$oldp=$p;
@@ -197,11 +208,17 @@ print_path($map,Astar($map,52.297277,4.862030,52.29334,4.85876));
 print_path($map,Astar($map,52.2973969,4.8620826,52.2871944,4.8503294,'car'));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724,'foot'));
-print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724,'car'));
+#print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724,'car'));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724,'bicycle'));
 #print_path($map,Astar($map,52.4184,4.8724,52.2973969,4.8620826,'car'));
 #print_path($map,Astar($map,52.4184,4.8724,52.2973969,4.8620826,'bicycle'));
-print_path($map,Astar($map,52.2973969,4.8620826,51.9972199,4.3855367,'car'));
+#print_path($map,Astar($map,52.2973969,4.8620826,51.9972199,4.3855367,'bicycle'));
+#print_path($map,Astar($map,52.2973969,4.8620826,51.9972199,4.3855367,'car'));
+#print_path($map,Astar($map,52.4184,4.8724,51.9972199,4.3855367,'car'));
+#print_path($map,Astar($map,52.13331,4.49894,52.1247,4.4816,'car'));
+#print_path($map,Astar($map,52.2973969,4.8620826,43.4046930,6.6792379,'car'));
+#print_path($map,Astar($map,52.2973969,4.8620826,50.8417207,4.3832422,'car'));
+#print_path($map,Astar($map,52.2973969,4.8620826,51.9972199,4.3855367,'car'));
 #print_path($map,Astar($map,52.4184,4.8724,51.9972199,4.3855367,'car'));
 $map->saveOSMdata();
 

@@ -351,7 +351,6 @@
         my ($self,$lat,$lon,$maxdist) = @_;
 	my $node = undef;
 	my $distance=$infinity;
-        my @retnodes;
 
 	for my $n (keys %$nodes) {
 	    my $d = $self->distanceCoor($lat,$lon,$$nodes{$n}->{lat},$$nodes{$n}->{lon});
@@ -359,18 +358,8 @@
 		$distance=$d;
 		$node = $n;
 	    }
-            push @retnodes,$n if (defined($maxdist) && $distance <= $maxdist);
 	}
         
-        if ($#retnodes > 0) {
-            my $nn = $self->tempnode($lat,$lon);
-            for my $n (@retnodes) {
-               $self->tempway($n,$nn);
-            }
-            return $nn;
-        } elsif ($#retnodes == 0) {
-            return $retnodes[0];
-        }
 	return $node if (defined($maxdist) && ($distance <= $maxdist));
 	
         my @nb = $self->neighbours($node);
@@ -451,7 +440,7 @@
 	my $y = shift;
 	
 	my $d = $dist->{$x}->{$y};
-	$d = $dist->{x}->{$y} = $dist->{$y}->{$x} = $self->distance($x,$y) unless defined($d);
+	$d = $dist->{$x}->{$y} = $dist->{$y}->{$x} = $self->distance($x,$y) unless defined($d);
 	return $d unless defined($vehicle);
 	
 	my $speed = $profiles{$vehicle}->{maxspeed};
@@ -560,6 +549,14 @@
 	    push @ways,$way->{$n}->{$n1};
 	}
 	return @ways;
+    }
+    
+    sub dist { 
+	my $self = shift;
+	my $n1=shift;
+	my $n2=shift;
+	return undef unless defined($n1) && defined($n2);
+	return $dist->{$n1}->{$n2};
     }
 }
 
