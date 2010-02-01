@@ -13,6 +13,9 @@
     @ISA = qw(Exporter);
     
     my $getmapcmd;
+    my $getwaycmd;
+    my $getnodecmd;
+    my $getrelcmd;
     my $infinity;
     my $geo;
     my $ua;
@@ -21,6 +24,9 @@
         $OSM::Map::VERSION = "0.1";
         $XML::Simple::PREFERRED_PARSER = "XML::Parser";
         $getmapcmd ="http://api.openstreetmap.org/api/0.6/map?bbox=";
+        $getwaycmd ="http://api.openstreetmap.org/api/0.6/way";
+        $getrelcmd ="http://api.openstreetmap.org/api/0.6/relation/%s/full";
+        $getnodecmd ="http://api.openstreetmap.org/api/0.6/node";
         $infinity = 9999999999;
         $geo=new Geo::Distance;
         $ua = LWP::UserAgent->new;
@@ -56,6 +62,12 @@
 	my $self = shift;
 	my $n = shift;
 	return $$ways{$n};
+    }
+    
+    sub getnodes {
+        my ($self,$w) = @_;
+        
+        return @{$$ways{$w}->{nd}};
     }
     
     sub new {
@@ -129,63 +141,88 @@
     sub procesdata {
         my $self = shift;
 	my $doc = shift;
-	my $nodes;
-	my $ways;
+	my $newnodes;
+	my $newways;
 	my $relations;
 	my $bounds;
 	
-        $nodes = $doc->{node};
-        $ways = $doc->{way};
+        $newnodes = $doc->{node};
+        $newways = $doc->{way};
         $relations = $doc->{relation};
 	$bounds = $doc->{bounds};
 #        print Dumper($ways);
         my $nrnodes;
 	
-        foreach my $w (keys %$ways) {
-            unless (usable_way($ways->{$w})) {
-	        delete($$ways{$w});
+	$self->process_relations($relations,$newways,$newnodes);
+        
+        foreach my $w (keys %$newways) {
+            unless (usable_way($newways->{$w})) {
+	        delete($$newways{$w});
 	        next;
             }
-            my $oneway = $ways->{$w}->{tag}->{oneway};
+            my $oneway = $newways->{$w}->{tag}->{oneway};
             $oneway = "no" unless defined $oneway;
             $oneway = "yes" if $oneway eq "true";
             $oneway = "yes" if $oneway eq "1";
             $oneway = "rev" if $oneway eq "-1";
             if ($oneway eq "no") {
-	        delete $ways->{$w}->{tag}->{oneway} if exists($ways->{$w}->{tag}->{oneway});
+	        delete $newways->{$w}->{tag}->{oneway} if exists($newways->{$w}->{tag}->{oneway});
             } else {
-                $ways->{$w}->{tag}->{oneway} = $oneway;
+                $newways->{$w}->{tag}->{oneway} = $oneway;
             }
 #           print Dumper($ways->{$w}->{nd});
-            $nrnodes = $#{$ways->{$w}->{nd}}+1;
+            $nrnodes = $#{$newways->{$w}->{nd}}+1;
             my ($n1,$n2);
             for (my $i=0;$i<$nrnodes-1;$i++) {
-	        $n1 = $ways->{$w}->{nd}->[$i]->{ref};
-    	        $n2 = $ways->{$w}->{nd}->[$i+1]->{ref};
+	        $n1 = $newways->{$w}->{nd}->[$i]->{ref};
+    	        $n2 = $newways->{$w}->{nd}->[$i+1]->{ref};
 	        $way->{$n1}->{$n2}=$w;
 	        $way->{$n2}->{$n1}=$w;
             }
         }
 	
-	$self->process_relations($relations);
 
-        foreach my $n (keys %$nodes) {
-            delete $$nodes{$n} unless exists($way->{$n});
+        foreach my $n (keys %$newnodes) {
+            delete $$newnodes{$n} unless exists($way->{$n});
         }
-	$self->store($nodes,$ways,$bounds);
+	$self->store($newnodes,$newways,$bounds);
     }
     
     sub process_relations {
-        my ($self,$relations) = @_;
+        my ($self,$relations,$newways,$newnodes) = @_;
     	foreach my $r (keys %$relations) {
-	    next unless $$relations{$r}->{tag}->{type} eq "multipolygon";
-	    next unless exists($$relations{$r}->{tag}->{admin_level});
+            my $type = $$relations{$r}->{tag}->{type};
+	    next unless ($type eq "multipolygon") or ($type eq "boundary");
+            my $level = $$relations{$r}->{tag}->{admin_level};
+	    next unless defined($level);
+            my $name = $$relations{$r}->{tag}->{name};
+            next unless defined($name);
+            next if exists($admin[$level]->{$name});
 #            print Dumper \$$relations{$r};
-            print $$relations{$r}->{tag}->{name},' ',$$relations{$r}->{tag}->{type},' ',$$relations{$r}->{tag}->{admin_level},' ',$$relations{$r}->{tag}->{boundary},"\n";
-	    $admin[$$relations{$r}->{tag}->{admin_level}]->{$r}->{name}=$$relations{$r}->{tag}->{name};
-	    my @ways = $$relations{$r}->{member};
-	    print Dumper \@ways;
+            print $$relations{$r}->{tag}->{name},' ',$$relations{$r}->{tag}->{type},' ',$level,' ',$$relations{$r}->{tag}->{boundary},"\n";
+	    $admin[$level]->{$name}->{type} = $type;
+            $admin[$level]->{$name}->{lat} = ();
+            $admin[$level]->{$name}->{lon} = ();
+            
+            my $doc = $self->loadrelation($r);
+            my $ways=$doc->{way};
+            my $nodes=$doc->{node};
+            my $rel=$doc->{relation}->{$r};
+            my @members = @{$rel->{member}};
+            for (my $m=0;$m<=$#members;$m++) {
+                my $w = $members[$m]->{ref};
+                my @nds = @{$$ways{$w}->{nd}};
+                for (my $n=0;$n<=$#nds;$n++) {
+#                    print Dumper $$nodes{$nds[$n]->{ref}};
+                    push @{$admin[$level]->{$name}->{lat}},$$nodes{$nds[$n]->{ref}}->{lat};
+                    push @{$admin[$level]->{$name}->{lon}},$$nodes{$nds[$n]->{ref}}->{lon};
+                }
+            }
+#            print Dumper \@admin;
 	}
+        open TMP,">relations.txt";
+        print TMP Dumper(\@admin);
+        close TMP;
     }
     
     sub pnpoly {
@@ -208,6 +245,19 @@
 	return $c;
     }
     
+    sub findLocation {
+        my ($self,$node) = @_;
+        for (my $a=0;$a<=$#admin;$a++) {
+            next unless defined($admin[$a]);
+            my $r = $admin[$a];
+            foreach my $l (keys %{$admin[$a]}) {
+                my $nvert = $#{$$r{$l}->{lat}};
+                my $c = $self->pnpoly($nvert,$$r{$l}->{lon},$$r{$l}->{lat},$$nodes{$node}->{lon},$$nodes{$node}->{lat});
+                print " ",$l if $c;
+            }
+        }
+    }
+    
     sub saveOSMdata {
         my $doc;
 	$doc->{node}=$nodes;
@@ -222,7 +272,7 @@
     sub loadOSMdata {
         my $self = shift;
 	my $data = shift;
-        return XMLin($data, ForceArray=>['tag','nd','member'],KeyAttr=>{tag => 'k', way=>'id','node'=>'id',relation=>'id'},ContentKey => "-v");
+        return XMLin($data, ForceArray=>['tag','nd','member','way','node','relation'],KeyAttr=>{tag => 'k', way=>'id','node'=>'id',relation=>'id'},ContentKey => "-v");
     }
     
     sub useLocaldata {
@@ -233,23 +283,42 @@
         $self->procesdata($doc);
     }
     
+    sub fetchUrl {
+        my ($self,$url) = @_;
+        
+        print "url = $url\n";
+        my $req = HTTP::Request->new(GET =>$url);
+        my $result = $ua->request($req);
+        return ($result->code == 200 ? $result : -1);
+    }
+    
+    sub loadway {
+        my ($self,$w) = @_;
+        my $url = "$getwaycmd/$w";
+        my $data = $self->fetchUrl($url);
+        return XMLin($data->content, ForceArray=>['tag','nd','member','way','node','relation'],KeyAttr=>{tag => 'k', way=>'id','node'=>'id',relation=>'id'},ContentKey => "-v");
+    }
+    
+    sub loadrelation {
+        my ($self,$w) = @_;
+        my $url = sprintf($getrelcmd,$w);
+        my $data = $self->fetchUrl($url);
+        return XMLin($data->content, ForceArray=>['tag','nd','member','way','node','relation'],KeyAttr=>{tag => 'k', way=>'id','node'=>'id',relation=>'id'},ContentKey => "-v");
+    }
+    
     sub useNetdata {
         my $self =  shift;
 	my @bbox = @_;
         return -1  if $#bbox != 3 ;
 	
         my $url = $getmapcmd.join(",",@bbox);
-        print "url = $url\n";
-        my $req = HTTP::Request->new(GET =>$url);
-        my $result = $ua->request($req);
-        return -1 unless $result->code == 200;
+        my $result = $self->fetchUrl($url);
 #	if (open NEW,">newmap.osm") {
 #	    print NEW $result->content;
 #	    close NEW;
 #	}
 	my $doc = $self->loadOSMdata($result->content);
         $self->procesdata($doc);
-	print "\n";
     }
     
     sub fetchCoor {
