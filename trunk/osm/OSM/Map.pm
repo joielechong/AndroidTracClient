@@ -34,6 +34,7 @@
     my @bounds;
     my $dist;
     my $way;
+    my @admin;
     
     sub initRoute {
         my $self = shift;
@@ -77,6 +78,8 @@
 #        print Dumper($conf);
         %profiles=%{${$$conf{profiles}}{profile}};
         %highways=%{${$$conf{highways}}{highway}};
+	$self->{tempways} = 0;
+	$self->{tempnodes} = 0;
     }
     
     sub usable_way {
@@ -128,10 +131,12 @@
 	my $doc = shift;
 	my $nodes;
 	my $ways;
+	my $relations;
 	my $bounds;
 	
         $nodes = $doc->{node};
         $ways = $doc->{way};
+        $relations = $doc->{relation};
 	$bounds = $doc->{bounds};
 #        print Dumper($ways);
         my $nrnodes;
@@ -151,7 +156,7 @@
             } else {
                 $ways->{$w}->{tag}->{oneway} = $oneway;
             }
-            print Dumper($ways->{$w}->{nd});
+#           print Dumper($ways->{$w}->{nd});
             $nrnodes = $#{$ways->{$w}->{nd}}+1;
             my ($n1,$n2);
             for (my $i=0;$i<$nrnodes-1;$i++) {
@@ -162,10 +167,45 @@
             }
         }
 	
+	$self->process_relations($relations);
+
         foreach my $n (keys %$nodes) {
             delete $$nodes{$n} unless exists($way->{$n});
         }
 	$self->store($nodes,$ways,$bounds);
+    }
+    
+    sub process_relations {
+        my ($self,$relations) = @_;
+    	foreach my $r (keys %$relations) {
+	    next unless $$relations{$r}->{tag}->{type} eq "multipolygon";
+	    next unless exists($$relations{$r}->{tag}->{admin_level});
+#            print Dumper \$$relations{$r};
+            print $$relations{$r}->{tag}->{name},' ',$$relations{$r}->{tag}->{type},' ',$$relations{$r}->{tag}->{admin_level},' ',$$relations{$r}->{tag}->{boundary},"\n";
+	    $admin[$$relations{$r}->{tag}->{admin_level}]->{$r}->{name}=$$relations{$r}->{tag}->{name};
+	    my @ways = $$relations{$r}->{member};
+	    print Dumper \@ways;
+	}
+    }
+    
+    sub pnpoly {
+        my $self = shift;
+	my $nvert = shift;
+	my $vertx = shift;
+	my $verty = shift;
+	my $testx = shift;
+	my $testy = shift;
+
+	my ($i,$j,$c);
+	$c=0;
+	$j=$nvert-1;
+	for ($i=0;$i<$nvert;$j=$i++) {
+            if ( (($$verty[$i]>$testy) != ($$verty[$j]>$testy)) &&
+	          ($testx < ($$vertx[$j]-$$vertx[$i]) * ($testy-$$verty[$i]) / ($$verty[$j]-$$verty[$i]) + $$vertx[$i]) ) {
+                $c = !$c;
+	    }
+	}
+	return $c;
     }
     
     sub saveOSMdata {
@@ -255,9 +295,30 @@
     }
     
     sub removetempnodes {
+	my $self = shift;
+	
+	for (my $i=0;$i<$self->{tempnodes};$i++) {
+        my $nodeid="TN$i";
+	    my $w=$way->{$nodeid};
+	    foreach my $n ($self->neighbours($nodeid)) {
+	        delete($$way{$n}->{$nodeid}) if exists($$way{$n}->{$nodeid});
+	        delete($$dist{$n}->{$nodeid}) if exists($$dist{$n}->{$nodeid});
+	    }
+	    delete($$way{$nodeid});
+	    delete($$dist{$nodeid}) if exists($$dist{$nodeid});
+	    delete($$nodes{$nodeid});
+	}
+	$self->{tempnodes} = 0;
     }
     
     sub removetempways {
+	my $self = shift;
+	
+	for (my $i=0;$i<$self->{tempways};$i++) {
+	    my $wayid="WN$i";
+	    delete($$ways{$wayid});
+	}
+	$self->{tempways} = 0;
     }
     
     sub tempnode {
@@ -325,7 +386,7 @@
             my $dx = ($x2-$x3 );
             my $dy = ($y2-$y3);
             my ($a,$b,$lat1,$x4,$y4,$nt);
-            if (abs($dy) > abs($dx)) {
+            if (abs($dy) > abs($dx) || $dx == 0) {
                 $a = $dx/$dy;
                 $b = $x2 - $a*$y2;
                 $y4 = ($y1+$a*($x1-$b))/(1+$a**2);

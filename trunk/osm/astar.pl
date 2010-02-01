@@ -167,7 +167,7 @@ if (defined($arg) && ($arg eq "local")) {
     $map->useLocaldata("map.osm");
 }
 
-#print_path($map,Astar($map,52.297277,4.862030,52.29334,4.85876));
+print_path($map,Astar($map,52.297277,4.862030,52.29334,4.85876));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'foot'));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'bicycle'));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'car'));
@@ -194,14 +194,14 @@ if (defined($arg) && ($arg eq "local")) {
 #print_path($map,Astar($map,52.2973969,4.8620826,52.2932895,4.8544163));
 #print_path($map,Astar($map,52.297275,4.8616077,52.2932895,4.8544163));
 #print_path($map,Astar($map,52.297275,4.8616077,52.2871944,4.8503294,'bicycle'));
-#print_path($map,Astar($map,52.2973969,4.8620826,52.2871944,4.8503294,'car'));
+print_path($map,Astar($map,52.2973969,4.8620826,52.2871944,4.8503294,'car'));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724,'foot'));
 print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724,'car'));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724,'bicycle'));
 #print_path($map,Astar($map,52.4184,4.8724,52.2973969,4.8620826,'car'));
 #print_path($map,Astar($map,52.4184,4.8724,52.2973969,4.8620826,'bicycle'));
-#print_path($map,Astar($map,52.2973969,4.8620826,51.9972199,4.3855367,'car'));
-print_path($map,Astar($map,52.4184,4.8724,51.9972199,4.3855367,'car'));
+print_path($map,Astar($map,52.2973969,4.8620826,51.9972199,4.3855367,'car'));
+#print_path($map,Astar($map,52.4184,4.8724,51.9972199,4.3855367,'car'));
 $map->saveOSMdata();
 
