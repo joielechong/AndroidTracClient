@@ -192,6 +192,7 @@
         my ($self,$relations,$newways,$newnodes) = @_;
     	foreach my $r (keys %$relations) {
             my $type = $$relations{$r}->{tag}->{type};
+	    next unless defined($type);
 	    next unless ($type eq "multipolygon") or ($type eq "boundary");
             my $level = $$relations{$r}->{tag}->{admin_level};
 	    next unless defined($level);
@@ -253,7 +254,7 @@
             foreach my $l (keys %{$admin[$a]}) {
                 my $nvert = $#{$$r{$l}->{lat}};
                 my $c = $self->pnpoly($nvert,$$r{$l}->{lon},$$r{$l}->{lat},$$nodes{$node}->{lon},$$nodes{$node}->{lat});
-                print " ",$l if $c;
+                print " $l($a)" if $c;
             }
         }
     }
@@ -285,11 +286,21 @@
     
     sub fetchUrl {
         my ($self,$url) = @_;
-        
+        my $retry = 0;
+	my $result;
+
         print "url = $url\n";
-        my $req = HTTP::Request->new(GET =>$url);
-        my $result = $ua->request($req);
-        return ($result->code == 200 ? $result : -1);
+	do {
+	    print "retry $retry\n" if $retry > 0;
+	    my $req = HTTP::Request->new(GET =>$url);
+	    $result = $ua->request($req);
+	    if ($result->code == 200) {
+		return $result;
+	    }
+	    $retry++;
+	}
+	while ($retry < 5 && $result->code == 500);
+	return -1;
     }
     
     sub loadway {
