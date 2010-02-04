@@ -19,6 +19,7 @@
     my $infinity;
     my $geo;
     my $ua;
+    my $PI;
     
     BEGIN  {
         $OSM::Map::VERSION = "0.1";
@@ -30,6 +31,7 @@
         $infinity = 9999999999;
         $geo=new Geo::Distance;
         $ua = LWP::UserAgent->new;
+        $PI = 3.14159265358979;
     }
     
     my $vehicle;
@@ -192,6 +194,11 @@
         my ($self,$relations,$newways,$newnodes) = @_;
     	foreach my $r (keys %$relations) {
             my $type = $$relations{$r}->{tag}->{type};
+            if (defined($type)) {
+                print "relation $r heeft type $type\n" unless ($type eq "multipolygon") or ($type eq "boundary") or ($type eq "route");
+            } else {
+                print "relation $r heeft geen type\n";
+            }
 	    next unless defined($type);
 	    next unless ($type eq "multipolygon") or ($type eq "boundary");
             my $level = $$relations{$r}->{tag}->{admin_level};
@@ -324,10 +331,10 @@
 	
         my $url = $getmapcmd.join(",",@bbox);
         my $result = $self->fetchUrl($url);
-#	if (open NEW,">newmap.osm") {
-#	    print NEW $result->content;
-#	    close NEW;
-#	}
+	if (open NEW,">newmap.osm") {
+	    print NEW $result->content;
+	    close NEW;
+	}
 	my $doc = $self->loadOSMdata($result->content);
         $self->procesdata($doc);
     }
@@ -514,10 +521,34 @@
 	die "nodes not found in wrong direction $x $y $w\n";
     }
     
+    sub curvecost {
+        my ($self,$x,$y,$p) = @_;
+        return 0 unless defined($p);
+        
+        my $dx1 = $$nodes{$y}->{lon}-$$nodes{$x}->{lon};
+        my $dy1 = $$nodes{$y}->{lat}-$$nodes{$x}->{lat};
+        my $dx2 = $$nodes{$x}->{lon}-$$nodes{$p}->{lon};
+        my $dy2 = $$nodes{$x}->{lat}-$$nodes{$p}->{lat};
+        my $h1 = 180 * atan2($dx1,$dy1) / $PI;
+        my $h2 = 180 * atan2($dx2,$dy2) / $PI;
+        my $dh = abs($h1-$h2);
+        return 0 if $dh < 45;
+        return 5 if $dh < 60;
+        return 10 if $dh < 90;
+        return 50 if $dh <120;
+        return 100 if $dh <150;
+        return 20000;
+    }
+    
+    sub direction {
+        my ($self,$n1,$n2) = @_;
+        my $dx1 = $$nodes{$n2}->{lon}-$$nodes{$n1}->{lon};
+        my $dy1 = $$nodes{$n2}->{lat}-$$nodes{$n1}->{lat};
+        return 180 * atan2($dx1,$dy1) / $PI;
+    }
+    
     sub cost {
-	my $self=shift;
-	my $x = shift;
-	my $y = shift;
+        my ($self,$x,$y,$prevnode) = @_;
 	
 	my $d = $dist->{$x}->{$y};
 	$d = $dist->{$x}->{$y} = $dist->{$y}->{$x} = $self->distance($x,$y) unless defined($d);
@@ -554,7 +585,7 @@
 	    my $defspeed = $highways{$hw}->{speed};
 	    $speed = $defspeed if $defspeed < $speed;
 	} else {
-	    $self->saveOSMdata();
+#	    $self->saveOSMdata();
 	    print "Geen snelheid voor $hw op weg $w\n";
 	    return $infinity;
 	}
@@ -591,6 +622,7 @@
 		$extracost += $highways{$$nodes{$y}->{highway}}->{extracost};
 	    }
 	    $extracost += 10 if defined($$nodey{traffic_calming});
+            $extracost += $self->curvecost($x,$y,$prevnode);
 	} else {
 	    die "Onbekend voertuig\n";
 	}
