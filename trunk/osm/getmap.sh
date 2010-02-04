@@ -1,1 +1,1 @@
-wget -O newmap.osm http://api.openstreetmap.org/api/0.6/map?bbox=4.8516077,52.287275,4.8716077,52.307275
+wget -O newmap.osm http://api.openstreetmap.org/api/0.6/map?bbox=4.82707,52.27199,4.87707,52.32199

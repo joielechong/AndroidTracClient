@@ -8,7 +8,7 @@
 		<highway name="primary_link" speed="15"/>
 		<highway name="construction" speed="15"/>
 		<highway name="footway" speed="10"/>
-		<highway name="living_street" speed="30"/>
+		<highway name="living_street" speed="15"/>
 		<highway name="motorway" speed="120"/>
 		<highway name="trunk" speed="100"/>
 		<highway name="trunk_link" speed="100"/>
@@ -68,8 +68,8 @@
 			<allowed highway="trunk_link" extracost="15" />
 			<allowed highway="motorway_link" extracost="10" />
 			<allowed highway="living_street" extracost="90" />
-			<allowed highway="residential" extracost="90" />
-			<allowed highway="unclassified" extracost="50" />
+			<allowed highway="residential" extracost="50" />
+			<allowed highway="unclassified" extracost="30" />
 			<allowed highway="service" extracost="90" />
 			<allowed highway="primary" extracost="10" />
  			<allowed highway="primary_link" extracost="20" />
