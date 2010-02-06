@@ -195,7 +195,7 @@
     	foreach my $r (keys %$relations) {
             my $type = $$relations{$r}->{tag}->{type};
             if (defined($type)) {
-                print "relation $r heeft type $type\n" unless ($type eq "multipolygon") or ($type eq "boundary") or ($type eq "route");
+                print "relation $r heeft type $type\n" unless ($type eq "multipolygon") or ($type eq "boundary") or ($type eq "route") or ($type eq "restriction");
             } else {
                 print "relation $r heeft geen type\n";
             }
@@ -228,9 +228,6 @@
             }
 #            print Dumper \@admin;
 	}
-        open TMP,">relations.txt";
-        print TMP Dumper(\@admin);
-        close TMP;
     }
     
     sub pnpoly {
@@ -277,20 +274,6 @@
 	}
     }
     
-    sub loadOSMdata {
-        my $self = shift;
-	my $data = shift;
-        return XMLin($data, ForceArray=>['tag','nd','member','way','node','relation'],KeyAttr=>{tag => 'k', way=>'id','node'=>'id',relation=>'id'},ContentKey => "-v");
-    }
-    
-    sub useLocaldata {
-        my $self =  shift;
-	my $filename = shift;
-	$filename = "map.osm" unless defined $filename;
-	my $doc = $self->loadOSMdata($filename);
-        $self->procesdata($doc);
-    }
-    
     sub fetchUrl {
         my ($self,$url) = @_;
         my $retry = 0;
@@ -312,16 +295,36 @@
     
     sub loadway {
         my ($self,$w) = @_;
-        my $url = "$getwaycmd/$w";
-        my $data = $self->fetchUrl($url);
-        return XMLin($data->content, ForceArray=>['tag','nd','member','way','node','relation'],KeyAttr=>{tag => 'k', way=>'id','node'=>'id',relation=>'id'},ContentKey => "-v");
+
+        my $file = "map_way_$w.osm";
+        my $url = sprintf($getwaycmd,$w);
+        return $self->loadOSMdata($file,$url);
     }
     
     sub loadrelation {
         my ($self,$w) = @_;
+
+        my $file = "map_rel_$w.osm";
         my $url = sprintf($getrelcmd,$w);
-        my $data = $self->fetchUrl($url);
-        return XMLin($data->content, ForceArray=>['tag','nd','member','way','node','relation'],KeyAttr=>{tag => 'k', way=>'id','node'=>'id',relation=>'id'},ContentKey => "-v");
+        return $self->loadOSMdata($file,$url);
+    }
+    
+    sub loadOSMdata {
+        my ($self,$file,$url) = @_;
+        
+        my $content;
+        if (open OLD, "<$file") {
+            close OLD;
+            $content = $file;
+        } else {
+            my $data = $self->fetchUrl($url);
+            $content = $data-> content;
+	    if (open NEW,">$file") {
+	        print NEW $content;
+	        close NEW;
+	    }
+        }
+        return XMLin($content, ForceArray=>['tag','nd','member','way','node','relation'],KeyAttr=>{tag => 'k', way=>'id','node'=>'id',relation=>'id'},ContentKey => "-v");
     }
     
     sub useNetdata {
@@ -329,13 +332,17 @@
 	my @bbox = @_;
         return -1  if $#bbox != 3 ;
 	
+        my $file = "map_bbox_".join("_",@bbox).".osm";
         my $url = $getmapcmd.join(",",@bbox);
-        my $result = $self->fetchUrl($url);
-	if (open NEW,">newmap.osm") {
-	    print NEW $result->content;
-	    close NEW;
-	}
-	my $doc = $self->loadOSMdata($result->content);
+        my $doc = $self->loadOSMdata($file,$url);
+        $self->procesdata($doc);
+    }
+    
+    sub useLocaldata {
+        my $self =  shift;
+	my $filename = shift;
+	$filename = "map.osm" unless defined $filename;
+	my $doc = $self->loadOSMdata($filename,undef);
         $self->procesdata($doc);
     }
     
