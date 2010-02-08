@@ -3,8 +3,9 @@
 use strict;
 use OSM::Map;
 use Data::Dumper;
+use Storable;
 
-my @bbox = (4.83,52.28,4.88,52.31);
+my $dbfile = "localdatabase.data";
 
 sub reconstruct_path {
     my $came_from = shift;
@@ -179,11 +180,18 @@ sub print_path {
 }
 
 my $arg = shift;
-my $map = OSM::Map->new();
-if (defined($arg) && ($arg eq "local")) {
-    $map->useLocaldata("map.osm");
+my $map;
+if (defined($arg)) {
+    $map = OSM::Map->new();
+    if ($arg eq "local") {
+        $map->useLocaldata("map.osm");
+    }
+} else {
+    $map = retrieve $dbfile;
+    $map->initialize();
 }
 
+###huis school
 #print_path($map,Astar($map,52.297277,4.862030,52.29334,4.85876));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'foot'));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'bicycle'));
@@ -193,10 +201,14 @@ if (defined($arg) && ($arg eq "local")) {
 #print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588,'foot'));
 #print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588,'bicycle'));
 #print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588,'car'));
+
+###Huis hockey
 #print_path($map,Astar($map,52.297275,4.8616077,52.2886,4.8508));
 #print_path($map,Astar($map,52.297275,4.8616077,52.2886,4.8508,'foot'));
 #print_path($map,Astar($map,52.297275,4.8616077,52.2886,4.8508,'bicycle'));
 #print_path($map,Astar($map,52.297275,4.8616077,52.2886,4.8508,'car'));
+
+
 #print_path($map,Astar($map,52.297275,4.8616077,52.311311,4.8468799,'car'));
 #print_path($map,Astar($map,52.297275,4.8616077,52.4176385,4.8708703,'bicycle'));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.278473,4.846854));
@@ -213,19 +225,25 @@ if (defined($arg) && ($arg eq "local")) {
 #print_path($map,Astar($map,52.297275,4.8616077,52.2932895,4.8544163));
 #print_path($map,Astar($map,52.297275,4.8616077,52.2871944,4.8503294,'bicycle'));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.2871944,4.8503294,'car'));
-#print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724));
-#print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724,'foot'));
+
+###Coentunnel
+print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724));
+print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724,'foot'));
 print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724,'car'));
 print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724,'bicycle'));
-#print_path($map,Astar($map,52.4184,4.8724,52.2973969,4.8620826,'car'));
-#print_path($map,Astar($map,52.4184,4.8724,52.2973969,4.8620826,'bicycle'));
+print_path($map,Astar($map,52.4184,4.8724,52.2973969,4.8620826,'car'));
+print_path($map,Astar($map,52.4184,4.8724,52.2973969,4.8620826,'bicycle'));
+
+## Croon Delft
 print_path($map,Astar($map,52.2973969,4.8620826,51.9972199,4.3855367,'car'));
 print_path($map,Astar($map,52.2973969,4.8620826,51.9972199,4.3855367,'bicycle'));
-#print_path($map,Astar($map,52.4184,4.8724,51.9972199,4.3855367,'car'));
-#print_path($map,Astar($map,52.13331,4.49894,52.1247,4.4816,'car'));
-#print_path($map,Astar($map,52.2973969,4.8620826,43.4046930,6.6792379,'car'));
-#print_path($map,Astar($map,52.2973969,4.8620826,50.8417207,4.3832422,'car'));
-#print_path($map,Astar($map,52.2973969,4.8620826,51.9972199,4.3855367,'car'));
-#print_path($map,Astar($map,52.4184,4.8724,51.9972199,4.3855367,'car'));
-#$map->saveOSMdata();
+print_path($map,Astar($map,52.2973969,4.8620826,51.9972199,4.3855367));
+print_path($map,Astar($map,52.4184,4.8724,51.9972199,4.3855367,'car'));
 
+## Roquebrune
+#print_path($map,Astar($map,52.2973969,4.8620826,43.4046930,6.6792379,'car'));
+
+###Brussel
+#print_path($map,Astar($map,52.2973969,4.8620826,50.8417207,4.3832422,'car'));
+
+$map->saveOSMdata($dbfile);

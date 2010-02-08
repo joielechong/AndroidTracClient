@@ -8,6 +8,7 @@
     use Data::Dumper;
     use XML::Simple;
     use Geo::Distance;
+    use Storable;
     
     require Exporter;
     @ISA = qw(Exporter);
@@ -22,16 +23,6 @@
     my $PI;
     
     BEGIN  {
-        $OSM::Map::VERSION = "0.1";
-        $XML::Simple::PREFERRED_PARSER = "XML::Parser";
-        $getmapcmd ="http://api.openstreetmap.org/api/0.6/map?bbox=";
-        $getwaycmd ="http://api.openstreetmap.org/api/0.6/way";
-        $getrelcmd ="http://api.openstreetmap.org/api/0.6/relation/%s/full";
-        $getnodecmd ="http://api.openstreetmap.org/api/0.6/node";
-        $infinity = 9999999999;
-        $geo=new Geo::Distance;
-        $ua = LWP::UserAgent->new;
-        $PI = 3.14159265358979;
     }
     
     my $vehicle;
@@ -78,14 +69,31 @@
 	my $class = ref($this) || $this;
 	my $self = {};
 	bless $self, $class;
+        $self->{nodes} = undef;
+        $self->{ways} = undef;
+        $self->{dist} = undef;
+        $self->{way} = undef;
+        $self->{bounds} = [];
+        $self->{admin} = [];
 	$self->initialize($conffile);
 	return $self;
     }
     
     sub initialize {
         my $self = shift;
-	
 	my $conffile = shift;
+	
+        $OSM::Map::VERSION = "0.1";
+        $XML::Simple::PREFERRED_PARSER = "XML::Parser";
+        $getmapcmd ="http://api.openstreetmap.org/api/0.6/map?bbox=";
+        $getwaycmd ="http://api.openstreetmap.org/api/0.6/way";
+        $getrelcmd ="http://api.openstreetmap.org/api/0.6/relation/%s/full";
+        $getnodecmd ="http://api.openstreetmap.org/api/0.6/node";
+        $infinity = 9999999999;
+        $geo=new Geo::Distance;
+        $ua = LWP::UserAgent->new;
+        $PI = 3.14159265358979;
+
 	$conffile = "astarconf.xml" unless defined $conffile;
 	
         my $conf = XMLin($conffile,ForceArray=>['highway','profile'],KeyAttr=>{allowed=>'highway',profile=>'name',highway=>'name'});
@@ -94,6 +102,13 @@
         %highways=%{${$$conf{highways}}{highway}};
 	$self->{tempways} = 0;
 	$self->{tempnodes} = 0;
+        $nodes = $$self{nodes};
+        $ways = $$self{ways};
+        $dist = $$self{dist};
+        $way = $$self{way};
+        @bounds = @{$$self{bounds}};
+        @admin = @{$$self{admin}};
+        $self->{changed} = 0;
     }
     
     sub usable_way {
@@ -113,7 +128,7 @@
         return $geo->distance('meter',$$nodes{$n1}->{lon},$$nodes{$n1}->{lat}=>$$nodes{$n2}->{lon},$$nodes{$n2}->{lat});
     }
     
-    sub store {
+    sub storenewdata {
 	my ($self,$newnodes,$newways,$newbounds) = @_;
 	for my $n (keys %$newnodes) {
 	    $$nodes{$n} = $$newnodes{$n} unless exists($$nodes{$n});
@@ -155,6 +170,7 @@
 #        print Dumper($ways);
         my $nrnodes;
 	
+        $self->{changed} = 1;
 	$self->process_relations($relations,$newways,$newnodes);
         
         foreach my $w (keys %$newways) {
@@ -187,7 +203,7 @@
         foreach my $n (keys %$newnodes) {
             delete $$newnodes{$n} unless exists($way->{$n});
         }
-	$self->store($newnodes,$newways,$bounds);
+	$self->storenewdata($newnodes,$newways,$bounds);
     }
     
     sub process_relations {
@@ -264,14 +280,18 @@
     }
     
     sub saveOSMdata {
-        my $doc;
-	$doc->{node}=$nodes;
-	$doc->{way}=$ways;
-	$doc->{bounds}=\@bounds;
-	if (open NEW,">saveddata.osm") {
-	    print NEW XMLout($doc, KeyAttr=>{tag => 'k', way=>'id','node'=>'id',relation=>'id'},ContentKey => "-v");
-	    close NEW;
-	}
+        my $self = shift;
+        my $filename = shift;
+        
+        return unless $self->{changed};
+        $self->{changed} = 0;
+        $self->{nodes} = $nodes;
+        $self->{ways} = $ways;
+        $self->{dist} = $dist;
+        $self->{way} = $way;
+        $self->{bounds} = \@bounds;
+        $self->{admin} = \@admin;
+        store $self,$filename;
     }
     
     sub fetchUrl {
@@ -558,7 +578,12 @@
         my ($self,$x,$y,$prevnode) = @_;
 	
 	my $d = $dist->{$x}->{$y};
-	$d = $dist->{$x}->{$y} = $dist->{$y}->{$x} = $self->distance($x,$y) unless defined($d);
+        unless (defined($d)) {
+	    $d = $dist->{$x}->{$y} = $dist->{$y}->{$x} = $self->distance($x,$y);
+            unless ((substr($x,0,2) eq 'TN') or (substr($y,0,2) eq 'TN')) {
+                $self->{changed} = 1 
+            }
+        }
 	return $d unless defined($vehicle);
 	
 	my $speed = $profiles{$vehicle}->{maxspeed};
