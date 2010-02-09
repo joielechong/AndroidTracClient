@@ -117,7 +117,7 @@ sub Astar {
 			${$h[$i]}{$y} = $map->calc_h_score($y,$goal);
 			${$d[$i]}{$y} = $map->distance($y,$goal);
 			${$f[$i]}{$y} = ${$g[$i]}{$y}+${$h[$i]}{$y};
-			my $w = $map->getway($xs,$y);
+#			my $w = $map->getway($xs,$y);
 #			print "$i $xs $y ",${$g[$i]}{$y}," ",${$h[$i]}{$y}," ",${$f[$i]}{$y},"\n" if $i==1;
 #			print "$i $y $xs ",${$g[$i]}{$y}," ",${$h[$i]}{$y}," ",${$f[$i]}{$y},"\n" if $i==2;
 #		        print "openset=",join(", ",keys(%openset)),"\n";
@@ -190,7 +190,7 @@ if (defined($arg)) {
 }
 
 ###huis school
-print_path($map,Astar($map,52.297277,4.862030,52.29334,4.85876));
+#print_path($map,Astar($map,52.297277,4.862030,52.29334,4.85876));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'foot'));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'bicycle'));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'car'));
@@ -238,11 +238,15 @@ print_path($map,Astar($map,52.297277,4.862030,52.29334,4.85876));
 #print_path($map,Astar($map,52.2973969,4.8620826,51.9972199,4.3855367));
 #print_path($map,Astar($map,52.4184,4.8724,51.9972199,4.3855367,'car'));
 
-#ICT Barendrecht
-print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'car'));
+#I# CT Barendrecht
+#print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'car'));
 #print_path($map,Astar($map,51.8503978,4.5091717,52.2973969,4.8620826,'car'));
 #print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'bicycle'));
 
+## ProRail
+print_path($map,Astar($map,52.2973969,4.8620826,52.087473,5.115715,'car'));
+#print_path($map,Astar($map,52.2973969,4.8620826,52.087473,5.115715,'bicycle'));
+#print_path($map,Astar($map,52.087473,5.115715,52.2973969,4.8620826,'car'));
 
 ## Roquebrune
 #print_path($map,Astar($map,52.2973969,4.8620826,43.4046930,6.6792379,'car'));
