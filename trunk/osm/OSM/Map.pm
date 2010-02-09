@@ -556,14 +556,17 @@
         my $dy2 = $$nodes{$x}->{lat}-$$nodes{$p}->{lat};
         my $h1 = 180 * atan2($dy1,$dx1) / $PI;
         my $h2 = 180 * atan2($dy2,$dx2) / $PI;
-	$h1+=360 if $h1 < 0;
-	$h2+=360 if $h2 < 0;
+#	$h1+=360 if $h1 < 0;
+#	$h2+=360 if $h2 < 0;
+#	$h1 = 360-$h1 if $h1;
         my $dh = abs($h1-$h2);
+		$dh = 360-$dh if $dh > 180;
         return 0 if $dh < 45;
         return 5 if $dh < 60;
         return 10 if $dh < 90;
         return 50 if $dh <120;
         return 100 if $dh <150;
+#		print "curve $p $x $y $dx1 $dy1 $dx2 $dy2 $h1 $h2 $dh\n";
         return 20000;
     }
     
