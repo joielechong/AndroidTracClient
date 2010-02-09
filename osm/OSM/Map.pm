@@ -556,8 +556,10 @@
         my $dy1 = $$nodes{$y}->{lat}-$$nodes{$x}->{lat};
         my $dx2 = $$nodes{$x}->{lon}-$$nodes{$p}->{lon};
         my $dy2 = $$nodes{$x}->{lat}-$$nodes{$p}->{lat};
-        my $h1 = 180 * atan2($dx1,$dy1) / $PI;
-        my $h2 = 180 * atan2($dx2,$dy2) / $PI;
+        my $h1 = 180 * atan2($dy1,$dx1) / $PI;
+        my $h2 = 180 * atan2($dy2,$dx2) / $PI;
+	$h1+=360 if $h1 < 0;
+	$h2+=360 if $h2 < 0;
         my $dh = abs($h1-$h2);
         return 0 if $dh < 45;
         return 5 if $dh < 60;
