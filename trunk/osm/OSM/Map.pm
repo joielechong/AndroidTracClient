@@ -8,7 +8,6 @@
     use Data::Dumper;
     use XML::Simple;
     use Geo::Distance;
-    use Storable;
     
     require Exporter;
     @ISA = qw(Exporter);
@@ -291,7 +290,6 @@
         $self->{way} = $way;
         $self->{bounds} = \@bounds;
         $self->{admin} = \@admin;
-        store $self,$filename;
     }
     
     sub fetchUrl {
