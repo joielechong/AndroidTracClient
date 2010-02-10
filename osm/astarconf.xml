@@ -70,7 +70,7 @@
 			<allowed highway="trunk_link" extracost="15" />
 			<allowed highway="motorway_link" extracost="10" />
 			<allowed highway="living_street" extracost="90" />
-			<allowed highway="residential" extracost="50" />
+			<allowed highway="residential" extracost="30" />
 			<allowed highway="unclassified" extracost="30" />
 			<allowed highway="road" extracost="30" />
 			<allowed highway="service" extracost="90" />

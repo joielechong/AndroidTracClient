@@ -2,6 +2,7 @@
 
 use strict;
 use OSM::Map;
+use GetOpt::Long;
 use Data::Dumper;
 use Storable;
 
@@ -61,8 +62,8 @@ sub Astar {
     $ds_score{$start} = $map->distance($start,$goal);
     
     $gg_score{$goal} = 0;
-    $fg_score{$goal} = $hg_score{$goal} = $map->calc_h_score($goal,$start,$vehicle);
-    $dg_score{$goal} = $map->distance($goal,$start);
+    $fg_score{$goal} = $hg_score{$goal} = $map->calc_h_score($start,$goal,$vehicle);
+    $dg_score{$goal} = $map->distance($start,$goal);
     
     
     $openset[1] = \%startset;
@@ -177,6 +178,13 @@ sub print_path {
     }
 }
 
+my $new;
+my $dbonly;
+my $netonly;
+my $confile;
+
+my %options = ('new' => \$new,'dbonly' => \$dbonly,'net' => \$netonly,'conf=s' => \$confile);
+
 my $arg = shift;
 my $map;
 if (defined($arg)) {
@@ -186,7 +194,7 @@ if (defined($arg)) {
     }
 } else {
     $map = retrieve $dbfile;
-    $map->initialize();
+    $map->initialize($confile);
 }
 
 ###huis school
@@ -238,15 +246,15 @@ if (defined($arg)) {
 #print_path($map,Astar($map,52.2973969,4.8620826,51.9972199,4.3855367));
 #print_path($map,Astar($map,52.4184,4.8724,51.9972199,4.3855367,'car'));
 
-#I# CT Barendrecht
-#print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'car'));
+## ICT Barendrecht
+print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'car'));
 #print_path($map,Astar($map,51.8503978,4.5091717,52.2973969,4.8620826,'car'));
 #print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'bicycle'));
 
 ## ProRail
-print_path($map,Astar($map,52.2973969,4.8620826,52.087473,5.115715,'car'));
-print_path($map,Astar($map,52.2973969,4.8620826,52.087473,5.115715,'bicycle'));
-print_path($map,Astar($map,52.087473,5.115715,52.2973969,4.8620826,'car'));
+#print_path($map,Astar($map,52.2973969,4.8620826,52.087473,5.115715,'car'));
+#print_path($map,Astar($map,52.2973969,4.8620826,52.087473,5.115715,'bicycle'));
+#print_path($map,Astar($map,52.087473,5.115715,52.2973969,4.8620826,'car'));
 
 ## Roquebrune
 #print_path($map,Astar($map,52.2973969,4.8620826,43.4046930,6.6792379,'car'));
