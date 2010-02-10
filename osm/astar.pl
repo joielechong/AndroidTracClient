@@ -245,8 +245,8 @@ if (defined($arg)) {
 
 ## ProRail
 print_path($map,Astar($map,52.2973969,4.8620826,52.087473,5.115715,'car'));
-#print_path($map,Astar($map,52.2973969,4.8620826,52.087473,5.115715,'bicycle'));
-#print_path($map,Astar($map,52.087473,5.115715,52.2973969,4.8620826,'car'));
+print_path($map,Astar($map,52.2973969,4.8620826,52.087473,5.115715,'bicycle'));
+print_path($map,Astar($map,52.087473,5.115715,52.2973969,4.8620826,'car'));
 
 ## Roquebrune
 #print_path($map,Astar($map,52.2973969,4.8620826,43.4046930,6.6792379,'car'));
