@@ -6,7 +6,6 @@ use Getopt::Long;
 use Data::Dumper;
 use Storable;
 
-
 my $dbfile = "localdatabase.data";
 
 sub reconstruct_path {
@@ -202,7 +201,7 @@ if (defined($arg)) {
 #print_path($map,Astar($map,52.297277,4.862030,52.29334,4.85876));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'foot'));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'bicycle'));
-#print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'car'));
+print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'car'));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.2935821,4.8593675,'car'));
 #print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588));
 #print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588,'foot'));
@@ -248,7 +247,7 @@ if (defined($arg)) {
 #print_path($map,Astar($map,52.4184,4.8724,51.9972199,4.3855367,'car'));
 
 ## ICT Barendrecht
-print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'car'));
+#print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'car'));
 #print_path($map,Astar($map,51.8503978,4.5091717,52.2973969,4.8620826,'car'));
 #print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'bicycle'));
 

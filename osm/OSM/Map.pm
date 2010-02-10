@@ -177,6 +177,10 @@
 	        delete($$newways{$w});
 	        next;
             }
+	    delete $$newways{$w}->{user};
+	    delete $$newways{$w}->{uid};
+	    delete $$newways{$w}->{visible};
+	    delete $$newways{$w}->{changeset};
             my $oneway = $newways->{$w}->{tag}->{oneway};
             $oneway = "no" unless defined $oneway;
             $oneway = "yes" if $oneway eq "true";
@@ -197,10 +201,17 @@
 	        $way->{$n2}->{$n1}=$w;
             }
         }
-	
 
         foreach my $n (keys %$newnodes) {
-            delete $$newnodes{$n} unless exists($way->{$n});
+            if (exists($way->{$n})) {
+	        delete $$newnodes{$n}->{user};
+	        delete $$newnodes{$n}->{changeset};
+	        delete $$newnodes{$n}->{version};
+	        delete $$newnodes{$n}->{visible};
+	        delete $$newnodes{$n}->{uid};
+	    } else {
+	        delete $$newnodes{$n};
+	    }
         }
 	$self->storenewdata($newnodes,$newways,$bounds);
     }
@@ -226,6 +237,10 @@
 	    $admin[$level]->{$name}->{type} = $type;
             $admin[$level]->{$name}->{lat} = ();
             $admin[$level]->{$name}->{lon} = ();
+	    $admin[$level]->{$name}->{minlon} = 1000;
+	    $admin[$level]->{$name}->{minlat} = 1000;
+	    $admin[$level]->{$name}->{maxlon} = -1000;
+	    $admin[$level]->{$name}->{maxlat} = -1000;
             
             my $doc = $self->loadrelation($r);
             my $ways=$doc->{way};
@@ -236,9 +251,15 @@
                 my $w = $members[$m]->{ref};
                 my @nds = @{$$ways{$w}->{nd}};
                 for (my $n=0;$n<=$#nds;$n++) {
+		    my $lon = $$nodes{$nds[$n]->{ref}}->{lon};
+		    my $lat = $$nodes{$nds[$n]->{ref}}->{lat};
 #                    print Dumper $$nodes{$nds[$n]->{ref}};
-                    push @{$admin[$level]->{$name}->{lat}},$$nodes{$nds[$n]->{ref}}->{lat};
-                    push @{$admin[$level]->{$name}->{lon}},$$nodes{$nds[$n]->{ref}}->{lon};
+                    push @{$admin[$level]->{$name}->{lat}},$lat;
+                    push @{$admin[$level]->{$name}->{lon}},$lon;
+		    $admin[$level]->{$name}->{minlon} = $lon if $admin[$level]->{$name}->{minlon} > $lon;
+		    $admin[$level]->{$name}->{minlat} = $lat if $admin[$level]->{$name}->{minlat} > $lat;
+		    $admin[$level]->{$name}->{maxlon} = $lon if $admin[$level]->{$name}->{maxlon} < $lon;
+		    $admin[$level]->{$name}->{maxlat} = $lat if $admin[$level]->{$name}->{maxlat} < $lat;
                 }
             }
 #            print Dumper \@admin;
@@ -268,13 +289,16 @@
     sub findLocation {
         my ($self,$node) = @_;
         my $locstr = "";
+	my $lat = $$nodes{$node}->{lat};
+	my $lon = $$nodes{$node}->{lon};
         
         for (my $a=0;$a<=$#admin;$a++) {
             next unless defined($admin[$a]);
             my $r = $admin[$a];
             foreach my $l (keys %{$admin[$a]}) {
+    	        next unless ($lat >= $$r{$l}->{minlat} and $lat <= $$r{$l}->{maxlat}) and ($lon >= $$r{$l}->{minlon} and $lon <= $$r{$l}->{maxlon});
                 my $nvert = $#{$$r{$l}->{lat}};
-                my $c = $self->pnpoly($nvert,$$r{$l}->{lon},$$r{$l}->{lat},$$nodes{$node}->{lon},$$nodes{$node}->{lat});
+                my $c = $self->pnpoly($nvert,$$r{$l}->{lon},$$r{$l}->{lat},$lon,$lat);
                 $locstr .= " $l($a)" if $c;
             }
         }
@@ -561,9 +585,6 @@
         my $dy2 = $$nodes{$x}->{lat}-$$nodes{$p}->{lat};
         my $h1 = 180 * atan2($dy1,$dx1) / $PI;
         my $h2 = 180 * atan2($dy2,$dx2) / $PI;
-#	$h1+=360 if $h1 < 0;
-#	$h2+=360 if $h2 < 0;
-#	$h1 = 360-$h1 if $h1;
         my $dh = abs($h1-$h2);
 		$dh = 360-$dh if $dh > 180;
         return 0 if $dh < 45;
