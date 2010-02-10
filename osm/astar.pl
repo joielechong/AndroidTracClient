@@ -2,9 +2,10 @@
 
 use strict;
 use OSM::Map;
-use GetOpt::Long;
+use Getopt::Long;
 use Data::Dumper;
 use Storable;
+
 
 my $dbfile = "localdatabase.data";
 
