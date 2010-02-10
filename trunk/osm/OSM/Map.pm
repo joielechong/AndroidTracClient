@@ -267,15 +267,18 @@
     
     sub findLocation {
         my ($self,$node) = @_;
+        my $locstr = "";
+        
         for (my $a=0;$a<=$#admin;$a++) {
             next unless defined($admin[$a]);
             my $r = $admin[$a];
             foreach my $l (keys %{$admin[$a]}) {
                 my $nvert = $#{$$r{$l}->{lat}};
                 my $c = $self->pnpoly($nvert,$$r{$l}->{lon},$$r{$l}->{lat},$$nodes{$node}->{lon},$$nodes{$node}->{lat});
-                print " $l($a)" if $c;
+                $locstr .= " $l($a)" if $c;
             }
         }
+        return $locstr;
     }
     
     sub saveOSMdata {
@@ -283,6 +286,8 @@
         my $filename = shift;
         
         return unless $self->{changed};
+        $self->removetempways();
+        $self->removetempnodes();
         $self->{changed} = 0;
         $self->{nodes} = $nodes;
         $self->{ways} = $ways;
@@ -567,7 +572,7 @@
         return 50 if $dh <120;
         return 100 if $dh <150;
 #		print "curve $p $x $y $dx1 $dy1 $dx2 $dy2 $h1 $h2 $dh\n";
-        return 20000;
+        return 2000;
     }
     
     sub direction {
@@ -620,7 +625,6 @@
 	    my $defspeed = $highways{$hw}->{speed};
 	    $speed = $defspeed if $defspeed < $speed;
 	} else {
-#	    $self->saveOSMdata();
 	    print "Geen snelheid voor $hw op weg $w\n";
 	    return $infinity;
 	}
