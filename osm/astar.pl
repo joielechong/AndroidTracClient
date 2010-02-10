@@ -201,7 +201,7 @@ if (defined($arg)) {
 #print_path($map,Astar($map,52.297277,4.862030,52.29334,4.85876));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'foot'));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'bicycle'));
-print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'car'));
+#print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'car'));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.2935821,4.8593675,'car'));
 #print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588));
 #print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588,'foot'));
@@ -215,7 +215,7 @@ print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'car'));
 #print_path($map,Astar($map,52.297275,4.8616077,52.2886,4.8508,'car'));
 
 
-#print_path($map,Astar($map,52.297275,4.8616077,52.311311,4.8468799,'car'));
+print_path($map,Astar($map,52.297275,4.8616077,52.311311,4.8468799,'car'));
 #print_path($map,Astar($map,52.297275,4.8616077,52.4176385,4.8708703,'bicycle'));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.278473,4.846854));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.278473,4.846854,'foot'));
