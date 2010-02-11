@@ -215,7 +215,7 @@ if (defined($arg)) {
 #print_path($map,Astar($map,52.297275,4.8616077,52.2886,4.8508,'car'));
 
 
-print_path($map,Astar($map,52.297275,4.8616077,52.311311,4.8468799,'car'));
+#print_path($map,Astar($map,52.297275,4.8616077,52.311311,4.8468799,'car'));
 #print_path($map,Astar($map,52.297275,4.8616077,52.4176385,4.8708703,'bicycle'));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.278473,4.846854));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.278473,4.846854,'foot'));
@@ -235,26 +235,26 @@ print_path($map,Astar($map,52.297275,4.8616077,52.311311,4.8468799,'car'));
 ###Coentunnel
 #print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724,'foot'));
-#print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724,'car'));
+print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724,'car'));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724,'bicycle'));
 #print_path($map,Astar($map,52.4184,4.8724,52.2973969,4.8620826,'car'));
 #print_path($map,Astar($map,52.4184,4.8724,52.2973969,4.8620826,'bicycle'));
 
 ## Croon Delft
-#print_path($map,Astar($map,52.2973969,4.8620826,51.9972199,4.3855367,'car'));
+print_path($map,Astar($map,52.2973969,4.8620826,51.9972199,4.3855367,'car'));
 #print_path($map,Astar($map,52.2973969,4.8620826,51.9972199,4.3855367,'bicycle'));
 #print_path($map,Astar($map,52.2973969,4.8620826,51.9972199,4.3855367));
 #print_path($map,Astar($map,52.4184,4.8724,51.9972199,4.3855367,'car'));
 
-## ICT Barendrecht
-#print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'car'));
-#print_path($map,Astar($map,51.8503978,4.5091717,52.2973969,4.8620826,'car'));
-#print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'bicycle'));
-
 ## ProRail
-#print_path($map,Astar($map,52.2973969,4.8620826,52.087473,5.115715,'car'));
+print_path($map,Astar($map,52.2973969,4.8620826,52.087473,5.115715,'car'));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.087473,5.115715,'bicycle'));
 #print_path($map,Astar($map,52.087473,5.115715,52.2973969,4.8620826,'car'));
+
+## ICT Barendrecht
+print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'car'));
+#print_path($map,Astar($map,51.8503978,4.5091717,52.2973969,4.8620826,'car'));
+#print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'bicycle'));
 
 ## Roquebrune
 #print_path($map,Astar($map,52.2973969,4.8620826,43.4046930,6.6792379,'car'));
