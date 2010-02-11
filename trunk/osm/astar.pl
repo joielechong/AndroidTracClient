@@ -6,8 +6,6 @@ use Getopt::Long;
 use Data::Dumper;
 use Storable;
 
-my $dbfile = "localdatabase.data";
-
 sub reconstruct_path {
     my $came_from = shift;
     my $goes_to = shift;
@@ -178,24 +176,31 @@ sub print_path {
     }
 }
 
-my $new;
-my $dbonly;
-my $netonly;
-my $confile;
+my $new=0;
+my $dbonly=0;
+my $netonly=0;
+my $confile='astarconf.xml';
+my $dbfile = "localdatabase.data";
 
-my %options = ('new' => \$new,'dbonly' => \$dbonly,'net' => \$netonly,'conf=s' => \$confile);
+my %options = ('new' => \$new,'dbonly' => \$dbonly,'net' => \$netonly,'conf=s' => \$confile,'db=s'=> \$dbfile);
+my $result = GetOptions(%options);
 
-my $arg = shift;
 my $map;
-if (defined($arg)) {
-    $map = OSM::Map->new();
-    if ($arg eq "local") {
-        $map->useLocaldata("map.osm");
-    }
-} else {
+if ($new == 0 && -r $dbfile) {
     $map = retrieve $dbfile;
     $map->initialize($confile);
+} else {
+    $map = OSM::Map->new();
 }
+
+if ($dbonly) { 
+    opendir(my $dh, "maps") || die "can't opendir : $!";
+    my @files = grep { /map_bbox.*\.osm$/ && -f "maps/$_" } readdir($dh);
+    closedir $dh;
+    foreach my $f (@files) {
+        $map->useLocaldata($f);
+    }
+} else {
 
 ###huis school
 #print_path($map,Astar($map,52.297277,4.862030,52.29334,4.85876));
@@ -241,18 +246,18 @@ print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724,'car'));
 #print_path($map,Astar($map,52.4184,4.8724,52.2973969,4.8620826,'bicycle'));
 
 ## Croon Delft
-print_path($map,Astar($map,52.2973969,4.8620826,51.9972199,4.3855367,'car'));
+#print_path($map,Astar($map,52.2973969,4.8620826,51.9972199,4.3855367,'car'));
 #print_path($map,Astar($map,52.2973969,4.8620826,51.9972199,4.3855367,'bicycle'));
 #print_path($map,Astar($map,52.2973969,4.8620826,51.9972199,4.3855367));
 #print_path($map,Astar($map,52.4184,4.8724,51.9972199,4.3855367,'car'));
 
 ## ProRail
-print_path($map,Astar($map,52.2973969,4.8620826,52.087473,5.115715,'car'));
+#print_path($map,Astar($map,52.2973969,4.8620826,52.087473,5.115715,'car'));
 #print_path($map,Astar($map,52.2973969,4.8620826,52.087473,5.115715,'bicycle'));
 #print_path($map,Astar($map,52.087473,5.115715,52.2973969,4.8620826,'car'));
 
 ## ICT Barendrecht
-print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'car'));
+#print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'car'));
 #print_path($map,Astar($map,51.8503978,4.5091717,52.2973969,4.8620826,'car'));
 #print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'bicycle'));
 
@@ -261,6 +266,6 @@ print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'car'));
 
 ###Brussel
 #print_path($map,Astar($map,52.2973969,4.8620826,50.8417207,4.3832422,'car'));
-
-$map->saveOSMdata($dbfile);
-store $map,$dbfile;
+}
+$map->saveOSMdata();
+$map->nstore($dbfile);

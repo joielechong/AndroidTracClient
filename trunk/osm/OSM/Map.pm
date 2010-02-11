@@ -8,9 +8,10 @@
     use Data::Dumper;
     use XML::Simple;
     use Geo::Distance;
+    use Storable;
     
     require Exporter;
-    @ISA = qw(Exporter);
+    @ISA = qw(Exporter Storable);
     
     my $getmapcmd;
     my $getwaycmd;
@@ -307,8 +308,7 @@
     
     sub saveOSMdata {
         my $self = shift;
-        my $filename = shift;
-        
+
         return unless $self->{changed};
         $self->removetempways();
         $self->removetempnodes();
@@ -360,13 +360,13 @@
         my ($self,$file,$url) = @_;
         
         my $content;
-        if (open OLD, "<$file") {
+        if (open OLD, "<maps/$file") {
             close OLD;
-            $content = $file;
+            $content = "maps/$file";
         } else {
             my $data = $self->fetchUrl($url);
             $content = $data-> content;
-	    if (open NEW,">$file") {
+	    if (open NEW,">maps/$file") {
 	        print NEW $content;
 	        close NEW;
 	    }
@@ -677,7 +677,12 @@
 	    return $infinity if $ma eq "no";
 	    return $infinity if $access eq "no" and $ma ne "yes";
 	    return $infinity if (!exists($profiles{$vehicle}->{allowed}->{$hw}));
-	    return $infinity if defined($onew) and $self->wrong_direction($x,$y,$w,$onew);
+#	    return $infinity if defined($onew) and $self->wrong_direction($x,$y,$w,$onew);
+	    if (defined($onew)) {
+              if ($self->wrong_direction($x,$y,$w,$onew)) {
+                return $infinity ;
+              }
+            }
 	    if (exists($$nodey{highway}) and exists($highways{$$nodey{highway}}->{extracost})) {
 		$extracost += $highways{$$nodes{$y}->{highway}}->{extracost};
 	    }
