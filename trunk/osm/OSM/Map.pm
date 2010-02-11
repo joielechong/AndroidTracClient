@@ -117,7 +117,8 @@
     }
     
     sub distanceCoor {
-        my ($self,$lat1,$lon1,$lat2,$lon2) = @_;
+        my ($self,$lat1,$lon1,$lat2,$lon2,$n) = @_;
+	print "$n\n",Dumper $$nodes{$n} unless defined($lat2);
         return $geo->distance('meter',$lon1,$lat1,$lon2,$lat2);
     }
     
@@ -494,7 +495,7 @@
 	my $distance=$infinity;
 
 	for my $n (keys %$nodes) {
-	    my $d = $self->distanceCoor($lat,$lon,$$nodes{$n}->{lat},$$nodes{$n}->{lon});
+	    my $d = $self->distanceCoor($lat,$lon,$$nodes{$n}->{lat},$$nodes{$n}->{lon},$n);
 	    if ($d < $distance) {
 		$distance=$d;
 		$node = $n;
