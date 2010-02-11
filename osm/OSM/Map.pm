@@ -309,6 +309,7 @@
     
     sub saveOSMdata {
         my $self = shift;
+        my $dbfile = shift;
 
         return unless $self->{changed};
         $self->removetempways();
@@ -320,6 +321,7 @@
         $self->{way} = $way;
         $self->{bounds} = \@bounds;
         $self->{admin} = \@admin;
+        $self->nstore($dbfile);
     }
     
     sub fetchUrl {

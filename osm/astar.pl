@@ -267,5 +267,4 @@ print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724,'car'));
 ###Brussel
 #print_path($map,Astar($map,52.2973969,4.8620826,50.8417207,4.3832422,'car'));
 }
-$map->saveOSMdata();
-$map->nstore($dbfile);
+$map->saveOSMdata($dbfile);
