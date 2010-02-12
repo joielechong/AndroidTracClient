@@ -702,6 +702,8 @@
 	    die "Onbekend voertuig\n";
 	}
 	return $infinity if $access eq "no";
+
+	$extracost += $profiles{$vehicle}->{barrier}->{type}->{$$nodey{barrier}} if exists($$nodey{barrier}) and exists($profiles{$vehicle}->{barrier}->{type}->{$$nodey{barrier}});
 	my $name=$$wwtag{name};
 	my $ref=$$wwtag{ref};
 	$ref="" unless defined($ref);
