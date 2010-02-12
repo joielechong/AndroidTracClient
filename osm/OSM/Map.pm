@@ -339,6 +339,7 @@
 		return $result;
 	    }
 	    $retry++;
+            sleep 5*$retry;
 	}
 	while ($retry < 5 && $result->code == 500);
 	return -1;
