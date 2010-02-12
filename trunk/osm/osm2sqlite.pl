@@ -22,7 +22,7 @@ my $nodes = $result->{node};
 
 foreach my $n (@$nodes) {
      print ENT $n->{id},"|node\n";
-     print NODE join("|",($n->{id},$n->{lat},$n->{lon},$n->{timestamp})),"\n";
+     print NODE join("|",($n->{id},$n->{lat},$n->{lon},$n->{version},$n->{timestamp})),"\n";
      my $tags = $n->{tag};
      foreach my $t (@$tags) {
          print TAGS join("|",($n->{id},$t->{k},$t->{v})),"\n";

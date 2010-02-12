@@ -220,27 +220,27 @@ if ($dbonly) {
 #print_path($map,Astar($map,52.297275,4.8616077,52.2886,4.8508,'car'));
 
 ###Huis atletiek
-print_path($map,Astar($map,52.297275,4.8616077,52.28728,4.85771));
-print_path($map,Astar($map,52.297275,4.8616077,52.28728,4.85771,'foot'));
-print_path($map,Astar($map,52.297275,4.8616077,52.28728,4.85771,'bicycle'));
-print_path($map,Astar($map,52.297275,4.8616077,52.28728,4.85771,'car'));
+#print_path($map,Astar($map,52.297275,4.8616077,52.28728,4.85771));
+#print_path($map,Astar($map,52.297275,4.8616077,52.28728,4.85771,'foot'));
+#print_path($map,Astar($map,52.297275,4.8616077,52.28728,4.85771,'bicycle'));
+#print_path($map,Astar($map,52.297275,4.8616077,52.28728,4.85771,'car'));
 
-print_path($map,Astar($map,52.297275,4.8616077,52.311311,4.8468799,'car'));
-print_path($map,Astar($map,52.297275,4.8616077,52.4176385,4.8708703,'bicycle'));
-print_path($map,Astar($map,52.2973969,4.8620826,52.278473,4.846854));
-print_path($map,Astar($map,52.2973969,4.8620826,52.278473,4.846854,'foot'));
-print_path($map,Astar($map,52.2973969,4.8620826,52.278473,4.846854,'bicycle'));
-print_path($map,Astar($map,52.2973969,4.8620826,52.278473,4.846854,'car'));
-print_path($map,Astar($map,52.297275,4.8616077,52.4176385,4.8708703,'car'));
-print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588));
-print_path($map,Astar($map,52.297275,4.8616077,52.2935821,4.8593675));
-print_path($map,Astar($map,52.297275,4.8616077,52.2935821,4.8593675,'foot'));
-print_path($map,Astar($map,52.297275,4.8616077,52.2935821,4.8593675,'bicycle'));
-print_path($map,Astar($map,52.297275,4.8616077,52.2935821,4.8593675,'car'));
-print_path($map,Astar($map,52.2973969,4.8620826,52.2932895,4.8544163));
-print_path($map,Astar($map,52.297275,4.8616077,52.2932895,4.8544163));
-print_path($map,Astar($map,52.297275,4.8616077,52.2871944,4.8503294,'bicycle'));
-print_path($map,Astar($map,52.2973969,4.8620826,52.2871944,4.8503294,'car'));
+#print_path($map,Astar($map,52.297275,4.8616077,52.311311,4.8468799,'car'));
+#print_path($map,Astar($map,52.297275,4.8616077,52.4176385,4.8708703,'bicycle'));
+#print_path($map,Astar($map,52.2973969,4.8620826,52.278473,4.846854));
+#print_path($map,Astar($map,52.2973969,4.8620826,52.278473,4.846854,'foot'));
+#print_path($map,Astar($map,52.2973969,4.8620826,52.278473,4.846854,'bicycle'));
+#print_path($map,Astar($map,52.2973969,4.8620826,52.278473,4.846854,'car'));
+#print_path($map,Astar($map,52.297275,4.8616077,52.4176385,4.8708703,'car'));
+#print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588));
+#print_path($map,Astar($map,52.297275,4.8616077,52.2935821,4.8593675));
+#print_path($map,Astar($map,52.297275,4.8616077,52.2935821,4.8593675,'foot'));
+#print_path($map,Astar($map,52.297275,4.8616077,52.2935821,4.8593675,'bicycle'));
+#print_path($map,Astar($map,52.297275,4.8616077,52.2935821,4.8593675,'car'));
+#print_path($map,Astar($map,52.2973969,4.8620826,52.2932895,4.8544163));
+#print_path($map,Astar($map,52.297275,4.8616077,52.2932895,4.8544163));
+#print_path($map,Astar($map,52.297275,4.8616077,52.2871944,4.8503294,'bicycle'));
+#print_path($map,Astar($map,52.2973969,4.8620826,52.2871944,4.8503294,'car'));
 
 ###Coentunnel
 #print_path($map,Astar($map,52.2973969,4.8620826,52.4184,4.8724));
@@ -263,9 +263,9 @@ print_path($map,Astar($map,52.2973969,4.8620826,52.2871944,4.8503294,'car'));
 #print_path($map,Astar($map,52.087473,5.115715,52.2973969,4.8620826,'car'));
 
 ## ICT Barendrecht
-#print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'car'));
-#print_path($map,Astar($map,51.8503978,4.5091717,52.2973969,4.8620826,'car'));
-#print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'bicycle'));
+print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'car'));
+print_path($map,Astar($map,51.8503978,4.5091717,52.2973969,4.8620826,'car'));
+print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'bicycle'));
 
 ## Roquebrune
 #print_path($map,Astar($map,52.2973969,4.8620826,43.4046930,6.6792379,'car'));
