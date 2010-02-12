@@ -3,7 +3,7 @@
 	<highways>
 		<highway name="bus_stop"/>
 		<highway name="crossing" extracost="10"/>
-		<highway name="bridleway" speed="5"/> <!-- ruiterpad -->
+		<highway name="bridleway" speed="5"/>s	<!-- ruiterpad -->
 		<highway name="cycleway" speed="15"/>
 		<highway name="primary_link" speed="15"/>
 		<highway name="construction" speed="15"/>
@@ -75,7 +75,7 @@
 			<allowed highway="road" extracost="30" />
 			<allowed highway="service" extracost="90" />
 			<allowed highway="primary" extracost="10" />
- 			<allowed highway="primary_link" extracost="20" />
+			<allowed highway="primary_link" extracost="20" />
 			<allowed highway="secondary" extracost="20" />
 			<allowed highway="secondary_link" extracost="30" />
 			<allowed highway="tertiary" extracost="30" />
