@@ -28,12 +28,6 @@
     my $vehicle;
     my %highways;
     my %profiles;
-#    my $nodes;
-#    my $ways;
-#    my @bounds;
-#    my $dist;
-#    my $way;
-#    my @admin;
     
     sub initRoute {
         my $self = shift;
@@ -75,6 +69,7 @@
         $self->{way} = undef;
         $self->{bounds} = [];
         $self->{admin} = [];
+        $self->{buckets}=undef;
 	$self->initialize($conffile);
 	return $self;
     }
@@ -102,12 +97,6 @@
         %highways=%{${$$conf{highways}}{highway}};
 	$self->{tempways} = 0;
 	$self->{tempnodes} = 0;
-#        $nodes = $$self{nodes};
-#        $ways = $$self{ways};
-#        $dist = $$self{dist};
-#        $way = $$self{way};
-#        @bounds = @{$$self{bounds}};
-#        @admin = @{$$self{admin}};
         $self->{changed} = 0;
     }
     
@@ -169,7 +158,6 @@
         $newways = $doc->{way};
         $relations = $doc->{relation};
 	$bounds = $doc->{bounds};
-#        print Dumper($ways);
         my $nrnodes;
 	
         $self->{changed} = 1;
@@ -194,7 +182,6 @@
             } else {
                 $newways->{$w}->{tag}->{oneway} = $oneway;
             }
-#           print Dumper($ways->{$w}->{nd});
             $nrnodes = $#{$newways->{$w}->{nd}}+1;
             my ($n1,$n2);
             for (my $i=0;$i<$nrnodes-1;$i++) {
@@ -212,9 +199,18 @@
 	        delete $$newnodes{$n}->{version};
 	        delete $$newnodes{$n}->{visible};
 	        delete $$newnodes{$n}->{uid};
+                my $x = int(20*($$newnodes{$n}->{lon} + 180));
+                my $y = int(20*($$newnodes{$n}->{lat} +90));
+                $self->{bucket}->{$x}->{$y} = [] unless exists($self->{bucket}->{$x}->{$y});
+                push @{$self->{bucket}->{$x}->{$y}},$n;
 	    } else {
 	        delete $$newnodes{$n};
 	    }
+        }
+        foreach my $x (sort keys %{$self->{bucket}}) {
+            foreach my $y (sort keys %{$self->{bucket}->{$x}}) {
+                print "$x $y ",$#{$self->{bucket}->{$x}->{$y}},"\n";
+            }
         }
 	$self->storenewdata($newnodes,$newways,$bounds);
     }
@@ -235,7 +231,6 @@
             my $name = $$relations{$r}->{tag}->{name};
             next unless defined($name);
             next if exists(${$self->{admin}}[$level]->{$name});
-#            print Dumper \$$relations{$r};
             print $$relations{$r}->{tag}->{name},' ',$$relations{$r}->{tag}->{type},' ',$level,' ',$$relations{$r}->{tag}->{boundary},"\n";
 	    ${$self->{admin}}[$level]->{$name}->{type} = $type;
             ${$self->{admin}}[$level]->{$name}->{lat} = ();
@@ -316,12 +311,6 @@
         $self->removetempways();
         $self->removetempnodes();
         $self->{changed} = 0;
-#        $self->{nodes} = $nodes;
-#        $self->{ways} = $ways;
-#        $self->{dist} = $dist;
-#        $self->{way} = $way;
-#        $self->{bounds} = \@bounds;
-#        $self->{admin} = \@admin;
         $self->nstore($dbfile);
     }
     
@@ -497,8 +486,17 @@
         my ($self,$lat,$lon,$maxdist) = @_;
 	my $node = undef;
 	my $distance=$infinity;
+        
+        my $x = int(20*($lon+180));
+        my $y = int(20*($lat+90));
+        my @nds;
+        if (exists($self->{bucket}->{$x}->{$y})) {
+            @nds = @{$self->{bucket}->{$x}->{$y}};
+        } else {
+            @nds = keys %{$self->{nodes}};
+        }
 
-	for my $n (keys %{$self->{nodes}}) {
+	for my $n (@nds) {
 	    my $d = $self->distanceCoor($lat,$lon,$self->{nodes}->{$n}->{lat},$self->{nodes}->{$n}->{lon});
 	    if ($d < $distance) {
 		$distance=$d;
@@ -566,7 +564,11 @@
     }
     
     sub wrong_direction {
+#        print join(", ",@_),"\n";
 	my ($self,$x,$y,$w,$onew) = @_;
+        if ($x==634932634) {
+          my $xyz=34;
+        }
 	my @nd = @{$self->{ways}->{$w}->{nd}};
 	
 	foreach my $n (@nd) {
