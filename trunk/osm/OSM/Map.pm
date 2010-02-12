@@ -28,12 +28,12 @@
     my $vehicle;
     my %highways;
     my %profiles;
-    my $nodes;
-    my $ways;
-    my @bounds;
-    my $dist;
-    my $way;
-    my @admin;
+#    my $nodes;
+#    my $ways;
+#    my @bounds;
+#    my $dist;
+#    my $way;
+#    my @admin;
     
     sub initRoute {
         my $self = shift;
@@ -48,19 +48,19 @@
     sub node {
         my $self = shift;
 	my $n = shift;
-	return $$nodes{$n};
+	return $self->{nodes}->{$n};
     }
     
     sub way {
 	my $self = shift;
 	my $n = shift;
-	return $$ways{$n};
+	return $self->{ways}->{$n};
     }
     
     sub getnodes {
         my ($self,$w) = @_;
         
-        return @{$$ways{$w}->{nd}};
+        return @{$self->{ways}->{$w}->{nd}};
     }
     
     sub new {
@@ -102,12 +102,12 @@
         %highways=%{${$$conf{highways}}{highway}};
 	$self->{tempways} = 0;
 	$self->{tempnodes} = 0;
-        $nodes = $$self{nodes};
-        $ways = $$self{ways};
-        $dist = $$self{dist};
-        $way = $$self{way};
-        @bounds = @{$$self{bounds}};
-        @admin = @{$$self{admin}};
+#        $nodes = $$self{nodes};
+#        $ways = $$self{ways};
+#        $dist = $$self{dist};
+#        $way = $$self{way};
+#        @bounds = @{$$self{bounds}};
+#        @admin = @{$$self{admin}};
         $self->{changed} = 0;
     }
     
@@ -117,8 +117,7 @@
     }
     
     sub distanceCoor {
-        my ($self,$lat1,$lon1,$lat2,$lon2,$n) = @_;
-	print "$n\n",Dumper $$nodes{$n} unless defined($lat2);
+        my ($self,$lat1,$lon1,$lat2,$lon2) = @_;
         return $geo->distance('meter',$lon1,$lat1,$lon2,$lat2);
     }
     
@@ -126,24 +125,26 @@
         my $self = shift;
         my $n1 = shift;
         my $n2 = shift;
-        return $geo->distance('meter',$$nodes{$n1}->{lon},$$nodes{$n1}->{lat}=>$$nodes{$n2}->{lon},$$nodes{$n2}->{lat});
+	my $nd1=$$self{nodes}->{$n1};
+	my $nd2=$$self{nodes}->{$n2};
+        return $geo->distance('meter',$$nd1{lon},$$nd1{lat}=>$$nd2{lon},$$nd2{lat});
     }
     
     sub storenewdata {
 	my ($self,$newnodes,$newways,$newbounds) = @_;
 	for my $n (keys %$newnodes) {
-	    $$nodes{$n} = $$newnodes{$n} unless exists($$nodes{$n});
+	    $self->{nodes}->{$n} = $$newnodes{$n} unless exists($self->{nodes}->{$n});
 	}
 	for my $w (keys %$newways) {
-	    $$ways{$w} = $$newways{$w} unless exists($$ways{$w});
+	    $self->{ways}->{$w} = $$newways{$w} unless exists($self->{ways}->{$w});
 	}
-	push @bounds,$newbounds;
+	push @{$$self{bounds}},$newbounds;
     }
     
     sub inboundCoor {
         my ($self,$lat,$lon) = @_;
 	
-	for my $b (@bounds) {
+	for my $b (@{$$self{bounds}}) {
 	    return 1 if ($lat<=$b->{maxlat} && $lat >=$b->{minlat} && $lon<=$b->{maxlon} && $lon>=$b->{minlon});
 	}
 	return 0;
@@ -151,8 +152,8 @@
     
     sub inboundNode {
         my ($self,$node) = @_;
-	my $lat = $$nodes{$node}->{lat};
-	my $lon = $$nodes{$node}->{lon};
+	my $lat = $self->{nodes}->{$node}->{lat};
+	my $lon = $self->{nodes}->{$node}->{lon};
 	return $self->inboundCoor($lat,$lon);
     }
     
@@ -199,13 +200,13 @@
             for (my $i=0;$i<$nrnodes-1;$i++) {
 	        $n1 = $newways->{$w}->{nd}->[$i]->{ref};
     	        $n2 = $newways->{$w}->{nd}->[$i+1]->{ref};
-	        $way->{$n1}->{$n2}=$w;
-	        $way->{$n2}->{$n1}=$w;
+	        $self->{way}->{$n1}->{$n2}=$w;
+	        $self->{way}->{$n2}->{$n1}=$w;
             }
         }
 
         foreach my $n (keys %$newnodes) {
-            if (exists($way->{$n})) {
+            if (exists($self->{way}->{$n})) {
 	        delete $$newnodes{$n}->{user};
 	        delete $$newnodes{$n}->{changeset};
 	        delete $$newnodes{$n}->{version};
@@ -233,16 +234,16 @@
 	    next unless defined($level);
             my $name = $$relations{$r}->{tag}->{name};
             next unless defined($name);
-            next if exists($admin[$level]->{$name});
+            next if exists(${$self->{admin}}[$level]->{$name});
 #            print Dumper \$$relations{$r};
             print $$relations{$r}->{tag}->{name},' ',$$relations{$r}->{tag}->{type},' ',$level,' ',$$relations{$r}->{tag}->{boundary},"\n";
-	    $admin[$level]->{$name}->{type} = $type;
-            $admin[$level]->{$name}->{lat} = ();
-            $admin[$level]->{$name}->{lon} = ();
-	    $admin[$level]->{$name}->{minlon} = 1000;
-	    $admin[$level]->{$name}->{minlat} = 1000;
-	    $admin[$level]->{$name}->{maxlon} = -1000;
-	    $admin[$level]->{$name}->{maxlat} = -1000;
+	    ${$self->{admin}}[$level]->{$name}->{type} = $type;
+            ${$self->{admin}}[$level]->{$name}->{lat} = ();
+            ${$self->{admin}}[$level]->{$name}->{lon} = ();
+	    ${$self->{admin}}[$level]->{$name}->{minlon} = 1000;
+	    ${$self->{admin}}[$level]->{$name}->{minlat} = 1000;
+	    ${$self->{admin}}[$level]->{$name}->{maxlon} = -1000;
+	    ${$self->{admin}}[$level]->{$name}->{maxlat} = -1000;
             
             my $doc = $self->loadrelation($r);
             my $ways=$doc->{way};
@@ -256,15 +257,15 @@
 		    my $lon = $$nodes{$nds[$n]->{ref}}->{lon};
 		    my $lat = $$nodes{$nds[$n]->{ref}}->{lat};
 #                    print Dumper $$nodes{$nds[$n]->{ref}};
-                    push @{$admin[$level]->{$name}->{lat}},$lat;
-                    push @{$admin[$level]->{$name}->{lon}},$lon;
-		    $admin[$level]->{$name}->{minlon} = $lon if $admin[$level]->{$name}->{minlon} > $lon;
-		    $admin[$level]->{$name}->{minlat} = $lat if $admin[$level]->{$name}->{minlat} > $lat;
-		    $admin[$level]->{$name}->{maxlon} = $lon if $admin[$level]->{$name}->{maxlon} < $lon;
-		    $admin[$level]->{$name}->{maxlat} = $lat if $admin[$level]->{$name}->{maxlat} < $lat;
+                    push @{${$self->{admin}}[$level]->{$name}->{lat}},$lat;
+                    push @{${$self->{admin}}[$level]->{$name}->{lon}},$lon;
+		    ${$self->{admin}}[$level]->{$name}->{minlon} = $lon if ${$self->{admin}}[$level]->{$name}->{minlon} > $lon;
+		    ${$self->{admin}}[$level]->{$name}->{minlat} = $lat if ${$self->{admin}}[$level]->{$name}->{minlat} > $lat;
+		    ${$self->{admin}}[$level]->{$name}->{maxlon} = $lon if ${$self->{admin}}[$level]->{$name}->{maxlon} < $lon;
+		    ${$self->{admin}}[$level]->{$name}->{maxlat} = $lat if ${$self->{admin}}[$level]->{$name}->{maxlat} < $lat;
                 }
             }
-#            print Dumper \@admin;
+#            print Dumper \@{$self->{admin}};
 	}
     }
     
@@ -291,13 +292,13 @@
     sub findLocation {
         my ($self,$node) = @_;
         my $locstr = "";
-	my $lat = $$nodes{$node}->{lat};
-	my $lon = $$nodes{$node}->{lon};
+	my $lat = $self->{nodes}->{$node}->{lat};
+	my $lon = $self->{nodes}->{$node}->{lon};
         
-        for (my $a=0;$a<=$#admin;$a++) {
-            next unless defined($admin[$a]);
-            my $r = $admin[$a];
-            foreach my $l (keys %{$admin[$a]}) {
+        for (my $a=0;$a<=$#{$self->{admin}};$a++) {
+            next unless defined(${$self->{admin}}[$a]);
+            my $r = ${$self->{admin}}[$a];
+            foreach my $l (keys %{${$self->{admin}}[$a]}) {
     	        next unless ($lat >= $$r{$l}->{minlat} and $lat <= $$r{$l}->{maxlat}) and ($lon >= $$r{$l}->{minlon} and $lon <= $$r{$l}->{maxlon});
                 my $nvert = $#{$$r{$l}->{lat}};
                 my $c = $self->pnpoly($nvert,$$r{$l}->{lon},$$r{$l}->{lat},$lon,$lat);
@@ -315,12 +316,12 @@
         $self->removetempways();
         $self->removetempnodes();
         $self->{changed} = 0;
-        $self->{nodes} = $nodes;
-        $self->{ways} = $ways;
-        $self->{dist} = $dist;
-        $self->{way} = $way;
-        $self->{bounds} = \@bounds;
-        $self->{admin} = \@admin;
+#        $self->{nodes} = $nodes;
+#        $self->{ways} = $ways;
+#        $self->{dist} = $dist;
+#        $self->{way} = $way;
+#        $self->{bounds} = \@bounds;
+#        $self->{admin} = \@admin;
         $self->nstore($dbfile);
     }
     
@@ -404,7 +405,7 @@
 	my $maxlon=$lon+$delta;
 	my $minlat=$lat-$delta;
 	my $maxlat=$lat+$delta;
-	for my $b (@bounds) {
+	for my $b (@{$self->{bounds}}) {
             if ($minlat<=$b->{maxlat} && $minlat >=$b->{minlat} && $minlon<=$b->{maxlon} && $minlon>=$b->{minlon}) {
 	        if ($lon > $b->{maxlon}) {
     	            $minlon = $b->{maxlon};
@@ -443,14 +444,14 @@
 	
 	for (my $i=0;$i<$self->{tempnodes};$i++) {
         my $nodeid="TN$i";
-	    my $w=$way->{$nodeid};
+	    my $w=$self->{way}->{$nodeid};
 	    foreach my $n ($self->neighbours($nodeid)) {
-	        delete($$way{$n}->{$nodeid}) if exists($$way{$n}->{$nodeid});
-	        delete($$dist{$n}->{$nodeid}) if exists($$dist{$n}->{$nodeid});
+	        delete($self->{way}->{$n}->{$nodeid}) if exists($self->{way}->{$n}->{$nodeid});
+	        delete($self->{dist}->{$n}->{$nodeid}) if exists($self->{dist}->{$n}->{$nodeid});
 	    }
-	    delete($$way{$nodeid});
-	    delete($$dist{$nodeid}) if exists($$dist{$nodeid});
-	    delete($$nodes{$nodeid});
+	    delete($self->{way}->{$nodeid});
+	    delete($self->{dist}->{$nodeid}) if exists($self->{dist}->{$nodeid});
+	    delete($self->{nodes}->{$nodeid});
 	}
 	$self->{tempnodes} = 0;
     }
@@ -460,7 +461,7 @@
 	
 	for (my $i=0;$i<$self->{tempways};$i++) {
 	    my $wayid="WN$i";
-	    delete($$ways{$wayid});
+	    delete($self->{ways}->{$wayid});
 	}
 	$self->{tempways} = 0;
     }
@@ -469,8 +470,8 @@
         my ($self,$lat,$lon) = @_;
         my $nr = $self->{tempnodes}++;
         my $nodeid="TN$nr";
-        $$nodes{$nodeid}->{lat} = $lat;
-        $$nodes{$nodeid}->{lon} = $lon;
+        $self->{nodes}->{$nodeid}->{lat} = $lat;
+        $self->{nodes}->{$nodeid}->{lon} = $lon;
 	print "Created node $nodeid, $lat,$lon\n";
         return $nodeid;
     }
@@ -480,13 +481,13 @@
         my @nds = @_;
         my $nr = $self->{tempways}++;
         my $wayid="WN$nr";
-        $$ways{$wayid}->{nd}=();
+        $self->{ways}->{$wayid}->{nd}=();
         for (my $i=0;$i<=$#nds;$i++){
-             $$ways{$wayid}->{nd}->[$i]->{ref}=$nds[$i];
-             $way->{$nds[$i-1]}->{$nds[$i]}=$wayid if $i>0;
-             $way->{$nds[$i]}->{$nds[$i-1]}=$wayid if $i>0;
+             $self->{ways}->{$wayid}->{nd}->[$i]->{ref}=$nds[$i];
+             $self->{way}->{$nds[$i-1]}->{$nds[$i]}=$wayid if $i>0;
+             $self->{way}->{$nds[$i]}->{$nds[$i-1]}=$wayid if $i>0;
         }
-        $$ways{$wayid}->{tag}->{highway}="service";
+        $self->{ways}->{$wayid}->{tag}->{highway}="service";
 	print "Created way $wayid: nodes: ",join(", ",@nds),"\n";
         return $wayid;
     }
@@ -496,8 +497,8 @@
 	my $node = undef;
 	my $distance=$infinity;
 
-	for my $n (keys %$nodes) {
-	    my $d = $self->distanceCoor($lat,$lon,$$nodes{$n}->{lat},$$nodes{$n}->{lon},$n);
+	for my $n (keys %{$self->{nodes}}) {
+	    my $d = $self->distanceCoor($lat,$lon,$self->{nodes}->{$n}->{lat},$self->{nodes}->{$n}->{lon});
 	    if ($d < $distance) {
 		$distance=$d;
 		$node = $n;
@@ -511,11 +512,11 @@
         my $madeway = 0;
         my $x1=$lon;
         my $y1=$lat;
-        my $x2=$$nodes{$node}->{lon};
-        my $y2=$$nodes{$node}->{lat};
+        my $x2=$self->{nodes}->{$node}->{lon};
+        my $y2=$self->{nodes}->{$node}->{lat};
         for my $n (@nb) {
-            my $x3=$$nodes{$n}->{lon};
-            my $y3=$$nodes{$n}->{lat};
+            my $x3=$self->{nodes}->{$n}->{lon};
+            my $y3=$self->{nodes}->{$n}->{lat};
             my $dx = ($x2-$x3 );
             my $dy = ($y2-$y3);
             my ($a,$b,$lat1,$x4,$y4,$nt);
@@ -549,8 +550,8 @@
     
     sub fetchNode {
 	my ($self,$node) = @_;
-	my $lat = $$nodes{$node}->{lat};
-	my $lon = $$nodes{$node}->{lon};
+	my $lat = $self->{nodes}->{$node}->{lat};
+	my $lon = $self->{nodes}->{$node}->{lon};
 	$self->fetchCoor($lat,$lon);
     }
     
@@ -565,7 +566,7 @@
     
     sub wrong_direction {
 	my ($self,$x,$y,$w,$onew) = @_;
-	my @nd = @{$$ways{$w}{nd}};
+	my @nd = @{$self->{ways}->{$w}->{nd}};
 	
 	foreach my $n (@nd) {
 	    if ($n->{ref} == $y) {
@@ -581,11 +582,15 @@
     sub curvecost {
         my ($self,$x,$y,$p) = @_;
         return 0 unless defined($p);
+	
+	my $ndx=$self->{nodes}->{$x};
+	my $ndy=$self->{nodes}->{$y};
+	my $ndp=$self->{nodes}->{$p};
         
-        my $dx1 = $$nodes{$y}->{lon}-$$nodes{$x}->{lon};
-        my $dy1 = $$nodes{$y}->{lat}-$$nodes{$x}->{lat};
-        my $dx2 = $$nodes{$x}->{lon}-$$nodes{$p}->{lon};
-        my $dy2 = $$nodes{$x}->{lat}-$$nodes{$p}->{lat};
+        my $dx1 = $$ndy{lon}-$$ndx{lon};
+        my $dy1 = $$ndy{lat}-$$ndx{lat};
+        my $dx2 = $$ndx{lon}-$$ndp{lon};
+        my $dy2 = $$ndx{lat}-$$ndp{lat};
         my $h1 = 180 * atan2($dy1,$dx1) / $PI;
         my $h2 = 180 * atan2($dy2,$dx2) / $PI;
         my $dh = abs($h1-$h2);
@@ -601,17 +606,19 @@
     
     sub direction {
         my ($self,$n1,$n2) = @_;
-        my $dx1 = $$nodes{$n2}->{lon}-$$nodes{$n1}->{lon};
-        my $dy1 = $$nodes{$n2}->{lat}-$$nodes{$n1}->{lat};
+	my $nd1 = $self->{nodes}->{$n1};
+	my $nd2 = $self->{nodes}->{$n2};
+        my $dx1 = $$nd2{lon}-$$nd1{lon};
+        my $dy1 = $$nd2{lat}-$$nd1{lat};
         return 180 * atan2($dx1,$dy1) / $PI;
     }
     
     sub cost {
         my ($self,$x,$y,$prevnode) = @_;
 	
-	my $d = $dist->{$x}->{$y};
+	my $d = $self->{dist}->{$x}->{$y};
         unless (defined($d)) {
-	    $d = $dist->{$x}->{$y} = $dist->{$y}->{$x} = $self->distance($x,$y);
+	    $d = $self->{dist}->{$x}->{$y} = $self->{dist}->{$y}->{$x} = $self->distance($x,$y);
             unless ((substr($x,0,2) eq 'TN') or (substr($y,0,2) eq 'TN')) {
                 $self->{changed} = 1 
             }
@@ -620,8 +627,8 @@
 	
 	my $speed = $profiles{$vehicle}->{maxspeed};
 	
-	my $w = $way->{$x}->{$y};
-	my $ww=$$ways{$w};
+	my $w = $self->{way}->{$x}->{$y};
+	my $ww=$self->{ways}->{$w};
 	my $wwtag = $$ww{tag};
 	
 	my ($hw,$access,$cw,$fa,$ca,$onew,$ma);
@@ -658,7 +665,7 @@
 	my $extracost = 0;
 	$extracost = $profiles{$vehicle}->{allowed}->{$hw}->{extracost} if exists($profiles{$vehicle}->{allowed}->{$hw}) and exists($profiles{$vehicle}->{allowed}->{$hw}->{extracost});
 	
-	my $nodey = $$nodes{$y};
+	my $nodey = $self->{nodes}->{$y};
 	
 	if ($vehicle eq "foot") {
 	    return $infinity if $fa eq "no";
@@ -687,7 +694,7 @@
               }
             }
 	    if (exists($$nodey{highway}) and exists($highways{$$nodey{highway}}->{extracost})) {
-		$extracost += $highways{$$nodes{$y}->{highway}}->{extracost};
+		$extracost += $highways{$$nodey{highway}}->{extracost};
 	    }
 	    $extracost += 10 if defined($$nodey{traffic_calming});
             $extracost += $self->curvecost($x,$y,$prevnode);
@@ -709,7 +716,7 @@
         my $self = shift;
 	my $x = shift;
 	
-	return keys(%{$$way{$x}});
+	return keys(%{$self->{way}->{$x}});
     }
     
     sub getway {
@@ -717,7 +724,7 @@
 	my $p1 = shift;
 	my $p2 = shift;
 	
-	return $way->{$p1}->{$p2};
+	return $self->{way}->{$p1}->{$p2};
     }
     
     sub getways {
@@ -725,8 +732,8 @@
 	my $n = shift;
 	
 	my @ways = ();
-	for my $n1 (keys(%{$$way{$n}})) {
-	    push @ways,$way->{$n}->{$n1};
+	for my $n1 (keys(%{$self->{way}->{$n}})) {
+	    push @ways,$self->{way}->{$n}->{$n1};
 	}
 	return @ways;
     }
@@ -736,7 +743,7 @@
 	my $n1=shift;
 	my $n2=shift;
 	return undef unless defined($n1) && defined($n2);
-	return $dist->{$n1}->{$n2};
+	return $self->{dist}->{$n1}->{$n2};
     }
 }
 1;
