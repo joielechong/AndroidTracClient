@@ -69,7 +69,7 @@
         $self->{way} = undef;
         $self->{bounds} = [];
         $self->{admin} = [];
-        $self->{buckets}=undef;
+        $self->{bucket}=undef;
 	$self->initialize($conffile);
 	return $self;
     }
@@ -564,11 +564,7 @@
     }
     
     sub wrong_direction {
-#        print join(", ",@_),"\n";
 	my ($self,$x,$y,$w,$onew) = @_;
-        if ($x==634932634) {
-          my $xyz=34;
-        }
 	my @nd = @{$self->{ways}->{$w}->{nd}};
 	
 	foreach my $n (@nd) {
