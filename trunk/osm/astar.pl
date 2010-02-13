@@ -181,8 +181,9 @@ my $dbonly=0;
 my $netonly=0;
 my $confile='astarconf.xml';
 my $dbfile = "localdatabase.data";
+my $mapfile = undef;
 
-my %options = ('new' => \$new,'dbonly' => \$dbonly,'net' => \$netonly,'conf=s' => \$confile,'db=s'=> \$dbfile);
+my %options = ('new' => \$new,'dbonly' => \$dbonly,'net' => \$netonly,'conf=s' => \$confile,'db=s'=> \$dbfile,'map=s'=>\$mapfile);
 my $result = GetOptions(%options);
 
 my $map;
@@ -193,14 +194,22 @@ if ($new == 0 && -r $dbfile) {
     $map = OSM::Map->new();
 }
 
-if ($dbonly) { 
-    opendir(my $dh, "maps") || die "can't opendir : $!";
-    my @files = grep { /map_bbox.*\.osm$/ && -f "maps/$_" } readdir($dh);
-    closedir $dh;
+if ($dbonly) {
+    my @files = ();
+    if (defined($mapfile)) {
+	$files[0] = $mapfile;
+    } else {
+	opendir(my $dh, "maps") || die "can't opendir : $!";
+        @files = grep { /map_bbox.*\.osm$/ && -f "maps/$_" } readdir($dh);
+	closedir $dh;
+    }
     foreach my $f (@files) {
         $map->useLocaldata($f);
     }
 } else {
+    if (defined($mapfile)) {
+	$map->useLocaldata($mapfile);
+    }
 
 ###huis school
 #print_path($map,Astar($map,52.297277,4.862030,52.29334,4.85876));
