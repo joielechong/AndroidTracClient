@@ -141,8 +141,10 @@
     
     sub inboundNode {
         my ($self,$node) = @_;
-	my $lat = $self->{nodes}->{$node}->{lat};
-	my $lon = $self->{nodes}->{$node}->{lon};
+ 	my $lat = $$self{nodes}->{$node}->{lat};
+	my $lon = $$self{nodes}->{$node}->{lon};
+        
+        return 0 unless (defined($lat) and defined($lon));
 	return $self->inboundCoor($lat,$lon);
     }
     
@@ -551,6 +553,7 @@
 	my ($self,$node) = @_;
 	my $lat = $self->{nodes}->{$node}->{lat};
 	my $lon = $self->{nodes}->{$node}->{lon};
+        print "letop fetch node = $node",Dumper($self->{nodes}->{$node}) unless (defined($lat) and defined($lon));
 	$self->fetchCoor($lat,$lon);
     }
     
@@ -581,10 +584,14 @@
     sub curvecost {
         my ($self,$x,$y,$p) = @_;
         return 0 unless defined($p);
-	
-	my $ndx=$self->{nodes}->{$x};
-	my $ndy=$self->{nodes}->{$y};
-	my $ndp=$self->{nodes}->{$p};
+ 	
+	my $ndx=$$self{nodes}->{$x};
+	my $ndy=$$self{nodes}->{$y};
+	my $ndp=$$self{nodes}->{$p};
+        
+        return 0 unless (defined($$ndx{lon}) and defined($$ndx{lat}));
+        return 0 unless (defined($$ndy{lon}) and defined($$ndy{lat}));
+        return 0 unless (defined($$ndp{lon}) and defined($$ndp{lat}));
         
         my $dx1 = $$ndy{lon}-$$ndx{lon};
         my $dy1 = $$ndy{lat}-$$ndx{lat};
@@ -593,7 +600,7 @@
         my $h1 = 180 * atan2($dy1,$dx1) / $PI;
         my $h2 = 180 * atan2($dy2,$dx2) / $PI;
         my $dh = abs($h1-$h2);
-		$dh = 360-$dh if $dh > 180;
+	$dh = 360-$dh if $dh > 180;
         return 0 if $dh < 45;
         return 5 if $dh < 60;
         return 10 if $dh < 90;
