@@ -7,6 +7,7 @@
     use LWP::UserAgent;
     use Data::Dumper;
     use XML::Simple;
+    use XML::LibXML::Reader;
     use Geo::Distance;
     use Storable;
     
@@ -148,6 +149,167 @@
 	return $self->inboundCoor($lat,$lon);
     }
     
+    sub processElem {
+        my $self = shift;
+        my $elem = shift;
+        my $xmlname = $elem->{xmlname};
+        my $id = $elem->{id};
+#       print Dumper $elem;
+        delete $elem->{nodeType};
+        delete $elem->{visible};
+        delete $elem->{uid};
+        delete $elem->{xmlname};
+        delete $elem->{depth};
+        delete $elem->{changeset};
+        delete $elem->{user};
+        delete $elem->{id};
+        delete $elem->{timestamp};
+        if ($xmlname eq 'node') {
+            if (exists($self->{nodes}->{$id})) {
+#           print Dumper $self->{nodes}->{$id},$elem if $self->{nodes}->{$id}->{version} < $elem->{version};
+                $self->{nodes}->{$id} = $elem if $self->{nodes}->{$id}->{version} < $elem->{version};
+            } else {
+                $self->{nodes}->{$id} = $elem;
+            }
+        } elsif ($xmlname eq 'way') {
+            if (exists($self->{ways}->{$id})) {
+#               print Dumper $self->{ways}->{$id},$elem if $self->{ways}->{$id}->{version} < $elem->{version};
+                $self->{ways}->{$id} = $elem if $self->{ways}->{$id}->{version} < $elem->{version};
+            } else {
+                $self->{ways}->{$id} = $elem;
+            }
+        } elsif ($xmlname eq 'relation') {
+            if (exists($self->{relations}->{$id})) {
+#              print Dumper $self->{relations}->{$id},$elem if $self->{relations}->{$id}->{version} < $elem->{version};
+               $self->{relations}->{$id} = $elem if $self->{relations}->{$id}->{version} < $elem->{version};
+            } else {
+               $self->{relations}->{$id} = $elem;
+            }
+        } elsif ($xmlname eq 'bounds') {
+            push @{$self->{bounds}}, $elem;
+        }
+    }
+
+    sub processXMLNode {
+        my $self = shift;
+        my $elem;
+        my $reader = shift;
+        $elem->{depth} = $reader->depth;
+        $elem->{xmlname} = $reader->name;
+        $elem->{nodeType} = $reader->nodeType;
+        if ($reader->hasAttributes()) {
+            $reader->moveToFirstAttribute();
+            do {
+#               printf "%d %d %s %d %s\n",$reader->depth,$reader->nodeType,$reader->name,$reader->isEmptyElement,$reader->value;
+                $elem->{$reader->name} = $reader->value;
+            } while ($reader->moveToNextAttribute());
+        }
+        return $elem;
+    }
+
+    sub importOSMfile {
+        my $self = shift;
+        my $f = shift;
+        
+        my $fd;
+        if ($f=~m/\.gz$/) {
+            my $cmd = "zcat maps/$f";
+            print $cmd,"\n";
+            open $fd,"$cmd |" or die "Kan $cmd niet uitvoeren\n";
+       } else { 
+           print "maps/$f\n";
+           open $fd,"<maps/$f" or die "Kan file maps/$f niet lezen\n";
+       }
+       binmode $fd;
+       my $doc = new XML::LibXML::Reader(FD =>$fd);
+       my $currelem = undef;
+
+       while ($doc->read()) {
+           my $elem = $self->processXMLNode($doc);
+           next if $elem->{nodeType} == 14 or $elem->{nodeType} == 15;
+           if ($elem->{depth} == 1) {
+               $self->processElem($currelem) if defined $currelem;
+               $currelem = $elem;
+               $currelem->{nds} = [] if $currelem->{xmlname} eq "way";
+               $currelem->{members} = [] if $currelem->{xmlname} eq "relation";
+           } elsif (defined($currelem) && $elem->{depth} == 2) {
+               if ($elem->{xmlname} eq "tag") {
+                   $currelem->{tag}->{$elem->{k}} = $elem->{v};
+               } elsif ($elem->{xmlname} eq "nd") {
+                   push @{$currelem->{nds}}, $elem->{ref};
+               } elsif ($elem->{xmlname} eq "member") {
+                   push @{$currelem->{members}}, {type => $elem->{type},ref=>$elem->{ref},role=>$elem->{role}};
+               }
+           }
+#          print Dumper $elem unless $elem->{nodeType} == 14 or $elem->{nodeType} == 15 or $elem->{depth} ==0;
+       }
+       $self->processElem($currelem) if defined $currelem;
+       $doc->finish;
+       close $fd;
+       my $nds = keys %{$self->{nodes}};
+       my $ws = keys %{$self->{ways}};
+       my $rels = keys %{$self->{relations}};
+       printf "%d nodes, %d ways %d relations %d bounds\n",$nds,$ws,$rels,1+$#{$self->{bounds}};
+    }
+    
+    sub postprocess {
+        my $self = shift;
+        my $nrnodes;
+        
+        $self->{changed} = 1;
+        my $newways = $self->{ways};
+        my $newnodes = $self->{nodes};
+        my $relations = $self->{relations};
+        $self->process_relations($relations,$newways,$newnodes);
+        
+        foreach my $w (keys %$newways) {
+            unless (usable_way($newways->{$w})) {
+	        delete($$newways{$w});
+	        next;
+            }
+            my $oneway = $newways->{$w}->{tag}->{oneway};
+            $oneway = "no" unless defined $oneway;
+            $oneway = "yes" if $oneway eq "true";
+            $oneway = "yes" if $oneway eq "1";
+            $oneway = "rev" if $oneway eq "-1";
+            if ($oneway eq "no") {
+	        delete $newways->{$w}->{tag}->{oneway} if exists($newways->{$w}->{tag}->{oneway});
+            } else {
+                $newways->{$w}->{tag}->{oneway} = $oneway;
+            }
+            $nrnodes = $#{$newways->{$w}->{nd}}+1;
+            my ($n1,$n2);
+            for (my $i=0;$i<$nrnodes-1;$i++) {
+	        $n1 = $newways->{$w}->{nd}->[$i]->{ref};
+    	        $n2 = $newways->{$w}->{nd}->[$i+1]->{ref};
+	        $self->{way}->{$n1}->{$n2}=$w;
+	        $self->{way}->{$n2}->{$n1}=$w;
+            }
+        }
+
+        foreach my $n (keys %$newnodes) {
+            if (exists($self->{way}->{$n})) {
+	        delete $$newnodes{$n}->{user};
+	        delete $$newnodes{$n}->{changeset};
+	        delete $$newnodes{$n}->{timestamp};
+	        delete $$newnodes{$n}->{visible};
+	        delete $$newnodes{$n}->{uid};
+                my $x = int(20*($$newnodes{$n}->{lon} + 180));
+                my $y = int(20*($$newnodes{$n}->{lat} +90));
+                $self->{bucket}->{$x}->{$y} = [] unless exists($self->{bucket}->{$x}->{$y});
+                push @{$self->{bucket}->{$x}->{$y}},$n;
+	    } else {
+	        delete $$newnodes{$n};
+	    }
+        }
+        foreach my $x (sort keys %{$self->{bucket}}) {
+            foreach my $y (sort keys %{$self->{bucket}->{$x}}) {
+                print "$x $y ",$#{$self->{bucket}->{$x}->{$y}},"\n";
+            }
+        }
+#	$self->storenewdata($newnodes,$newways,$bounds);
+    }
+    
     sub procesdata {
         my $self = shift;
 	my $doc = shift;
@@ -173,6 +335,7 @@
 	    delete $$newways{$w}->{user};
 	    delete $$newways{$w}->{uid};
 	    delete $$newways{$w}->{visible};
+            delete $$newways{$w}->{timestamp};
 	    delete $$newways{$w}->{changeset};
             my $oneway = $newways->{$w}->{tag}->{oneway};
             $oneway = "no" unless defined $oneway;
@@ -198,7 +361,7 @@
             if (exists($self->{way}->{$n})) {
 	        delete $$newnodes{$n}->{user};
 	        delete $$newnodes{$n}->{changeset};
-	        delete $$newnodes{$n}->{version};
+	        delete $$newnodes{$n}->{timestamp};
 	        delete $$newnodes{$n}->{visible};
 	        delete $$newnodes{$n}->{uid};
                 my $x = int(20*($$newnodes{$n}->{lon} + 180));
