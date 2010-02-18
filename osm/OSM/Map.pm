@@ -230,13 +230,13 @@
            if ($elem->{depth} == 1) {
                $self->processElem($currelem) if defined $currelem;
                $currelem = $elem;
-               $currelem->{nds} = [] if $currelem->{xmlname} eq "way";
+               $currelem->{nd} = [] if $currelem->{xmlname} eq "way";
                $currelem->{members} = [] if $currelem->{xmlname} eq "relation";
            } elsif (defined($currelem) && $elem->{depth} == 2) {
                if ($elem->{xmlname} eq "tag") {
                    $currelem->{tag}->{$elem->{k}} = $elem->{v};
                } elsif ($elem->{xmlname} eq "nd") {
-                   push @{$currelem->{nds}}, $elem->{ref};
+                   push @{$currelem->{nd}}, {'ref'=>$elem->{ref}};
                } elsif ($elem->{xmlname} eq "member") {
                    push @{$currelem->{members}}, {type => $elem->{type},ref=>$elem->{ref},role=>$elem->{role}};
                }
@@ -289,11 +289,6 @@
 
         foreach my $n (keys %$newnodes) {
             if (exists($self->{way}->{$n})) {
-	        delete $$newnodes{$n}->{user};
-	        delete $$newnodes{$n}->{changeset};
-	        delete $$newnodes{$n}->{timestamp};
-	        delete $$newnodes{$n}->{visible};
-	        delete $$newnodes{$n}->{uid};
                 my $x = int(20*($$newnodes{$n}->{lon} + 180));
                 my $y = int(20*($$newnodes{$n}->{lat} +90));
                 $self->{bucket}->{$x}->{$y} = [] unless exists($self->{bucket}->{$x}->{$y});
