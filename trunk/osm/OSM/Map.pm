@@ -297,11 +297,7 @@
 	        delete $$newnodes{$n};
 	    }
         }
-        foreach my $x (sort keys %{$self->{bucket}}) {
-            foreach my $y (sort keys %{$self->{bucket}->{$x}}) {
-                print "$x $y ",$#{$self->{bucket}->{$x}->{$y}},"\n";
-            }
-        }
+        delete $self->{relations};
 #	$self->storenewdata($newnodes,$newways,$bounds);
     }
     
