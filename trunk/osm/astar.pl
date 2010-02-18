@@ -200,12 +200,13 @@ if ($dbonly) {
 	$files[0] = $mapfile;
     } else {
 	opendir(my $dh, "maps") || die "can't opendir : $!";
-        @files = grep { /map_bbox.*\.osm$/ && -f "maps/$_" } readdir($dh);
+        @files = grep { /map_rel.*\.osm$/ && -f "maps/$_" } readdir($dh);
 	closedir $dh;
     }
     foreach my $f (@files) {
-        $map->useLocaldata($f);
+        $map->importOSMfile($f);
     }
+    $map->postprocess()
 } else {
     if (defined($mapfile)) {
 	$map->useLocaldata($mapfile);
