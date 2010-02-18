@@ -200,7 +200,7 @@ if ($dbonly) {
 	$files[0] = $mapfile;
     } else {
 	opendir(my $dh, "maps") || die "can't opendir : $!";
-        @files = grep { /map_rel.*\.osm$/ && -f "maps/$_" } readdir($dh);
+        @files = grep { /map_.*\.osm$/ && -f "maps/$_" } readdir($dh);
 	closedir $dh;
     }
     foreach my $f (@files) {
