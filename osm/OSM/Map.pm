@@ -515,7 +515,7 @@
 		    ${$self->{admin}}[$level]->{$name}->{maxlat} = $lat if ${$self->{admin}}[$level]->{$name}->{maxlat} < $lat;
                 }
             }
-            $self-{insertadm}->execute($r,$level,$name,$type,${$self->{admin}}[$level]->{$name}->{minlat},${$self->{admin}}[$level]->{$name}->{maxlat},${$self->{admin}}[$level]->{$name}->{minlon},${$self->{admin}}[$level]->{$name}->{maxlon);}
+            $self->{insertadm}->execute($r,$level,$name,$type,${$self->{admin}}[$level]->{$name}->{minlat},${$self->{admin}}[$level]->{$name}->{maxlat},${$self->{admin}}[$level]->{$name}->{minlon},${$self->{admin}}[$level]->{$name}->{maxlon});
 #            print Dumper \@{$self->{admin}};
 	}
         $self->{dbh}->commit;
