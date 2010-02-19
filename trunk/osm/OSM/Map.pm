@@ -24,9 +24,6 @@
     my $ua;
     my $PI;
     
-    BEGIN  {
-    }
-    
     my $vehicle;
     my %highways;
     my %profiles;
@@ -58,7 +55,7 @@
         
         return @{$self->{ways}->{$w}->{nd}};
     }
-
+    
     sub initDB {
         my $self = shift;
         
@@ -236,9 +233,9 @@
         } elsif ($xmlname eq 'relation') {
             if (exists($self->{relations}->{$id})) {
 #              print Dumper $self->{relations}->{$id},$elem if $self->{relations}->{$id}->{version} < $elem->{version};
-               $self->{relations}->{$id} = $elem if $self->{relations}->{$id}->{version} < $elem->{version};
+		$self->{relations}->{$id} = $elem if $self->{relations}->{$id}->{version} < $elem->{version};
             } else {
-               $self->{relations}->{$id} = $elem;
+		$self->{relations}->{$id} = $elem;
             }
             
             $self->{checkrel}->execute($id);
@@ -265,7 +262,7 @@
             $self->{inserttag}->execute($id,$k,$elem->{tag}->{$k});
         }
     }
-
+    
     sub processXMLNode {
         my $self = shift;
         my $elem;
@@ -282,7 +279,7 @@
         }
         return $elem;
     }
-
+    
     sub importOSMfile {
         my $self = shift;
         my $f = shift;
@@ -292,11 +289,11 @@
             my $cmd = "zcat maps/$f";
             print $cmd,"\n";
             open $fd,"$cmd |" or die "Kan $cmd niet uitvoeren\n";
-       } else { 
-           print "maps/$f\n";
-           open $fd,"<maps/$f" or die "Kan file maps/$f niet lezen\n";
-       }
-       binmode $fd;
+	} else { 
+	    print "maps/$f\n";
+	    open $fd,"<maps/$f" or die "Kan file maps/$f niet lezen\n";
+	}
+	binmode $fd;
 	my $doc = new XML::LibXML::Reader(FD =>$fd);
 	my $currelem = undef;
 	my $i = 0;
@@ -304,39 +301,39 @@
         $self->{dbh}->begin_work;
 	while ($doc->read()) {
 	    my $elem = $self->processXMLNode($doc);
-           next if $elem->{nodeType} == 14 or $elem->{nodeType} == 15;
-           if ($elem->{depth} == 1) {
-               $self->processElem($currelem) if defined $currelem;
-               $currelem = $elem;
-               $currelem->{nd} = [] if $currelem->{xmlname} eq "way";
-               $currelem->{member} = [] if $currelem->{xmlname} eq "relation";
-           } elsif (defined($currelem) && $elem->{depth} == 2) {
-               if ($elem->{xmlname} eq "tag") {
-                   $currelem->{tag}->{$elem->{k}} = $elem->{v};
-               } elsif ($elem->{xmlname} eq "nd") {
-                   push @{$currelem->{nd}}, {'ref'=>$elem->{ref}};
-               } elsif ($elem->{xmlname} eq "member") {
-                   push @{$currelem->{member}}, {type => $elem->{type},ref=>$elem->{ref},role=>$elem->{role}};
-               }
-           }
+	    next if $elem->{nodeType} == 14 or $elem->{nodeType} == 15;
+	    if ($elem->{depth} == 1) {
+		$self->processElem($currelem) if defined $currelem;
+		$currelem = $elem;
+		$currelem->{nd} = [] if $currelem->{xmlname} eq "way";
+		$currelem->{member} = [] if $currelem->{xmlname} eq "relation";
+	    } elsif (defined($currelem) && $elem->{depth} == 2) {
+		if ($elem->{xmlname} eq "tag") {
+		    $currelem->{tag}->{$elem->{k}} = $elem->{v};
+		} elsif ($elem->{xmlname} eq "nd") {
+		    push @{$currelem->{nd}}, {'ref'=>$elem->{ref}};
+		} elsif ($elem->{xmlname} eq "member") {
+		    push @{$currelem->{member}}, {type => $elem->{type},ref=>$elem->{ref},role=>$elem->{role}};
+		}
+	    }
 #          print Dumper $elem unless $elem->{nodeType} == 14 or $elem->{nodeType} == 15 or $elem->{depth} ==0;
 	    $i++;
 	    if (($i%5000) == 0) {
-       my $nds = keys %{$self->{nodes}};
-       my $ws = keys %{$self->{ways}};
-       my $rels = keys %{$self->{relations}};
-       printf "%d nodes, %d ways %d relations %d bounds\n",$nds,$ws,$rels,1+$#{$self->{bounds}};
+		my $nds = keys %{$self->{nodes}};
+		my $ws = keys %{$self->{ways}};
+		my $rels = keys %{$self->{relations}};
+		printf "%d nodes, %d ways %d relations %d bounds\n",$nds,$ws,$rels,1+$#{$self->{bounds}};
 	    }
-
-       }
-       $self->processElem($currelem) if defined $currelem;
-       $doc->finish;
-       close $fd;
-       $self->{dbh}->commit;
-       my $nds = keys %{$self->{nodes}};
-       my $ws = keys %{$self->{ways}};
-       my $rels = keys %{$self->{relations}};
-       printf "%d nodes, %d ways %d relations %d bounds\n",$nds,$ws,$rels,1+$#{$self->{bounds}};
+	    
+	}
+	$self->processElem($currelem) if defined $currelem;
+	$doc->finish;
+	close $fd;
+	$self->{dbh}->commit;
+	my $nds = keys %{$self->{nodes}};
+	my $ws = keys %{$self->{ways}};
+	my $rels = keys %{$self->{relations}};
+	printf "%d nodes, %d ways %d relations %d bounds\n",$nds,$ws,$rels,1+$#{$self->{bounds}};
     }
     
     sub postprocess {
@@ -351,7 +348,7 @@
         $self->process_relations($relations,$newways,$newnodes);
         
         $dbh->do("DELETE FROM tag WHERE k in ('created_by','source') or k like 'AND%' or k like '3dshapes%'");
-
+	
         $dbh->begin_work;        
         foreach my $w (keys %$newways) {
             unless (usable_way($newways->{$w})) {
@@ -383,7 +380,7 @@
             }
         }
         $dbh->commit;
-
+	
         $dbh->begin_work;
         foreach my $n (keys %$newnodes) {
             if (exists($self->{way}->{$n})) {
@@ -445,7 +442,7 @@
 	        $self->{way}->{$n2}->{$n1}=$w;
             }
         }
-
+	
         foreach my $n (keys %$newnodes) {
             if (exists($self->{way}->{$n})) {
 	        delete $$newnodes{$n}->{user};
@@ -528,13 +525,13 @@
 	my $verty = shift;
 	my $testx = shift;
 	my $testy = shift;
-
+	
 	my ($i,$j,$c);
 	$c=0;
 	$j=$nvert-1;
 	for ($i=0;$i<$nvert;$j=$i++) {
             if ( (($$verty[$i]>$testy) != ($$verty[$j]>$testy)) &&
-	          ($testx < ($$vertx[$j]-$$vertx[$i]) * ($testy-$$verty[$i]) / ($$verty[$j]-$$verty[$i]) + $$vertx[$i]) ) {
+		 ($testx < ($$vertx[$j]-$$vertx[$i]) * ($testy-$$verty[$i]) / ($$verty[$j]-$$verty[$i]) + $$vertx[$i]) ) {
                 $c = !$c;
 	    }
 	}
@@ -563,7 +560,7 @@
     sub saveOSMdata {
         my $self = shift;
         my $dbfile = shift;
-
+	
         return unless $self->{changed};
         $self->removetempways();
         $self->removetempnodes();
@@ -575,7 +572,7 @@
         my ($self,$url) = @_;
         my $retry = 0;
 	my $result;
-
+	
         print "url = $url\n";
 	do {
 	    print "retry $retry\n" if $retry > 0;
@@ -593,7 +590,7 @@
     
     sub loadway {
         my ($self,$w) = @_;
-
+	
         my $file = "map_way_$w.osm";
         my $url = sprintf($getwaycmd,$w);
         return $self->loadOSMdata($file,$url);
@@ -601,7 +598,7 @@
     
     sub loadrelation {
         my ($self,$w) = @_;
-
+	
         my $file = "map_rel_$w.osm";
         my $url = sprintf($getrelcmd,$w);
         return $self->loadOSMdata($file,$url);
@@ -690,7 +687,7 @@
 	my $self = shift;
 	
 	for (my $i=0;$i<$self->{tempnodes};$i++) {
-        my $nodeid="TN$i";
+	    my $nodeid="TN$i";
 	    my $w=$self->{way}->{$nodeid};
 	    foreach my $n ($self->neighbours($nodeid)) {
 	        delete($self->{way}->{$n}->{$nodeid}) if exists($self->{way}->{$n}->{$nodeid});
@@ -730,9 +727,9 @@
         my $wayid="WN$nr";
         $self->{ways}->{$wayid}->{nd}=();
         for (my $i=0;$i<=$#nds;$i++){
-             $self->{ways}->{$wayid}->{nd}->[$i]->{ref}=$nds[$i];
-             $self->{way}->{$nds[$i-1]}->{$nds[$i]}=$wayid if $i>0;
-             $self->{way}->{$nds[$i]}->{$nds[$i-1]}=$wayid if $i>0;
+	    $self->{ways}->{$wayid}->{nd}->[$i]->{ref}=$nds[$i];
+	    $self->{way}->{$nds[$i-1]}->{$nds[$i]}=$wayid if $i>0;
+	    $self->{way}->{$nds[$i]}->{$nds[$i-1]}=$wayid if $i>0;
         }
         $self->{ways}->{$wayid}->{tag}->{highway}="service";
 	print "Created way $wayid: nodes: ",join(", ",@nds),"\n";
@@ -752,7 +749,7 @@
         } else {
             @nds = keys %{$self->{nodes}};
         }
-
+	
 	for my $n (@nds) {
 	    my $d = $self->distanceCoor($lat,$lon,$self->{nodes}->{$n}->{lat},$self->{nodes}->{$n}->{lon});
 	    if ($d < $distance) {
@@ -950,9 +947,9 @@
 	    return $infinity if (!exists($profiles{$vehicle}->{allowed}->{$hw}));
 #	    return $infinity if defined($onew) and $self->wrong_direction($x,$y,$w,$onew);
 	    if (defined($onew)) {
-              if ($self->wrong_direction($x,$y,$w,$onew)) {
-                return $infinity ;
-              }
+		if ($self->wrong_direction($x,$y,$w,$onew)) {
+		    return $infinity ;
+		}
             }
 	    if (exists($$nodey{highway}) and exists($highways{$$nodey{highway}}->{extracost})) {
 		$extracost += $highways{$$nodey{highway}}->{extracost};
@@ -963,7 +960,7 @@
 	    die "Onbekend voertuig\n";
 	}
 	return $infinity if $access eq "no";
-
+	
 	$extracost += $profiles{$vehicle}->{barrier}->{type}->{$$nodey{barrier}} if exists($$nodey{barrier}) and exists($profiles{$vehicle}->{barrier}->{type}->{$$nodey{barrier}});
 	my $name=$$wwtag{name};
 	my $ref=$$wwtag{ref};
