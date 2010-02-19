@@ -221,11 +221,12 @@
            open $fd,"<maps/$f" or die "Kan file maps/$f niet lezen\n";
        }
        binmode $fd;
-       my $doc = new XML::LibXML::Reader(FD =>$fd);
-       my $currelem = undef;
-
-       while ($doc->read()) {
-           my $elem = $self->processXMLNode($doc);
+	my $doc = new XML::LibXML::Reader(FD =>$fd);
+	my $currelem = undef;
+	my $i = 0;
+	
+	while ($doc->read()) {
+	    my $elem = $self->processXMLNode($doc);
            next if $elem->{nodeType} == 14 or $elem->{nodeType} == 15;
            if ($elem->{depth} == 1) {
                $self->processElem($currelem) if defined $currelem;
@@ -242,6 +243,14 @@
                }
            }
 #          print Dumper $elem unless $elem->{nodeType} == 14 or $elem->{nodeType} == 15 or $elem->{depth} ==0;
+	    $i++;
+	    if (($i%5000) == 0) {
+       my $nds = keys %{$self->{nodes}};
+       my $ws = keys %{$self->{ways}};
+       my $rels = keys %{$self->{relations}};
+       printf "%d nodes, %d ways %d relations %d bounds\n",$nds,$ws,$rels,1+$#{$self->{bounds}};
+	    }
+
        }
        $self->processElem($currelem) if defined $currelem;
        $doc->finish;
