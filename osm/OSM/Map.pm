@@ -286,12 +286,12 @@
         
         my $fd;
         if ($f=~m/\.gz$/) {
-            my $cmd = "zcat maps/$f";
+            my $cmd = "zcat $f";
             print $cmd,"\n";
             open $fd,"$cmd |" or die "Kan $cmd niet uitvoeren\n";
 	} else { 
-	    print "maps/$f\n";
-	    open $fd,"<maps/$f" or die "Kan file maps/$f niet lezen\n";
+	    print "$f\n";
+	    open $fd,"<$f" or die "Kan file $f niet lezen\n";
 	}
 	binmode $fd;
 	my $doc = new XML::LibXML::Reader(FD =>$fd);
@@ -617,6 +617,7 @@
 	    if (open NEW,">maps/$file") {
 	        print NEW $content;
 	        close NEW;
+		$self->importOSMfile("maps/$file");
 	    }
         }
         return XMLin($content, ForceArray=>['tag','nd','member','way','node','relation'],KeyAttr=>{tag => 'k', way=>'id','node'=>'id',relation=>'id'},ContentKey => "-v");
