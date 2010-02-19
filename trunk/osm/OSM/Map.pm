@@ -8,6 +8,7 @@
     use Data::Dumper;
     use XML::Simple;
     use XML::LibXML::Reader;
+    use DBI;
     use Geo::Distance;
     use Storable;
     
@@ -57,6 +58,34 @@
         
         return @{$self->{ways}->{$w}->{nd}};
     }
+
+    sub initDB {
+        my $self = shift;
+        
+        my $dbh = $self->{dbh} = DBI->connect("dbi:SQLite:dbname=osm.sqlite","","");
+        $dbh->do("PRAGMA foreign_keys=ON");
+        $self->{checknode} = $dbh->prepare("SELECT version from node where id =?");
+        $self->{checkrel}  = $dbh->prepare("SELECT version from relation where id =?");
+        $self->{checkway}  = $dbh->prepare("SELECT version from way where id =?");
+
+        $self->{delnode} = $dbh->prepare("DELETE from node where id =?");
+        $self->{delrel}  = $dbh->prepare("DELETE from relation where id =?");
+        $self->{delway}  = $dbh->prepare("DELETE from way where id =?");
+
+        $self->{insertnode}  = $dbh->prepare("INSERT INTO node (id,lat,lon,version) VALUES (?,?,?,?)");
+        $self->{inserttag}   = $dbh->prepare("INSERT OR REPLACE INTO tag (id,k,v) VALUES (?,?,?)");
+        $self->{insertway}   = $dbh->prepare("INSERT INTO way (id,version) VALUES (?,?)");
+        $self->{insertnd}    = $dbh->prepare("INSERT INTO nd (id,seq,ref) VALUES (?,?,?)");
+        $self->{insertrel}   = $dbh->prepare("INSERT INTO relation (id,version) VALUES (?,?)");
+        $self->{insertmemb}  = $dbh->prepare("INSERT INTO member (id,seq,type,ref,role) VALUES (?,?,?,?,?)");
+        $self->{insertbound} = $dbh->prepare("INSERT INTO bound (minlat,maxlat,minlon,maxlon) VALUES (?,?,?,?)");
+        $self->{insertadm}   = $dbh->prepare("INSERT INTO admin (id,level,name,type,minlat,maxlat,minlon,maxlon) VALUES (?,?,?,?,?,?,?,?)");
+        $self->{insertnb}    = $dbh->prepare("INSERT INTO neighbor (id1,id2,way) VALUES (?,?,?)");
+ 
+        $dbh->do("DELETE FROM relation WHERE NOT processed");
+        $dbh->do("DELETE FROM way WHERE NOT processed");
+        $dbh->do("DELETE FROM node WHERE NOT processed");
+    }
     
     sub new {
         my $this = shift;
@@ -78,6 +107,8 @@
     sub initialize {
         my $self = shift;
 	my $conffile = shift;
+       
+        $self->initDB();
 	
         $OSM::Map::VERSION = "0.1";
         $XML::Simple::PREFERRED_PARSER = "XML::Parser";
@@ -171,12 +202,36 @@
             } else {
                 $self->{nodes}->{$id} = $elem;
             }
+            
+            $self->{checknode}->execute($id);
+            my $version = -1;
+            if (my @row = $self->{checknode}->fetchrow_array()) {
+                $version = $row[0];
+                $self->{delnode}->execute($id) if ($elem->{version} > $version);
+                print "Nieuwe versie voor node $id, versie = $version\n" if $version > -1 and $elem->{version} > $version;
+            }
+            $self->{insertnode}->execute($id,$elem->{lat},$elem->{lon},$elem->{version}) if $elem->{version} > $version;
         } elsif ($xmlname eq 'way') {
             if (exists($self->{ways}->{$id})) {
 #               print Dumper $self->{ways}->{$id},$elem if $self->{ways}->{$id}->{version} < $elem->{version};
                 $self->{ways}->{$id} = $elem if $self->{ways}->{$id}->{version} < $elem->{version};
             } else {
                 $self->{ways}->{$id} = $elem;
+            }
+            
+            $self->{checkway}->execute($id);
+            my $version = -1;
+            if (my @row = $self->{checkway}->fetchrow_array()) {
+                $version = $row[0];
+                $self->{delway}->execute($id) if ($elem->{version} > $version);
+            }
+            if ($elem->{version} > $version) {
+                print "Nieuwe versie voor weg $id, versie = $version\n" if $version > -1;
+                $self->{insertway}->execute($id,$elem->{version});
+                my $nds = $#{$elem->{nd}};
+                for(my $i=0;$i<=$nds;$i++) {
+                    printf "probleem insertnd id=%d seq=%d ref=%d: %s\n",$id,$i,$elem->{nd}->[$i]->{ref},$self->{dbh}->errstr unless $self->{insertnd}->execute($id,$i,$elem->{nd}->[$i]->{ref});
+                }
             }
         } elsif ($xmlname eq 'relation') {
             if (exists($self->{relations}->{$id})) {
@@ -185,8 +240,29 @@
             } else {
                $self->{relations}->{$id} = $elem;
             }
+            
+            $self->{checkrel}->execute($id);
+            my $version = -1;
+            if (my @row = $self->{checkrel}->fetchrow_array()) {
+                $version = $row[0];
+                $self->{delrel}->execute($id) if ($elem->{version} > $version);
+            }
+            if ($elem->{version} > $version) {
+                print "Nieuwe versie voor relatie $id, versie = $version\n" if $version > -1;
+                $self->{insertrel}->execute($id,$elem->{version});
+                my $membs = $#{$elem->{member}};
+                for(my $i=0;$i<=$membs;$i++) {
+                    my $memb = $elem->{member}->[$i];
+                    printf "probleem insertmemb id=%d seq=%d ref=%d: %s\n",$id,$i,$memb->{ref},$self->{dbh}->errstr unless $self->{insertmemb}->execute($id,$i,$memb->{type},$memb->{ref},$memb->{role});
+                }
+            }
         } elsif ($xmlname eq 'bounds') {
             push @{$self->{bounds}}, $elem;
+            
+            $self->{insertbound}->execute($elem->{minlat},$elem->{maxlat},$elem->{minlon},$elem->{maxlon});
+        }
+        foreach my $k (keys %{$elem->{tag}}) {
+            $self->{inserttag}->execute($id,$k,$elem->{tag}->{$k});
         }
     }
 
@@ -225,6 +301,7 @@
 	my $currelem = undef;
 	my $i = 0;
 	
+        $self->{dbh}->begin_work;
 	while ($doc->read()) {
 	    my $elem = $self->processXMLNode($doc);
            next if $elem->{nodeType} == 14 or $elem->{nodeType} == 15;
@@ -232,14 +309,14 @@
                $self->processElem($currelem) if defined $currelem;
                $currelem = $elem;
                $currelem->{nd} = [] if $currelem->{xmlname} eq "way";
-               $currelem->{members} = [] if $currelem->{xmlname} eq "relation";
+               $currelem->{member} = [] if $currelem->{xmlname} eq "relation";
            } elsif (defined($currelem) && $elem->{depth} == 2) {
                if ($elem->{xmlname} eq "tag") {
                    $currelem->{tag}->{$elem->{k}} = $elem->{v};
                } elsif ($elem->{xmlname} eq "nd") {
                    push @{$currelem->{nd}}, {'ref'=>$elem->{ref}};
                } elsif ($elem->{xmlname} eq "member") {
-                   push @{$currelem->{members}}, {type => $elem->{type},ref=>$elem->{ref},role=>$elem->{role}};
+                   push @{$currelem->{member}}, {type => $elem->{type},ref=>$elem->{ref},role=>$elem->{role}};
                }
            }
 #          print Dumper $elem unless $elem->{nodeType} == 14 or $elem->{nodeType} == 15 or $elem->{depth} ==0;
@@ -255,6 +332,7 @@
        $self->processElem($currelem) if defined $currelem;
        $doc->finish;
        close $fd;
+       $self->{dbh}->commit;
        my $nds = keys %{$self->{nodes}};
        my $ws = keys %{$self->{ways}};
        my $rels = keys %{$self->{relations}};
@@ -269,8 +347,12 @@
         my $newways = $self->{ways};
         my $newnodes = $self->{nodes};
         my $relations = $self->{relations};
+        my $dbh = $self->{dbh};
         $self->process_relations($relations,$newways,$newnodes);
         
+        $dbh->do("DELETE FROM tag WHERE k in ('created_by','source') or k like 'AND%' or k like '3dshapes%'");
+
+        $dbh->begin_work;        
         foreach my $w (keys %$newways) {
             unless (usable_way($newways->{$w})) {
 	        delete($$newways{$w});
@@ -286,6 +368,10 @@
             } else {
                 $newways->{$w}->{tag}->{oneway} = $oneway;
             }
+            $dbh->do("DELETE FROM tag WHERE v IN ('0','no','NO','false','FALSE') AND k IN ('bridge','tunnel','oneway')");
+            $dbh->do("UPDATE tag set v='yes' WHERE v in ('1','true','TRUE') AND k IN ('bridge','tunnel','oneway')");
+            $dbh->do("UPDATE tag set v='rev' WHERE v = '-1' and k='oneway'");
+            
             $nrnodes = $#{$newways->{$w}->{nd}}+1;
             my ($n1,$n2);
             for (my $i=0;$i<$nrnodes-1;$i++) {
@@ -293,9 +379,12 @@
     	        $n2 = $newways->{$w}->{nd}->[$i+1]->{ref};
 	        $self->{way}->{$n1}->{$n2}=$w;
 	        $self->{way}->{$n2}->{$n1}=$w;
+                $self->{insertnb}->execute($n1,$n2,$w);
             }
         }
+        $dbh->commit;
 
+        $dbh->begin_work;
         foreach my $n (keys %$newnodes) {
             if (exists($self->{way}->{$n})) {
                 my $x = int(20*($$newnodes{$n}->{lon} + 180));
@@ -382,6 +471,7 @@
     
     sub process_relations {
         my ($self,$relations,$newways,$newnodes) = @_;
+        $self->{dbh}->begin_work;
     	foreach my $r (keys %$relations) {
             my $type = $$relations{$r}->{tag}->{type};
             if (defined($type)) {
@@ -425,8 +515,10 @@
 		    ${$self->{admin}}[$level]->{$name}->{maxlat} = $lat if ${$self->{admin}}[$level]->{$name}->{maxlat} < $lat;
                 }
             }
+            $self-{insertadm}->execute($r,$level,$name,$type,${$self->{admin}}[$level]->{$name}->{minlat},${$self->{admin}}[$level]->{$name}->{maxlat},${$self->{admin}}[$level]->{$name}->{minlon},${$self->{admin}}[$level]->{$name}->{maxlon);}
 #            print Dumper \@{$self->{admin}};
 	}
+        $self->{dbh}->commit;
     }
     
     sub pnpoly {
