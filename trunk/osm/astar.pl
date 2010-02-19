@@ -204,7 +204,7 @@ if ($dbonly) {
 	closedir $dh;
     }
     foreach my $f (@files) {
-        $map->importOSMfile($f);
+        $map->importOSMfile("maps/$f");
     }
     $map->postprocess()
 } else {
