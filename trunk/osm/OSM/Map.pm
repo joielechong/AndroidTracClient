@@ -76,8 +76,9 @@
         $self->{insertrel}   = $dbh->prepare("INSERT INTO relation (id,version) VALUES (?,?)");
         $self->{insertmemb}  = $dbh->prepare("INSERT INTO member (id,seq,type,ref,role) VALUES (?,?,?,?,?)");
         $self->{insertbound} = $dbh->prepare("INSERT INTO bound (minlat,maxlat,minlon,maxlon) VALUES (?,?,?,?)");
-        $self->{insertadm}   = $dbh->prepare("INSERT INTO admin (id,level,name,type,minlat,maxlat,minlon,maxlon) VALUES (?,?,?,?,?,?,?,?)");
         $self->{insertnb}    = $dbh->prepare("INSERT INTO neighbor (id1,id2,way) VALUES (?,?,?)");
+	
+	$self->{getcounts}   = $dbh->prepare("SELECT * FROM counts");
  
         $dbh->do("DELETE FROM relation WHERE NOT processed");
         $dbh->do("DELETE FROM way WHERE NOT processed");
@@ -183,23 +184,7 @@
         my $xmlname = $elem->{xmlname};
         my $id = $elem->{id};
 #       print Dumper $elem;
-        delete $elem->{nodeType};
-        delete $elem->{visible};
-        delete $elem->{uid};
-        delete $elem->{xmlname};
-        delete $elem->{depth};
-        delete $elem->{changeset};
-        delete $elem->{user};
-        delete $elem->{id};
-        delete $elem->{timestamp};
         if ($xmlname eq 'node') {
-            if (exists($self->{nodes}->{$id})) {
-#           print Dumper $self->{nodes}->{$id},$elem if $self->{nodes}->{$id}->{version} < $elem->{version};
-                $self->{nodes}->{$id} = $elem if $self->{nodes}->{$id}->{version} < $elem->{version};
-            } else {
-                $self->{nodes}->{$id} = $elem;
-            }
-            
             $self->{checknode}->execute($id);
             my $version = -1;
             if (my @row = $self->{checknode}->fetchrow_array()) {
@@ -209,13 +194,6 @@
             }
             $self->{insertnode}->execute($id,$elem->{lat},$elem->{lon},$elem->{version}) if $elem->{version} > $version;
         } elsif ($xmlname eq 'way') {
-            if (exists($self->{ways}->{$id})) {
-#               print Dumper $self->{ways}->{$id},$elem if $self->{ways}->{$id}->{version} < $elem->{version};
-                $self->{ways}->{$id} = $elem if $self->{ways}->{$id}->{version} < $elem->{version};
-            } else {
-                $self->{ways}->{$id} = $elem;
-            }
-            
             $self->{checkway}->execute($id);
             my $version = -1;
             if (my @row = $self->{checkway}->fetchrow_array()) {
@@ -231,13 +209,6 @@
                 }
             }
         } elsif ($xmlname eq 'relation') {
-            if (exists($self->{relations}->{$id})) {
-#              print Dumper $self->{relations}->{$id},$elem if $self->{relations}->{$id}->{version} < $elem->{version};
-		$self->{relations}->{$id} = $elem if $self->{relations}->{$id}->{version} < $elem->{version};
-            } else {
-		$self->{relations}->{$id} = $elem;
-            }
-            
             $self->{checkrel}->execute($id);
             my $version = -1;
             if (my @row = $self->{checkrel}->fetchrow_array()) {
@@ -254,8 +225,6 @@
                 }
             }
         } elsif ($xmlname eq 'bounds') {
-            push @{$self->{bounds}}, $elem;
-            
             $self->{insertbound}->execute($elem->{minlat},$elem->{maxlat},$elem->{minlon},$elem->{maxlon});
         }
         foreach my $k (keys %{$elem->{tag}}) {
@@ -278,6 +247,14 @@
             } while ($reader->moveToNextAttribute());
         }
         return $elem;
+    }
+    
+    sub getCounts {
+	my $self = shift;
+	
+	$self->{getcounts}->execute();
+	my @row = $self->{getcounts}->fetchrow_array();
+	return @row;
     }
     
     sub importOSMfile {
@@ -322,7 +299,7 @@
 		my $nds = keys %{$self->{nodes}};
 		my $ws = keys %{$self->{ways}};
 		my $rels = keys %{$self->{relations}};
-		printf "%d nodes, %d ways %d relations %d bounds\n",$nds,$ws,$rels,1+$#{$self->{bounds}};
+		printf "%d nodes, %d ways %d relations %d bounds\n",$self->getCounts();
 	    }
 	    
 	}
@@ -333,7 +310,7 @@
 	my $nds = keys %{$self->{nodes}};
 	my $ws = keys %{$self->{ways}};
 	my $rels = keys %{$self->{relations}};
-	printf "%d nodes, %d ways %d relations %d bounds\n",$nds,$ws,$rels,1+$#{$self->{bounds}};
+	printf "%d nodes, %d ways %d relations %d bounds\n",$self->getCounts();
     }
     
     sub postprocess {
@@ -341,59 +318,13 @@
         my $nrnodes;
         
         $self->{changed} = 1;
-        my $newways = $self->{ways};
-        my $newnodes = $self->{nodes};
-        my $relations = $self->{relations};
         my $dbh = $self->{dbh};
-        $self->process_relations($relations,$newways,$newnodes);
         
         $dbh->do("DELETE FROM tag WHERE k in ('created_by','source') or k like 'AND%' or k like '3dshapes%'");
-	
-        $dbh->begin_work;        
-        foreach my $w (keys %$newways) {
-            unless (usable_way($newways->{$w})) {
-	        delete($$newways{$w});
-	        next;
-            }
-            my $oneway = $newways->{$w}->{tag}->{oneway};
-            $oneway = "no" unless defined $oneway;
-            $oneway = "yes" if $oneway eq "true";
-            $oneway = "yes" if $oneway eq "1";
-            $oneway = "rev" if $oneway eq "-1";
-            if ($oneway eq "no") {
-	        delete $newways->{$w}->{tag}->{oneway} if exists($newways->{$w}->{tag}->{oneway});
-            } else {
-                $newways->{$w}->{tag}->{oneway} = $oneway;
-            }
-            $dbh->do("DELETE FROM tag WHERE v IN ('0','no','NO','false','FALSE') AND k IN ('bridge','tunnel','oneway')");
-            $dbh->do("UPDATE tag set v='yes' WHERE v in ('1','true','TRUE') AND k IN ('bridge','tunnel','oneway')");
-            $dbh->do("UPDATE tag set v='rev' WHERE v = '-1' and k='oneway'");
-            
-            $nrnodes = $#{$newways->{$w}->{nd}}+1;
-            my ($n1,$n2);
-            for (my $i=0;$i<$nrnodes-1;$i++) {
-	        $n1 = $newways->{$w}->{nd}->[$i]->{ref};
-    	        $n2 = $newways->{$w}->{nd}->[$i+1]->{ref};
-	        $self->{way}->{$n1}->{$n2}=$w;
-	        $self->{way}->{$n2}->{$n1}=$w;
-                $self->{insertnb}->execute($n1,$n2,$w);
-            }
-        }
-        $dbh->commit;
-	
-        $dbh->begin_work;
-        foreach my $n (keys %$newnodes) {
-            if (exists($self->{way}->{$n})) {
-                my $x = int(20*($$newnodes{$n}->{lon} + 180));
-                my $y = int(20*($$newnodes{$n}->{lat} +90));
-                $self->{bucket}->{$x}->{$y} = [] unless exists($self->{bucket}->{$x}->{$y});
-                push @{$self->{bucket}->{$x}->{$y}},$n;
-	    } else {
-	        delete $$newnodes{$n};
-	    }
-        }
-        delete $self->{relations};
-#	$self->storenewdata($newnodes,$newways,$bounds);
+        $dbh->do("DELETE FROM tag WHERE v IN ('0','no','NO','false','FALSE') AND k IN ('bridge','tunnel','oneway')");
+        $dbh->do("UPDATE tag set v='yes' WHERE v in ('1','true','TRUE') AND k IN ('bridge','tunnel','oneway')");
+        $dbh->do("UPDATE tag set v='rev' WHERE v = '-1' and k='oneway'");
+	$dbh->do("INSERT INTO neighbor (way,id1,id2) SELECT way,id1,id2 FROM nb");
     }
     
     sub procesdata {
