@@ -197,7 +197,7 @@ if ($new == 0 && -r $dbfile) {
 if ($dbonly) {
     my @files = ();
     if (defined($mapfile)) {
-	$files[0] = $mapfile;
+	$files[0] = "../$mapfile";
     } else {
 	opendir(my $dh, "maps") || die "can't opendir : $!";
         @files = grep { /map_.*\.osm$/ && -f "maps/$_" } readdir($dh);
@@ -209,7 +209,7 @@ if ($dbonly) {
     $map->postprocess()
 } else {
     if (defined($mapfile)) {
-	$map->useLocaldata($mapfile);
+	$map->importOSMfile($mapfile);
     }
 
 ###huis school
@@ -283,4 +283,4 @@ print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'bicycle'))
 ###Brussel
 #print_path($map,Astar($map,52.2973969,4.8620826,50.8417207,4.3832422,'car'));
 }
-$map->saveOSMdata($dbfile);
+$map->saveOSMdata($dbfile)
