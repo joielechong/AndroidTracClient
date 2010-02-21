@@ -325,9 +325,9 @@
         $dbh->do("UPDATE tag set v='yes' WHERE v in ('1','true','TRUE') AND k IN ('bridge','tunnel','oneway')");
         $dbh->do("UPDATE tag set v='rev' WHERE v = '-1' and k='oneway'");
 	$dbh->do("INSERT INTO neighbor (way,id1,id2) SELECT DISTINCT way,id1,id2 FROM nb");
-	$dbh->do{"UPDATE node set processed=1");
-	$dbh->do{"UPDATE way set processed=1");
-	$dbh->do{"UPDATE relation set processed=1");
+	$dbh->do("UPDATE node set processed=1");
+	$dbh->do("UPDATE way set processed=1");
+	$dbh->do("UPDATE relation set processed=1");
     }
     
     sub procesdata {
