@@ -641,6 +641,7 @@
 	}
 	my @bbox = ($minlon,$minlat,$maxlon,$maxlat);
 	$self->importBbox(join(",",@bbox));
+	$sekf->postprocess();
     }
     
     sub removetempnodes {
