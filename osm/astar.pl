@@ -180,36 +180,41 @@ my $new=0;
 my $dbonly=0;
 my $netonly=0;
 my $confile='astarconf.xml';
-my $dbfile = "localdatabase.data";
 my $mapfile = undef;
+my $bbox = undef;
 
-my %options = ('new' => \$new,'dbonly' => \$dbonly,'net' => \$netonly,'conf=s' => \$confile,'db=s'=> \$dbfile,'map=s'=>\$mapfile);
+my %options = ('new' => \$new,
+               'dbonly' => \$dbonly,
+               'net' => \$netonly,
+               'conf=s' => \$confile,
+               'map=s'=>\$mapfile,
+               'bbox=s'=>\$bbox);
+               
 my $result = GetOptions(%options);
 
-my $map;
-if ($new == 0 && -r $dbfile) {
-    $map = retrieve $dbfile;
-    $map->initialize($confile);
-} else {
-    $map = OSM::Map->new();
-}
-
+my $map = OSM::Map->new();
 if ($dbonly) {
     my @files = ();
     if (defined($mapfile)) {
-	$files[0] = "../$mapfile";
+	$files[0] = $mapfile;
+    } elsif (defined ($bbox)) {
+      $map->importBbox($bbox);
+      $map->postprocess();
     } else {
 	opendir(my $dh, "maps") || die "can't opendir : $!";
         @files = grep { /map_.*\.osm$/ && -f "maps/$_" } readdir($dh);
+        map {s:^:maps/: => $_} @files;
 	closedir $dh;
     }
     foreach my $f (@files) {
-        $map->importOSMfile("maps/$f");
+        $map->importOSMfile("$f");
     }
-    $map->postprocess()
+    $map->postprocess();
 } else {
     if (defined($mapfile)) {
+        $map = OSM::Map->new();
 	$map->importOSMfile($mapfile);
+        $map->postprocess()
     }
 
 ###huis school
@@ -283,4 +288,4 @@ print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'bicycle'))
 ###Brussel
 #print_path($map,Astar($map,52.2973969,4.8620826,50.8417207,4.3832422,'car'));
 }
-$map->saveOSMdata($dbfile)
+$map->saveOSMdata()

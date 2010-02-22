@@ -10,7 +10,6 @@
     use XML::LibXML::Reader;
     use DBI;
     use Geo::Distance;
-    use Storable;
     
     require Exporter;
     @ISA = qw(Exporter Storable);
@@ -60,6 +59,7 @@
         my $self = shift;
         
         my $dbh = $self->{dbh} = DBI->connect("dbi:SQLite:dbname=osm.sqlite","","");
+        $dbh->{AutoCommit} = 1;
         $dbh->do("PRAGMA foreign_keys=ON");
         $self->{checknode} = $dbh->prepare("SELECT version from node where id =?");
         $self->{checkrel}  = $dbh->prepare("SELECT version from relation where id =?");
@@ -77,7 +77,9 @@
         $self->{insertmemb}  = $dbh->prepare("INSERT INTO member (id,seq,type,ref,role) VALUES (?,?,?,?,?)");
         $self->{insertbound} = $dbh->prepare("INSERT INTO bound (minlat,maxlat,minlon,maxlon) VALUES (?,?,?,?)");
         $self->{insertnb}    = $dbh->prepare("INSERT INTO neighbor (id1,id2,way) VALUES (?,?,?)");
-	
+        
+	$self->{inboundnd}   = $dbh->prepare("SELECT count(bound.maxlat) FROM bound,node WHERE id=? and lat >= minlat and lat <= maxlat and lon >= minlon and lon <= maxlon");
+	$self->{inboundcoor} = $dbh->prepare("SELECT count(bound.maxlat) FROM bound,(SELECT ? as lat,? as lon) as input WHERE lat >= minlat and lat <= maxlat and lon >= minlon and lon <= maxlon");
 	$self->{getcounts}   = $dbh->prepare("SELECT * FROM counts");
  
         $dbh->do("DELETE FROM relation WHERE NOT processed");
@@ -91,13 +93,6 @@
 	my $class = ref($this) || $this;
 	my $self = {};
 	bless $self, $class;
-        $self->{nodes} = undef;
-        $self->{ways} = undef;
-        $self->{dist} = undef;
-        $self->{way} = undef;
-        $self->{bounds} = [];
-        $self->{admin} = [];
-        $self->{bucket}=undef;
 	$self->initialize($conffile);
 	return $self;
     }
@@ -125,9 +120,6 @@
 #        print Dumper($conf);
         %profiles=%{${$$conf{profiles}}{profile}};
         %highways=%{${$$conf{highways}}{highway}};
-	$self->{tempways} = 0;
-	$self->{tempnodes} = 0;
-        $self->{changed} = 0;
     }
     
     sub usable_way {
@@ -162,20 +154,21 @@
     
     sub inboundCoor {
         my ($self,$lat,$lon) = @_;
-	
-	for my $b (@{$$self{bounds}}) {
-	    return 1 if ($lat<=$b->{maxlat} && $lat >=$b->{minlat} && $lon<=$b->{maxlon} && $lon>=$b->{minlon});
-	}
+        
+        $self->{inboundcoor}->execute($lat,$lon);
+        if (my @row = $self->{inboundcoor}->fetchrow_array()) {
+             return $row[0];
+        }
 	return 0;
     }
     
     sub inboundNode {
         my ($self,$node) = @_;
- 	my $lat = $$self{nodes}->{$node}->{lat};
-	my $lon = $$self{nodes}->{$node}->{lon};
-        
-        return 0 unless (defined($lat) and defined($lon));
-	return $self->inboundCoor($lat,$lon);
+        $self->{inboundnd}->execute($node);
+        if (my @row = $self->{inboundnd}->fetchrow_array()) {
+             return $row[0];
+        }
+        return 0;
     }
     
     sub processElem {
@@ -257,6 +250,42 @@
 	return @row;
     }
     
+    sub importRelation {
+        my ($self,$relation) = @_;
+        
+        my $file="map_rel_$relation.osm";
+        my $url =sprintf("$getrelcmd",$relation);
+        $self->loadFile($file,$url);
+    }
+    
+    sub importBbox {
+        my ($self,$bbox) = @_;
+        
+        my $file="map_bbox_$bbox.osm";
+        my $url = $getmapcmd.$bbox;
+        $self->loadFile($file,$url);
+    }
+    
+    sub loadFile {
+        my ($self,$file,$url) = @_;
+        
+        if (open OLD, "<maps/$file") {
+            close OLD;
+        } else {
+            my $data = $self->fetchUrl($url);
+            if (ref($data) ne "HTTP::Response") {
+                printf STDERR "URL %s is niet geldig\n",$url;
+                return;
+            }
+            my $content = $data-> content;
+	    if (open NEW,">maps/$file") {
+	        print NEW $content;
+	        close NEW;
+	    }
+        }
+   	$self->importOSMfile("maps/$file");
+    }    
+    
     sub importOSMfile {
         my $self = shift;
         my $f = shift;
@@ -293,12 +322,9 @@
 		    push @{$currelem->{member}}, {type => $elem->{type},ref=>$elem->{ref},role=>$elem->{role}};
 		}
 	    }
-#          print Dumper $elem unless $elem->{nodeType} == 14 or $elem->{nodeType} == 15 or $elem->{depth} ==0;
+#          print Dumper $elem unless $elem->{nodeType} == 14 or $elem->{nodeType} == 15 or $elem->{depth} == 0;
 	    $i++;
 	    if (($i%5000) == 0) {
-		my $nds = keys %{$self->{nodes}};
-		my $ws = keys %{$self->{ways}};
-		my $rels = keys %{$self->{relations}};
 		printf "%d nodes, %d ways %d relations %d bounds\n",$self->getCounts();
 	    }
 	    
@@ -307,27 +333,27 @@
 	$doc->finish;
 	close $fd;
 	$self->{dbh}->commit;
-	my $nds = keys %{$self->{nodes}};
-	my $ws = keys %{$self->{ways}};
-	my $rels = keys %{$self->{relations}};
 	printf "%d nodes, %d ways %d relations %d bounds\n",$self->getCounts();
     }
     
     sub postprocess {
         my $self = shift;
-        my $nrnodes;
-        
-        $self->{changed} = 1;
         my $dbh = $self->{dbh};
         
+        my $rrr = $dbh->selectcol_arrayref("SELECT distinct id from member where (type='relation' and not ref in (select id from relation)) or (type='way' and not ref in (select id from way)) or (type='node' and not ref in (select id from node))");
+        foreach my $r (@$rrr) {
+            $self->importRelation($r);
+        }
         $dbh->do("DELETE FROM tag WHERE k in ('created_by','source') or k like 'AND%' or k like '3dshapes%'");
         $dbh->do("DELETE FROM tag WHERE v IN ('0','no','NO','false','FALSE') AND k IN ('bridge','tunnel','oneway')");
         $dbh->do("UPDATE tag set v='yes' WHERE v in ('1','true','TRUE') AND k IN ('bridge','tunnel','oneway')");
         $dbh->do("UPDATE tag set v='rev' WHERE v = '-1' and k='oneway'");
 	$dbh->do("INSERT INTO neighbor (way,id1,id2) SELECT DISTINCT way,id1,id2 FROM nb");
-	$dbh->do("UPDATE node set processed=1");
-	$dbh->do("UPDATE way set processed=1");
-	$dbh->do("UPDATE relation set processed=1");
+        $dbh->do("INSERT INTO admin (id,name,level,minlat,maxlat,minlon,maxlon) SELECT id,name,level,minlat,maxlat,minlon,maxlon FROM admintmp");
+	$dbh->do("UPDATE node set processed=1 WHERE NOT processed");
+	$dbh->do("UPDATE way set processed=1 WHERE NOT processed");
+	$dbh->do("UPDATE relation set processed=1 WHERE NOT processed");
+	$dbh->do("UPDATE bound set processed=1 WHERE NOT processed");
     }
     
     sub procesdata {
@@ -499,7 +525,6 @@
         $self->removetempways();
         $self->removetempnodes();
         $self->{changed} = 0;
-        $self->nstore($dbfile);
     }
     
     sub fetchUrl {
@@ -615,7 +640,7 @@
 	    }
 	}
 	my @bbox = ($minlon,$minlat,$maxlon,$maxlat);
-	$self->useNetdata(@bbox);
+	$self->importBbox(join(",",@bbox));
     }
     
     sub removetempnodes {
