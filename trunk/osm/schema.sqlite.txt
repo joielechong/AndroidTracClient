@@ -8,7 +8,7 @@ DROP VIEW admin2;
 DROP VIEW usable_way;
 DROP VIEW nb;
 
-DROP TA:LE admin;
+DROP TABLE admin;
 DROP TABLE tag;
 DROP TABLE nd;
 DROP TABLE member;
@@ -36,7 +36,7 @@ CREATE TRIGGER reltag BEFORE DELETE ON relation FOR EACH ROW  BEGIN DELETE FROM 
 CREATE TRIGGER insbucket AFTER INSERT ON node FOR EACH ROW BEGIN INSERT INTO bucket (x,y,node) VALUES (round((new.lat+90)*20),round((new.lon+180)*20),new.id); END;
 
 CREATE VIEW admin1 as select relation.id, (select t1.v from tag as t1 where t1.id=relation.id and t1.k='name') as name, (select t2.v from tag as t2 where t2.id=tag.id and t2.k='admin_level') as level from relation,tag where not relation.processed and relation.id=tag.id and tag.k='type' and tag.v in ('boundary','multipolygon') and not name is null and not level is null;
-CREATE VIEW admin2 as select member.id,min(lat) as minlat,max(lat) as maxlat,min(lon) as minlon, max(lon) as maxlon from relation,member,nd,node where nor relation.processed and relation.id = member.id and member.type='way' and member.ref=nd.id and nd.ref=node.id group by member.id;
+CREATE VIEW admin2 as select member.id,min(lat) as minlat,max(lat) as maxlat,min(lon) as minlon, max(lon) as maxlon from relation,member,nd,node where not relation.processed and relation.id = member.id and member.type='way' and member.ref=nd.id and nd.ref=node.id group by member.id;
 CREATE VIEW admintmp as select admin1.*,minlat,maxlat,minlon,maxlon from admin1,admin2 where admin1.id=admin2.id;
 CREATE VIEW usable_way as select way.* from way,tag where way.id=tag.id and (k='highway' or (k='route' and v='ferry'));
 CREATE VIEW nb as select nd.id as way,ref as id1,(select nd1.ref from nd as nd1 where nd.id=nd1.id and nd1.seq=(nd.seq+1)) as id2 from nd,usable_way as u where nd.id=u.id and not u.processed and not id2 is null;
