@@ -284,7 +284,7 @@
 	        close NEW;
 	    }
         }
-   	$self->importOSMfile("maps/$file");$
+   	$self->importOSMfile("maps/$file");
     }    
    
     sub importOSMfile {
@@ -508,9 +508,9 @@
 	$self->{adminnode}->execute($node);
 	
 	while (my @row=$self->{adminnode}->fetchow_array()) {
-	    mt $id=$row[0];
-	    my $lat = $self->{dbh}->selectcol_array("SELECT lat FROM member,nd,node WHERE member.id=$id AND member.type='way' AND member.ref=nd.id AND nd.ref=node.id ORDER BY member.seq,nd.seq");
-	    my $lon = $self->{dbh}->selectcol_array("SELECT lon FROM member,nd,node WHERE member.id=$id AND member.type='way' AND member.ref=nd.id AND nd.ref=node.id ORDER BY member.seq,nd.seq");
+	    my $id=$row[0];
+	    my @lat = $self->{dbh}->selectcol_array("SELECT lat FROM member,nd,node WHERE member.id=$id AND member.type='way' AND member.ref=nd.id AND nd.ref=node.id ORDER BY member.seq,nd.seq");
+	    my @lon = $self->{dbh}->selectcol_array("SELECT lon FROM member,nd,node WHERE member.id=$id AND member.type='way' AND member.ref=nd.id AND nd.ref=node.id ORDER BY member.seq,nd.seq");
 	    my $c=$self->pnpoly(1+$#lat,\@lon,\@lat,$lon,$lat);
 	    $locstr .= sprintf(" %s(%d)",$row[1],$row[2]) if $c;
 	}
