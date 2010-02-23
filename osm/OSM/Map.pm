@@ -7,6 +7,7 @@
     use LWP::UserAgent;
     use Data::Dumper;
     use XML::LibXML::Reader;
+    use XML::Simple;
     use DBI;
     use Geo::Distance;
     
