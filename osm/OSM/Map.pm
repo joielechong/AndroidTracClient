@@ -78,8 +78,9 @@
         $self->{insertbound} = $dbh->prepare("INSERT INTO bound (minlat,maxlat,minlon,maxlon) VALUES (?,?,?,?)");
         $self->{insertnb}    = $dbh->prepare("INSERT INTO neighbor (id1,id2,way) VALUES (?,?,?)");
         
-	$self->{inboundnd}   = $dbh->prepare("SELECT count(bound.maxlat) FROM bound,node WHERE id=? and lat >= minlat and lat <= maxlat and lon >= minlon and lon <= maxlon");
-	$self->{inboundcoor} = $dbh->prepare("SELECT count(bound.maxlat) FROM bound,(SELECT ? as lat,? as lon) as input WHERE lat >= minlat and lat <= maxlat and lon >= minlon and lon <= maxlon");
+	$self->{inboundnd}   = $dbh->prepare("SELECT count(maxlat) FROM bound,node WHERE id=? and lat >= minlat and lat <= maxlat and lon >= minlon and lon <= maxlon");
+	$self->{inboundcoor} = $dbh->prepare("SELECT count(maxlat) FROM bound,(SELECT ? as lat,? as lon) as input WHERE lat >= minlat and lat <= maxlat and lon >= minlon and lon <= maxlon");
+	$self->{adminnode}  = $dbh->prepare("SELECT admin.id,naam,level FROM admin,node WHERE where node.id=? and lat >= minlat and lat <= maxlat and lon >= minlon and lon <= maxlon ORDER BY level,naam");
 	$self->{getcounts}   = $dbh->prepare("SELECT * FROM counts");
  
         $dbh->do("DELETE FROM relation WHERE NOT processed");
@@ -283,9 +284,9 @@
 	        close NEW;
 	    }
         }
-   	$self->importOSMfile("maps/$file");
+   	$self->importOSMfile("maps/$file");$
     }    
-    
+   
     sub importOSMfile {
         my $self = shift;
         my $f = shift;
@@ -503,17 +504,26 @@
         my $locstr = "";
 	my $lat = $self->{nodes}->{$node}->{lat};
 	my $lon = $self->{nodes}->{$node}->{lon};
-        
-        for (my $a=0;$a<=$#{$self->{admin}};$a++) {
-            next unless defined(${$self->{admin}}[$a]);
-            my $r = ${$self->{admin}}[$a];
-            foreach my $l (keys %{${$self->{admin}}[$a]}) {
-    	        next unless ($lat >= $$r{$l}->{minlat} and $lat <= $$r{$l}->{maxlat}) and ($lon >= $$r{$l}->{minlon} and $lon <= $$r{$l}->{maxlon});
-                my $nvert = $#{$$r{$l}->{lat}};
-                my $c = $self->pnpoly($nvert,$$r{$l}->{lon},$$r{$l}->{lat},$lon,$lat);
-                $locstr .= " $l($a)" if $c;
-            }
-        }
+	
+	$self->{adminnode}->execute($node);
+	
+	while (my @row=$self->{adminnode}->fetchow_array()) {
+	    mt $id=$row[0];
+	    my $lat = $self->{dbh}->selectcol_array("SELECT lat FROM member,nd,node WHERE member.id=$id AND member.type='way' AND member.ref=nd.id AND nd.ref=node.id ORDER BY member.seq,nd.seq");
+	    my $lon = $self->{dbh}->selectcol_array("SELECT lon FROM member,nd,node WHERE member.id=$id AND member.type='way' AND member.ref=nd.id AND nd.ref=node.id ORDER BY member.seq,nd.seq");
+	    my $c=$self->pnpoly(1+$#lat,\@lon,\@lat,$lon,$lat);
+	    $locstr .= sprintf(" %s(%d)",$row[1],$row[2]) if $c;
+	}
+#        for (my $a=0;$a<=$#{$self->{admin}};$a++) {
+#            next unless defined(${$self->{admin}}[$a]);
+#            my $r = ${$self->{admin}}[$a];
+#            foreach my $l (keys %{${$self->{admin}}[$a]}) {
+#    	        next unless ($lat >= $$r{$l}->{minlat} and $lat <= $$r{$l}->{maxlat}) and ($lon >= $$r{$l}->{minlon} and $lon <= $$r{$l}->{maxlon});
+#                my $nvert = $#{$$r{$l}->{lat}};
+#                my $c = $self->pnpoly($nvert,$$r{$l}->{lon},$$r{$l}->{lat},$lon,$lat);
+#                $locstr .= " $l($a)" if $c;
+#            }
+#        }
         return $locstr;
     }
     
@@ -641,7 +651,7 @@
 	}
 	my @bbox = ($minlon,$minlat,$maxlon,$maxlat);
 	$self->importBbox(join(",",@bbox));
-	$sekf->postprocess();
+	$self->postprocess();
     }
     
     sub removetempnodes {
