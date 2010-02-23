@@ -80,7 +80,7 @@
         
 	$self->{inboundnd}   = $dbh->prepare("SELECT count(maxlat) FROM bound,node WHERE id=? and lat >= minlat and lat <= maxlat and lon >= minlon and lon <= maxlon");
 	$self->{inboundcoor} = $dbh->prepare("SELECT count(maxlat) FROM bound,(SELECT ? as lat,? as lon) as input WHERE lat >= minlat and lat <= maxlat and lon >= minlon and lon <= maxlon");
-	$self->{adminnode}   = $dbh->prepare("SELECT admin.id,name,level FROM admin,node WHERE node.id=? and lat >= minlat and lat <= maxlat and lon >= minlon and lon <= maxlon ORDER BY level,naam");
+	$self->{adminnode}   = $dbh->prepare("SELECT admin.id,name,level FROM admin,node WHERE node.id=? and lat >= minlat and lat <= maxlat and lon >= minlon and lon <= maxlon ORDER BY level,name");
 	$self->{getcounts}   = $dbh->prepare("SELECT * FROM counts");
  
         $dbh->do("DELETE FROM relation WHERE NOT processed");
