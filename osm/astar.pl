@@ -288,4 +288,3 @@ print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'bicycle'))
 ###Brussel
 #print_path($map,Astar($map,52.2973969,4.8620826,50.8417207,4.3832422,'car'));
 }
-$map->saveOSMdata()
