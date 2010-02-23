@@ -6,7 +6,6 @@
     
     use LWP::UserAgent;
     use Data::Dumper;
-    use XML::Simple;
     use XML::LibXML::Reader;
     use DBI;
     use Geo::Distance;
@@ -82,6 +81,7 @@
 	$self->{inboundcoor} = $dbh->prepare("SELECT count(maxlat) FROM bound,(SELECT ? as lat,? as lon) as input WHERE lat >= minlat and lat <= maxlat and lon >= minlon and lon <= maxlon");
 	$self->{adminnode}   = $dbh->prepare("SELECT admin.id,name,level FROM admin,node WHERE node.id=? and lat >= minlat and lat <= maxlat and lon >= minlon and lon <= maxlon ORDER BY level,name");
 	$self->{getcounts}   = $dbh->prepare("SELECT * FROM counts");
+	$self->{getnb}       = $dbh->prepare("select n.* from (select neighbor.* from neighbor union select id2,id1,way,distance from neighbor) as n,(select ? as ccc) as x where ccc=n.id1");
  
         $dbh->do("DELETE FROM relation WHERE NOT processed");
         $dbh->do("DELETE FROM way WHERE NOT processed");
@@ -356,129 +356,7 @@
 	$dbh->do("UPDATE relation set processed=1 WHERE NOT processed");
 	$dbh->do("UPDATE bound set processed=1 WHERE NOT processed");
     }
-    
-    sub procesdata {
-        my $self = shift;
-	my $doc = shift;
-	my $newnodes;
-	my $newways;
-	my $relations;
-	my $bounds;
-	
-        $newnodes = $doc->{node};
-        $newways = $doc->{way};
-        $relations = $doc->{relation};
-	$bounds = $doc->{bounds};
-        my $nrnodes;
-	
-        $self->{changed} = 1;
-	$self->process_relations($relations,$newways,$newnodes);
         
-        foreach my $w (keys %$newways) {
-            unless (usable_way($newways->{$w})) {
-	        delete($$newways{$w});
-	        next;
-            }
-	    delete $$newways{$w}->{user};
-	    delete $$newways{$w}->{uid};
-	    delete $$newways{$w}->{visible};
-            delete $$newways{$w}->{timestamp};
-	    delete $$newways{$w}->{changeset};
-            my $oneway = $newways->{$w}->{tag}->{oneway};
-            $oneway = "no" unless defined $oneway;
-            $oneway = "yes" if $oneway eq "true";
-            $oneway = "yes" if $oneway eq "1";
-            $oneway = "rev" if $oneway eq "-1";
-            if ($oneway eq "no") {
-	        delete $newways->{$w}->{tag}->{oneway} if exists($newways->{$w}->{tag}->{oneway});
-            } else {
-                $newways->{$w}->{tag}->{oneway} = $oneway;
-            }
-            $nrnodes = $#{$newways->{$w}->{nd}}+1;
-            my ($n1,$n2);
-            for (my $i=0;$i<$nrnodes-1;$i++) {
-	        $n1 = $newways->{$w}->{nd}->[$i]->{ref};
-    	        $n2 = $newways->{$w}->{nd}->[$i+1]->{ref};
-	        $self->{way}->{$n1}->{$n2}=$w;
-	        $self->{way}->{$n2}->{$n1}=$w;
-            }
-        }
-	
-        foreach my $n (keys %$newnodes) {
-            if (exists($self->{way}->{$n})) {
-	        delete $$newnodes{$n}->{user};
-	        delete $$newnodes{$n}->{changeset};
-	        delete $$newnodes{$n}->{timestamp};
-	        delete $$newnodes{$n}->{visible};
-	        delete $$newnodes{$n}->{uid};
-                my $x = int(20*($$newnodes{$n}->{lon} + 180));
-                my $y = int(20*($$newnodes{$n}->{lat} +90));
-                $self->{bucket}->{$x}->{$y} = [] unless exists($self->{bucket}->{$x}->{$y});
-                push @{$self->{bucket}->{$x}->{$y}},$n;
-	    } else {
-	        delete $$newnodes{$n};
-	    }
-        }
-        foreach my $x (sort keys %{$self->{bucket}}) {
-            foreach my $y (sort keys %{$self->{bucket}->{$x}}) {
-                print "$x $y ",$#{$self->{bucket}->{$x}->{$y}},"\n";
-            }
-        }
-	$self->storenewdata($newnodes,$newways,$bounds);
-    }
-    
-    sub process_relations {
-        my ($self,$relations,$newways,$newnodes) = @_;
-        $self->{dbh}->begin_work;
-    	foreach my $r (keys %$relations) {
-            my $type = $$relations{$r}->{tag}->{type};
-            if (defined($type)) {
-                print "relation $r heeft type $type\n" unless ($type eq "multipolygon") or ($type eq "boundary") or ($type eq "route") or ($type eq "restriction");
-            } else {
-                print "relation $r heeft geen type\n";
-            }
-	    next unless defined($type);
-	    next unless ($type eq "multipolygon") or ($type eq "boundary");
-            my $level = $$relations{$r}->{tag}->{admin_level};
-	    next unless defined($level);
-            my $name = $$relations{$r}->{tag}->{name};
-            next unless defined($name);
-            next if exists(${$self->{admin}}[$level]->{$name});
-            print $$relations{$r}->{tag}->{name},' ',$$relations{$r}->{tag}->{type},' ',$level,' ',$$relations{$r}->{tag}->{boundary},"\n";
-	    ${$self->{admin}}[$level]->{$name}->{type} = $type;
-            ${$self->{admin}}[$level]->{$name}->{lat} = ();
-            ${$self->{admin}}[$level]->{$name}->{lon} = ();
-	    ${$self->{admin}}[$level]->{$name}->{minlon} = 1000;
-	    ${$self->{admin}}[$level]->{$name}->{minlat} = 1000;
-	    ${$self->{admin}}[$level]->{$name}->{maxlon} = -1000;
-	    ${$self->{admin}}[$level]->{$name}->{maxlat} = -1000;
-            
-            my $doc = $self->loadrelation($r);
-            my $ways=$doc->{way};
-            my $nodes=$doc->{node};
-            my $rel=$doc->{relation}->{$r};
-            my @members = @{$rel->{member}};
-            for (my $m=0;$m<=$#members;$m++) {
-                my $w = $members[$m]->{ref};
-                my @nds = @{$$ways{$w}->{nd}};
-                for (my $n=0;$n<=$#nds;$n++) {
-		    my $lon = $$nodes{$nds[$n]->{ref}}->{lon};
-		    my $lat = $$nodes{$nds[$n]->{ref}}->{lat};
-#                    print Dumper $$nodes{$nds[$n]->{ref}};
-                    push @{${$self->{admin}}[$level]->{$name}->{lat}},$lat;
-                    push @{${$self->{admin}}[$level]->{$name}->{lon}},$lon;
-		    ${$self->{admin}}[$level]->{$name}->{minlon} = $lon if ${$self->{admin}}[$level]->{$name}->{minlon} > $lon;
-		    ${$self->{admin}}[$level]->{$name}->{minlat} = $lat if ${$self->{admin}}[$level]->{$name}->{minlat} > $lat;
-		    ${$self->{admin}}[$level]->{$name}->{maxlon} = $lon if ${$self->{admin}}[$level]->{$name}->{maxlon} < $lon;
-		    ${$self->{admin}}[$level]->{$name}->{maxlat} = $lat if ${$self->{admin}}[$level]->{$name}->{maxlat} < $lat;
-                }
-            }
-            $self->{insertadm}->execute($r,$level,$name,$type,${$self->{admin}}[$level]->{$name}->{minlat},${$self->{admin}}[$level]->{$name}->{maxlat},${$self->{admin}}[$level]->{$name}->{minlon},${$self->{admin}}[$level]->{$name}->{maxlon});
-#            print Dumper \@{$self->{admin}};
-	}
-        $self->{dbh}->commit;
-    }
-    
     sub pnpoly {
         my $self = shift;
 	my $nvert = shift;
@@ -514,27 +392,7 @@
 	    my $c=$self->pnpoly(1+$#lat,\@lon,\@lat,$lon,$lat);
 	    $locstr .= sprintf(" %s(%d)",$row[1],$row[2]) if $c;
 	}
-#        for (my $a=0;$a<=$#{$self->{admin}};$a++) {
-#            next unless defined(${$self->{admin}}[$a]);
-#            my $r = ${$self->{admin}}[$a];
-#            foreach my $l (keys %{${$self->{admin}}[$a]}) {
-#    	        next unless ($lat >= $$r{$l}->{minlat} and $lat <= $$r{$l}->{maxlat}) and ($lon >= $$r{$l}->{minlon} and $lon <= $$r{$l}->{maxlon});
-#                my $nvert = $#{$$r{$l}->{lat}};
-#                my $c = $self->pnpoly($nvert,$$r{$l}->{lon},$$r{$l}->{lat},$lon,$lat);
-#                $locstr .= " $l($a)" if $c;
-#            }
-#        }
         return $locstr;
-    }
-    
-    sub saveOSMdata {
-        my $self = shift;
-        my $dbfile = shift;
-	
-        return unless $self->{changed};
-        $self->removetempways();
-        $self->removetempnodes();
-        $self->{changed} = 0;
     }
     
     sub fetchUrl {
@@ -555,41 +413,6 @@
 	}
 	while ($retry < 5 && $result->code == 500);
 	return -1;
-    }
-    
-    sub loadway {
-        my ($self,$w) = @_;
-	
-        my $file = "map_way_$w.osm";
-        my $url = sprintf($getwaycmd,$w);
-        return $self->loadOSMdata($file,$url);
-    }
-    
-    sub loadrelation {
-        my ($self,$w) = @_;
-	
-        my $file = "map_rel_$w.osm";
-        my $url = sprintf($getrelcmd,$w);
-        return $self->loadOSMdata($file,$url);
-    }
-    
-    sub loadOSMdata {
-        my ($self,$file,$url) = @_;
-        
-        my $content;
-        if (open OLD, "<maps/$file") {
-            close OLD;
-            $content = "maps/$file";
-        } else {
-            my $data = $self->fetchUrl($url);
-            $content = $data-> content;
-	    if (open NEW,">maps/$file") {
-	        print NEW $content;
-	        close NEW;
-		$self->importOSMfile("maps/$file");
-	    }
-        }
-        return XMLin($content, ForceArray=>['tag','nd','member','way','node','relation'],KeyAttr=>{tag => 'k', way=>'id','node'=>'id',relation=>'id'},ContentKey => "-v");
     }
     
     sub useNetdata {
