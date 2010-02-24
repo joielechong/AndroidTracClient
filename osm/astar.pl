@@ -129,7 +129,7 @@ sub print_path {
     my $map = shift;
     my @p1=@_;
     print join(", ",@p1);
-    print " ",$map->node($p1[0])->{length} if defined($map->node($p1[0])->{length});
+#    print " ",$map->node($p1[0])->{length} if defined($map->node($p1[0])->{length});
     print "\n";
     my $oldp;
     my $oldw;
@@ -150,19 +150,22 @@ sub print_path {
 	}
 	if (defined($w)) {
 	    print $w,": ";
-	    my $mwt = $map->way($w)->{tag};
+            my $ww=$map->loadway($w);
+	    my $mwt = $ww->{tag};
 	    print $$mwt{name}," " if defined($$mwt{name});
 	    print $$mwt{highway}," " if defined($$mwt{highway});
 	    print $$mwt{maxspeed}," " if defined($$mwt{maxspeed});
 	    print $$mwt{ref}," " if defined($$mwt{ref});
-	    my $d = $map->dist($oldp,$p);
-	    if (defined($d)) {
-                $olddir = $dir;
-                $dir = $map->direction($oldp,$p);
-		print "$dir $d ";
-		$totdist += $d;
-	    }
-	    print $totdist," ";
+            if (defined($oldp)) {
+                my $d = $map->dist($oldp,$p);
+	        if (defined($d)) {
+                    $olddir = $dir;
+                    $dir = $map->direction($oldp,$p);
+		    print "$dir $d ";
+		    $totdist += $d;
+	        }
+	        print $totdist," ";
+            }
             $oldw=$w;
             print $map->findLocation($p);
 	}
@@ -177,51 +180,49 @@ my $netonly=0;
 my $confile='astarconf.xml';
 my $mapfile = undef;
 my $bbox = undef;
+my $directory;
 
 my %options = ('new' => \$new,
                'dbonly' => \$dbonly,
                'net' => \$netonly,
                'conf=s' => \$confile,
                'map=s'=>\$mapfile,
+               'dir=s'=>\$directory,
                'bbox=s'=>\$bbox);
                
 my $result = GetOptions(%options);
 
 my $map = OSM::Map->new();
-if ($dbonly) {
-    my @files = ();
-    if (defined($mapfile)) {
-	$files[0] = $mapfile;
-    } elsif (defined ($bbox)) {
-      $map->importBbox($bbox);
-      $map->postprocess();
-    } else {
-	opendir(my $dh, "maps") || die "can't opendir : $!";
-        @files = grep { /map_.*\.osm$/ && -f "maps/$_" } readdir($dh);
-        map {s:^:maps/: => $_} @files;
-	closedir $dh;
-    }
+
+my @files = ();
+if (defined($mapfile)) {
+    $map->importOSMfile($mapfile);
+    $map->postprocess();
+} elsif (defined ($bbox)) {
+    $map->importBbox($bbox);
+    $map->postprocess();
+} elsif (defined($directory)) {
+    opendir(my $dh, $directory) || die "can't opendir $directory: $!";
+    @files = grep { /map_.*\.osm$/ && -f "$directory/$_" } readdir($dh);
+    map {s:^:$directory/: => $_} @files;
+    closedir $dh;
     foreach my $f (@files) {
         $map->importOSMfile("$f");
     }
     $map->postprocess();
-} else {
-    if (defined($mapfile)) {
-        $map = OSM::Map->new();
-	$map->importOSMfile($mapfile);
-        $map->postprocess()
-    }
+}
 
+unless ($dbonly) {
 ###huis school
-#print_path($map,Astar($map,52.297277,4.862030,52.29334,4.85876));
-#print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'foot'));
-#print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'bicycle'));
-#print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'car'));
-#print_path($map,Astar($map,52.2973969,4.8620826,52.2935821,4.8593675,'car'));
-#print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588));
-#print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588,'foot'));
-#print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588,'bicycle'));
-#print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588,'car'));
+print_path($map,Astar($map,52.297277,4.862030,52.29334,4.85876));
+print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'foot'));
+print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'bicycle'));
+print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'car'));
+print_path($map,Astar($map,52.2973969,4.8620826,52.2935821,4.8593675,'car'));
+print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588));
+print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588,'foot'));
+print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588,'bicycle'));
+print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588,'car'));
 
 ###Huis hockey
 #print_path($map,Astar($map,52.297275,4.8616077,52.2886,4.8508));
@@ -273,9 +274,9 @@ if ($dbonly) {
 #print_path($map,Astar($map,52.087473,5.115715,52.2973969,4.8620826,'car'));
 
 ## ICT Barendrecht
-print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'car'));
-print_path($map,Astar($map,51.8503978,4.5091717,52.2973969,4.8620826,'car'));
-print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'bicycle'));
+#print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'car'));
+#print_path($map,Astar($map,51.8503978,4.5091717,52.2973969,4.8620826,'car'));
+#print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'bicycle'));
 
 ## Roquebrune
 #print_path($map,Astar($map,52.2973969,4.8620826,43.4046930,6.6792379,'car'));
