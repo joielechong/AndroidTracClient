@@ -55,14 +55,9 @@ sub Astar {
     $startset{$start} = 1;
     $goalset{$goal} = 2;
     
-    $gs_score{$start} = 0;
-    $fs_score{$start} = $hs_score{$start} = $map->calc_h_score($start,$goal,$vehicle);
-    $ds_score{$start} = $map->distance($start,$goal);
-    
-    $gg_score{$goal} = 0;
-    $fg_score{$goal} = $hg_score{$goal} = $map->calc_h_score($start,$goal,$vehicle);
-    $dg_score{$goal} = $map->distance($start,$goal);
-    
+    $gg_score{$goal} = $gs_score{$start} = 0;
+    $fg_score{$goal} = $hg_score{$goal} = $fs_score{$start} = $hs_score{$start} = $map->calc_h_score($start,$goal,$vehicle);
+    $dg_score{$goal} = $ds_score{$start} = $map->distance($start,$goal);    
     
     $openset[1] = \%startset;
     $openset[2] = \%goalset;
@@ -96,7 +91,7 @@ sub Astar {
 		delete(${$openset[$i]}{$xs});
 		$closedset{$xs} = $i;
 #	        print "close $xs ".$f_score{$xs}."\n";                
-		for my $y ($map->neighbours($xs)) {
+		for my $y (@{$map->neighbours($xs)}) {
 		    $map->fetchNode($y) unless $map->inboundNode($y);
 		    next if (defined($closedset{$y}));
                     my $prevnode = ${$to[$i]}{$xs};
