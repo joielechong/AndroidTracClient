@@ -281,7 +281,7 @@
         print "Postprocessing\n";
         my $rrr = $dbh->imcompleteRelations();
         foreach my $r (@$rrr) {
-            $self->importRelation($r);
+            $self->importRelation($r,1);
         }
         $dbh->do("DELETE FROM tag WHERE k IN ('created_by','source') or k like 'AND%' or k like '3dshapes%'");
         $dbh->do("DELETE FROM tag WHERE v IN ('0','no','NO','false','FALSE') AND k IN ('bridge','tunnel','oneway')");
