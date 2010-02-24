@@ -8,11 +8,11 @@
     use Data::Dumper;
     use XML::LibXML::Reader;
     use XML::Simple;
-    use DBI;
     use Geo::Distance;
     
     require Exporter;
     @ISA = qw(Exporter);
+    require OSM::Map::Db;
     
     my $getmapcmd;
     my $getwaycmd;
@@ -101,13 +101,11 @@
         return $geo->distance('meter',$lon1,$lat1,$lon2,$lat2);
     }
     
-    sub XXXdistance {
-        my $self = shift;
-        my $n1 = shift;
-        my $n2 = shift;
-	my $nd1=$$self{nodes}->{$n1};
-	my $nd2=$$self{nodes}->{$n2};
-        return $geo->distance('meter',$$nd1{lon},$$nd1{lat}=>$$nd2{lon},$$nd2{lat});
+    sub distance {
+        my ($self,$n1,$n2) = @_; 
+	my ($lat1,$lon1) = $dbh->getCoor($n1);
+	my ($lat2,$lon2) = $dbh->getCoor($n2);
+        return $geo->distance('meter',$lon1,$lat1=>$lon2,$lat2);
     }
     
     sub inboundCoor {
@@ -115,13 +113,9 @@
         return $dbh->inboundCoor(@_);
     }
     
-    sub XXXinboundNode {
+    sub inboundNode {
         my ($self,$node) = @_;
-        $self->{inboundnd}->execute($node);
-        if (my @row = $self->{inboundnd}->fetchrow_array()) {
-             return $row[0];
-        }
-        return 0;
+        return $dbh->inboundNode($node);
     }
     
     sub processElem {
@@ -139,18 +133,17 @@
             }
             $dbh->insertNode($id,$elem->{lat},$elem->{lon},$elem->{version},($id<0?1:0)) if $elem->{version} > $version;
         } elsif ($xmlname eq 'way') {
-            $self->{checkway}->execute($id);
             my $version = -1;
-            if (my @row = $self->{checkway}->fetchrow_array()) {
+            if (my @row = $dbh->checkWay($id)) {
                 $version = $row[0];
-                $self->{delway}->execute($id) if ($elem->{version} > $version);
+                $dbh->delWay($id) if ($elem->{version} > $version);
             }
             if ($elem->{version} > $version) {
                 print "Nieuwe versie voor weg $id, versie = $version\n" if $version > -1;
-                $self->{insertway}->execute($id,$elem->{version},($id<0?1:0));
+                $dbh->insertWay($id,$elem->{version},($id<0?1:0));
                 my $nds = $#{$elem->{nd}};
                 for(my $i=0;$i<=$nds;$i++) {
-                    printf "probleem insertnd id=%d seq=%d ref=%d: %s\n",$id,$i,$elem->{nd}->[$i]->{ref},$dbh->errstr unless $dbh->{insertnd}->execute($id,$i,$elem->{nd}->[$i]->{ref});
+                    printf "probleem insertnd id=%d seq=%d ref=%d: %s\n",$id,$i,$elem->{nd}->[$i]->{ref},$dbh->errstr unless $dbh->insertNd($id,$i,$elem->{nd}->[$i]->{ref});
                 }
             }
         } elsif ($xmlname eq 'relation') {
@@ -173,7 +166,7 @@
             $self->{insertbound}->execute($elem->{minlat},$elem->{maxlat},$elem->{minlon},$elem->{maxlon});
         }
         foreach my $k (keys %{$elem->{tag}}) {
-            $self->{inserttag}->execute($id,$k,$elem->{tag}->{$k});
+            $dbh->insertTag($id,$k,$elem->{tag}->{$k});
         }
     }
     
@@ -299,26 +292,6 @@
 #	$dbh->do("UPDATE bound set processed=1 WHERE NOT processed");
     }
         
-    sub pnpoly_orig {
-        my $self = shift;
-	my $nvert = shift;
-	my $vertx = shift;
-	my $verty = shift;
-	my $testx = shift;
-	my $testy = shift;
-	
-	my ($i,$j,$c);
-	$c=0;
-	$j=$nvert-1;
-	for ($i=0;$i<$nvert;$j=$i++) {
-            if ( (($$verty[$i]>$testy) != ($$verty[$j]>$testy)) &&
-		 ($testx < ($$vertx[$j]-$$vertx[$i]) * ($testy-$$verty[$i]) / ($$verty[$j]-$$verty[$i]) + $$vertx[$i]) ) {
-                $c = !$c;
-	    }
-	}
-	return $c;
-    }
-
     sub pnpoly {
         my $self = shift;
 	my $nvert = shift;
@@ -430,7 +403,7 @@
     sub tempnode {
         my ($self,$lat,$lon) = @_;
         
-        my $nodeid = $dbh->minNode();
+        my $nodeid = $dbh->minID();
         $nodeid = 0 if $nodeid > 0;
         
         my $elem;
@@ -450,7 +423,7 @@
         my $self = shift;
         my @nds = @_;
         
-        my $wayid = $dbh->minWay();
+        my $wayid = $dbh->minID();
         $wayid = 0 if $wayid > 0;
         
         my $elem;
@@ -526,18 +499,13 @@
         return $nn;
     }
     
-    sub XXXfetchNode {
+    sub fetchNode {
 	my ($self,$node) = @_;
-	my $lat = $self->{nodes}->{$node}->{lat};
-	my $lon = $self->{nodes}->{$node}->{lon};
-        print "letop fetch node = $node",Dumper($self->{nodes}->{$node}) unless (defined($lat) and defined($lon));
-	$self->fetchCoor($lat,$lon);
+	$self->fetchCoor($dbh->getCoor($node));
     }
     
-    sub XXXcalc_h_score {
-        my $self = shift;
-        my $x = shift;
-        my $y = shift;
+    sub calc_h_score {
+        my ($self,$x,$y) = @_;
 	
         my $d=$self->distance($x,$y);
         return defined($vehicle) ? $d *3.6/$profiles{$vehicle}->{avgspeed} : $d;
@@ -596,16 +564,10 @@
         return 180 * atan2($dx1,$dy1) / $PI;
     }
     
-    sub XXXcost {
+    sub cost {
         my ($self,$x,$y,$prevnode) = @_;
 	
-	my $d = $self->{dist}->{$x}->{$y};
-        unless (defined($d)) {
-	    $d = $self->{dist}->{$x}->{$y} = $self->{dist}->{$y}->{$x} = $self->distance($x,$y);
-            unless ((substr($x,0,2) eq 'TN') or (substr($y,0,2) eq 'TN')) {
-                $self->{changed} = 1 
-            }
-        }
+	my $d = $dbh->distance($x,$y);
 	return $d unless defined($vehicle);
 	
 	my $speed = $profiles{$vehicle}->{maxspeed};
@@ -732,173 +694,5 @@
     }
 }
 
-{
-    package OSM::Map::Db;
-   
-    use strict;
-    use vars qw(@ISA $VERSION);
-    
-    use DBI;
-    
-    require Exporter;
-    @ISA = qw(Exporter DBI);
-    
-    my $dbh;
-    
-    sub new {
-        my $this = shift;
-	my $conffile = shift;
-	my $class = ref($this) || $this;
-	my $self = {};
-	bless $self, $class;
-	$self->initialize($conffile);
-	return $self;
-    }
-    
-    my $getcoor;
-    my $getcounts;
-    my $insertnode;
-    my $delnode;
-    my $checknode;
-    my $adminnode;
-    my $latlonarr;
-    my $inboundcoor;
-    my $loadbucket;
-    my $insertway;
-    my $insertnd;
-    my $getnb;
-    
-    sub initialize {
-        my $self = shift;
-        my $naam = shift;
-        
-        $dbh = $self->{dbh} = DBI->connect("dbi:SQLite:dbname=$naam","","");
-        $dbh->{AutoCommit} = 1;
-        $dbh->do("PRAGMA foreign_keys=ON");
-        $checknode = $dbh->prepare("SELECT version from node where id =?");
-        $self->{checkrel}  = $dbh->prepare("SELECT version from relation where id =?");
-        $self->{checkway}  = $dbh->prepare("SELECT version from way where id =?");
 
-        $delnode = $dbh->prepare("DELETE from node where id =?");
-        $self->{delrel}  = $dbh->prepare("DELETE from relation where id =?");
-        $self->{delway}  = $dbh->prepare("DELETE from way where id =?");
-
-        $insertnode  = $dbh->prepare("INSERT INTO node (id,lat,lon,version,temporary) VALUES (?,?,?,?,?)");
-        $self->{inserttag}   = $dbh->prepare("INSERT OR REPLACE INTO tag (id,k,v) VALUES (?,?,?)");
-        $insertway   = $dbh->prepare("INSERT INTO way (id,version,temporary) VALUES (?,?,?)");
-        $insertnd    = $dbh->prepare("INSERT INTO nd (id,seq,ref) VALUES (?,?,?)");
-        $self->{insertrel}   = $dbh->prepare("INSERT INTO relation (id,version) VALUES (?,?)");
-        $self->{insertmemb}  = $dbh->prepare("INSERT INTO member (id,seq,type,ref,role) VALUES (?,?,?,?,?)");
-        $self->{insertbound} = $dbh->prepare("INSERT INTO bound (minlat,maxlat,minlon,maxlon) VALUES (?,?,?,?)");
-        $self->{insertnb}    = $dbh->prepare("INSERT INTO neighbor (id1,id2,way) VALUES (?,?,?)");
-        
-	$self->{inboundnd}   = $dbh->prepare("SELECT count(maxlat) FROM bound,node WHERE id=? and lat >= minlat and lat <= maxlat and lon >= minlon and lon <= maxlon");
-	$inboundcoor = $dbh->prepare("SELECT count(maxlat) FROM bound,(SELECT ? as lat,? as lon) as input WHERE lat >= minlat and lat <= maxlat and lon >= minlon and lon <= maxlon");
-	$adminnode   = $dbh->prepare("SELECT admin.id,name,level FROM admin,node WHERE node.id=? and lat >= minlat and lat <= maxlat and lon >= minlon and lon <= maxlon ORDER BY level DESC,name");
-	$getcounts   = $dbh->prepare("SELECT * FROM counts");
-	$getcoor     = $dbh->prepare("SELECT lat,lon FROM node WHERE id=?");
-	$getnb       = $dbh->prepare("SELECT n.id2 FROM (SELECT neighbor.* FROM neighbor UNION SELECT id2,id1,way,distance FROM neighbor) AS n,(SELECT ? AS input) AS x WHERE input=n.id1");
-	$latlonarr   = $dbh->prepare("SELECT lat,lon FROM member,nd,node WHERE member.id=? AND member.type='way' AND member.ref=nd.id AND nd.ref=node.id ORDER BY member.seq,nd.seq");
-        $loadbucket  = $dbh->prepare("SELECT b1.node,lat,lon FROM bucket AS b2,bucket AS b1,node WHERE b2.node=? AND b2.x=b1.x AND b2.y=b1.y AND b1.node != b2.node AND b1.node=id");
-
- 
-#        $dbh->do("DELETE FROM relation WHERE NOT processed");
-#        $dbh->do("DELETE FROM way WHERE NOT processed");
-#        $dbh->do("DELETE FROM node WHERE NOT processed");
-    }
-    
-    sub inboundCoor {
-        my $self = shift;
-        $inboundcoor->execute(@_);
-        if (my @row = $inboundcoor->fetchrow_array()) {
-             return $row[0];
-        }
-	return 0;
-    }
-    
-    sub do {
-        my $self = shift;
-        return $dbh->do(shift);
-    }
-    
-    sub getLatLonarr {
-        my ($self,$id) = @_;
-        
-        $latlonarr->execute($id);
-        return $latlonarr->fetchall_arrayref();
-    }
-
-    sub getCoor {
-        my ($self,$node) = @_;
-        
-    	$getcoor->execute($node);
-	return $getcoor->fetchrow_array();
-    }
-    
-    sub getCounts {
-	my $self = shift;
-	
-	$getcounts->execute();
-	return $getcounts->fetchrow_array();
-    }
-    
-    sub insertNode {
-        my $self = shift;
-        $insertnode->execute(@_);
-    }
-    
-    sub insertWay {
-        my $self = shift;
-        $insertway->execute(@_);
-    }
-    
-    sub insertNd {
-        my $self = shift;
-        $insertnd->execute(@_);
-    }
-    
-    sub checkNode {
-        my ($self,$id) = @_;
-        $checknode->execute($id);
-        return $checknode->fetchrow_array();
-    }
-    
-    sub delNode {
-        my ($self,$id) = @_;
-        $delnode->execute($id);
-    }
-    
-    sub adminNode {
-        my ($self,$node) = @_;
-       $adminnode->execute($node);
-       return $adminnode->fetchall_arrayref();
-    }
-    
-    sub minWay {
-        my $self = shift;
-        
-        my $row = $dbh->selectcol_arrayref("SELECT min(id) from way");
-        return $row->[0];
-    }
-    
-    sub minNode {
-        my $self = shift;
-        
-        my $row = $dbh->selectcol_arrayref("SELECT min(id) from node");
-        return $row->[0];
-    }
-    
-    sub getNb {
-        my ($self,$node) = @_;
-        
-        return $dbh->selectcol_arrayref($getnb,{},$node);
-    }
-    
-    sub loadBucket{
-        my ($self,$node) = @_;
-        
-        $loadbucket->execute($node);
-        return $loadbucket->fetchall_arrayref();
-    }    
-}
 1;
