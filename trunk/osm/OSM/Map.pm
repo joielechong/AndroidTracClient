@@ -289,6 +289,7 @@
         $dbh->do("UPDATE tag set v='rev' WHERE v = '-1' and k='oneway'");
 	$dbh->do("INSERT INTO neighbor (way,id1,id2) SELECT DISTINCT way,id1,id2 FROM nb");
         $dbh->do("INSERT INTO admin (id,name,level,minlat,maxlat,minlon,maxlon) SELECT id,name,level,minlat,maxlat,minlon,maxlon FROM admintmp WHERE NOT id in (SELECT id from admin)");
+        $dbh->do("DELETE FROM bucket WHERE NOT node in (SELECT ref FROM nd)");
 	$dbh->do("UPDATE node set processed=1 WHERE NOT processed");
 	$dbh->do("UPDATE way set processed=1 WHERE NOT processed");
 	$dbh->do("UPDATE relation set processed=1 WHERE NOT processed");
