@@ -1,4 +1,4 @@
-PRAGMA foreign_keys=OFF;
+PRAGMA foreign_keys=ON;
 BEGIN TRANSACTION;
 
 DROP VIEW counts;
@@ -19,20 +19,22 @@ DROP TABLE relation;
 DROP TABLE way;
 DROP TABLE node;
 
-CREATE TABLE node (id long primary key,lat double not null,lon double not null, version integer not null,processed boolean default 0, temporary boolean default 0);
+CREATE TABLE node (id long primary key,lat double not null,lon double not null, version integer not null,processed boolean default 0);
 CREATE TABLE tag (id long not null,k varchar not null,v varchar not null, primary key (id,k));
-CREATE TABLE way (id long primary key,version integer not null,processed boolean default 0, temporary boolean default 0);
+CREATE TABLE way (id long primary key,version integer not null,processed boolean default 0);
 CREATE TABLE relation (id long primary key,version integer not null,processed boolean default 0);
+CREATE TABLE bound (minlat double not null,maxlat double not null,minlon double not null, maxlon double not null,processed boolean default 0,unique(minlat,maxlat,minlon,maxlon));
+
 CREATE TABLE nd (id long references way(id) on delete cascade not null,seq integer not null,ref long not null references node(id) on delete cascade,primary key (id,seq));
 CREATE TABLE member (id long not null references relation(id) on delete cascade,seq integer not null,type varchar not null,ref long not null, role varchar, primary key (id,seq));
-CREATE TABLE neighbor (id1 long not null references node(id) on delete cascade,id2 long not null references node(id) on delete cascade, way long not null references way(id) on delete cascade,distance double default NULL);
-CREATE TABLE bound (minlat double not null,maxlat double not null,minlon double not null, maxlon double not null,processed boolean default 0,unique(minlat,maxlat,minlon,maxlon));
+CREATE TABLE neighbor (id1 long not null references node(id) on delete cascade,id2 long not null references node(id) on delete cascade, way long not null references way(id) on delete cascade,distance double default NULL,unique(id1,id2,way));
 CREATE TABLE bucket (x integer,y integer,node long not null references node(id) on delete cascade);
 CREATE TABLE admin (id long primary key references relation(id) on delete cascade,name varchar, level integer,minlat double,maxlat double,minlon double,maxlon double);
 
-CREATE TRIGGER nodetag BEFORE DELETE ON node FOR EACH ROW  BEGIN DELETE FROM tag where id=old.id; DELETE FROM member where ref=old.id; END;
-CREATE TRIGGER waytag BEFORE DELETE ON way FOR EACH ROW  BEGIN DELETE FROM tag where id=old.id; DELETE FROM member where ref =old.id; END;
-CREATE TRIGGER reltag BEFORE DELETE ON relation FOR EACH ROW  BEGIN DELETE FROM tag where id=old.id; END;
+CREATE TRIGGER nodetag BEFORE DELETE ON node FOR EACH ROW  BEGIN DELETE FROM tag where id=old.id; DELETE FROM member where ref=old.id; DELETE FROM neighbor WHERE id1=old.id OR id2=old.id; DELETE FROM bucket where node=old.id;END;
+CREATE TRIGGER waytag BEFORE DELETE ON way FOR EACH ROW  BEGIN DELETE FROM tag where id=old.id; DELETE FROM member where ref =old.id; DELETE FROM nd WHERE id=old.id; DELETE FROM neighbor WHERE way=old.id; END;
+CREATE TRIGGER reltag BEFORE DELETE ON relation FOR EACH ROW  BEGIN DELETE FROM tag where id=old.id; DELETE FROM admin WHERE id=old.id; END;
+
 CREATE TRIGGER insbucket AFTER INSERT ON node FOR EACH ROW BEGIN INSERT INTO bucket (x,y,node) VALUES (round((new.lat+90)*20),round((new.lon+180)*20),new.id); END;
 
 CREATE VIEW admin1 as select relation.id, (select t1.v from tag as t1 where t1.id=relation.id and t1.k='name') as name, (select t2.v from tag as t2 where t2.id=tag.id and t2.k='admin_level') as level from relation,tag where not relation.processed and relation.id=tag.id and tag.k='type' and tag.v in ('boundary','multipolygon') and not name is null and not level is null;
@@ -42,8 +44,9 @@ CREATE VIEW usable_way as select way.* from way,tag where way.id=tag.id and (k='
 CREATE VIEW nb as select nd.id as way,ref as id1,(select nd1.ref from nd as nd1 where nd.id=nd1.id and nd1.seq=(nd.seq+1)) as id2 from nd,usable_way as u where nd.id=u.id and not u.processed and not id2 is null;
 CREATE VIEW counts as SELECT (select count(*) from node) as nodes,(select count(*) from way) as ways,(select count(*) from relation) as relations,(select count(*) from bound) as bounds;
 
+CREATE INDEX nd_ref ON nd(ref);
+
 COMMIT;
-PRAGMA foreign_keys=ON;
 PRAGMA default_cache_size=5000;
 PRAGMA synchronous=off;
 PRAGMA temp_store=2;

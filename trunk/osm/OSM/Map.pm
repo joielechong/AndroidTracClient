@@ -91,11 +91,6 @@
         %highways=%{${$$conf{highways}}{highway}};
     }
     
-    sub XXXusable_way {
-        my $w = shift;
-        return exists($w->{tag}->{highway}) || (exists($w->{tag}->{route}) and $w->{tag}->{route} eq "ferry");
-    }
-    
     sub distanceCoor {
         my ($self,$lat1,$lon1,$lat2,$lon2) = @_;
         return $geo->distance('meter',$lon1,$lat1,$lon2,$lat2);
@@ -131,39 +126,47 @@
                 $dbh->delNode($id) if ($elem->{version} > $version);
                 print "Nieuwe versie voor node $id, versie = $version\n" if $version > -1 and $elem->{version} > $version;
             }
-            $dbh->insertNode($id,$elem->{lat},$elem->{lon},$elem->{version},($id<0?1:0)) if $elem->{version} > $version;
-        } elsif ($xmlname eq 'way') {
-            my $version = -1;
-            if (my @row = $dbh->checkWay($id)) {
-                $version = $row[0];
-                $dbh->delWay($id) if ($elem->{version} > $version);
-            }
             if ($elem->{version} > $version) {
-                print "Nieuwe versie voor weg $id, versie = $version\n" if $version > -1;
-                $dbh->insertWay($id,$elem->{version},($id<0?1:0));
-                my $nds = $#{$elem->{nd}};
-                for(my $i=0;$i<=$nds;$i++) {
-                    printf "probleem insertnd id=%d seq=%d ref=%d: %s\n",$id,$i,$elem->{nd}->[$i]->{ref},$dbh->errstr unless $dbh->insertNd($id,$i,$elem->{nd}->[$i]->{ref});
+                unless ($dbh->insertNode($id,$elem->{lat},$elem->{lon},$elem->{version}) ) {
+                    printf STDERR "probleem insertNode id=%d versions %d %d: %s\n",$id,$version,$elem->{version},$dbh->errstr ;
+                    die;
                 }
             }
+        } elsif ($xmlname eq 'way') {
+            if (exists($elem->{tag}->{highway}) || (exists($elem->{tag}->{route}) and $elem->{tag}->{route} eq "ferry")) {
+                my $version = -1;
+                if (my @row = $dbh->checkWay($id)) {
+                    $version = $row[0];
+                    $dbh->delWay($id) if ($elem->{version} > $version);
+                }
+                if ($elem->{version} > $version) {
+                    print "Nieuwe versie voor weg $id, versie = $version\n" if $version > -1;
+                    $dbh->insertWay($id,$elem->{version});
+                    my $nds = $#{$elem->{nd}};
+                    for(my $i=0;$i<=$nds;$i++) {
+                        printf "probleem insertnd id=%d seq=%d ref=%d: %s\n",$id,$i,$elem->{nd}->[$i]->{ref},$dbh->errstr unless $dbh->insertNd($id,$i,$elem->{nd}->[$i]->{ref});
+                    }
+                }
+            } else {
+                delete $elem->{tag};
+            }
         } elsif ($xmlname eq 'relation') {
-            $self->{checkrel}->execute($id);
             my $version = -1;
-            if (my @row = $self->{checkrel}->fetchrow_array()) {
+            if (my @row = $dbh->checkRelation($id)) {
                 $version = $row[0];
-                $self->{delrel}->execute($id) if ($elem->{version} > $version);
+                $dbh->delRelation($id) if ($elem->{version} > $version);
             }
             if ($elem->{version} > $version) {
                 print "Nieuwe versie voor relatie $id, versie = $version\n" if $version > -1;
-                $self->{insertrel}->execute($id,$elem->{version});
+                $dbh->insertRelation($id,$elem->{version});
                 my $membs = $#{$elem->{member}};
                 for(my $i=0;$i<=$membs;$i++) {
                     my $memb = $elem->{member}->[$i];
-                    printf "probleem insertmemb id=%d seq=%d ref=%d: %s\n",$id,$i,$memb->{ref},$self->{dbh}->errstr unless $self->{insertmemb}->execute($id,$i,$memb->{type},$memb->{ref},$memb->{role});
+                    printf "probleem insertmemb id=%d seq=%d ref=%d: %s\n",$id,$i,$memb->{ref},$self->{dbh}->errstr unless $dbh->insertMemb($id,$i,$memb->{type},$memb->{ref},$memb->{role});
                 }
             }
         } elsif ($xmlname eq 'bounds') {
-            $self->{insertbound}->execute($elem->{minlat},$elem->{maxlat},$elem->{minlon},$elem->{maxlon});
+            $dbh->insertBound($elem->{minlat},$elem->{maxlat},$elem->{minlon},$elem->{maxlon});
         }
         foreach my $k (keys %{$elem->{tag}}) {
             $dbh->insertTag($id,$k,$elem->{tag}->{$k});
@@ -188,11 +191,11 @@
     }
     
     sub importRelation {
-        my ($self,$relation) = @_;
+        my ($self,$relation,$notlocal) = @_;
         
         my $file="map_rel_$relation.osm";
         my $url =sprintf("$getrelcmd",$relation);
-        $self->loadFile($file,$url);
+        $self->loadFile($file,$url,$notlocal);
     }
     
     sub importBbox {
@@ -204,9 +207,9 @@
     }
     
     sub loadFile {
-        my ($self,$file,$url) = @_;
+        my ($self,$file,$url,$notlocal) = @_;
         
-        if (open OLD, "<maps/$file") {
+        if ((!(defined($notlocal) || $notlocal)) && defined($file) && open OLD, "<maps/$file") {
             close OLD;
         } else {
             my $data = $self->fetchUrl($url);
@@ -241,7 +244,7 @@
 	my $currelem = undef;
 	my $i = 0;
 	
-        $self->{dbh}->begin_work;
+        $dbh->begin_work;
 	while ($doc->read()) {
 	    my $elem = $self->processXMLNode($doc);
 	    next if $elem->{nodeType} == 14 or $elem->{nodeType} == 15;
@@ -275,21 +278,21 @@
     
     sub postprocess {
         my $self = shift;
-        
-        my $rrr = $dbh->selectcol_arrayref("SELECT distinct id from member where (type='relation' and not ref in (select id from relation)) or (type='way' and not ref in (select id from way)) or (type='node' and not ref in (select id from node))");
+        print "Postprocessing\n";
+        my $rrr = $dbh->imcompleteRelations();
         foreach my $r (@$rrr) {
             $self->importRelation($r);
         }
-#        $dbh->do("DELETE FROM tag WHERE NOT k IN ('created_by','source') or k like 'AND%' or k like '3dshapes%'");
+        $dbh->do("DELETE FROM tag WHERE k IN ('created_by','source') or k like 'AND%' or k like '3dshapes%'");
         $dbh->do("DELETE FROM tag WHERE v IN ('0','no','NO','false','FALSE') AND k IN ('bridge','tunnel','oneway')");
         $dbh->do("UPDATE tag set v='yes' WHERE v in ('1','true','TRUE') AND k IN ('bridge','tunnel','oneway')");
         $dbh->do("UPDATE tag set v='rev' WHERE v = '-1' and k='oneway'");
 	$dbh->do("INSERT INTO neighbor (way,id1,id2) SELECT DISTINCT way,id1,id2 FROM nb");
-        $dbh->do("INSERT INTO admin (id,name,level,minlat,maxlat,minlon,maxlon) SELECT id,name,level,minlat,maxlat,minlon,maxlon FROM admintmp");
-#	$dbh->do("UPDATE node set processed=1 WHERE NOT processed");
-#	$dbh->do("UPDATE way set processed=1 WHERE NOT processed");
-#	$dbh->do("UPDATE relation set processed=1 WHERE NOT processed");
-#	$dbh->do("UPDATE bound set processed=1 WHERE NOT processed");
+        $dbh->do("INSERT INTO admin (id,name,level,minlat,maxlat,minlon,maxlon) SELECT id,name,level,minlat,maxlat,minlon,maxlon FROM admintmp WHERE NOT id in (SELECT id from admin)");
+	$dbh->do("UPDATE node set processed=1 WHERE NOT processed");
+	$dbh->do("UPDATE way set processed=1 WHERE NOT processed");
+	$dbh->do("UPDATE relation set processed=1 WHERE NOT processed");
+	$dbh->do("UPDATE bound set processed=1 WHERE NOT processed");
     }
         
     sub pnpoly {
@@ -393,11 +396,11 @@
     }
     
     sub removetempnodes {
-        $dbh->do("DELETE FROM node WHERE temporary");
+        $dbh->do("DELETE FROM node WHERE id<0");
     }
     
     sub removetempways {
-        $dbh->do("DELETE FROM way WHERE temporary");
+        $dbh->do("DELETE FROM way WHERE id<0");
     }
     
     sub tempnode {
@@ -438,6 +441,8 @@
         $elem->{tag}->{highway} = "service";
         $self->processElem($elem);        
 	print "Created way $wayid: nodes: ",join(", ",@nds),"\n";
+        $dbh->insertNb($nds[0],$nds[1],$wayid);
+        $dbh->insertNb($nds[1],$nds[2],$wayid) if defined($nds[2]);
         return $wayid;
     }
     
@@ -489,8 +494,9 @@
                 if (($x4-$x2)/$dx < 0) {
                     $y4 = $x4*$a+$b;
                     $nt = $self->tempnode($y4,$x4);
-                    $self->tempway($nn,$nt,$node);
-                    $self->tempway($nn,$nt,$n);
+                    $self->tempway($nn,$nt);
+                    $self->tempway($nt,$node);
+                    $self->tempway($nt,$n);
                     $madeway = 1;
                 }
             }
@@ -511,29 +517,25 @@
         return defined($vehicle) ? $d *3.6/$profiles{$vehicle}->{avgspeed} : $d;
     }
     
-    sub XXXwrong_direction {
-	my ($self,$x,$y,$w,$onew) = @_;
-	my @nd = @{$self->{ways}->{$w}->{nd}};
+    sub wrong_direction {
+	my ($self,$nodex,$nodey,$ww,$onew) = @_;
+	my @nd = @{$ww->{nd}};
 	
 	foreach my $n (@nd) {
-	    if ($n->{ref} == $y) {
+	    if ($n->{ref} == $nodey->{id}) {
 		return ($onew ne "rev");
 	    }
-	    if ($n->{ref} == $x) {
+	    if ($n->{ref} == $nodex->{id}) {
 		return ($onew eq "rev");
 	    }
 	}
-	die "nodes not found in wrong direction $x $y $w\n";
+	die "nodes not found in wrong direction ".$nodex->{id}." ".$nodey->{id}." ".$ww->{id}."\n";
     }
     
-    sub XXXcurvecost {
-        my ($self,$x,$y,$p) = @_;
-        return 0 unless defined($p);
+    sub curvecost {
+        my ($self,$ndx,$ndy,$ndp) = @_;
+        return 0 unless defined($ndp);
  	
-	my $ndx=$$self{nodes}->{$x};
-	my $ndy=$$self{nodes}->{$y};
-	my $ndp=$$self{nodes}->{$p};
-        
         return 0 unless (defined($$ndx{lon}) and defined($$ndx{lat}));
         return 0 unless (defined($$ndy{lon}) and defined($$ndy{lat}));
         return 0 unless (defined($$ndp{lon}) and defined($$ndp{lat}));
@@ -551,29 +553,29 @@
         return 10 if $dh < 90;
         return 50 if $dh <120;
         return 100 if $dh <150;
-#		print "curve $p $x $y $dx1 $dy1 $dx2 $dy2 $h1 $h2 $dh\n";
+#       print "curve $p $x $y $dx1 $dy1 $dx2 $dy2 $h1 $h2 $dh\n";
         return 2000;
     }
     
-    sub XXXdirection {
+    sub direction {
         my ($self,$n1,$n2) = @_;
-	my $nd1 = $self->{nodes}->{$n1};
-	my $nd2 = $self->{nodes}->{$n2};
-        my $dx1 = $$nd2{lon}-$$nd1{lon};
-        my $dy1 = $$nd2{lat}-$$nd1{lat};
+        my ($lat1,$lon1) = $dbh->getCoor($n1);
+        my ($lat2,$lon2) = $dbh->getCoor($n2);
+        
+        my $dx1 = $lon2-$lon1;
+        my $dy1 = $lat2-$lat1;
         return 180 * atan2($dx1,$dy1) / $PI;
     }
     
     sub cost {
         my ($self,$x,$y,$prevnode) = @_;
 	
-	my $d = $dbh->distance($x,$y);
+	my $d = $dbh->getDistance($x,$y);
 	return $d unless defined($vehicle);
 	
 	my $speed = $profiles{$vehicle}->{maxspeed};
-	
-	my $w = $self->{way}->{$x}->{$y};
-	my $ww=$self->{ways}->{$w};
+        my $w=$dbh->getWay($x,$y);
+        my $ww = $dbh->loadWay($w);
 	my $wwtag = $$ww{tag};
 	
 	my ($hw,$access,$cw,$fa,$ca,$onew,$ma);
@@ -610,7 +612,7 @@
 	my $extracost = 0;
 	$extracost = $profiles{$vehicle}->{allowed}->{$hw}->{extracost} if exists($profiles{$vehicle}->{allowed}->{$hw}) and exists($profiles{$vehicle}->{allowed}->{$hw}->{extracost});
 	
-	my $nodey = $self->{nodes}->{$y};
+        my $nodey = $dbh->loadNode($y);
 	
 	if ($vehicle eq "foot") {
 	    return $infinity if $fa eq "no";
@@ -621,8 +623,9 @@
 	    return $infinity if $access eq "no" and $ca ne "yes";
 	    return $infinity if (!exists($profiles{$vehicle}->{allowed}->{$hw})) && !defined($cw);
 	    $extracost = 0 if defined($cw);
-	    if (defined($onew) and (!defined($cw) or $cw ne "opposite")) {
-		return $infinity if $self->wrong_direction($x,$y,$w,$onew);
+ 	    if (defined($onew) and (!defined($cw) or $cw ne "opposite")) {
+               my $nodex = $dbh->loadNode($x);
+		return $infinity if $self->wrong_direction($nodex,$nodey,$ww,$onew);
 	    }
 	    if (exists($$nodey{highway}) and exists($highways{$$nodey{highway}}->{extracost})) {
 		$extracost += $highways{$$nodey{highway}}->{extracost};
@@ -632,9 +635,11 @@
 	    return $infinity if $ma eq "no";
 	    return $infinity if $access eq "no" and $ma ne "yes";
 	    return $infinity if (!exists($profiles{$vehicle}->{allowed}->{$hw}));
-#	    return $infinity if defined($onew) and $self->wrong_direction($x,$y,$w,$onew);
+#	    return $infinity if defined($onew) and $self->wrong_direction($nodex,$nodey,$ww,$onew);
+            my $nodex = $dbh->loadNode($x);
+            my $nodep = $dbh->loadNode($prevnode);
 	    if (defined($onew)) {
-		if ($self->wrong_direction($x,$y,$w,$onew)) {
+		if ($self->wrong_direction($nodex,$nodey,$ww,$onew)) {
 		    return $infinity ;
 		}
             }
@@ -642,7 +647,7 @@
 		$extracost += $highways{$$nodey{highway}}->{extracost};
 	    }
 	    $extracost += 10 if defined($$nodey{traffic_calming});
-            $extracost += $self->curvecost($x,$y,$prevnode);
+            $extracost += $self->curvecost($nodex,$nodey,$nodep);
 	} else {
 	    die "Onbekend voertuig\n";
 	}
@@ -666,31 +671,31 @@
         return $dbh->getNb($node);
     }
     
-    sub XXXgetway {
+    sub loadway {
         my $self = shift;
 	my $p1 = shift;
 	my $p2 = shift;
 	
-	return $self->{way}->{$p1}->{$p2};
+	return $dbh->loadWay($p1,$p2);
     }
     
-    sub XXXgetways {
+    sub getway {
+        my $self = shift;
+	my $p1 = shift;
+	my $p2 = shift;
+	
+	return $dbh->getWay($p1,$p2);
+    }
+    
+    sub getways {
         my $self = shift;
 	my $n = shift;
-	
-	my @ways = ();
-	for my $n1 (keys(%{$self->{way}->{$n}})) {
-	    push @ways,$self->{way}->{$n}->{$n1};
-	}
-	return @ways;
+	return @{$dbh->getWays($n)};
     }
     
-    sub XXXdist { 
+    sub dist { 
 	my $self = shift;
-	my $n1=shift;
-	my $n2=shift;
-	return undef unless defined($n1) && defined($n2);
-	return $self->{dist}->{$n1}->{$n2};
+        return $dbh->getDistance(@_);
     }
 }
 
