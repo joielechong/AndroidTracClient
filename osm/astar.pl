@@ -127,10 +127,15 @@ sub Astar {
 
 sub print_path {
     my $map = shift;
+    
+    open PP,">>route.log";
+    print PP "Route log:\n\n";
+    
     my @p1=@_;
-    print join(", ",@p1);
+    print join(", ",@p1),"\n";
+    print PP join(", ",@p1),"\n";
 #    print " ",$map->node($p1[0])->{length} if defined($map->node($p1[0])->{length});
-    print "\n";
+
     my $oldp;
     my $oldw;
     my $dir;
@@ -140,6 +145,7 @@ sub print_path {
         my $w;
 
 	print "$p -> ";
+	print PP "$p -> ";
 	my @ws = $map->getways($p);
 	if ($#ws == 0) {
 	    $w = $ws[0];
@@ -150,28 +156,40 @@ sub print_path {
 	}
 	if (defined($w)) {
 	    print $w,": ";
+	    print PP $w,": ";
             my $ww=$map->loadway($w);
 	    my $mwt = $ww->{tag};
 	    print $$mwt{name}," " if defined($$mwt{name});
 	    print $$mwt{highway}," " if defined($$mwt{highway});
 	    print $$mwt{maxspeed}," " if defined($$mwt{maxspeed});
 	    print $$mwt{ref}," " if defined($$mwt{ref});
+	    print PP $$mwt{name}," " if defined($$mwt{name});
+	    print PP $$mwt{highway}," " if defined($$mwt{highway});
+	    print PP $$mwt{maxspeed}," " if defined($$mwt{maxspeed});
+	    print PP $$mwt{ref}," " if defined($$mwt{ref});
             if (defined($oldp)) {
                 my $d = $map->dist($oldp,$p);
 	        if (defined($d)) {
                     $olddir = $dir;
                     $dir = $map->direction($oldp,$p);
 		    print "$dir $d ";
+		    print PP "$dir $d ";
 		    $totdist += $d;
 	        }
 	        print $totdist," ";
+	        print PP $totdist," ";
             }
             $oldw=$w;
-            print $map->findLocation($p);
+            my $locstr = $map->findLocation($p);
+            print $locstr;
+            print PP $locstr;
 	}
 	$oldp=$p;
 	print "\n";
+	print PP "\n";
     }
+    print PP "\n===============End of log ==================\n\n";
+    close PP;
 }
 
 my $new=0;
@@ -197,10 +215,8 @@ my $map = OSM::Map->new();
 my @files = ();
 if (defined($mapfile)) {
     $map->importOSMfile($mapfile);
-    $map->postprocess();
 } elsif (defined ($bbox)) {
     $map->importBbox($bbox);
-    $map->postprocess();
 } elsif (defined($directory)) {
     opendir(my $dh, $directory) || die "can't opendir $directory: $!";
     @files = grep { /map_.*\.osm$/ && -f "$directory/$_" } readdir($dh);
@@ -209,20 +225,19 @@ if (defined($mapfile)) {
     foreach my $f (@files) {
         $map->importOSMfile("$f");
     }
-    $map->postprocess();
 }
 
 unless ($dbonly) {
 ###huis school
-print_path($map,Astar($map,52.297277,4.862030,52.29334,4.85876));
-print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'foot'));
-print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'bicycle'));
-print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'car'));
-print_path($map,Astar($map,52.2973969,4.8620826,52.2935821,4.8593675,'car'));
-print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588));
-print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588,'foot'));
-print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588,'bicycle'));
-print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588,'car'));
+#print_path($map,Astar($map,52.297277,4.862030,52.29334,4.85876));
+#print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'foot'));
+#print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'bicycle'));
+#print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'car'));
+#print_path($map,Astar($map,52.2973969,4.8620826,52.2935821,4.8593675,'car'));
+#print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588));
+#print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588,'foot'));
+#print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588,'bicycle'));
+#print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588,'car'));
 
 ###Huis hockey
 #print_path($map,Astar($map,52.297275,4.8616077,52.2886,4.8508));
@@ -274,9 +289,9 @@ print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588,'car'));
 #print_path($map,Astar($map,52.087473,5.115715,52.2973969,4.8620826,'car'));
 
 ## ICT Barendrecht
-#print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'car'));
-#print_path($map,Astar($map,51.8503978,4.5091717,52.2973969,4.8620826,'car'));
-#print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'bicycle'));
+print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'car'));
+print_path($map,Astar($map,51.8503978,4.5091717,52.2973969,4.8620826,'car'));
+print_path($map,Astar($map,52.2973969,4.8620826,51.8503978,4.5091717,'bicycle'));
 
 ## Roquebrune
 #print_path($map,Astar($map,52.2973969,4.8620826,43.4046930,6.6792379,'car'));
@@ -284,3 +299,4 @@ print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588,'car'));
 ###Brussel
 #print_path($map,Astar($map,52.2973969,4.8620826,50.8417207,4.3832422,'car'));
 }
+$map->postprocess();

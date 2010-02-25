@@ -93,14 +93,14 @@
     
     sub distanceCoor {
         my ($self,$lat1,$lon1,$lat2,$lon2) = @_;
-        return $geo->distance('meter',$lon1,$lat1,$lon2,$lat2);
+        return $geo->distance('meter',$lon1,$lat1 => $lon2,$lat2);
     }
     
     sub distance {
         my ($self,$n1,$n2) = @_; 
 	my ($lat1,$lon1) = $dbh->getCoor($n1);
 	my ($lat2,$lon2) = $dbh->getCoor($n2);
-        return $geo->distance('meter',$lon1,$lat1=>$lon2,$lat2);
+        return $geo->distance('meter',$lon1,$lat1 => $lon2,$lat2);
     }
     
     sub inboundCoor {
@@ -283,7 +283,7 @@
         print "Postprocessing\n";
         my $rrr = $dbh->imcompleteRelations();
         foreach my $r (@$rrr) {
-            $self->importRelation($r,1);
+            $self->importRelation($r);
         }
         $dbh->do("DELETE FROM tag WHERE k IN ('created_by','source') or k like 'AND%' or k like '3dshapes%'");
         $dbh->do("DELETE FROM tag WHERE v IN ('0','no','NO','false','FALSE') AND k IN ('bridge','tunnel','oneway')");
@@ -395,7 +395,6 @@
 	}
 	my @bbox = ($minlon,$minlat,$maxlon,$maxlat);
 	$self->importBbox(join(",",@bbox));
-	$self->postprocess();
     }
     
     sub removetempnodes {
