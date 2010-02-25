@@ -324,7 +324,7 @@
     }    
     
     sub imcompleteRelations {
-        return $dbh->selectcol_arrayref("SELECT distinct id from member where (type='relation' and not ref in (select id from relation)) or (type='way' and not ref in (select id from way)) or (type='node' and not ref in (select id from node))");
+        return $dbh->selectcol_arrayref("SELECT distinct relation.id from relation,member where relation.processed and relation.id=member.id and ((type='relation' and not ref in (select id from relation)) or (type='way' and not ref in (select id from way)) or (type='node' and not ref in (select id from node)))");
     }
 
 }
