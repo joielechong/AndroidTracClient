@@ -126,7 +126,7 @@ sub Astar {
     print FAIL "----------------------------\nOpenset\n----------------------------\n";
     print FAIL Dumper \@openset;
     print FAIL "----------------------------\nClosedset\n----------------------------\n";
-    print FAIL Dumper \@closedset;
+    print FAIL Dumper \%closedset;
     print FAIL "----------------------------\nf\n----------------------------\n";
     print FAIL Dumper \@f;
     print FAIL "----------------------------\ng\n----------------------------\n";
