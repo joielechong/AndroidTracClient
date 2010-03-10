@@ -77,8 +77,8 @@
         $insertway   = $dbh->prepare("INSERT INTO way (id,version) VALUES (?,?)");
         $insertnd    = $dbh->prepare("INSERT INTO nd (id,seq,ref) VALUES (?,?,?)");
         $insertrel   = $dbh->prepare("INSERT INTO relation (id,version) VALUES (?,?)");
-        $insertmemb  = $dbh->prepare("INSERT INTO member (id,seq,type,ref,role) VALUES (?,?,?,?,?)");
-        $insertbound = $dbh->prepare("INSERT INTO bound (minlat,maxlat,minlon,maxlon) VALUES (?,?,?,?)");
+        $insertmemb  = $dbh->prepare("INSERT OR REPLACE INTO member (id,seq,type,ref,role) VALUES (?,?,?,?,?)");
+        $insertbound = $dbh->prepare("INSERT OR IGNORE INTO bound (minlat,maxlat,minlon,maxlon) VALUES (?,?,?,?)");
         $insertnb    = $dbh->prepare("INSERT INTO neighbor (id1,id2,way) VALUES (?,?,?)");
         
         $loadway     = $dbh->prepare("SELECT version FROM way where id=?");
@@ -324,7 +324,7 @@
     }    
     
     sub imcompleteRelations {
-        return $dbh->selectcol_arrayref("SELECT distinct relation.id from relation,member where relation.processed and relation.id=member.id and ((type='relation' and not ref in (select id from relation)) or (type='way' and not ref in (select id from way)) or (type='node' and not ref in (select id from node)))");
+        return $dbh->selectcol_arrayref("SELECT * FROM incomplete_relations");
     }
 
 }
