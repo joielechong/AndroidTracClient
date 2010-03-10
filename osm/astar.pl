@@ -122,6 +122,22 @@ sub Astar {
     }
     
 #     return failure
+    open FAIL,">astar.err.log";
+    print FAIL "----------------------------\nOpenset\n----------------------------\n";
+    print FAIL Dumper \@openset;
+    print FAIL "----------------------------\nClosedset\n----------------------------\n";
+    print FAIL Dumper \@closedset;
+    print FAIL "----------------------------\nf\n----------------------------\n";
+    print FAIL Dumper \@f;
+    print FAIL "----------------------------\ng\n----------------------------\n";
+    print FAIL Dumper \@g;
+    print FAIL "----------------------------\nh\n----------------------------\n";
+    print FAIL Dumper \@h;
+    print FAIL "----------------------------\nto\n----------------------------\n";
+    print FAIL Dumper \@to;
+    print FAIL "----------------------------\ngl\n----------------------------\n";
+    print FAIL Dumper \@gl;
+    close FAIL;
     return "foutje";
 }
 
