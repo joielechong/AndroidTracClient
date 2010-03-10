@@ -133,7 +133,7 @@
                 }
             }
         } elsif ($xmlname eq 'way') {
-            if (exists($elem->{tag}->{highway}) || (exists($elem->{tag}->{route}) and $elem->{tag}->{route} eq "ferry")) {
+            if (exists($elem->{tag}->{highway}) || exists($elem->{tag}->{boundary}) || (exists($elem->{tag}->{route}) and $elem->{tag}->{route} eq "ferry")  || (exists($elem->{tag}->{natural}) and $elem->{tag}->{natural} eq "coastline")) {
                 my $version = -1;
                 if (my @row = $dbh->checkWay($id)) {
                     $version = $row[0];
@@ -289,8 +289,8 @@
         $dbh->do("DELETE FROM tag WHERE v IN ('0','no','NO','false','FALSE') AND k IN ('bridge','tunnel','oneway')");
         $dbh->do("UPDATE tag set v='yes' WHERE v in ('1','true','TRUE') AND k IN ('bridge','tunnel','oneway')");
         $dbh->do("UPDATE tag set v='rev' WHERE v = '-1' and k='oneway'");
-	$dbh->do("INSERT INTO neighbor (way,id1,id2) SELECT DISTINCT way,id1,id2 FROM nb");
-        $dbh->do("INSERT INTO admin (id,name,level,minlat,maxlat,minlon,maxlon) SELECT id,name,level,minlat,maxlat,minlon,maxlon FROM admintmp WHERE NOT id in (SELECT id from admin)");
+	$dbh->do("INSERT OR REPLACE INTO neighbor (way,id1,id2) SELECT DISTINCT way,id1,id2 FROM nb");
+        $dbh->do("INSERT OR REPLACE INTO admin (id,name,level,minlat,maxlat,minlon,maxlon) SELECT id,name,level,minlat,maxlat,minlon,maxlon FROM admintmp");
         $dbh->do("DELETE FROM bucket WHERE NOT node in (SELECT ref FROM nd)");
 #	$dbh->do("UPDATE node set processed=1 WHERE NOT processed");
 #	$dbh->do("UPDATE way set processed=1 WHERE NOT processed");
