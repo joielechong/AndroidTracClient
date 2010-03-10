@@ -92,10 +92,32 @@ sub Astar {
 		$closedset{$xs} = $i;
 #	        print "close $xs ".$f_score{$xs}."\n";                
 		for my $y (@{$map->neighbours($xs)}) {
+                    my $xs1 = $xs;
+                    my $prevnode = ${$to[$i]}{$xs1};
 		    $map->fetchNode($y) unless $map->inboundNode($y);
 		    next if (defined($closedset{$y}));
-                    my $prevnode = ${$to[$i]}{$xs};
-		    my $tentative_g_score = ${$g[$i]}{$xs} + ($i==1?$map->cost($xs,$y,$prevnode):$map->cost($y,$xs,$prevnode));
+                    my @ynb = @{$map->neighbours($y)};
+                    while ($#ynb == 1) {
+#                        print "Proceeding on $y from $xs1".(defined($prevnode) ?" and $prevnode":"")."\n";
+                        ${$g[$i]}{$y} = ${$g[$i]}{$xs1} + ($i==1?$map->cost($xs1,$y,$prevnode): $map->cost($y,$xs1,$prevnode));
+                        if ($ynb[0] == $xs1) {
+                            ${$to[$i]}{$y} = $xs1;
+                            $prevnode=$xs1;
+                            $xs1=$y;
+                            $y = $ynb[1];
+                        } else {
+                            ${$to[$i]}{$y} = $xs1;
+                            $prevnode=$xs1;
+                            $xs1=$y;
+                            $y = $ynb[0];
+                        }
+                        $closedset{$xs1}=$i;
+  		        $map->fetchNode($y) unless $map->inboundNode($y);
+		        last if (defined($closedset{$y}));
+                        @ynb = @{$map->neighbours($y)};
+                    }
+                    next if (defined($closedset{$y}));
+		    my $tentative_g_score = ${$g[$i]}{$xs1} + ($i==1?$map->cost($xs1,$y,$prevnode):$map->cost($y,$xs1,$prevnode));
 		    my $tentative_is_better;
 		    unless (defined(${$openset[$i]}{$y})) {
 			${$openset[$i]}{$y} = 1 ;
@@ -106,7 +128,7 @@ sub Astar {
 			$tentative_is_better = 0;
 		    }
 		    if ($tentative_is_better) {
-			${$to[$i]}{$y} = $xs;
+			${$to[$i]}{$y} = $xs1;
 			${$g[$i]}{$y} = $tentative_g_score;
 			${$h[$i]}{$y} = $map->calc_h_score($y,$goal);
 			${$d[$i]}{$y} = $map->distance($y,$goal);
@@ -138,7 +160,7 @@ sub Astar {
     print FAIL "----------------------------\ngl\n----------------------------\n";
     print FAIL Dumper \@gl;
     close FAIL;
-    return "foutje";
+    die "foutje";
 }
 
 sub print_path {
@@ -293,9 +315,9 @@ unless ($dbonly) {
 #print_path($map,Astar($map,52.4184,4.8724,52.2973969,4.8620826,'bicycle'));
 
 ## Croon Delft
-#print_path($map,Astar($map,52.2973969,4.8620826,52.27909,4.86404,'car'));
-#print_path($map,Astar($map,52.27909,4.86404,51.9972199,4.3855367,'car'));
-print_path($map,Astar($map,52.2973969,4.8620826,51.9972199,4.3855367,'car'));
+print_path($map,Astar($map,52.2973969,4.8620826,52.27909,4.86404,'car'));
+print_path($map,Astar($map,52.27909,4.86404,51.9972199,4.3855367,'car'));
+#print_path($map,Astar($map,52.2973969,4.8620826,51.9972199,4.3855367,'car'));
 #print_path($map,Astar($map,51.9972199,4.3855367,52.2973969,4.8620826,'car'));
 #print_path($map,Astar($map,52.2973969,4.8620826,51.9972199,4.3855367,'bicycle'));
 #print_path($map,Astar($map,52.2973969,4.8620826,51.9972199,4.3855367));
