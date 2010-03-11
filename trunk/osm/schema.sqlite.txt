@@ -7,6 +7,7 @@ DROP VIEW admin1;
 DROP VIEW admin2;
 DROP VIEW usable_way;
 DROP VIEW nb;
+DROP VIEW incomplete_relations;
 
 DROP TABLE admin;
 DROP TABLE tag;
@@ -42,7 +43,7 @@ CREATE VIEW admin2 as select member.id,min(lat) as minlat,max(lat) as maxlat,min
 CREATE VIEW admintmp as select admin1.*,minlat,maxlat,minlon,maxlon from admin1,admin2 where admin1.id=admin2.id;
 CREATE VIEW usable_way as select way.* from way,tag where way.id=tag.id and (k='highway' or (k='route' and v='ferry'));
 CREATE VIEW nb as select nd.id as way,ref as id1,(select nd1.ref from nd as nd1 where nd.id=nd1.id and nd1.seq=(nd.seq+1)) as id2 from nd,usable_way as u where nd.id=u.id and not u.processed and not id2 is null;
-CREATE VIEW counts as SELECT (select count(*) from node) as nodes,(select count(*) from way) as ways,(select count(*) from relation) as relations,(select count(*) from bound) as bounds;
+CREATE VIEW counts as SELECT (select count(*) from node) as nodes,(select count(*) from way) as ways,(select count(*) from relation) as relations,(select count(*) from bound) as bounds, (select count(*) from tag) as tags;
 CREATE VIEW incomplete_relations AS SELECT distinct relation.id FROM relation,tag,member WHERE  relation.processed and relation.id=tag.id and tag.k='type' and tag.v in ('multiploygon','boundary')  and relation.id=member.id AND ((type='relation' AND  not ref in (select id from relation)) or (type='way' and not ref in (select id from way)) or (type='node' and not ref in (select id from node)));
 
 CREATE INDEX nd_ref ON nd(ref);
