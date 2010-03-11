@@ -167,7 +167,12 @@
     
     sub insertTag {
         my ($self,$id,$k,$v) = @_;
-	$inserttag->execute($id,$k,$v);
+	if ($k eq 'oneway' or $k eq 'bridge' or $k eq 'tunnel') {
+	    return if ($v eq '0' or $v eq 'no' or $v eq 'NO');
+	    $v = 'yes' if ($v eq '1' or $v eq 'true' or $v eq 'TRUE' or $v eq 'YES');
+	    $v = 'rev' if ($v eq '-1' and $k eq 'oneway');
+	}
+	$inserttag->execute($id,$k,$v) unless ($k =~ /^source/ or $k eq 'converted_by' or $k eq 'created_by' or $k =~ /^3dshapes/ or $k eq 'time' or $ke eq 'timestamp' or $k eq 'user' or $k =~ /^AND/ or $k =~ /^note/ or $k =~ /^openGeoDB/ or $k =~ /^opengeodb/ or $k eq 'fixme' or $k eq 'FIXME' or $k eq 'todo' or $k eq 'TODO' );
     }
     
     sub inboundNode {
