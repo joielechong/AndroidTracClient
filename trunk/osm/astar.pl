@@ -355,4 +355,4 @@ print_path($map,Astar($map,52.27909,4.86404,51.9972199,4.3855367,'car'));
 ###Brussel
 #print_path($map,Astar($map,52.2973969,4.8620826,50.8417207,4.3832422,'car'));
 }
-#$map->postprocess();
+$map->postprocess();
