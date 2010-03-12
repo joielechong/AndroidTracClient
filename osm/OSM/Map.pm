@@ -96,6 +96,11 @@
         return $geo->distance('meter',$lon1,$lat1 => $lon2,$lat2);
     }
     
+    sub getCoor {
+	my ($self,$n) = @_;
+	return $dbh->getCoor($n);
+    }
+    
     sub distance {
         my ($self,$n1,$n2) = @_; 
 	my ($lat1,$lon1) = $dbh->getCoor($n1);
