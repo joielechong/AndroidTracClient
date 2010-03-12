@@ -225,9 +225,13 @@
 	my $self = shift;
 	
 	$getcounts->execute();
-	return $getcounts->fetchrow_array();
+	my @counts = $getcounts->fetchrow_array();
+	foreach (@counts) {
+	    $_ = 0 unless defined;
+	}
+	return @counts;
     }
-    
+
     sub insertNode {
         my $self = shift;
         $insertnode->execute(@_);
