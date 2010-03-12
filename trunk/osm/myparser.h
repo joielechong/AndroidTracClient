@@ -8,6 +8,8 @@ class MySaxParser : public xmlpp::SaxParser
  public:
   MySaxParser();
   virtual ~MySaxParser();
+
+  int getDepth();
   
  protected:
   //overrides:
@@ -21,6 +23,9 @@ class MySaxParser : public xmlpp::SaxParser
   virtual void on_warning(const Glib::ustring& text);
   virtual void on_error(const Glib::ustring& text);
   virtual void on_fatal_error(const Glib::ustring& text);
+
+ private:
+  short depth;
 };
 
 
