@@ -5,6 +5,7 @@
 MySaxParser::MySaxParser()
   : xmlpp::SaxParser()
 {
+  depth = 0;
 }
 
 MySaxParser::~MySaxParser()
@@ -24,18 +25,20 @@ void MySaxParser::on_end_document()
 void MySaxParser::on_start_element(const Glib::ustring& name,
                                    const AttributeList& attributes)
 {
-  std::cout << "node name=" << name << std::endl;
+  depth++;
+  std::cout << "node: name=" << name << "(" << depth << ")" << std::endl;
   
   // Print attributes:
   for(xmlpp::SaxParser::AttributeList::const_iterator iter = attributes.begin(); iter != attributes.end(); ++iter)
     {
-      std::cout << "  Attribute " << iter->name << " = " << iter->value << std::endl;
+      std::cout << "  Attribute: " << iter->name << " = " << iter->value << std::endl;
     }
 }
 
 void MySaxParser::on_end_element(const Glib::ustring& name)
 {
   std::cout << "on_end_element()" << std::endl;
+  depth--;
 }
 
 void MySaxParser::on_characters(const Glib::ustring& text)

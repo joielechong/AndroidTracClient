@@ -20,7 +20,7 @@ main(int argc, char* argv[])
   try
     {
       MySaxParser parser;
-      parser.set_substitute_entities(true); //
+      //      parser.set_substitute_entities(true); //
       parser.parse_file(filepath);
     }
   catch(const xmlpp::exception& ex)
