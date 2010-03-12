@@ -56,6 +56,7 @@
     my $loadtags;
     my $loadmemb;
     my $getways;
+    my $boundcnt;
     
     sub initialize {
         my $self = shift;
@@ -99,6 +100,7 @@
 	$getway      = $dbh->prepare("SELECT way FROM neighbor AS nb, (SELECT ? AS id1,? AS id2) AS inp WHERE (nb.id1=inp.id1 AND nb.id2=inp.id2) OR (nb.id1=inp.id2 AND nb.id2=inp.id1)");
 	$getways     = $dbh->prepare("SELECT way FROM neighbor AS nb, (SELECT ? AS id) AS inp WHERE id1=id  OR id2=id");
 	$storedist   = $dbh->prepare("UPDATE neighbor set distance=? WHERE id1=? AND id2=?");
+	$boundcnt    = $dbh->prepare("SELECT count(*) FROM bound");
  
 #        $dbh->do("DELETE FROM relation WHERE NOT processed");
 #        $dbh->do("DELETE FROM way WHERE NOT processed");
@@ -175,8 +177,18 @@
 	$inserttag->execute($id,$k,$v) unless ($k =~ /^source/ or $k eq 'converted_by' or $k eq 'created_by' or $k =~ /^3dshapes/ or $k eq 'time' or $k eq 'timestamp' or $k eq 'user' or $k =~ /^AND/ or $k =~ /^note/ or $k =~ /^openGeoDB/ or $k =~ /^opengeodb/ or $k eq 'fixme' or $k eq 'FIXME' or $k eq 'todo' or $k eq 'TODO' );
     }
     
+    sub boundCount {
+	my $self = shift;
+
+	$boundcnt->execute();
+	my @count = $boundcnt->fetchrow_array();
+	return $count[0];
+    }
+    
     sub inboundNode {
         my ($self,$node) = @_;
+
+	return 1 if $self->boundCount() == 0;
 	$inboundnd->execute($node);
         if (my @row = $inboundnd->fetchrow_array()) {
              return $row[0];
@@ -186,7 +198,11 @@
     
     sub inboundCoor {
         my $self = shift;
-        $inboundcoor->execute(@_);
+	my $lat = shift;
+	my $lon = shift;
+
+	return 1 if $self->boundCount() == 0;
+        $inboundcoor->execute($lat,$lon);
         if (my @row = $inboundcoor->fetchrow_array()) {
              return $row[0];
         }
@@ -220,7 +236,7 @@
     	$getcoor->execute($node);
 	return $getcoor->fetchrow_array();
     }
-    
+
     sub getCounts {
 	my $self = shift;
 	
