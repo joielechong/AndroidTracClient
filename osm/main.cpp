@@ -7,6 +7,8 @@
 
 #include "myparser.h"
 
+#define BUFFERSIZE (1024)
+
 int
 main(int argc, char* argv[])
 {
@@ -34,11 +36,11 @@ main(int argc, char* argv[])
     //std::cout << "Incremental SAX Parser:" << std:endl;
     
     std::ifstream is(filepath.c_str());
-    char buffer[64];
+    char buffer[BUFFERSIZE];
     
     MySaxParser parser;
     do {
-      is.read(buffer, 63);
+      is.read(buffer, (BUFFERSIZE-1));
       Glib::ustring input(buffer, is.gcount());
       
       parser.parse_chunk(input);
