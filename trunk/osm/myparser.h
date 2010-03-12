@@ -5,11 +5,11 @@
 
 class MySaxParser : public xmlpp::SaxParser
 {
-public:
+ public:
   MySaxParser();
   virtual ~MySaxParser();
-
-protected:
+  
+ protected:
   //overrides:
   virtual void on_start_document();
   virtual void on_end_document();
