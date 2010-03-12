@@ -73,7 +73,7 @@
         $delrel  = $dbh->prepare("DELETE from relation where id =?");
         $delway  = $dbh->prepare("DELETE from way where id =?");
 
-        $insertnode  = $dbh->prepare("INSERT INTO node (id,lat,lon,version) VALUES (?,?,?,?)");
+        $insertnode  = $dbh->prepare("INSERT INTO node (id,lat,lon,version,x,y) VALUES (?,?,?,?,?,?)");
         $inserttag   = $dbh->prepare("INSERT OR REPLACE INTO tag (id,k,v) VALUES (?,?,?)");
         $insertway   = $dbh->prepare("INSERT INTO way (id,version) VALUES (?,?)");
         $insertnd    = $dbh->prepare("INSERT INTO nd (id,seq,ref) VALUES (?,?,?)");
@@ -250,7 +250,7 @@
 
     sub insertNode {
         my $self = shift;
-        $insertnode->execute(@_);
+        $insertnode->execute(@_,round((lat+90)*20),round((lon+180)*20));
     }
     
     sub insertWay {
