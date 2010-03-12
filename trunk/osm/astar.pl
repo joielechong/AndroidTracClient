@@ -136,10 +136,11 @@ sub Astar {
 #			my $w = $map->getway($xs,$y);
 #			print "$i $xs $y ",${$g[$i]}{$y}," ",${$h[$i]}{$y}," ",${$f[$i]}{$y},"\n" if $i==1;
 #			print "$i $y $xs ",${$g[$i]}{$y}," ",${$h[$i]}{$y}," ",${$f[$i]}{$y},"\n" if $i==2;
-#		        print "openset=",join(", ",keys(%openset)),"\n";
 		    }
 		}
 	    }
+#            print "$i xs=$xs openset=",join(", ",keys(%{$openset[$i]})),"\n";
+#	     dump_openset($map,$openset[$i]);
 	}
     }
     
@@ -161,6 +162,21 @@ sub Astar {
     print FAIL Dumper \@gl;
     close FAIL;
     die "foutje";
+}
+
+my $filnum=0;
+sub dump_openset {
+	my $map = shift;
+	my $openset = shift;
+	
+	my $f=$filnum++;
+	$filnum %=10;
+	if (open UIT,">astardmp-$filnum.csv") {
+	        foreach my $o (keys(%{$openset})) {
+	            printf UIT "%9.5f\t%9.5f\t%d\n",$map->getCoor($o),$o;
+	    }
+	    close UIT;
+	}
 }
 
 sub print_path {
@@ -339,4 +355,4 @@ print_path($map,Astar($map,52.27909,4.86404,51.9972199,4.3855367,'car'));
 ###Brussel
 #print_path($map,Astar($map,52.2973969,4.8620826,50.8417207,4.3832422,'car'));
 }
-$map->postprocess();
+#$map->postprocess();
