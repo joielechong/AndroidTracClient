@@ -74,9 +74,7 @@ sub Astar {
     $gl[1] = $goal;
     $gl[2] = $start;
     
-    my @dd=(0,0,0);
-
-    while (keys(%startset) != 0 or keys(%goalset) != 0) {
+   while (keys(%startset) != 0 or keys(%goalset) != 0) {
 	for (my $i=1;$i<=2;$i++) {
 	    my $goal = $gl[$i];
 	    my $xs = undef;
@@ -141,8 +139,7 @@ sub Astar {
 		    }
 		}
 	    }
-	    $dd[$i] = ${$d[$i]}{$xs};
-	    print "\r",$dd[1]+$dd[2];
+	    print "\r$xs ",${$d[$i]}{$xs};
 #            print "$i xs=$xs openset=",join(", ",keys(%{$openset[$i]})),"\n";
 #	     dump_openset($map,$openset[$i]);
 	}
