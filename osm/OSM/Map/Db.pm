@@ -250,7 +250,9 @@
 
     sub insertNode {
         my ($self,$id,$lat,$lon,$version) = @_;
-        $insertnode->execute($id,$lat,$lon,$version,round(($lat+90)*20),round(($lon+180)*20));
+	my $x = sprintf("%d",($lat+90)*20);
+	my $y = sprintf("%d",($lon+180)*20);
+        $insertnode->execute($id,$lat,$lon,$version,$x,$y);
     }
     
     sub insertWay {
