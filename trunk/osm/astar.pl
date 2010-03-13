@@ -134,12 +134,12 @@ sub Astar {
 			${$d[$i]}{$y} = $map->distance($y,$goal);
 			${$f[$i]}{$y} = ${$g[$i]}{$y}+${$h[$i]}{$y};
 #			my $w = $map->getway($xs,$y);
-#			print "$i $xs $y ",${$g[$i]}{$y}," ",${$h[$i]}{$y}," ",${$f[$i]}{$y},"\n" if $i==1;
-#			print "$i $y $xs ",${$g[$i]}{$y}," ",${$h[$i]}{$y}," ",${$f[$i]}{$y},"\n" if $i==2;
+			print "$i $xs $y ",${$g[$i]}{$y}," ",${$h[$i]}{$y}," ",${$f[$i]}{$y},"\n" if $i==1;
+			print "$i $y $xs ",${$g[$i]}{$y}," ",${$h[$i]}{$y}," ",${$f[$i]}{$y},"\n" if $i==2;
 		    }
 		}
 	    }
-	    print "\r$xs ",${$d[$i]}{$xs};
+	    print "$xs ",${$d[$i]}{$xs},"\n";
 #            print "$i xs=$xs openset=",join(", ",keys(%{$openset[$i]})),"\n";
 #	     dump_openset($map,$openset[$i]);
 	}
