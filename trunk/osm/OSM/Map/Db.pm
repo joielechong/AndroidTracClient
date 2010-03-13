@@ -249,8 +249,8 @@
     }
 
     sub insertNode {
-        my $self = shift;
-        $insertnode->execute(@_,round((lat+90)*20),round((lon+180)*20));
+        my ($self,$id,$lat,$lon,$version) = @_;
+        $insertnode->execute($id,$lat,$lon,$version,round(($lat+90)*20),round(($lon+180)*20));
     }
     
     sub insertWay {
