@@ -95,7 +95,7 @@
 	$getcoor     = $dbh->prepare("SELECT lat,lon FROM node WHERE id=?");
 	$getnb       = $dbh->prepare("SELECT id1,id2 FROM neighbor, (SELECT ? AS input) AS x WHERE input=id1 OR input=id2");
 	$latlonarr   = $dbh->prepare("SELECT lat,lon FROM member,nd,node WHERE member.id=? AND member.type='way' AND member.ref=nd.id AND nd.ref=node.id ORDER BY member.seq,nd.seq");
-        $loadbucket  = $dbh->prepare("SELECT b1.node,lat,lon FROM bucket AS b2,bucket AS b1,node WHERE b2.node=? AND b2.x=b1.x AND b2.y=b1.y AND b1.node != b2.node AND b1.node=id");
+        $loadbucket  = $dbh->prepare("SELECT b1.id,b1.lat,b1.lon FROM node AS b2,node AS b1 WHERE b2.id=? AND b2.x=b1.x AND b2.y=b1.y AND b1.id != b2.id");
 	$getdist     = $dbh->prepare("SELECT distance FROM neighbor AS nb, (SELECT ? AS id1,? AS id2) AS inp WHERE (nb.id1=inp.id1 AND nb.id2=inp.id2) OR (nb.id1=inp.id2 AND nb.id2=inp.id1)");
 	$getway      = $dbh->prepare("SELECT way FROM neighbor AS nb, (SELECT ? AS id1,? AS id2) AS inp WHERE (nb.id1=inp.id1 AND nb.id2=inp.id2) OR (nb.id1=inp.id2 AND nb.id2=inp.id1)");
 	$getways     = $dbh->prepare("SELECT way FROM neighbor AS nb, (SELECT ? AS id) AS inp WHERE id1=id  OR id2=id");
