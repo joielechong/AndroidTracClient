@@ -25,6 +25,13 @@ void Element::store(sqlite3_connection *con) {
   cout << "Element id = " << _id << " version = " << _version << endl;
 }
 
+void Element::printTags() {
+  map(string,string::iterator it;
+  
+  for (it=_tags.begin();it != _tags.end(); it++) 
+    cout << "   " << (*it).first << " => " << (*it).second << endl;
+}
+
 //Way
 
 
@@ -38,6 +45,7 @@ void Way::addNd(long ref) {
 
 void Way::store(sqlite3_connection *con) {
   cout << "Way id = " << _id << " version = " << _version << endl;
+  printTags();
 }
 
 
@@ -54,6 +62,7 @@ void Relation::addMember(long ref,string type,string role) {
 
 void Relation::store(sqlite3_connection *con) {
   cout << "Relation id = " << _id << " version = " << _version << endl;
+  printTags();
 }
 
 
@@ -65,6 +74,7 @@ Node::~Node() {}
 
 void Node::store(sqlite3_connection *con) {
   cout << "Node id = " << _id << " version = " << _version << endl;
+  printTags();
 }
 
 Nd::Nd(long ref) : _ref(ref) {}
