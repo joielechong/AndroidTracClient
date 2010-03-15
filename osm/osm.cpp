@@ -1,6 +1,9 @@
 #include "osm.h"
+#include <sqlite3x.hpp>
 
 using namespace osm;
+using namespace std;
+using namespace sqlite3x;
 
 Element::Element() {}
 
@@ -27,7 +30,7 @@ void Way::addNd(long ref) {
 }
 
 void Way::store(sqlite3_connection con) {
-  std::cout << "Way id = " << _id << " version = " << _version << std::endl;
+  cout << "Way id = " << _id << " version = " << _version << endl;
 }
 
 
@@ -40,8 +43,9 @@ void Relation::addMember(long ref,string type,string role) {
 	Member mem(ref,type,role);
 	_members.push_back(mem);
 }
+
 void Relation::store(sqlite3_connection con) {
-  std::cout << "Relation id = " << _id << " version = " << _version << std::endl;
+  cout << "Relation id = " << _id << " version = " << _version << endl;
 }
 
 
@@ -51,5 +55,5 @@ void Relation::store(sqlite3_connection con) {
 Node::Node() : Element() {}
 
 void Node::store(sqlite3_connection con) {
-  std::cout << "Node id = " << _id << " version = " << _version << std::endl;
+  cout << "Node id = " << _id << " version = " << _version << endl;
 }
