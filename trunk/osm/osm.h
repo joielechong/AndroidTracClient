@@ -4,8 +4,6 @@
 #include <string>
 #include <vector>
 
-using namespace std;
-
 class Tag {
 }
 
@@ -14,7 +12,7 @@ class Element {
 		Element(long id,int version);
 		~Element();
 		
-		void addTag(string k,string v);
+		void addTag(std::string k,std::string v);
 
 	protected:
 		long _id;
@@ -25,7 +23,7 @@ class Element {
 class Way : Element {
 }
 
-class Relation : Elelement {
+class Relation : Element {
 }
 
 class Node : Element {
