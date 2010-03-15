@@ -1,6 +1,7 @@
 #include "myparser.h"
 #include <iostream>
 #include "osm.h"
+#include <string>
 
 MySaxParser::MySaxParser() : xmlpp::SaxParser() {
   depth = 0;
