@@ -62,4 +62,11 @@ Node::~Node() {}
 void Node::store(sqlite3_connection *con) {
   cout << "Node id = " << _id << " version = " << _version << endl;
 }
+
+Nd::Nd(long ref) : _ref(ref) {}
+Nd::~Nd() {}
+
+Member::Member(long ref,string type, string role) : _ref(ref),_type(type),_role(role) {}
+Member::~Member() {}
+
 }
