@@ -1,5 +1,6 @@
 #include "osm.h"
 #include <sqlite3x.hpp>
+#include <stdlib.h>
 
 using namespace osm;
 using namespace std;
