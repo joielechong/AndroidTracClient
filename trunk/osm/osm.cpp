@@ -2,7 +2,7 @@
 #include <sqlite3x.hpp>
 #include <stdlib.h>
 
-using namespace osm;
+namespace osm {
 using namespace std;
 using namespace sqlite3x;
 
@@ -57,4 +57,5 @@ Node::Node() : Element() {}
 
 void Node::store(sqlite3_connection *con) {
   cout << "Node id = " << _id << " version = " << _version << endl;
+}
 }
