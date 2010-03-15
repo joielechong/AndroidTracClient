@@ -46,7 +46,7 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
 		else if (iter->name == "version") 
 		  elem->setVersion(iter->value);
 	  } else if (depth == 3) {
-          if (name="tag") {
+          if (name=="tag") {
 	        if (iter->name == "k")
 		      k = iter->value;
 		    else if (iter->name == "v")
