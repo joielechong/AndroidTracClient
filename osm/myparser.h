@@ -1,5 +1,5 @@
-#ifndef _MYPARSER_H
-#define _MYPARSER_H
+#ifndef _OSM_MYPARSER_H
+#define _OSM_MYPARSER_H
 
 #include <libxml++/libxml++.h>
 
@@ -27,6 +27,5 @@ class MySaxParser : public xmlpp::SaxParser
  private:
   short depth;
 };
-
 
 #endif //_MYPARSER_H
