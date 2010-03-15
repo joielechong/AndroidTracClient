@@ -52,10 +52,10 @@ int main(int argc, char* argv[])
   try {
     sqlite3_connection sql(dbname);
 	ifstream schema;
-	char regel[256];
+	char regel[2048];
 	schema.open("schema.sqlite.txt");
 	while (schema.good()) {
-	    schema.getline(regel,255);
+	    schema.getline(regel,2047);
 		cout << regel << endl;
 		if (strncmp(regel,"CREATE",6)==0) {
   		   sql.executenonquery(regel);
