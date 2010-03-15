@@ -52,7 +52,7 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
 		    else if (iter->name == "v")
 		      v = iter->value;
 	      } else if (name=="nd" and iter->name == "ref") 
-		      elem->addNd(atol(iter->value.c_str()));
+		      elem->addNd(iter->value);
 	  }
   }
   if (depth == 3 and name == "tag" and elem != NULL)
