@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
 	schema.open("schema.sqlite.txt",ifstream::in);
 	while (schema.good()) {
 	    schema >> regel;
-		cout <<regel;
+		cout <<regel << endl;
 	}
 	schema.close();
   } catch (const exception &ex) {
