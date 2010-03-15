@@ -1,6 +1,6 @@
-#include "osm.h"
 #include "myparser.h"
 #include <iostream>
+#include "osm.h"
 
 MySaxParser::MySaxParser()
   : xmlpp::SaxParser()
