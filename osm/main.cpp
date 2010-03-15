@@ -56,7 +56,9 @@ int main(int argc, char* argv[])
 	while (schema.good()) {
 	    schema.getline(regel,255);
 		cout << regel << endl;
-		sql.executenonquery(regel);
+		if (strncmp(regel,"CREATE",6)==0) {
+  		   sql.executenonquery(regel);
+		}
 	}
 	schema.close();
   } catch (const exception &ex) {
