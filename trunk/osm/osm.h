@@ -17,7 +17,7 @@ class Element {
 	protected:
 		long _id;
 		int	_version;
-		vector<Tag> _tags;
+		std::vector<Tag> _tags;
 }
 
 class Way : Element {
