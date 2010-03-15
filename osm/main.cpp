@@ -2,6 +2,8 @@
 #include <config.h>
 #endif
 
+#include <sqlite3.h>
+
 #include <fstream>
 #include <iostream>
 
@@ -13,6 +15,7 @@ int
 main(int argc, char* argv[])
 {
   std::string filepath;
+  std::cout << "argc = " << argc << std::endl;
   if(argc > 1 )
     filepath = argv[1]; //Allow the user to specify a different XML file to parse.
   else
