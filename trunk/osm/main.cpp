@@ -23,7 +23,11 @@ main(int argc, char* argv[])
     {
       MySaxParser parser;
       //      parser.set_substitute_entities(true); //
-      parser.parse_file(filepath);
+	  if (filepath == "-") {
+	    parser.parse_stream(cin);
+	  } else {
+		parser.parse_file(filepath);
+	  }
     }
   catch(const xmlpp::exception& ex)
     {
