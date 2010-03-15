@@ -48,6 +48,9 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
 
 void MySaxParser::on_end_element(const Glib::ustring& name) {
   std::cout << "on_end_element()" << std::endl;
+  if (depth == 2) {
+     elem->store(_con);
+  }
   depth--;
   
 }
@@ -70,4 +73,8 @@ void MySaxParser::on_error(const Glib::ustring& text) {
 
 void MySaxParser::on_fatal_error(const Glib::ustring& text) {
   std::cout << "on_fatal_error(): " << text << std::endl;
+}
+
+void MySaxParser::setDBconn(sqlite3x::sqlite3_connection con) {
+  _con = con;
 }

@@ -12,11 +12,11 @@ void Element::addTag(string k,string v) {
 }
 
 void Element::setId(string id) {
-  _id = id;
+  _id = atol(id);
 }
 
 void Element::setVersion(string version) {
-  _version = version;
+  _version = atol(version);
 }
 
 //Way

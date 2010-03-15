@@ -4,6 +4,8 @@
 #include <libxml++/libxml++.h>
 
 #include "osm.h"
+#include <sqlite3x.hpp>
+
 
 class MySaxParser : public xmlpp::SaxParser
 {
@@ -26,9 +28,12 @@ class MySaxParser : public xmlpp::SaxParser
   virtual void on_error(const Glib::ustring& text);
   virtual void on_fatal_error(const Glib::ustring& text);
   
+  void setDBconn(sqlite3x::sqlite3_connection con);
+  
  private:
   short depth;
   osm::Element *elem;
+  sqlite3x::sqlite3_connection _con;
 };
 
 #endif //_MYPARSER_H
