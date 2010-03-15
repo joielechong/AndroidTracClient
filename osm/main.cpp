@@ -52,10 +52,10 @@ int main(int argc, char* argv[])
     sqlite3_connection sql(dbname);
 	ifstream schema;
 	string regel;
-	schema.open("schema.sqlite.txt",ifstream::in);
+	schema.open("schema.sqlite.txt");
 	while (schema.good()) {
-	    schema >> regel;
-		cout <<regel << endl;
+	    schema.getline(regel,255);
+		cout << regel << endl;
 	}
 	schema.close();
   } catch (const exception &ex) {
