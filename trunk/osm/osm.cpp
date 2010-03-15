@@ -46,6 +46,11 @@ void Way::addNd(long ref) {
 void Way::store(sqlite3_connection *con) {
   cout << "Way id = " << _id << " version = " << _version << endl;
   printTags();
+  
+  int i;
+  for (i=0;i<_nds.size();i++)
+    cout << "Node["<<i<<"]" = "<< _nds[i] <<"endl;
+  
 }
 
 
