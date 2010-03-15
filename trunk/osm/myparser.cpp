@@ -27,7 +27,7 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
 	} else if (name == "way") {
 	  elem = new osm::Way();
 	} else if (name == "relation") {
-	  elem = new osm::Releation();
+	  elem = new osm::Relation();
 	} else {
 	// throw an exception
 	}
