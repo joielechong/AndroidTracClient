@@ -51,7 +51,7 @@ void MySaxParser::on_end_element(const Glib::ustring& name) {
   std::cout << "on_end_element()" << std::endl;
   if (depth == 2 && elem != NULL) {
      elem->store(_con);
-	 delete [] elem;
+	 delete *elem;
 	 elem = NULL;
   }
   depth--;
