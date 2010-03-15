@@ -2,6 +2,7 @@
 #define _OSM_H
 
 #include <vector>
+#include <map>
 #include <string>
 
 namespace osm {
