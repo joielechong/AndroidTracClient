@@ -13,11 +13,11 @@ void Element::addTag(string k,string v) {
 }
 
 void Element::setId(string id) {
-  _id = atol(id);
+  _id = atol(id.c_str());
 }
 
 void Element::setVersion(string version) {
-  _version = atol(version);
+  _version = atol(version.c_str());
 }
 
 //Way
