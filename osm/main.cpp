@@ -48,6 +48,8 @@ int main(int argc, char* argv[])
 
   // Parse the entire document in one go:
     MySaxParser parser;
+	parser.setDBconn(&sql);
+	
     //      parser.set_substitute_entities(true); //
     if (filepath == "-") {
       parser.parse_stream(cin);

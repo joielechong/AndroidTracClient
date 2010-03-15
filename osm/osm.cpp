@@ -29,7 +29,7 @@ void Way::addNd(long ref) {
     _nds.push_back(nd);
 }
 
-void Way::store(sqlite3_connection con) {
+void Way::store(sqlite3_connection *con) {
   cout << "Way id = " << _id << " version = " << _version << endl;
 }
 
@@ -44,7 +44,7 @@ void Relation::addMember(long ref,string type,string role) {
 	_members.push_back(mem);
 }
 
-void Relation::store(sqlite3_connection con) {
+void Relation::store(sqlite3_connection *con) {
   cout << "Relation id = " << _id << " version = " << _version << endl;
 }
 
@@ -54,6 +54,6 @@ void Relation::store(sqlite3_connection con) {
 
 Node::Node() : Element() {}
 
-void Node::store(sqlite3_connection con) {
+void Node::store(sqlite3_connection *con) {
   cout << "Node id = " << _id << " version = " << _version << endl;
 }

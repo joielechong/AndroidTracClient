@@ -39,7 +39,7 @@ namespace osm {
     void addTag(string k,string v);
 	void setId(string id);
 	void setVersion(string version);
-	virtual void store(sqlite3_connection con);
+	virtual void store(sqlite3_connection *con);
     
   protected:
     long _id;
@@ -53,7 +53,7 @@ namespace osm {
     ~Way();
 	
 	void addNd(long ref);
-	virtual void store(sqlite3_connection con);
+	virtual void store(sqlite3_connection *con);
     
   private:
     vector<Nd> _nds;
@@ -65,7 +65,7 @@ namespace osm {
     ~Relation();
 	
 	void addMember(long ref,string type,string role);
- 	virtual void store(sqlite3_connection con);
+ 	virtual void store(sqlite3_connection *con);
    
   private:
     vector<Member> _members;
@@ -76,7 +76,7 @@ namespace osm {
     Node();
     ~Node();
 
-	virtual void store(sqlite3_connection con);
+	virtual void store(sqlite3_connection *con);
     
   private:
     double _lat;
