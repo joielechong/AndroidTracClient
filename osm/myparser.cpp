@@ -1,3 +1,4 @@
+#include "osm.h"
 #include "myparser.h"
 
 #include <iostream>

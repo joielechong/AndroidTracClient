@@ -1,5 +1,5 @@
-#ifndef __LIBXMLPP_EXAMPLES_MYPARSER_H
-#define __LIBXMLPP_EXAMPLES_MYPARSER_H
+#ifndef _MYPARSER_H
+#define _MYPARSER_H
 
 #include <libxml++/libxml++.h>
 
@@ -29,4 +29,4 @@ class MySaxParser : public xmlpp::SaxParser
 };
 
 
-#endif //__LIBXMLPP_EXAMPLES_MYPARSER_H
+#endif //_MYPARSER_H
