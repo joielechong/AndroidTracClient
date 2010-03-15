@@ -4,6 +4,9 @@
 #include <string>
 #include <vector>
 
+class Tag {
+}
+
 class Element {
 	public:
 		Element(long id,int version);
@@ -24,9 +27,6 @@ class Relation : Elelement {
 }
 
 class Node : Element {
-}
-
-class Tag {
 }
 
 #endif
