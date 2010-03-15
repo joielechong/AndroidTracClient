@@ -20,17 +20,36 @@ void MySaxParser::on_end_document() {
 void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList& attributes) {
   depth++;
   std::cout << "node: name=" << name << "(" << depth << ")" << std::endl;
+	
+  if (depth == 2) {
+	if (name == "node") {
+	  elem = new Node();
+	} else if (name == "way") {
+	  elem = new Way();
+	} else if (name == "relation") {
+	  elem = new Releation();
+	} else {
+	// throw an exception
+	}
+  }
   
   // Print attributes:
   for(xmlpp::SaxParser::AttributeList::const_iterator iter = attributes.begin(); iter != attributes.end(); ++iter)
     {
       std::cout << "  Attribute: " << iter->name << " = " << iter->value << std::endl;
+	  if {depth == 2) {
+	    if (iter->name == "id") 
+		  elem->setId(iter->value);
+		else if (iter-<name == "version") 
+		  elem->setVersion(iter->value);
+	  }
     }
 }
 
 void MySaxParser::on_end_element(const Glib::ustring& name) {
   std::cout << "on_end_element()" << std::endl;
   depth--;
+  
 }
 
 void MySaxParser::on_characters(const Glib::ustring& text) {
