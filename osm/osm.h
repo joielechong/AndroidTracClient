@@ -57,7 +57,7 @@ namespace osm {
     Relation(long id,int version);
     ~Relation();
 	
-	void addMember(long ref,strung type,string role);
+	void addMember(long ref,string type,string role);
     
   private:
     vector<Member> _members;

@@ -18,6 +18,6 @@ void Way::addNd(long ref) {
 }
 
 void Relation::addMember(long ref,string type,string role) {
-	Member mem(ref,type,string);
+	Member mem(ref,type,role);
 	-member.pushback(mem);
 }
