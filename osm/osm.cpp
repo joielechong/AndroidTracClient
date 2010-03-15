@@ -25,6 +25,9 @@ void Element::store(sqlite3_connection *con) {
   cout << "Element id = " << _id << " version = " << _version << endl;
 }
 
+void Element::addNd(long ref) {};
+void Element::addMember(long ref,string type,string role) {};
+
 void Element::printTags() {
   map<string,string>::iterator it;
   
