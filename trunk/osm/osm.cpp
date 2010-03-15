@@ -48,6 +48,7 @@ void Way::store(sqlite3_connection *con) {
   printTags();
   
   int i;
+  cout << "  Nd size = << _nds.size() << endl;
   for (i=0;i<_nds.size();i++)
     cout << "   Node[" << i << "] = " << _nds[i].ref() << endl;
   
