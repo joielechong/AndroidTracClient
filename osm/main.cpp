@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
   if (argc > 2) {
     filepath = argv[1];
 	dbname = argv[2];
-  else 
+  } else {
     if (argc > 1 )
       filepath = argv[1]; //Allow the user to specify a different XML file to parse.
     else 
