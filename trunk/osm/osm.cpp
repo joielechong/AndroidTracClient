@@ -49,7 +49,7 @@ void Way::store(sqlite3_connection *con) {
   
   int i;
   for (i=0;i<_nds.size();i++)
-    cout << "   Node[" << i << "]" = "<< _nds[i] << endl;
+    cout << "   Node[" << i << "] = "<< _nds[i] << endl;
   
 }
 
