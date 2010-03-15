@@ -18,7 +18,7 @@ namespace osm {
     long _ref;
   };
   
-  class Member  
+  class Member {
   public:
     Member(long ref,string role);
     ~Member();
