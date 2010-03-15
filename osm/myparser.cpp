@@ -35,16 +35,23 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
   }
   
   // Print attributes:
-  for(xmlpp::SaxParser::AttributeList::const_iterator iter = attributes.begin(); iter != attributes.end(); ++iter)
-    {
+  string k;
+  string v;
+  for(xmlpp::SaxParser::AttributeList::const_iterator iter = attributes.begin(); iter != attributes.end(); ++iter) {
       std::cout << "  Attribute: " << iter->name << " = " << iter->value << std::endl;
 	  if (depth == 2) {
 	    if (iter->name == "id") 
 		  elem->setId(iter->value);
 		else if (iter->name == "version") 
 		  elem->setVersion(iter->value);
-	  }
-    }
+	  } else if (depth == 3) {
+	    if (iter->name == "k")
+		  k = iter->value;
+		else if (iter->name == 'v')
+		  v = iter->value;
+  }
+  if (depth == 3 and elem != NULL)
+    elem->addTag(k,v);
 }
 
 void MySaxParser::on_end_element(const Glib::ustring& name) {
