@@ -9,7 +9,7 @@ namespace osm {
   
   using namespace std;
   
-  class Nd : public {
+  class Nd {
   public:
     Nd(long ref);
     ~Nd();
@@ -18,7 +18,7 @@ namespace osm {
     long _ref;
   };
   
-  class Member : public {
+  class Member  
   public:
     Member(long ref,string role);
     ~Member();
@@ -28,7 +28,7 @@ namespace osm {
     string _role;
   };
   
-  class Element : public {
+  class Element {
   public:
     Element(long id,int version);
     ~Element();
