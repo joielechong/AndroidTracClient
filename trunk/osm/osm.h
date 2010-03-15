@@ -1,7 +1,8 @@
 #ifndef _OSM_H
 #define _OSM_H
 
-#include <stl.h>
+#include <string>
+#include <vector>
 
 class Element {
 	public:
