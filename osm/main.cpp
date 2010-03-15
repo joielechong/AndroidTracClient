@@ -14,8 +14,7 @@ using namespace std;
 
 #define BUFFERSIZE (1024)
 
-int v
-main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
   string filepath;
   string dbname;
