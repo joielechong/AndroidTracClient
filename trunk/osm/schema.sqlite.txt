@@ -20,7 +20,7 @@ DROP TABLE relation;
 DROP TABLE way;
 DROP TABLE node;
 
-CREATE TABLE node (id long primary key,lat double not null,lon double not null, version integer not null,processed boolean default 0);
+CREATE TABLE node (id long primary key,lat double not null,lon double not null, version integer not null,processed boolean default 0,x integer,y ineteger);
 CREATE TABLE tag (id long not null,k varchar not null,v varchar not null, primary key (id,k));
 CREATE TABLE way (id long primary key,version integer not null,processed boolean default 0);
 CREATE TABLE relation (id long primary key,version integer not null,processed boolean default 0);
@@ -29,15 +29,13 @@ CREATE TABLE bound (minlat double not null,maxlat double not null,minlon double 
 CREATE TABLE nd (id long references way(id) on delete cascade not null,seq integer not null,ref long not null references node(id) on delete cascade,primary key (id,seq));
 CREATE TABLE member (id long not null references relation(id) on delete cascade,seq integer not null,type varchar not null,ref long not null, role varchar, primary key (id,seq));
 CREATE TABLE neighbor (id1 long not null references node(id) on delete cascade,id2 long not null references node(id) on delete cascade, way long not null references way(id) on delete cascade,distance double default NULL,unique(id1,id2,way));
-CREATE TABLE bucket (x integer,y integer,node long not null references node(id) on delete cascade);
 CREATE TABLE admin (id long primary key references relation(id) on delete cascade,name varchar, level integer,minlat double,maxlat double,minlon double,maxlon double);
 
-CREATE TRIGGER nodetag BEFORE DELETE ON node FOR EACH ROW  BEGIN DELETE FROM tag where id=old.id; DELETE FROM member where ref=old.id; DELETE FROM neighbor WHERE id1=old.id OR id2=old.id; DELETE FROM bucket where node=old.id;END;
+CREATE TRIGGER nodetag BEFORE DELETE ON node FOR EACH ROW  BEGIN DELETE FROM tag where id=old.id; DELETE FROM nd WHERE ref=old.id; DELETE FROM member where ref=old.id; DELETE FROM neighbor WHERE id1=old.id OR id2=old.id;END;
 CREATE TRIGGER waytag BEFORE DELETE ON way FOR EACH ROW  BEGIN DELETE FROM tag where id=old.id; DELETE FROM member where ref =old.id; DELETE FROM nd WHERE id=old.id; DELETE FROM neighbor WHERE way=old.id; END;
-CREATE TRIGGER reltag BEFORE DELETE ON relation FOR EACH ROW  BEGIN DELETE FROM tag where id=old.id; DELETE FROM admin WHERE id=old.id; END;
+CREATE TRIGGER reltag BEFORE DELETE ON relation FOR EACH ROW  BEGIN DELETE FROM tag where id=old.id; DELETE FROM admin WHERE id=old.id; DELETE FROM memeber WHERE id=old.id; END;
 
-CREATE TRIGGER insbucket AFTER INSERT ON node FOR EACH ROW BEGIN INSERT INTO bucket (x,y,node) VALUES (round((new.lat+90)*20),round((new.lon+180)*20),new.id); END;
-
+CREATE VIEW bucket as SELECT x,y,id as node FROM node");
 CREATE VIEW admin1 as select relation.id, (select t1.v from tag as t1 where t1.id=relation.id and t1.k='name') as name, (select t2.v from tag as t2 where t2.id=tag.id and t2.k='admin_level') as level from relation,tag where relation.id=tag.id and tag.k='type' and tag.v in ('boundary','multipolygon') and not name is null and not level is null;
 CREATE VIEW admin2 as select member.id,min(lat) as minlat,max(lat) as maxlat,min(lon) as minlon, max(lon) as maxlon from member,nd,node where member.type='way' and member.ref=nd.id and nd.ref=node.id group by member.id;
 CREATE VIEW admintmp as select admin1.*,minlat,maxlat,minlon,maxlon from admin1,admin2 where admin1.id=admin2.id;
@@ -47,6 +45,12 @@ CREATE VIEW counts as SELECT (select max(rowid) from node) as nodes,(select max(
 CREATE VIEW incomplete_relations AS SELECT distinct relation.id FROM relation,tag,member WHERE  relation.processed and relation.id=tag.id and tag.k='type' and tag.v in ('multiploygon','boundary')  and relation.id=member.id AND ((type='relation' AND  not ref in (select id from relation)) or (type='way' and not ref in (select id from way)) or (type='node' and not ref in (select id from node)));
 
 CREATE INDEX nd_ref ON nd(ref);
+CREATE INDEX ndx ON node(x);
+CREATE INDEX ndy ON node(y);
+CREATE INDEX mb1 ON member(ref);
+CREATE INDEX nb1 ON neighbor(id1);
+CREATE INDEX nb2 ON neighbor(id2);
+CREATE INDEX nd_ref ON nr(ref);
 
 COMMIT;
 PRAGMA default_cache_size=5000;
