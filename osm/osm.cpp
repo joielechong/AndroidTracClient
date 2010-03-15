@@ -96,10 +96,10 @@ Member::~Member() {}
 
 }
 
-inline ostream& operator<<(ostream& o,const osm::Nd& nd) {
+using namespace osm;
+using namespace std;
+
+inline ostream& operator<<(ostream& o,const Nd& nd) {
   o << nd.ref();
   return o;
 }
-
-
-
