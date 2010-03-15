@@ -8,16 +8,6 @@ namespace osm {
   
   using namespace std;
   
-  class Tag {
-  public:
-    Tag(string k,string v);
-    ~Tag();
-
-  private:
-    string _k;
-    string _v;
-  };
-  
   class Nd {
   public:
     Nd(long ref);
@@ -47,7 +37,7 @@ namespace osm {
   protected:
     long _id;
     int	_version;
-    vector<Tag> _tags;
+    map<string,string> _tags;
   };
   
   class Way : Element {
