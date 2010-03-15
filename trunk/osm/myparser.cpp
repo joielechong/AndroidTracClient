@@ -50,6 +50,7 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
 		  k = iter->value;
 		else if (iter->name == "v")
 		  v = iter->value;
+	  }
   }
   if (depth == 3 and elem != NULL)
     elem->addTag(k,v);
