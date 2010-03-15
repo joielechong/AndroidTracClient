@@ -28,7 +28,7 @@ class MySaxParser : public xmlpp::SaxParser
   
  private:
   short depth;
-  Element *elem;
+  osm::Element *elem;
 };
 
 #endif //_MYPARSER_H
