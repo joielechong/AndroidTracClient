@@ -1,21 +1,41 @@
 #ifndef _OSM_H
 #define _OSM_H
 
-#include <string>
 #include <vector>
+#include <string>
 
 namespace osm {
   
   using namespace std;
   
   class Tag {
-  }
+  public:
+    Tag(string k,string v);
+    ~Tag();
+
+  private:
+    string _k;
+    string _v;
+  };
   
   class Nd {
-  }
+  public:
+    Nd(long ref);
+    ~Nd();
+
+  private:
+    long _ref;
+  };
   
   class Member {
-  }
+  public:
+    Member(long ref,string role);
+    ~Member();
+
+  private:
+    long _ref;
+    string _role;
+  };
   
   class Element {
   public:
@@ -27,8 +47,8 @@ namespace osm {
   protected:
     long _id;
     int	_version;
-//    vector<Tag> _tags;
-  }
+    vector<Tag> _tags;
+  };
   
   class Way : Element {
   public:
@@ -36,8 +56,8 @@ namespace osm {
     ~Way();
     
   private:
-//    vector<Nd> _nds;
-  }
+    vector<Nd> _nds;
+  };
   
   class Relation : Element {
   public:
@@ -45,8 +65,8 @@ namespace osm {
     ~Relation();
     
   private:
-//    vector<Member> _members;
-  }
+    vector<Member> _members;
+  };
   
   class Node : Element {
   public:
@@ -58,7 +78,7 @@ namespace osm {
     double _lon;
     int _x;
     int _y;
-  }
+  };
 }
 
 #endif
