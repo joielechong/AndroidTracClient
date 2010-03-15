@@ -29,6 +29,7 @@ namespace osm {
   private:
     long _ref;
     string _role;
+	string _type;
   };
   
   class Element {
