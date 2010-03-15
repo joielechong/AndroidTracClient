@@ -75,6 +75,6 @@ void MySaxParser::on_fatal_error(const Glib::ustring& text) {
   std::cout << "on_fatal_error(): " << text << std::endl;
 }
 
-void MySaxParser::setDBconn(sqlite3x::sqlite3_connection con) {
+void MySaxParser::setDBconn(sqlite3x::sqlite3_connection *con) {
   _con = con;
 }

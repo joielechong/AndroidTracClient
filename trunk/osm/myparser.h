@@ -14,7 +14,7 @@ class MySaxParser : public xmlpp::SaxParser
   virtual ~MySaxParser();
   
   int getDepth();
-  void setDBconn(sqlite3x::sqlite3_connection con);
+  void setDBconn(sqlite3x::sqlite3_connection *con);
  
  protected:
   //overrides:
@@ -33,7 +33,7 @@ class MySaxParser : public xmlpp::SaxParser
  private:
   short depth;
   osm::Element *elem;
-  sqlite3x::sqlite3_connection _con;
+  sqlite3x::sqlite3_connection *_con;
 };
 
 #endif //_MYPARSER_H
