@@ -54,6 +54,9 @@ int main(int argc, char* argv[])
     } else {
       parser.parse_file(filepath);
     }
+    sql.executenonquery("INSERT OR REPLACE INTO neighbor (way,id1,id2) SELECT DISTINCT way,id1,id2 FROM nb");
+    sql.executenonquery("INSERT OR REPLACE INTO admin (id,name,level,minlat,maxlat,minlon,maxlon) SELECT id,name,level,minlat,maxlat,minlon,maxlon FROM admintmp");
+    sql.executenonquery("UPDATE node SET x=round((lon+90)*20),y=round((lat+180)*20) WHERE id in (SELECT ref FROM usable_way as u,nd WHERE u.id=nd.id)");
   } catch(const xmlpp::exception& ex) {
     cout << "libxml++ exception: " << ex.what() << endl;
     return 1;
@@ -62,36 +65,7 @@ int main(int argc, char* argv[])
     sql.close();
     return 1;
   }
-
-  
-  // Demonstrate incremental parsing, sometimes useful for network connections:
-  {
-    //std::cout << "Incremental SAX Parser:" << std:endl;
-    
-    std::ifstream is(filepath.c_str());
-    char buffer[BUFFERSIZE];
-    
-    MySaxParser parser;
-    do {
-      is.read(buffer, (BUFFERSIZE-1));
-      Glib::ustring input(buffer, is.gcount());
-      
-      parser.parse_chunk(input);
-    }
-    while(is);
-    
-    parser.finish_chunk_parsing();
-  }
-  
-  try {  
-    sql.executenonquery("INSERT OR REPLACE INTO neighbor (way,id1,id2) SELECT DISTINCT way,id1,id2 FROM nb");
-    sql.executenonquery("INSERT OR REPLACE INTO admin (id,name,level,minlat,maxlat,minlon,maxlon) SELECT id,name,level,minlat,maxlat,minlon,maxlon FROM admintmp");
-    sql.executenonquery("UPDATE node SET x=round((lon+90)*20),y=round((lat+180)*20) WHERE id in (SELECT ref FROM usable_way as u,nd WHERE u.id=nd.id)");
-  } catch (const exception &ex) {
-    cout << "Postprocessing failed: " << ex.what() <<endl;
-    sql.close();
-    return 1;
-  }
+ 
   sql.close();
   
   return 0;
