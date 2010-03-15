@@ -14,7 +14,8 @@ class MySaxParser : public xmlpp::SaxParser
   virtual ~MySaxParser();
   
   int getDepth();
-  
+  void setDBconn(sqlite3x::sqlite3_connection con);
+ 
  protected:
   //overrides:
   virtual void on_start_document();
@@ -28,7 +29,6 @@ class MySaxParser : public xmlpp::SaxParser
   virtual void on_error(const Glib::ustring& text);
   virtual void on_fatal_error(const Glib::ustring& text);
   
-  void setDBconn(sqlite3x::sqlite3_connection con);
   
  private:
   short depth;
