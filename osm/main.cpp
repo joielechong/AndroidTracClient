@@ -32,23 +32,8 @@ int main(int argc, char* argv[])
     dbname = "newosm.sqlite";
   }
   
-  // Parse the entire document in one go:
   try {
-    MySaxParser parser;
-    //      parser.set_substitute_entities(true); //
-    if (filepath == "-") {
-      parser.parse_stream(cin);
-    } else {
-      parser.parse_file(filepath);
-    }
-  }
-  catch(const xmlpp::exception& ex) {
-    cout << "libxml++ exception: " << ex.what() << endl;
-    return 1;
-  }
-  
-  sqlite3_connection sql(dbname);
-  try {
+    sqlite3_connection sql(dbname);
     ifstream schema;
     char regel[2048];
     schema.open("schema.sqlite.txt");
@@ -56,16 +41,29 @@ int main(int argc, char* argv[])
       schema.getline(regel,2047);
       cout << regel << endl;
       if ((strncmp(regel,"CREATE",6) == 0) || (strncmp(regel,"PRAGMA",5) == 0)) {
-	sql.executenonquery(regel);
+	    sql.executenonquery(regel);
       }
     }
     schema.close();
+
+  // Parse the entire document in one go:
+    MySaxParser parser;
+    //      parser.set_substitute_entities(true); //
+    if (filepath == "-") {
+      parser.parse_stream(cin);
+    } else {
+      parser.parse_file(filepath);
+    }
+  } catch(const xmlpp::exception& ex) {
+    cout << "libxml++ exception: " << ex.what() << endl;
+    return 1;
   } catch (const exception &ex) {
     cout << "Exception in sqlite: " << ex.what() <<endl;
     sql.close();
     return 1;
   }
 
+  
   // Demonstrate incremental parsing, sometimes useful for network connections:
   {
     //std::cout << "Incremental SAX Parser:" << std:endl;
