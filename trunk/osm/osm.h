@@ -5,6 +5,9 @@
 #include <vector>
 
 namespace osm {
+
+using namespace std;
+
 class Tag {
 }
 
@@ -19,12 +22,12 @@ class Element {
 		Element(long id,int version);
 		~Element();
 		
-		void addTag(std::string k,std::string v);
+		void addTag(string k,string v);
 
 	protected:
 		long _id;
 		int	_version;
-		std::vector<Tag> _tags;
+		vector<Tag> _tags;
 }
 
 class Way : Element {
@@ -33,7 +36,7 @@ class Way : Element {
 		~Way();
 	
 	private:
-		std::vector<Nd> _nds;
+		vector<Nd> _nds;
 }
 
 class Relation : Element {
@@ -42,7 +45,7 @@ class Relation : Element {
 		~Relation();
 	
 	private:
-		std::vector<Member> _members;
+		vector<Member> _members;
 }
 
 class Node : Element {
@@ -53,8 +56,8 @@ class Node : Element {
 	private:
 		double _lat;
 		double _lon;
-		int x;
-		int y;
+		int _x;
+		int _y;
 }
 }
 
