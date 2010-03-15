@@ -41,6 +41,7 @@ namespace osm {
 	void setId(string id);
 	void setVersion(string version);
 	virtual void store(sqlite3_connection *con);
+	void printTags();
     
   protected:
     long _id;
