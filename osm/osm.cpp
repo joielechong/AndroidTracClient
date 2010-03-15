@@ -7,6 +7,7 @@ using namespace std;
 using namespace sqlite3x;
 
 Element::Element() {}
+Element::~Element() {}
 
 void Element::addTag(string k,string v) {
   _tags[k] = v;
@@ -24,6 +25,7 @@ void Element::setVersion(string version) {
 
 
 Way::Way() : Element() {}
+Way::~Way() {}
 
 void Way::addNd(long ref) {
     Nd nd(ref);
@@ -39,6 +41,7 @@ void Way::store(sqlite3_connection *con) {
 
 
 Relation::Relation() : Element() {}
+Relation::~Relation() {}
 
 void Relation::addMember(long ref,string type,string role) {
 	Member mem(ref,type,role);
@@ -54,6 +57,7 @@ void Relation::store(sqlite3_connection *con) {
 
 
 Node::Node() : Element() {}
+Node::~Node() {}
 
 void Node::store(sqlite3_connection *con) {
   cout << "Node id = " << _id << " version = " << _version << endl;
