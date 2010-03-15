@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <sqlite3x.h>
 
 namespace osm {
   
@@ -30,10 +31,13 @@ namespace osm {
   
   class Element {
   public:
-    Element(long id,int version);
+    Element();
     ~Element();
     
     void addTag(string k,string v);
+	void setId(string id);
+	void setVersion(string version);
+	virtual void store(sqlite3_connection con);
     
   protected:
     long _id;
@@ -43,10 +47,11 @@ namespace osm {
   
   class Way  : public Element {
   public:
-    Way(long id,int version);
+    Way();
     ~Way();
 	
 	void addNd(long ref);
+	virtual void store(sqlite3_connection con);
     
   private:
     vector<Nd> _nds;
@@ -54,19 +59,22 @@ namespace osm {
   
   class Relation  : public Element {
   public:
-    Relation(long id,int version);
+    Relation();
     ~Relation();
 	
 	void addMember(long ref,string type,string role);
-    
+ 	virtual void store(sqlite3_connection con);
+   
   private:
     vector<Member> _members;
   };
   
   class Node  : public Element {
   public:
-    Node(long id,int version, double lat,double lon);
+    Node();
     ~Node();
+
+	virtual void store(sqlite3_connection con);
     
   private:
     double _lat;

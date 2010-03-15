@@ -3,6 +3,8 @@
 
 #include <libxml++/libxml++.h>
 
+#include "osm.h"
+
 class MySaxParser : public xmlpp::SaxParser
 {
  public:
@@ -26,6 +28,7 @@ class MySaxParser : public xmlpp::SaxParser
   
  private:
   short depth;
+  Element *elem;
 };
 
 #endif //_MYPARSER_H
