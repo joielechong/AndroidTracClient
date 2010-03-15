@@ -50,7 +50,7 @@ CREATE INDEX ndy ON node(y);
 CREATE INDEX mb1 ON member(ref);
 CREATE INDEX nb1 ON neighbor(id1);
 CREATE INDEX nb2 ON neighbor(id2);
-CREATE INDEX nd_ref ON nr(ref);
+CREATE INDEX nd_ref ON nd(ref);
 
 COMMIT;
 PRAGMA default_cache_size=5000;
