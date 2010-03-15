@@ -20,7 +20,7 @@ namespace osm {
   
   class Member {
   public:
-    Member(long ref,string role);
+    Member(long ref,string type,string role);
     ~Member();
 
   private:
@@ -45,6 +45,8 @@ namespace osm {
   public:
     Way(long id,int version);
     ~Way();
+	
+	void addNd(long ref);
     
   private:
     vector<Nd> _nds;
@@ -54,6 +56,8 @@ namespace osm {
   public:
     Relation(long id,int version);
     ~Relation();
+	
+	void addMember(long ref,strung type,string role);
     
   private:
     vector<Member> _members;
