@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+using namespace osm;
+
 class Tag {
 }
 
