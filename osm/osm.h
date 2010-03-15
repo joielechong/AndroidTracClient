@@ -5,6 +5,7 @@
 #include <map>
 #include <string>
 #include <sqlite3x.hpp>
+#include <iostream>
 
 namespace osm {
   
