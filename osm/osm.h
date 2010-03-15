@@ -4,7 +4,7 @@
 #include <vector>
 #include <map>
 #include <string>
-#include <sqlite3x.h>
+#include <sqlite3x.hpp>
 
 namespace osm {
   
