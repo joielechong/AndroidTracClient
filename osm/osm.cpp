@@ -49,7 +49,7 @@ void Way::store(sqlite3_connection *con) {
   
   int i;
   for (i=0;i<_nds.size();i++)
-    cout << "   Node[" << i << "] = " << _nds[i] << endl;
+    cout << "   Node[" << i << "] = " << _nds[i].ref() << endl;
   
 }
 
@@ -96,10 +96,10 @@ Member::~Member() {}
 
 }
 
-using namespace osm;
-using namespace std;
+//using namespace osm;
+//using namespace std;
 
-inline ostream& operator<<(ostream& o,const Nd& nd) {
-  o << nd.ref();
-  return o;
-}
+//inline ostream& operator<<(ostream& o,const Nd& nd) {
+//  o << nd.ref();
+//  return o;
+//}
