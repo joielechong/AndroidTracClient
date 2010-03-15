@@ -12,7 +12,7 @@ void Element::setId(string id) {
   _id = id;
 }
 
-void Element::setversion(string version) {
+void Element::setVersion(string version) {
   _version = version;
 }
 
