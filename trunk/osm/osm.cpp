@@ -94,11 +94,12 @@ Member::Member(long ref,string type, string role) : _ref(ref),_type(type),_role(
 
 Member::~Member() {}
 
-inline ostream& operator<<(ostream& o,const Nd& nd) {
+}
+
+inline ostream& operator<<(ostream& o,const osm::Nd& nd) {
   o << nd.ref();
   return o;
 }
 
-}
 
 
