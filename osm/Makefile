@@ -10,7 +10,7 @@ clean:
 	rm *.o test dijkstra
 
 mkdb:	main.o myparser.o osm.o
-	g++ ${LDFLAGS} -o mkdb main.o myparser.o ${LIBS}
+	g++ ${LDFLAGS} -o mkdb main.o myparser.o osm.o ${LIBS}
 
 dijkstra:	dijkstra.o
 	g++ -o dijkstra dijkstra.o
