@@ -23,11 +23,11 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
 	
   if (depth == 2) {
 	if (name == "node") {
-	  elem = new Node();
+	  elem = new osm::Node();
 	} else if (name == "way") {
-	  elem = new Way();
+	  elem = new osm::Way();
 	} else if (name == "relation") {
-	  elem = new Releation();
+	  elem = new osm::Releation();
 	} else {
 	// throw an exception
 	}
