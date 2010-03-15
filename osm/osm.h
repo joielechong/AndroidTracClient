@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-using namespace osm;
+namespace osm {
 
 class Tag {
 }
@@ -57,5 +57,5 @@ class Node : Element {
 		int x;
 		int y;
 }
-
+}
 #endif
