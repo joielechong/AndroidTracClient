@@ -2,6 +2,7 @@
 #include <config.h>
 #endif
 
+#include <string.h>
 #include <sqlite3x.hpp>
 
 #include <fstream>
