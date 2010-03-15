@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
   try {
     sqlite3_connection sql(dbname);
 	ifstream schema;
-	string regel;
+	char regel[256];
 	schema.open("schema.sqlite.txt");
 	while (schema.good()) {
 	    schema.getline(regel,255);
