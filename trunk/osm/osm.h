@@ -9,7 +9,8 @@
 namespace osm {
   
   using namespace std;
-  
+  using namespace sqlite3x;
+
   class Nd {
   public:
     Nd(long ref);
