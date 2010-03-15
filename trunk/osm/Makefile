@@ -7,7 +7,7 @@ LIBS=-lxml++-2.6 -lglibmm-2.4 -lglib-2.0 -lxml2 -lsqlite3x -lsqlite3
 all:	mkdb dijkstra
 
 clean:
-	rm *.o test dijkstra
+	rm *.o mkdb dijkstra
 
 mkdb:	main.o myparser.o osm.o
 	g++ ${LDFLAGS} -o mkdb main.o myparser.o osm.o ${LIBS}
