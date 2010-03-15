@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+namespace osm {
 class Tag {
 }
 
@@ -54,6 +55,7 @@ class Node : Element {
 		double _lon;
 		int x;
 		int y;
+}
 }
 
 #endif
