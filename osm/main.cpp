@@ -16,7 +16,7 @@ main(int argc, char* argv[])
   if(argc > 1 )
     filepath = argv[1]; //Allow the user to specify a different XML file to parse.
   else
-    filepath = "example.xml";
+    filepath = "-";  // use stdin when no argument
   
   // Parse the entire document in one go:
   try
@@ -24,7 +24,7 @@ main(int argc, char* argv[])
       MySaxParser parser;
       //      parser.set_substitute_entities(true); //
 	  if (filepath == "-") {
-	    parser.parse_stream(cin);
+	    parser.parse_stream(std::cin);
 	  } else {
 		parser.parse_file(filepath);
 	  }
