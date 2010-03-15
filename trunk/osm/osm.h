@@ -9,7 +9,7 @@ namespace osm {
   
   using namespace std;
   
-  class Nd {
+  class Nd : public {
   public:
     Nd(long ref);
     ~Nd();
@@ -18,7 +18,7 @@ namespace osm {
     long _ref;
   };
   
-  class Member {
+  class Member : public {
   public:
     Member(long ref,string role);
     ~Member();
@@ -28,7 +28,7 @@ namespace osm {
     string _role;
   };
   
-  class Element {
+  class Element : public {
   public:
     Element(long id,int version);
     ~Element();
@@ -41,7 +41,7 @@ namespace osm {
     map<string,string> _tags;
   };
   
-  class Way : Element {
+  class Way  : public Element {
   public:
     Way(long id,int version);
     ~Way();
@@ -50,7 +50,7 @@ namespace osm {
     vector<Nd> _nds;
   };
   
-  class Relation : Element {
+  class Relation  : public Element {
   public:
     Relation(long id,int version);
     ~Relation();
@@ -59,7 +59,7 @@ namespace osm {
     vector<Member> _members;
   };
   
-  class Node : Element {
+  class Node  : public Element {
   public:
     Node(long id,int version, double lat,double lon);
     ~Node();
