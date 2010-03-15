@@ -4,6 +4,7 @@
 
 MySaxParser::MySaxParser() : xmlpp::SaxParser() {
   depth = 0;
+  *elem = NULL;
 }
 
 MySaxParser::~MySaxParser() {
@@ -48,8 +49,10 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
 
 void MySaxParser::on_end_element(const Glib::ustring& name) {
   std::cout << "on_end_element()" << std::endl;
-  if (depth == 2) {
+  if (depth == 2 && elem != NULL) {
      elem->store(_con);
+	 delete [] *elem;
+	 *elem = NULL;
   }
   depth--;
   
