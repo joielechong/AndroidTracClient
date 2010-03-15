@@ -48,7 +48,7 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
 	  } else if (depth == 3) {
 	    if (iter->name == "k")
 		  k = iter->value;
-		else if (iter->name == 'v')
+		else if (iter->name == "v")
 		  v = iter->value;
   }
   if (depth == 3 and elem != NULL)
