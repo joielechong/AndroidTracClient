@@ -16,6 +16,8 @@ namespace osm {
   public:
     Nd(long ref);
     ~Nd();
+	
+	long ref();
 
   private:
     long _ref;
