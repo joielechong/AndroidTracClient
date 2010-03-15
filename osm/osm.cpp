@@ -22,7 +22,7 @@ void Element::setVersion(string version) {
 }
 
 void Element::addNd(string ref) {
-  addNd(atol(ref,c_str()));
+  addNd(atol(ref.c_str()));
 }
 
 void Element::store(sqlite3_connection *con) {
