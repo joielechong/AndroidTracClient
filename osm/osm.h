@@ -27,7 +27,7 @@ namespace osm {
   protected:
     long _id;
     int	_version;
-    vector<Tag> _tags;
+//    vector<Tag> _tags;
   }
   
   class Way : Element {
@@ -36,7 +36,7 @@ namespace osm {
     ~Way();
     
   private:
-    vector<Nd> _nds;
+//    vector<Nd> _nds;
   }
   
   class Relation : Element {
@@ -45,7 +45,7 @@ namespace osm {
     ~Relation();
     
   private:
-    vector<Member> _members;
+//    vector<Member> _members;
   }
   
   class Node : Element {
