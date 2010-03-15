@@ -2,7 +2,7 @@ CPPFLAGS=-I/usr/include/libxml++-2.6/ -I/usr/include/glibmm-2.4 -I /usr/lib/glib
 
 CFLAGS=-ggdb -O0
 LDFLAGS=
-LIBS=-lxml++-2.6 -lglibmm-2.4 -lglib-2.0 -lxml2
+LIBS=-lxml++-2.6 -lglibmm-2.4 -lglib-2.0 -lxml2 -lsqlite3
 
 all:	mkdb dijkstra
 
