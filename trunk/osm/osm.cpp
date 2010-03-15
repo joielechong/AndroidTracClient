@@ -14,10 +14,10 @@ Node::Node(long id,int version,double lat,double lon) : Element(id,version), _la
 
 void Way::addNd(long ref) {
     Nd nd(ref);
-    _nds.pushback(nd);
+    _nds.push_back(nd);
 }
 
 void Relation::addMember(long ref,string type,string role) {
 	Member mem(ref,type,role);
-	-member.pushback(mem);
+	-member.push_back(mem);
 }
