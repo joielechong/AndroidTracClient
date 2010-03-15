@@ -83,18 +83,22 @@ void Node::store(sqlite3_connection *con) {
 }
 
 Nd::Nd(long ref) : _ref(ref) {}
+
 Nd::~Nd() {}
-
-Member::Member(long ref,string type, string role) : _ref(ref),_type(type),_role(role) {}
-Member::~Member() {}
-
-}
 
 long Nd::ref() {
   return _ref;
 }
 
+Member::Member(long ref,string type, string role) : _ref(ref),_type(type),_role(role) {}
+
+Member::~Member() {}
+
 inline ostream& operator<<(ostream& o,const Nd& nd) {
   o << nd.ref();
   return o;
 }
+
+}
+
+
