@@ -26,7 +26,7 @@ void Element::store(sqlite3_connection *con) {
 }
 
 void Element::printTags() {
-  map(string,string::iterator it;
+  map<string,string>::iterator it;
   
   for (it=_tags.begin();it != _tags.end(); it++) 
     cout << "   " << (*it).first << " => " << (*it).second << endl;
