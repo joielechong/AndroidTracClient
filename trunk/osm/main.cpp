@@ -64,6 +64,7 @@ int main(int argc, char* argv[])
 	schema.close();
   } catch (const exception &ex) {
     cout << "Exception in sqlite: " << ex.what() <<endl;
+	sql.close();
 	return 1;
   }
 
@@ -85,12 +86,17 @@ int main(int argc, char* argv[])
     
     parser.finish_chunk_parsing();
   }
-  
+
+  try {  
   sql.executenonquery("INSERT OR REPLACE INTO neighbor (way,id1,id2) SELECT DISTINCT way,id1,id2 FROM nb");
   sql.executenonquery("INSERT OR REPLACE INTO admin (id,name,level,minlat,maxlat,minlon,maxlon) SELECT id,name,level,minlat,maxlat,minlon,maxlon FROM admintmp");
   sql.executenonquery("UPDATE node SET x=round((lon+90)*20),y=round((lat+180)*20) WHERE id in (SELECT ref FROM usable_way as u,nd WHERE u.id=nd.id)");
+  } catch (const exception &ex) {
+    cout << "Postprocessing failed: " << ex.what() <<endl;
+	sql.close();
+	return 1;
+  }
   sql.close();
-  
   
   return 0;
 }
