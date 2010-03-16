@@ -19,7 +19,7 @@ database::database(string naam) {
       schema.getline(regel,2047);
       //      cout << regel << endl;
       if ((strncmp(regel,"CREATE",6) == 0) || (strncmp(regel,"PRAGMA",5) == 0)) {
-	sql.executenonquery(regel);
+	sql->executenonquery(regel);
       }
     }
     schema.close();
