@@ -88,6 +88,6 @@ void MySaxParser::on_fatal_error(const Glib::ustring& text) {
   std::cout << "on_fatal_error(): " << text << std::endl;
 }
 
-void MySaxParser::setDBconn(osm_db::osm_db *con) {
+void MySaxParser::setDBconn(osm_db::database *con) {
   _con = con;
 }
