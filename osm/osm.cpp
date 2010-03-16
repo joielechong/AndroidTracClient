@@ -1,4 +1,5 @@
 #include "osm.h"
+#include "osm_db.h";
 #include <stdlib.h>
 #include <string>
 #include <glibmm/ustring.h>
@@ -18,7 +19,14 @@ namespace osm {
       s << "   " << (*it).first << " => " << (*it).second.c_str() << endl;
 	return s.str();
   }
+
+void createTags(osm_db::database con) {
+  map<string,Glib::ustring>::iterator it;
   
+  for (it=_tags.begin();it != _tags.end(); it++) 
+	con.createTag(_id,(*it).first,(*it).second.c_str());
+
+}  
   void Element::setLat(string ref) {throw "Lat kan alleen bij Node";};  // throw exception
   void Element::setLon(string ref) {throw "Lon kan alleen bij Node";};  // throw exception
 
@@ -37,12 +45,18 @@ string Way::output () {
 
   s << "Way: Id = " << _id << " version = " << _version << endl;
 
-  for(i=0;i<_nds.size();i++) {
+  for(i=0;i<_nds.size();i++) 
     s << "   Node[" << i << "] : " << _nds[i] << endl;  
-  }
   
   s << printTags();
   return s.str();
+}
+
+void Way::store(osm_db::database& con){
+  con.createWay(_id,_version);
+  createTags(con)
+  for(i=0;i<_nds.size();i++) 
+    con.createNd(_id,i,_nds[i]);
 }
 
 // Relation 
@@ -59,13 +73,18 @@ string Relation::output () {
   
   s << "Relation: Id = " << _id << " version = " << _version << endl;;
 
-  for(i=0;i<_members.size();i++) {
+  for(i=0;i<_members.size();i++) 
     s << "   Member[" << i << "] : " << _members[i].ref() << "," << _members[i].type() << "," << _members[i].role() << endl;  
-  }
   
   s << printTags();
   return s.str();
 }
+
+void Relation::store(osm_db::database& con){
+  con.createRelation(_id,_version);
+  createTags(con);
+  for(i=0;i<_members.size();i++) 
+    con.createMember(_id,i,_members[i].ref(),_members[i].type(),_members[i].role());  
 
 // Node
 
@@ -76,6 +95,11 @@ string Node::output () {
   s << "Node: Id = " << _id << " version = " << _version << " lat,lon = " << _lat << " , " << _lon << endl;
   s << printTags();
   return s.str();
+}
+
+void Node::store(osm_db::database& con){
+  con.createNode(_id,_version,_lat,_lon);
+  createTags(con);
 }
 
 }
