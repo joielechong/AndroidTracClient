@@ -22,6 +22,10 @@ database::~database() {
   sql = NULL;
 }
 
+database& database::operator<<(const osm::Element& n) {
+  throw "database store van Element";
+}
+
 database& database::operator<<(const osm::Node& n) {
 	createNode.bind(1,n.ref());
 	createNode.bind(2,n.version());
