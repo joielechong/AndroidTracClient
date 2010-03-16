@@ -1,6 +1,6 @@
+#include "osm.h"
 #include "osm_db.h"
 #include <string>
-#include "osm.h"
 
 namespace osm_db {
 
