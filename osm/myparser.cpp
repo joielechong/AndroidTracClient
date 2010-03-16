@@ -35,7 +35,7 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
       elem = new osm::Way(attr["id"],attr["version"]);
     } else if (name == "relation") {
       elem = new osm::Relation(attr["id"],attr["version"]);
-	} else if (name == "bounds") {
+	} else if (name == "bound") {
     } else {
       throw(("Onbekend element "+name).c_str());
     }
