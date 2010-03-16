@@ -24,10 +24,6 @@ database::~database() {
 
 /*
 
-database& database::operator<<(database& db,const osm::Element& n) {
-  throw "database store van Element";
-}
-
 database& database::operator<<(database& db,const osm::Node& n) {
 	createNode.bind(1,n.ref());
 	createNode.bind(2,n.version());
@@ -52,3 +48,11 @@ database& database::operator<<(database& db,const osm::Relation& n) {
 }
 */
 }
+
+using namespace osm_db;
+
+database& database::operator<<(database& db,const osm::Element& n) {
+  throw "database store van Element";
+}
+
+
