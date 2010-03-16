@@ -40,7 +40,8 @@ void Way::store(sqlite3_connection *con) {
 
 Relation::~Relation() {
 	while (! _members.empty()) {
-	  Member *mem = _members.pop_back();
+	  Member *mem = _members.back();
+	  _members.pop_back();
 	  delete mem;
 	}
 }
