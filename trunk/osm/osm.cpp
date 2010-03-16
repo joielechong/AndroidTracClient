@@ -20,7 +20,7 @@ namespace osm {
 	return s.str();
   }
 
-void createTags(osm_db::database con) {
+void Element::createTags(osm_db::database con) {
   map<string,Glib::ustring>::iterator it;
   
   for (it=_tags.begin();it != _tags.end(); it++) 
