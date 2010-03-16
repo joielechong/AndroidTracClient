@@ -12,7 +12,6 @@
 namespace osm {
   
   using namespace std;
-  using namespace sqlite3x;
   
   class Member {
   public:
@@ -34,7 +33,9 @@ namespace osm {
     inline Element(long id,int version) :_id(id),_version(version) {}
     inline Element(string id,string version) :_id(atol(id.c_str())),_version(atol(version.c_str())) {}
     inline ~Element() {}
-    
+
+	inline long id() { return _id;}
+	inline int version() { return _version;}
     inline void addTag(string k,string v) {_tags[k] = v;}
     inline void setId(string id) {_id=atol(id.c_str());}
     inline void setVersion(string version) {_version=atol(version.c_str());}
@@ -84,6 +85,8 @@ namespace osm {
 	inline Node(long id,int version,double lat,double lon) : _lat(lat),_lon(lon), Element(id,version) {}
 	inline Node(string id,string version,string lat,string lon) : _lat(atof(lat.c_str())),_lon(atof(lon.c_str())),Element(id,version) {}
     inline ~Node() {}
+	inline double lat() { return _lat;}
+	inline double lon() { return _lon;}
     
     inline virtual void setLat(string lat) {_lat=atof(lat.c_str());}
     inline virtual void setLon(string lon) {_lon=atof(lon.c_str());}
@@ -94,6 +97,14 @@ namespace osm {
     int _x;
     int _y;
   };
+  
+//  ostream& operator<<(ostream& o,const Element& e);
+  ostream& operator<<(ostream& o,const Node& e);
+  ostream& operator<<(ostream& o,const Way& e);
+  ostream& operator<<(ostream& o,const Relation& e);
+  ostream& operator<<(ostream& o,const Member& e);
+  ostream& operator<<(ostream& o,const Nd& e);
+  ostream& operator<<(ostream& o,const Tag& e);
 }
 
 #endif

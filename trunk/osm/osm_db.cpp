@@ -1,10 +1,12 @@
 #include "osm_db.h"
 #include <string>
+#include "osm.h"
 
 namespace osm_db {
 
 using namespace std;
 using namespace sqlite3x;
+using namespace osm;
 
 database::database(string naam) {
   sql = new sqlite3_connection(naam);
