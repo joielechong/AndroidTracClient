@@ -104,7 +104,6 @@ namespace osm {
   ostream& operator<<(ostream& o,const Relation& e);
   ostream& operator<<(ostream& o,const Member& e);
   ostream& operator<<(ostream& o,const Nd& e);
-  ostream& operator<<(ostream& o,const Tag& e);
 }
 
 #endif
