@@ -2,6 +2,7 @@
 #include <iostream>
 #include "osm.h"
 #include <string>
+#include <map>
 
 MySaxParser::MySaxParser() : depth(0), elem(NULL), xmlpp::SaxParser() {}
 
@@ -20,54 +21,38 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
   depth++;
   std::cout << "node: name=" << name << "(" << depth << ")" << std::endl;
   
-  if (depth == 2) {
+  // Store attributes:
+  map<string,string> attr;
+  for(xmlpp::SaxParser::AttributeList::const_iterator iter = attributes.begin(); iter != attributes.end(); ++iter) {
+    std::cout << "  Attribute: " << iter->name << " = " << iter->value << std::endl;
+	attr[iter-<name]=iter->value;
+  }
+  switch (depth) {
+	case 2:
     if (name == "node") {
-      elem = new osm::Node();
+      elem = new osm::Node(attr["id"],attr["version"],attr["lat"],attr["lon"]);
     } else if (name == "way") {
-      elem = new osm::Way();
+      elem = new osm::Way(attr["id"],attr["version"]);
     } else if (name == "relation") {
-      elem = new osm::Relation();
+      elem = new osm::Relation(attr["id"],attr["version"]);
     } else {
       // throw an exception
     }
-  }
-  
-  // Print attributes:
-  std::string k,v;
-  std::string ref,type,role;
-  for(xmlpp::SaxParser::AttributeList::const_iterator iter = attributes.begin(); iter != attributes.end(); ++iter) {
-    std::cout << "  Attribute: " << iter->name << " = " << iter->value << std::endl;
-    if (depth == 2) {
-      if (iter->name == "id") 
-	elem->setId(iter->value);
-      else if (iter->name == "version") 
-	elem->setVersion(iter->value);
-      else if (iter->name == "lat") 
-	elem->setLat(iter->value);
-      else if (iter->name == "lon") 
-	elem->setLon(iter->value);
-    } else if (depth == 3) {
-      if (name=="tag") {
-	if (iter->name == "k")
-	  k = iter->value;
-	else if (iter->name == "v")
-	  v = iter->value;
+	break;
+	
+	case 3:
+	if (elem != NULL) {
+      if (name == "tag") {
+        elem->addTag(attr["k"],attr["v"]);
       } else if (name == "member") {
-	if (iter->name == "ref")
-	  ref = iter->value;
-	else if (iter->name == "type")
-	  type = iter->value;	
-	else if (iter->name == "role")
-	  role = iter->value;	
-      } else if (name=="nd" and iter->name == "ref") 
-	elem->addNd(iter->value);
+        elem->addMember(attr["ref"],attr["type"],attr["role"]);
+	  } else if (name == "nd" ) {
+	    elem->addNd(attr["ref"]);
+	  } else {
+	  // THROW EXCEPTION
+	  }
     }
-  }
-  if (depth == 3 and elem != NULL) {
-    if (name == "tag")
-      elem->addTag(k,v);
-    else if (name == "member")
-      elem->addMember(ref,type,role);
+	break;
   }
 }
 

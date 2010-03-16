@@ -27,6 +27,8 @@ namespace osm {
   class Element {
   public:
     inline Element() {}
+    inline Element(long id,int version) :_id(id),_version(version) {}
+    inline Element(string id,string version) :_id(atol(id.c_str())),_version(atol(version.c_str())) {}
     inline ~Element() {}
     
     inline void addTag(string k,string v) {_tags[k] = v;}
@@ -50,6 +52,8 @@ namespace osm {
   class Way  : public Element {
   public:
     inline Way() : Element() {}
+	inline Way(long id,int version) : Element(id,version) {}
+	inline Way(string id,string version) : Element(id,version) {}
     inline ~Way() {}
     
     inline void addNd(long ref) {_nds.push_back(ref);}
@@ -62,6 +66,8 @@ namespace osm {
   class Relation  : public Element {
   public:
     inline Relation() : Element() {}
+	inline Relation(long id,int version) : Element(id,version) {}
+	inline Relation(string id,string version) : Element(id,version) {}
     inline ~Relation() {}
     
     void addMember(long ref,string type,string role);
@@ -74,6 +80,8 @@ namespace osm {
   class Node  : public Element {
   public:
     inline Node() : Element() {}
+	inline Node(long id,int version,double lat,double lon) : _lat(lat),_lon(lon), Element(id,version) {}
+	inline Node(string id,string version,string lat,string lon) : _lat(atof(lat.c_str())),_lon(atof(lon.c_str())),Element(id,version) {}
     inline ~Node() {}
     
     inline virtual void setLat(string lat) {_lat=atof(lat.c_str());}
