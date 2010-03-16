@@ -5,7 +5,7 @@
 #include <map>
 #include <string>
 #include <glibmm/ustring.h>
-#include <osm_db.hpp>
+#include <osm_db.h>
 #include <iostream>
 #include <stdlib.h>
 
