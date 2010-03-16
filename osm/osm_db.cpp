@@ -60,7 +60,7 @@ void database::createRelation(long id,int version) {
 void database::createTags(long id,std::map<std::string,Glib::ustring> tags) {
   map<string,Glib::ustring>::iterator it;
   
-  for (it=_tags.begin();it != _tags.end(); it++) 
+  for (it=tags.begin();it != tags.end(); it++) 
 	createTag(id,(*it).first,(*it).second.c_str());
 }
 
