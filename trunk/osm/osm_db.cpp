@@ -6,7 +6,6 @@ namespace osm_db {
 
 using namespace std;
 using namespace sqlite3x;
-using namespace osm;
 
 database::database(string naam) {
   sql = new sqlite3_connection(naam);
@@ -23,7 +22,7 @@ database::~database() {
   sql = NULL;
 }
 
-database& database::operator<<(database& db,const Node& n) {
+database& database::operator<<(database& db,const osm::Node& n) {
 	createNode.bind(1,n.ref());
 	createNode.bind(2,n.version());
 	createNode.bind(3,n.lat());
@@ -32,14 +31,14 @@ database& database::operator<<(database& db,const Node& n) {
 	return db;
 }
 
-database& database::operator<<(database& db,const Way& n) {
+database& database::operator<<(database& db,const osm::Way& n) {
 	createWay.bind(1,n.ref());
 	createWay.bind(2,n.version());
 	createWay.executenonquery();
 	return db;
 }
 
-database& database::operator<<(database& db,const Relation& n) {
+database& database::operator<<(database& db,const osm::Relation& n) {
 	createRelation.bind(1,n.ref());
 	createRelation.bind(2,n.version());
 	createRelation.executenonquery();
