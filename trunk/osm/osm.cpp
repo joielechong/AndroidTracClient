@@ -12,7 +12,8 @@ void Element::store(sqlite3_connection *con) {
   cout << "Element id = " << _id << " version = " << _version << endl;
 }
 
-  void Element::addMember(long ref,string type,string role){} 
+  void Element::addMember(long ref,string type,string role){ throw "Member kan niet in dit type element";}  // throw exception
+  void Element::addNd(long ref) { throw "Nd kan niet in dit type element";}   // throw exception
   
   void Element::printTags() {
     map<string,Glib::ustring>::iterator it;
@@ -33,8 +34,8 @@ void Way::store(sqlite3_connection *con) {
   
 }
 
-  void Element::setLat(string ref) {};
-  void Element::setLon(string ref) {};
+  void Element::setLat(string ref) {throw "Lat kan alleen bij Node";};  // throw exception
+  void Element::setLon(string ref) {throw "Lon kan alleen bij Node";};  // throw exception
 
 // Relation 
 

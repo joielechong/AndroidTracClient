@@ -39,7 +39,7 @@ namespace osm {
     inline void setId(string id) {_id=atol(id.c_str());}
     inline void setVersion(string version) {_version=atol(version.c_str());}
     virtual void store(sqlite3_connection *con);
-    virtual void addNd(long ref) {}
+    virtual void addNd(long ref);
     inline void addNd(string ref) {addNd(atol(ref.c_str()));};
     virtual void addMember(long ref,string type,string role);
     inline void addMember(string ref,string type,string role) {addMember(atol(ref.c_str()),type,role);}
