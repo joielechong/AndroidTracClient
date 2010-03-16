@@ -4,7 +4,7 @@
 #include <string>
 #include <sqlite3x.hpp>
 #include <map>
-#include <glibmm/ustring.h>;
+#include <glibmm/ustring.h>
 
 namespace osm_db {
 
