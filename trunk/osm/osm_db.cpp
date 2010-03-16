@@ -57,7 +57,7 @@ void database::createRelation(long id,int version) {
    _createRelation->executenonquery();
 }
 
-void database::createTags(long id,map<std::string,Glib::ustring> tags) {
+void database::createTags(long id,std::map<std::string,Glib::ustring> tags) {
   map<string,Glib::ustring>::iterator it;
   
   for (it=_tags.begin();it != _tags.end(); it++) 
