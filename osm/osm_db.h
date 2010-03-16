@@ -3,7 +3,6 @@
 
 #include <string>
 #include <sqlite3x.hpp>
-#include "osm.h"
 
 namespace osm_db {
 
