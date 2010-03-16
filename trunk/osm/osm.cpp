@@ -13,11 +13,12 @@ void Element::store(sqlite3_connection *con) {
 }
 
   void Element::addMember(long ref,string type,string role){} 
+  
   void Element::printTags() {
     map<string,Glib::ustring>::iterator it;
     
     for (it=_tags.begin();it != _tags.end(); it++) 
-      cout << "   " << (*it).first << " => " << (*it).second << endl;
+      cout << "   " << (*it).first << " => " << (*it).second.c_str() << endl;
   }
   
 //Way
