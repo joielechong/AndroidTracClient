@@ -39,17 +39,17 @@ int main(int argc, char* argv[])
     schema.open("schema.sqlite.txt");
     while (schema.good()) {
       schema.getline(regel,2047);
-      cout << regel << endl;
+      //      cout << regel << endl;
       if ((strncmp(regel,"CREATE",6) == 0) || (strncmp(regel,"PRAGMA",5) == 0)) {
-	    sql.executenonquery(regel);
+	sql.executenonquery(regel);
       }
     }
     schema.close();
-
-  // Parse the entire document in one go:
+    
+    // Parse the entire document in one go:
     MySaxParser parser;
-	parser.setDBconn(&sql);
-	
+    parser.setDBconn(&sql);
+    
     //      parser.set_substitute_entities(true); //
     if (filepath == "-") {
       parser.parse_stream(cin);
