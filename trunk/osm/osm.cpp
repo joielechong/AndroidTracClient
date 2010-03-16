@@ -65,17 +65,17 @@ ostream& operator<<(ostream& o,const osm::Element& n) {
 }
 
 ostream& operator<<(ostream& o,const osm::Node& n) {
-  o <<  << endl;
+  o << output() << endl;
   return o;
 }
 
 ostream& operator<<(ostream& o,const osm::Way& n) {
-  o << "Id = " << n.id() << " version = " << n.version() << endl;
+  o << output() << endl;
   return o;
 }
 
 ostream& operator<<(ostream& o,const osm::Relation& n) {
-  o << "Id = " << n.id() << " version = " << n.version() << endl;
+  o << output() << endl;
   return o;
 }
 

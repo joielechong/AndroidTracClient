@@ -47,7 +47,7 @@ namespace osm {
     void printTags();
     virtual void setLat(string lat);
     virtual void setLon(string lon);
-	virtual string output();
+	virtual string output() const;
     
   protected:
     long _id;
@@ -61,7 +61,7 @@ namespace osm {
 	inline Way(long id,int version) : Element(id,version) {}
 	inline Way(string id,string version) : Element(id,version) {}
     inline ~Way() {}
-	string output ();
+	string output () const;
     
     inline void addNd(long ref) {_nds.push_back(ref);}
     
@@ -75,7 +75,7 @@ namespace osm {
 	inline Relation(long id,int version) : Element(id,version) {}
 	inline Relation(string id,string version) : Element(id,version) {}
     inline ~Relation() {}
-	string output ();
+	string output () const;
     
     void addMember(long ref,string type,string role);
     
@@ -91,7 +91,7 @@ namespace osm {
     inline ~Node() {}
 	inline double lat() const { return _lat;}
 	inline double lon() const { return _lon;}
-	string output ();
+	string output () const;
     
     inline virtual void setLat(string lat) {_lat=atof(lat.c_str());}
     inline virtual void setLon(string lon) {_lon=atof(lon.c_str());}
