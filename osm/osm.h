@@ -43,7 +43,7 @@ namespace osm {
     inline void addNd(string ref) {addNd(atol(ref.c_str()));};
     virtual void addMember(long ref,string type,string role);
     inline void addMember(string ref,string type,string role) {addMember(atol(ref.c_str()),type,role);}
-    string printTags();
+    string printTags() const;
     virtual void setLat(string lat);
     virtual void setLon(string lon);
 	virtual string output() const;

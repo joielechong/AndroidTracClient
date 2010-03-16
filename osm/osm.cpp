@@ -10,7 +10,7 @@ using namespace std;
   void Element::addMember(long ref,string type,string role){ throw "Member kan niet in dit type element";}  // throw exception
   void Element::addNd(long ref) { throw "Nd kan niet in dit type element";}   // throw exception
   
-  string Element::printTags() {
+  string Element::printTags() const{
     map<string,Glib::ustring>::iterator it;
 	stringstream s;
     
