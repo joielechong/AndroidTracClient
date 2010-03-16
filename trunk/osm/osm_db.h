@@ -12,17 +12,21 @@ namespace osm_db {
   public:
     database(std::string naam);
     ~database();
+	
+	void createNode(long id,int version,double lat,double lon);
+	void createWay(long id,int version);
+	void createRelation(long id,int version);
 
-    inline void executenonquery(std::string query) {sql->executenonquery(query);}
+    inline void executenonquery(std::string query) {_sql->executenonquery(query);}
 
   private: 
-    sqlite3_connection *sql;
-    sqlite3_command *createNode;
-    sqlite3_command *createWay;
-    sqlite3_command *createRelation;
-    sqlite3_command *createTag;
-    sqlite3_command *createNd;
-    sqlite3_command *createMember;
+    sqlite3_connection *_sql;
+    sqlite3_command *_createNode;
+    sqlite3_command *_createWay;
+    sqlite3_command *_createRelation;
+    sqlite3_command *_createTag;
+    sqlite3_command *_createNd;
+    sqlite3_command *_createMember;
   };
 
 }

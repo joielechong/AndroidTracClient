@@ -11,7 +11,7 @@ using namespace std;
 using namespace sqlite3x;
 
 database::database(string naam) {
-  sql = new sqlite3_connection(naam);
+  _sql = new sqlite3_connection(naam);
     ifstream schema;
     char regel[2048];
     schema.open("schema.sqlite.txt");
@@ -19,21 +19,41 @@ database::database(string naam) {
       schema.getline(regel,2047);
       //      cout << regel << endl;
       if ((strncmp(regel,"CREATE",6) == 0) || (strncmp(regel,"PRAGMA",5) == 0)) {
-	sql->executenonquery(regel);
+	_sql->executenonquery(regel);
       }
     }
     schema.close();
-  createNode = new sqlite3_command(*sql,"INSERT INTO node (id,version,lat,lon) VALUES (?,?,?,?)");
-  createWay = new sqlite3_command(*sql,"INSERT INTO way (id,version) VALUES (?,?)");
-  createRelation = new sqlite3_command(*sql,"INSERT INTO relation (id,version) VALUES (?,?)");
+  _createNode = new sqlite3_command(*_sql,"INSERT INTO node (id,version,lat,lon) VALUES (?,?,?,?)");
+  _createWay = new sqlite3_command(*_sql,"INSERT INTO way (id,version) VALUES (?,?)");
+  _createRelation = new sqlite3_command(*_sql,"INSERT INTO relation (id,version) VALUES (?,?)");
+}
+
+void database::createNode(long id,int version,double lat,double lon)
+   _createNode->bind(1,id);
+   _createNode->bind(2,version);
+   _createNode->bind(3,lat);
+   _createNode->bind(4,lon);
+   _createNode->executenonquery();
+}
+
+void database::createWay(long id,int version)
+   _createWay->bind(1,id);
+   _createWay->bind(2,version);
+   _createWay->executenonquery();
+}
+
+void database::createRelation(long id,int version)
+   _createRelation->bind(1,id);
+   _createRelation->bind(2,version);
+   _createRelation->executenonquery();
 }
 
 database::~database() {
-  delete createNode;
-  delete createWay;
-  delete createRelation;
-  delete sql;
-  sql = NULL;
+  delete _createNode;
+  delete _createWay;
+  delete _createRelation;
+  delete _sql;
+  _sql = NULL;
 }
 
 }
