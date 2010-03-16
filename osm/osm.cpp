@@ -1,5 +1,5 @@
 #include "osm.h"
-#include "osm_db.h";
+#include "osm_db.h"
 #include <stdlib.h>
 #include <string>
 #include <glibmm/ustring.h>
