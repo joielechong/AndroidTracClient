@@ -19,12 +19,12 @@ void MySaxParser::on_end_document() {
 
 void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList& attributes) {
   depth++;
-  std::cout << "node: name=" << name << "(" << depth << ")" << std::endl;
+//  std::cout << "node: name=" << name << "(" << depth << ")" << std::endl;
   
   // Store attributes:
   std::map<std::string,std::string> attr;
   for(xmlpp::SaxParser::AttributeList::const_iterator iter = attributes.begin(); iter != attributes.end(); ++iter) {
-    std::cout << "  Attribute: " << iter->name << " = " << iter->value << std::endl;
+//    std::cout << "  Attribute: " << iter->name << " = " << iter->value << std::endl;
 	attr[iter->name]=iter->value;
   }
   switch (depth) {
@@ -57,7 +57,7 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
 }
 
 void MySaxParser::on_end_element(const Glib::ustring& name) {
-  std::cout << "on_end_element()" << std::endl;
+//  std::cout << "on_end_element()" << std::endl;
   if (depth == 2 && elem != NULL) {
     elem->store(_con);
     delete elem;
@@ -68,7 +68,7 @@ void MySaxParser::on_end_element(const Glib::ustring& name) {
 }
 
 void MySaxParser::on_characters(const Glib::ustring& text) {
-  std::cout << "on_characters(): " << text << std::endl;
+//  std::cout << "on_characters(): " << text << std::endl;
 }
 
 void MySaxParser::on_comment(const Glib::ustring& text) {
