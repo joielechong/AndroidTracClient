@@ -21,7 +21,7 @@ namespace osm_db {
 	void createRelation(long id,int version);
 	void createTag(long id,std::string k,std::string v);
 	void createNd(long id,int seq,long ref);
-	void createMember(long id,int seq,long ref,string type,string role);
+	void createMember(long id,int seq,long ref,std::string type,std::string role);
 
     inline void executenonquery(std::string query) {_sql->executenonquery(query);}
 
