@@ -17,9 +17,9 @@ namespace osm {
   public:
     Member(long ref,string type,string role);
     inline ~Member() {}
-	inline long ref() {return _ref;}
-	inline string role() {return _role;}
-	inline string type() {return _type;}
+	inline long ref() const {return _ref;}
+	inline string role() const {return _role;}
+	inline string type() const {return _type;}
     
   private:
     long _ref;
@@ -34,8 +34,8 @@ namespace osm {
     inline Element(string id,string version) :_id(atol(id.c_str())),_version(atol(version.c_str())) {}
     inline ~Element() {}
 
-	inline long id() { return _id;}
-	inline int version() { return _version;}
+	inline long id() const { return _id;}
+	inline int version() const { return _version;}
     inline void addTag(string k,string v) {_tags[k] = v;}
     inline void setId(string id) {_id=atol(id.c_str());}
     inline void setVersion(string version) {_version=atol(version.c_str());}
@@ -85,8 +85,8 @@ namespace osm {
 	inline Node(long id,int version,double lat,double lon) : _lat(lat),_lon(lon), Element(id,version) {}
 	inline Node(string id,string version,string lat,string lon) : _lat(atof(lat.c_str())),_lon(atof(lon.c_str())),Element(id,version) {}
     inline ~Node() {}
-	inline double lat() { return _lat;}
-	inline double lon() { return _lon;}
+	inline double lat() const { return _lat;}
+	inline double lon() const { return _lon;}
     
     inline virtual void setLat(string lat) {_lat=atof(lat.c_str());}
     inline virtual void setLon(string lon) {_lon=atof(lon.c_str());}
