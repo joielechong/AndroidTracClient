@@ -9,8 +9,8 @@ all:	mkdb dijkstra
 clean:
 	rm *.o mkdb dijkstra
 
-mkdb:	main.o myparser.o osm.o
-	g++ ${LDFLAGS} -o mkdb main.o myparser.o osm.o ${LIBS}
+mkdb:	main.o myparser.o osm.o osm_db.o
+	g++ ${LDFLAGS} -o mkdb main.o myparser.o osm.o osm_db.o ${LIBS}
 
 dijkstra:	dijkstra.o
 	g++ -o dijkstra dijkstra.o
