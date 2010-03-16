@@ -22,11 +22,11 @@ database::~database() {
   sql = NULL;
 }
 
-database& database::operator<<(const osm::Element& n) {
+database& database::operator<<(database& db,const osm::Element& n) {
   throw "database store van Element";
 }
 
-database& database::operator<<(const osm::Node& n) {
+database& database::operator<<(database& db,const osm::Node& n) {
 	createNode.bind(1,n.ref());
 	createNode.bind(2,n.version());
 	createNode.bind(3,n.lat());
@@ -35,14 +35,14 @@ database& database::operator<<(const osm::Node& n) {
 	return this;
 }
 
-database& database::operator<<(const osm::Way& n) {
+database& database::operator<<(database& db,const osm::Way& n) {
 	createWay.bind(1,n.ref());
 	createWay.bind(2,n.version());
 	createWay.executenonquery();
 	return this;
 }
 
-database& database::operator<<(const osm::Relation& n) {
+database& database::operator<<(database& db,const osm::Relation& n) {
 	createRelation.bind(1,n.ref());
 	createRelation.bind(2,n.version());
 	createRelation.executenonquery();
