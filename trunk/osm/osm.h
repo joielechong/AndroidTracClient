@@ -103,7 +103,11 @@ namespace osm {
     int _y;
   };
   
-  ostream& operator<<(ostream& o,const osm::Element& e);
+
+inline ostream& operator<<(ostream& o,const osm::Element& n) {
+  o << n.output() << endl;
+  return o;
+}
   ostream& operator<<(ostream& o,const Node& e);
   ostream& operator<<(ostream& o,const Way& e);
   ostream& operator<<(ostream& o,const Relation& e);
