@@ -22,13 +22,13 @@ namespace osm {
   void Element::setLat(string ref) {throw "Lat kan alleen bij Node";};  // throw exception
   void Element::setLon(string ref) {throw "Lon kan alleen bij Node";};  // throw exception
 
-string Element::output () const {
+string Element::output (){
 throw "Kan Element niet printen";
 }
 
 //Way
 
-string Way::output () const {
+string Way::output () {
   stringstream s;
   s << "Id = " << _id << " version = " << _version << endl;
   s << printTags();
@@ -43,7 +43,7 @@ void Relation::addMember(long ref,string type,string role) {
 	delete mem;
 }
 
-string Relation::output () const {
+string Relation::output () {
   stringstream s;
   s << "Id = " << _id << " version = " << _version << endl;;
   s << printTags();
@@ -54,7 +54,7 @@ string Relation::output () const {
 
 Member::Member(long ref,string type, string role) : _ref(ref),_type(type),_role(role) {}
 
-string Node::output () const {
+string Node::output () {
   stringstream s;
   s << "Id = " << _id << " version = " << _version << " lat,lon = " << _lat << " , " << _lon << endl;
   s << printTags();
