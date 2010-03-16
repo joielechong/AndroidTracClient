@@ -14,10 +14,10 @@ namespace osm_db {
     database(std::string naam);
     ~database();
 
-    inline void executenonquery(std::string query) {con->executenonquery(query);}
+    inline void executenonquery(std::string query) {sql->executenonquery(query);}
 
   private: 
-    sqlite3_connection *con;
+    sqlite3_connection *sql;
     sqlite3_command *createNode;
     sqlite3_command *createWay;
     sqlite3_command *createRelation;
