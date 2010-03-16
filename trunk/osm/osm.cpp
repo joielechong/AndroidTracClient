@@ -16,11 +16,11 @@ using namespace std;
       cout << "   " << (*it).first << " => " << (*it).second.c_str() << endl;
   }
   
-//Way
-
-
   void Element::setLat(string ref) {throw "Lat kan alleen bij Node";};  // throw exception
   void Element::setLon(string ref) {throw "Lon kan alleen bij Node";};  // throw exception
+
+//Way
+
 
 // Relation 
 
