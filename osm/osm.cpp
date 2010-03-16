@@ -30,7 +30,13 @@ throw "Kan Element niet printen";
 
 string Way::output () {
   stringstream s;
+  int i;
+
   s << "Id = " << _id << " version = " << _version << endl;
+
+  for(i=0;i<_nds.size();i++) {
+    s << "Node[" << i << "] : " << _nds[i] << endl;  
+
   s << printTags();
   return s.str();
 }
@@ -45,7 +51,13 @@ void Relation::addMember(long ref,string type,string role) {
 
 string Relation::output () {
   stringstream s;
+  int i;
+  
   s << "Id = " << _id << " version = " << _version << endl;;
+
+  for(i=0;i<_members.size();i++) {
+    s << "Member[" << i << "] : " << _members[i].ref() << "," << _members[i].type() << "," << _members[i].role() << endl;  
+
   s << printTags();
   return s.str();
 }
