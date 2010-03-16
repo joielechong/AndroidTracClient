@@ -8,17 +8,16 @@
 namespace osm_db {
 
   using namespace sqlite3x;
-  using namespace std;
 
   class database {
   public:
-    database(string naam);
+    database(std::string naam);
     ~database();
 	
 //	database& operator<<(database& db, const osm::Element& n);
 	database& operator<<(database& db, const osm::Node& n);
 
-    inline void executenonquery(string query) {con->executenonquery(query);}
+    inline void executenonquery(std::string query) {con->executenonquery(query);}
 
   private: 
     sqlite3_connection *con;
