@@ -9,6 +9,7 @@ namespace osm_db {
 
   using namespace sqlite3x;
   using namespace std;
+  using namespace osm;
 
   class database {
   public:
