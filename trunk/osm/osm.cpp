@@ -48,7 +48,7 @@ void Relation::store(sqlite3_connection *con) {
   int i;
   cout << "  members size = " << _members.size() << endl;
   for (i=0;i<_members.size();i++)
-    cout << "   Member[" << i << "] = " << _members[i].ref() << "," << _members[i].type << "," << _members[i].role << endl;
+    cout << "   Member[" << i << "] = " << _members[i].ref() << "," << _members[i].type() << "," << _members[i].role() << endl;
 }
 
 
