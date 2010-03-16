@@ -15,7 +15,7 @@ namespace osm_db {
     ~database();
 	
 //	database& operator<<(const osm::Element& n);
-	operator<<(const osm::Node& n);
+	database& operator<<(const osm::Node& n);
 
     inline void executenonquery(std::string query) {con->executenonquery(query);}
 
