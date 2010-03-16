@@ -55,7 +55,6 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
     }
 	break;
 	
-	default:
   }
 }
 
