@@ -1,12 +1,10 @@
 #include "osm.h"
-#include <sqlite3x.hpp>
 #include <stdlib.h>
 #include <string>
 #include <glibmm/ustring.h>
 
 namespace osm {
 using namespace std;
-using namespace sqlite3x;
 
   void Element::addMember(long ref,string type,string role){ throw "Member kan niet in dit type element";}  // throw exception
   void Element::addNd(long ref) { throw "Nd kan niet in dit type element";}   // throw exception
