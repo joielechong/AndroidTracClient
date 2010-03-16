@@ -38,10 +38,6 @@ Member::Member(long ref,string type, string role) : _ref(ref),_type(type),_role(
 
 using namespace std;
 
-ostream& operator<<(ostream& o,const osm::Element& e) {
-  throw "Output van Element";
-}
-
 ostream& operator<<(ostream& o,const osm::Node& n) {
   o << "Id = " << n.id() << " version = " << n.version() << " lat,lon = " << n.lat() << " , " << n.lon() << endl;
   return o;
@@ -55,4 +51,8 @@ ostream& operator<<(ostream& o,const osm::Way& n) {
 ostream& operator<<(ostream& o,const osm::Relation& n) {
   o << "Id = " << n.id() << " version = " << n.version() << endl;
   return o;
+}
+
+ostream& operator<<(ostream& o,const osm::Element& e) {
+  throw "Output van Element";
 }
