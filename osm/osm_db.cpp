@@ -24,8 +24,8 @@ database::database(string naam) {
     }
     schema.close();
   createNode = new sqlite3_command(*sql,"INSERT INTO node (id,version,lat,lon) VALUES (?,?,?,?)");
-  createWay = new sqlite3_command(*sql,"INSERT INTO way (id,version,lat,lon) VALUES (?,?)");
-  createRelation = new sqlite3_command(*sql,"INSERT INTO relation (id,version,lat,lon) VALUES (?,?)");
+  createWay = new sqlite3_command(*sql,"INSERT INTO way (id,version) VALUES (?,?)");
+  createRelation = new sqlite3_command(*sql,"INSERT INTO relation (id,version) VALUES (?,?)");
 }
 
 database::~database() {
