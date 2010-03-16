@@ -17,7 +17,9 @@ database::database(string naam) {
 
 database::~database() {
   delete createNode;
-  sql.close();
+  delete createWay;
+  delete createRelation;
+  delete sql;
   sql = NULL;
 }
 
