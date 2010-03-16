@@ -9,10 +9,10 @@ namespace osm_db {
   using namespace sqlite3x;
   using namespace std;
 
-  class osm_db {
+  class database {
   public:
-    osm_db(string naam);
-    ~osm_db();
+    database(string naam);
+    ~database();
 
     inline void executenonquery(string query) {con->executenonquery(query);}
 
