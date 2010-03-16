@@ -62,7 +62,7 @@ namespace osm {
 	inline Way(string id,string version) : Element(id,version) {}
     inline ~Way() {}
 	string output ();
-	inline void store(osm_db::database& con){con.createWay(_id,_version);con.createTags(id,_tags);}
+	inline void store(osm_db::database& con){con.createWay(_id,_version);con.createTags(_id,_tags);}
     
     inline void addNd(long ref) {_nds.push_back(ref);}
     
@@ -77,7 +77,7 @@ namespace osm {
 	inline Relation(string id,string version) : Element(id,version) {}
     inline ~Relation() {}
 	string output ();
- 	inline void store(osm_db::database& con){con.createRelation(_id,_version);con.createTags(id,_tags);}
+ 	inline void store(osm_db::database& con){con.createRelation(_id,_version);con.createTags(_id,_tags);}
    
     void addMember(long ref,string type,string role);
     
@@ -94,7 +94,7 @@ namespace osm {
 	inline double lat() const { return _lat;}
 	inline double lon() const { return _lon;}
 	string output ();
-	inline void store(osm_db::database& con){con.createNode(_id,_version,_lat,_lon);con.createTags(id,_tags);}
+	inline void store(osm_db::database& con){con.createNode(_id,_version,_lat,_lon);con.createTags(_id,_tags);}
     
     inline virtual void setLat(string lat) {_lat=atof(lat.c_str());}
     inline virtual void setLon(string lon) {_lon=atof(lon.c_str());}
