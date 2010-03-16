@@ -26,6 +26,9 @@ string Element::output (){
 throw "Kan Element niet printen";
 }
 
+void Element::store () {
+throw "Kan Element niet opslaan";
+}
 //Way
 
 string Way::output () {
