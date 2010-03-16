@@ -19,13 +19,13 @@ using namespace std;
   void Element::setLat(string ref) {throw "Lat kan alleen bij Node";};  // throw exception
   void Element::setLon(string ref) {throw "Lon kan alleen bij Node";};  // throw exception
 
-Element::string output () {
+string Element::output () {
 throw "Kan Element niet printen";
 }
 
 //Way
 
-Way::string output () {
+string Way::output () {
   string s;
   s << "Id = " << _id << " version = " << _version;
   return s;
@@ -39,7 +39,7 @@ void Relation::addMember(long ref,string type,string role) {
 	delete mem;
 }
 
-Relation::string output () {
+string Relation::output () {
   string s;
   s << "Id = " << _id << " version = " << _version;
   return s;
@@ -49,7 +49,7 @@ Relation::string output () {
 
 Member::Member(long ref,string type, string role) : _ref(ref),_type(type),_role(role) {}
 
-Node::string output () {
+string Node::output () {
   string s;
   s << "Id = " << _id << " version = " << _version << " lat,lon = " << _lat << " , " << _lon;
   return s;
