@@ -35,17 +35,6 @@ int main(int argc, char* argv[])
   
   try {
     database sql(dbname);
-    ifstream schema;
-    char regel[2048];
-    schema.open("schema.sqlite.txt");
-    while (schema.good()) {
-      schema.getline(regel,2047);
-      //      cout << regel << endl;
-      if ((strncmp(regel,"CREATE",6) == 0) || (strncmp(regel,"PRAGMA",5) == 0)) {
-	sql.executenonquery(regel);
-      }
-    }
-    schema.close();
     
     // Parse the entire document in one go:
     MySaxParser parser;

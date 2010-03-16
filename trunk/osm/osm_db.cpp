@@ -2,6 +2,8 @@
 #include "osm_db.h"
 #include <string>
 #include <iostream>
+#include <fstream>
+#include <stdlib.h>
 
 namespace osm_db {
 
