@@ -35,7 +35,7 @@ database::~database() {
   _sql = NULL;
 }
 
-void database::createNode(long id,int version,double lat,double lon)
+void database::createNode(long id,int version,double lat,double lon) {
    _createNode->bind(1,id);
    _createNode->bind(2,version);
    _createNode->bind(3,lat);
@@ -43,13 +43,13 @@ void database::createNode(long id,int version,double lat,double lon)
    _createNode->executenonquery();
 }
 
-void database::createWay(long id,int version)
+void database::createWay(long id,int version) {
    _createWay->bind(1,id);
    _createWay->bind(2,version);
    _createWay->executenonquery();
 }
 
-void database::createRelation(long id,int version)
+void database::createRelation(long id,int version) {
    _createRelation->bind(1,id);
    _createRelation->bind(2,version);
    _createRelation->executenonquery();
