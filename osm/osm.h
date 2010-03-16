@@ -62,7 +62,7 @@ namespace osm {
 	inline Way(string id,string version) : Element(id,version) {}
     inline ~Way() {}
 	string output ();
-	inline void store(osm_db::database& con){con.createWay(_id,_version);con.createTags(_id,_tags);}
+	inline void store(osm_db::database& con){con.createWay(_id,_version);con.createTags(_id,_tags);con.createNds(_id,_nds);}
     
     inline void addNd(long ref) {_nds.push_back(ref);}
     
@@ -77,7 +77,7 @@ namespace osm {
 	inline Relation(string id,string version) : Element(id,version) {}
     inline ~Relation() {}
 	string output ();
- 	inline void store(osm_db::database& con){con.createRelation(_id,_version);con.createTags(_id,_tags);}
+ 	inline void store(osm_db::database& con){con.createRelation(_id,_version);con.createTags(_id,_tags);con.createMembers(_id,_members);}
    
     void addMember(long ref,string type,string role);
     

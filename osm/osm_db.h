@@ -4,7 +4,9 @@
 #include <string>
 #include <sqlite3x.hpp>
 #include <map>
+#include <vector>
 #include <glibmm/ustring.h>
+#include "osm.h"
 
 namespace osm_db {
 
@@ -20,6 +22,8 @@ namespace osm_db {
 	void createRelation(long id,int version);
 	void createTags(long id, std::map<std::string,Glib::ustring> tags);
 	void createTag(long id,std::string k,std::string v);
+	void createNds(long id,std::vector<long> nds);
+	void createNd(long id,int seq,long ref);
 
     inline void executenonquery(std::string query) {_sql->executenonquery(query);}
 
