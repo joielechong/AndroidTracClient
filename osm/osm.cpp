@@ -23,7 +23,6 @@ void Element::store(sqlite3_connection *con) {
 void Way::store(sqlite3_connection *con) {
   cout << "Way id = " << _id << " version = " << _version << endl;
   printTags();
-  
   int i;
   cout << "  Nd size = " << _nds.size() << endl;
   for (i=0;i<_nds.size();i++)
@@ -44,6 +43,10 @@ void Relation::addMember(long ref,string type,string role) {
 void Relation::store(sqlite3_connection *con) {
   cout << "Relation id = " << _id << " version = " << _version << endl;
   printTags();
+  int i;
+  cout << "  members size = " << _members.size() << endl;
+  for (i=0;i<_members.size();i++)
+    cout << "   Member[" << i << "] = " << _members[i].ref() << "," << _members[i].type << "," << _members[i].role << endl;
 }
 
 
