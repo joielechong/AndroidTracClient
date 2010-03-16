@@ -53,6 +53,3 @@ ostream& operator<<(ostream& o,const osm::Relation& n) {
   return o;
 }
 
-ostream& operator<<(ostream& o,const osm::Element& e) {
-  throw "Output van Element";
-}
