@@ -72,7 +72,7 @@ namespace osm {
     inline Relation() : Element() {}
 	inline Relation(long id,int version) : Element(id,version) {}
 	inline Relation(string id,string version) : Element(id,version) {}
-    ~Relation() {}
+    ~Relation();
     
     void addMember(long ref,string type,string role);
     virtual void store(sqlite3_connection *con);
