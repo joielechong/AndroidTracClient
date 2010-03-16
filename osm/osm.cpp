@@ -1,6 +1,8 @@
 #include "osm.h"
 #include <sqlite3x.hpp>
 #include <stdlib.h>
+#include <string>
+#include <glibmm/ustring.h>
 
 namespace osm {
 using namespace std;
@@ -12,7 +14,7 @@ void Element::store(sqlite3_connection *con) {
 
   void Element::addMember(long ref,string type,string role){} 
   void Element::printTags() {
-    map<string,string>::iterator it;
+    map<string,Glib::ustring>::iterator it;
     
     for (it=_tags.begin();it != _tags.end(); it++) 
       cout << "   " << (*it).first << " => " << (*it).second << endl;
