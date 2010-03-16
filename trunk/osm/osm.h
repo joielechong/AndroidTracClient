@@ -47,7 +47,7 @@ namespace osm {
     virtual void setLat(string lat);
     virtual void setLon(string lon);
 	virtual string output();
-	virtual store(osm_db::database& con);
+	virtual void store(osm_db::database& con);
     
   protected:
     long _id;
@@ -62,7 +62,7 @@ namespace osm {
 	inline Way(string id,string version) : Element(id,version) {}
     inline ~Way() {}
 	string output ();
-	store(osm_db::database& con);
+	void store(osm_db::database& con);
     
     inline void addNd(long ref) {_nds.push_back(ref);}
     
@@ -77,7 +77,7 @@ namespace osm {
 	inline Relation(string id,string version) : Element(id,version) {}
     inline ~Relation() {}
 	string output ();
- 	store(osm_db::database& con);
+ 	void store(osm_db::database& con);
    
     void addMember(long ref,string type,string role);
     
@@ -94,7 +94,7 @@ namespace osm {
 	inline double lat() const { return _lat;}
 	inline double lon() const { return _lon;}
 	string output ();
-	store(osm_db::database& con);
+	void store(osm_db::database& con);
     
     inline virtual void setLat(string lat) {_lat=atof(lat.c_str());}
     inline virtual void setLon(string lon) {_lon=atof(lon.c_str());}
