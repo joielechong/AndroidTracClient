@@ -26,7 +26,7 @@ string Element::output (){
 throw "Kan Element niet printen";
 }
 
-void Element::store () {
+void Element::store (osm_db::database& con) {
 throw "Kan Element niet opslaan";
 }
 //Way
