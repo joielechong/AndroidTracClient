@@ -38,17 +38,10 @@ void Way::store(sqlite3_connection *con) {
 
 // Relation 
 
-Relation::~Relation() {
-	while (! _members.empty()) {
-	  Member *mem = _members.back();
-	  _members.pop_back();
-	  delete mem;
-	}
-}
-
 void Relation::addMember(long ref,string type,string role) {
 	Member *mem = new Member(ref,type,role);
 	_members.push_back(*mem);
+	delete mem;
 }
 
 void Relation::store(sqlite3_connection *con) {
