@@ -11,8 +11,8 @@
 
 #include "myparser.h"
 
-using namespace sqlite3x;
 using namespace std;
+using namespace osm_db;
 
 #define BUFFERSIZE (1024)
 
