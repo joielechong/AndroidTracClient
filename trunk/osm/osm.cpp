@@ -38,7 +38,7 @@ Member::Member(long ref,string type, string role) : _ref(ref),_type(type),_role(
 
 using namespace std;
 
-ostream& operator<<(ostream& o,const osm::Element& n) {
+ostream& operator<<(ostream& o,const osm::Element& e) {
   throw "Output van Element";
 }
 
