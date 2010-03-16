@@ -26,9 +26,9 @@ throw "Kan Element niet printen";
 //Way
 
 string Way::output () {
-  string s;
+  stringstream s;
   s << "Id = " << _id << " version = " << _version;
-  return s;
+  return s.str();
 }
 
 // Relation 
@@ -40,9 +40,9 @@ void Relation::addMember(long ref,string type,string role) {
 }
 
 string Relation::output () {
-  string s;
+  stringstream s;
   s << "Id = " << _id << " version = " << _version;
-  return s;
+  return s.str();
 }
 
 // Node
@@ -50,9 +50,9 @@ string Relation::output () {
 Member::Member(long ref,string type, string role) : _ref(ref),_type(type),_role(role) {}
 
 string Node::output () {
-  string s;
+  stringstream s;
   s << "Id = " << _id << " version = " << _version << " lat,lon = " << _lat << " , " << _lon;
-  return s;
+  return s.str();
 }
 
 }
