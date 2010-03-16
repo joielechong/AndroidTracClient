@@ -103,7 +103,7 @@ namespace osm {
   };
   
 
-inline ostream& operator<<(ostream& o,const osm::Element& n) {
+inline ostream& operator<<(ostream& o,osm::Element& n) {
   o << n.output();
   return o;
 }
