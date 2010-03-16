@@ -42,6 +42,7 @@ database::~database() {
 }
 
 void database::createNode(long id,int version,double lat,double lon) {
+   _createNode->reset();
    _createNode->bind(1,(sqlite3x::int64_t)id);
    _createNode->bind(2,version);
    _createNode->bind(3,lat);
@@ -50,18 +51,21 @@ void database::createNode(long id,int version,double lat,double lon) {
 }
 
 void database::createWay(long id,int version) {
+   _createWay->reset();
    _createWay->bind(1,(sqlite3x::int64_t)id);
    _createWay->bind(2,version);
    _createWay->executenonquery();
 }
 
 void database::createRelation(long id,int version) {
+   _createRelation->reset();
    _createRelation->bind(1,(sqlite3x::int64_t)id);
    _createRelation->bind(2,version);
    _createRelation->executenonquery();
 }
 
 void database::createTag(long id,std::string k,std::string v) {
+   _createTag->reset();
    _createTag->bind(1,(sqlite3x::int64_t)id);
    _createTag->bind(2,k);
    _createTag->bind(3,v);
@@ -69,6 +73,7 @@ void database::createTag(long id,std::string k,std::string v) {
 }
 
 void database::createNd(long id,int seq,long ref) {
+   _createNd->reset();
    _createNd->bind(1,(sqlite3x::int64_t)id);
    _createNd->bind(2,seq);
    _createNd->bind(3,(sqlite3x::int64_t)ref);
@@ -76,6 +81,7 @@ void database::createNd(long id,int seq,long ref) {
 }
 
 void database::createMember(long id,int seq,long ref,string type,string role) {
+   _createMember->reset();
    _createMember->bind(1,(sqlite3x::int64_t)id);
    _createMember->bind(2,seq);
    _createMember->bind(3,(sqlite3x::int64_t)ref);
