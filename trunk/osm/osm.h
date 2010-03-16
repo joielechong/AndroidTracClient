@@ -18,6 +18,9 @@ namespace osm {
   public:
     Member(long ref,string type,string role);
     inline ~Member() {}
+	inline long ref() {return _ref;}
+	inline string role() {return _role;}
+	inline string type() {return _type;}
     
   private:
     long _ref;
