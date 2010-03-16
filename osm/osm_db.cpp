@@ -85,4 +85,3 @@ void createMember(long id,int seq,long ref,string type,string role) {
 }
 
 }
-

@@ -83,10 +83,13 @@ string Relation::output () {
 }
 
 void Relation::store(osm_db::database& con){
+  int i;
+  
   con.createRelation(_id,_version);
   createTags(con);
   for(i=0;i<_members.size();i++) 
     con.createMember(_id,i,_members[i].ref(),_members[i].type(),_members[i].role());  
+}
 
 // Node
 
