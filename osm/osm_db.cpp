@@ -1,4 +1,3 @@
-#include "osm.h"
 #include "osm_db.h"
 #include <string>
 #include <iostream>
@@ -7,8 +6,8 @@
 
 namespace osm_db {
 
-using namespace std;
-using namespace sqlite3x;
+  using namespace std;
+  using namespace sqlite3x;
 
 database::database(string naam) {
   _sql = new sqlite3_connection(naam);
