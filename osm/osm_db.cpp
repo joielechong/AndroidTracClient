@@ -57,14 +57,14 @@ void database::createRelation(long id,int version) {
    _createRelation->executenonquery();
 }
 
-void database::createTags(long id,map<string,Glib::ustring> tags) {
+void database::createTags(long id,map<std::string,Glib::ustring> tags) {
   map<string,Glib::ustring>::iterator it;
   
   for (it=_tags.begin();it != _tags.end(); it++) 
 	createTag(id,(*it).first,(*it).second.c_str());
 }
 
-void database::createTag(long id,string k,string v) {
+void database::createTag(long id,std::string k,std::string v) {
    _createTag->bind(1,(sqlite3x::int64_t)id);
    _createTag->bind(2,k);
    _createTag->bind(3,v);
