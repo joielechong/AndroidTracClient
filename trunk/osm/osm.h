@@ -4,7 +4,7 @@
 #include <vector>
 #include <map>
 #include <string>
-#include <glibmm/ustring>
+#include <glibmm/ustring.h>
 #include <sqlite3x.hpp>
 #include <iostream>
 #include <stdlib.h>
