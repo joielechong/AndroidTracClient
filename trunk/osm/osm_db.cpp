@@ -28,6 +28,14 @@ database::database(string naam) {
   _createRelation = new sqlite3_command(*_sql,"INSERT INTO relation (id,version) VALUES (?,?)");
 }
 
+database::~database() {
+  delete _createNode;
+  delete _createWay;
+  delete _createRelation;
+  delete _sql;
+  _sql = NULL;
+}
+
 void database::createNode(long id,int version,double lat,double lon)
    _createNode->bind(1,id);
    _createNode->bind(2,version);
@@ -46,14 +54,6 @@ void database::createRelation(long id,int version)
    _createRelation->bind(1,id);
    _createRelation->bind(2,version);
    _createRelation->executenonquery();
-}
-
-database::~database() {
-  delete _createNode;
-  delete _createWay;
-  delete _createRelation;
-  delete _sql;
-  _sql = NULL;
 }
 
 }
