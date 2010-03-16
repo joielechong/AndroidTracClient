@@ -65,17 +65,17 @@ ostream& operator<<(ostream& o,const osm::Element& n) {
 }
 
 ostream& operator<<(ostream& o,const osm::Node& n) {
-  o << output() << endl;
+  o << n.output() << endl;
   return o;
 }
 
 ostream& operator<<(ostream& o,const osm::Way& n) {
-  o << output() << endl;
+  o << n.output() << endl;
   return o;
 }
 
 ostream& operator<<(ostream& o,const osm::Relation& n) {
-  o << output() << endl;
+  o << n.output() << endl;
   return o;
 }
 
