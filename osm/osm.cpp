@@ -62,6 +62,8 @@ Member::Member(long ref,string type, string role) : _ref(ref),_type(type),_role(
 
 }
 
+using namespace std;
+
 ostream& operator<<(ostream& o,const osm::Node& n) {
   o << "Id = " << n.id() << " version = " << n.version() << " lat,lon = " << n.lat() << " , " << n.lon() << endl;
   return o;
