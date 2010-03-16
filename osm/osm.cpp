@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string>
 #include <glibmm/ustring.h>
+#include <sstream>
 
 namespace osm {
 using namespace std;
@@ -11,9 +12,11 @@ using namespace std;
   
   void Element::printTags() {
     map<string,Glib::ustring>::iterator it;
+	stringstream s;
     
     for (it=_tags.begin();it != _tags.end(); it++) 
-      cout << "   " << (*it).first << " => " << (*it).second.c_str() << endl;
+      s << "   " << (*it).first << " => " << (*it).second.c_str() << endl;
+	return s.str();
   }
   
   void Element::setLat(string ref) {throw "Lat kan alleen bij Node";};  // throw exception
@@ -27,7 +30,8 @@ throw "Kan Element niet printen";
 
 string Way::output () const {
   stringstream s;
-  s << "Id = " << _id << " version = " << _version;
+  s << "Id = " << _id << " version = " << _version << endl;
+  s << printTags();
   return s.str();
 }
 
@@ -41,7 +45,8 @@ void Relation::addMember(long ref,string type,string role) {
 
 string Relation::output () const {
   stringstream s;
-  s << "Id = " << _id << " version = " << _version;
+  s << "Id = " << _id << " version = " << _version << endl;;
+  s << printTags();
   return s.str();
 }
 
@@ -51,31 +56,9 @@ Member::Member(long ref,string type, string role) : _ref(ref),_type(type),_role(
 
 string Node::output () const {
   stringstream s;
-  s << "Id = " << _id << " version = " << _version << " lat,lon = " << _lat << " , " << _lon;
+  s << "Id = " << _id << " version = " << _version << " lat,lon = " << _lat << " , " << _lon << endl;
+  s << printTags();
   return s.str();
 }
 
 }
-
-using namespace std;
-
-ostream& operator<<(ostream& o,const osm::Element& n) {
-  o << n.output() << endl;
-  return o;
-}
-
-ostream& operator<<(ostream& o,const osm::Node& n) {
-  o << n.output() << endl;
-  return o;
-}
-
-ostream& operator<<(ostream& o,const osm::Way& n) {
-  o << n.output() << endl;
-  return o;
-}
-
-ostream& operator<<(ostream& o,const osm::Relation& n) {
-  o << n.output() << endl;
-  return o;
-}
-

@@ -7,7 +7,6 @@
 #include <glibmm/ustring.h>
 #include "osm_db.h"
 #include <iostream>
-#include <sstream>
 #include <stdlib.h>
 
 namespace osm {
@@ -105,13 +104,9 @@ namespace osm {
   
 
 inline ostream& operator<<(ostream& o,const osm::Element& n) {
-  o << n.output() << endl;
+  o << n.output();
   return o;
 }
-  ostream& operator<<(ostream& o,const Node& e);
-  ostream& operator<<(ostream& o,const Way& e);
-  ostream& operator<<(ostream& o,const Relation& e);
-  ostream& operator<<(ostream& o,const Member& e);
 }
 
 #endif
