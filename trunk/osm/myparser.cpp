@@ -36,7 +36,7 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
     } else if (name == "relation") {
       elem = new osm::Relation(attr["id"],attr["version"]);
     } else {
-      // throw an exception
+      throw("Onbekend element "+name);
     }
 	break;
 	
@@ -49,7 +49,7 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
 	  } else if (name == "nd" ) {
 	    elem->addNd(attr["ref"]);
 	  } else {
-	  // THROW EXCEPTION
+	    throw("Onbekend element "+name);
 	  }
     }
 	break;
