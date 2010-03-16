@@ -54,7 +54,7 @@ string Way::output () {
 
 void Way::store(osm_db::database& con){
   con.createWay(_id,_version);
-  createTags(con)
+  createTags(con);
   for(i=0;i<_nds.size();i++) 
     con.createNd(_id,i,_nds[i]);
 }
