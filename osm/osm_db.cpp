@@ -22,6 +22,8 @@ database::~database() {
   sql = NULL;
 }
 
+/*
+
 database& database::operator<<(database& db,const osm::Element& n) {
   throw "database store van Element";
 }
@@ -48,4 +50,5 @@ database& database::operator<<(database& db,const osm::Relation& n) {
 	createRelation.executenonquery();
 	return this;
 }
+*/
 }
