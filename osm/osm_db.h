@@ -25,6 +25,8 @@ namespace osm_db {
     sqlite3_command *createNd;
     sqlite3_command *createMember;
   };
+
+  database& database::operator<<(database& db,const osm::Element& n);
 }
 
 #endif
