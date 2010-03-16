@@ -3,6 +3,7 @@
 
 #include <string>
 #include <sqlite3x.hpp>
+#include "osm.h"
 
 namespace osm_db {
 
@@ -13,6 +14,9 @@ namespace osm_db {
   public:
     database(string naam);
     ~database();
+	
+//	database& operator<<(database& db, const Element& n);
+	database& operator<<(database& db, const Node& n);
 
     inline void executenonquery(string query) {con->executenonquery(query);}
 

@@ -5,7 +5,7 @@
 #include <map>
 #include <string>
 #include <glibmm/ustring.h>
-#include <sqlite3x.hpp>
+#include <osm_db.hpp>
 #include <iostream>
 #include <stdlib.h>
 
@@ -38,7 +38,6 @@ namespace osm {
     inline void addTag(string k,string v) {_tags[k] = v;}
     inline void setId(string id) {_id=atol(id.c_str());}
     inline void setVersion(string version) {_version=atol(version.c_str());}
-    virtual void store(sqlite3_connection *con);
     virtual void addNd(long ref);
     inline void addNd(string ref) {addNd(atol(ref.c_str()));};
     virtual void addMember(long ref,string type,string role);
@@ -61,7 +60,6 @@ namespace osm {
     inline ~Way() {}
     
     inline void addNd(long ref) {_nds.push_back(ref);}
-    virtual void store(sqlite3_connection *con);
     
   private:
     vector<long> _nds;
@@ -75,7 +73,6 @@ namespace osm {
     inline ~Relation() {}
     
     void addMember(long ref,string type,string role);
-    virtual void store(sqlite3_connection *con);
     
   private:
     vector<Member> _members;
@@ -90,7 +87,6 @@ namespace osm {
     
     inline virtual void setLat(string lat) {_lat=atof(lat.c_str());}
     inline virtual void setLon(string lon) {_lon=atof(lon.c_str());}
-    virtual void store(sqlite3_connection *con);
     
   private:
     double _lat;

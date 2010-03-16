@@ -8,10 +8,6 @@ namespace osm {
 using namespace std;
 using namespace sqlite3x;
 
-void Element::store(sqlite3_connection *con) {
-  cout << "Element id = " << _id << " version = " << _version << endl;
-}
-
   void Element::addMember(long ref,string type,string role){ throw "Member kan niet in dit type element";}  // throw exception
   void Element::addNd(long ref) { throw "Nd kan niet in dit type element";}   // throw exception
   
