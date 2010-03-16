@@ -101,12 +101,17 @@ namespace osm {
     int _x;
     int _y;
   };
-  
 
 inline ostream& operator<<(ostream& o,osm::Element& n) {
   o << n.output();
   return o;
 }
+
+inline database& operator<<(database& o,osm::Element& n) {
+  n.store(o);
+  return o;
+}
+
 }
 
 #endif
