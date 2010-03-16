@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <glibmm/ustring>
 #include <sqlite3x.hpp>
 #include <iostream>
 #include <stdlib.h>
@@ -46,7 +47,7 @@ namespace osm {
   protected:
     long _id;
     int	_version;
-    map<string,string> _tags;
+    map<string,Glib::ustring> _tags;
   };
   
   class Way  : public Element {
