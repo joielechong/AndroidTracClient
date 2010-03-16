@@ -3,7 +3,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include <stdlib.h>
+#include <string.h>
 
 namespace osm_db {
 
