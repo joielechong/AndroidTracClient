@@ -97,14 +97,12 @@ namespace osm {
 	string output ();
 	void store(osm_db::database& con);
     
-    inline virtual void setLat(string lat) {_lat=atof(lat.c_str());_x = (_lat+90)*20;}
-    inline virtual void setLon(string lon) {_lon=atof(lon.c_str());_y = (_lon+180)*20;}
+    inline virtual void setLat(string lat) {_lat=atof(lat.c_str());}
+    inline virtual void setLon(string lon) {_lon=atof(lon.c_str());}
     
   private:
     double _lat;
     double _lon;
-    int _x;
-    int _y;
   };
 
 inline ostream& operator<<(ostream& o,osm::Element& n) {
