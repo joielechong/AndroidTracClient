@@ -98,7 +98,7 @@ namespace osm {
     int _y;
   };
   
-  ostream& operator<<(ostream& o,const Element& e);
+  ostream& operator<<(ostream& o,Element& e);
   ostream& operator<<(ostream& o,const Node& e);
   ostream& operator<<(ostream& o,const Way& e);
   ostream& operator<<(ostream& o,const Relation& e);
