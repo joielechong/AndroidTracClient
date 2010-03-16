@@ -75,7 +75,7 @@ void database::createNd(long id,int seq,long ref) {
    _createNd->executenonquery();
 }
 
-void createMember(long id,int seq,long ref,string type,string role) {
+void database::createMember(long id,int seq,long ref,string type,string role) {
    _createMember->bind(1,(sqlite3x::int64_t)id);
    _createMember->bind(2,seq);
    _createMember->bind(3,(sqlite3x::int64_t)ref);
