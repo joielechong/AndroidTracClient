@@ -3,6 +3,8 @@
 
 #include <string>
 #include <sqlite3x.hpp>
+#include <map>
+#include <glibmm/ustring.h>;
 
 namespace osm_db {
 
@@ -16,6 +18,8 @@ namespace osm_db {
 	void createNode(long id,int version,double lat,double lon);
 	void createWay(long id,int version);
 	void createRelation(long id,int version);
+	void createTags(long id, map<string,Glib::ustring>);
+	void createTag(long id,string k,string v);
 
     inline void executenonquery(std::string query) {_sql->executenonquery(query);}
 

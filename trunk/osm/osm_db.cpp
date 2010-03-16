@@ -25,12 +25,14 @@ database::database(string naam) {
   _createNode = new sqlite3_command(*_sql,"INSERT INTO node (id,version,lat,lon) VALUES (?,?,?,?)");
   _createWay = new sqlite3_command(*_sql,"INSERT INTO way (id,version) VALUES (?,?)");
   _createRelation = new sqlite3_command(*_sql,"INSERT INTO relation (id,version) VALUES (?,?)");
+  _createTag = new sqlite3_command(*_sql,"INSERT INTO tag (id,k,v) VALUES(?,?,?)");
 }
 
 database::~database() {
   delete _createNode;
   delete _createWay;
   delete _createRelation;
+  delete _createTag;
   delete _sql;
   _sql = NULL;
 }
@@ -53,6 +55,20 @@ void database::createRelation(long id,int version) {
    _createRelation->bind(1,(sqlite3x::int64_t)id);
    _createRelation->bind(2,version);
    _createRelation->executenonquery();
+}
+
+void database::createTags(long id,map<string,Glib::ustring> tags) {
+  map<string,Glib::ustring>::iterator it;
+  
+  for (it=_tags.begin();it != _tags.end(); it++) 
+	createTag(id,(*it).first,(*it).second.c_str());
+}
+
+void database::createTag(long id,string k,string v) {
+   _createTag->bind(1,(sqlite3x::int64_t)id);
+   _createTag->bind(2,k);
+   _createTag->bind(3,v);
+   _createTag->executenonquery();
 }
 
 }
