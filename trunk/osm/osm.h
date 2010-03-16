@@ -107,7 +107,7 @@ inline ostream& operator<<(ostream& o,osm::Element& n) {
   return o;
 }
 
-inline database& operator<<(database& o,osm::Element& n) {
+inline osm_db::database& operator<<(osm_db::database& o,osm::Element& n) {
   n.store(o);
   return o;
 }
