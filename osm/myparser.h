@@ -4,8 +4,7 @@
 #include <libxml++/libxml++.h>
 
 #include "osm.h"
-#include <sqlite3x.hpp>
-
+#include "osm_db.h"
 
 class MySaxParser : public xmlpp::SaxParser
 {
@@ -14,7 +13,7 @@ class MySaxParser : public xmlpp::SaxParser
   virtual ~MySaxParser();
   
   int getDepth();
-  void setDBconn(sqlite3x::sqlite3_connection *con);
+  void setDBconn(osm_db::osm_db *con);
  
  protected:
   //overrides:
@@ -33,7 +32,7 @@ class MySaxParser : public xmlpp::SaxParser
  private:
   short depth;
   osm::Element *elem;
-  sqlite3x::sqlite3_connection *_con;
+  osm_db::osm_db *_con;
 };
 
 #endif //_MYPARSER_H
