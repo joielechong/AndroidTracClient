@@ -3,10 +3,7 @@
 #include "osm.h"
 #include <string>
 
-MySaxParser::MySaxParser() : xmlpp::SaxParser() {
-  depth = 0;
-  elem = NULL;
-}
+MySaxParser::MySaxParser() : depth(0), elem(NULL), xmlpp::SaxParser() {}
 
 MySaxParser::~MySaxParser() {
 }
@@ -22,49 +19,64 @@ void MySaxParser::on_end_document() {
 void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList& attributes) {
   depth++;
   std::cout << "node: name=" << name << "(" << depth << ")" << std::endl;
-	
+  
   if (depth == 2) {
-	if (name == "node") {
-	  elem = new osm::Node();
-	} else if (name == "way") {
-	  elem = new osm::Way();
-	} else if (name == "relation") {
-	  elem = new osm::Relation();
-	} else {
-	// throw an exception
-	}
+    if (name == "node") {
+      elem = new osm::Node();
+    } else if (name == "way") {
+      elem = new osm::Way();
+    } else if (name == "relation") {
+      elem = new osm::Relation();
+    } else {
+      // throw an exception
+    }
   }
   
   // Print attributes:
-  std::string k;
-  std::string v;
+  std::string k,v;
+  std::string ref,type,role;
   for(xmlpp::SaxParser::AttributeList::const_iterator iter = attributes.begin(); iter != attributes.end(); ++iter) {
-      std::cout << "  Attribute: " << iter->name << " = " << iter->value << std::endl;
-	  if (depth == 2) {
-	    if (iter->name == "id") 
-		  elem->setId(iter->value);
-		else if (iter->name == "version") 
-		  elem->setVersion(iter->value);
-	  } else if (depth == 3) {
-          if (name=="tag") {
-	        if (iter->name == "k")
-		      k = iter->value;
-		    else if (iter->name == "v")
-		      v = iter->value;
-	      } else if (name=="nd" and iter->name == "ref") 
-		      elem->addNd(iter->value);
-	  }
+    std::cout << "  Attribute: " << iter->name << " = " << iter->value << std::endl;
+    if (depth == 2) {
+      if (iter->name == "id") 
+	elem->setId(iter->value);
+      else if (iter->name == "version") 
+	elem->setVersion(iter->value);
+      else if (iter->name == "lat") 
+	elem->setLat(iter->value);
+      else if (iter->name == "lon") 
+	elem->setLon(iter->value);
+    } else if (depth == 3) {
+      if (name=="tag") {
+	if (iter->name == "k")
+	  k = iter->value;
+	else if (iter->name == "v")
+	  v = iter->value;
+      } else if (name == "member") {
+	if (iter->name == "ref")
+	  ref = iter->value;
+	else if (iter->name == "type")
+	  type = iter->value;	
+	else if (iter->name == "role")
+	  role = iter->value;	
+      } else if (name=="nd" and iter->name == "ref") 
+	elem->addNd(iter->value);
+    }
   }
-  if (depth == 3 and name == "tag" and elem != NULL)
-    elem->addTag(k,v);
+  if (depth == 3 and elem != NULL) {
+    if (name == "tag")
+      elem->addTag(k,v);
+    else if (name == "member")
+      elem->addMember(ref,type,role);
+  }
 }
 
 void MySaxParser::on_end_element(const Glib::ustring& name) {
   std::cout << "on_end_element()" << std::endl;
   if (depth == 2 && elem != NULL) {
-     elem->store(_con);
-	 delete *elem;
-	 elem = NULL;
+    elem->store(_con);
+    delete elem;
+    elem = NULL;
   }
   depth--;
   
