@@ -47,6 +47,12 @@ int main(int argc, char* argv[])
     } else {
       parser.parse_file(filepath);
     }
+	sql.executenonquery("DELETE FROM way WHERE NOT id in (SELECT id FROM tag WHERE k in ('highway','boundary','route','natural'))");
+	sql.executenonquery("DELETE FROM way WHERE id in (SELECT id FROM tag WHERE k='route' AND NOT v like 'ferry%')");
+	sql.executenonquery("DELETE FROM way WHERE id in (SELECT id FROM tag WHERE k='natural' AND NOT v like 'coastline%')");
+	sql.executenonquery("DELETE FROM relation WHERE id in (SELECT id FROM tag WHERE k='type' AND NOT v in ('boundary','restriction','multipolygon')");
+	sql.executenonquery("DELETE FROM node WHERE NOT id IN (SELECT id FROM tag UNION SELECT id FROM nd UNION SELECT id FROM member)");
+	
     sql.executenonquery("INSERT OR REPLACE INTO neighbor (way,id1,id2) SELECT DISTINCT way,id1,id2 FROM nb");
     sql.executenonquery("INSERT OR REPLACE INTO admin (id,name,level,minlat,maxlat,minlon,maxlon) SELECT id,name,level,minlat,maxlat,minlon,maxlon FROM admintmp");
     sql.executenonquery("UPDATE node SET x=round((lon+90)*20),y=round((lat+180)*20) WHERE id in (SELECT ref FROM usable_way as u,nd WHERE u.id=nd.id)");

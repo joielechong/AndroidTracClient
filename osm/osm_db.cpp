@@ -68,22 +68,6 @@ namespace osm_db {
   }
   
   void database::createTag(long id,std::string k,std::string v) {
-    if (k == "created_by" ||
-        k == "converted_by" || 
-	k == "time" ||
-	k == "timestamp" ||
-	k == "user" ||
-	k == "fixme" ||
-	k == "FIXME" || 
-	k == "todo" ||
-	k == "TODO" ||
-	strncmp(k.c_str(),"AND",3) == 0 ||
-	strncmp(k.c_str(),"source",6) == 0 ||
-	strncmp(k.c_str(),"3dshapes",8) == 0 ||
-	strncmp(k.c_str(),"note",4) == 0 ||
-	strncasecmp(k.c_str(),"opengeo",7) == 0) 
-      return;
-
     _createTag->bind(1,(sqlite3x::int64_t)id);
     _createTag->bind(2,k);
     _createTag->bind(3,v);
