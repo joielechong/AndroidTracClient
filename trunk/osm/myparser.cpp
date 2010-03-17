@@ -97,7 +97,7 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
       } else if (name == "nd" ) {
 	_con->createNd(lastid,ndcnt++,ref);
       } else {
-	throw(("Onbekend element "+name).c_str());
+	throw(exception("Onbekend element "+name).c_str());
       }
     }
     break;
