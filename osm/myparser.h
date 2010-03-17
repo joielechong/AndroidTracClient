@@ -32,7 +32,7 @@ class MySaxParser : public xmlpp::SaxParser
   short depth;
   long counter;
   osm_db::database *_con;
-  long last_id;
+  long lastid;
   int memcnt,ndcnt;
 };
 
