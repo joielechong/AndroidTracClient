@@ -58,8 +58,8 @@ int main(int argc, char* argv[])
   } catch (const sqlite3x::database_error& ex) {
     cout << "Exception in sqlite: " << ex.what() <<endl;
     return 1;
-  } catch (const exception &ex) {
-     cout << "Exception in program: " << ex.what() <<endl;
+  } catch (const Glib::ustring &ex) {
+     cout << "Exception in program: " << ex <<endl;
  }
   
   return 0;
