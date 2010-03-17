@@ -11,6 +11,7 @@ namespace osm_db {
   
   database::database(string naam) {
     _sql = new sqlite3_connection(naam);
+	_trans = new sqlite3_transaction(*_sql); // automatic begin
     ifstream schema;
     char regel[2048];
     schema.open("schema.sqlite.txt");
@@ -28,9 +29,13 @@ namespace osm_db {
     _createTag = new sqlite3_command(*_sql,"INSERT INTO tag (id,k,v) VALUES(?,?,?)");
     _createNd = new sqlite3_command(*_sql,"INSERT INTO nd (id,seq,ref) VALUES(?,?,?)");
     _createMember = new sqlite3_command(*_sql,"INSERT INTO member (id,seq,ref,type,role) VALUES(?,?,?,?,?)");
+	_trans->commit();
+	_trans->begin();
   }
   
   database::~database() {
+    _trans->commit();
+	delete _trans;
     delete _createNode;
     delete _createWay;
     delete _createRelation;
