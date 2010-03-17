@@ -107,7 +107,6 @@ namespace osm_db {
   }
   
   void database::getCounts(long &nodes,long &ways,long &rels, long &bounds, long &tags,long &nds, long &mems) {
-    int strsize;
     sqlite3_cursor cur(_getCounts->executecursor());
 	cur.step();
 	nodes = cur.getint64(0);
