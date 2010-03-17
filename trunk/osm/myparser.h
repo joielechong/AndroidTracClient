@@ -3,7 +3,6 @@
 
 #include <libxml++/libxml++.h>
 
-#include "osm.h"
 #include "osm_db.h"
 
 class MySaxParser : public xmlpp::SaxParser
@@ -32,8 +31,9 @@ class MySaxParser : public xmlpp::SaxParser
  private:
   short depth;
   long counter;
-  osm::Element *elem;
   osm_db::database *_con;
+  long last_id;
+  int memcnt,ndcnt;
 };
 
 #endif //_MYPARSER_H
