@@ -11,14 +11,14 @@ namespace osm_db {
   
   database::database(string naam) {
     _sql = new sqlite3_connection(naam);
-	_trans = new sqlite3_transaction(*_sql); // automatic begin
+	_trans = new sqlite3_transaction(*_sql,false); // no automatic begin
     ifstream schema;
     char regel[2048];
     schema.open("schema.sqlite.txt");
     while (schema.good()) {
       schema.getline(regel,2047);
       //      cout << regel << endl;
-      if ((strncmp(regel,"CREATE",6) == 0) || (strncmp(regel,"PRAGMA",5) == 0)) {
+      if (strncmp(regel,"DROP",4) != 0) {
 	_sql->executenonquery(regel);
       }
     }
@@ -29,7 +29,6 @@ namespace osm_db {
     _createTag = new sqlite3_command(*_sql,"INSERT INTO tag (id,k,v) VALUES(?,?,?)");
     _createNd = new sqlite3_command(*_sql,"INSERT INTO nd (id,seq,ref) VALUES(?,?,?)");
     _createMember = new sqlite3_command(*_sql,"INSERT INTO member (id,seq,ref,type,role) VALUES(?,?,?,?,?)");
-	_trans->commit();
 	_trans->begin();
   }
   
