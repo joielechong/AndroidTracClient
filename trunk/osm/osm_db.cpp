@@ -107,15 +107,16 @@ namespace osm_db {
   }
   
   void database::getCounts(long &nodes,long &ways,long &rels, long &bounds, long &tags,long &nds, long &mems) {
-    sqlite3_cursor cur(_getCounts.executecursor());
+    int strsize;
+    sqlite3_cursor cur(_getCounts->executecursor());
 	cur.step();
-	nodes = atol(cur.getstring(0,255));
-	ways = atol(cur.getstring(1,255));
-	rels = atol(cur.getstring(2,255));
-	bounds = atol(cur.getstring(3,255));
-	tags = atol(cur.getstring(4,255));
-	nds = atol(cur.getstring(5,255));
-	mems = atol(cur.getstring(6,255));
+	nodes = cur.getint64(0);
+	ways = cur.getint64(1);
+	rels = cur.getint64(2);
+	bounds = cur.getint64(3);
+	tags = cur.getint64(4);
+	nds = cur.getint64(5);
+	mems = cur.getint64(6);
   }
   
 }
