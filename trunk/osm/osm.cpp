@@ -12,19 +12,19 @@ namespace osm {
   void Element::addNd(long ref) { throw "Nd kan niet in dit type element";}   // throw exception
   
   string Element::printTags() {
-    map<string,Glib::ustring>::iterator it;
+    int i;
     stringstream s;
     
-    for (it=_tags.begin();it != _tags.end(); it++) 
-      s << "   " << (*it).first << " => " << (*it).second.c_str() << endl;
+	for (i=0;i<_k.size();i++) {
+      s << "   " << _k[i] << " => " << _v[i] << endl;
     return s.str();
   }
   
   void Element::createTags(osm_db::database& con) {
-    map<string,Glib::ustring>::iterator it;
+    int i;
     
-    for (it=_tags.begin();it != _tags.end(); it++) 
-      con.createTag(_id,(*it).first,(*it).second.c_str());
+    for (i=0;i<_k.size();i++) 
+      con.createTag(_id,_k[i],_v[i]);
   }  
 
 

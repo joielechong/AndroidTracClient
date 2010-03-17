@@ -22,7 +22,7 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
 //  std::cout << "node: name=" << name.c_str() << "(" << depth << ")" << std::endl;
   
   // Store attributes:
-  std::map<std::string,Glib::ustring> attr;
+  std::map<std::string,std::string> attr;
   for(xmlpp::SaxParser::AttributeList::const_iterator iter = attributes.begin(); iter != attributes.end(); ++iter) {
 //    std::cout << "  Attribute: " << iter->name << " = " << iter->value.c_str() << std::endl;
     attr[iter->name]=iter->value.c_str();
