@@ -25,22 +25,22 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
   long id,ref;
   int version;
   double lat,lon;
-  str::string type,role,k,v;
+  std::string type,role,k,v;
   
   for(xmlpp::SaxParser::AttributeList::const_iterator iter = attributes.begin(); iter != attributes.end(); ++iter) {
 //    std::cout << "  Attribute: " << iter->name << " = " << iter->value.c_str() << std::endl;
     if (depth == 2) {
 	  if (iter->name == "id") {
 		id = atol(iter->value.c_str());
-		last_id = id;
+		lastid = id;
 		memcnt = 0;
 		ndcnt = 0;
       } else if (iter->name == "version") {
 	    version = atol(iter->value.c_str());
 	  } else if (iter->name == "lat") {
-	    lat = atod(iter->value.c_str());
+	    lat = atof(iter->value.c_str());
 	  } else if (iter->name == "lon") {
-	    lon = atod(iter->value.c_str());
+	    lon = atof(iter->value.c_str());
 	  }
 	} else if (depth == 3) {
 	  if (iter->name == "k") {
@@ -59,11 +59,11 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
   switch (depth) {
   case 2:
     if (name == "node") {
-	  _con.createNode(id,version,lat,lon);
+      _con->createNode(id,version,lat,lon);
     } else if (name == "way") {
-	  _con.createWay(id,version);
+      _con->createWay(id,version);
     } else if (name == "relation") {
-	  _con.createRelation(id,version;
+      _con->createRelation(id,version);
     } else if (name == "bounds" || name == "bound") {
     } else {
       throw(("Onbekend element "+name).c_str());
@@ -73,11 +73,11 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
   case 3:
     if (lastid != 0) {
       if (name == "tag") {
-	    _con.createTag(lastid,,k,v);
+	_con->createTag(lastid,k,v);
       } else if (name == "member") {
-	    _con.createMember(lastid,memcnt++,ref,type,role);
+	_con->createMember(lastid,memcnt++,ref,type,role);
       } else if (name == "nd" ) {
-	    _con.createNd(lastid,ndcnt++,ref);
+	_con->createNd(lastid,ndcnt++,ref);
       } else {
 	throw(("Onbekend element "+name).c_str());
       }
