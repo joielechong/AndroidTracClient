@@ -52,8 +52,8 @@ namespace osm {
   protected:
     long _id;
     int	_version;
-	vector<string> _k;
-	vector<string> _v;
+    vector<string> _k;
+    vector<string> _v;
   };
   
   class Way  : public Element {
