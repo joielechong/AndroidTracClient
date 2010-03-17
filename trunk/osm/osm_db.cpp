@@ -18,7 +18,7 @@ namespace osm_db {
     while (schema.good()) {
       schema.getline(regel,2047);
       //      cout << regel << endl;
-      if (strncmp(regel,"DROP",4) != 0) {
+      if (strncmp(regel,"DROP",4) != 0 && strlen(regel) > 0) {
 	_sql->executenonquery(regel);
       }
     }
