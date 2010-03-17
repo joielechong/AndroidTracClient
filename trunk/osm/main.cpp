@@ -3,6 +3,7 @@
 #endif
 
 #include <string.h>
+#include <glibmm/ustring.h>
 #include "osm_db.h"
 #include "osm.h"
 
