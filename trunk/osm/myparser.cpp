@@ -94,7 +94,7 @@ void MySaxParser::on_end_element(const Glib::ustring& name) {
     lastid = 0;
   }
   depth--;
-  counter++;
+    counter++;
   if ((counter%10000) == 0) {
     long nodes,ways,rels,bounds,tags,nds,mems;
     _con->commit();
