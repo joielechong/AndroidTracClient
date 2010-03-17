@@ -33,7 +33,7 @@ namespace osm_db {
     sqlite3_command *_createNd;
     sqlite3_command *_createMember;
 	
-	sq3lite_transaction *_trans;
+	sqlite3_transaction *_trans;
   };
   
 }
