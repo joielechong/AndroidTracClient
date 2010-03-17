@@ -3,9 +3,6 @@
 
 #include <string>
 #include <sqlite3x.hpp>
-#include <map>
-#include <vector>
-#include <glibmm/ustring.h>
 
 namespace osm_db {
   

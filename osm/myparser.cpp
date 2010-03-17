@@ -1,11 +1,10 @@
 #include "myparser.h"
 #include <iostream>
-#include "osm.h"
+#include "osm_db.h"
 #include <string>
 #include <glibmm/ustring.h>
-#include <map>
 
-MySaxParser::MySaxParser() : depth(0),counter(0), elem(NULL), xmlpp::SaxParser() {}
+MySaxParser::MySaxParser() : depth(0),counter(0), lastid(0), ndcnt(0), memcnt(0), xmlpp::SaxParser() {}
 
 MySaxParser::~MySaxParser() {}
 
@@ -22,19 +21,48 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
 //  std::cout << "node: name=" << name.c_str() << "(" << depth << ")" << std::endl;
   
   // Store attributes:
-  std::map<std::string,std::string> attr;
+  long id,ref;
+  int version;
+  double lat,lon;
+  string type,role,k,v;
+  
   for(xmlpp::SaxParser::AttributeList::const_iterator iter = attributes.begin(); iter != attributes.end(); ++iter) {
 //    std::cout << "  Attribute: " << iter->name << " = " << iter->value.c_str() << std::endl;
-    attr[iter->name]=iter->value.c_str();
+    if (depth == 2) {
+	  if (iter->name == "id") {
+		id = atol(iter->value.c_str());
+		last_id = id;
+		memcnt = 0;
+		ndcnt = 0;
+      } else if (iter->name == "version") {
+	    version = atol(iter->value.c_str());
+	  } else if (iter->name == "lat") {
+	    lat = atod(iter->value.c_str());
+	  } else if (iter->name == "lon") {
+	    lon = atod(iter->value.c_str());
+	  }
+	} else if (depth == 3) {
+	  if (iter->name == "k") {
+	    k = iter->value.c_str();
+	  } else if (iter->name == "v") {
+	    v = iter->value.c_str();
+	  }else if (iter->name == "ref") {
+	    ref = atol(iter->value.c_str());
+	  } else if (iter->name == "role") {
+	    role = iter->value.c_str();
+	  } else if (iter->name == "type") {
+	    type = iter->value.c_str();
+	  }
+	}
   }
   switch (depth) {
   case 2:
     if (name == "node") {
-      elem = new osm::Node(attr["id"],attr["version"],attr["lat"],attr["lon"]);
+	  _con.createNode(id,version,lat,lon);
     } else if (name == "way") {
-      elem = new osm::Way(attr["id"],attr["version"]);
+	  _con.createWay(id,version);
     } else if (name == "relation") {
-      elem = new osm::Relation(attr["id"],attr["version"]);
+	  _con.createRelation(id,version;
     } else if (name == "bounds" || name == "bound") {
     } else {
       throw(("Onbekend element "+name).c_str());
@@ -42,13 +70,13 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
     break;
     
   case 3:
-    if (elem != NULL) {
+    if (lastid != 0) {
       if (name == "tag") {
-        elem->addTag(attr["k"],attr["v"]);
+	    _con.createTag(lastid,,k,v);
       } else if (name == "member") {
-        elem->addMember(attr["ref"],attr["type"],attr["role"]);
+	    _con.createMember(lastid,memcnt++,ref,type,role);
       } else if (name == "nd" ) {
-	elem->addNd(attr["ref"]);
+	    _con.createNd(lastid,ndcnt++,ref);
       } else {
 	throw(("Onbekend element "+name).c_str());
       }
@@ -60,11 +88,9 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
 
 void MySaxParser::on_end_element(const Glib::ustring& name) {
 //  std::cout << "on_end_element()" << std::endl;
-  if (depth == 2 && elem != NULL) {
+  if (depth == 2) {
 //    std::cout << *elem;
-    *_con << *elem;
-    delete elem;
-    elem = NULL;
+    lastid = 0;
     counter++;
   }
   depth--;

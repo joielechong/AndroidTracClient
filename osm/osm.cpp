@@ -15,7 +15,7 @@ namespace osm {
     int i;
     stringstream s;
     
-	for (i=0;i<_k.size();i++) {
+	for (i=0;i<_k.size();i++) 
       s << "   " << _k[i] << " => " << _v[i] << endl;
     return s.str();
   }
