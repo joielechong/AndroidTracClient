@@ -14,7 +14,7 @@ class MySaxParser : public xmlpp::SaxParser
   
   int getDepth();
   void setDBconn(osm_db::database *con);
- 
+  
  protected:
   //overrides:
   virtual void on_start_document();
@@ -31,6 +31,7 @@ class MySaxParser : public xmlpp::SaxParser
   
  private:
   short depth;
+  long counter;
   osm::Element *elem;
   osm_db::database *_con;
 };
