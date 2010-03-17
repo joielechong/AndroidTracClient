@@ -92,11 +92,10 @@ void MySaxParser::on_end_element(const Glib::ustring& name) {
   if (depth == 2) {
 //    std::cout << *elem;
     lastid = 0;
-    counter++;
   }
   depth--;
   counter++;
-  if ((counter%5000) == 0) 
+  if ((counter%5000) == 0) {
     std::cerr <<counter << std::endl;
 }
 
