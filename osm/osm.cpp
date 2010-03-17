@@ -15,7 +15,7 @@ namespace osm {
     int i;
     stringstream s;
     
-	for (i=0;i<_k.size();i++) 
+    for (i=0;i<_k.size();i++) 
       s << "   " << _k[i] << " => " << _v[i] << endl;
     return s.str();
   }
@@ -26,8 +26,8 @@ namespace osm {
     for (i=0;i<_k.size();i++) 
       con.createTag(_id,_k[i],_v[i]);
   }  
-
-
+  
+  
   void Element::setLat(string ref) {throw "Lat kan alleen bij Node";};  // throw exception
   void Element::setLon(string ref) {throw "Lon kan alleen bij Node";};  // throw exception
   
