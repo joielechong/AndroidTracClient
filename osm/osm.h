@@ -2,7 +2,6 @@
 #define _OSM_H
 
 #include <vector>
-#include <map>
 #include <string>
 #include <glibmm/ustring.h>
 #include "osm_db.h"
@@ -36,7 +35,7 @@ namespace osm {
     
     inline long id() const { return _id;}
     inline int version() const { return _version;}
-    inline void addTag(string k,string v) {_tags[k] = v;}
+    inline void addTag(string k,string v) {_k.push_back(k);_v.push_back(v);}
     inline void setId(string id) {_id=atol(id.c_str());}
     inline void setVersion(string version) {_version=atol(version.c_str());}
     virtual void addNd(long ref);
@@ -53,7 +52,8 @@ namespace osm {
   protected:
     long _id;
     int	_version;
-    map<string,Glib::ustring> _tags;
+	vector<string> _k;
+	vector<string> _v;
   };
   
   class Way  : public Element {
