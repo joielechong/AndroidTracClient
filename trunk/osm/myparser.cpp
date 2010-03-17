@@ -29,7 +29,8 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
   
   for(xmlpp::SaxParser::AttributeList::const_iterator iter = attributes.begin(); iter != attributes.end(); ++iter) {
 //    std::cout << "  Attribute: " << iter->name << " = " << iter->value.c_str() << std::endl;
-    if (depth == 2) {
+    switch (depth) {
+	case 2:
 	  if (iter->name == "id") {
 		id = atol(iter->value.c_str());
 		lastid = id;
@@ -42,7 +43,8 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
 	  } else if (iter->name == "lon") {
 	    lon = atof(iter->value.c_str());
 	  }
-	} else if (depth == 3) {
+	  break;
+	case 3:
 	  if (iter->name == "k") {
 	    k = iter->value.c_str();
 	  } else if (iter->name == "v") {
@@ -54,6 +56,7 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
 	  } else if (iter->name == "type") {
 	    type = iter->value.c_str();
 	  }
+	  break;
 	}
   }
   switch (depth) {
@@ -69,11 +72,25 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
       throw(("Onbekend element "+name).c_str());
     }
     break;
-    
   case 3:
     if (lastid != 0) {
       if (name == "tag") {
+	  if (! (k == "created_by" ||
+        k == "converted_by" || 
+	k == "time" ||
+	k == "timestamp" ||
+	k == "user" ||
+	k == "fixme" ||
+	k == "FIXME" || 
+	k == "todo" ||
+	k == "TODO" ||
+	strncmp(k.c_str(),"AND",3) == 0 ||
+	strncmp(k.c_str(),"source",6) == 0 ||
+	strncmp(k.c_str(),"3dshapes",8) == 0 ||
+	strncmp(k.c_str(),"note",4) == 0 ||
+	strncasecmp(k.c_str(),"opengeo",7) == 0)) {
 	_con->createTag(lastid,k,v);
+	}
       } else if (name == "member") {
 	_con->createMember(lastid,memcnt++,ref,type,role);
       } else if (name == "nd" ) {
@@ -83,7 +100,6 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
       }
     }
     break;
-    
   }
 }
 
