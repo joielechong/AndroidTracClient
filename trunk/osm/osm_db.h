@@ -21,6 +21,7 @@ namespace osm_db {
     void createMember(long id,int seq,long ref,std::string type,std::string role);
 	inline void begin() { _trans->begin();}
 	inline void commit() { _trans->commit();}
+	void getCounts(long &nodes,long &ways,long &rel, long &bounds, long &tags,long &nds, long &mems);
     
     inline void executenonquery(std::string query) {_sql->executenonquery(query);}
     
@@ -32,6 +33,7 @@ namespace osm_db {
     sqlite3_command *_createTag;
     sqlite3_command *_createNd;
     sqlite3_command *_createMember;
+	sqlite3_command *_getCounts;
 	
 	sqlite3_transaction *_trans;
   };

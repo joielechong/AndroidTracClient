@@ -95,8 +95,11 @@ void MySaxParser::on_end_element(const Glib::ustring& name) {
   }
   depth--;
   counter++;
-  if ((counter%5000) == 0) {
+  if ((counter%10000) == 0) {
+    long nodes,ways,rels,bounds,tags,nds,mems;
     _con->commit();
+	_con->getCounts(nodes,ways,rels,bounds,tags,nds,mems);
+	std::cout << nodes << " nodes " << ways << " ways " << rels << " relations " << tags << " tags " << nds << " nds " << mems << " members" << std::endl;
 	_con->begin();
     std::cerr <<counter << std::endl;
   }

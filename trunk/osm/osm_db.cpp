@@ -29,6 +29,7 @@ namespace osm_db {
     _createTag = new sqlite3_command(*_sql,"INSERT INTO tag (id,k,v) VALUES(?,?,?)");
     _createNd = new sqlite3_command(*_sql,"INSERT INTO nd (id,seq,ref) VALUES(?,?,?)");
     _createMember = new sqlite3_command(*_sql,"INSERT INTO member (id,seq,ref,type,role) VALUES(?,?,?,?,?)");
+	_getCounts = new sqlite3_command(*_sql,"SELECT * FROM counts");
 	_trans->begin();
   }
   
@@ -41,6 +42,7 @@ namespace osm_db {
     delete _createTag;
     delete _createNd;
     delete _createMember;
+	delete _getCounts;
     delete _sql;
     _sql = NULL;
   }
@@ -102,6 +104,18 @@ namespace osm_db {
     _createMember->bind(4,type);
     _createMember->bind(5,role);
     _createMember->executenonquery();
+  }
+  
+  void database::getCounts(long &nodes,long &ways,long &rels, long &bounds, long &tags,long &nds, long &mems) {
+    sqlite3_cursor cur(_getCounts.executecursor());
+	cur.step();
+	nodes = atol(cur.getstring(0,255));
+	ways = atol(cur.getstring(1,255));
+	rels = atol(cur.getstring(2,255));
+	bounds = atol(cur.getstring(3,255));
+	tags = atol(cur.getstring(4,255));
+	nds = atol(cur.getstring(5,255));
+	mems = atol(cur.getstring(6,255));
   }
   
 }
