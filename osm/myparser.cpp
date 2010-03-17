@@ -96,8 +96,8 @@ void MySaxParser::on_end_element(const Glib::ustring& name) {
   depth--;
   counter++;
   if ((counter%5000) == 0) {
-    _con.commit();
-	_con.begin();
+    _con->commit();
+	_con->begin();
     std::cerr <<counter << std::endl;
   }
 }
