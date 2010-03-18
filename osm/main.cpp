@@ -56,9 +56,8 @@ int main(int argc, char* argv[])
     } else {
       parser.parse_file(filepath);
     }
-
-	cout << "Starting postprocessing" << endl;
-	sql.postprocess();
+    cout << "Starting postprocessing" << endl;
+    sql.postprocess();
   } catch(const xmlpp::exception& ex) {
     cout << "libxml++ exception: " << ex.what() << endl;
     return 1;
