@@ -10,10 +10,10 @@ MySaxParser::MySaxParser() : depth(0),counter(0), lastid(0), ndcnt(0), memcnt(0)
 
 MySaxParser::~MySaxParser() {}
 
-#define getCounts() { \
-  long nodes,ways,rels,bounds,tags,nds,mems; \
-  _con->getCounts(nodes,ways,rels,bounds,tags,nds,mems); \
-  std::cout << counter << ": " << nodes << " nodes " << ways << " ways " << rels << " relations " << tags << " tags " << nds << " nds " << mems << " members" << std::endl; \
+void MySaxParser::printCounts() { 
+  long nodes,ways,rels,bounds,tags,nds,mems; 
+  _con->getCounts(nodes,ways,rels,bounds,tags,nds,mems); 
+  std::cout << counter << ": " << nodes << " nodes " << ways << " ways " << rels << " relations " << tags << " tags " << nds << " nds " << mems << " members" << std::endl; 
 }
 
 void MySaxParser::on_start_document() {
@@ -124,7 +124,7 @@ void MySaxParser::on_end_element(const Glib::ustring& name) {
   counter++;
   if ((counter%10000) == 0) {
     _con->commit();
-	getCounts();
+	printCounts();
     _con->begin();
   }
 }
