@@ -74,7 +74,7 @@
         $delway  = $dbh->prepare("DELETE from way where id =?");
 
         $insertnode  = $dbh->prepare("INSERT INTO node (id,lat,lon,version,x,y) VALUES (?,?,?,?,?,?)");
-        $inserttag   = $dbh->prepare("INSERT OR REPLACE INTO tag (id,k,v) VALUES (?,?,?)");
+        $inserttag   = $dbh->prepare("INSERT OR REPLACE INTO tag (id,type,k,v) VALUES (?,?,?,?)");
         $insertway   = $dbh->prepare("INSERT INTO way (id,version) VALUES (?,?)");
         $insertnd    = $dbh->prepare("INSERT INTO nd (id,seq,ref) VALUES (?,?,?)");
         $insertrel   = $dbh->prepare("INSERT INTO relation (id,version) VALUES (?,?)");
@@ -83,7 +83,7 @@
         $insertnb    = $dbh->prepare("INSERT INTO neighbor (id1,id2,way) VALUES (?,?,?)");
         
         $loadway     = $dbh->prepare("SELECT version FROM way where id=?");
-        $loadtags    = $dbh->prepare("SELECT k,v FROM tag WHERE id=?");
+        $loadtags    = $dbh->prepare("SELECT k,v FROM tag WHERE id=? and type=?");
         $loadnd      = $dbh->prepare("SELECT seq,ref FROM nd WHERE id=?");
         $loadnode    = $dbh->prepare("SELECT lat,lon,version FROM node WHERE id=?");
         $loadrel     = $dbh->prepare("SELECT version FROM relation WHERE id=?");
@@ -128,7 +128,7 @@
         $elem->{xmlname}='way';
         $elem->{id} = $w;
         $elem->{version} = $row->[0];
-        $loadtags->execute($w);
+        $loadtags->execute($w,'way');
         while (my @row = $loadtags->fetchrow_array) {
             $elem->{tag}->{$row[0]}=$row[1];
         }
@@ -148,7 +148,7 @@
         $elem->{xmlname}='node';
         $elem->{id} = $n;
         $elem->{version} = $row->[0];
-        $loadtags->execute($n);
+        $loadtags->execute($n,'node');
         while (my @row = $loadtags->fetchrow_array) {
             $elem->{tag}->{$row[0]}=$row[1];
         }
@@ -168,13 +168,13 @@
    }
     
     sub insertTag {
-        my ($self,$id,$k,$v) = @_;
+        my ($self,$id,$type,$k,$v) = @_;
 	if ($k eq 'oneway' or $k eq 'bridge' or $k eq 'tunnel') {
 	    return if ($v eq '0' or $v eq 'no' or $v eq 'NO');
 	    $v = 'yes' if ($v eq '1' or $v eq 'true' or $v eq 'TRUE' or $v eq 'YES');
 	    $v = 'rev' if ($v eq '-1' and $k eq 'oneway');
 	}
-	$inserttag->execute($id,$k,$v) unless ($k =~ /^source/ or $k eq 'converted_by' or $k eq 'created_by' or $k =~ /^3dshapes/ or $k eq 'time' or $k eq 'timestamp' or $k eq 'user' or $k =~ /^AND/ or $k =~ /^note/ or $k =~ /^openGeoDB/ or $k =~ /^opengeodb/ or $k eq 'fixme' or $k eq 'FIXME' or $k eq 'todo' or $k eq 'TODO' );
+	$inserttag->execute($id,$type,$k,$v) unless ($k =~ /^source/ or $k eq 'converted_by' or $k eq 'created_by' or $k =~ /^3dshapes/ or $k eq 'time' or $k eq 'timestamp' or $k eq 'user' or $k =~ /^AND/ or $k =~ /^note/ or $k =~ /^openGeoDB/ or $k =~ /^opengeodb/ or $k eq 'fixme' or $k eq 'FIXME' or $k eq 'todo' or $k eq 'TODO' );
     }
     
     sub boundCount {
