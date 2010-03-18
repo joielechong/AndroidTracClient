@@ -16,7 +16,7 @@ namespace osm_db {
     void createNode(long id,int version,double lat,double lon);
     void createWay(long id,int version);
     void createRelation(long id,int version);
-    void createTag(long id,std::string k,std::string v);
+    void createTag(long id,std::string type,std::string k,std::string v);
     void createNd(long id,int seq,long ref);
     void createMember(long id,int seq,long ref,std::string type,std::string role);
 	inline void begin() { _trans->begin();}
