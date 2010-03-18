@@ -10,10 +10,10 @@ MySaxParser::MySaxParser() : depth(0),counter(0), lastid(0), ndcnt(0), memcnt(0)
 
 MySaxParser::~MySaxParser() {}
 
-static void getCounts() {
-  long nodes,ways,rels,bounds,tags,nds,mems;
-  _con->getCounts(nodes,ways,rels,bounds,tags,nds,mems);
-  std::cout << counter << ": " << nodes << " nodes " << ways << " ways " << rels << " relations " << tags << " tags " << nds << " nds " << mems << " members" << std::endl;
+#define getCounts() { \
+  long nodes,ways,rels,bounds,tags,nds,mems; \
+  _con->getCounts(nodes,ways,rels,bounds,tags,nds,mems); \
+  std::cout << counter << ": " << nodes << " nodes " << ways << " ways " << rels << " relations " << tags << " tags " << nds << " nds " << mems << " members" << std::endl; \
 }
 
 void MySaxParser::on_start_document() {
