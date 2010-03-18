@@ -45,17 +45,19 @@ int main(int argc, char* argv[])
     database sql(dbname);
     sql.setupSchemas("schema.sqlite.txt");
 	sql.initializeFill();
+	
     // Parse the entire document in one go:
     MySaxParser parser;
     parser.setDBconn(&sql);
-    
-    //      parser.set_substitute_entities(true); //
+//    parser.set_substitute_entities(true);
+
     if (filepath == "-") {
       parser.parse_stream(cin);
     } else {
       parser.parse_file(filepath);
     }
-	cout << "Starting postprocessing << endl;
+
+	cout << "Starting postprocessing" << endl;
 	sql.postprocess();
   } catch(const xmlpp::exception& ex) {
     cout << "libxml++ exception: " << ex.what() << endl;

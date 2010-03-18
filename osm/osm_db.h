@@ -11,20 +11,23 @@ namespace osm_db {
     database(std::string naam);
     ~database();
     
-	void setupSchemas(const string filename);
+	void setupSchemas(const std::string filename);
 	void initializeFill();
+	void postprocess();
+	
     void createNode(long id,int version,double lat,double lon);
     void createWay(long id,int version);
     void createRelation(long id,int version);
     void createTag(long id,std::string type,std::string k,std::string v);
     void createNd(long id,int seq,long ref);
     void createMember(long id,int seq,long ref,std::string type,std::string role);
+
 	inline void begin() { _trans->begin();}
 	inline void commit() { _trans->commit();}
+    void executenonquery(std::string query);
+
 	void getCounts(long &nodes,long &ways,long &rel, long &bounds, long &tags,long &nds, long &mems);
-	void postprocess();
     
-    inline void executenonquery(std::string query) {std::cout << "DB: " << query << std::endl;_sql->executenonquery(query);}
     
   private: 
     sqlite3x::sqlite3_connection *_sql;

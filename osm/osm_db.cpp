@@ -64,6 +64,11 @@ namespace osm_db {
     executenonquery("UPDATE node SET x=round((lon+90)*20),y=round((lat+180)*20) WHERE id in (SELECT ref FROM usable_way as u,nd WHERE u.id=nd.id)");
   }
   
+  void executenonquery(std::string query) {
+    std::cout << "DB: " << query << std::endl;
+	_sql->executenonquery(query);
+  }
+
   void database::createNode(long id,int version,double lat,double lon) {
     _createNode->bind(1,(sqlite3x::int64_t)id);
     _createNode->bind(2,version);
