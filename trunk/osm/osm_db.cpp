@@ -26,7 +26,7 @@ namespace osm_db {
     _createNode = new sqlite3_command(*_sql,"INSERT INTO node (id,version,lat,lon) VALUES (?,?,?,?)");
     _createWay = new sqlite3_command(*_sql,"INSERT INTO way (id,version) VALUES (?,?)");
     _createRelation = new sqlite3_command(*_sql,"INSERT INTO relation (id,version) VALUES (?,?)");
-    _createTag = new sqlite3_command(*_sql,"INSERT INTO tag (id,k,v) VALUES(?,?,?)");
+    _createTag = new sqlite3_command(*_sql,"INSERT INTO tag (id,type,k,v) VALUES(?,?,?,?)");
     _createNd = new sqlite3_command(*_sql,"INSERT INTO nd (id,seq,ref) VALUES(?,?,?)");
     _createMember = new sqlite3_command(*_sql,"INSERT INTO member (id,seq,ref,type,role) VALUES(?,?,?,?,?)");
 	_getCounts = new sqlite3_command(*_sql,"SELECT * FROM counts");
@@ -67,10 +67,11 @@ namespace osm_db {
     _createRelation->executenonquery();
   }
   
-  void database::createTag(long id,std::string k,std::string v) {
+  void database::createTag(long id,string type,string k,string v) {
     _createTag->bind(1,(sqlite3x::int64_t)id);
-    _createTag->bind(2,k);
-    _createTag->bind(3,v);
+    _createTag->bind(2,type);
+    _createTag->bind(3,k);
+    _createTag->bind(4,v);
     _createTag->executenonquery();
   }
   

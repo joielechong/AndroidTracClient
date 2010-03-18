@@ -57,8 +57,8 @@ int main(int argc, char* argv[])
     sql.executenonquery("DELETE FROM way WHERE NOT id in (SELECT id FROM tag WHERE k in ('highway','boundary','route','natural'))");
     sql.executenonquery("DELETE FROM way WHERE id in (SELECT id FROM tag WHERE k='route' AND NOT v like 'ferry%')");
     sql.executenonquery("DELETE FROM way WHERE id in (SELECT id FROM tag WHERE k='natural' AND NOT v like 'coastline%')");
-    sql.executenonquery("DELETE FROM relation WHERE id in (SELECT id FROM tag WHERE k='type' AND NOT v in ('boundary','restriction','multipolygon')");
-    sql.executenonquery("DELETE FROM node WHERE NOT id IN (SELECT id FROM tag UNION SELECT id FROM nd UNION SELECT id FROM member)");
+    sql.executenonquery("DELETE FROM relation WHERE id in (SELECT id FROM tag WHERE k='type' AND NOT v in ('boundary','restriction','multipolygon'))");
+    sql.executenonquery("DELETE FROM node WHERE NOT id IN (SELECT id FROM tag UNION SELECT ref FROM nd UNION SELECT ref FROM member WHERE type='node')");
     
     sql.executenonquery("INSERT OR REPLACE INTO neighbor (way,id1,id2) SELECT DISTINCT way,id1,id2 FROM nb");
     sql.executenonquery("INSERT OR REPLACE INTO admin (id,name,level,minlat,maxlat,minlon,maxlon) SELECT id,name,level,minlat,maxlat,minlon,maxlon FROM admintmp");

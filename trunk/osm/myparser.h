@@ -2,7 +2,7 @@
 #define _OSM_MYPARSER_H
 
 #include <libxml++/libxml++.h>
-
+#include <string>
 #include "osm_db.h"
 
 class MySaxParser : public xmlpp::SaxParser
@@ -33,6 +33,7 @@ class MySaxParser : public xmlpp::SaxParser
   long counter;
   osm_db::database *_con;
   long lastid;
+  std::string _type;
   int memcnt,ndcnt;
 };
 

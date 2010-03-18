@@ -63,6 +63,7 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
 
   switch (depth) {
   case 2:
+    _type = name;
     if (name == "node") {
       _con->createNode(id,version,lat,lon);
     } else if (name == "way") {
@@ -91,7 +92,7 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
 	       strncmp(k.c_str(),"3dshapes",8) == 0 ||
 	       strncmp(k.c_str(),"note",4) == 0 ||
 	       strncasecmp(k.c_str(),"opengeo",7) == 0)) {
-	  _con->createTag(lastid,k,v);
+	  _con->createTag(lastid,_type,k,v);
 	}
       } else if (name == "member") {
 	_con->createMember(lastid,memcnt++,ref,type,role);
