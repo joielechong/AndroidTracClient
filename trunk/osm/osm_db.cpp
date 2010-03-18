@@ -53,10 +53,10 @@ namespace osm_db {
   }
   
   void database::postprocess() {
-    executenonquery("DELETE FROM way WHERE NOT id in (SELECT id FROM tag WHERE k in ('highway','boundary','route','natural'))");
+    executenonquery("DELETE FROM relation WHERE id in (SELECT id FROM tag WHERE type='relation' AND k='type' AND NOT v in ('boundary','restriction','multipolygon'))");
+    executenonquery("DELETE FROM way WHERE NOT id in (SELECT id FROM tag WHERE k in ('highway','boundary','route','natural') UNION SELECT ref FROM member WHERE type = 'way')");
     executenonquery("DELETE FROM way WHERE id in (SELECT id FROM tag WHERE type = 'way' AND k='route' AND NOT v like 'ferry%')");
     executenonquery("DELETE FROM way WHERE id in (SELECT id FROM tag WHERE type = 'way' AND k='natural' AND NOT v like 'coastline%')");
-    executenonquery("DELETE FROM relation WHERE id in (SELECT id FROM tag WHERE type='relation' AND k='type' AND NOT v in ('boundary','restriction','multipolygon'))");
     executenonquery("DELETE FROM node WHERE NOT id IN (SELECT id FROM tag WHERE type='node' UNION SELECT ref FROM nd UNION SELECT ref FROM member WHERE type='node')");
 
     executenonquery("INSERT OR REPLACE INTO neighbor (way,id1,id2) SELECT DISTINCT way,id1,id2 FROM nb");
@@ -124,5 +124,4 @@ namespace osm_db {
 	nds = cur.getint64(5);
 	mems = cur.getint64(6);
   }
-  
 }
