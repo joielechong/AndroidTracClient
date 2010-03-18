@@ -174,7 +174,7 @@
             $dbh->insertBound($elem->{minlat},$elem->{maxlat},$elem->{minlon},$elem->{maxlon});
         }
         foreach my $k (keys %{$elem->{tag}}) {
-            $dbh->insertTag($id,$k,$elem->{tag}->{$k});
+            $dbh->insertTag($id,$xmlname,$k,$elem->{tag}->{$k});
         }
     }
     

@@ -12,25 +12,7 @@ namespace osm_db {
   database::database(string naam) {
     _sql = new sqlite3_connection(naam);
 	_trans = new sqlite3_transaction(*_sql,false); // no automatic begin
-    ifstream schema;
-    char regel[2048];
-    schema.open("schema.sqlite.txt");
-    while (schema.good()) {
-      schema.getline(regel,2047);
-      //      cout << regel << endl;
-      if (strncmp(regel,"DROP",4) != 0 && strlen(regel) > 0) {
-	_sql->executenonquery(regel);
-      }
-    }
-    schema.close();
-    _createNode = new sqlite3_command(*_sql,"INSERT INTO node (id,version,lat,lon) VALUES (?,?,?,?)");
-    _createWay = new sqlite3_command(*_sql,"INSERT INTO way (id,version) VALUES (?,?)");
-    _createRelation = new sqlite3_command(*_sql,"INSERT INTO relation (id,version) VALUES (?,?)");
-    _createTag = new sqlite3_command(*_sql,"INSERT INTO tag (id,type,k,v) VALUES(?,?,?,?)");
-    _createNd = new sqlite3_command(*_sql,"INSERT INTO nd (id,seq,ref) VALUES(?,?,?)");
-    _createMember = new sqlite3_command(*_sql,"INSERT INTO member (id,seq,ref,type,role) VALUES(?,?,?,?,?)");
 	_getCounts = new sqlite3_command(*_sql,"SELECT * FROM counts");
-	_trans->begin();
   }
   
   database::~database() {
@@ -45,6 +27,41 @@ namespace osm_db {
 	delete _getCounts;
     delete _sql;
     _sql = NULL;
+  }
+  
+  void database::setupSchemas(const string filename) {
+    ifstream schema;
+    char regel[2048];
+    schema.open(filename);
+    while (schema.good()) {
+      schema.getline(regel,2047);
+      //      cout << regel << endl;
+      if (strncmp(regel,"DROP",4) != 0 && strlen(regel) > 0) {
+	    executenonquery(regel);
+      }
+    }
+    schema.close();  
+  }
+  
+  void database::initialzeFill() {
+    _createNode = new sqlite3_command(*_sql,"INSERT INTO node (id,version,lat,lon) VALUES (?,?,?,?)");
+    _createWay = new sqlite3_command(*_sql,"INSERT INTO way (id,version) VALUES (?,?)");
+    _createRelation = new sqlite3_command(*_sql,"INSERT INTO relation (id,version) VALUES (?,?)");
+    _createTag = new sqlite3_command(*_sql,"INSERT INTO tag (id,type,k,v) VALUES(?,?,?,?)");
+    _createNd = new sqlite3_command(*_sql,"INSERT INTO nd (id,seq,ref) VALUES(?,?,?)");
+    _createMember = new sqlite3_command(*_sql,"INSERT INTO member (id,seq,ref,type,role) VALUES(?,?,?,?,?)");
+  }
+  
+  void database::postprocess() {
+    executenonquery("DELETE FROM way WHERE NOT id in (SELECT id FROM tag WHERE k in ('highway','boundary','route','natural'))");
+    executenonquery("DELETE FROM way WHERE id in (SELECT id FROM tag WHERE type = 'way' AND k='route' AND NOT v like 'ferry%')");
+    executenonquery("DELETE FROM way WHERE id in (SELECT id FROM tag WHERE type = 'way' AND k='natural' AND NOT v like 'coastline%')");
+    executenonquery("DELETE FROM relation WHERE id in (SELECT id FROM tag WHERE type='relation' AND k='type' AND NOT v in ('boundary','restriction','multipolygon'))");
+    executenonquery("DELETE FROM node WHERE NOT id IN (SELECT id FROM tag WHERE type='node' UNION SELECT ref FROM nd UNION SELECT ref FROM member WHERE type='node')");
+
+    executenonquery("INSERT OR REPLACE INTO neighbor (way,id1,id2) SELECT DISTINCT way,id1,id2 FROM nb");
+    executenonquery("INSERT OR REPLACE INTO admin (id,name,level,minlat,maxlat,minlon,maxlon) SELECT id,name,level,minlat,maxlat,minlon,maxlon FROM admintmp");
+    executenonquery("UPDATE node SET x=round((lon+90)*20),y=round((lat+180)*20) WHERE id in (SELECT ref FROM usable_way as u,nd WHERE u.id=nd.id)");
   }
   
   void database::createNode(long id,int version,double lat,double lon) {

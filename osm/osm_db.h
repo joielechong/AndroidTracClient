@@ -6,13 +6,13 @@
 
 namespace osm_db {
   
-  using namespace sqlite3x;
-  
   class database {
   public:
     database(std::string naam);
     ~database();
     
+	void setupSchemas(const string filename);
+	void initializeFill();
     void createNode(long id,int version,double lat,double lon);
     void createWay(long id,int version);
     void createRelation(long id,int version);
@@ -22,22 +22,23 @@ namespace osm_db {
 	inline void begin() { _trans->begin();}
 	inline void commit() { _trans->commit();}
 	void getCounts(long &nodes,long &ways,long &rel, long &bounds, long &tags,long &nds, long &mems);
+	void postprocess();
     
-    inline void executenonquery(std::string query) {_sql->executenonquery(query);}
+    inline void executenonquery(std::string query) {std::cout << "DB: " << query << std::endl;_sql->executenonquery(query);}
     
   private: 
-    sqlite3_connection *_sql;
-    sqlite3_command *_createNode;
-    sqlite3_command *_createWay;
-    sqlite3_command *_createRelation;
-    sqlite3_command *_createTag;
-    sqlite3_command *_createNd;
-    sqlite3_command *_createMember;
-	sqlite3_command *_getCounts;
+    sqlite3x::sqlite3_connection *_sql;
 	
-	sqlite3_transaction *_trans;
+    sqlite3x::sqlite3_command *_createNode;
+    sqlite3x::sqlite3_command *_createWay;
+    sqlite3x::sqlite3_command *_createRelation;
+    sqlite3x::sqlite3_command *_createTag;
+    sqlite3x::sqlite3_command *_createNd;
+    sqlite3x::sqlite3_command *_createMember;
+	sqlite3x::sqlite3_command *_getCounts;
+	
+	sqlite3x::sqlite3_transaction *_trans;
   };
-  
 }
 
 #endif
