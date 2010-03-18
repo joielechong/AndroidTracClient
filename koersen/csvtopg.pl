@@ -20,7 +20,7 @@ $fdbh->{dryrun} = 1;
 
 DataSource::opencsvlog("/web/www/dailycsvlog.txt");
 
-foreach my $file (keys %dllist) {
+foreach my $file (sort keys %dllist) {
     my $url = $dllist{$file}->{url};
     print $file,"\n";
 	my ($method,$num) = split('\056',$file);
