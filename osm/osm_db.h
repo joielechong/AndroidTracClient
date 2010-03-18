@@ -11,7 +11,7 @@ namespace osm_db {
     database(std::string naam);
     ~database();
     
-    void setupSchemas(const std::string filename);
+    void setupSchemas(const char *filename);
     void initializeFill();
     void postprocess();
 	
