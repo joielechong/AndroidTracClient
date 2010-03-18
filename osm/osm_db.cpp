@@ -29,7 +29,7 @@ namespace osm_db {
     _sql = NULL;
   }
   
-  void database::setupSchemas(const string filename) {
+  void database::setupSchemas(const char *filename) {
     ifstream schema;
     char regel[2048];
     schema.open(filename);
@@ -43,7 +43,7 @@ namespace osm_db {
     schema.close();  
   }
   
-  void database::initialzeFill() {
+  void database::initializeFill() {
     _createNode = new sqlite3_command(*_sql,"INSERT INTO node (id,version,lat,lon) VALUES (?,?,?,?)");
     _createWay = new sqlite3_command(*_sql,"INSERT INTO way (id,version) VALUES (?,?)");
     _createRelation = new sqlite3_command(*_sql,"INSERT INTO relation (id,version) VALUES (?,?)");
@@ -64,11 +64,11 @@ namespace osm_db {
     executenonquery("UPDATE node SET x=round((lon+90)*20),y=round((lat+180)*20) WHERE id in (SELECT ref FROM usable_way as u,nd WHERE u.id=nd.id)");
   }
   
-  void executenonquery(std::string query) {
+  void database::executenonquery(std::string query) {
     std::cout << "DB: " << query << std::endl;
-	_sql->executenonquery(query);
+    _sql->executenonquery(query);
   }
-
+  
   void database::createNode(long id,int version,double lat,double lon) {
     _createNode->bind(1,(sqlite3x::int64_t)id);
     _createNode->bind(2,version);

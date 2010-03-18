@@ -24,7 +24,7 @@ void MySaxParser::on_start_document() {
 void MySaxParser::on_end_document() {
   //  std::cout << "on_end_document()" << std::endl;
   _con->commit();
-  getCounts();
+  printCounts();
 }
 
 void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList& attributes) {
