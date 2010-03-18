@@ -379,24 +379,24 @@
         return $self;
     }
     
-	my $maanden = "janfebmrtaprmeijunjulaugsepoktnovdec";
+    my $maanden = "janfebmrtaprmeijunjulaugsepoktnovdec";
+    
+    sub settijd {
+	my $tijdveld = shift;
 	
-	sub settijd {
-		my $tijdveld = shift;
-		
-		my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
-		$sec = 0;
-		
-		if ($tijdveld =~ /:/) {
-			($hour,$min) = split(':',$tijdveld);
-		} elsif ($tijdveld =~ / /) {
-			my $maand;
-			($mday,$maand) = split(' ',$tijdveld);
-			$mon = index($maanden,$maand)/3;
-			$hour = 23;
-			$min=59;
-		}
-		
+	my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+	$sec = 0;
+	
+	if ($tijdveld =~ /:/) {
+	    ($hour,$min) = split(':',$tijdveld);
+	} elsif ($tijdveld =~ / /) {
+	    my $maand;
+	    ($mday,$maand) = split(' ',$tijdveld);
+	    $mon = index($maanden,$maand)/3;
+	    $hour = 23;
+	    $min=59;
+	}
+	
 		return mktime($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst);
 	}
     
@@ -413,46 +413,47 @@
 	my $state = 0;
 	for (my $i=0;$i<=$nfonds;$i++) {
 	    my $f = $fondslist[$i]->innerText;
-#		print "$i: ",Dumper $f;
-		if ($state == 0) {
-			if ($f eq 'Tijd') {
-				$state++;
-				$i++;
-			}
-		} elsif ($state == 1) {
-			my $last = $fondslist[$i+1]->innerText;
-			if ($last =~ m/^Powered/) {
-				$state++;
-				next;
-			}
-			my $volume = $fondslist[$i+3]->innerText;
-			my $laag = $fondslist[$i+6]->innerText;
-			my $hoog = $fondslist[$i+7]->innerText;
-			my $prev = $fondslist[$i+8]->innerText;
-			my $tijd = $fondslist[$i+9]->innerText;
-			$i += 10;
-			
-			$last =~ s/^[^ ]*\ //;
-			$last =~ s/\.//g;
-			$last =~ s/,/./;
-			
-			$volume =~ s/\.//g;
-			
-			$laag =~ s/\.//g;
-			$laag =~ s/,/./;
-						
-			$hoog =~ s/\.//g;
-			$hoog =~ s/,/./;
-			
-			$prev =~ s/\.//g;
-			$prev =~ s/,/./;
-			
-			my $time_t = settijd($tijd);
-			$fdbh->storeKoers($f,$time_t,$last,$last,$hoog,$laag,$volume,$prev);
-			$self->outputKoers($f,$time_t,$last,$last,$hoog,$laag,$volume,$prev);
+	    #print "In DS.IEX -> $i: ",Dumper $f;
+	    if ($state == 0) {
+		if ($f eq 'Tijd') {
+		    $state++;
+		    $i++;
 		}
+	    } elsif ($state == 1) {
+		my $last = $fondslist[$i+1]->innerText;
+#		print "iex last = $last\n";
+		if ($last eq "") {
+		    $state++;
+		    next;
+		}
+		my $volume = $fondslist[$i+3]->innerText;
+		my $laag = $fondslist[$i+6]->innerText;
+		my $hoog = $fondslist[$i+7]->innerText;
+		my $prev = $fondslist[$i+8]->innerText;
+		my $tijd = $fondslist[$i+9]->innerText;
+		$i += 10;
+		
+		$last =~ s/^[^ ]*\ //;
+		$last =~ s/\.//g;
+		$last =~ s/,/./;
+		
+		$volume =~ s/\.//g;
+		
+		$laag =~ s/\.//g;
+		$laag =~ s/,/./;
+		
+		$hoog =~ s/\.//g;
+		$hoog =~ s/,/./;
+		
+		$prev =~ s/\.//g;
+		$prev =~ s/,/./;
+		
+		my $time_t = settijd($tijd);
+		$fdbh->storeKoers($f,$time_t,$last,$last,$hoog,$laag,$volume,$prev);
+		$self->outputKoers($f,$time_t,$last,$last,$hoog,$laag,$volume,$prev);
+	    }
 	}
-	}    
+    }    
 }
 
 {
