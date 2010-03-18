@@ -29,6 +29,9 @@ class MySaxParser : public xmlpp::SaxParser
   
   
  private:
+ 
+  void printCounts();
+  
   short depth;
   long counter;
   osm_db::database *_con;
