@@ -25,7 +25,8 @@ double grootcirkel(double lat1,double lon1,double lat2,double lon2) {
   return (radius-drad*(sin((lat1+lat2)*pi/360)))*2*asin(sqrt((pow(sin((lat2-lat1)*pi/360),2)+cos(lat1*pi/180)*cos(lat2*pi/180)*pow(sin((lon2-lon1)*pi/360),2))));
 }
 
-static void *osmdistance(sqlite3_context *sc,int n,sqlite3_value **values) {
+static void osmdistance(sqlite3_context *sc,int n,sqlite3_value **values) {
+  sqlite3_result_double(sc, 0.0);
 }
 
 int main(int argc, char* argv[])
