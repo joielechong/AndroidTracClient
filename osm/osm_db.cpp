@@ -141,7 +141,7 @@ static double drad = 21385;
 
   if (pi < 3.14)
     pi = atan2(0,1)*2;
-  cerr "grootcirkel: " << lat1 << " " << lon1 << " " << lat2 << " " << lon2 << " " << result << endl;
+  cerr << "grootcirkel: " << pi << " " << radius << " " << drad << " " << lat1 << " " << lon1 << " " << lat2 << " " << lon2 << " " << result << endl;
   return (radius-drad*(sin((lat1+lat2)*pi/360)))*2*asin(sqrt((pow(sin((lat2-lat1)*pi/360),2)+cos(lat1*pi/180)*cos(lat2*pi/180)*pow(sin((lon2-lon1)*pi/360),2))));
 }
 
@@ -153,7 +153,7 @@ static void osmdistance(sqlite3_context *sc,int n,sqlite3_value **values) {
   lat2 = sqlite3_value_double(values[2]);
   lon2 = sqlite3_value_double(values[3]);
   result = grootcirkel(lat1,lon1,lat2,lon2);
-  cerr "osmdistance: " << lat1 << " " << lon1 << " " << lat2 << " " << lon2 << " " << result << endl;
+  cerr << "osmdistance: " << lat1 << " " << lon1 << " " << lat2 << " " << lon2 << " " << result << endl;
   sqlite3_result_double(sc, result);
 }
 
