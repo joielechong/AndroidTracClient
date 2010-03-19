@@ -7,8 +7,6 @@
 #include "osm_db.h"
 #include <iostream>
 #include <stdlib.h>
-#include <cache.h>
-
 namespace osm {
   
   using namespace std;
