@@ -13,7 +13,6 @@ using namespace osm_db;
 
 #define BUFFERSIZE (1024)
 
-
 int main(int argc, char* argv[])
 {
   string filepath;
