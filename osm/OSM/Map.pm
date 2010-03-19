@@ -293,11 +293,6 @@
 	$dbh->do("INSERT OR REPLACE INTO neighbor (way,id1,id2) SELECT DISTINCT way,id1,id2 FROM nb");
         $dbh->do("INSERT OR REPLACE INTO admin (id,name,level,minlat,maxlat,minlon,maxlon) SELECT id,name,level,minlat,maxlat,minlon,maxlon FROM admintmp");
 	$dbh->do("UPDATE node SET x=NULL,y=NULL WHERE id not in (SELECT ref FROM nd)");
-#        $dbh->do("DELETE FROM bucket WHERE NOT node in (SELECT ref FROM nd)");
-#	$dbh->do("UPDATE node set processed=1 WHERE NOT processed");
-#	$dbh->do("UPDATE way set processed=1 WHERE NOT processed");
-#	$dbh->do("UPDATE relation set processed=1 WHERE NOT processed");
-#	$dbh->do("UPDATE bound set processed=1 WHERE NOT processed");
     }
         
     sub pnpoly {
