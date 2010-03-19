@@ -134,11 +134,11 @@ namespace osm_db {
     mems = cur.getint64(6);
   }
   
-double pi = 0;
-double radius = 6378137;
-double drad = 21385;
-
 static double grootcirkel(double lat1,double lon1,double lat2,double lon2) {
+static double pi = 0;
+static double radius = 6378137;
+static double drad = 21385;
+
   if (pi < 3.14)
     pi = atan2(0,1)*2;
   return (radius-drad*(sin((lat1+lat2)*pi/360)))*2*asin(sqrt((pow(sin((lat2-lat1)*pi/360),2)+cos(lat1*pi/180)*cos(lat2*pi/180)*pow(sin((lon2-lon1)*pi/360),2))));
