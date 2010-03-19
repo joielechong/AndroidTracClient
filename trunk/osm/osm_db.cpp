@@ -12,7 +12,7 @@ namespace osm_db {
   database::database(string naam) {
     _sql = new sqlite3_connection(naam);
 	_trans = new sqlite3_transaction(*_sql,false); // no automatic begin
-	_getCounts = new sqlite3_command(*_sql,"SELECT * FROM counts");
+	_getCounts = NULL;
   }
   
   database::~database() {
@@ -114,14 +114,16 @@ namespace osm_db {
   }
   
   void database::getCounts(long &nodes,long &ways,long &rels, long &bounds, long &tags,long &nds, long &mems) {
+    if (_getCounts == NULL) 
+      _getCounts = new sqlite3_command(*_sql,"SELECT * FROM counts");
     sqlite3_cursor cur(_getCounts->executecursor());
-	cur.step();
-	nodes = cur.getint64(0);
-	ways = cur.getint64(1);
-	rels = cur.getint64(2);
-	bounds = cur.getint64(3);
-	tags = cur.getint64(4);
-	nds = cur.getint64(5);
-	mems = cur.getint64(6);
+    cur.step();
+    nodes = cur.getint64(0);
+    ways = cur.getint64(1);
+    rels = cur.getint64(2);
+    bounds = cur.getint64(3);
+    tags = cur.getint64(4);
+    nds = cur.getint64(5);
+    mems = cur.getint64(6);
   }
 }

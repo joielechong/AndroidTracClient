@@ -61,202 +61,204 @@
 #ifndef __CACHE_FOR_MEMORY_OBJECTS_PCG907
 #define __CACHE_FOR_MEMORY_OBJECTS_PCG907
 
-#include<hash_map>
+#include <map>
+#include <list>
 
 template < class K, class V, int limsize = 1000, int BiqQ = 0x7fffffff, int SmallQ=0 > 
-class cache 
-{
-public:
-	cache() { m_size =0;}
-	V* operator[](K& k)
-	{
-		mapiter imap = m_map.find(k);
-		if(imap== m_map.end()) return ((V*) -1);
-		listiter ilist = (*imap).second;
-		V* p= (*ilist).m_p;
-		m_list.erase(ilist);
-		push_back(p, imap);
-		return p;
-
-	}
-	void push_back(const K &k,V* p)
-	{
-		int size = p->size();
-		bool Remove;
-		listiter ilist =NULL;
-		do
-		{
-			Remove = m_size>limsize;
-
-			if(Remove)
-			{
-				Remove = m_list.size()> SmallQ;
-			}
-			else
-			{
-				Remove = m_list.size()> BiqQ;
-			}
-			if(Remove)
-			{
-				ilist = m_list.end();
-				ilist--;
-				m_size -= ((*ilist).m_p)->size();
-				delete (*ilist).m_p;
-				m_map.erase((*ilist).m_mapiter);
-				m_list.erase(ilist);
-			}
-		} while(Remove);
-		mapiter imap;
-		ASSERT(m_map.find(k)==m_map.end()); // No, you are not allowed to insert twice the same elment
-// begin bad writing : The 2 next lines are bad writing, but I do not know  how to avoid it.. please help
-		ASSERT(m_map.size() == m_list.size());
-		TRACE(" %d \n",m_map.size());
-		m_map[k]=ilist;
-		TRACE(" %d \n",m_map.size());
-		ASSERT(m_map.size() == m_list.size()+1);
-		imap = m_map.find(k); 
-//  They should be replaced by some :
-//      imap = m_map.insert(k,ilist); 
-// end bad writing : please help me to fix that 
-		ASSERT(m_map[k]==ilist);
-		push_back(p, imap);
-		m_size += p->size();
-	}
-	bool iscached(V* p)
-	{
-		return (p != (V*) -1);
-	}
-	~cache()
-	{
-		for(listiter ilist = m_list.begin(); ilist != m_list.end(); ilist++)
-			delete (*ilist).m_p;
-
-	}
+  class cache 
+  {
+  public:
+  cache() { m_size =0;}
+  V* operator[](K& k)
+  {
+    mapiter imap = m_map.find(k);
+    if(imap== m_map.end()) return ((V*) -1);
+    listiter ilist = (*imap).second;
+    V* p= (*ilist).m_p;
+    m_list.erase(ilist);
+    push_back(p, imap);
+    return p;
+    
+  }
+  void push_back(const K &k,V* p)
+  {
+    int size = p->size();
+    bool Remove;
+    listiter ilist =NULL;
+    do
+      {
+	Remove = m_size>limsize;
+	
+	if(Remove)
+	  {
+	    Remove = m_list.size()> SmallQ;
+	  }
+	else
+	  {
+	    Remove = m_list.size()> BiqQ;
+	  }
+	if(Remove)
+	  {
+	    ilist = m_list.end();
+	    ilist--;
+	    m_size -= ((*ilist).m_p)->size();
+	    delete (*ilist).m_p;
+	    m_map.erase((*ilist).m_mapiter);
+	    m_list.erase(ilist);
+	  }
+      } while(Remove);
+    mapiter imap;
+    ASSERT(m_map.find(k)==m_map.end()); // No, you are not allowed to insert twice the same elment
+    // begin bad writing : The 2 next lines are bad writing, but I do not know  how to avoid it.. please help
+    ASSERT(m_map.size() == m_list.size());
+    TRACE(" %d \n",m_map.size());
+    m_map[k]=ilist;
+    TRACE(" %d \n",m_map.size());
+    ASSERT(m_map.size() == m_list.size()+1);
+    imap = m_map.find(k); 
+    //  They should be replaced by some :
+    //      imap = m_map.insert(k,ilist); 
+    // end bad writing : please help me to fix that 
+    ASSERT(m_map[k]==ilist);
+    push_back(p, imap);
+    m_size += p->size();
+  }
+  bool iscached(V* p)
+  {
+    return (p != (V*) -1);
+  }
+  ~cache()
+  {
+    for(listiter ilist = m_list.begin(); ilist != m_list.end(); ilist++)
+      delete (*ilist).m_p;
+    
+  }
 #ifdef _DEBUG
-	int dbggetmapsize()
-	{
-		ASSERT(m_map.size() == m_list.size());
-		TRACE(" dbggetmapsize %d (m_size %d) order : ",m_map.size(),m_size);
-		for(listiter ilist = m_list.begin(); ilist != m_list.end(); ilist++)
-			TRACE(" %d ", (*((*ilist).m_mapiter)).first);
-		TRACE("\n");
-		return m_map.size();
-	}
-	int dbggetcachesize()
-	{
-		return m_size;
-	}
-	V* dbgcheck(K &k)
-	{
-		mapiter imap = m_map.find(k);
-		if(imap== m_map.end()) return ((V*) -1);
-		listiter ilist = (*imap).second;
-		return  (*ilist).m_p;
-		
-	}
-#endif _DEBUG
-private:
-	class listitem;
-	typedef list<listitem>::iterator listiter;
-	typedef hash_map< K,listiter>::iterator mapiter;
-	class listitem
-	{
-		friend class cache<  K,  V,  limsize,  BiqQ,  SmallQ > ;
-	private:
-		mapiter  m_mapiter;
-		V* m_p;
-	};
-	list<listitem> m_list;
-	hash_map< K,listiter> m_map;
-	int m_size;
-	void push_back(V* p, mapiter &imap)
-	{
-		ASSERT(m_map.size() == m_list.size()+1);
-		m_list.push_front();
-		ASSERT(m_map.size() == m_list.size());
-		listiter ilist = m_list.begin();
-		(*ilist).m_mapiter = imap;
-		(*ilist).m_p = p;
-		(*imap).second = ilist;
-		ASSERT(m_map.size() == m_list.size());
-	}
-};
+  int dbggetmapsize()
+  {
+    ASSERT(m_map.size() == m_list.size());
+    TRACE(" dbggetmapsize %d (m_size %d) order : ",m_map.size(),m_size);
+    for(listiter ilist = m_list.begin(); ilist != m_list.end(); ilist++)
+      TRACE(" %d ", (*((*ilist).m_mapiter)).first);
+    TRACE("\n");
+    return m_map.size();
+  }
+  int dbggetcachesize()
+  {
+    return m_size;
+  }
+  V* dbgcheck(K &k)
+  {
+    mapiter imap = m_map.find(k);
+    if(imap== m_map.end()) return ((V*) -1);
+    listiter ilist = (*imap).second;
+    return  (*ilist).m_p;
+    
+  }
+#endif //_DEBUG
+  private:
+  class listitem;
+  typedef list<listitem>::iterator listiter;
+  typedef map< K,listiter>::iterator mapiter;
+  class listitem
+  {
+    friend class cache<  K,  V,  limsize,  BiqQ,  SmallQ > ;
+  private:
+    mapiter  m_mapiter;
+    V* m_p;
+  };
+  list<listitem> m_list;
+  map< K,listiter> m_map;
+  int m_size;
+  void push_back(V* p, mapiter &imap)
+  {
+    ASSERT(m_map.size() == m_list.size()+1);
+    m_list.push_front();
+    ASSERT(m_map.size() == m_list.size());
+    listiter ilist = m_list.begin();
+    (*ilist).m_mapiter = imap;
+    (*ilist).m_p = p;
+    (*imap).second = ilist;
+    ASSERT(m_map.size() == m_list.size());
+  }
+  };
 
 
 #ifdef _DEBUG
 #ifdef TEST_CACHE
 
+#include <string>
 
-void test_cache()
+void main () //test_cache()
 {
-
-	cache<int, string ,25, 3, 2> tcache;
-
-	int		one =12341;
-	int		two =12342;
-	int		three =12343;
-	int		four =12344;
-	int		five =12345;
-	int		six =12446;
-	int		seven =12447;
-	int		eight =12448;
-	tcache.push_back(one,new string(11,'1'));
-	ASSERT(*(tcache.dbgcheck(one))== string(11,'1'));
-	ASSERT(tcache.dbggetmapsize()==1 && tcache.dbggetcachesize()==11);
-	tcache.push_back(two,new string(4,'2'));
-	ASSERT(tcache.dbggetmapsize()==2 && tcache.dbggetcachesize()==15);
-	ASSERT(*(tcache.dbgcheck(one))== string(11,'1'));
-	tcache.push_back(three,new string(3,'3'));
-	ASSERT(tcache.dbggetmapsize()==3 && tcache.dbggetcachesize()==18);
-	tcache.push_back(four,new string(2,'4'));
-	ASSERT(tcache.dbggetmapsize()==4 && tcache.dbggetcachesize()==20);
-	ASSERT(*(tcache.dbgcheck(one))== string(11,'1'));
-	ASSERT(*(tcache.dbgcheck(four))== string(2,'4'));
-	tcache.push_back(five,new string(8,'5'));
-	ASSERT(tcache.dbgcheck(one) == (string*) -1);
-	ASSERT(tcache.dbggetmapsize()==4 && tcache.dbggetcachesize()==17);
-	tcache.push_back(six,new string(3,'6'));
-	ASSERT(tcache.dbggetmapsize()==4 && tcache.dbggetcachesize()==16);
-	ASSERT(tcache.dbgcheck(two) == (string*) -1);
-	// order 6,5,4,3
-	ASSERT(tcache[two] == (string*) -1);
-	ASSERT(*(tcache[four])== string(2,'4'));
-	// order 4,6,5,3
-	ASSERT(tcache.dbggetmapsize()==4 && tcache.dbggetcachesize()==16);
-	ASSERT(tcache[one] == (string*) -1);
-	ASSERT(*(tcache[three])== string(3,'3'));
-	// order 3,4,6,5
-	ASSERT(tcache.dbggetmapsize()==4 && tcache.dbggetcachesize()==16);
-	tcache.push_back(seven,new string(12,'7'));
-	// order 7,3,4,6
-	ASSERT(tcache.dbggetmapsize()==4 && tcache.dbggetcachesize()==20);
-	tcache.push_back(one,new string(11,'1'));
-	// order 1,7,3,4
-	ASSERT(tcache.dbggetmapsize()==4 && tcache.dbggetcachesize()==28);
-	tcache.push_back(eight,new string(17,'8'));
-	ASSERT(tcache[four] == (string*) -1);
-	// order 8,1,7
-	ASSERT(tcache.dbggetmapsize()==3 && tcache.dbggetcachesize()==40);
-	ASSERT(*tcache[seven] == string(12,'7'));
-	// order 7,8,1
-	ASSERT(tcache.dbggetmapsize()==3 && tcache.dbggetcachesize()==40);
-	ASSERT(*tcache[one] == string(11,'1'));
-	// order 1,7,8
-	ASSERT(tcache.dbggetmapsize()==3 && tcache.dbggetcachesize()==40);
-	tcache.push_back(six,new string(3,'6'));
-	// order 6,1,7
-	ASSERT(tcache.dbggetmapsize()==3 && tcache.dbggetcachesize()==26);
-	tcache.push_back(two,new string(4,'2'));
-	// order 2,6,1
-	ASSERT(tcache.dbggetmapsize()==3 && tcache.dbggetcachesize()==18);
-	// order 8,2,6,1
-	tcache.push_back(eight,new string(17,'8'));
-	ASSERT(tcache.dbggetmapsize()==4 && tcache.dbggetcachesize()==35);
-
+  
+  cache<int, string ,25, 3, 2> tcache;
+  
+  int		one =12341;
+  int		two =12342;
+  int		three =12343;
+  int		four =12344;
+  int		five =12345;
+  int		six =12446;
+  int		seven =12447;
+  int		eight =12448;
+  tcache.push_back(one,new string(11,'1'));
+  ASSERT(*(tcache.dbgcheck(one))== string(11,'1'));
+  ASSERT(tcache.dbggetmapsize()==1 && tcache.dbggetcachesize()==11);
+  tcache.push_back(two,new string(4,'2'));
+  ASSERT(tcache.dbggetmapsize()==2 && tcache.dbggetcachesize()==15);
+  ASSERT(*(tcache.dbgcheck(one))== string(11,'1'));
+  tcache.push_back(three,new string(3,'3'));
+  ASSERT(tcache.dbggetmapsize()==3 && tcache.dbggetcachesize()==18);
+  tcache.push_back(four,new string(2,'4'));
+  ASSERT(tcache.dbggetmapsize()==4 && tcache.dbggetcachesize()==20);
+  ASSERT(*(tcache.dbgcheck(one))== string(11,'1'));
+  ASSERT(*(tcache.dbgcheck(four))== string(2,'4'));
+  tcache.push_back(five,new string(8,'5'));
+  ASSERT(tcache.dbgcheck(one) == (string*) -1);
+  ASSERT(tcache.dbggetmapsize()==4 && tcache.dbggetcachesize()==17);
+  tcache.push_back(six,new string(3,'6'));
+  ASSERT(tcache.dbggetmapsize()==4 && tcache.dbggetcachesize()==16);
+  ASSERT(tcache.dbgcheck(two) == (string*) -1);
+  // order 6,5,4,3
+  ASSERT(tcache[two] == (string*) -1);
+  ASSERT(*(tcache[four])== string(2,'4'));
+  // order 4,6,5,3
+  ASSERT(tcache.dbggetmapsize()==4 && tcache.dbggetcachesize()==16);
+  ASSERT(tcache[one] == (string*) -1);
+  ASSERT(*(tcache[three])== string(3,'3'));
+  // order 3,4,6,5
+  ASSERT(tcache.dbggetmapsize()==4 && tcache.dbggetcachesize()==16);
+  tcache.push_back(seven,new string(12,'7'));
+  // order 7,3,4,6
+  ASSERT(tcache.dbggetmapsize()==4 && tcache.dbggetcachesize()==20);
+  tcache.push_back(one,new string(11,'1'));
+  // order 1,7,3,4
+  ASSERT(tcache.dbggetmapsize()==4 && tcache.dbggetcachesize()==28);
+  tcache.push_back(eight,new string(17,'8'));
+  ASSERT(tcache[four] == (string*) -1);
+  // order 8,1,7
+  ASSERT(tcache.dbggetmapsize()==3 && tcache.dbggetcachesize()==40);
+  ASSERT(*tcache[seven] == string(12,'7'));
+  // order 7,8,1
+  ASSERT(tcache.dbggetmapsize()==3 && tcache.dbggetcachesize()==40);
+  ASSERT(*tcache[one] == string(11,'1'));
+  // order 1,7,8
+  ASSERT(tcache.dbggetmapsize()==3 && tcache.dbggetcachesize()==40);
+  tcache.push_back(six,new string(3,'6'));
+  // order 6,1,7
+  ASSERT(tcache.dbggetmapsize()==3 && tcache.dbggetcachesize()==26);
+  tcache.push_back(two,new string(4,'2'));
+  // order 2,6,1
+  ASSERT(tcache.dbggetmapsize()==3 && tcache.dbggetcachesize()==18);
+  // order 8,2,6,1
+  tcache.push_back(eight,new string(17,'8'));
+  ASSERT(tcache.dbggetmapsize()==4 && tcache.dbggetcachesize()==35);
+  
 }
 
-#endif TEST_CACHE
+#endif //TEST_CACHE
 
-#endif _DEBUG
+#endif //_DEBUG
 
-#endif  __CACHE_FOR_MEMORY_OBJECTS_PCG907
+#endif  //__CACHE_FOR_MEMORY_OBJECTS_PCG907
