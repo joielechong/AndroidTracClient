@@ -66,6 +66,32 @@
 using namespace std;
 
 template < class K, class V, int limsize = 1000, int BiqQ = 0x7fffffff, int SmallQ=0 > class cache {
+ private:
+ class listitem;
+ typedef typename list<listitem>::iterator listiter;
+ typedef typename map< K,listiter>::iterator mapiter;
+ class listitem
+ {
+   friend class cache<  K,  V,  limsize,  BiqQ,  SmallQ > ;
+ private:
+   mapiter  m_mapiter;
+   V* m_p;
+ };
+ list<listitem> m_list;
+ map< K,listiter> m_map;
+ int m_size;
+ void push_back(V* p, mapiter &imap)
+ {
+   ASSERT(m_map.size() == m_list.size()+1);
+   m_list.push_front();
+   ASSERT(m_map.size() == m_list.size());
+   listiter ilist = m_list.begin();
+   (*ilist).m_mapiter = imap;
+   (*ilist).m_p = p;
+   (*imap).second = ilist;
+   ASSERT(m_map.size() == m_list.size());
+ }
+
  public:
  cache() { m_size =0;}
  V* operator[](K& k) {
@@ -123,32 +149,6 @@ template < class K, class V, int limsize = 1000, int BiqQ = 0x7fffffff, int Smal
  ~cache() {
    for(listiter ilist = m_list.begin(); ilist != m_list.end(); ilist++)
      delete (*ilist).m_p;  
- }
-
- private:
- class listitem;
- typedef typename list<listitem>::iterator listiter;
- typedef typename map< K,listiter>::iterator mapiter;
- class listitem
- {
-   friend class cache<  K,  V,  limsize,  BiqQ,  SmallQ > ;
- private:
-   mapiter  m_mapiter;
-   V* m_p;
- };
- list<listitem> m_list;
- map< K,listiter> m_map;
- int m_size;
- void push_back(V* p, mapiter &imap)
- {
-   ASSERT(m_map.size() == m_list.size()+1);
-   m_list.push_front();
-   ASSERT(m_map.size() == m_list.size());
-   listiter ilist = m_list.begin();
-   (*ilist).m_mapiter = imap;
-   (*ilist).m_p = p;
-   (*imap).second = ilist;
-   ASSERT(m_map.size() == m_list.size());
  }
 
 #ifdef _DEBUG
