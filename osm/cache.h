@@ -181,7 +181,7 @@ template < class K, class V, int limsize = 1000, int BiqQ = 0x7fffffff, int Smal
 
 #include <string>
 
-void main () //test_cache()
+int main () //test_cache()
 {
   
   cache<int, string ,25, 3, 2> tcache;
@@ -246,7 +246,7 @@ void main () //test_cache()
   // order 8,2,6,1
   tcache.push_back(eight,new string(17,'8'));
   ASSERT(tcache.dbggetmapsize()==4 && tcache.dbggetcachesize()==35);
-  
+  return 0;
 }
 
 #endif //TEST_CACHE

@@ -9,7 +9,7 @@ all:	mkdb dijkstra
 clean:
 	rm *.o mkdb dijkstra
 
-mkdb:	main.o myparser.o osm_db.o
+mkdb:	main.o myparser.o osm_db.o osm.o
 	g++ ${LDFLAGS} -o mkdb main.o myparser.o osm_db.o ${LIBS}
 
 dijkstra:	dijkstra.o
