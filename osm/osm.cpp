@@ -4,6 +4,7 @@
 #include <string>
 #include <glibmm/ustring.h>
 #include <sstream>
+#include "cache.h"
 
 namespace osm {
   using namespace std;
