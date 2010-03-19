@@ -44,12 +44,12 @@ int main(int argc, char* argv[])
   try {
     database sql(dbname);
     sql.setupSchemas("schema.sqlite.txt");
-	sql.initializeFill();
-	
+    sql.initializeFill();
+    
     // Parse the entire document in one go:
     MySaxParser parser;
     parser.setDBconn(&sql);
-//    parser.set_substitute_entities(true);
+    //    parser.set_substitute_entities(true);
 
     if (filepath == "-") {
       parser.parse_stream(cin);
