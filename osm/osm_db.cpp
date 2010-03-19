@@ -141,7 +141,7 @@ static double drad = 21385;
 
   if (pi < 3.14)
     pi = atan2(0,1)*2;
-  cerr << "grootcirkel: " << pi << " " << radius << " " << drad << " " << lat1 << " " << lon1 << " " << lat2 << " " << lon2 << " " << result << endl;
+  cerr << "grootcirkel: " << pi << " " << radius << " " << drad << " " << lat1 << " " << lon1 << " " << lat2 << " " << lon2 << endl;
   return (radius-drad*(sin((lat1+lat2)*pi/360)))*2*asin(sqrt((pow(sin((lat2-lat1)*pi/360),2)+cos(lat1*pi/180)*cos(lat2*pi/180)*pow(sin((lon2-lon1)*pi/360),2))));
 }
 
