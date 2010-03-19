@@ -64,124 +64,114 @@
 #include <map>
 #include <list>
 
-template < class K, class V, int limsize = 1000, int BiqQ = 0x7fffffff, int SmallQ=0 > 
-  class cache 
-  {
-  public:
-  cache() { m_size =0;}
-  V* operator[](K& k)
-  {
-    mapiter imap = m_map.find(k);
-    if(imap== m_map.end()) return ((V*) -1);
-    listiter ilist = (*imap).second;
-    V* p= (*ilist).m_p;
-    m_list.erase(ilist);
-    push_back(p, imap);
-    return p;
-    
-  }
-  void push_back(const K &k,V* p)
-  {
-    int size = p->size();
-    bool Remove;
-    listiter ilist =NULL;
-    do
-      {
-	Remove = m_size>limsize;
-	
-	if(Remove)
-	  {
-	    Remove = m_list.size()> SmallQ;
-	  }
-	else
-	  {
-	    Remove = m_list.size()> BiqQ;
-	  }
-	if(Remove)
-	  {
-	    ilist = m_list.end();
-	    ilist--;
-	    m_size -= ((*ilist).m_p)->size();
-	    delete (*ilist).m_p;
-	    m_map.erase((*ilist).m_mapiter);
+template < class K, class V, int limsize = 1000, int BiqQ = 0x7fffffff, int SmallQ=0 > class cache {
+ public:
+ cache() { m_size =0;}
+ V* operator[](K& k) {
+   mapiter imap = m_map.find(k);
+   if(imap== m_map.end()) return ((V*) -1);
+   listiter ilist = (*imap).second;
+   V* p= (*ilist).m_p;
+   m_list.erase(ilist);
+   push_back(p, imap);
+   return p;
+ }
+ 
+ void push_back(const K &k,V* p)  {
+   int size = p->size();
+   bool Remove;
+   listiter ilist =NULL;
+   do
+     {
+       Remove = m_size>limsize;
+       
+       if(Remove)
+	 Remove = m_list.size()> SmallQ;
+       else
+	 Remove = m_list.size()> BiqQ;
+       if(Remove) {
+	 ilist = m_list.end();
+	 ilist--;
+	 m_size -= ((*ilist).m_p)->size();
+	 delete (*ilist).m_p;
+	 m_map.erase((*ilist).m_mapiter);
 	    m_list.erase(ilist);
-	  }
-      } while(Remove);
-    mapiter imap;
-    ASSERT(m_map.find(k)==m_map.end()); // No, you are not allowed to insert twice the same elment
-    // begin bad writing : The 2 next lines are bad writing, but I do not know  how to avoid it.. please help
-    ASSERT(m_map.size() == m_list.size());
-    TRACE(" %d \n",m_map.size());
-    m_map[k]=ilist;
-    TRACE(" %d \n",m_map.size());
-    ASSERT(m_map.size() == m_list.size()+1);
-    imap = m_map.find(k); 
-    //  They should be replaced by some :
-    //      imap = m_map.insert(k,ilist); 
-    // end bad writing : please help me to fix that 
-    ASSERT(m_map[k]==ilist);
-    push_back(p, imap);
-    m_size += p->size();
-  }
-  bool iscached(V* p)
-  {
-    return (p != (V*) -1);
-  }
-  ~cache()
-  {
-    for(listiter ilist = m_list.begin(); ilist != m_list.end(); ilist++)
-      delete (*ilist).m_p;
-    
-  }
+       }
+     } while(Remove);
+   mapiter imap;
+   ASSERT(m_map.find(k)==m_map.end()); // No, you are not allowed to insert twice the same elment
+   // begin bad writing : The 2 next lines are bad writing, but I do not know  how to avoid it.. please help
+   ASSERT(m_map.size() == m_list.size());
+   TRACE(" %d \n",m_map.size());
+   m_map[k]=ilist;
+   TRACE(" %d \n",m_map.size());
+   ASSERT(m_map.size() == m_list.size()+1);
+   imap = m_map.find(k); 
+   //  They should be replaced by some :
+   //      imap = m_map.insert(k,ilist); 
+   // end bad writing : please help me to fix that 
+   ASSERT(m_map[k]==ilist);
+   push_back(p, imap);
+   m_size += p->size();
+ }
+
+ bool iscached(V* p) {
+   return (p != (V*) -1);
+ }
+ 
+ ~cache() {
+   for(listiter ilist = m_list.begin(); ilist != m_list.end(); ilist++)
+     delete (*ilist).m_p;  
+ }
+
 #ifdef _DEBUG
-  int dbggetmapsize()
-  {
-    ASSERT(m_map.size() == m_list.size());
-    TRACE(" dbggetmapsize %d (m_size %d) order : ",m_map.size(),m_size);
-    for(listiter ilist = m_list.begin(); ilist != m_list.end(); ilist++)
-      TRACE(" %d ", (*((*ilist).m_mapiter)).first);
-    TRACE("\n");
-    return m_map.size();
-  }
-  int dbggetcachesize()
-  {
-    return m_size;
-  }
-  V* dbgcheck(K &k)
-  {
-    mapiter imap = m_map.find(k);
-    if(imap== m_map.end()) return ((V*) -1);
-    listiter ilist = (*imap).second;
-    return  (*ilist).m_p;
-    
+ int dbggetmapsize() {
+   ASSERT(m_map.size() == m_list.size());
+   TRACE(" dbggetmapsize %d (m_size %d) order : ",m_map.size(),m_size);
+   for(listiter ilist = m_list.begin(); ilist != m_list.end(); ilist++)
+     TRACE(" %d ", (*((*ilist).m_mapiter)).first);
+   TRACE("\n");
+   return m_map.size();
+ }
+ 
+ int dbggetcachesize() {
+   return m_size;
+ }
+  
+ V* dbgcheck(K &k) {
+   mapiter imap = m_map.find(k);
+   if(imap== m_map.end()) return ((V*) -1);
+   listiter ilist = (*imap).second;
+   return  (*ilist).m_p;
   }
 #endif //_DEBUG
-  private:
-  class listitem;
-  typedef list<listitem>::iterator listiter;
-  typedef map< K,listiter>::iterator mapiter;
-  class listitem
-  {
-    friend class cache<  K,  V,  limsize,  BiqQ,  SmallQ > ;
-  private:
-    mapiter  m_mapiter;
-    V* m_p;
-  };
-  list<listitem> m_list;
-  map< K,listiter> m_map;
-  int m_size;
-  void push_back(V* p, mapiter &imap)
-  {
-    ASSERT(m_map.size() == m_list.size()+1);
-    m_list.push_front();
-    ASSERT(m_map.size() == m_list.size());
-    listiter ilist = m_list.begin();
-    (*ilist).m_mapiter = imap;
-    (*ilist).m_p = p;
-    (*imap).second = ilist;
-    ASSERT(m_map.size() == m_list.size());
-  }
-  };
+
+ private:
+ class listitem;
+ typedef list<listitem>::iterator listiter;
+ typedef map< K,listiter>::iterator mapiter;
+ class listitem
+ {
+   friend class cache<  K,  V,  limsize,  BiqQ,  SmallQ > ;
+ private:
+   mapiter  m_mapiter;
+   V* m_p;
+ };
+ list<listitem> m_list;
+ map< K,listiter> m_map;
+ int m_size;
+ void push_back(V* p, mapiter &imap)
+ {
+   ASSERT(m_map.size() == m_list.size()+1);
+   m_list.push_front();
+   ASSERT(m_map.size() == m_list.size());
+   listiter ilist = m_list.begin();
+   (*ilist).m_mapiter = imap;
+   (*ilist).m_p = p;
+   (*imap).second = ilist;
+   ASSERT(m_map.size() == m_list.size());
+ }
+};
 
 
 #ifdef _DEBUG
