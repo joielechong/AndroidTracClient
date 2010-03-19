@@ -3,6 +3,7 @@
 
 #include <string>
 #include <sqlite3x.hpp>
+#include <sqlite3.h>
 
 namespace osm_db {
   
@@ -25,6 +26,7 @@ namespace osm_db {
     inline void begin() { _trans->begin();}
     inline void commit() { _trans->commit();}
     void executenonquery(std::string query);
+	inline sqlite3 *db() {return _sql->db();}
 
     void getCounts(long &nodes,long &ways,long &rel, long &bounds, long &tags,long &nds, long &mems);
 
