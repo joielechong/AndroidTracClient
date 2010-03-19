@@ -64,11 +64,12 @@
 #include <map>
 #include <list>
 using namespace std;
+
 template < class K, class V, int limsize = 1000, int BiqQ = 0x7fffffff, int SmallQ=0 > class cache {
  private:
  class listitem;
- typedef list<listitem>::iterator listiter;
- typedef map< K,listiter>::iterator mapiter;
+ typedef typename list<listitem>::iterator listiter;
+ typedef typename map< K,listiter>::iterator mapiter;
  class listitem
  {
    friend class cache<  K,  V,  limsize,  BiqQ,  SmallQ > ;
