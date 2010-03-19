@@ -25,7 +25,7 @@ namespace osm {
     int i;
     
     for (i=0;i<_k.size();i++) 
-      con.createTag(_id,_k[i],_v[i]);
+      con.createTag(_id,_type,_k[i],_v[i]);
   }  
   
   

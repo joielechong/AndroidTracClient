@@ -51,13 +51,14 @@ namespace osm {
   protected:
     long _id;
     int	_version;
+	string _type;
     vector<string> _k;
     vector<string> _v;
   };
   
   class Way  : public Element {
   public:
-    inline Way() : Element() {}
+    inline Way() : Element() {_type='way';}
     inline Way(long id,int version) : Element(id,version) {}
     inline Way(string id,string version) : Element(id,version) {}
     inline ~Way() {}
@@ -72,7 +73,7 @@ namespace osm {
   
   class Relation  : public Element {
   public:
-    inline Relation() : Element() {}
+    inline Relation() : Element() {_type='relation';}
     inline Relation(long id,int version) : Element(id,version) {}
     inline Relation(string id,string version) : Element(id,version) {}
     inline ~Relation() {}
@@ -87,7 +88,7 @@ namespace osm {
   
   class Node  : public Element {
   public:
-    inline Node() : Element() {}
+    inline Node() : Element() {_type='node';}
     inline Node(long id,int version,double lat,double lon) : _lat(lat),_lon(lon), Element(id,version) {}
     inline Node(string id,string version,string lat,string lon) : _lat(atof(lat.c_str())),_lon(atof(lon.c_str())),Element(id,version) {}
     inline ~Node() {}
