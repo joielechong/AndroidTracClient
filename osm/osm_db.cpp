@@ -65,10 +65,10 @@ namespace osm_db {
     executenonquery("DELETE FROM nd WHERE NOT ref IN (SELECT id FROM node)");
     executenonquery("DELETE FROM member WHERE (type='way' AND NOT ref IN (SELECT id FROM way)) OR (type='node' AND NOT ref IN (SELECT id FROM node)) OR (type='relation' AND NOT ref IN (SELECT id FROM relation))");
 	
+    executenonquery("UPDATE node SET x=round((lon+90)*20),y=round((lat+180)*20) WHERE id in (SELECT ref FROM usable_way as u,nd WHERE u.id=nd.id)");
+    executenonquery("INSERT OR REPLACE INTO admin (id,name,level,minlat,maxlat,minlon,maxlon) SELECT id,name,level,minlat,maxlat,minlon,maxlon FROM admintmp");
     executenonquery("INSERT OR REPLACE INTO neighbor (way,id1,id2,distance) SELECT DISTINCT way,id1,id2,osmdistance(nd1.lat,nd1.lon,nd2.lat,nd2.lon) FROM nb,node as nd1,node as nd2 WHERE id1=nd1.id AND id2=nd2.id");
     //    executenonquery("CREATE TABLE test AS SELECT way,id1,id2,osmdistance(nd1.lat,nd1.lon,nd2.lat,nd2.lon) FROM nb,node as nd1,node as nd2 WHERE id1=nd1.id AND id2=nd2.id");
-    executenonquery("INSERT OR REPLACE INTO admin (id,name,level,minlat,maxlat,minlon,maxlon) SELECT id,name,level,minlat,maxlat,minlon,maxlon FROM admintmp");
-    executenonquery("UPDATE node SET x=round((lon+90)*20),y=round((lat+180)*20) WHERE id in (SELECT ref FROM usable_way as u,nd WHERE u.id=nd.id)");
   }
   
   void database::executenonquery(std::string query) {
@@ -150,7 +150,6 @@ namespace osm_db {
     lat2 = sqlite3_value_double(values[2]);
     lon2 = sqlite3_value_double(values[3]);
     result = grootcirkel(lat1,lon1,lat2,lon2);
-    cerr << "osmdistance: " << lat1 << " " << lon1 << " " << lat2 << " " << lon2 << " " << result << endl;
     sqlite3_result_double(sc, result);
   }
   
