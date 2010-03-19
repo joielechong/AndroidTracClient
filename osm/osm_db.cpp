@@ -9,12 +9,14 @@ namespace osm_db {
   
   using namespace std;
   using namespace sqlite3x;
-  
+
+  static void osmdistance(sqlite3_context *sc,int n,sqlite3_value **values);
+ 
   database::database(string naam) {
     _sql = new sqlite3_connection(naam);
 	_trans = new sqlite3_transaction(*_sql,false); // no automatic begin
 	_getCounts = NULL;
-	sqlite3_create_function(_sql.db(),"osmdistance",4,SQLITE_ANY,NULL,osmdistance,NULL,NULL);
+	sqlite3_create_function(_sql->db(),"osmdistance",4,SQLITE_ANY,NULL,osmdistance,NULL,NULL);
   }
   
   database::~database() {
