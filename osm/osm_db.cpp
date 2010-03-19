@@ -152,6 +152,7 @@ static void osmdistance(sqlite3_context *sc,int n,sqlite3_value **values) {
   lat2 = sqlite3_value_double(values[2]);
   lon2 = sqlite3_value_double(values[3]);
   result = grootcirkel(lat1,lon1,lat2,lon2);
+  cerr << lat1, << " " << lon1 << " " << lat2 << " " << lon2 << " " << restult << endl;
   sqlite3_result_double(sc, result);
 }
 
