@@ -19,10 +19,10 @@ int main(int argc, char* argv[])
   string dbname;
   string schema;
   
-  StringArgument dbArg("-db","newosm.sqlite","SQLite database name");
-  StringArgument schemaArg("-schema","schema.sqlite.txt","schema definition file");
+  StringArgument dbArg("-db","value",string("newosm.sqlite"),"SQLite database name");
+  StringArgument schemaArg("-schema","value",string("schema.sqlite.txt"),"schema definition file");
   BooleanArgument newArg("-new","Create new database");
-  StringArgument fileArg("-file","-","Input file (- = stdin)");
+  StringArgument fileArg("-file","value",string("-"),"Input file (- = stdin)");
   
   ArgumentParser parser;
   parser.addArgument(dbArg);
