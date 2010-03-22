@@ -5,12 +5,13 @@
 #include <glibmm/ustring.h>
 #include <sstream>
 #include "cache.h"
+#include <stdexcept>
 
 namespace osm {
   using namespace std;
   
-  void Element::addMember(long ref,string type,string role){ throw Glib::ustring("Member kan niet in dit type element");}  // throw exception
-  void Element::addNd(long ref) { throw "Nd kan niet in dit type element";}   // throw exception
+  void Element::addMember(long ref,string type,string role){ throw new std::range_error("Member kan niet in dit type element");}  // throw exception
+  void Element::addNd(long ref) { throw new std::range_error("Nd kan niet in dit type element");}   // throw exception
   
   string Element::printTags() {
     int i;
@@ -29,15 +30,15 @@ namespace osm {
   }  
   
   
-  void Element::setLat(string ref) {throw "Lat kan alleen bij Node";};  // throw exception
-  void Element::setLon(string ref) {throw "Lon kan alleen bij Node";};  // throw exception
+  void Element::setLat(string ref) {throw new std::range_error("Lat kan alleen bij Node");};  // throw exception
+  void Element::setLon(string ref) {throw new std::range_error("Lon kan alleen bij Node");};  // throw exception
   
   string Element::output (){
-    throw "Kan Element niet printen";
+    throw new std::range_error("Kan Element niet printen");
   }
   
   void Element::store (osm_db::database& con) {
-    throw "Kan Element niet opslaan";
+    throw new std::range_error("Kan Element niet opslaan");
   }
 
   //Way
