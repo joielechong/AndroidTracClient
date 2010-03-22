@@ -5,6 +5,7 @@
 #include <glibmm/ustring.h>
 #include <cstdlib>
 #include <cstring>
+#include <stdexcept>
 
 MySaxParser::MySaxParser() : depth(0),counter(0), lastid(0), ndcnt(0), memcnt(0), xmlpp::SaxParser() {}
 
@@ -81,7 +82,7 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
       _con->createRelation(id,version);
     } else if (name == "bounds" || name == "bound") {
     } else {
-      throw "Onbekend element "+name;
+      throw new std::range_error("Onbekend element "+name);
     }
     break;
   case 3:
@@ -108,7 +109,7 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
       } else if (name == "nd" ) {
 	_con->createNd(lastid,ndcnt++,ref);
       } else {
-	throw "Onbekend element "+name;
+	throw new std::range_error("Onbekend element "+name);
       }
     }
     break;
