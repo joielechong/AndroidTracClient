@@ -19,17 +19,17 @@ int main(int argc, char* argv[])
   string dbname;
   string schema;
   
-  StringArgument dbArg = new StringArgument("-db","newosm.sqlite","SQLite database name");
-  StringArgument schemaArg = new StringArgument("-schema","schema.sqlite.txt","schema definition file");
-  BooleanArgument newArg = new BooleanArgument("-new","Create new database");
-  StringArgument fileArd = new StringArgument("-file","-","Input file (- = stdin)");
+  StringArgument dbArg("-db","newosm.sqlite","SQLite database name");
+  StringArgument schemaArg("-schema","schema.sqlite.txt","schema definition file");
+  BooleanArgument newArg("-new","Create new database");
+  StringArgument fileArd("-file","-","Input file (- = stdin)");
   
   ArgumentParser parser = new ArgumentParser();
   parser.addArgument(dbArg);
   parser.addArgument(schemaArg);
   parser.addArgument(newArg);  
   parser.addArgument(fileArg);
-  List extra = parser.parse(argv);
+  list<string> extra = parser.parse(argc,argv);
   
   filepath = fileArg.getValue();
   dbname = dbArg.getValue();
