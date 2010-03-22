@@ -25,9 +25,9 @@ int main(int argc, char* argv[])
   StringArgument fileArd = new StringArgument("-file","-","Input file (- = stdin)");
   
   ArgumentParser parser = new ArgumentParser();
-  parser.addrgument(dbArg);
-  parser.addrgument(schemaArg);
-  parser.addrgument(newArg);  
+  parser.addArgument(dbArg);
+  parser.addArgument(schemaArg);
+  parser.addArgument(newArg);  
   parser.addArgument(fileArg);
   List extra = parser.parse(argv);
   
