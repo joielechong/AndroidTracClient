@@ -58,7 +58,7 @@ namespace osm_db {
   
   void database::postprocess() {
     executenonquery("DELETE FROM relation WHERE id in (SELECT id FROM tag WHERE type='relation' AND k='type' AND NOT v in ('boundary','restriction','multipolygon'))");
-    executenonquery("DELETE FROM way WHERE NOT id in (SELECT id FROM tag WHERE k in ('highway','boundary','route','natural','addr:interpolation') UNION SELECT ref FROM member WHERE type = 'way')");
+    executenonquery("DELETE FROM way WHERE NOT id in (SELECT id FROM tag WHERE k in ('highway','boundary','route','natural') OR k like 'addr:%' OR k like 'is_in% UNION SELECT ref FROM member WHERE type = 'way')");
     executenonquery("DELETE FROM way WHERE id in (SELECT id FROM tag WHERE type = 'way' AND ((k='route' AND NOT v like 'ferry%') OR ( k='natural' AND NOT v like 'coastline%')))");
     executenonquery("DELETE FROM nd WHERE NOT ref IN (SELECT id FROM node)");
     executenonquery("DELETE FROM member WHERE (type='way' AND NOT ref IN (SELECT id FROM way)) OR (type='node' AND NOT ref IN (SELECT id FROM node)) OR (type='relation' AND NOT ref IN (SELECT id FROM relation))");

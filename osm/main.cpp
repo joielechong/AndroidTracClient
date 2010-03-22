@@ -1,11 +1,9 @@
 #include <cstring>
 #include <glibmm/ustring.h>
 #include "osm_db.h"
-//#include "osm.h"
-
 #include <fstream>
 #include <iostream>
-
+#include <stdexcept>
 #include "myparser.h"
 
 using namespace std;
@@ -55,6 +53,8 @@ int main(int argc, char* argv[])
     return 1;
   } catch (const Glib::ustring &ex) {
     cout << "Exception in program: " << ex <<endl;
+  } catch (const std::exception &ex) {
+    cout << "Exception in program: " << ex.what() <<endl;
   }
   
   return 0;
