@@ -22,9 +22,9 @@ int main(int argc, char* argv[])
   StringArgument dbArg("-db","newosm.sqlite","SQLite database name");
   StringArgument schemaArg("-schema","schema.sqlite.txt","schema definition file");
   BooleanArgument newArg("-new","Create new database");
-  StringArgument fileArd("-file","-","Input file (- = stdin)");
+  StringArgument fileArg("-file","-","Input file (- = stdin)");
   
-  ArgumentParser parser = new ArgumentParser();
+  ArgumentParser parser;
   parser.addArgument(dbArg);
   parser.addArgument(schemaArg);
   parser.addArgument(newArg);  

@@ -13,7 +13,7 @@ namespace osm_db {
     ~database();
     
     void setupSchemas(const char *filename);
-    inline void setupSchemas(const std::string s) {setupSchemas(s.c_str())}
+    inline void setupSchemas(const std::string s) {setupSchemas(s.c_str());}
     void initializeFill();
     void postprocess();
 	
