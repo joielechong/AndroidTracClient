@@ -1,10 +1,12 @@
 #include <cstring>
 #include <glibmm/ustring.h>
-#include "osm_db.h"
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
+#include <Argument.h>
+
 #include "myparser.h"
+#include "osm_db.h"
 
 using namespace std;
 using namespace osm_db;
@@ -15,7 +17,25 @@ int main(int argc, char* argv[])
 {
   string filepath;
   string dbname;
+  string schema;
   
+  StringArgument dbArg = new StringArgument("-db","newosm.sqlite","SQLite database name");
+  StringArgument schemaArg = new StringArgument("-schema","schema.sqlite.txt","schema definition file");
+  BooleanArgument newArg = new BooleanArgument("-new","Create new database");
+  StringArgument fileArd = new StringArgument("-file","-","Input file (- = stdin)");
+  
+  ArgumentParser parser = new ArgumentParser();
+  parser.addrgument(dbArg);
+  parser.addrgument(schemaArg);
+  parser.addrgument(newArg);  
+  parser.addArgument(fileArg);
+  List extra = parser.parse(argv);
+  
+  filepath = fileArg.getValue();
+  dbname = dbArg.getValue();
+  schema = schemaArg.getValue();
+
+/*  
   cout << "argc = " << argc << endl;
   if (argc > 2) {
     filepath = argv[1];
@@ -27,10 +47,11 @@ int main(int argc, char* argv[])
       filepath = "-";  // use stdin when no argument
     dbname = "newosm.sqlite";
   }
-  
+*/
+
   try {
     database sql(dbname);
-    sql.setupSchemas("schema.sqlite.txt");
+    sql.setupSchemas(schema);
     sql.initializeFill();
     
     // Parse the entire document in one go:
@@ -52,7 +73,7 @@ int main(int argc, char* argv[])
     cout << "Exception in sqlite: " << ex.what() <<endl;
     return 1;
   } catch (const Glib::ustring &ex) {
-    cout << "Exception in program: " << ex <<endl;
+    cout << "Exception in parser: " << ex <<endl;
   } catch (const std::exception &ex) {
     cout << "Exception in program: " << ex.what() <<endl;
   }

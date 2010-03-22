@@ -2,14 +2,14 @@ CPPFLAGS=-I/usr/include/libxml++-2.6/ -I/usr/include/glibmm-2.4 -I /usr/lib/glib
 
 CFLAGS=
 LDFLAGS=
-LIBS=-lxml++-2.6 -lglibmm-2.4 -lglib-2.0 -lxml2 -lsqlite3x -lsqlite3
+LIBS=-lxml++-2.6 -lglibmm-2.4 -lglib-2.0 -lxml2 -lsqlite3x -lsqlite3 -lArgV
 
 all:	mkdb dijkstra
 
 clean:
 	rm *.o mkdb dijkstra
 
-mkdb:	main.o myparser.o osm_db.o osm.o
+mkdb:	main.o myparser.o osm_db.o
 	g++ ${LDFLAGS} -o mkdb main.o myparser.o osm_db.o ${LIBS}
 
 dijkstra:	dijkstra.o
