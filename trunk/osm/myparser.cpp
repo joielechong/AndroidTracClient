@@ -3,8 +3,8 @@
 #include "osm_db.h"
 #include <string>
 #include <glibmm/ustring.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 
 MySaxParser::MySaxParser() : depth(0),counter(0), lastid(0), ndcnt(0), memcnt(0), xmlpp::SaxParser() {}
 
