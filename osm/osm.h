@@ -6,7 +6,7 @@
 #include <glibmm/ustring.h>
 #include "osm_db.h"
 #include <iostream>
-#include <stdlib.h>
+#include <cstdlib>
 namespace osm {
   
   using namespace std;

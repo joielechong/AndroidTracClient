@@ -1,7 +1,7 @@
-#include <string.h>
+#include <cstring>
 #include <glibmm/ustring.h>
 #include "osm_db.h"
-#include "osm.h"
+//#include "osm.h"
 
 #include <fstream>
 #include <iostream>

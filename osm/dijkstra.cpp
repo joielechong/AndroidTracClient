@@ -1,5 +1,5 @@
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 
 #define MAX_NODES 1024        /* maximum number of nodes */
 #define INFINITY 1000000000      /* a number larger than every maximum path */

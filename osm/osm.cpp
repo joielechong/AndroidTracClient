@@ -1,6 +1,6 @@
 #include "osm.h"
 #include "osm_db.h"
-#include <stdlib.h>
+#include <cstdlib>
 #include <string>
 #include <glibmm/ustring.h>
 #include <sstream>
