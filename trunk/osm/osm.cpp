@@ -2,7 +2,6 @@
 #include "osm_db.h"
 #include <cstdlib>
 #include <string>
-#include <glibmm/ustring.h>
 #include <sstream>
 #include "cache.h"
 #include <stdexcept>
