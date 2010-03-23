@@ -7,7 +7,7 @@
 #include <cstring>
 #include <stdexcept>
 
-MySaxParser::MySaxParser() : depth(0),counter(0), lastid(0), ndcnt(0), memcnt(0), xmlpp::SaxParser() {}
+MySaxParser::MySaxParser() : xmlpp::SaxParser(), depth(0),counter(0), lastid(0), memcnt(0), ndcnt(0) {}
 
 MySaxParser::~MySaxParser() {}
 
@@ -33,9 +33,9 @@ void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList
   //  std::cout << "node: name=" << name.c_str() << "(" << depth << ")" << std::endl;
   
   // Store attributes:
-  long id,ref;
-  int version;
-  double lat,lon;
+  long id=-1,ref=-1;
+  int version=-1;
+  double lat=-999,lon=-999;
   std::string type,role,k,v;
   
   for(xmlpp::SaxParser::AttributeList::const_iterator iter = attributes.begin(); iter != attributes.end(); ++iter) {
