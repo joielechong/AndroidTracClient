@@ -12,9 +12,12 @@ AC_LANG([C++])
 AC_PROG_CXX
 
 # Checks for libraries.
-PKG_CHECK_MODULES(DEPS, libxml++-2.6 >= 2.26.1 libsqlite3x  sqlite3 >= 3.6.0.0 ArgV glibmm-2.4 >= 2.23.3)
+PKG_CHECK_MODULES(DEPS, libxml++-2.6 >= 2.26.1 ArgV glibmm-2.4 >= 2.23.3)
 AC_SUBST(DEPS_CFLAGS)
 AC_SUBST(DEPS_LIBS)
+PKG_CHECK_MODULES(OSM, libsqlite3x  sqlite3 >= 3.6.0.0 )
+AC_SUBST(OSM_CFLAGS)
+AC_SUBST(OSM_LIBS)
 
 # Checks for header files.
 AC_HEADER_STDC

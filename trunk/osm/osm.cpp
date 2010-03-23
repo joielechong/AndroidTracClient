@@ -110,4 +110,46 @@ namespace osm {
     this->createTags(con);
   }
   
+  Nodes::Nodes() {}
+  Nodes::~Nodes() {}
+
+  Node Nodes::operator[](long id) {
+    Node n(id,1,52.,4.);
+    n.addTag("created_by","Michiel van Loon");
+    n.addTag("highway","unclassified");
+    n.addTag("note","dit is een test van het size methode. Ik ben benieuwd of het werkt");
+    n.addTag("verhaal","dit is een ander verhaal maar vult wel lekker op zo");
+    return n;
+  }
+
+  void Element::addTag(string k,string v) {_k.push_back(k);_v.push_back(v);}
+
+
+  long Node::size() const {
+    return sizeof *this;
+  }
+}
+
+
+int main() {
+
+  osm::Nodes nodes;
+
+  osm::Node nd = nodes[1];
+  long lengte = nd.size();
+  cout << nd << endl;
+
+  osm::Node nd1= nd;
+
+  int j = 0;
+  for (int i=1;i<=100;i++)
+    j+= i;
+  cout << j << endl;
+  cout <<"Lengte is " << lengte << endl;
+  for (int i=1;i<=100;i++)
+    j+= i;
+  cout << j << endl;
+  cout << nd1.size() << endl;
+  return 0;
+
 }

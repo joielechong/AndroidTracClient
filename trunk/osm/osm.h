@@ -6,6 +6,8 @@
 #include "osm_db.h"
 #include <iostream>
 #include <cstdlib>
+#include "cache.h"
+
 namespace osm {
   
   using namespace std;
@@ -33,7 +35,8 @@ namespace osm {
     
     inline long id() const { return _id;}
     inline int version() const { return _version;}
-    inline void addTag(string k,string v) {_k.push_back(k);_v.push_back(v);}
+    void addTag(string k,string v);
+
     inline void setId(string id) {_id=atol(id.c_str());}
     inline void setVersion(string version) {_version=atol(version.c_str());}
     virtual void addNd(long ref);
@@ -46,6 +49,7 @@ namespace osm {
     virtual string output();
     virtual void store(osm_db::database& con);
     virtual void createTags(osm_db::database& con);
+    virtual long size() const {return -1;}
     
   protected:
     long _id;
@@ -95,6 +99,7 @@ namespace osm {
     inline double lon() const { return _lon;}
     string output ();
     void store(osm_db::database& con);
+    long size() const;
     
     inline virtual void setLat(string lat) {_lat=atof(lat.c_str());}
     inline virtual void setLon(string lon) {_lon=atof(lon.c_str());}
@@ -114,6 +119,18 @@ namespace osm {
     return o;
   }
   
+  class Nodes {
+
+  public:
+    Nodes();
+    ~Nodes();
+
+    Node operator[](long id);
+
+  private:
+    cache<long,Node> _cache;
+
+  };
 }
 
 #endif

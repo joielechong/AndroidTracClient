@@ -70,8 +70,7 @@ template < class K, class V, int limsize = 1000, int BiqQ = 0x7fffffff, int Smal
  class listitem;
  typedef typename list<listitem>::iterator listiter;
  typedef typename map< K,listiter>::iterator mapiter;
- class listitem
- {
+ class listitem {
    friend class cache<  K,  V,  limsize,  BiqQ,  SmallQ > ;
  private:
    mapiter  m_mapiter;
@@ -80,8 +79,7 @@ template < class K, class V, int limsize = 1000, int BiqQ = 0x7fffffff, int Smal
  list<listitem> m_list;
  map< K,listiter> m_map;
  int m_size;
- void push_back(V* p, mapiter &imap)
- {
+ void push_back(V* p, mapiter &imap) {
    ASSERT(m_map.size() == m_list.size()+1);
    m_list.push_front();
    ASSERT(m_map.size() == m_list.size());
@@ -91,7 +89,7 @@ template < class K, class V, int limsize = 1000, int BiqQ = 0x7fffffff, int Smal
    (*imap).second = ilist;
    ASSERT(m_map.size() == m_list.size());
  }
-
+ 
  public:
  cache() { m_size =0;}
  V* operator[](K& k) {
