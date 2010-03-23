@@ -33,11 +33,14 @@ namespace osm_db {
     _sql = new sqlite3_connection(naam);
 	_trans = new sqlite3_transaction(*_sql,false); // no automatic begin
 	_getCounts = NULL;
+	_in_transaction=false;
 	sqlite3_create_function(_sql->db(),"osmdistance",4,SQLITE_ANY,NULL,osmdistance,NULL,NULL);
   }
   
   database::~database() {
-    _trans->commit();
+    if (_in_transaction) 
+      _trans->commit();
+	_in_transaction=false;
 	delete _trans;
     delete _createNode;
     delete _createWay;
