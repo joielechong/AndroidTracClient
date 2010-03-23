@@ -57,12 +57,6 @@
 /* Define to 1 if you have the <myparser.h> header file. */
 #undef HAVE_MYPARSER_H
 
-/* Define to 1 if you have the <osm_db.h> header file. */
-#undef HAVE_OSM_DB_H
-
-/* Define to 1 if you have the <osm.h> header file. */
-#undef HAVE_OSM_H
-
 /* Define to 1 if you have the `pow' function. */
 #undef HAVE_POW
 
