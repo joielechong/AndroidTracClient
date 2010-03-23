@@ -18,7 +18,7 @@ AC_SUBST(DEPS_LIBS)
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(Argument.h cmath cstdio cstdlib cstring fstream glibmm/ustring.h iostream libxml++/libxml++.h list map myparser.h osm.h osm_db.h sqlite3.h sqlite3x.hpp sstream stdexcept string vector)
+AC_CHECK_HEADERS(Argument.h cmath cstdio cstdlib cstring fstream glibmm/ustring.h iostream libxml++/libxml++.h list map myparser.h sqlite3.h sqlite3x.hpp sstream stdexcept string vector)
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL

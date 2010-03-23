@@ -3,7 +3,9 @@
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
-#include <Argument.h>
+#include <ArgumentParser.h>
+#include <StringArgument.h>
+#include <BooleanArgument.h>
 
 #include "myparser.h"
 #include "osm_db.h"
@@ -19,12 +21,12 @@ int main(int argc, char* argv[])
   string dbname;
   string schema;
   
-  StringArgument dbArg("-db","value",string("newosm.sqlite"),"SQLite database name");
-  StringArgument schemaArg("-schema","value",string("schema.sqlite.txt"),"schema definition file");
-  BooleanArgument newArg("-new","Create new database");
-  StringArgument fileArg("-file","value",string("-"),"Input file (- = stdin)");
+  Argument::StringArgument dbArg("-db","value",string("newosm.sqlite"),"SQLite database name");
+  Argument::StringArgument schemaArg("-schema","value",string("schema.sqlite.txt"),"schema definition file");
+  Argument::BooleanArgument newArg("-new","Create new database");
+  Argument::StringArgument fileArg("-file","value",string("-"),"Input file (- = stdin)");
   
-  ArgumentParser parser;
+  Argument::ArgumentParser parser;
   parser.addArgument(dbArg);
   parser.addArgument(schemaArg);
   parser.addArgument(newArg);  
