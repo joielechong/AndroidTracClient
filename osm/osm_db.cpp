@@ -5,17 +5,16 @@
 #include <cstring>
 #include <cmath>
 
-namespace osm_db {
-  
+#define PI (3.1415926535897932384626433)
+#define RADIUS (6378137)
+#define DRAD (21835)
+
+namespace osm_db {  
   using namespace std;
   using namespace sqlite3x;
-
+  
   static double grootcirkel(double lat1,double lon1,double lat2,double lon2) {
-    static double pi = 3.1415926535897932384626433;
-    static double radius = 6378137;
-    static double drad = 21385;
-    
-    return (radius-drad*(sin((lat1+lat2)*pi/360)))*2*asin(sqrt((pow(sin((lat2-lat1)*pi/360),2)+cos(lat1*pi/180)*cos(lat2*pi/180)*pow(sin((lon2-lon1)*pi/360),2))));
+    return (RADIUS-DRAD*(sin((lat1+lat2)*PI/360)))*2*asin(sqrt((pow(sin((lat2-lat1)*PI/360),2)+cos(lat1*PI/180)*cos(lat2*PI/180)*pow(sin((lon2-lon1)*PI/360),2))));
   }
   
   static void osmdistance(sqlite3_context *sc,int n,sqlite3_value **values) {
@@ -151,5 +150,4 @@ namespace osm_db {
     nds = cur.getint64(5);
     mems = cur.getint64(6);
   }
-  
 }
