@@ -14,7 +14,7 @@ namespace osm {
   void Element::addNd(long ref) { throw new std::range_error("Nd kan niet in dit type element");}   // throw exception
   
   string Element::printTags() {
-    int i;
+    unsigned int i;
     stringstream s;
     
     for (i=0;i<_k.size();i++) 
@@ -23,7 +23,7 @@ namespace osm {
   }
   
   void Element::createTags(osm_db::database& con) {
-    int i;
+    unsigned int i;
     
     for (i=0;i<_k.size();i++) 
       con.createTag(_id,_type,_k[i],_v[i]);
@@ -45,7 +45,7 @@ namespace osm {
   
   string Way::output () {
     stringstream s;
-    int i;
+    unsigned int i;
     
     s << "Way: Id = " << _id << " version = " << _version << endl;
     
@@ -57,7 +57,7 @@ namespace osm {
   }
   
   void Way::store(osm_db::database& con){
-    int i;
+    unsigned int i;
     
     con.createWay(_id,_version);
     createTags(con);
@@ -75,7 +75,7 @@ namespace osm {
   
   string Relation::output () {
     stringstream s;
-    int i;
+    unsigned int i;
     
     s << "Relation: Id = " << _id << " version = " << _version << endl;;
     
@@ -87,7 +87,7 @@ namespace osm {
   }
   
   void Relation::store(osm_db::database& con){
-    int i;
+    unsigned int i;
     
     con.createRelation(_id,_version);
     createTags(con);
@@ -97,7 +97,7 @@ namespace osm {
   
   // Node
   
-  Member::Member(long ref,string type, string role) : _ref(ref),_type(type),_role(role) {}
+  Member::Member(long ref,string type, string role) : _ref(ref),_role(role),_type(type) {}
   
   string Node::output () {
     stringstream s;
