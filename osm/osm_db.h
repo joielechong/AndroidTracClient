@@ -24,8 +24,8 @@ namespace osm_db {
     void createNd(long id,int seq,long ref);
     void createMember(long id,int seq,long ref,std::string type,std::string role);
 
-    inline void begin() { _trans->begin();_in_transaction=true;}
-    inline void commit() { _trans->commit()_in_transaction=false;}
+    inline void begin() { _trans->begin();_in_transaction=1;}
+    inline void commit() { _trans->commit();_in_transaction=0;}
     void executenonquery(std::string query);
 
     void getCounts(long &nodes,long &ways,long &rel, long &bounds, long &tags,long &nds, long &mems);
@@ -42,7 +42,7 @@ namespace osm_db {
     sqlite3x::sqlite3_command *_getCounts;
     
     sqlite3x::sqlite3_transaction *_trans;
-	bool _in_transaction;
+    int _in_transaction;
   };
 }
 
