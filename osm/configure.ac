@@ -4,7 +4,7 @@
 AC_PREREQ([2.63])
 AC_INIT([osm], [0.1])
 AM_INIT_AUTOMAKE(osm,0.1)
-AC_CONFIG_SRCDIR([osm_db.cpp])
+AC_CONFIG_SRCDIR([main.cpp])
 AC_CONFIG_HEADERS([config.h])
 AC_LANG([C++])
 
@@ -12,13 +12,13 @@ AC_LANG([C++])
 AC_PROG_CXX
 
 # Checks for libraries.
-PKG_CHECK_MODULES(DEPS, glibmm-2.4 libxml++-2.6 libsqlite3x glib-2.0 >= 2.22.0 libxml-2.0 >= 2-2.6.0 sqlite3 >= 3.6.0.0 sigc++-2.0 ArgV)
+PKG_CHECK_MODULES(DEPS, glibmm-2.4 libxml++-2.6 libsqlite3x  sqlite3 >= 3.6.0.0 ArgV)
 AC_SUBST(DEPS_CFLAGS)
 AC_SUBST(DEPS_LIBS)
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(Argument.h cmath cstdio cstdlib cstring fstream glibmm/ustring.h iostream libxml++/libxml++.h list map myparser.h sqlite3.h sqlite3x.hpp sstream stdexcept string vector)
+AC_CHECK_HEADERS(cmath cstdio cstdlib cstring fstream iostream list map sstream stdexcept string vector)
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL

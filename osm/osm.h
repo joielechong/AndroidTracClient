@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <string>
-#include <glibmm/ustring.h>
 #include "osm_db.h"
 #include <iostream>
 #include <cstdlib>
@@ -89,8 +88,8 @@ namespace osm {
   class Node  : public Element {
   public:
     inline Node() : Element() {_type="node";}
-    inline Node(long id,int version,double lat,double lon) : _lat(lat),_lon(lon), Element(id,version) {}
-    inline Node(string id,string version,string lat,string lon) : _lat(atof(lat.c_str())),_lon(atof(lon.c_str())),Element(id,version) {}
+    inline Node(long id,int version,double lat,double lon) : Element(id,version),_lat(lat),_lon(lon)  {}
+    inline Node(string id,string version,string lat,string lon) : Element(id,version),_lat(atof(lat.c_str())),_lon(atof(lon.c_str())) {}
     inline ~Node() {}
     inline double lat() const { return _lat;}
     inline double lon() const { return _lon;}
