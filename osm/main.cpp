@@ -17,10 +17,6 @@ using namespace osm_db;
 
 int main(int argc, char* argv[])
 {
-  string filepath;
-  string dbname;
-  string schema;
-  
   Argument::StringArgument dbArg("-db","value",string("newosm.sqlite"),"SQLite database name");
   Argument::StringArgument schemaArg("-schema","value",string("schema.sqlite.txt"),"schema definition file");
   Argument::BooleanArgument newArg("-new","Create new database");
@@ -33,9 +29,13 @@ int main(int argc, char* argv[])
   parser.addArgument(fileArg);
   list<string> extra = parser.parse(argc,argv);
   
-  filepath = fileArg.getValue();
-  dbname = dbArg.getValue();
-  schema = schemaArg.getValue();
+  string filepath = fileArg.getValue();
+  string dbname = dbArg.getValue();
+  string schema = schemaArg.getValue();
+  bool nieuw = newArg.getValue();
+
+  if (nieuw)
+    unlink(dbname.c_str());
 
 /*  
   cout << "argc = " << argc << endl;
