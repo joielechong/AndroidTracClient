@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
     sql.initializeFill();
     
     // Parse the entire document in one go:
-    MySaxParser parser;
+    osmparser::MySaxParser parser;
     parser.setDBconn(&sql);
     //    parser.set_substitute_entities(true);
 
