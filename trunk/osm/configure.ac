@@ -4,7 +4,7 @@
 AC_PREREQ([2.63])
 AC_INIT([osm], [0.1])
 AM_INIT_AUTOMAKE(osm,0.1)
-AC_CONFIG_SRCDIR([main.cpp])
+AC_CONFIG_SRCDIR([mkdb.cpp])
 AC_CONFIG_HEADERS([config.h])
 AC_LANG([C++])
 

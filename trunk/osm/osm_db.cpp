@@ -31,24 +31,24 @@ namespace osm_db {
   
   database::database(string naam) {
     _sql = new sqlite3_connection(naam);
-	_trans = new sqlite3_transaction(*_sql,false); // no automatic begin
-	_getCounts = NULL;
-	_in_transaction=false;
-	sqlite3_create_function(_sql->db(),"osmdistance",4,SQLITE_ANY,NULL,osmdistance,NULL,NULL);
+    _trans = new sqlite3_transaction(*_sql,false); // no automatic begin
+    _getCounts = NULL;
+    _in_transaction=0;
+    sqlite3_create_function(_sql->db(),"osmdistance",4,SQLITE_ANY,NULL,osmdistance,NULL,NULL);
   }
   
   database::~database() {
-    if (_in_transaction) 
+    if (_in_transaction == 1) 
       _trans->commit();
-	_in_transaction=false;
-	delete _trans;
+    _in_transaction=0;
+    delete _trans;
     delete _createNode;
     delete _createWay;
     delete _createRelation;
     delete _createTag;
     delete _createNd;
     delete _createMember;
-	delete _getCounts;
+    delete _getCounts;
     delete _sql;
     _sql = NULL;
   }
@@ -61,7 +61,7 @@ namespace osm_db {
       schema.getline(regel,2047);
       //      cout << regel << endl;
       if (strncmp(regel,"DROP",4) != 0 && strlen(regel) > 0) {
-	    executenonquery(regel);
+	executenonquery(regel);
       }
     }
     schema.close();  
