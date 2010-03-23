@@ -10,8 +10,25 @@ namespace osm_db {
   using namespace std;
   using namespace sqlite3x;
 
-  static void osmdistance(sqlite3_context *sc,int n,sqlite3_value **values);
- 
+  static double grootcirkel(double lat1,double lon1,double lat2,double lon2) {
+    static double pi = 3.1415926535897932384626433;
+    static double radius = 6378137;
+    static double drad = 21385;
+    
+    return (radius-drad*(sin((lat1+lat2)*pi/360)))*2*asin(sqrt((pow(sin((lat2-lat1)*pi/360),2)+cos(lat1*pi/180)*cos(lat2*pi/180)*pow(sin((lon2-lon1)*pi/360),2))));
+  }
+  
+  static void osmdistance(sqlite3_context *sc,int n,sqlite3_value **values) {
+    double result,lat1,lon1,lat2,lon2;
+    
+    lat1 = sqlite3_value_double(values[0]);
+    lon1 = sqlite3_value_double(values[1]);
+    lat2 = sqlite3_value_double(values[2]);
+    lon2 = sqlite3_value_double(values[3]);
+    result = grootcirkel(lat1,lon1,lat2,lon2);
+    sqlite3_result_double(sc, result);
+  }
+  
   database::database(string naam) {
     _sql = new sqlite3_connection(naam);
 	_trans = new sqlite3_transaction(*_sql,false); // no automatic begin
@@ -130,25 +147,6 @@ namespace osm_db {
     tags = cur.getint64(4);
     nds = cur.getint64(5);
     mems = cur.getint64(6);
-  }
-  
-  static double grootcirkel(double lat1,double lon1,double lat2,double lon2) {
-    static double pi = 3.14159265;
-    static double radius = 6378137;
-    static double drad = 21385;
-    
-    return (radius-drad*(sin((lat1+lat2)*pi/360)))*2*asin(sqrt((pow(sin((lat2-lat1)*pi/360),2)+cos(lat1*pi/180)*cos(lat2*pi/180)*pow(sin((lon2-lon1)*pi/360),2))));
-  }
-  
-  static void osmdistance(sqlite3_context *sc,int n,sqlite3_value **values) {
-    double result,lat1,lon1,lat2,lon2;
-    
-    lat1 = sqlite3_value_double(values[0]);
-    lon1 = sqlite3_value_double(values[1]);
-    lat2 = sqlite3_value_double(values[2]);
-    lon2 = sqlite3_value_double(values[3]);
-    result = grootcirkel(lat1,lon1,lat2,lon2);
-    sqlite3_result_double(sc, result);
   }
   
 }
