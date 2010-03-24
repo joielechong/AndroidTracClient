@@ -114,11 +114,11 @@ namespace osm {
     return o;
   }
   
-  template class Cache<T> {
+  template <class T> class Cache{
 
   public:
-    Cache<T>(){_top = NULL;_bottom = NULL;}
-    ~Cache<T>(){}
+    Cache(){_top = NULL;_bottom = NULL;}
+    ~Cache(){}
 
     T operator[](long id);
     map<long,T *>::iterator it;
