@@ -10,19 +10,19 @@ namespace osm {
   
   Element::Element() {
     _next = NULL;
-	_prev = NULL;
+    _prev = NULL;
   }
   Element::Element(long id,int version) {
     _id=id;
-	_version=version;
-	_next = NULL;
-	_prev = NULL;
+    _version=version;
+    _next = NULL;
+    _prev = NULL;
   }
-  ElementElement(string id,string version) {
+  Element::Element(string id,string version) {
     _id = atol(id.c_str());
     _version = atol(version.c_str());
     _next = NULL;
-	_prev = NULL;
+    _prev = NULL;
   }
   Element::~Element() {}
   
@@ -106,8 +106,8 @@ namespace osm {
     return s.str();
   }
   
-  Node::Node(long id,osm_db::database con) {
+  Node::Node(long id,osm_db::database &con) {
     _id = id;
-	con.getNode(id,version,lat,lon);
+    con.getNode(id,_version,_lat,_lon);
   }
 }

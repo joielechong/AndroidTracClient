@@ -31,7 +31,14 @@ namespace osm_db {
   database::database(string naam) {
     _sql = new sqlite3_connection(naam);
     _trans = new sqlite3_transaction(*_sql,false); // no automatic begin
+    _createNode = NULL;
+    _createWay = NULL;
+    _createRelation = NULL;
+    _createTag = NULL;
+    _createNd = NULL;
+    _createMember = NULL;
     _getCounts = NULL;
+    _getNode = NULL;
     _in_transaction=0;
     sqlite3_create_function(_sql->db(),"osmdistance",4,SQLITE_ANY,NULL,osmdistance,NULL,NULL);
   }
@@ -40,14 +47,24 @@ namespace osm_db {
     if (_in_transaction == 1) 
       _trans->commit();
     _in_transaction=0;
-    delete _trans;
-    delete _createNode;
-    delete _createWay;
-    delete _createRelation;
-    delete _createTag;
-    delete _createNd;
-    delete _createMember;
-    delete _getCounts;
+    if (_trans != NULL)
+      delete _trans;
+    if (_createNode != NULL)
+      delete _createNode;
+    if (_createWay != NULL)
+      delete _createWay;
+    if (_createRelation != NULL)
+      delete _createRelation;
+    if (_createTag != NULL)
+      delete _createTag;
+    if (_createNd != NULL)
+      delete _createNd;
+    if (_createMember != NULL)
+      delete _createMember;
+    if (_getCounts != NULL)
+      delete _getCounts;
+    if (_getNode != NULL)
+      delete _getNode;
     delete _sql;
     _sql = NULL;
   }
@@ -151,11 +168,11 @@ namespace osm_db {
     mems = cur.getint64(6);
   }
   
-  void database::getNode(long id,int &version,double &lat,&double lon) {
+  void database::getNode(long id,int &version,double &lat,double &lon) {
     try {
       if (_getNode == NULL) 
         _getNode = new sqlite3_command(*_sql,"SELECT version,lat,lon FROM node  WHERE id = ?");
-	  _getNode->bind(1,,(sqlite3x::int64_t)id);
+	  _getNode->bind(1,(sqlite3x::int64_t)id);
       sqlite3_cursor cur(_getNode->executecursor());
       cur.step();
 	  version = cur.getint(0);
