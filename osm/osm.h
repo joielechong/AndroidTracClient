@@ -36,7 +36,7 @@ namespace osm {
     inline long id() const { return _id;}
     inline int version() const { return _version;}
     void addTag(string k,string v);
-
+    
     inline void setId(string id) {_id=atol(id.c_str());}
     inline void setVersion(string version) {_version=atol(version.c_str());}
     virtual void addNd(long ref);
@@ -51,10 +51,10 @@ namespace osm {
   protected:
     long _id;
     int	_version;
-	string _type;
+    string _type;
     vector<string> _k;
     vector<string> _v;
-	Element *_next,*_prev;
+    Element *_next,*_prev;
   };
   
   class Way  : public Element {
@@ -90,7 +90,7 @@ namespace osm {
     inline Node() : Element() {_type="node";}
     inline Node(long id,int version,double lat,double lon) : Element(id,version),_lat(lat),_lon(lon)  {}
     inline Node(string id,string version,string lat,string lon) : Element(id,version),_lat(atof(lat.c_str())),_lon(atof(lon.c_str())) {}
-	Node(long id,osm_db::database con);
+    Node(long id,osm_db::database &con);
     inline ~Node() {}
     inline double lat() const { return _lat;}
     inline double lon() const { return _lon;}
@@ -109,47 +109,43 @@ namespace osm {
     return o;
   }
   
-  inline osm_db::database& operator<<(osm_db::database& o,osm::Element& n) {
-    n.store(o);
-    return o;
-  }
-  
+  /*
   template <class T> class Cache{
-
+    
   public:
     Cache(){_top = NULL;_bottom = NULL;}
-    ~Cache(){}
-
-    T operator[](long id);
-    map<long,T *>::iterator it;
-
-	it=_cache.find(id);
-    if (it == _cache.end) {  // does not exist
-	  
-	} else if (bottom != top) {
-	  T *e = it->second;
-	  T *p = e->_prev;
-	  T *n = e->_next;
-	  if (p != NULL) { // top element remains at top so no action for ==
-	    p->_next = n;
-	    if (n != NULL)
-  	      n->_prev = _prev;
-		else
-		  _bottom = p;
-		e->_prev = NULL;
-		e->_next = _top;
-		_top = e;
+    
+    T operator[](long id) {
+      std::map<long,T *>::iterator it;
+      
+      it=_cache.find(id);
+      if (it == _cache.end) {  // does not exist
+	
+      } else if (_bottom != _top) {
+	T *e = it->second;
+	T *p = e->_prev;
+	T *n = e->_next;
+	if (p != NULL) { // top element remains at top so no action for ==
+	  p->_next = n;
+	  if (n != NULL)
+	    n->_prev = _prev;
+	  else
+	    _bottom = p;
+	  e->_prev = NULL;
+	  e->_next = _top;
+	  _top = e;
 	  return *e;
 	}
-  }
-}
-
+      }
+    }
+    
   private:
-    map<long,T *> _cache;
-	T *_top;
-	T *_bottom;
-
+    std::map<long,T *> _cache;
+    T *_top;
+    T *_bottom;
+    
   };
+  */
 }
 
 #endif
