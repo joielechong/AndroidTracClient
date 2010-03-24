@@ -150,4 +150,23 @@ namespace osm_db {
     nds = cur.getint64(5);
     mems = cur.getint64(6);
   }
+  
+  void database::getNode(long id,int &version,double &lat,&double lon) {
+    try {
+      if (_getNode == NULL) 
+        _getNode = new sqlite3_command(*_sql,"SELECT version,lat,lon FROM node  WHERE id = ?");
+	  _getNode->bind(1,,(sqlite3x::int64_t)id);
+      sqlite3_cursor cur(_getNode->executecursor());
+      cur.step();
+	  version = cur.getint(0);
+	  lat = cur.getdouble(1);
+	  lon = cur.getdouble(2);
+	  cur.close();
+    } catch (const sqlite3x::database_error& ex) {
+      cout << "Exception in sqlite: " << ex.what() <<endl;
+      version = -1;
+	  lat = -999;
+	  lon = -999;
+    }
+  }
 }

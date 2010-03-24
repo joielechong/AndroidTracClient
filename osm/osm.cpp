@@ -3,7 +3,6 @@
 #include <cstdlib>
 #include <string>
 #include <sstream>
-#include "cache.h"
 #include <stdexcept>
 
 namespace osm {
