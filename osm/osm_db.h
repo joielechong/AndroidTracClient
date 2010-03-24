@@ -29,6 +29,7 @@ namespace osm_db {
     void executenonquery(std::string query);
 
     void getCounts(long &nodes,long &ways,long &rel, long &bounds, long &tags,long &nds, long &mems);
+	void getNode(long id,int &version,double &lat,double &lon);
 
   private: 
     sqlite3x::sqlite3_connection *_sql;
@@ -40,6 +41,7 @@ namespace osm_db {
     sqlite3x::sqlite3_command *_createNd;
     sqlite3x::sqlite3_command *_createMember;
     sqlite3x::sqlite3_command *_getCounts;
+    sqlite3x::sqlite3_command *_getNode;
     
     sqlite3x::sqlite3_transaction *_trans;
     int _in_transaction;
