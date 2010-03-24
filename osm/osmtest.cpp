@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
 
 
   for (it=extra.begin();it!=extra.end();it++) {
-    osm::Node *nd = new osm::Node(atol(it->c_str()),sql);
+    osm::Relation *nd = new osm::Relation(atol(it->c_str()),sql);
     cout << *nd << endl;
     delete nd;
   }

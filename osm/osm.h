@@ -54,7 +54,6 @@ namespace osm {
     string _type;
     vector<string> _k;
     vector<string> _v;
-    Element *_next,*_prev;
   };
   
   class Way  : public Element {
@@ -62,6 +61,7 @@ namespace osm {
     inline Way() : Element() {_type="way";}
     inline Way(long id,int version) : Element(id,version) {}
     inline Way(string id,string version) : Element(id,version) {}
+    Way(long id,osm_db::database &con);
     inline ~Way() {}
     string output ();
     
@@ -76,6 +76,7 @@ namespace osm {
     inline Relation() : Element() {_type="relation";}
     inline Relation(long id,int version) : Element(id,version) {}
     inline Relation(string id,string version) : Element(id,version) {}
+    Relation(long id,osm_db::database &con);
     inline ~Relation() {}
     string output ();
     
@@ -102,6 +103,8 @@ namespace osm {
   private:
     double _lat;
     double _lon;
+    int _x;
+    int _y;
   };
   
   inline ostream& operator<<(ostream& o,osm::Element& n) {
