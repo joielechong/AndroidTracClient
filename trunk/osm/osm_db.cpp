@@ -4,6 +4,7 @@
 #include <fstream>
 #include <cstring>
 #include <cmath>
+#include <vector>
 
 #define PI (3.1415926535897932384626433)
 #define RADIUS (6378137)
@@ -39,6 +40,7 @@ namespace osm_db {
     _createMember = NULL;
     _getCounts = NULL;
     _getNode = NULL;
+    _getTags = NULL;
     _in_transaction=0;
     sqlite3_create_function(_sql->db(),"osmdistance",4,SQLITE_ANY,NULL,osmdistance,NULL,NULL);
   }
@@ -65,6 +67,8 @@ namespace osm_db {
       delete _getCounts;
     if (_getNode != NULL)
       delete _getNode;
+    if (_getTags != NULL)
+      delete _getTags;
     delete _sql;
     _sql = NULL;
   }
@@ -172,18 +176,35 @@ namespace osm_db {
     try {
       if (_getNode == NULL) 
         _getNode = new sqlite3_command(*_sql,"SELECT version,lat,lon FROM node  WHERE id = ?");
-	  _getNode->bind(1,(sqlite3x::int64_t)id);
+      _getNode->bind(1,(sqlite3x::int64_t)id);
       sqlite3_cursor cur(_getNode->executecursor());
-      cur.step();
-	  version = cur.getint(0);
-	  lat = cur.getdouble(1);
-	  lon = cur.getdouble(2);
-	  cur.close();
+      if (cur.step()) {
+	version = cur.getint(0);
+	lat = cur.getdouble(1);
+	lon = cur.getdouble(2);
+      } else {
+	version = -1;
+	lat = -999;
+	lon = -999;
+      }
+      cur.close();
     } catch (const sqlite3x::database_error& ex) {
       cout << "Exception in sqlite: " << ex.what() <<endl;
       version = -1;
-	  lat = -999;
-	  lon = -999;
+      lat = -999;
+      lon = -999;
+    }
+  }
+  
+  void database::getTags(long id,std::string type,std::vector<std::string> &k,std::vector<std::string> &v) {
+    if (_getTags == NULL) 
+      _getTags = new sqlite3_command(*_sql,"SELECT k,v FROM  tag WHERE id=? and type = ?");
+    _getTags->bind(1,(sqlite3x::int64_t)id);
+    _getTags->bind(2,type);
+    sqlite3_cursor cur(_getTags->executecursor());
+    while(cur.step()) {
+      k.push_back(cur.getstring(0));
+      v.push_back(cur.getstring(1));
     }
   }
 }

@@ -4,6 +4,7 @@
 #include <string>
 #include <sqlite3x.hpp>
 #include <sqlite3.h>
+#include <vector>
 
 namespace osm_db {
   
@@ -29,7 +30,8 @@ namespace osm_db {
     void executenonquery(std::string query);
 
     void getCounts(long &nodes,long &ways,long &rel, long &bounds, long &tags,long &nds, long &mems);
-	void getNode(long id,int &version,double &lat,double &lon);
+    void getNode(long id,int &version,double &lat,double &lon);
+    void getTags(long id,std::string type,std::vector<std::string> &k,std::vector<std::string> &v);
 
   private: 
     sqlite3x::sqlite3_connection *_sql;
@@ -42,6 +44,7 @@ namespace osm_db {
     sqlite3x::sqlite3_command *_createMember;
     sqlite3x::sqlite3_command *_getCounts;
     sqlite3x::sqlite3_command *_getNode;
+    sqlite3x::sqlite3_command *_getTags;
     
     sqlite3x::sqlite3_transaction *_trans;
     int _in_transaction;
