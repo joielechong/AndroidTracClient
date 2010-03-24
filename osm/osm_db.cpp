@@ -28,7 +28,7 @@ namespace osm_db {
     result = grootcirkel(lat1,lon1,lat2,lon2);
     sqlite3_result_double(sc, result);
   }
-  
+
   database::database(string naam) {
     _sql = new sqlite3_connection(naam);
     _trans = new sqlite3_transaction(*_sql,false); // no automatic begin
@@ -45,6 +45,7 @@ namespace osm_db {
     _getNds = NULL;
     _getMembers = NULL;
     _getTags = NULL;
+    _findNode = NULL;
     _in_transaction=0;
     sqlite3_create_function(_sql->db(),"osmdistance",4,SQLITE_ANY,NULL,osmdistance,NULL,NULL);
   }
@@ -73,6 +74,12 @@ namespace osm_db {
       delete _getNode;
     if (_getTags != NULL)
       delete _getTags;
+    if (_getNds != NULL)
+      delete _getNds;
+    if (_getMembers != NULL)
+      delete _getMembers;
+    if (_findNode != NULL)
+      delete _findNode;
     delete _sql;
     _sql = NULL;
   }
@@ -108,7 +115,7 @@ namespace osm_db {
     executenonquery("DELETE FROM member WHERE (type='way' AND NOT ref IN (SELECT id FROM way)) OR (type='node' AND NOT ref IN (SELECT id FROM node)) OR (type='relation' AND NOT ref IN (SELECT id FROM relation))");
     executenonquery("DELETE FROM node WHERE NOT id IN (SELECT id FROM tag WHERE type='node' UNION SELECT ref FROM nd UNION SELECT ref FROM member WHERE type='node')");
 	
-    executenonquery("UPDATE node SET x=round((lon+90)*20),y=round((lat+180)*20) WHERE id in (SELECT ref FROM usable_way as u,nd WHERE u.id=nd.id)");
+    executenonquery("UPDATE node SET x=(lon+90)*20,y=(lat+180)*20 WHERE id in (SELECT ref FROM usable_way as u,nd WHERE u.id=nd.id)");
     executenonquery("INSERT OR REPLACE INTO admin (id,name,level,minlat,maxlat,minlon,maxlon) SELECT id,name,level,minlat,maxlat,minlon,maxlon FROM admintmp");
     executenonquery("INSERT OR REPLACE INTO neighbor (way,id1,id2,distance) SELECT DISTINCT way,id1,id2,osmdistance(nd1.lat,nd1.lon,nd2.lat,nd2.lon) FROM nb,node as nd1,node as nd2 WHERE id1=nd1.id AND id2=nd2.id");
   }
@@ -292,6 +299,21 @@ namespace osm_db {
 	role.push_back(cur.getstring(2));
 	ref.push_back(cur.getint64(3));
       }
+    }
+  }
+
+  void database::findNode(double latinp,double loninp,double diff,std::vector<long> &id,std::vector<double> &lat,std::vector<double> &lon,std::vector<double> &distance) {
+    if (_findNode == NULL)
+      _findNode = new sqlite3_command(*_sql,"SELECT node.id,node.lat,node.lon,osmdistance(node.lat,node.lon,inp.lat,inp.lon) from node,(select ? as lat,? as lon,? as diff) as inp WHERE node.x IN (round((inp.lon+90)*20),round((inp.lon-inp.diff*2+90)*20),round((inp.lon+inp.diff*2+90)*20)) and node.y in (round((inp.lat+180)*20), round((inp.lat-inp.diff*2+180)*20),round((inp.lat+inp.diff*2+180)*20)) AND abs(node.lat-inp.lat) < inp.diff and abs(node.lon-inp.lon) < inp.diff order by 4");
+    _findNode->bind(1,latinp);
+    _findNode->bind(2,loninp);
+    _findNode->bind(3,diff);
+    sqlite3_cursor cur(_findNode->executecursor());
+    while (cur.step()) {
+      id.push_back(cur.getint64(0));
+      lat.push_back(cur.getdouble(1));
+      lon.push_back(cur.getdouble(2));
+      distance.push_back(cur.getdouble(3));
     }
   }
 }
