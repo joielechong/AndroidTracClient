@@ -30,8 +30,13 @@ namespace osm_db {
     void executenonquery(std::string query);
 
     void getCounts(long &nodes,long &ways,long &rel, long &bounds, long &tags,long &nds, long &mems);
-    void getNode(long id,int &version,double &lat,double &lon);
+    void getNode(long id,int &version,double &lat,double &lon,int &x,int &y);
+    void getWay(long id,int &version);
+    void getRelation(long id,int &version);
     void getTags(long id,std::string type,std::vector<std::string> &k,std::vector<std::string> &v);
+    void getNds(long id,std::vector<long> &ref);
+    void getMembers(long id,std::vector<std::string> &type,std::vector<std::string> &role,std::vector<long> &ref);
+
 
   private: 
     sqlite3x::sqlite3_connection *_sql;
@@ -44,7 +49,11 @@ namespace osm_db {
     sqlite3x::sqlite3_command *_createMember;
     sqlite3x::sqlite3_command *_getCounts;
     sqlite3x::sqlite3_command *_getNode;
+    sqlite3x::sqlite3_command *_getWay;
+    sqlite3x::sqlite3_command *_getRelation;
     sqlite3x::sqlite3_command *_getTags;
+    sqlite3x::sqlite3_command *_getNds;
+    sqlite3x::sqlite3_command *_getMembers;
     
     sqlite3x::sqlite3_transaction *_trans;
     int _in_transaction;

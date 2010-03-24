@@ -9,20 +9,14 @@ namespace osm {
   using namespace std;
   
   Element::Element() {
-    _next = NULL;
-    _prev = NULL;
   }
   Element::Element(long id,int version) {
     _id=id;
     _version=version;
-    _next = NULL;
-    _prev = NULL;
   }
   Element::Element(string id,string version) {
     _id = atol(id.c_str());
     _version = atol(version.c_str());
-    _next = NULL;
-    _prev = NULL;
   }
   Element::~Element() {}
   
@@ -56,9 +50,9 @@ namespace osm {
   
   void Element::addTag(string k,string v) {
     _k.push_back(k);
-	_v.push_back(v);
+    _v.push_back(v);
   }
-
+  
   //Way
   
   string Way::output () {
@@ -101,14 +95,33 @@ namespace osm {
   
   string Node::output () {
     stringstream s;
-    s << "Node: Id = " << _id << " version = " << _version << " lat,lon = " << _lat << " , " << _lon << endl;
+    s << "Node: Id = " << _id << " version = " << _version << " lat,lon = " << _lat << " , " << _lon << " x,y = " << _x << "," << _y<< endl;
     s << printTags();
     return s.str();
   }
   
   Node::Node(long id,osm_db::database &con) {
     _id = id;
-    con.getNode(id,_version,_lat,_lon);
+    con.getNode(id,_version,_lat,_lon,_x,_y);
     con.getTags(id,"node",_k,_v);
+  }
+  
+  Way::Way(long id,osm_db::database &con) {
+    _id = id;
+    con.getWay(id,_version);
+    con.getTags(id,"way",_k,_v);
+    con.getNds(id,_nds);
+  }
+  
+  Relation::Relation(long id,osm_db::database &con) {
+    _id = id;
+    con.getRelation(id,_version);
+    con.getTags(id,"relation",_k,_v);
+    std::vector<long> ref;
+    std::vector<std::string> type;
+    std::vector<std::string> role;
+    con.getMembers(id,type,role,ref);
+    for (unsigned int i=0;i<ref.size();i++) 
+      _members.push_back(Member(ref[i],type[i],role[i]));
   }
 }
