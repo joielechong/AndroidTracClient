@@ -36,6 +36,7 @@ namespace osm_db {
     void getTags(long id,std::string type,std::vector<std::string> &k,std::vector<std::string> &v);
     void getNds(long id,std::vector<long> &ref);
     void getMembers(long id,std::vector<std::string> &type,std::vector<std::string> &role,std::vector<long> &ref);
+    void findNode(double latinp,double loninp,double diff,std::vector<long> &id,std::vector<double> &lat,std::vector<double> &lon,std::vector<double> &distance);
 
 
   private: 
@@ -54,6 +55,7 @@ namespace osm_db {
     sqlite3x::sqlite3_command *_getTags;
     sqlite3x::sqlite3_command *_getNds;
     sqlite3x::sqlite3_command *_getMembers;
+    sqlite3x::sqlite3_command *_findNode;
     
     sqlite3x::sqlite3_transaction *_trans;
     int _in_transaction;
