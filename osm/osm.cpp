@@ -109,5 +109,6 @@ namespace osm {
   Node::Node(long id,osm_db::database &con) {
     _id = id;
     con.getNode(id,_version,_lat,_lon);
+    con.getTags(id,"node",_k,_v);
   }
 }
