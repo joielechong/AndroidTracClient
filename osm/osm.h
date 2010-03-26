@@ -109,11 +109,6 @@ namespace osm {
     int _y;
   };
   
-  inline ostream& operator<<(ostream& o,osm::Node& n) {
-    o << n.output();
-    return o;
-  }
-  
   inline ostream& operator<<(ostream& o,osm::Element& n) {
     o << n.output();
     return o;
@@ -125,7 +120,7 @@ namespace osm {
     typedef typename std::map<long,T*>::iterator cache_iter;
     
   public:
-    Cache(osm_db::database *con){_top = NULL;_bottom = NULL;_con=con;}
+    Cache(osm_db::database *con,const unsigned long size){_top = NULL;_bottom = NULL;_con=con;_size=size;}
     ~Cache() {}
     
     T operator[](long id) {
@@ -137,9 +132,18 @@ namespace osm {
 	e = new T(id,*_con);
 	e->_prev=NULL;
 	e->_next=_top;
+	if (_top != NULL) 
+	  _top->_prev = e;
 	_top = e;
 	if (_bottom == NULL)
 	  _bottom = e;
+	_cache[id]=e;
+	if (_cache.size() > _size) {
+	  T *p = _bottom->_prev;
+	  p->_next = NULL;
+	  _cache.erase(_bottom->id());
+	  _bottom = p;
+	}
       } else if (_bottom != _top) {
 	e = it->second;
 	T *p = e->_prev;
@@ -163,6 +167,7 @@ namespace osm {
     T *_top;
     T *_bottom;
     osm_db::database *_con;
+    unsigned long _size;
     
   };
 }

@@ -7,26 +7,30 @@
 #include <stdexcept>
 #include <ArgumentParser.h>
 #include <StringArgument.h>
+#include <DoubleArgument.h>
 #include <cmath>
  
 int main(int argc, char *argv[]) {
-  Argument::StringArgument dbArg("-db","value",string("newosm.sqlite"),"SQLite database name");
+  Argument::StringArgument dbArg("-db","value",string("osm.sqlite"),"SQLite database name");
+  Argument::DoubleArgument cacheArg("-cs","positive-integer",1000,"Cache size");
   Argument::ArgumentParser parser;
   parser.addArgument(dbArg);
+  parser.addArgument(cacheArg);
   list<string> extra = parser.parse(argc,argv);
   list<string>::iterator it;
 
   string dbname = dbArg.getValue();
+  long cachesize = cacheArg.getValue();
 
   osm_db::database sql(dbname);
 
-  osm::Cache<osm::Node> nodes(&sql);
+  osm::Cache<osm::Node> nodes(&sql,cachesize);
 
   for(long i=123357;i<123370;i++) {
     try {
       osm::Node n=nodes[i];
       cout << n << endl;
-    } catch (const exception &ex) {
+    } catch (const range_error &ex) {
       cout << "Exception "<<ex.what()<<endl;
     }
   }
@@ -35,7 +39,7 @@ int main(int argc, char *argv[]) {
     try {
       osm::Node n=nodes[i];
       cout << n << endl;
-    } catch (const exception &ex) {
+    } catch (const range_error &ex) {
       cout << "Exception "<<ex.what()<<endl;
     }
   }

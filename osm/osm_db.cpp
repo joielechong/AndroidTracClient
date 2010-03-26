@@ -202,12 +202,12 @@ namespace osm_db {
 	x = cur.getint(3);
 	y = cur.getint(4);
       } else {
-        throw new std::range_error("Node does not exist");
+        throw std::range_error("Node does not exist");
       }
       cur.close();
     } catch (const sqlite3x::database_error& ex) {
       cout << "Exception in sqlite: " << ex.what() <<endl;
-      throw new std::range_error("Node does not exist");
+      throw std::range_error("Node does not exist");
     }
   }
   
