@@ -1,7 +1,7 @@
 
 SHELL=/bin/sh
 
-INCLUDES=-O0 -Wall -ggdb $(DEPS_CFLAGS) $(OSM_CFLAGS)
+INCLUDES=-O2 -Wall -ggdb $(DEPS_CFLAGS) $(OSM_CFLAGS)
 
 SUFFIXES=".cpp .o"
 
