@@ -99,6 +99,8 @@ namespace osm {
     
     inline virtual void setLat(string lat) {_lat=atof(lat.c_str());}
     inline virtual void setLon(string lon) {_lon=atof(lon.c_str());}
+
+    Node * _prev,*_next;
     
   private:
     double _lat;
@@ -107,48 +109,62 @@ namespace osm {
     int _y;
   };
   
+  inline ostream& operator<<(ostream& o,osm::Node& n) {
+    o << n.output();
+    return o;
+  }
+  
   inline ostream& operator<<(ostream& o,osm::Element& n) {
     o << n.output();
     return o;
   }
   
-  /*
   template <class T> class Cache{
+
+    typedef typename std::map<long,T*> cache_t;
+    typedef typename std::map<long,T*>::iterator cache_iter;
     
   public:
-    Cache(){_top = NULL;_bottom = NULL;}
+    Cache(osm_db::database *con){_top = NULL;_bottom = NULL;_con=con;}
+    ~Cache() {}
     
     T operator[](long id) {
-      std::map<long,T *>::iterator it;
-      
-      it=_cache.find(id);
-      if (it == _cache.end) {  // does not exist
-	
+      cache_iter it;
+      T *e = NULL;
+
+      it =_cache.find(id);
+      if (it == _cache.end()) {  // does not exist
+	e = new T(id,*_con);
+	e->_prev=NULL;
+	e->_next=_top;
+	_top = e;
+	if (_bottom == NULL)
+	  _bottom = e;
       } else if (_bottom != _top) {
-	T *e = it->second;
+	e = it->second;
 	T *p = e->_prev;
 	T *n = e->_next;
 	if (p != NULL) { // top element remains at top so no action for ==
 	  p->_next = n;
 	  if (n != NULL)
-	    n->_prev = _prev;
+	    n->_prev = p;
 	  else
 	    _bottom = p;
 	  e->_prev = NULL;
 	  e->_next = _top;
 	  _top = e;
-	  return *e;
 	}
       }
+      return *e;
     }
     
   private:
-    std::map<long,T *> _cache;
+    cache_t _cache;
     T *_top;
     T *_bottom;
+    osm_db::database *_con;
     
   };
-  */
 }
 
 #endif

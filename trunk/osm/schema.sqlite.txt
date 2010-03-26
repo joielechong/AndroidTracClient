@@ -35,13 +35,18 @@ CREATE TRIGGER waytag BEFORE DELETE ON way FOR EACH ROW  BEGIN DELETE FROM tag w
 CREATE TRIGGER reltag BEFORE DELETE ON relation FOR EACH ROW  BEGIN DELETE FROM tag where id=old.id and type='relation'; DELETE FROM admin WHERE id=old.id; DELETE FROM member WHERE id=old.id; END;
 
 CREATE VIEW bucket as SELECT x,y,id as node FROM node WHERE NOT (x IS NULL OR y IS NULL);
-CREATE VIEW admin1 as select relation.id, (select t1.v from tag as t1 where t1.type='relation' and t1.id=relation.id and t1.k='name') as name, (select t2.v from tag as t2 where t2.type='relation' and t2.id=tag.id and t2.k='admin_level') as level from relation,tag where relation.id=tag.id and tag.type='relation' and tag.k='type' and tag.v in ('boundary','multipolygon') and not name is null and not level is null;
+CREATE VIEW nodetag AS SELECT * FROM tag WHERE type='node';
+CREATE VIEW waytag AS SELECT * FROM tag WHERE type='way';
+CREATE VIEW relationtag AS SELECT * FROM tag WHERE type='relation';
+CREATE VIEW usable_way as select way.* from way,waytag as tag where way.id=tag.id and (k='highway' or (k='route' and v='ferry'));
+
+CREATE VIEW admin1 as select relation.id, (select t1.v from relationtag as t1 where t1.id=relation.id and t1.k='name') as name, (select t2.v from relationtag as t2 where t2.id=tag.id and t2.k='admin_level') as level from relation,relationtag as tag where relation.id=tag.id and tag.k='type' and tag.v in ('boundary','multipolygon') and not name is null and not level is null;
 CREATE VIEW admin2 as select member.id,min(lat) as minlat,max(lat) as maxlat,min(lon) as minlon, max(lon) as maxlon from member,nd,node where member.type='way' and member.ref=nd.id and nd.ref=node.id group by member.id;
 CREATE VIEW admintmp as select admin1.*,minlat,maxlat,minlon,maxlon from admin1,admin2 where admin1.id=admin2.id;
-CREATE VIEW usable_way as select way.* from way,tag where way.id=tag.id and tag.type='way' and (k='highway' or (k='route' and v='ferry'));
+
 CREATE VIEW nb as select nd.id as way,ref as id1,(select nd1.ref from nd as nd1 where nd.id=nd1.id and nd1.seq=(nd.seq+1)) as id2 from nd,usable_way as u where nd.id=u.id and not u.processed and not id2 is null;
 CREATE VIEW counts as SELECT (select max(rowid) from node) as nodes,(select max(rowid) from way) as ways,(select max(rowid) from relation) as relations,(select max(rowid) from bound) as bounds, (select max(rowid) from tag) as tags, (select max(rowid) from nd) as nds, (select max(rowid) from member) as mems;
-CREATE VIEW incomplete_relations AS SELECT distinct relation.id FROM relation,tag,member WHERE  relation.processed and relation.id=tag.id and tag.type='relation'  and tag.k='type' and tag.v in ('multiploygon','boundary')  and relation.id=member.id AND ((member.type='relation' AND  not ref in (select id from relation)) or (member.type='way' and not ref in (select id from way)) or (member.type='node' and not ref in (select id from node)));
+CREATE VIEW incomplete_relations AS SELECT distinct relation.id FROM relation,relationtag as tag,member WHERE  relation.processed and relation.id=tag.id and tag.k='type' and tag.v in ('multiploygon','boundary')  and relation.id=member.id AND ((member.type='relation' AND  not ref in (select id from relation)) or (member.type='way' and not ref in (select id from way)) or (member.type='node' and not ref in (select id from node)));
 
 CREATE INDEX nd_ref ON nd(ref);
 CREATE INDEX ndx ON node(x);

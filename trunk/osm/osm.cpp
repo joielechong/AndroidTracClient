@@ -124,4 +124,5 @@ namespace osm {
     for (unsigned int i=0;i<ref.size();i++) 
       _members.push_back(Member(ref[i],type[i],role[i]));
   }
+
 }
