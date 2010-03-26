@@ -142,13 +142,14 @@ namespace osm {
 	  T *p = _bottom->_prev;
 	  p->_next = NULL;
 	  _cache.erase(_bottom->id());
+	  delete _bottom;
 	  _bottom = p;
 	}
       } else if (_bottom != _top) {
 	e = it->second;
-	T *p = e->_prev;
-	T *n = e->_next;
-	if (p != NULL) { // top element remains at top so no action for ==
+	if (e != _top) {
+	  T *p = e->_prev;
+	  T *n = e->_next;
 	  p->_next = n;
 	  if (n != NULL)
 	    n->_prev = p;
@@ -156,11 +157,13 @@ namespace osm {
 	    _bottom = p;
 	  e->_prev = NULL;
 	  e->_next = _top;
+	  _top->_prev = e;
 	  _top = e;
 	}
       } else 
 	e = it->second;
-
+      
+      /*
       std::cout << "top to bottom" << std::endl;
       for (T *xxx=_top;xxx != NULL; xxx=xxx->_next)
 	std::cout << xxx->id() << " ";
@@ -169,6 +172,7 @@ namespace osm {
       for (T *xxx=_bottom;xxx != NULL; xxx=xxx->_prev)
 	std::cout << xxx->id() << " ";
       std::cout << std::endl;
+      */
       return *e;
     }
     

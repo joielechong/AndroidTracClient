@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  for(long i=123357;i<123400;i++) {
+  for(long i=123399;i>=123357;i--) {
     try {
       osm::Node n=nodes[i];
       cout << n << endl;
@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  /*
+
   for (it=extra.begin();it!=extra.end();it++) {
     string latstr = *it++;
     string lonstr = *it++;
@@ -69,10 +69,13 @@ int main(int argc, char *argv[]) {
     diff=atof(diffstr.c_str());
 
     sql.findNode(lat,lon,diff,ids,lats,lons,distance);
-    for (unsigned int i = 0; i<lats.size();i++) 
+    for (unsigned int i = 0; i<lats.size();i++) {
       cout << ids[i]<<": "<<lats[i] <<","<<lons[i] << "  " << distance[i] << endl;
+      osm::Node n=nodes[ids[i]];
+      cout << n << endl;
+    }
   }
-*/
+
   return 0;
 
 }
