@@ -53,7 +53,9 @@ int main(int argc, char* argv[])
 
   try {
     database sql(dbname);
+    if (nieuw) {
     sql.setupSchemas(schema);
+    }
     sql.initializeFill();
     
     // Parse the entire document in one go:

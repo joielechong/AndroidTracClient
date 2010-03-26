@@ -284,15 +284,15 @@ if (defined($mapfile)) {
 
 unless ($dbonly) {
 ###huis school
-#print_path($map,Astar($map,52.297277,4.862030,52.29334,4.85876));
-#print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'foot'));
-#print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'bicycle'));
-#print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'car'));
-#print_path($map,Astar($map,52.2973969,4.8620826,52.2935821,4.8593675,'car'));
-#print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588));
-#print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588,'foot'));
-#print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588,'bicycle'));
-#print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588,'car'));
+print_path($map,Astar($map,52.297277,4.862030,52.29334,4.85876));
+print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'foot'));
+print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'bicycle'));
+print_path($map,Astar($map,52.2973969,4.8620826,52.2933,4.8588,'car'));
+print_path($map,Astar($map,52.2973969,4.8620826,52.2935821,4.8593675,'car'));
+print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588));
+print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588,'foot'));
+print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588,'bicycle'));
+print_path($map,Astar($map,52.297275,4.8616077,52.2933,4.8588,'car'));
 
 ###Huis hockey
 #print_path($map,Astar($map,52.297275,4.8616077,52.2886,4.8508));
@@ -332,8 +332,8 @@ unless ($dbonly) {
 #print_path($map,Astar($map,52.4184,4.8724,52.2973969,4.8620826,'bicycle'));
 
 ## Croon Delft
-print_path($map,Astar($map,52.2973969,4.8620826,52.27909,4.86404,'car'));
-print_path($map,Astar($map,52.27909,4.86404,51.9972199,4.3855367,'car'));
+#print_path($map,Astar($map,52.2973969,4.8620826,52.27909,4.86404,'car'));
+#print_path($map,Astar($map,52.27909,4.86404,51.9972199,4.3855367,'car'));
 #print_path($map,Astar($map,52.2973969,4.8620826,51.9972199,4.3855367,'car'));
 #print_path($map,Astar($map,51.9972199,4.3855367,52.2973969,4.8620826,'car'));
 #print_path($map,Astar($map,52.2973969,4.8620826,51.9972199,4.3855367,'bicycle'));
