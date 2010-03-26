@@ -158,7 +158,17 @@ namespace osm {
 	  e->_next = _top;
 	  _top = e;
 	}
-      }
+      } else 
+	e = it->second;
+
+      std::cout << "top to bottom" << std::endl;
+      for (T *xxx=_top;xxx != NULL; xxx=xxx->_next)
+	std::cout << xxx->id() << " ";
+      std::cout << std::endl;
+      std::cout << "bottom to top" << std::endl;
+      for (T *xxx=_bottom;xxx != NULL; xxx=xxx->_prev)
+	std::cout << xxx->id() << " ";
+      std::cout << std::endl;
       return *e;
     }
     
