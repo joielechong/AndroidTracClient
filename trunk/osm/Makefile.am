@@ -14,7 +14,7 @@ dijkstra_SOURCES=dijkstra.cpp
 
 lib_LTLIBRARIES = libosm.la libosmsql.la
 libosm_la_LDFLAGS = -version-info 0:1:0
-libosm_la_SOURCES = osm.cpp osm_db.cpp osm_db_except.cpp osm.h 
+libosm_la_SOURCES = osm.cpp osm_db.cpp osm_db_except.cpp osm.h db_create.cpp db_postprocess.cpp db_getelements.cpp
 include_HEADERS = osm_db.h osm.h
 libosm_la_LIBADD=$(OSM_LIBS)
 
