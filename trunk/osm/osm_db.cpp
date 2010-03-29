@@ -112,10 +112,10 @@ namespace osm_db {
   
   void database::executenonquery(std::string query,bool repcount) {
     try {
-    std::cout << "DB: " << query << std::endl;
-    _sql->executenonquery(query);
-    if (repcount) 
-      std::cout << "DB: " << _sql->changes() << " records" << std::endl;
+      std::cout << "DB: " << query << std::endl;
+      _sql->executenonquery(query);
+      if (repcount) 
+        std::cout << "DB: " << _sql->changes() << " records" << std::endl;
     } catch (sqlite3x::database_error &ex) {
       std::cerr << "Probleem bij uitvoeren van opdracht" <<std::endl;
       std::cerr << "Exception  = " << ex.what() << std::endl;
@@ -205,9 +205,8 @@ namespace osm_db {
 	lon = cur.getdouble(2);
 	x = cur.getint(3);
 	y = cur.getint(4);
-      } else {
+      } else
         throw std::range_error("Node does not exist");
-      }
       cur.close();
     } catch (const sqlite3x::database_error& ex) {
       cout << "Exception in sqlite: " << ex.what() <<endl;
@@ -221,11 +220,10 @@ namespace osm_db {
         _getWay = new sqlite3_command(*_sql,"SELECT version FROM node  WHERE id = ?");
       _getWay->bind(1,(sqlite3x::int64_t)id);
       sqlite3_cursor cur(_getWay->executecursor());
-      if (cur.step()) {
+      if (cur.step())
 	version = cur.getint(0);
-      } else {
+      else
 	version = -1;
-      }
       cur.close();
     } catch (const sqlite3x::database_error& ex) {
       cout << "Exception in sqlite: " << ex.what() <<endl;
@@ -239,11 +237,10 @@ namespace osm_db {
         _getRelation = new sqlite3_command(*_sql,"SELECT version FROM relation  WHERE id = ?");
       _getRelation->bind(1,(sqlite3x::int64_t)id);
       sqlite3_cursor cur(_getRelation->executecursor());
-      if (cur.step()) {
+      if (cur.step())
 	version = cur.getint(0);
-      } else {
+      else
 	version = -1;
-      }
       cur.close();
     } catch (const sqlite3x::database_error& ex) {
       cout << "Exception in sqlite: " << ex.what() <<endl;
