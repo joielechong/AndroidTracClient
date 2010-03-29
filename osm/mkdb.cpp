@@ -53,9 +53,10 @@ int main(int argc, char* argv[])
 
   try {
     database sql(dbname);
-    if (nieuw) {
-    sql.setupSchemas(schema);
-    }
+
+    if (nieuw) 
+      sql.setupSchemas(schema);
+    
     sql.initializeFill();
     
     // Parse the entire document in one go:
@@ -78,8 +79,8 @@ int main(int argc, char* argv[])
     return 1;
   } catch (const Glib::ustring &ex) {
     cout << "Exception in parser: " << ex <<endl;
-  } catch (const std::exception &ex) {
-    cout << "Exception in program: " << ex.what() <<endl;
+  } catch (const std::exception *ex) {
+    cout << "Exception in program: " << ex->what() <<endl;
   }
   
   return 0;

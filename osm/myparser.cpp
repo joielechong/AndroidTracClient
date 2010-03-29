@@ -103,9 +103,19 @@ namespace osmparser {
 	    _con->createTag(_lastid,_type,k,v);
 	  }
 	} else if (name == "member") {
+	  try {
 	  _con->createMember(_lastid,_memcnt++,ref,type,role);
+	  } catch (const std::exception &ex) {
+	    std::cerr << "createMember mislukt: "<<ex.what() << std::endl;
+	    std::cerr << "lastid = " << _lastid << " memcnt = " << _memcnt-1 << " ref = "<< ref << " type = "<<type<<" role = "<<role << std::endl;
+	  }
 	} else if (name == "nd" ) {
-	  _con->createNd(_lastid,_ndcnt++,ref);
+	  try {
+	    _con->createNd(_lastid,_ndcnt++,ref);
+	  } catch (const std::exception &ex) {
+	    std::cerr << "createNd mislukt: "<<ex.what() << std::endl;
+	    std::cerr << "lastid = " << _lastid << " ndcnt = " << _ndcnt-1 << " ref = "<< ref << std::endl;
+	  }
 	} else {
 	  throw new std::range_error("Onbekend element "+name);
 	}
