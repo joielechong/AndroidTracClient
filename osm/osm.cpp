@@ -133,4 +133,17 @@ namespace osm {
       _members.push_back(Member(ref[i],type[i],role[i]));
   }
 
+
+  Map::Map(osm_db::database *sql,const unsigned long cacheSize) :_con(sql),
+								 _cacheSize(cacheSize) {
+    _nodes = new osm::Cache<osm::Node>(sql,cacheSize);
+    _ways = new osm::Cache<osm::Way>(sql,cacheSize);
+    _relations = new osm::Cache<osm::Relation>(sql,cacheSize);
+  }
+ 
+  Map::~Map() {
+    delete _relations;
+    delete _ways;
+    delete _nodes;
+  }
 }

@@ -188,6 +188,25 @@ namespace osm {
     unsigned long _size;
     
   };
+
+  class Map {
+  public:
+    Map(osm_db::database *con,const unsigned long cacheSize);
+    ~Map();
+
+    inline osm::Cache<osm::Node>* nodes() {return _nodes;}
+    inline osm::Cache<osm::Way>* ways() {return _ways;}
+    inline osm::Cache<osm::Relation>* relations() {return _relations;}
+
+  private:
+    osm_db::database *_con;
+    unsigned long _cacheSize;
+
+    osm::Cache<osm::Node> *_nodes;
+    osm::Cache<osm::Way> *_ways;
+    osm::Cache<osm::Relation> *_relations;
+
+  };
 }
 
 #endif
