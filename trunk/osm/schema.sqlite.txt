@@ -29,6 +29,7 @@ CREATE TABLE nd (id long references way(id) on delete cascade not null,seq integ
 CREATE TABLE member (id long not null references relation(id) on delete cascade,seq integer not null,type varchar not null,ref long not null, role varchar, primary key (id,seq));
 CREATE TABLE neighbor (id1 long not null references node(id) on delete cascade,id2 long not null references node(id) on delete cascade, way long not null references way(id) on delete cascade,distance double default NULL,unique(id1,id2,way));
 CREATE TABLE admin (id long primary key references relation(id) on delete cascade,name varchar, level integer,minlat double,maxlat double,minlon double,maxlon double);
+CREATE TABLE adressen(id long,type varchar,country varchar,city varchar,street varchar,housenumber varchar,postcode varchar);
 
 CREATE TRIGGER nodetag BEFORE DELETE ON node FOR EACH ROW  BEGIN DELETE FROM tag where id=old.id and type='node'; DELETE FROM nd WHERE ref=old.id; DELETE FROM member where ref=old.id; DELETE FROM neighbor WHERE id1=old.id OR id2=old.id;END;
 CREATE TRIGGER waytag BEFORE DELETE ON way FOR EACH ROW  BEGIN DELETE FROM tag where id=old.id and type='way'; DELETE FROM member where ref =old.id; DELETE FROM nd WHERE id=old.id; DELETE FROM neighbor WHERE way=old.id; END;

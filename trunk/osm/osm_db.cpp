@@ -1,4 +1,5 @@
 #include "osm_db.h"
+#include <sqlite3x.hpp>
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -7,28 +8,11 @@
 #include <vector>
 #include <stdexcept>
 
-#define PI (3.1415926535897932384626433)
-#define RADIUS (6378137)
-#define DRAD (21835)
-
 namespace osm_db {  
   using namespace std;
   using namespace sqlite3x;
   
-  static double grootcirkel(double lat1,double lon1,double lat2,double lon2) {
-    return (RADIUS-DRAD*(sin((lat1+lat2)*PI/360)))*2*asin(sqrt((pow(sin((lat2-lat1)*PI/360),2)+cos(lat1*PI/180)*cos(lat2*PI/180)*pow(sin((lon2-lon1)*PI/360),2))));
-  }
-  
-  static void osmdistance(sqlite3_context *sc,int n,sqlite3_value **values) {
-    double result,lat1,lon1,lat2,lon2;
-    
-    lat1 = sqlite3_value_double(values[0]);
-    lon1 = sqlite3_value_double(values[1]);
-    lat2 = sqlite3_value_double(values[2]);
-    lon2 = sqlite3_value_double(values[3]);
-    result = grootcirkel(lat1,lon1,lat2,lon2);
-    sqlite3_result_double(sc, result);
-  }
+#include "myfuncs.c"
 
   database::database(string naam) {
     _sql = new sqlite3_connection(naam);
@@ -109,8 +93,9 @@ namespace osm_db {
   }
   
   void database::postprocess() {
-    executenonquery("DELETE FROM relation WHERE id in (SELECT id FROM relationtag as tag WHERE k='type' AND NOT v in ('boundary','restriction','multipolygon','associatedStreet','relatedStreet'))");
-    executenonquery("DELETE FROM way WHERE NOT id in (SELECT id FROM waytag as tag WHERE k in ('highway','boundary','route','natural') OR k like 'addr:%' OR k like 'is_in%' UNION SELECT ref FROM member WHERE type = 'way')");
+    executenonquery("UPDATE tag SET v='associatedStreet' WHERE type='relation' AND k='type' AND v='relatedStreet'");
+    executenonquery("DELETE FROM relation WHERE id in (SELECT id FROM relationtag WHERE k='type' AND NOT v in ('boundary','restriction','multipolygon','associatedStreet'))");
+    executenonquery("DELETE FROM way WHERE NOT id in (SELECT id FROM waytag WHERE k in ('highway','boundary','route','natural') OR k like 'addr:%' OR k like 'is_in%' UNION SELECT ref FROM member WHERE type = 'way')");
     executenonquery("DELETE FROM way WHERE id in (SELECT id FROM waytag as tag WHERE ((k='route' AND NOT v like 'ferry%') OR ( k='natural' AND NOT v like 'coastline%')))");
     executenonquery("DELETE FROM nd WHERE NOT ref IN (SELECT id FROM node)");
     executenonquery("DELETE FROM member WHERE (type='way' AND NOT ref IN (SELECT id FROM way)) OR (type='node' AND NOT ref IN (SELECT id FROM node)) OR (type='relation' AND NOT ref IN (SELECT id FROM relation))");
@@ -118,16 +103,19 @@ namespace osm_db {
     executenonquery("UPDATE tag SET v='yes' WHERE k IN ('bridge','oneway','tunnel') AND v IN ('1','YES','true','Yes')");
     executenonquery("DELETE FROM tag WHERE k IN ('bridge','oneway','tunnel') AND v IN ('NO','FALSE','No','False','no','ny','false')");
 	
-    executenonquery("UPDATE node SET x=(lon+90)*20,y=(lat+180)*20 WHERE id in (SELECT ref FROM usable_way as u,nd WHERE u.id=nd.id)");
-    executenonquery("UPDATE tag SET v='associatedStreet' WHERE type='relation' AND k='type' AND v='relatedStreet'");
+    executenonquery("UPDATE node SET x=round((lon+90)*20),y=round((lat+180)*20) WHERE id in (SELECT ref FROM usable_way as u,nd WHERE u.id=nd.id)");
     executenonquery("INSERT OR REPLACE INTO admin (id,name,level,minlat,maxlat,minlon,maxlon) SELECT id,name,level,minlat,maxlat,minlon,maxlon FROM admintmp");
     executenonquery("INSERT OR REPLACE INTO neighbor (way,id1,id2,distance) SELECT DISTINCT way,id1,id2,osmdistance(nd1.lat,nd1.lon,nd2.lat,nd2.lon) FROM nb,node as nd1,node as nd2 WHERE id1=nd1.id AND id2=nd2.id");
-    executenonquery("CREATE TABLE adressen AS SELECT id,'node' AS type,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:country') AS country,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:city') AS city,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:street') AS street,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:housenumber') AS housenumber,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:postcode') AS postcode FROM node WHERE NOT coalesce(country,city,street,housenumber,postcode) IS NULL UNION SELECT id,'way' AS type,(SELECT v FROM waytag WHERE id=way.id AND k='addr:country') AS country,(SELECT v FROM waytag WHERE id=way.id AND k='addr:city') AS city,(SELECT v FROM waytag WHERE id=way.id AND k='addr:street') AS street,(SELECT v FROM waytag WHERE id=way.id AND k='addr:housenumber') AS housenumber,(SELECT v FROM waytag WHERE id=way.id AND k='addr:postcode') AS postcode FROM way WHERE NOT coalesce(country,city,street,housenumber,postcode) IS NULL");
+    executenonquery("INSERT INTO adressen SELECT id,'node' AS type,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:country') AS country,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:city') AS city,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:street') AS street,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:housenumber') AS housenumber,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:postcode') AS postcode FROM node WHERE NOT coalesce(country,city,street,housenumber,postcode) IS NULL");
+    executenonquery("INSERT INTO adressen SELECT id,'way' AS type,(SELECT v FROM waytag WHERE id=way.id AND k='addr:country') AS country,(SELECT v FROM waytag WHERE id=way.id AND k='addr:city') AS city,(SELECT v FROM waytag WHERE id=way.id AND k='addr:street') AS street,(SELECT v FROM waytag WHERE id=way.id AND k='addr:housenumber') AS housenumber,(SELECT v FROM waytag WHERE id=way.id AND k='addr:postcode') AS postcode FROM way WHERE NOT coalesce(country,city,street,housenumber,postcode) IS NULL");
   }
   
   void database::executenonquery(std::string query) {
     std::cout << "DB: " << query << std::endl;
     _sql->executenonquery(query);
+    int changes = _sql->changes();
+    if (changes > 0) 
+      std::cout << "DB: " << changes << " records" << std::endl;
   }
   
   void database::createNode(long id,int version,double lat,double lon) {
@@ -159,19 +147,31 @@ namespace osm_db {
   }
   
   void database::createNd(long id,int seq,long ref) {
-    _createNd->bind(1,(sqlite3x::int64_t)id);
-    _createNd->bind(2,seq);
-    _createNd->bind(3,(sqlite3x::int64_t)ref);
-    _createNd->executenonquery();
+    try {
+      _createNd->bind(1,(sqlite3x::int64_t)id);
+      _createNd->bind(2,seq);
+      _createNd->bind(3,(sqlite3x::int64_t)ref);
+      _createNd->executenonquery();
+    } catch (sqlite3x::database_error &ex) {
+      std::cerr << "Probleem bij invoeren in tabel Nd("<<id<<","<<seq<<","<<ref<<")"<<std::endl;
+      std::cerr << "Exception  = " << ex.what() << std::endl;
+      throw std::domain_error("node bestaat niet");
+    }
   }
   
   void database::createMember(long id,int seq,long ref,string type,string role) {
-    _createMember->bind(1,(sqlite3x::int64_t)id);
-    _createMember->bind(2,seq);
-    _createMember->bind(3,(sqlite3x::int64_t)ref);
-    _createMember->bind(4,type);
-    _createMember->bind(5,role);
-    _createMember->executenonquery();
+    try {
+      _createMember->bind(1,(sqlite3x::int64_t)id);
+      _createMember->bind(2,seq);
+      _createMember->bind(3,(sqlite3x::int64_t)ref);
+      _createMember->bind(4,type);
+      _createMember->bind(5,role);
+      _createMember->executenonquery();
+    }  catch (sqlite3x::database_error &ex) {
+      std::cerr << "Probleem bij invoeren in tabel Member("<<id<<","<<seq<<","<<ref<<","<<role<<","<<type<<")"<<std::endl;
+      std::cerr << "Exception  = " << ex.what() << std::endl;
+      throw std::domain_error(type+" bestaat niet");
+    }
   }
   
   void database::getCounts(long &nodes,long &ways,long &rels, long &bounds, long &tags,long &nds, long &mems) {
