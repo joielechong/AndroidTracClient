@@ -2,9 +2,7 @@
 #include <sqlite3x.hpp>
 #include <string>
 #include <iostream>
-#include <fstream>
 #include <cstring>
-#include <cmath>
 #include <vector>
 #include <stdexcept>
 
