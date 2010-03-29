@@ -47,6 +47,8 @@ namespace osm {
     virtual void setLat(string lat);
     virtual void setLon(string lon);
     virtual string output();
+
+    string operator[](const string tagkey) const;
     
   protected:
     long _id;
@@ -64,9 +66,11 @@ namespace osm {
     Way(long id,osm_db::database &con);
     inline ~Way() {}
     string output ();
-    
-    inline void addNd(long ref) {_nds.push_back(ref);}
-    
+
+    inline void addNd(const long ref) {_nds.push_back(ref);}
+    inline long getNodesCount() const { return _nds.size();}
+    inline long getNd(const long seq) const { return _nds[seq];}
+
   private:
     vector<long> _nds;
   };

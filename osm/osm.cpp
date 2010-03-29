@@ -37,6 +37,14 @@ namespace osm {
     return s.str();
   }
 
+  std::string Element::operator[](const std::string tagkey) const {
+    for (unsigned int i=0;i<_k.size();i++) {
+      if (_k[i] == tagkey)
+	return _v[i];
+    }
+    return "";
+  }
+
   void Element::setLat(string ref) {
     throw new std::range_error("Lat kan alleen bij Node");
   }
