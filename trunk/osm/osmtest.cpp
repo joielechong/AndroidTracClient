@@ -24,11 +24,12 @@ int main(int argc, char *argv[]) {
 
   osm_db::database sql(dbname);
 
-  osm::Cache<osm::Node> nodes(&sql,cachesize);
+  osm::Map map(&sql,cachesize);
+  osm::Cache<osm::Node> *nodes = map.nodes();
 
   for(long i=123357;i<123370;i++) {
     try {
-      osm::Node n=nodes[i];
+      osm::Node n=(*(map.nodes()))[i];
       cout << n << endl;
     } catch (const range_error &ex) {
       cout << "Exception "<<ex.what()<<endl;
@@ -37,7 +38,7 @@ int main(int argc, char *argv[]) {
 
   for(long i=123357;i<123400;i++) {
     try {
-      osm::Node n=nodes[i];
+      osm::Node n=(*nodes)[i];
       cout << n << endl;
     } catch (const range_error &ex) {
       cout << "Exception "<<ex.what()<<endl;
@@ -46,7 +47,7 @@ int main(int argc, char *argv[]) {
 
   for(long i=123399;i>=123357;i--) {
     try {
-      osm::Node n=nodes[i];
+      osm::Node n=(*nodes)[i];
       cout << n << endl;
     } catch (const range_error &ex) {
       cout << "Exception "<<ex.what()<<endl;
@@ -71,7 +72,7 @@ int main(int argc, char *argv[]) {
     sql.findNode(lat,lon,diff,ids,lats,lons,distance);
     for (unsigned int i = 0; i<lats.size();i++) {
       cout << ids[i]<<": "<<lats[i] <<","<<lons[i] << "  " << distance[i] << endl;
-      osm::Node n=nodes[ids[i]];
+      osm::Node n=(*nodes)[ids[i]];
       cout << n << endl;
     }
   }
