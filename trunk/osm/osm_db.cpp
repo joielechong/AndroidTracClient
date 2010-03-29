@@ -123,31 +123,51 @@ namespace osm_db {
   }
   
   void database::createNode(long id,int version,double lat,double lon) {
-    _createNode->bind(1,(sqlite3x::int64_t)id);
-    _createNode->bind(2,version);
-    _createNode->bind(3,lat);
-    _createNode->bind(4,lon);
-    _createNode->executenonquery();
+    try {
+      _createNode->bind(1,(sqlite3x::int64_t)id);
+      _createNode->bind(2,version);
+      _createNode->bind(3,lat);
+      _createNode->bind(4,lon);
+      _createNode->executenonquery();
+    } catch (sqlite3x::database_error &ex) {
+      std::cerr << "Probleem bij aanmaken nieuwe node "<<id <<std::endl;
+      std::cerr << "Exception  = " << ex.what() << std::endl;
+    }
   }
   
   void database::createWay(long id,int version) {
-    _createWay->bind(1,(sqlite3x::int64_t)id);
-    _createWay->bind(2,version);
-    _createWay->executenonquery();
+    try {
+      _createWay->bind(1,(sqlite3x::int64_t)id);
+      _createWay->bind(2,version);
+      _createWay->executenonquery();
+    } catch (sqlite3x::database_error &ex) {
+      std::cerr << "Probleem bij aanmaken nieuwe weg "<<id <<std::endl;
+      std::cerr << "Exception  = " << ex.what() << std::endl;
+    }
   }
   
   void database::createRelation(long id,int version) {
-    _createRelation->bind(1,(sqlite3x::int64_t)id);
-    _createRelation->bind(2,version);
-    _createRelation->executenonquery();
+    try {
+      _createRelation->bind(1,(sqlite3x::int64_t)id);
+      _createRelation->bind(2,version);
+      _createRelation->executenonquery();
+    } catch (sqlite3x::database_error &ex) {
+      std::cerr << "Probleem bij aanmaken nieuwe relatie "<<id <<std::endl;
+      std::cerr << "Exception  = " << ex.what() << std::endl;
+    }
   }
   
   void database::createTag(long id,string type,string k,string v) {
-    _createTag->bind(1,(sqlite3x::int64_t)id);
-    _createTag->bind(2,type);
-    _createTag->bind(3,k);
-    _createTag->bind(4,v);
-    _createTag->executenonquery();
+    try {
+      _createTag->bind(1,(sqlite3x::int64_t)id);
+      _createTag->bind(2,type);
+      _createTag->bind(3,k);
+      _createTag->bind(4,v);
+      _createTag->executenonquery();
+    } catch (sqlite3x::database_error &ex) {
+      std::cerr << "Probleem bij aanmaken nieuwe tag voor "<<type<<":"<<id << " k = " <<k << " v = " <<v <<std::endl;
+      std::cerr << "Exception  = " << ex.what() << std::endl;
+    }
   }
   
   void database::createNd(long id,int seq,long ref) {

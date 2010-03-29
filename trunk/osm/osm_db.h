@@ -6,6 +6,7 @@
 #include <sqlite3.h>
 #include <vector>
 #include <stdbool.h>
+#include <stdexcept>
 
 namespace osm_db {
   
@@ -60,6 +61,16 @@ namespace osm_db {
     
     sqlite3x::sqlite3_transaction *_trans;
     int _in_transaction;
+  };
+
+  class osm_db_error : public std::exception {
+  public:
+    osm_db_error(const char *format,...);
+    virtual ~osm_db_error() throw();
+    virtual char const * what() const throw();
+    
+  private:
+    std::string m_what;
   };
 }
 
