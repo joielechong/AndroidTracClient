@@ -2,14 +2,14 @@
 #include "osm_db.h"
 #include <cstdlib>
 #include <string>
-#include <sstream>
-#include "cache.h"
+#include <iostream>
 #include <stdexcept>
 #include <ArgumentParser.h>
 #include <StringArgument.h>
 #include <DoubleArgument.h>
-#include <cmath>
- 
+
+using namespace std;
+
 int main(int argc, char *argv[]) {
   Argument::StringArgument dbArg("-db","value",string("osm.sqlite"),"SQLite database name");
   Argument::DoubleArgument cacheArg("-cs","positive-integer",1000,"Cache size");
