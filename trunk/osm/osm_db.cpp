@@ -77,7 +77,7 @@ namespace osm_db {
       schema.getline(regel,2047);
       //      cout << regel << endl;
       if (strncmp(regel,"DROP",4) != 0 && strlen(regel) > 0) {
-	executenonquery(regel);
+	executenonquery(regel,false);
       }
     }
     schema.close();  
@@ -110,12 +110,16 @@ namespace osm_db {
     executenonquery("INSERT INTO adressen SELECT id,'way' AS type,(SELECT v FROM waytag WHERE id=way.id AND k='addr:country') AS country,(SELECT v FROM waytag WHERE id=way.id AND k='addr:city') AS city,(SELECT v FROM waytag WHERE id=way.id AND k='addr:street') AS street,(SELECT v FROM waytag WHERE id=way.id AND k='addr:housenumber') AS housenumber,(SELECT v FROM waytag WHERE id=way.id AND k='addr:postcode') AS postcode FROM way WHERE NOT coalesce(country,city,street,housenumber,postcode) IS NULL");
   }
   
-  void database::executenonquery(std::string query) {
+  void database::executenonquery(std::string query,bool repcount) {
+    try {
     std::cout << "DB: " << query << std::endl;
     _sql->executenonquery(query);
-    int changes = _sql->changes();
-    if (changes > 0) 
-      std::cout << "DB: " << changes << " records" << std::endl;
+    if (repcount) 
+      std::cout << "DB: " << _sql->changes() << " records" << std::endl;
+    } catch (sqlite3x::database_error &ex) {
+      std::cerr << "Probleem bij uitvoeren van opdracht" <<std::endl;
+      std::cerr << "Exception  = " << ex.what() << std::endl;
+    } 
   }
   
   void database::createNode(long id,int version,double lat,double lon) {
