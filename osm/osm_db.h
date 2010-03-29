@@ -5,6 +5,7 @@
 #include <sqlite3x.hpp>
 #include <sqlite3.h>
 #include <vector>
+#include <stdbool.h>
 
 namespace osm_db {
   
@@ -27,7 +28,7 @@ namespace osm_db {
 
     inline void begin() { _trans->begin();_in_transaction=1;}
     inline void commit() { _trans->commit();_in_transaction=0;}
-    void executenonquery(std::string query);
+    void executenonquery(std::string query,bool rep=true);
 
     void getCounts(long &nodes,long &ways,long &rel, long &bounds, long &tags,long &nds, long &mems);
     void getNode(long id,int &version,double &lat,double &lon,int &x,int &y);
