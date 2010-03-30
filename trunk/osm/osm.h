@@ -199,6 +199,7 @@ namespace osm {
     inline osm::Cache<osm::Relation>& relations() {return _relations;}
 
     void InterpolatedAddresses(osm::Way &w);
+    osm::Node& Address(const string country,const string city,const string street,const string housenumber,const string postcode) const;
 
     inline void findNode(double latinp,double loninp,double diff,std::vector<long> &id,std::vector<double> &lat,std::vector<double> &lon,std::vector<double> &distance) { _con->findNode(latinp,loninp,diff,id,lat,lon,distance);}
   private:
