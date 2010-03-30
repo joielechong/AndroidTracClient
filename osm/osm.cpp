@@ -135,15 +135,11 @@ namespace osm {
 
 
   Map::Map(osm_db::database *sql,const unsigned long cacheSize) :_con(sql),
-								 _cacheSize(cacheSize) {
-    _nodes = new osm::Cache<osm::Node>(sql,cacheSize);
-    _ways = new osm::Cache<osm::Way>(sql,cacheSize);
-    _relations = new osm::Cache<osm::Relation>(sql,cacheSize);
+								 _cacheSize(cacheSize),
+								 _nodes(_con,_cacheSize),
+								 _ways(_con,_cacheSize),
+								 _relations(_con,_cacheSize) {
   }
  
-  Map::~Map() {
-    delete _relations;
-    delete _ways;
-    delete _nodes;
-  }
+  Map::~Map() {  }
 }
