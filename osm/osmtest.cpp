@@ -25,7 +25,6 @@ int main(int argc, char *argv[]) {
   osm_db::database sql(dbname);
 
   osm::Map map(&sql,cachesize);
-  osm::Cache<osm::Node> *nodes = map.nodes();
 
   for(long i=123357;i<123370;i++) {
     try {
