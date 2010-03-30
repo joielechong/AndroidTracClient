@@ -198,7 +198,7 @@ namespace osm {
     inline osm::Cache<osm::Way>* ways() {return _ways;}
     inline osm::Cache<osm::Relation>* relations() {return _relations;}
 
-    void InterPolatedAddresses(Way &w);
+    void InterpolatedAddresses(osm::Way &w);
 
     inline void findNode(double latinp,double loninp,double diff,std::vector<long> &id,std::vector<double> &lat,std::vector<double> &lon,std::vector<double> &distance) { _con->findNode(latinp,loninp,diff,id,lat,lon,distance);}
   private:
