@@ -31,8 +31,12 @@ namespace osm_db {
     _getMembers = NULL;
     _getTags = NULL;
     _findNode = NULL;
+    _findAdmin = NULL;
+    _findAddress = NULL;
+    _getRelCoords = NULL;
     _in_transaction=0;
     sqlite3_create_function(_sql->db(),"osmdistance",4,SQLITE_ANY,NULL,osmdistance,NULL,NULL);
+    sqlite3_create_function(_sql->db(),"int",1,SQLITE_ANY,NULL,osmint,NULL,NULL);
   }
   
   database::~database() {
@@ -65,6 +69,12 @@ namespace osm_db {
       delete _getMembers;
     if (_findNode != NULL)
       delete _findNode;
+    if (_findAdmin != NULL)
+      delete _findAdmin;
+    if (_findAddress != NULL)
+      delete _findAddress;
+    if (_getRelCoords != NULL)
+      delete _getRelCoords;
     delete _sql;
     _sql = NULL;
   }

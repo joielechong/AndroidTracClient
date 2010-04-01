@@ -70,6 +70,7 @@ namespace osm {
     inline void addNd(const long ref) {_nds.push_back(ref);}
     inline long getNodesCount() const { return _nds.size();}
     inline long getNd(const long seq) const { return _nds[seq];}
+    Way * _prev,*_next;
 
   private:
     vector<long> _nds;
@@ -85,7 +86,8 @@ namespace osm {
     string output ();
     
     void addMember(long ref,string type,string role);
-    
+    Relation * _prev,*_next;
+
   private:
     vector<Member> _members;
   };
@@ -127,7 +129,7 @@ namespace osm {
     Cache(osm_db::database *con,const unsigned long size){_top = NULL;_bottom = NULL;_con=con;_size=size;}
     ~Cache() {}
     
-    T operator[](long id) {
+    T& operator[](long id) {
       cache_iter it;
       T *e = NULL;
 
@@ -192,7 +194,6 @@ namespace osm {
   class Map {
   public:
     Map(osm_db::database *con,const unsigned long cacheSize);
-    ~Map();
 
     inline osm::Cache<osm::Node>& nodes() {return _nodes;}
     inline osm::Cache<osm::Way>& ways() {return _ways;}
@@ -201,7 +202,11 @@ namespace osm {
     void InterpolatedAddresses(osm::Way &w);
     osm::Node& Address(const string country,const string city,const string street,const string housenumber,const string postcode) const;
 
-    inline void findNode(double latinp,double loninp,double diff,std::vector<long> &id,std::vector<double> &lat,std::vector<double> &lon,std::vector<double> &distance) { _con->findNode(latinp,loninp,diff,id,lat,lon,distance);}
+    inline void findNode(const double latinp,const double loninp,const double diff,std::vector<long> &id,std::vector<double> &lat,std::vector<double> &lon,std::vector<double> &distance) { _con->findNode(latinp,loninp,diff,id,lat,lon,distance);}
+    bool insideRelation(long relationid,long nodeid);
+    void findAdmin(const string querystring,std::vector<string> &naam,std::vector<int> &level);
+
+
   private:
     osm_db::database *_con;
     unsigned long _cacheSize;

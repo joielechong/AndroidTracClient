@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 #include <stdexcept>
+#include <stdbool.h>
 
 namespace osm {
   using namespace std;
@@ -132,7 +133,26 @@ namespace osm {
     for (unsigned int i=0;i<ref.size();i++) 
       _members.push_back(Member(ref[i],type[i],role[i]));
   }
-
+  /*
+    sub pnpoly {
+        my $self = shift;
+	my $nvert = shift;
+	my $vertxy = shift;
+	my $testx = shift;
+	my $testy = shift;
+	
+	my ($i,$j,$c);
+	$c=0;
+	$j=$nvert-1;
+	for ($i=0;$i<$nvert;$j=$i++) {
+            if ( (($$vertxy[$i]->[0]>$testy) != ($$vertxy[$j]->[0]>$testy)) &&
+		 ($testx < ($$vertxy[$j]->[1]-$$vertxy[$i]->[1]) * ($testy-$$vertxy[$i]->[0]) / ($$vertxy[$j]->[0]-$$vertxy[$i]->[0]) + $$vertxy[$i]->[1]) ) {
+                $c = !$c;
+	    }
+	}
+	return $c;
+    }
+  */
 
   Map::Map(osm_db::database *sql,const unsigned long cacheSize) :_con(sql),
 								 _cacheSize(cacheSize),
@@ -141,5 +161,60 @@ namespace osm {
 								 _relations(_con,_cacheSize) {
   }
  
-  Map::~Map() {  }
+  bool Map::insideRelation(const long relationid,const long nodeid) {
+    double lat,lon;
+    std::vector<double> lats;
+    std::vector<double> lons;
+
+
+    lat = _nodes[nodeid].lat();
+    lon = _nodes[nodeid].lon();
+
+    _con->getRelCoords(relationid,lats,lons);
+
+    int nvert = lats.size();
+    bool c=false;
+    int j=nvert - 1;
+    for (int i=0;i<nvert;j=i++) {
+      if ( ((lons[i] > lon ) ^ (lons[j] > lon)) &&
+	   (lat < (lats[i] + (lats[j]-lats[i])*(lon-lons[i])/(lons[j]-lons[i]))))
+	c = ~c;
+    }
+    return c;
+  }
+
+
+  void Map::findAdmin(const string querystring,std::vector<string> &naam,std::vector<int> &level) {
+    std::vector<long> nodeids;
+    std::vector<double> nodelats;
+    std::vector<double> nodelons;
+    std::vector<long> relids;
+    std::vector<string> relname;
+    std::vector<int> admlevel;
+    std::vector<long> admid;
+    
+    _con->findAddress(querystring,nodeids,nodelats,nodelons);
+    cout << nodeids.size() << " nodes gevonden bij " << querystring << endl;
+    for (unsigned int j=0;j<nodeids.size();j++) {
+      cout << "Node: " << j << " " << nodelats[j] << "," << nodelons[j] << " " <<nodeids[j] << endl;
+      _con->findAdmin(nodelats[j],nodelons[j],relids,relname,admlevel);
+      cout << relids.size() << " admins gevonden" << endl;
+      for (unsigned int i=0;i<relids.size();i++) {
+	int found=-1;
+	for (unsigned int k=0;found<0 && k<admid.size();k++) {
+	  if (admid[k]==relids[i])
+	    found=k;
+	}
+	if (found == -1) {
+	  cout << "  Admin: "<< i << " " << relids[i] << " " <<nodeids[j] << endl;
+	  if (this->insideRelation(relids[i],nodeids[j])) {
+	    cout << "    Omvattend"<<endl;
+	    admid.push_back(relids[i]);
+	    naam.push_back(relname[i]);
+	    level.push_back(admlevel[i]);
+	  }
+	}
+      }
+    }
+  }
 }
