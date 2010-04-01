@@ -2,6 +2,8 @@
 #include <string>
 #include <stdexcept>
 #include <cstring>
+#include <cstdarg>
+#include <cstdio>
 
 namespace osm_db {  
   osm_db_error::osm_db_error(const char *format,...)

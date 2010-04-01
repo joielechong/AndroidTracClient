@@ -39,6 +39,9 @@ namespace osm_db {
     void getNds(long id,std::vector<long> &ref);
     void getMembers(long id,std::vector<std::string> &type,std::vector<std::string> &role,std::vector<long> &ref);
     void findNode(double latinp,double loninp,double diff,std::vector<long> &id,std::vector<double> &lat,std::vector<double> &lon,std::vector<double> &distance);
+    void getRelCoords(const long relationid, std::vector<double> &lat,std::vector<double> &lon);
+    void findAdmin(const double lat,const double lon,std::vector<long> &ids,std::vector<std::string> &names, std::vector<int> & admlevel);
+    void findAddress(std::string querystring,std::vector<long> &nodeids,std::vector<double> &nodelats,std::vector<double> &nodelons);
 
 
   private: 
@@ -58,6 +61,9 @@ namespace osm_db {
     sqlite3x::sqlite3_command *_getNds;
     sqlite3x::sqlite3_command *_getMembers;
     sqlite3x::sqlite3_command *_findNode;
+    sqlite3x::sqlite3_command *_findAdmin;
+    sqlite3x::sqlite3_command *_findAddress;
+    sqlite3x::sqlite3_command *_getRelCoords;
     
     sqlite3x::sqlite3_transaction *_trans;
     int _in_transaction;

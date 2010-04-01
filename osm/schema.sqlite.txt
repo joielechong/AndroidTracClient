@@ -59,6 +59,10 @@ CREATE INDEX b1 ON bound(minlat);
 CREATE INDEX b2 ON bound(maxlat);
 CREATE INDEX b3 ON bound(minlon);
 CREATE INDEX b4 ON bound(maxlon);
+CREATE INDEX maxlat ON admin(maxlat);
+CREATE INDEX minlat ON admin(minlat);
+CREATE INDEX minlon ON admin(minlon);
+CREATE INDEX maxlon ON admin(maxlon);
 
 COMMIT;
 PRAGMA default_cache_size=5000;

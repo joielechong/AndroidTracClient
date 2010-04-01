@@ -13,14 +13,17 @@ using namespace std;
 int main(int argc, char *argv[]) {
   Argument::StringArgument dbArg("-db","value",string("osm.sqlite"),"SQLite database name");
   Argument::DoubleArgument cacheArg("-cs","positive-integer",1000,"Cache size");
+  Argument::StringArgument addrArg("-adres","value",string("postcode='1185 CV'"),"SQLite where clause");
   Argument::ArgumentParser parser;
   parser.addArgument(dbArg);
   parser.addArgument(cacheArg);
+  parser.addArgument(addrArg);
   list<string> extra = parser.parse(argc,argv);
   list<string>::iterator it;
 
   string dbname = dbArg.getValue();
   long cachesize = cacheArg.getValue();
+  string query = addrArg.getValue();
 
   osm_db::database sql(dbname);
 
@@ -52,6 +55,14 @@ int main(int argc, char *argv[]) {
       cout << "Exception "<<ex.what()<<endl;
     }
   }
+
+
+  std::vector<string> naam;
+  std::vector<int> level;
+  cout <<query <<endl;
+  map.findAdmin(query,naam,level);
+  for (unsigned int i=0;i<naam.size();i++) 
+    cout << naam[i] <<"("<<level[i]<<")"<<std::endl;
 
 
   for (it=extra.begin();it!=extra.end();it++) {
