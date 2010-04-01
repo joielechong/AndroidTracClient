@@ -19,6 +19,7 @@ namespace osm_db {
     inline void setupSchemas(const std::string s) {setupSchemas(s.c_str());}
     void initializeFill();
     void postprocess();
+    inline void update(bool mode) {_update = mode;};
 	
     void createNode(long id,int version,double lat,double lon);
     void createWay(long id,int version);
@@ -64,9 +65,16 @@ namespace osm_db {
     sqlite3x::sqlite3_command *_findAdmin;
     sqlite3x::sqlite3_command *_findAddress;
     sqlite3x::sqlite3_command *_getRelCoords;
+    sqlite3x::sqlite3_command *_getRelWays;
+    sqlite3x::sqlite3_command *_getWayAsc;
+    sqlite3x::sqlite3_command *_getWayDesc;
+    sqlite3x::sqlite3_command *_delTags;
+    sqlite3x::sqlite3_command *_delNds;
+    sqlite3x::sqlite3_command *_delMems;
     
     sqlite3x::sqlite3_transaction *_trans;
     int _in_transaction;
+    bool _update;
   };
 
   class osm_db_error : public std::exception {

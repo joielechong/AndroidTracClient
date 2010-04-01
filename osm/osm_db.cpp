@@ -6,6 +6,7 @@
 #include <cstring>
 #include <cmath>
 #include <vector>
+#include <stdbool.h>
 #include <stdexcept>
 
 namespace osm_db {  
@@ -34,7 +35,14 @@ namespace osm_db {
     _findAdmin = NULL;
     _findAddress = NULL;
     _getRelCoords = NULL;
+    _getRelWays = NULL;
+    _getWayAsc = NULL;
+    _getWayDesc = NULL;
+    _delTags = NULL;
+    _delNds = NULL;
+    _delMems = NULL;
     _in_transaction=0;
+    _update = false;
     sqlite3_create_function(_sql->db(),"osmdistance",4,SQLITE_ANY,NULL,osmdistance,NULL,NULL);
     sqlite3_create_function(_sql->db(),"int",1,SQLITE_ANY,NULL,osmint,NULL,NULL);
   }
@@ -75,6 +83,20 @@ namespace osm_db {
       delete _findAddress;
     if (_getRelCoords != NULL)
       delete _getRelCoords;
+    if (_getRelCoords != NULL)
+      delete _getRelCoords;
+    if (_getRelWays != NULL)
+      delete _getRelWays;
+    if (_getWayAsc != NULL)
+      delete _getWayAsc;
+    if (_getWayDesc != NULL)
+      delete _getWayDesc;
+    if (_delTags == NULL)
+      delete _delTags;
+    if (_delNds == NULL)
+      delete _delNds;
+    if (_delMems == NULL)
+      delete _delMems;
     delete _sql;
     _sql = NULL;
   }

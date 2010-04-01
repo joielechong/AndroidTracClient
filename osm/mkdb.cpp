@@ -19,6 +19,7 @@ int main(int argc, char* argv[])
 {
   Argument::StringArgument dbArg("-db","value",string("newosm.sqlite"),"SQLite database name");
   Argument::StringArgument schemaArg("-schema","value",string("schema.sqlite.txt"),"schema definition file");
+  Argument::BooleanArgument updArg("-update","Update the database");
   Argument::BooleanArgument newArg("-new","Create new database");
   Argument::StringArgument fileArg("-file","value",string("-"),"Input file (- = stdin)");
   
@@ -26,6 +27,7 @@ int main(int argc, char* argv[])
   parser.addArgument(dbArg);
   parser.addArgument(schemaArg);
   parser.addArgument(newArg);  
+  parser.addArgument(updArg);  
   parser.addArgument(fileArg);
   list<string> extra = parser.parse(argc,argv);
   
@@ -33,6 +35,7 @@ int main(int argc, char* argv[])
   string dbname = dbArg.getValue();
   string schema = schemaArg.getValue();
   bool nieuw = newArg.getValue();
+  bool update = updArg.getValue();
 
   if (nieuw)
     unlink(dbname.c_str());
@@ -56,6 +59,9 @@ int main(int argc, char* argv[])
 
     if (nieuw) 
       sql.setupSchemas(schema);
+
+    if (update) 
+      sql.update(true);
     
     sql.initializeFill();
     
@@ -69,8 +75,10 @@ int main(int argc, char* argv[])
     } else {
       parser.parse_file(filepath);
     }
-    cout << "Starting postprocessing" << endl;
-    sql.postprocess();
+    if (!update) {
+      cout << "Starting postprocessing" << endl;
+      sql.postprocess();
+    }
   } catch(const xmlpp::exception& ex) {
     cout << "libxml++ exception: " << ex.what() << endl;
     return 1;

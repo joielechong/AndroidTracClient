@@ -42,7 +42,7 @@ namespace osm_db {
       cur.close();
     } catch (const sqlite3x::database_error& ex) {
       cout << "Exception in sqlite: " << ex.what() <<endl;
-      throw std::range_error("Node does not exist");
+      throw osm_db_error("Node %d returned database error",id);
     }
   }
   
@@ -162,18 +162,77 @@ namespace osm_db {
       distance.push_back(cur.getdouble(3));
     }
   }
+  //  select nd.id,nd.seq,nd.ref from member,nd where member.id=162577 and member.type='way' and member.ref=nd.id and (nd.seq=0 or nd.seq = (select max(seq) from nd where id=member.ref));
 
   void database::getRelCoords(long relationid, std::vector<double> &lat,std::vector<double> &lon) {
-    if (_getRelCoords == NULL)
-      _getRelCoords = new sqlite3_command(*_sql,"SELECT lat,lon FROM member,nd,node WHERE member.id = ? AND member.type='way' AND member.ref=nd.id AND nd.ref=node.id ORDER BY member.seq,nd.seq");
+    if (_getRelWays == NULL)
+      _getRelWays = new sqlite3_command(*_sql,"SELECT member.ref,(SELECT ref FROM nd WHERE id=member.ref ORDER BY seq LIMIT 1) AS first,(SELECT ref FROM nd WHERE id=member.ref ORDER BY seq DESC LIMIT 1) AS last FROM member WHERE id=?");
+    if (_getWayAsc == NULL)
+      _getWayAsc = new sqlite3_command(*_sql,"SELECT lat,lon FROM nd,node WHERE nd.id=? AND nd.ref=node.id ORDER BY seq ASC");
+    if (_getWayDesc == NULL)
+      _getWayDesc = new sqlite3_command(*_sql,"SELECT lat,lon FROM nd,node WHERE nd.id=? AND nd.ref=node.id ORDER BY seq DESC");
 
     lat.clear();
     lon.clear();
-    _getRelCoords->bind(1,(sqlite3x::int64_t)relationid);
-    sqlite3_cursor cur(_getRelCoords->executecursor());
-    while (cur.step()) {
-      lat.push_back(cur.getdouble(0));
-      lon.push_back(cur.getdouble(1));
+    vector<long> ways;
+    vector<long> firstnode;
+    vector<long> lastnode;
+    vector<bool> used;
+
+    { // destroys cur after execution
+      _getRelWays->bind(1,(sqlite3x::int64_t)relationid);
+      sqlite3_cursor cur(_getRelWays->executecursor());
+      while (cur.step()) {
+	//	cout << "rel " << ways.size() << " " << cur.getint64(0) << " " <<cur.getint64(1) << " " << cur.getint64(2) << endl; 
+	ways.push_back(cur.getint64(0));
+	firstnode.push_back(cur.getint64(1));
+	lastnode.push_back(cur.getint64(2));
+	used.push_back(false);
+      }
+    }    
+    long first = -1;
+    long next = firstnode[0];
+    
+    int curway = 0;
+    bool asc = true;
+    while (first != next) {
+      bool found = false;
+      for (unsigned int i=0;!found && i<firstnode.size();i++) {
+	if (!used[i]) {
+	  if (firstnode[i] == next) {
+	    found = true;
+	    asc = true;
+	    curway = i;
+	    next = lastnode[i];
+	  } else if (lastnode[i] == next) {
+	    found = true;
+	    asc = false;
+	    curway = i;
+	    next = firstnode[i];
+	  }
+	}
+      }
+
+      if (!found) 
+	throw osm_db_error("relatie %d niet goed",relationid);
+      
+      //      cout << first << " " << next << " " << asc << " " << curway << " " << ways[curway] << endl;
+
+      if (first == -1)
+	first = firstnode[curway];
+
+      sqlite3_command *q;
+      if (asc) 
+	q = _getWayAsc;
+      else
+	q = _getWayDesc;
+      q->bind(1,(sqlite3x::int64_t)ways[curway]);
+      sqlite3_cursor cur(q->executecursor());
+      while (cur.step()) {
+	lat.push_back(cur.getdouble(0));
+	lon.push_back(cur.getdouble(1));
+      }
+      used[curway] = true;
     }
   }
 

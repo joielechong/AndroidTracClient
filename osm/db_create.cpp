@@ -27,15 +27,31 @@ namespace osm_db {
   }
   
   void database::initializeFill() {
-    _createNode = new sqlite3_command(*_sql,"INSERT INTO node (id,version,lat,lon) VALUES (?,?,?,?)");
-    _createWay = new sqlite3_command(*_sql,"INSERT INTO way (id,version) VALUES (?,?)");
-    _createRelation = new sqlite3_command(*_sql,"INSERT INTO relation (id,version) VALUES (?,?)");
+    if (_update) {
+      _createNode = new sqlite3_command(*_sql,"INSERT OR REPLACE INTO node (id,version,lat,lon) VALUES (?,?,?,?)");
+      _createWay = new sqlite3_command(*_sql,"INSERT OR REPLACE INTO way (id,version) VALUES (?,?)");
+      _createRelation = new sqlite3_command(*_sql,"INSERT OR REPLACE INTO relation (id,version) VALUES (?,?)");
+      _delTags = new sqlite3_command(*_sql,"DELETE FROM tag WHERE id=? AND type = ?");
+      _delNds = new sqlite3_command(*_sql,"DELETE FROM nd WHERE id=?");
+      _delMems = new sqlite3_command(*_sql,"DELETE FROM member WHERE id=?");
+    } else {
+      _createNode = new sqlite3_command(*_sql,"INSERT INTO node (id,version,lat,lon) VALUES (?,?,?,?)");
+      _createWay = new sqlite3_command(*_sql,"INSERT INTO way (id,version) VALUES (?,?)");
+      _createRelation = new sqlite3_command(*_sql,"INSERT INTO relation (id,version) VALUES (?,?)");
+    }
     _createTag = new sqlite3_command(*_sql,"INSERT INTO tag (id,type,k,v) VALUES(?,?,?,?)");
     _createNd = new sqlite3_command(*_sql,"INSERT INTO nd (id,seq,ref) VALUES(?,?,?)");
     _createMember = new sqlite3_command(*_sql,"INSERT INTO member (id,seq,ref,type,role) VALUES(?,?,?,?,?)");
+
   }
   
   void database::createNode(long id,int version,double lat,double lon) {
+    if (_update) {
+      _delTags->bind(1,(sqlite3x::int64_t)id);
+      _delTags->bind(2,"node");
+      _delTags->executenonquery();
+    }
+
     try {
       _createNode->bind(1,(sqlite3x::int64_t)id);
       _createNode->bind(2,version);
@@ -49,6 +65,14 @@ namespace osm_db {
   }
   
   void database::createWay(long id,int version) {
+    if (_update) {
+      _delTags->bind(1,(sqlite3x::int64_t)id);
+      _delTags->bind(2,"way");
+      _delTags->executenonquery();
+      _delNds->bind(1,(sqlite3x::int64_t)id);
+      _delNds->executenonquery();
+    }
+
     try {
       _createWay->bind(1,(sqlite3x::int64_t)id);
       _createWay->bind(2,version);
@@ -60,6 +84,14 @@ namespace osm_db {
   }
   
   void database::createRelation(long id,int version) {
+    if (_update) {
+      _delTags->bind(1,(sqlite3x::int64_t)id);
+      _delTags->bind(2,"relation");
+      _delTags->executenonquery();
+      _delMems->bind(1,(sqlite3x::int64_t)id);
+      _delMems->executenonquery();
+    }
+
     try {
       _createRelation->bind(1,(sqlite3x::int64_t)id);
       _createRelation->bind(2,version);
