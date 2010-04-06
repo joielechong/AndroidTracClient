@@ -78,18 +78,23 @@ namespace osm {
   
   class Relation  : public Element {
   public:
-    inline Relation() : Element() {_type="relation";}
-    inline Relation(long id,int version) : Element(id,version) {}
-    inline Relation(string id,string version) : Element(id,version) {}
+    inline Relation() : Element() {_type="relation";_coordsLoaded=false;}
+    inline Relation(long id,int version) : Element(id,version) {_coordsLoaded=false;}
+    inline Relation(string id,string version) : Element(id,version) {_coordsLoaded=false;}
     Relation(long id,osm_db::database &con);
     inline ~Relation() {}
     string output ();
     
     void addMember(long ref,string type,string role);
+    bool isInside(osm_db::database *con,const double lat,const double lon);
+
     Relation * _prev,*_next;
 
   private:
     vector<Member> _members;
+    bool _coordsLoaded;
+    std::vector<double> _lats;
+    std::vector<double> _lons;
   };
   
   class Node  : public Element {
