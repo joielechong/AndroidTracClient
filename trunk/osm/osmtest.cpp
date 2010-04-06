@@ -13,10 +13,12 @@ using namespace std;
 int main(int argc, char *argv[]) {
   Argument::StringArgument dbArg("-db","value",string("osm.sqlite"),"SQLite database name");
   Argument::DoubleArgument cacheArg("-cs","positive-integer",1000,"Cache size");
-  Argument::StringArgument addrArg("-adres","value",string("postcode='1185 CV'"),"SQLite where clause");
+  Argument::DoubleArgument interpolArg("-intp","positive-integer",0,"Wegnummer voor interpolatie");
+  Argument::StringArgument addrArg("-adres","value",string("invalid"),"SQLite where clause");
   Argument::ArgumentParser parser;
   parser.addArgument(dbArg);
   parser.addArgument(cacheArg);
+  parser.addArgument(interpolArg);
   parser.addArgument(addrArg);
   list<string> extra = parser.parse(argc,argv);
   list<string>::iterator it;
@@ -24,8 +26,11 @@ int main(int argc, char *argv[]) {
   string dbname = dbArg.getValue();
   long cachesize = cacheArg.getValue();
   string query = addrArg.getValue();
+  long interp = interpolArg.getValue();
 
   osm_db::database sql(dbname);
+  if (interp != 0) 
+    sql.initializeFill();
 
   osm::Map map(&sql,cachesize);
 
@@ -56,14 +61,19 @@ int main(int argc, char *argv[]) {
     }
   }
 
+  if (query != "invalid") {
+    
+    std::vector<string> naam;
+    std::vector<int> level;
+    cout <<query <<endl;
+    map.findAdmin(query,naam,level);
+    for (unsigned int i=0;i<naam.size();i++) 
+      cout << naam[i] <<"("<<level[i]<<")"<<std::endl;
+  }
 
-  std::vector<string> naam;
-  std::vector<int> level;
-  cout <<query <<endl;
-  map.findAdmin(query,naam,level);
-  for (unsigned int i=0;i<naam.size();i++) 
-    cout << naam[i] <<"("<<level[i]<<")"<<std::endl;
-
+  if (interp != 0) {
+    map.InterpolatedAddresses(interp);
+  }
 
   for (it=extra.begin();it!=extra.end();it++) {
     string latstr = *it++;

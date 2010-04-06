@@ -264,4 +264,32 @@ namespace osm_db {
       nodelons.push_back(cur.getdouble(2));
     }
   }
+
+  void database::findHouses(long id,vector<long> &ids,vector<double> &nodelats,vector<double> &nodelons,vector<string> &countries,vector<string> &cities,vector<string> &streets,vector<string> &housenumbers,vector<string> &postcodes) {
+    if (_findHouses == NULL) 
+      _findHouses = new sqlite3_command(*_sql,"SELECT node.id,node.lat,node.lon,country,city,street,housenumber,postcode FROM nd,node,adressen WHERE nd.id=? AND nd.ref=node.id and node.id=adressen.id ORDER by nd.seq");
+
+    ids.clear();
+    nodelats.clear();
+    nodelons.clear();
+    countries.clear();
+    cities.clear();
+    streets.clear();
+    housenumbers.clear();
+    postcodes.clear();
+
+    _findHouses->bind(1,(sqlite3x::int64_t)id);
+    sqlite3_cursor cur(_findHouses->executecursor());
+    while (cur.step()) {
+      ids.push_back(cur.getint64(0));
+      nodelats.push_back(cur.getdouble(1));
+      nodelons.push_back(cur.getdouble(2));
+      countries.push_back(cur.getstring(3));
+      cities.push_back(cur.getstring(4));
+      streets.push_back(cur.getstring(5));
+      housenumbers.push_back(cur.getstring(6));
+      postcodes.push_back(cur.getstring(7));
+    }
+
+  }
 }

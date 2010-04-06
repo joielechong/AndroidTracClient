@@ -142,4 +142,18 @@ namespace osm_db {
       throw osm_db_error("%s bestaat niet",type.c_str());
     }
   }
+
+  void database::createAdres(long id,string type,string country,string city,string street, string housenumber,string postcode) {
+    if (_createAdres == NULL)
+      _createAdres = new sqlite3_command(*_sql,"INSERT INTO adressen (id,type,country,city,street,housenumber,postcode) VALUES (?,?,?,?,?,?,?)");
+    
+    _createAdres->bind(1,(sqlite3x::int64_t)id);
+    _createAdres->bind(2,type);
+    _createAdres->bind(3,country);
+    _createAdres->bind(4,city);
+    _createAdres->bind(5,street);
+    _createAdres->bind(6,housenumber);
+    _createAdres->bind(7,postcode);
+    _createAdres->executenonquery();
+  }
 }

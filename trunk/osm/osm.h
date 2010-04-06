@@ -204,7 +204,8 @@ namespace osm {
     inline osm::Cache<osm::Way>& ways() {return _ways;}
     inline osm::Cache<osm::Relation>& relations() {return _relations;}
 
-    void InterpolatedAddresses(osm::Way &w);
+    void InterpolatedAddresses(Way &w);
+    inline void InterpolatedAddresses(long id) {InterpolatedAddresses(_ways[id]);}
     osm::Node& Address(const string country,const string city,const string street,const string housenumber,const string postcode) const;
 
     inline void findNode(const double latinp,const double loninp,const double diff,std::vector<long> &id,std::vector<double> &lat,std::vector<double> &lon,std::vector<double> &distance) { _con->findNode(latinp,loninp,diff,id,lat,lon,distance);}
@@ -216,9 +217,9 @@ namespace osm {
     osm_db::database *_con;
     unsigned long _cacheSize;
 
-    osm::Cache<osm::Node> _nodes;
-    osm::Cache<osm::Way> _ways;
-    osm::Cache<osm::Relation> _relations;
+    Cache<Node> _nodes;
+    Cache<Way> _ways;
+    Cache<Relation> _relations;
 
   };
 }
