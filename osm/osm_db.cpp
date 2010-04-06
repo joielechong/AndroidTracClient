@@ -24,6 +24,7 @@ namespace osm_db {
     _createTag = NULL;
     _createNd = NULL;
     _createMember = NULL;
+    _createAdres = NULL;
     _getCounts = NULL;
     _getNode = NULL;
     _getWay = NULL;
@@ -34,6 +35,7 @@ namespace osm_db {
     _findNode = NULL;
     _findAdmin = NULL;
     _findAddress = NULL;
+    _findHouses = NULL;
     _getRelCoords = NULL;
     _getRelWays = NULL;
     _getWayAsc = NULL;
@@ -45,6 +47,14 @@ namespace osm_db {
     _update = false;
     sqlite3_create_function(_sql->db(),"osmdistance",4,SQLITE_ANY,NULL,osmdistance,NULL,NULL);
     sqlite3_create_function(_sql->db(),"int",1,SQLITE_ANY,NULL,osmint,NULL,NULL);
+
+    sqlite3_command *s = new sqlite3_command(*_sql,"SELECT (SELECT min(id) FROM node) AS node, (SELECT min(id) FROM way) AS way,(SELECT min(id) FROM relation) AS relation");
+    sqlite3_cursor cur(s->executecursor());
+    if (cur.step()) {
+      _tempnodes = min(0L,(long)cur.getint64(0));
+      _tempways = min(0L,(long)cur.getint64(1));
+      _temprelations = min(0L,(long)cur.getint64(2));
+    }
   }
   
   database::~database() {
@@ -65,6 +75,8 @@ namespace osm_db {
       delete _createNd;
     if (_createMember != NULL)
       delete _createMember;
+    if (_createAdres != NULL)
+      delete _createAdres;
     if (_getCounts != NULL)
       delete _getCounts;
     if (_getNode != NULL)
@@ -81,6 +93,8 @@ namespace osm_db {
       delete _findAdmin;
     if (_findAddress != NULL)
       delete _findAddress;
+    if (_findHouses != NULL)
+      delete _findHouses;
     if (_getRelCoords != NULL)
       delete _getRelCoords;
     if (_getRelCoords != NULL)

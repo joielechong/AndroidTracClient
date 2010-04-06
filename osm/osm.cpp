@@ -43,7 +43,7 @@ namespace osm {
       if (_k[i] == tagkey)
 	return _v[i];
     }
-    return "";
+    throw range_error("Key bestaat niet: "+tagkey);
   }
 
   void Element::setLat(string ref) {
