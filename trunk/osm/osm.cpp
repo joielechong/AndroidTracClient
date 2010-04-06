@@ -124,6 +124,7 @@ namespace osm {
   
   Relation::Relation(long id,osm_db::database &con) {
     _id = id;
+    _coordsLoaded=false;
     con.getRelation(id,_version);
     con.getTags(id,"relation",_k,_v);
     std::vector<long> ref;
@@ -188,6 +189,32 @@ namespace osm {
     return c;
   }
 
+  bool Relation::isInside(osm_db::database *con,const double lat,const double lon) {
+    try {
+      if (!_coordsLoaded) {
+	con->getRelCoords(_id,_lats,_lons);
+	_coordsLoaded = true;
+      }
+    } catch  (const osm_db::osm_db_error &ex) {
+      cout <<ex.what()<<endl;
+      return false;
+    }
+    int nvert = _lats.size();
+    bool c=false;
+    //    cout << nvert << " nodes"<<endl;
+    int j=nvert - 1;
+    for (int i=0;i<nvert;j=i++) {
+      if ((_lons[i] > lon ) != (_lons[j] > lon)) {
+	double l2 = (_lats[j]-_lats[i])*(lon-_lons[i])/(_lons[j]-_lons[i]) + _lats[i];
+	//	cout << "l2 = " << l2 << endl;
+	if (lat < l2)
+	  c = !c;
+      }
+      //      cout << i << " " << lon << " " << _lons[j] << " " << _lons[i] << " : " << lat << " " << _lats[j] << " " << _lats[i] << " = " << c << endl;
+    }
+    return c;
+  }
+
 
   void Map::findAdmin(const string querystring,std::vector<string> &naam,std::vector<int> &level) {
     std::vector<long> nodeids;
@@ -201,18 +228,20 @@ namespace osm {
     _con->findAddress(querystring,nodeids,nodelats,nodelons);
     //    cout << nodeids.size() << " nodes gevonden bij " << querystring << endl;
     for (unsigned int j=0;j<nodeids.size();j++) {
-      //      cout << "Node: " << j << " " << nodelats[j] << "," << nodelons[j] << " " <<nodeids[j] << endl;
+      cout << "Node: " << j << " " << nodelats[j] << "," << nodelons[j] << " " <<nodeids[j] << endl;
       _con->findAdmin(nodelats[j],nodelons[j],relids,relname,admlevel);
       cout << relids.size() << " admins gevonden" << endl;
       for (unsigned int i=0;i<relids.size();i++) {
 	int found=-1;
+	//	cout << relname[i] << endl;
 	for (unsigned int k=0;found<0 && k<admid.size();k++) {
 	  if (admid[k]==relids[i])
 	    found=k;
 	}
 	if (found == -1) {
 	  //	  cout << "  Admin: "<< i << " " << relids[i] << " " <<nodeids[j] << endl;
-	  if (this->insideRelation(relids[i],nodeids[j])) {
+	  Node& n=_nodes[nodeids[j]];
+	  if (_relations[relids[i]].isInside(_con,n.lat(),n.lon())) {
 	    //	    cout << "    Omvattend"<<endl;
 	    admid.push_back(relids[i]);
 	    naam.push_back(relname[i]);

@@ -47,6 +47,7 @@ namespace osm_db {
   }
   
   void database::getWay(long id,int &version) {
+    std::cout << "getWay("<<id<<")"<<std::endl;
     try {
       if (_getWay == NULL) 
         _getWay = new sqlite3_command(*_sql,"SELECT version FROM node  WHERE id = ?");
@@ -64,6 +65,7 @@ namespace osm_db {
   }
   
   void database::getRelation(long id,int &version) {
+    std::cout << "getRelation("<<id<<")"<<std::endl;
     try {
       if (_getRelation == NULL) 
         _getRelation = new sqlite3_command(*_sql,"SELECT version FROM relation  WHERE id = ?");
@@ -166,7 +168,7 @@ namespace osm_db {
 
   void database::getRelCoords(long relationid, std::vector<double> &lat,std::vector<double> &lon) {
     if (_getRelWays == NULL)
-      _getRelWays = new sqlite3_command(*_sql,"SELECT member.ref,(SELECT ref FROM nd WHERE id=member.ref ORDER BY seq LIMIT 1) AS first,(SELECT ref FROM nd WHERE id=member.ref ORDER BY seq DESC LIMIT 1) AS last FROM member WHERE id=?");
+      _getRelWays = new sqlite3_command(*_sql,"SELECT member.ref,(SELECT ref FROM nd WHERE id=member.ref ORDER BY seq LIMIT 1) AS first,(SELECT ref FROM nd WHERE id=member.ref ORDER BY seq DESC LIMIT 1) AS last FROM member WHERE id=? AND type='way' ");
     if (_getWayAsc == NULL)
       _getWayAsc = new sqlite3_command(*_sql,"SELECT lat,lon FROM nd,node WHERE nd.id=? AND nd.ref=node.id ORDER BY seq ASC");
     if (_getWayDesc == NULL)
@@ -214,7 +216,7 @@ namespace osm_db {
       }
 
       if (!found) 
-	throw osm_db_error("relatie %d niet goed",relationid);
+	throw osm_db_error("relatie %d niet goed: next = %d",relationid,next);
       
       //      cout << first << " " << next << " " << asc << " " << curway << " " << ways[curway] << endl;
 
@@ -238,7 +240,7 @@ namespace osm_db {
 
   void database::findAdmin(const double lat,const double lon,vector<long> &ids,vector<string> &names, vector<int> & admlevel) {
     if (_findAdmin == NULL) 
-      _findAdmin = new sqlite3_command(*_sql,"SELECT admin.id,admin.name,admin.level FROM admin WHERE  ? BETWEEN minlat AND maxlat AND ? BETWEEN minlon AND maxlon");
+      _findAdmin = new sqlite3_command(*_sql,"SELECT admin.id,admin.name,admin.level FROM admin WHERE  ? BETWEEN minlat AND maxlat AND ? BETWEEN minlon AND maxlon ORDER BY admin.level");
 
     ids.clear();
     names.clear();
@@ -254,7 +256,7 @@ namespace osm_db {
     }
   }
   void database::findAddress(std::string querystring,std::vector<long> &nodeids,std::vector<double> &nodelats,std::vector<double> &nodelons){
-    sqlite3_command fa(*_sql,"SELECT node.id,lat,lon FROM adressen,node WHERE "+querystring+" AND adressen.id=node.id");
+    sqlite3_command fa(*_sql,"SELECT node.id,lat,lon FROM adressen,node WHERE "+querystring+" AND adressen.type='node' AND adressen.id=node.id");
     sqlite3_cursor cur(fa.executecursor());
     while (cur.step()) {
       nodeids.push_back(cur.getint64(0));
