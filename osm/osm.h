@@ -204,6 +204,7 @@ namespace osm {
     inline osm::Cache<osm::Way>& ways() {return _ways;}
     inline osm::Cache<osm::Relation>& relations() {return _relations;}
 
+    void InterpolatedAddresses();
     void InterpolatedAddresses(Way &w);
     inline void InterpolatedAddresses(long id) {InterpolatedAddresses(_ways[id]);}
     osm::Node& Address(const string country,const string city,const string street,const string housenumber,const string postcode) const;

@@ -290,6 +290,13 @@ namespace osm_db {
       housenumbers.push_back(cur.getstring(6));
       postcodes.push_back(cur.getstring(7));
     }
+  }
 
+  void database::getInterpolationWays(vector<long> &ids) {
+    sqlite3_command *s = new sqlite3_command(*_sql,"SELECT id FROM waytag WHERE k='addr:interpolation'");
+    sqlite3_cursor cur(s->executecursor());
+    while (cur.step()) {
+      ids.push_back(cur.getint64(0));
+    } 
   }
 }

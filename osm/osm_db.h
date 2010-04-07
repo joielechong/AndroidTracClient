@@ -50,7 +50,7 @@ namespace osm_db {
     void findAdmin(const double lat,const double lon,std::vector<long> &ids,std::vector<std::string> &names, std::vector<int> & admlevel);
     void findAddress(const std::string querystring,std::vector<long> &nodeids,std::vector<double> &nodelats,std::vector<double> &nodelons);
     void findHouses(const long id,std::vector<long> &nodeids,std::vector<double> &nodelats,std::vector<double> &nodelons,std::vector<std::string> &countriesd,std::vector<std::string> &citiess,std::vector<std::string> &streets,std::vector<std::string> &housenumbers,std::vector<std::string> &postcodes);
-
+    void getInterpolationWays(std::vector<long> &ids);
 
   private: 
     sqlite3x::sqlite3_connection *_sql;
