@@ -21,7 +21,7 @@ AC_PROG_MAKE_SET
 AC_PROG_RANLIB
 
 # Checks for libraries.
-PKG_CHECK_MODULES(DEPS, libxml++-2.6 >= 2.26.1 glibmm-2.4 >= 2.23.3)
+PKG_CHECK_MODULES(DEPS, libxml++-2.6 >= 2.10.0 glibmm-2.4 >= 2.23.3)
 AC_SUBST(DEPS_CFLAGS)
 AC_SUBST(DEPS_LIBS)
 PKG_CHECK_MODULES(OSM, libsqlite3x  sqlite3 >= 3.6.0.0)

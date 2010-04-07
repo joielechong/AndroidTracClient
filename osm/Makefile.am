@@ -5,7 +5,11 @@ INCLUDES=-O2 -Wall -ggdb $(DEPS_CFLAGS) $(OSM_CFLAGS) $(ARG_CFLAGS)
 
 SUFFIXES=".cpp .o"
 
-bin_PROGRAMS=mkdb dijkstra osmtest
+bin_PROGRAMS=mkdb dijkstra osmtest eisen
+
+eisen_SOURCES=eisen.cpp eisparser.cpp eisparser.h
+eisen_LDADD=$(DEPS_LIBS) $(ARG_LIBS)
+
 mkdb_SOURCES=mkdb.cpp  myparser.cpp osm_db.h myparser.h 
 mkdb_LDADD=$(DEPS_LIBS) -losm $(OSM_LIBS) $(ARG_LIBS) 
 osmtest_SOURCES=osmtest.cpp  osm.h osm_db.h
