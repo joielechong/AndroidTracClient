@@ -7,6 +7,7 @@
 #include <ArgumentParser.h>
 #include <StringArgument.h>
 #include <DoubleArgument.h>
+#include <BooleanArgument.h>
 
 using namespace std;
 
@@ -14,11 +15,13 @@ int main(int argc, char *argv[]) {
   Argument::StringArgument dbArg("-db","value",string("osm.sqlite"),"SQLite database name");
   Argument::DoubleArgument cacheArg("-cs","positive-integer",1000,"Cache size");
   Argument::DoubleArgument interpolArg("-intp","positive-integer",0,"Wegnummer voor interpolatie");
+  Argument::BooleanArgument intpallArg("-intpall","Interpolate alles");
   Argument::StringArgument addrArg("-adres","value",string("invalid"),"SQLite where clause");
   Argument::ArgumentParser parser;
   parser.addArgument(dbArg);
   parser.addArgument(cacheArg);
   parser.addArgument(interpolArg);
+  parser.addArgument(intpallArg);
   parser.addArgument(addrArg);
   list<string> extra = parser.parse(argc,argv);
   list<string>::iterator it;
@@ -27,13 +30,15 @@ int main(int argc, char *argv[]) {
   long cachesize = cacheArg.getValue();
   string query = addrArg.getValue();
   long interp = interpolArg.getValue();
+  bool intpall = intpallArg.getValue();
 
   osm_db::database sql(dbname);
-  if (interp != 0) 
+  if (interp != 0 || intpall) 
     sql.initializeFill();
 
   osm::Map map(&sql,cachesize);
 
+  /*
   for(long i=123357;i<123370;i++) {
     try {
       osm::Node n=map.nodes()[i];
@@ -60,6 +65,7 @@ int main(int argc, char *argv[]) {
       cout << "Exception "<<ex.what()<<endl;
     }
   }
+  */
 
   if (query != "invalid") {
     
@@ -71,10 +77,17 @@ int main(int argc, char *argv[]) {
       cout << naam[i] <<"("<<level[i]<<")"<<std::endl;
   }
 
+  if (intpall)
+    map.InterpolatedAddresses();
+
   if (interp != 0) {
     map.InterpolatedAddresses(interp);
+    for (it=extra.begin();it!= extra.end();it++) {
+      string intp=*it++;
+      map.InterpolatedAddresses(atol(intp.c_str()));
+    }
   }
-
+  /*
   for (it=extra.begin();it!=extra.end();it++) {
     string latstr = *it++;
     string lonstr = *it++;
@@ -96,7 +109,7 @@ int main(int argc, char *argv[]) {
       cout << n << endl;
     }
   }
-
+  */
   return 0;
 
 }
