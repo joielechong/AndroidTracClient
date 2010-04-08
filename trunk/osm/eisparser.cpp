@@ -23,17 +23,31 @@ namespace eisparser {
   
   void EisenParser::on_characters(const Glib::ustring& text)
   {
-    string t=text.c_str();
-    //    std::cout << "on_characters(): " << t << "("<<_depth<<","<<_state<<"(" << std::endl;
+    //    std::cout << "on_characters(): " << text.c_str() << "("<<_depth<<","<<_state<<"(" << std::endl;
     switch(_state) {
+
+    case 9:
+      display_eis();  // fall through to state 3
     case 3:
-      _eis += text;
-      _state--;
+      {
+	_eis += text;
+	string drie = _eis.substr(0,3);
+	if (drie == "ctt" || drie == "VMS" || drie == "NZK" || drie == "NZk" || drie == "CTT" || drie == "Ctt")
+	  _state = 2;
+	else {
+	  _eis = "";
+	  _state = 7;
+	}
+      }
       break;
       
     case 6:
-      _eistitel += text;
-      _state--;
+      if (_eis == "") 
+	_state = 7;
+      else {
+	_eistitel += text;
+	_state--;
+      }
       break;
 
     case 11:
@@ -74,8 +88,12 @@ namespace eisparser {
     case 2:
       if (tag == "w:t")
 	_state++;  // Eis identificatie staat hier
-      else if (tag == "w:tc")
-	_state = 5;  // Naar eistitel
+      else if (tag == "w:tc") {
+	if (_eis.length() >5 &&(_eis.substr(1,4)=="ttOA" || _eis.substr(1,4)=="ttMS"))
+	  _state = 10;
+	else
+	  _state = 5;  // Naar eistitel
+      }
       break;
 
     case 5:
@@ -100,6 +118,8 @@ namespace eisparser {
     case 9:
       if (tag == "w:tc") 
 	_state++;
+      else if (tag == "w:tr")
+	_state = 8;
       break;
 
     case 10:
@@ -128,23 +148,30 @@ namespace eisparser {
       if (tag == "w:hdr" || tag == "w:ftr")
 	_state = 0;
     } else if (tag == "w:tbl"){
-      if (_eis != "" && _eis != "EisPagina") {
-	size_t c = _eistitel.find("&");
-	while (c != string::npos) {
-	  _eistitel.replace(c,1,"&amp;");
-	  c = _eistitel.find("&",c+4);
-	}
-	c = _eistext.find("&");
-	while (c != string::npos) {
-	  _eistext.replace(c,1,"&amp;");
-	  c = _eistext.find("&",c+4);
-	}
-	cout <<"<TR><TD>" << _eis << "</TD><TD>" << _eistitel << "</TD><TD> " << _eistext <<"</TD><TD>" << _eistrack <<"</TD></TR>" <<endl;
-	_eis = "";
-      }
+      display_eis();
       _state = 0;
     }
     _depth--;
-
+    
+  }
+  
+  void EisenParser::display_eis() {
+    if (_eis != "" && _eis != "EisPagina") {
+      size_t c = _eistitel.find("&");
+      while (c != string::npos) {
+	_eistitel.replace(c,1,"&amp;");
+	c = _eistitel.find("&",c+4);
+      }
+      c = _eistext.find("&");
+      while (c != string::npos) {
+	_eistext.replace(c,1,"&amp;");
+	c = _eistext.find("&",c+4);
+      }
+      cout <<"<TR><TD>" << _eis << "</TD><TD>" << _eistitel.raw() << "</TD><TD> " << _eistext.raw() <<"</TD><TD>" << _eistrack <<"</TD></TR>" <<endl;
+      _eis = "";
+      _eistitel = "";
+      _eistext = "";
+      _eistrack = "";
+    }
   }
 }

@@ -25,7 +25,8 @@ namespace eisparser {
   private:
     
     void printCounts();
-    
+    void display_eis();
+
     short _depth;
     short _state;
     Glib::ustring _eis;
