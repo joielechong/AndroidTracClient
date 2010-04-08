@@ -1,5 +1,5 @@
-#ifndef _EISENPARSER_H
-#define _EISENPARSER_H
+#ifndef _EISPARSER_H
+#define _EISPARSER_H
 
 #include <libxml++/libxml++.h>
 #include <string>
@@ -21,6 +21,10 @@ namespace eisparser {
     virtual void on_start_element(const Glib::ustring& name, const AttributeList& properties);
     virtual void on_end_element(const Glib::ustring& name);
     virtual void on_characters(const Glib::ustring& text);
+    virtual void on_comment(const Glib::ustring& text);
+    virtual void on_warning(const Glib::ustring& text);
+    virtual void on_error(const Glib::ustring& text);
+    virtual void on_fatal_error(const Glib::ustring& text);
     
   private:
     
@@ -35,4 +39,4 @@ namespace eisparser {
     Glib::ustring _eistrack;
   };
 }
-#endif //_EISENPARSER_H
+#endif //_EISPARSER_H
