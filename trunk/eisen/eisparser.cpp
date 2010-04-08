@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <glibmm/ustring.h>
+#include <glibmm/stringutils.h>
 #include <cstdlib>
 #include <cstring>
 #include <stdexcept>
@@ -10,7 +11,7 @@ namespace eisparser {
   using namespace std;
 
   void EisenParser::on_start_document() {
-    //    std::cout << "on_start_document()" << std::endl;
+    //     std::cout << "on_start_document()" << std::endl;
     _depth = 0;
     _state = 0;
     cout << "<TABLE>" << endl;
@@ -20,10 +21,29 @@ namespace eisparser {
     //    std::cout << "on_end_document()" << std::endl;
     cout << "</TABLE>"<<endl;
   }
-  
-  void EisenParser::on_characters(const Glib::ustring& text)
+  void EisenParser::on_comment(const Glib::ustring& text)
   {
-    //    std::cout << "on_characters(): " << text.c_str() << "("<<_depth<<","<<_state<<"(" << std::endl;
+    std::cout << "on_comment(): " << text << std::endl;
+  }
+
+  void EisenParser::on_warning(const Glib::ustring& text)
+  {
+    std::cout << "on_warning(): " << text << std::endl;
+  }
+
+  void EisenParser::on_error(const Glib::ustring& text)
+  {
+    std::cout << "on_error(): " << text << std::endl;
+  }
+
+  void EisenParser::on_fatal_error(const Glib::ustring& text)
+  {
+    std::cout << "on_fatal_error(): " << text << std::endl;
+  }
+
+
+  void EisenParser::on_characters(const Glib::ustring &text) {
+    //    std::cout << "on_characters(): " << text.c_str() << "  ("<<_depth<<","<<_state<<")" << std::endl;
     switch(_state) {
 
     case 9:
@@ -50,9 +70,10 @@ namespace eisparser {
       }
       break;
 
+    case 10:
     case 11:
       _eistext += text;
-      _state--;
+      _state = 10;
       break;
 
     case 13:
@@ -129,6 +150,8 @@ namespace eisparser {
 	_state = 12;
       else if (tag == "w:tr")
 	_state = 8;
+      else if (tag == "w:binData")
+	_state = 14;
       break;
 
     case 12:
@@ -147,6 +170,8 @@ namespace eisparser {
     if (_state == 99) {
       if (tag == "w:hdr" || tag == "w:ftr")
 	_state = 0;
+    } else if (_state == 14 && tag == "w:binData") {
+	_state = 10;
     } else if (tag == "w:tbl"){
       display_eis();
       _state = 0;
@@ -157,6 +182,7 @@ namespace eisparser {
   
   void EisenParser::display_eis() {
     if (_eis != "" && _eis != "EisPagina") {
+      /*
       size_t c = _eistitel.find("&");
       while (c != string::npos) {
 	_eistitel.replace(c,1,"&amp;");
@@ -167,7 +193,9 @@ namespace eisparser {
 	_eistext.replace(c,1,"&amp;");
 	c = _eistext.find("&",c+4);
       }
-      cout <<"<TR><TD>" << _eis << "</TD><TD>" << _eistitel.raw() << "</TD><TD> " << _eistext.raw() <<"</TD><TD>" << _eistrack <<"</TD></TR>" <<endl;
+      */
+      string t = Glib::strescape(_eistext);
+      cout <<"<TR><TD>" << _eis.raw() << "</TD><TD>" << _eistitel.raw() << "</TD><TD> " << t <<"</TD><TD>" << _eistrack <<"</TD></TR>" <<endl;
       _eis = "";
       _eistitel = "";
       _eistext = "";
