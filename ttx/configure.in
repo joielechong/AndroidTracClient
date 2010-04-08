@@ -2,6 +2,7 @@ LIBdnl Process this file with autoconf to produce a configure script.
 AC_INIT(ttx.cpp)
 AM_INIT_AUTOMAKE(ttx, 2.4.8pre)
 AM_CONFIG_HEADER(config.h)
+AC_LANG([C++])
 
 dnl Checks for programs.
 AC_PROG_CC

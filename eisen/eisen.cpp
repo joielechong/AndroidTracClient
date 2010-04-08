@@ -1,6 +1,5 @@
 #include <cstring>
 #include <glibmm/ustring.h>
-#include <fstream>
 #include <iostream>
 #include <stdexcept>
 #include "eisparser.h"

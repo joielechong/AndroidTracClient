@@ -1,8 +1,8 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.63])
-AC_INIT([osm], [0.1])
+AC_PREREQ(2.63)
+AC_INIT([osm],[0.1])
 AM_INIT_AUTOMAKE(osm,0.1)
 AC_CONFIG_SRCDIR([mkdb.cpp])
 AC_CONFIG_HEADERS([config.h])
@@ -14,7 +14,7 @@ AC_PROG_CXX
 AC_PROG_CPP
 AC_PROG_CXXCPP
 AC_PROG_INSTALL
-AC_PROG_LIBTOOL
+LT_INIT
 AC_PROG_AWK
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
@@ -30,12 +30,11 @@ AC_SUBST(OSM_LIBS)
 PKG_CHECK_MODULES(ARG, ArgV)
 AC_SUBST(ARG_CFLAGS)
 AC_SUBST(ARG_LIBS)
-AC_CHECK_LIB([m], [main])
+AC_CHECK_LIB([m], [main], [], [AC_MSG_ERROR([libm missing])])
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(cmath cstdio cstdlib cstring fstream iostream list map sstream stdexcept string vector)
-AC_CHECK_HEADERS([stdlib.h string.h])
+AC_CHECK_HEADERS([cmath cstdio cstdlib cstring fstream iostream list map sstream stdexcept string vector stdlib.h string.h], [], [AC_MSG_ERROR([required headers not found])])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
@@ -44,7 +43,8 @@ AC_TYPE_INT64_T
 AC_TYPE_SIZE_T
 
 # Checks for library functions.
-AC_CHECK_FUNCS([memset pow strlen strtod atof strtol atol sin cos asin sqrt strncasecmp strnicmp])
+AC_CHECK_FUNCS([unlink strncmp memset pow strlen strtod atof strtol atol sin cos asin sqrt], [], [AC_MSG_ERROR([required functions missing])])
+AC_CHECK_FUNCS([strncasecmp], [], [AC_CHECK_FUNCS([strnicmp],[],[AC_MSG_ERROR([required functions missing])])])
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

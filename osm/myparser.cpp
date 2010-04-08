@@ -6,6 +6,15 @@
 #include <cstdlib>
 #include <cstring>
 #include <stdexcept>
+#include "config.h"
+
+#if  defined(HAVE_STRNCASECMP) 
+#define STRNCASECMP strncasecmp
+#elif defined(HAVE_STRNICMP)
+#defined STRNCASECMP strnicmp
+#else
+#error No strncasecmp or strnicmp function available
+#endif
 
 namespace osmparser {
   

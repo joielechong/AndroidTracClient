@@ -256,12 +256,18 @@ print BATCH "spumux -s0 $prefix_out/\$1.id.xml | ";
 print BATCH "spumux -s1 $prefix_out/\$1.tc.xml > $prefix_out/\$1.mpg\n";
 print BATCH "}\n\n";
 
-print BATCH "#! /bin/sh\n";
 print BATCH "function call_ffmpeg1()\n";
 print BATCH "{\n";
 print BATCH "	ffmpeg -v 0 -i $prefix_in1/\$2/\$1  -target pal-dvd -aspect 4:3 -vb 9000k -ab 384k -ac 2 - | ";
 print BATCH "spumux -s0 $prefix_out/\$1.id.xml | ";
 print BATCH "spumux -s1 $prefix_out/\$1.tc.xml > $prefix_out/\$1.mpg\n";
+print BATCH "}\n\n";
+
+print BATCH "function call_ffmpeg2()\n";
+print BATCH "{\n";
+print BATCH "	ffmpeg -v 0 -i \$2/\$1  -target pal-dvd -aspect 4:3 -vb 9000k -ab 384k -ac 2 - | ";
+print BATCH "spumux -s0 $prefix_out/\$2.id.xml | ";
+print BATCH "spumux -s1 $prefix_out/\$2.tc.xml > $prefix_out/\$1.mpg\n";
 print BATCH "}\n\n";
 
 print BATCH "function call_mkmenu()\n";
