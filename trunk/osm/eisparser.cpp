@@ -139,7 +139,7 @@ namespace eisparser {
 	  _eistext.replace(c,1,"&amp;");
 	  c = _eistext.find("&",c+4);
 	}
-	cout <<"<TR><TD>" << _eis << "</TD><TD>" << _eistitel.raw() << "</TD><TD> " << _eistext.raw() <<"</TD><TD>" << _eistrack.raw() <<"</TD></TR>" <<endl;
+	cout <<"<TR><TD>" << _eis << "</TD><TD>" << _eistitel << "</TD><TD> " << _eistext <<"</TD><TD>" << _eistrack <<"</TD></TR>" <<endl;
 	_eis = "";
       }
       _state = 0;
