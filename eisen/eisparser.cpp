@@ -61,12 +61,13 @@ namespace eisparser {
       }
       break;
       
+    case 5:
     case 6:
       if (_eis == "") 
 	_state = 7;
       else {
 	_eistitel += text;
-	_state--;
+	_state = 5;
       }
       break;
 
@@ -194,8 +195,7 @@ namespace eisparser {
 	c = _eistext.find("&",c+4);
       }
       */
-      string t = Glib::strescape(_eistext);
-      cout <<"<TR><TD>" << _eis.raw() << "</TD><TD>" << _eistitel.raw() << "</TD><TD> " << t <<"</TD><TD>" << _eistrack <<"</TD></TR>" <<endl;
+      cout <<"<TR><TD>" << _eis << "</TD><TD>" << Glib::strescape(_eistitel) << "</TD><TD> " << Glib::strescape(_eistext) <<"</TD><TD>" << _eistrack <<"</TD></TR>" <<endl;
       _eis = "";
       _eistitel = "";
       _eistext = "";
