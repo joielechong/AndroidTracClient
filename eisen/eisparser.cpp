@@ -195,7 +195,7 @@ namespace eisparser {
 	c = _eistext.find("&",c+4);
       }
       */
-      cout <<"<TR><TD>" << _eis << "</TD><TD>" << Glib::strescape(_eistitel) << "</TD><TD> " << Glib::strescape(_eistext) <<"</TD><TD>" << _eistrack <<"</TD></TR>" <<endl;
+      cout <<"<TR><TD>" << _eis << "</TD><TD>" << Glib::strcompress(Glib::strescape(_eistitel)) << "</TD><TD> " << Glib::strcompress(Glib::strescape(_eistext)) <<"</TD><TD>" << _eistrack <<"</TD></TR>" <<endl;
       _eis = "";
       _eistitel = "";
       _eistext = "";
