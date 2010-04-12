@@ -52,6 +52,7 @@ namespace osmparser {
 	if (iter->name == "id") {
 	  id = atol(iter->value.c_str());
 	  _lastid = id;
+          _prevnd = 0;
 	  _memcnt = 0;
 	  _ndcnt = 0;
 	} else if (iter->name == "version") {
@@ -120,7 +121,11 @@ namespace osmparser {
 	  }
 	} else if (name == "nd" ) {
 	  try {
-	    _con->createNd(_lastid,_ndcnt++,ref);
+            int seq = _ndcnt++;
+	    _con->createNd(_lastid,seq,ref);
+            if (seq > 0)
+              _con->createNeighbor(_last_id,_prevnd,ref);
+            _prevnd = ref;
 	  } catch (const std::exception &ex) {
 	    std::cerr << "createNd mislukt: "<<ex.what() << std::endl;
 	    std::cerr << "lastid = " << _lastid << " ndcnt = " << _ndcnt-1 << " ref = "<< ref << std::endl;
