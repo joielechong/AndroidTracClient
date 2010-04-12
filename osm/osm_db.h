@@ -40,7 +40,7 @@ namespace osm_db {
     inline void commit() { _trans->commit();_in_transaction=0;}
     void executenonquery(std::string query,bool rep=true);
 
-    void getCounts(long &nodes,long &ways,long &rel, long &bounds, long &tags,long &nds, long &mems);
+    void getCounts(long &nodes,long &ways,long &rel, long &bounds, long &tags,long &nds, long &mems, long &nbs);
     void getNode(const long id,int &version,double &lat,double &lon,int &x,int &y);
     void getWay(const long id,int &version);
     void getRelation(const long id,int &version);

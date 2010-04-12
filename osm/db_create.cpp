@@ -41,7 +41,7 @@ namespace osm_db {
     }
     _createTag = new sqlite3_command(*_sql,"INSERT INTO tag (id,type,k,v) VALUES(?,?,?,?)");
     _createNd = new sqlite3_command(*_sql,"INSERT INTO nd (id,seq,ref) VALUES(?,?,?)");
-    _createNeighbour = new sqlite3_command(*_sql,"INSERT INTO nd (way,id1,id2,distance) SELECT inp.way,inp.id1.inp.id2,osmdistance(nd1.lat,nd1.lon,nd2.lat,nd2.lon) FROM (SELECT ? as way,? as id1, ? as id2) as inp,node as nd1,node as nd2 WHERE inp.id1=nd1.id AND inp.id2=nd2.id");
+    _createNeighbour = new sqlite3_command(*_sql,"INSERT INTO neighbor (way,id1,id2,distance) SELECT inp.way,inp.id1,inp.id2,osmdistance(nd1.lat,nd1.lon,nd2.lat,nd2.lon) FROM (SELECT ? as way,? as id1, ? as id2) as inp,node as nd1,node as nd2 WHERE inp.id1=nd1.id AND inp.id2=nd2.id");
     _createMember = new sqlite3_command(*_sql,"INSERT INTO member (id,seq,ref,type,role) VALUES(?,?,?,?,?)");
   }
   
