@@ -28,6 +28,7 @@ namespace osm_db {
     void createTag(long id,std::string type,std::string k,std::string v);
     void createNd(long id,int seq,long ref);
     void createMember(long id,int seq,long ref,std::string type,std::string role);
+    void createNeighbour(long way,int long id1,long id2);
 
     void createAdres(long nid,std::string type,std::string country,std::string ccity,std::string street,std::string housenumber,std::string postcode);
 
@@ -63,6 +64,7 @@ namespace osm_db {
     sqlite3x::sqlite3_command *_createNd;
     sqlite3x::sqlite3_command *_createMember;
     sqlite3x::sqlite3_command *_createAdres;
+    sqlite3x::sqlite3_command *_createNeighbour;
 
     sqlite3x::sqlite3_command *_getCounts;
     sqlite3x::sqlite3_command *_getNode;

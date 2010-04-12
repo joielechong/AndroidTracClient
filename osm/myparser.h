@@ -29,6 +29,7 @@ namespace osmparser {
     long _counter;
     osm_db::database *_con;
     long _lastid;
+    long _prevnd;
     std::string _type;
     int _memcnt,_ndcnt;
   };
