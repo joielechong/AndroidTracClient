@@ -48,6 +48,12 @@ namespace osm_db {
     sqlite3_create_function(_sql->db(),"osmdistance",4,SQLITE_ANY,NULL,osmdistance,NULL,NULL);
     sqlite3_create_function(_sql->db(),"int",1,SQLITE_ANY,NULL,osmint,NULL,NULL);
 
+    _tempnodes = 0;
+    _tempways = 0;
+    _temprelations = 0;
+  }
+
+  void database::initTemp() {
     sqlite3_command *s = new sqlite3_command(*_sql,"SELECT (SELECT min(id) FROM node) AS node, (SELECT min(id) FROM way) AS way,(SELECT min(id) FROM relation) AS relation");
     sqlite3_cursor cur(s->executecursor());
     if (cur.step()) {

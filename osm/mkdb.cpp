@@ -20,39 +20,28 @@ int main(int argc, char* argv[])
   Argument::StringArgument dbArg("-db","value",string("newosm.sqlite"),"SQLite database name");
   Argument::StringArgument schemaArg("-schema","value",string("schema.sqlite.txt"),"schema definition file");
   Argument::BooleanArgument updArg("-update","Update the database");
+  Argument::BooleanArgument postArg("-postonly","Perform only postprocessing on the database");
   Argument::BooleanArgument newArg("-new","Create new database");
   Argument::StringArgument fileArg("-file","value",string("-"),"Input file (- = stdin)");
   
-  Argument::ArgumentParser parser;
-  parser.addArgument(dbArg);
-  parser.addArgument(schemaArg);
-  parser.addArgument(newArg);  
-  parser.addArgument(updArg);  
-  parser.addArgument(fileArg);
-  list<string> extra = parser.parse(argc,argv);
+  Argument::ArgumentParser argparser;
+  argparser.addArgument(dbArg);
+  argparser.addArgument(schemaArg);
+  argparser.addArgument(newArg);  
+  argparser.addArgument(updArg);  
+  argparser.addArgument(postArg);  
+  argparser.addArgument(fileArg);
+  list<string> extra = argparser.parse(argc,argv);
   
   string filepath = fileArg.getValue();
   string dbname = dbArg.getValue();
   string schema = schemaArg.getValue();
   bool nieuw = newArg.getValue();
   bool update = updArg.getValue();
+  bool postonly = postArg.getValue();
 
   if (nieuw)
     unlink(dbname.c_str());
-
-/*  
-  cout << "argc = " << argc << endl;
-  if (argc > 2) {
-    filepath = argv[1];
-    dbname = argv[2];
-  } else {
-    if (argc > 1 )
-      filepath = argv[1]; //Allow the user to specify a different XML file to parse.
-    else 
-      filepath = "-";  // use stdin when no argument
-    dbname = "newosm.sqlite";
-  }
-*/
 
   try {
     database sql(dbname);
@@ -64,18 +53,21 @@ int main(int argc, char* argv[])
       sql.update(true);
     
     sql.initializeFill();
+    sql.initTemp();
     
-    // Parse the entire document in one go:
-    osmparser::MySaxParser parser;
-    parser.setDBconn(&sql);
-    //    parser.set_substitute_entities(true);
-
-    if (filepath == "-") {
-      parser.parse_stream(cin);
-    } else {
-      parser.parse_file(filepath);
+    if (nieuw || update) {
+      // Parse the entire document in one go:
+      osmparser::MySaxParser osmparser;
+      osmparser.setDBconn(&sql);
+      //    osmparser.set_substitute_entities(true);
+      
+      if (filepath == "-") {
+	osmparser.parse_stream(cin);
+      } else {
+	osmparser.parse_file(filepath);
+      }
     }
-    if (!update) {
+    if (nieuw || postonly) {
       cout << "Starting postprocessing" << endl;
       sql.postprocess();
     }
