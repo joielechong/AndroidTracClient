@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
   osm_db::database sql(dbname);
   if (interp != 0 || intpall) 
     sql.initializeFill();
-
+  sql.initTemp();
   osm::Map map(&sql,cachesize);
 
   /*

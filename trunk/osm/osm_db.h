@@ -18,6 +18,7 @@ namespace osm_db {
     void setupSchemas(const char *filename);
     inline void setupSchemas(const std::string s) {setupSchemas(s.c_str());}
     void initializeFill();
+    void initTemp();
     void postprocess();
     inline void update(bool mode) {_update = mode;};
 	
