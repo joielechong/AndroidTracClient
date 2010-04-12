@@ -10,7 +10,7 @@ namespace osm_db {
   using namespace std;
   using namespace sqlite3x;
   
-  void database::getCounts(long &nodes,long &ways,long &rels, long &bounds, long &tags,long &nds, long &mems) {
+  void database::getCounts(long &nodes,long &ways,long &rels, long &bounds, long &tags,long &nds, long &mems, long &nbs) {
     if (_getCounts == NULL) 
       _getCounts = new sqlite3_command(*_sql,"SELECT * FROM counts");
     sqlite3_cursor cur(_getCounts->executecursor());
@@ -22,6 +22,7 @@ namespace osm_db {
     tags = cur.getint64(4);
     nds = cur.getint64(5);
     mems = cur.getint64(6);
+    nbs = cur.getint64(7);
   }
   
   void database::getNode(long id,int &version,double &lat,double &lon, int&x, int &y) {

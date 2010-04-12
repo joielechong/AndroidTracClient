@@ -19,9 +19,9 @@
 namespace osmparser {
   
   void MySaxParser::printCounts() { 
-    long nodes,ways,rels,bounds,tags,nds,mems; 
-    _con->getCounts(nodes,ways,rels,bounds,tags,nds,mems); 
-    std::cout << _counter << ": " << nodes << " nodes " << ways << " ways " << rels << " relations " << tags << " tags " << nds << " nds " << mems << " members" << std::endl; 
+    long nodes,ways,rels,bounds,tags,nds,mems,nbs; 
+    _con->getCounts(nodes,ways,rels,bounds,tags,nds,mems,nbs); 
+    std::cout << _counter << ": " << nodes << " nodes " << ways << " ways " << rels << " relations " << tags << " tags " << nds << " nds " << mems << " members " << nbs << " neighbours" << std::endl; 
   }
   
   void MySaxParser::on_start_document() {
@@ -124,7 +124,7 @@ namespace osmparser {
             int seq = _ndcnt++;
 	    _con->createNd(_lastid,seq,ref);
             if (seq > 0)
-              _con->createNeighbor(_last_id,_prevnd,ref);
+              _con->createNeighbour(_lastid,_prevnd,ref);
             _prevnd = ref;
 	  } catch (const std::exception &ex) {
 	    std::cerr << "createNd mislukt: "<<ex.what() << std::endl;
