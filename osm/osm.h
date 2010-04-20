@@ -31,7 +31,7 @@ namespace osm {
     Element();
     Element(long id,int version);
     Element(string id,string version);
-    ~Element();
+    virtual ~Element();
     
     inline long id() const { return _id;}
     inline int version() const { return _version;}
@@ -193,7 +193,6 @@ namespace osm {
     T *_bottom;
     osm_db::database *_con;
     unsigned long _size;
-    
   };
 
   class Map {
@@ -208,11 +207,15 @@ namespace osm {
     void InterpolatedAddresses(Way &w);
     inline void InterpolatedAddresses(long id) {InterpolatedAddresses(_ways[id]);}
     osm::Node& Address(const string country,const string city,const string street,const string housenumber,const string postcode) const;
+    double distance(Node &n1,Node &n2);
+    inline double distance(const long n1,const long n2) {return distance(_nodes[n1],_nodes[n2]);}
+    double cost(Node &n1,Node &n2);
+    inline double cost(const long n1,const long n2) {return cost(_nodes[n1],_nodes[n2]);}
+    
 
     inline void findNode(const double latinp,const double loninp,const double diff,std::vector<long> &id,std::vector<double> &lat,std::vector<double> &lon,std::vector<double> &distance) { _con->findNode(latinp,loninp,diff,id,lat,lon,distance);}
     bool insideRelation(long relationid,long nodeid);
     void findAdmin(const string querystring,std::vector<string> &naam,std::vector<int> &level);
-
 
   private:
     osm_db::database *_con;
@@ -221,7 +224,6 @@ namespace osm {
     Cache<Node> _nodes;
     Cache<Way> _ways;
     Cache<Relation> _relations;
-
   };
 }
 

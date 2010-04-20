@@ -33,42 +33,11 @@ int main(int argc, char *argv[]) {
   bool intpall = intpallArg.getValue();
 
   osm_db::database sql(dbname);
-  if (interp != 0 || intpall) 
-    sql.initializeFill();
+  sql.initializeFill();
   sql.initTemp();
   osm::Map map(&sql,cachesize);
 
-  /*
-  for(long i=123357;i<123370;i++) {
-    try {
-      osm::Node n=map.nodes()[i];
-      cout << n << endl;
-    } catch (const range_error &ex) {
-      cout << "Exception "<<ex.what()<<endl;
-    }
-  }
-
-  for(long i=123357;i<123400;i++) {
-    try {
-      osm::Node n=map.nodes()[i];
-      cout << n << endl;
-    } catch (const range_error &ex) {
-      cout << "Exception "<<ex.what()<<endl;
-    }
-  }
-
-  for(long i=123399;i>=123357;i--) {
-    try {
-      osm::Node n=map.nodes()[i];
-      cout << n << endl;
-    } catch (const range_error &ex) {
-      cout << "Exception "<<ex.what()<<endl;
-    }
-  }
-  */
-
   if (query != "invalid") {
-    
     std::vector<string> naam;
     std::vector<int> level;
     cout <<query <<endl;

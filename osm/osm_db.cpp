@@ -13,7 +13,7 @@ namespace osm_db {
   using namespace std;
   using namespace sqlite3x;
   
-#include "myfuncs.c"
+#include "myfuncs.h"
 
   database::database(string naam) {
     _sql = new sqlite3_connection(naam);

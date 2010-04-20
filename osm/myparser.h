@@ -3,12 +3,13 @@
 
 #include <libxml++/libxml++.h>
 #include <string>
+#include <stdbool.h>
 #include "osm_db.h"
 
 namespace osmparser {
   class MySaxParser : public xmlpp::SaxParser {
   public:
-    inline MySaxParser() : xmlpp::SaxParser(), _depth(0),_counter(0), _lastid(0), _memcnt(0), _ndcnt(0) {}
+    inline MySaxParser() : xmlpp::SaxParser(), _depth(0),_counter(0), _lastid(0), _memcnt(0), _ndcnt(0), _is_highway(false) {}
     inline virtual ~MySaxParser() {};
     
     inline int getDepth() {return _depth;}
@@ -31,7 +32,9 @@ namespace osmparser {
     long _lastid;
     long _prevnd;
     std::string _type;
-    int _memcnt,_ndcnt;
+    int _memcnt;
+    int _ndcnt;
+    bool _is_highway;
   };
 }
 #endif //_MYPARSER_H
