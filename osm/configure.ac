@@ -7,6 +7,7 @@ AM_INIT_AUTOMAKE(osm,0.1)
 AC_CONFIG_SRCDIR([mkdb.cpp])
 AC_CONFIG_HEADERS([config.h])
 AC_LANG([C++])
+AC_CONFIG_MACRO_DIR([m4])
 
 # Checks for programs.
 AC_PROG_CC
@@ -18,7 +19,6 @@ AC_PROG_LIBTOOL
 AC_PROG_AWK
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_PROG_RANLIB
 
 # Checks for libraries.
 PKG_CHECK_MODULES(XML, libxml++-2.6 >= 2.10.0 glibmm-2.4 >= 2.23.3)
@@ -33,7 +33,7 @@ AC_SUBST(OSM_LIBS)
 PKG_CHECK_MODULES(ARG, ArgV)
 AC_SUBST(ARG_CFLAGS)
 AC_SUBST(ARG_LIBS)
-AC_CHECK_LIB([m], [main], [], [AC_MSG_ERROR([libm missing])])
+AC_CHECK_LIB([m], [main], [], [AC_MSG_ERROR([strange!! libm missing])])
 
 # Checks for header files.
 AC_HEADER_STDC
