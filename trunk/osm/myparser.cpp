@@ -127,7 +127,7 @@ namespace osmparser {
 	  try {
             int seq = _ndcnt++;
 	    _con->createNd(_lastid,seq,ref);
-            _ndlist.push_pack(ref);
+            _ndlist.push_back(ref);
             if (seq > 0 && _is_highway)
             _prevnd = ref;
 	  } catch (const std::exception &ex) {
@@ -147,7 +147,7 @@ namespace osmparser {
     if (_depth == 2) {
       if (name == "way") {
         if (_is_highway) {
-          for (unisigned int i=+;i<_ndlist.size();i++) 
+          for (unsigned int i=1;i<_ndlist.size();i++) 
           _con->createNeighbour(_lastid,_ndlist[i-1],_ndlist[i]);
         }
         _ndlist.clear();
