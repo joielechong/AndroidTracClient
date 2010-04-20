@@ -1,7 +1,9 @@
-
+AM_CXXFLAGS=
+AM_CFLAGS=
 SHELL=/bin/sh
 
-INCLUDES=-O2 -Wall -ggdb $(DEPS_CFLAGS) $(OSM_CFLAGS) $(ARG_CFLAGS)
+#INCLUDES=-O0 -Wall -ggdb $(DEPS_CFLAGS) $(OSM_CFLAGS) $(ARG_CFLAGS)
+INCLUDES=-O2 -Wall -ggdb 
 
 SUFFIXES=".cpp .o"
 
@@ -12,11 +14,17 @@ bin_PROGRAMS=mkdb \
 mkdb_SOURCES=mkdb.cpp \
 	     myparser.cpp \
 	     osm_db.h \
-             myparser.h 
+             myparser.h \
+             grootcirkel.h \
+             myfunc.h \
+	     osmapi.cpp \
+	     osmapi.h
 
-mkdb_LDADD=$(DEPS_LIBS) -losm $(OSM_LIBS) $(ARG_LIBS) 
+mkdb_LDADD=$(XML_LIBS) -losm $(OSM_LIBS) $(ARG_LIBS) $(SOCK_LIBS)
+mkdb_CPPFLAGS=$(OSM_CFLAGS) $(ARG_CFLAGS) $(XML_CFLAGS) $(SOCK_CFLAGS)
 
 osmtest_LDADD=-losm $(OSM_LIBS) $(ARG_LIBS)
+osmtest_CPPDLAGS=$(OSM_CFLAGS) $(ARG_CFLAGS)
 osmtest_SOURCES=osmtest.cpp \
 		osm.h \
 		osm_db.h
@@ -28,7 +36,8 @@ lib_LTLIBRARIES = libosm.la \
 
 libosm_la_LDFLAGS = -version-info 0:1:0
 libosm_la_LIBADD=$(OSM_LIBS)
-libosm_la_SOURCES = osm.cpp \
+libosm_la_CPPFLAGS=$(OSM_CFLAGS)
+libosm_la_SOURCES = element.cpp node.cpp way.cpp relation.cpp map.cpp \
 		    osm_db.cpp \
 		    osm_db_except.cpp \
 		    osm.h \
@@ -37,8 +46,11 @@ libosm_la_SOURCES = osm.cpp \
 		    db_getelements.cpp \
 		    interpol.cpp
 
-libosmsql_la_SOURCES = sqlosm.c
-libosmsql_la_LIBADD =-lm
+libosmsql_la_SOURCES = sqlosm.c \
+                       grootcirkel.h \
+                       myfunc.h
+
+libosmsql_la_LIBADD = -lm
 libosmsql_la_LDFLAGS = -version-info 0:1:0
 
 include_HEADERS = osm_db.h \

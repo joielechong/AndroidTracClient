@@ -6,9 +6,12 @@
 #include <ArgumentParser.h>
 #include <StringArgument.h>
 #include <BooleanArgument.h>
+#include <SocketHandler.h>
+#include <StdoutLog.h>
 
 #include "myparser.h"
 #include "osm_db.h"
+#include "osmapi.h"
 
 using namespace std;
 using namespace osm_db;
@@ -20,7 +23,8 @@ int main(int argc, char* argv[])
   Argument::StringArgument dbArg("-db","value",string("newosm.sqlite"),"SQLite database name");
   Argument::StringArgument schemaArg("-schema","value",string("schema.sqlite.txt"),"schema definition file");
   Argument::BooleanArgument updArg("-update","Update the database");
-  Argument::BooleanArgument postArg("-postonly","Perform only postprocessing on the database");
+  Argument::StringArgument apiArg("-api","value",string(""),"API request e.g. node/nodeid");
+  Argument::BooleanArgument postArg("-post","Perform postprocessing on the database");
   Argument::BooleanArgument newArg("-new","Create new database");
   Argument::StringArgument fileArg("-file","value",string("-"),"Input file (- = stdin)");
   
@@ -29,6 +33,7 @@ int main(int argc, char* argv[])
   argparser.addArgument(schemaArg);
   argparser.addArgument(newArg);  
   argparser.addArgument(updArg);  
+  argparser.addArgument(apiArg);  
   argparser.addArgument(postArg);  
   argparser.addArgument(fileArg);
   list<string> extra = argparser.parse(argc,argv);
@@ -39,6 +44,7 @@ int main(int argc, char* argv[])
   bool nieuw = newArg.getValue();
   bool update = updArg.getValue();
   bool postonly = postArg.getValue();
+  string apistr = apiArg.getValue();
 
   if (nieuw)
     unlink(dbname.c_str());
@@ -61,7 +67,19 @@ int main(int argc, char* argv[])
       osmparser.setDBconn(&sql);
       //    osmparser.set_substitute_entities(true);
       
-      if (filepath == "-") {
+      if (apistr != "") {
+	string buf;
+	
+	SocketHandler h(NULL);
+	osmapi::osmapiSocket sock(h, apistr);
+	h.Add(&sock);
+	while (h.GetCount()) {
+	  h.Select(1, 0);
+	}
+	buf = sock.GetData();
+	//	cout << buf;
+	osmparser.parse_memory(buf);
+      } else if (filepath == "-") {
 	osmparser.parse_stream(cin);
       } else {
 	osmparser.parse_file(filepath);

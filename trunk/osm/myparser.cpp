@@ -55,6 +55,7 @@ namespace osmparser {
           _prevnd = 0;
 	  _memcnt = 0;
 	  _ndcnt = 0;
+	  _is_highway = false;
 	} else if (iter->name == "version") {
 	  version = atol(iter->value.c_str());
 	} else if (iter->name == "lat") {
@@ -111,6 +112,8 @@ namespace osmparser {
 		 strncmp(k.c_str(),"note",4) == 0 ||
 		 strncasecmp(k.c_str(),"opengeo",7) == 0)) {
 	    _con->createTag(_lastid,_type,k,v);
+	    if ((k == "highway") || k == "boundary" || (k == "route" && v == "ferry") || (k=="natural" && v=="coastline"))
+	      _is_highway = true;
 	  }
 	} else if (name == "member") {
 	  try {
@@ -123,7 +126,7 @@ namespace osmparser {
 	  try {
             int seq = _ndcnt++;
 	    _con->createNd(_lastid,seq,ref);
-            if (seq > 0)
+            if (seq > 0 && _is_highway)
               _con->createNeighbour(_lastid,_prevnd,ref);
             _prevnd = ref;
 	  } catch (const std::exception &ex) {
