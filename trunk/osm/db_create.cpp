@@ -19,8 +19,15 @@ namespace osm_db {
     while (schema.good()) {
       schema.getline(regel,2047);
       //      cout << regel << endl;
-      if (strncmp(regel,"DROP",4) != 0 && strlen(regel) > 0) {
-	executenonquery(regel,false);
+      if (strlen(regel) > 0) {
+	try {
+	  executenonquery(regel,false);
+	} catch (const sqlite3x::database_error& ex) {
+	  if (strncmp(regel,"DROP",4) != 0) {
+	    cout << "Exception in sqlite: " << ex.what() <<endl;
+	    throw osm_db_error("Database error na commando: %s",regel);
+ 	  }
+	}
       }
     }
     schema.close();  
