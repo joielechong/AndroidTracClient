@@ -87,6 +87,7 @@ namespace osmparser {
       _con->createNode(id,version,lat,lon);
       } else if (name == "way") {
 	_con->createWay(id,version);
+        _ndlist.clear();
       } else if (name == "relation") {
 	_con->createRelation(id,version);
       } else if (name == "bounds" || name == "bound") {
@@ -126,8 +127,8 @@ namespace osmparser {
 	  try {
             int seq = _ndcnt++;
 	    _con->createNd(_lastid,seq,ref);
+            _ndlist.push_pack(ref);
             if (seq > 0 && _is_highway)
-              _con->createNeighbour(_lastid,_prevnd,ref);
             _prevnd = ref;
 	  } catch (const std::exception &ex) {
 	    std::cerr << "createNd mislukt: "<<ex.what() << std::endl;
@@ -143,8 +144,16 @@ namespace osmparser {
   
   void MySaxParser::on_end_element(const Glib::ustring& name) {
     //  std::cout << "on_end_element()" << std::endl;
-    if (_depth == 2) 
+    if (_depth == 2) {
+      if (name == "way") {
+        if (_is_highway) {
+          for (unisigned int i=+;i<_ndlist.size();i++) 
+          _con->createNeighbour(_lastid,_ndlist[i-1],_ndlist[i]);
+        }
+        _ndlist.clear();
+      }
       _lastid = 0;
+    }
     _depth--;
     _counter++;
     if ((_counter%10000) == 0) {
