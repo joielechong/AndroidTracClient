@@ -95,6 +95,9 @@ int main(int argc, char* argv[])
   } catch (const sqlite3x::database_error& ex) {
     cout << "Exception in sqlite: " << ex.what() <<endl;
     return 1;
+  } catch (const osm_db_error& ex) {
+    cout << "Exception in osm_db: " << ex.what() <<endl;
+    return 1;
   } catch (const Glib::ustring &ex) {
     cout << "Exception in parser: " << ex <<endl;
   } catch (const std::exception *ex) {
