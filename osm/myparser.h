@@ -4,6 +4,7 @@
 #include <libxml++/libxml++.h>
 #include <string>
 #include <stdbool.h>
+#include <vector>
 #include "osm_db.h"
 
 namespace osmparser {
@@ -35,6 +36,7 @@ namespace osmparser {
     int _memcnt;
     int _ndcnt;
     bool _is_highway;
+    std::vector<long> _ndlist;
   };
 }
 #endif //_MYPARSER_H
