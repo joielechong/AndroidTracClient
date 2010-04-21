@@ -1,7 +1,9 @@
 AM_CXXFLAGS=
 AM_CFLAGS=
 SHELL=/bin/sh
-ACLOCAL_AMFLAGS=-I m4
+ACLOCAL_AMFLAGS=-I m4 -I gnum4
+SUBDIRS=gnulib
+EXTRA_DIST=gnum4/gnulib-cache.m4
 
 #INCLUDES=-O0 -Wall -ggdb $(DEPS_CFLAGS) $(OSM_CFLAGS) $(ARG_CFLAGS)
 INCLUDES=-O2 -Wall -ggdb 
@@ -36,7 +38,7 @@ lib_LTLIBRARIES = libosm.la \
 		  libosmsql.la
 
 libosm_la_LDFLAGS = -version-info 0:1:0
-libosm_la_LIBADD=$(OSM_LIBS)
+libosm_la_LIBADD=$(OSM_LIBS) $(ASIN_LIBM) $(COS_LIBM) $(POW_LIB) $(POW_LIBM) $(SIN_LIBM) $(SQRT_LIBM)
 libosm_la_CPPFLAGS=$(OSM_CFLAGS)
 libosm_la_SOURCES = element.cpp node.cpp way.cpp relation.cpp map.cpp \
 		    osm_db.cpp \
@@ -51,7 +53,8 @@ libosmsql_la_SOURCES = sqlosm.c \
                        grootcirkel.h \
                        myfunc.h
 
-libosmsql_la_LIBADD = -lm
+libosmsql_la_LIBADD = -lm $(ASIN_LIBM) $(COS_LIBM) $(POW_LIB) $(POW_LIBM) $(SIN_LIBM) $(SQRT_LIBM)
+
 libosmsql_la_LDFLAGS = -version-info 0:1:0
 
 include_HEADERS = osm_db.h \

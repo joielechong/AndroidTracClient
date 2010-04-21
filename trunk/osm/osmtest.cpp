@@ -16,6 +16,7 @@ int main(int argc, char *argv[]) {
   Argument::DoubleArgument cacheArg("-cs","positive-integer",1000,"Cache size");
   Argument::DoubleArgument interpolArg("-intp","positive-integer",0,"Wegnummer voor interpolatie");
   Argument::BooleanArgument intpallArg("-intpall","Interpolate alles");
+  Argument::BooleanArgument helpArg("-help","Help on usage");
   Argument::StringArgument addrArg("-adres","value",string("invalid"),"SQLite where clause");
   Argument::ArgumentParser parser;
   parser.addArgument(dbArg);
@@ -23,6 +24,7 @@ int main(int argc, char *argv[]) {
   parser.addArgument(interpolArg);
   parser.addArgument(intpallArg);
   parser.addArgument(addrArg);
+  parser.addArgument(helpArg);
   list<string> extra = parser.parse(argc,argv);
   list<string>::iterator it;
 
@@ -31,6 +33,12 @@ int main(int argc, char *argv[]) {
   string query = addrArg.getValue();
   long interp = interpolArg.getValue();
   bool intpall = intpallArg.getValue();
+  bool help = helpArg.getValue();
+
+  if (help) {
+    parser.printUsage(cout);
+    return 0;
+  }
 
   osm_db::database sql(dbname);
   sql.initializeFill();

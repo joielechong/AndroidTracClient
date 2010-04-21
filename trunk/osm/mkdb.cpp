@@ -1,3 +1,4 @@
+#include "osm_db.h"
 #include <cstring>
 #include <glibmm/ustring.h>
 #include <fstream>
@@ -10,7 +11,6 @@
 #include <StdoutLog.h>
 
 #include "myparser.h"
-#include "osm_db.h"
 #include "osmapi.h"
 
 using namespace std;
@@ -23,8 +23,9 @@ int main(int argc, char* argv[])
   Argument::StringArgument dbArg("-db","value",string("newosm.sqlite"),"SQLite database name");
   Argument::StringArgument schemaArg("-schema","value",string("schema.sqlite.txt"),"schema definition file");
   Argument::BooleanArgument updArg("-update","Update the database");
-  Argument::StringArgument apiArg("-api","value",string(""),"API request e.g. node/nodeid");
+  Argument::StringArgument apiArg("-api","value",string(""),"online API request e.g. node/nodeid");
   Argument::BooleanArgument postArg("-post","Perform postprocessing on the database");
+  Argument::BooleanArgument helpArg("-help","Help on usage");
   Argument::BooleanArgument newArg("-new","Create new database");
   Argument::StringArgument fileArg("-file","value",string("-"),"Input file (- = stdin)");
   
@@ -33,9 +34,10 @@ int main(int argc, char* argv[])
   argparser.addArgument(schemaArg);
   argparser.addArgument(newArg);  
   argparser.addArgument(updArg);  
-  argparser.addArgument(apiArg);  
   argparser.addArgument(postArg);  
   argparser.addArgument(fileArg);
+  argparser.addArgument(apiArg);  
+  argparser.addArgument(helpArg);  
   list<string> extra = argparser.parse(argc,argv);
   
   string filepath = fileArg.getValue();
@@ -44,8 +46,14 @@ int main(int argc, char* argv[])
   bool nieuw = newArg.getValue();
   bool update = updArg.getValue();
   bool postonly = postArg.getValue();
+  bool helponly = helpArg.getValue();
   string apistr = apiArg.getValue();
 
+  if (helponly) {
+    argparser.printUsage(cout);
+    return 0;
+  }
+  
   if (nieuw)
     unlink(dbname.c_str());
 

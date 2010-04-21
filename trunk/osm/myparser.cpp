@@ -1,6 +1,6 @@
+#include "osm_db.h"
 #include "myparser.h"
 #include <iostream>
-#include "osm_db.h"
 #include <string>
 #include <glibmm/ustring.h>
 #include <cstdlib>
