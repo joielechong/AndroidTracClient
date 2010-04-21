@@ -1,6 +1,7 @@
 #ifndef _OSM_H
 #define _OSM_H
 
+#include "config.h"
 #include <vector>
 #include <string>
 #include "osm_db.h"

@@ -1,6 +1,7 @@
 #ifndef _OSM_DB_H
 #define _OSM_DB_H
 
+#include "config.h"
 #include <string>
 #include <sqlite3x.hpp>
 #include <sqlite3.h>

@@ -11,6 +11,7 @@ AC_CONFIG_MACRO_DIR([m4])
 
 # Checks for programs.
 AC_PROG_CC
+gl_EARLY
 AC_PROG_CXX
 AC_PROG_CPP
 AC_PROG_CXXCPP
@@ -19,6 +20,8 @@ AC_PROG_LIBTOOL
 AC_PROG_AWK
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
+
+gl_INIT
 
 # Checks for libraries.
 PKG_CHECK_MODULES(XML, libxml++-2.6 >= 2.10.0 glibmm-2.4 >= 2.23.3)
@@ -49,5 +52,5 @@ AC_TYPE_SIZE_T
 AC_CHECK_FUNCS([unlink strncmp memset pow strlen strtod atof strtol atol sin cos asin sqrt], [], [AC_MSG_ERROR([required functions missing])])
 AC_CHECK_FUNCS([strncasecmp], [], [AC_CHECK_FUNCS([strnicmp],[],[AC_MSG_ERROR([required functions missing])])])
 
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile gnulib/Makefile])
 AC_OUTPUT
