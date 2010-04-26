@@ -18,24 +18,24 @@
 
 namespace osmparser {
   
-  void MySaxParser::printCounts() { 
+  void OSMParser::printCounts() { 
     long nodes,ways,rels,bounds,tags,nds,mems,nbs; 
     _con->getCounts(nodes,ways,rels,bounds,tags,nds,mems,nbs); 
     std::cout << _counter << ": " << nodes << " nodes " << ways << " ways " << rels << " relations " << tags << " tags " << nds << " nds " << mems << " members " << nbs << " neighbours" << std::endl; 
   }
   
-  void MySaxParser::on_start_document() {
+  void OSMParser::on_start_document() {
     //  std::cout << "on_start_document()" << std::endl;
     _con->begin();
   }
   
-  void MySaxParser::on_end_document() {
+  void OSMParser::on_end_document() {
     //  std::cout << "on_end_document()" << std::endl;
     _con->commit();
     printCounts();
   }
   
-  void MySaxParser::on_start_element(const Glib::ustring& name,const AttributeList& attributes) {
+  void OSMParser::on_start_element(const Glib::ustring& name,const AttributeList& attributes) {
     _depth++;
     //  std::cout << "node: name=" << name.c_str() << "(" << depth << ")" << std::endl;
     
@@ -142,7 +142,7 @@ namespace osmparser {
     }
   }
   
-  void MySaxParser::on_end_element(const Glib::ustring& name) {
+  void OSMParser::on_end_element(const Glib::ustring& name) {
     //  std::cout << "on_end_element()" << std::endl;
     if (_depth == 2) {
       if (name == "way") {

@@ -8,10 +8,10 @@
 #include "osm_db.h"
 
 namespace osmparser {
-  class MySaxParser : public xmlpp::SaxParser {
+  class OSMParser : public xmlpp::SaxParser {
   public:
-    inline MySaxParser() : xmlpp::SaxParser(), _depth(0),_counter(0), _lastid(0), _memcnt(0), _ndcnt(0), _is_highway(false) {}
-    inline virtual ~MySaxParser() {};
+    inline OSMParser() : xmlpp::SaxParser(), _depth(0),_counter(0), _lastid(0), _memcnt(0), _ndcnt(0), _is_highway(false) {}
+    inline virtual ~OSMParser() {};
     
     inline int getDepth() {return _depth;}
     inline void setDBconn(osm_db::database *con) {_con=con;};

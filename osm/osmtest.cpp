@@ -13,12 +13,12 @@
 using namespace std;
 
 int main(int argc, char *argv[]) {
-  Argument::StringArgument dbArg("-db","value",string("osm.sqlite"),"SQLite database name");
-  Argument::DoubleArgument cacheArg("-cs","positive-integer",1000,"Cache size");
-  Argument::DoubleArgument interpolArg("-intp","positive-integer",0,"Wegnummer voor interpolatie");
+  Argument::StringArgument dbArg("-db","value","SQLite database name",string("osm.sqlite"));
+  Argument::DoubleArgument cacheArg("-cs","positive-integer","Cache size",1000L,false);
+  Argument::DoubleArgument interpolArg("-intp","positive-integer","Wegnummer voor interpolatie",0L);
   Argument::BooleanArgument intpallArg("-intpall","Interpolate alles");
   Argument::BooleanArgument helpArg("-help","Help on usage");
-  Argument::StringArgument addrArg("-adres","value",string("invalid"),"SQLite where clause");
+  Argument::StringArgument addrArg("-adres","value","SQLite where clause",false);
   Argument::ListArgument extraArg("arg","Extra argumenten",false);
   Argument::ArgumentParser parser;
 

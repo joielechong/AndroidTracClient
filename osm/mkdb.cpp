@@ -23,26 +23,24 @@ using namespace GZSTREAM_NAMESPACE;
 
 int main(int argc, char* argv[])
 {
-  Argument::StringArgument dbArg("-db","value",string("newosm.sqlite"),"\tSQLite database name");
-  Argument::StringArgument schemaArg("-schema","value",string(DATADIR)+string("/schema.sqlite.txt"),"schema definition file");
+  Argument::StringArgument dbArg("-db","value","\tSQLite database name",string("newosm.sqlite"),false);
+  Argument::StringArgument schemaArg("-schema","value","schema definition file",string(DATADIR)+string("/schema.sqlite.txt"),false);
   Argument::BooleanArgument updArg("-update","\tUpdate the database");
-  Argument::StringArgument apiArg("-api","value",string(""),"\tOnline API request e.g. node/nodeid");
+  Argument::StringArgument apiArg("-api","value","\tOnline API request e.g. node/nodeid",false);
   Argument::BooleanArgument fixArg("-fix","\t\tcompletes incomplete relations and ways (implied by -new)");
   Argument::BooleanArgument postArg("-post","\t\tPerform postprocessing on the database (implied by -new and -fix)");
   Argument::BooleanArgument helpArg("-help","\t\tHelp on usage");
   Argument::BooleanArgument newArg("-new","\t\tCreate new database");
-  Argument::ListArgument extraArg("file","\tFilename[s] to process (none or - implies stdin)");
+  Argument::ListArgument extraArg("file","\tFilename[s] to process (none or - implies stdin)",false);
 
-  Argument::ArgumentGroup modeGroup(Argument::ArgumentGroup::_EXCLUSIVE,true);
-  modeGroup.addArgument(newArg);
-  modeGroup.addArgument(updArg);
 
   Argument::ArgumentParser argparser;
 
   argparser.addArgument(helpArg);
+  argparser.addArgument(newArg);
+  argparser.addArgument(updArg);
   argparser.addArgument(dbArg);
   argparser.addArgument(schemaArg);
-  argparser.addArgument(modeGroup);  
   argparser.addArgument(fixArg);  
   argparser.addArgument(postArg);  
   argparser.addArgument(apiArg);  
@@ -106,7 +104,7 @@ int main(int argc, char* argv[])
     sql.initTemp();
     
     // Parse the entire document in one go:
-    osmparser::MySaxParser osmparser;
+    osmparser::OSMParser osmparser;
     osmparser.setDBconn(&sql);
     //    osmparser.set_substitute_entities(true);
     
@@ -141,6 +139,7 @@ int main(int argc, char* argv[])
       sql.setBoundaries();
     }
     if (fixup) {
+      fixup(osmparser);
     }
     
     
