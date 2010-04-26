@@ -25,6 +25,7 @@ namespace osm_db {
 	} catch (const sqlite3x::database_error& ex) {
 	  if (strncmp(regel,"DROP",4) != 0) {
 	    cout << "Exception in sqlite: " << ex.what() <<endl;
+	    std::cerr << "  errmsg = " << this->errmsg() << std::endl;
 	    throw osm_db_error("Database error na commando: %s",regel);
  	  }
 	}
@@ -38,17 +39,18 @@ namespace osm_db {
       _createNode = new sqlite3_command(*_sql,"INSERT OR REPLACE INTO node (id,version,lat,lon) VALUES (?,?,?,?)");
       _createWay = new sqlite3_command(*_sql,"INSERT OR REPLACE INTO way (id,version) VALUES (?,?)");
       _createRelation = new sqlite3_command(*_sql,"INSERT OR REPLACE INTO relation (id,version) VALUES (?,?)");
+      _createNeighbour = new sqlite3_command(*_sql,"INSERT OR REPLACE INTO neighbor (way,id1,id2,distance) SELECT inp.way,inp.id1,inp.id2,osmdistance(nd1.lat,nd1.lon,nd2.lat,nd2.lon) FROM (SELECT ? as way,? as id1, ? as id2) as inp,node as nd1,node as nd2 WHERE inp.id1=nd1.id AND inp.id2=nd2.id");
       _delTags = new sqlite3_command(*_sql,"DELETE FROM tag WHERE id=? AND type = ?");
       _delNds = new sqlite3_command(*_sql,"DELETE FROM nd WHERE id=?");
       _delMems = new sqlite3_command(*_sql,"DELETE FROM member WHERE id=?");
     } else {
       _createNode = new sqlite3_command(*_sql,"INSERT INTO node (id,version,lat,lon) VALUES (?,?,?,?)");
       _createWay = new sqlite3_command(*_sql,"INSERT INTO way (id,version) VALUES (?,?)");
+      _createNeighbour = new sqlite3_command(*_sql,"INSERT INTO neighbor (way,id1,id2,distance) SELECT inp.way,inp.id1,inp.id2,osmdistance(nd1.lat,nd1.lon,nd2.lat,nd2.lon) FROM (SELECT ? as way,? as id1, ? as id2) as inp,node as nd1,node as nd2 WHERE inp.id1=nd1.id AND inp.id2=nd2.id");
       _createRelation = new sqlite3_command(*_sql,"INSERT INTO relation (id,version) VALUES (?,?)");
     }
     _createTag = new sqlite3_command(*_sql,"INSERT INTO tag (id,type,k,v) VALUES(?,?,?,?)");
     _createNd = new sqlite3_command(*_sql,"INSERT INTO nd (id,seq,ref) VALUES(?,?,?)");
-    _createNeighbour = new sqlite3_command(*_sql,"INSERT INTO neighbor (way,id1,id2,distance) SELECT inp.way,inp.id1,inp.id2,osmdistance(nd1.lat,nd1.lon,nd2.lat,nd2.lon) FROM (SELECT ? as way,? as id1, ? as id2) as inp,node as nd1,node as nd2 WHERE inp.id1=nd1.id AND inp.id2=nd2.id");
     _createMember = new sqlite3_command(*_sql,"INSERT INTO member (id,seq,ref,type,role) VALUES(?,?,?,?,?)");
   }
   
@@ -68,6 +70,7 @@ namespace osm_db {
     } catch (sqlite3x::database_error &ex) {
       std::cerr << "Probleem bij aanmaken nieuwe node "<<id <<std::endl;
       std::cerr << "Exception  = " << ex.what() << std::endl;
+      std::cerr << "  errmsg = " << this->errmsg() << std::endl;
     }
   }
   
@@ -87,6 +90,7 @@ namespace osm_db {
     } catch (sqlite3x::database_error &ex) {
       std::cerr << "Probleem bij aanmaken nieuwe weg "<<id <<std::endl;
       std::cerr << "Exception  = " << ex.what() << std::endl;
+      std::cerr << "  errmsg = " << this->errmsg() << std::endl;
     }
   }
   
@@ -106,6 +110,7 @@ namespace osm_db {
     } catch (sqlite3x::database_error &ex) {
       std::cerr << "Probleem bij aanmaken nieuwe relatie "<<id <<std::endl;
       std::cerr << "Exception  = " << ex.what() << std::endl;
+      std::cerr << "  errmsg = " << this->errmsg() << std::endl;
     }
   }
   
@@ -119,6 +124,7 @@ namespace osm_db {
     } catch (sqlite3x::database_error &ex) {
       std::cerr << "Probleem bij aanmaken nieuwe tag voor "<<type<<":"<<id << " k = " <<k << " v = " <<v <<std::endl;
       std::cerr << "Exception  = " << ex.what() << std::endl;
+      std::cerr << "  errmsg = " << this->errmsg() << std::endl;
     }
   }
   
@@ -131,6 +137,7 @@ namespace osm_db {
     } catch (sqlite3x::database_error &ex) {
       std::cerr << "Probleem bij invoeren in tabel Nd("<<id<<","<<seq<<","<<ref<<")"<<std::endl;
       std::cerr << "Exception  = " << ex.what() << std::endl;
+      std::cerr << "  errmsg = " << this->errmsg() << std::endl;
       throw osm_db_error("node %ld bestaat niet",id);
     }
   }
@@ -142,9 +149,10 @@ namespace osm_db {
       _createNeighbour->bind(3,(sqlite3x::int64_t)id2);
       _createNeighbour->executenonquery();
     } catch (sqlite3x::database_error &ex) {
-      std::cerr << "Probleem bij invoeren in tabel Neighbour("<<way<<","<<id1<<","<<id2<<")"<<std::endl;
+      std::cerr << "Probleem bij invoeren in tabel neighbor("<<way<<","<<id1<<","<<id2<<")"<<std::endl;
       std::cerr << "Exception  = " << ex.what() << std::endl;
-      throw osm_db_error("weg %ld bestaat niet",way);
+      std::cerr << "  errmsg = " << this->errmsg() << std::endl;
+      //      throw osm_db_error("weg %ld bestaat niet",way);
     }
   }
   
@@ -159,6 +167,7 @@ namespace osm_db {
     }  catch (sqlite3x::database_error &ex) {
       std::cerr << "Probleem bij invoeren in tabel Member("<<id<<","<<seq<<","<<ref<<","<<role<<","<<type<<")"<<std::endl;
       std::cerr << "Exception  = " << ex.what() << std::endl;
+      std::cerr << "  errmsg = " << this->errmsg() << std::endl;
       throw osm_db_error("%s bestaat niet",type.c_str());
     }
   }
@@ -175,5 +184,10 @@ namespace osm_db {
     _createAdres->bind(6,housenumber);
     _createAdres->bind(7,postcode);
     _createAdres->executenonquery();
+  }
+
+  void database::setBoundaries() {
+    executenonquery("DELETE FROM bound");
+    executenonquery("INSERT INTO bound (minlat,maxlat,minlon,maxlon) SELECT min(lat),max(lat),min(lon),max(lon) FROM node,neighbor AS nb WHERE (NOT nb.distance IS NULL) AND (node.id=nb.id1 OR node.id=nb.id2)");
   }
 }

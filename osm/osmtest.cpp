@@ -8,6 +8,7 @@
 #include <StringArgument.h>
 #include <DoubleArgument.h>
 #include <BooleanArgument.h>
+#include <ListArgument.h>
 
 using namespace std;
 
@@ -18,15 +19,17 @@ int main(int argc, char *argv[]) {
   Argument::BooleanArgument intpallArg("-intpall","Interpolate alles");
   Argument::BooleanArgument helpArg("-help","Help on usage");
   Argument::StringArgument addrArg("-adres","value",string("invalid"),"SQLite where clause");
+  Argument::ListArgument extraArg("arg","Extra argumenten",false);
   Argument::ArgumentParser parser;
+
   parser.addArgument(dbArg);
   parser.addArgument(cacheArg);
   parser.addArgument(interpolArg);
   parser.addArgument(intpallArg);
   parser.addArgument(addrArg);
   parser.addArgument(helpArg);
-  list<string> extra = parser.parse(argc,argv);
-  list<string>::iterator it;
+  parser.addArgument(extraArg);
+  parser.parse(argc,argv);
 
   string dbname = dbArg.getValue();
   long cachesize = cacheArg.getValue();
@@ -34,6 +37,8 @@ int main(int argc, char *argv[]) {
   long interp = interpolArg.getValue();
   bool intpall = intpallArg.getValue();
   bool help = helpArg.getValue();
+  list<string> extra = extraArg.getValue();
+  list<string>::iterator it;
 
   if (help) {
     parser.printUsage(cout);
