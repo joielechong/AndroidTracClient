@@ -19,15 +19,15 @@ mkdb_SOURCES=mkdb.cpp \
 	     osm_db.h \
              myparser.h \
              grootcirkel.h \
-             myfunc.h \
 	     osmapi.cpp \
+             myfuncs.h \
 	     osmapi.h \
              gzstream.cpp \
              gzstream.h
 osmdatadir=$(datadir)/osm
 dist_osmdata_DATA=schema.sqlite.txt
 
-mkdb_LDADD=$(XML_LIBS) -lz -losm $(SQL_LIBS) $(ARG_LIBS) $(SOCK_LIBS) 
+mkdb_LDADD=$(XML_LIBS) -lz -losm $(SQL_LIBS) $(ARG_LIBS) $(SOCK_LIBS) $(ACOS_LIBM) $(ASIN_LIBM) $(COS_LIBM) $(SIN_LIBM) $(SQRT_LIBM) $(POW_LIBM)
 mkdb_CPPFLAGS=$(SQL_CFLAGS) $(ARG_CFLAGS) $(XML_CFLAGS) $(SOCK_CFLAGS) -DDATADIR=\"$(datadir)/osm\"
 
 osmtest_LDADD=-losm $(SQL_LIBS) $(ARG_LIBS)
@@ -51,13 +51,12 @@ libosm_la_SOURCES = element.cpp node.cpp way.cpp relation.cpp map.cpp \
 		    db_create.cpp \
 		    db_postprocess.cpp \
 		    db_getelements.cpp \
-                    db_fix.cpp \
 		    interpol.cpp
 
 libosmsql_la_LDFLAGS= $(ASIN_LIBM) $(COS_LIBM) $(POW_LIB) $(POW_LIBM) $(SIN_LIBM) $(SQRT_LIBM)
 libosmsql_la_SOURCES = sqlosm.c \
                        grootcirkel.h \
-                       myfunc.h
+                       myfuncs.h
 
 libosmsql_la_LIBADD = -lm $(ASIN_LIBM) $(COS_LIBM) $(POW_LIB) $(POW_LIBM) $(SIN_LIBM) $(SQRT_LIBM)
 

@@ -32,7 +32,6 @@ namespace osm_db {
     void createNeighbour(long way,int long id1,long id2);
     void createAdres(long nid,std::string type,std::string country,std::string ccity,std::string street,std::string housenumber,std::string postcode);
     void setBoundaries();
-    void fixup();
     inline const char *errmsg() { return sqlite3_errmsg(_sql->db());}
 
     inline long createTemporaryNode(double lat,double lon) {_tempnodes--;createNode(_tempnodes,0,lat,lon); return _tempnodes;}
@@ -56,9 +55,9 @@ namespace osm_db {
     void findAddress(const std::string querystring,std::vector<long> &nodeids,std::vector<double> &nodelats,std::vector<double> &nodelons);
     void findHouses(const long id,std::vector<long> &nodeids,std::vector<double> &nodelats,std::vector<double> &nodelons,std::vector<std::string> &countriesd,std::vector<std::string> &citiess,std::vector<std::string> &streets,std::vector<std::string> &housenumbers,std::vector<std::string> &postcodes);
     void getInterpolationWays(std::vector<long> &ids);
+    void getids(std::string &sqlcmd,std::vector<long> &ids);
 
   private: 
-    void fixup_badrelations();
 
     sqlite3x::sqlite3_connection *_sql;
     

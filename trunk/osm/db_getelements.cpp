@@ -42,13 +42,14 @@ namespace osm_db {
         throw std::range_error("Node does not exist");
       cur.close();
     } catch (const sqlite3x::database_error& ex) {
-      cout << "Exception in sqlite: " << ex.what() <<endl;
+      cerr << "Exception in sqlite: " << ex.what() <<endl;
+      cerr << "  errmsg = " << this->errmsg() << endl;
       throw osm_db_error("Node %d returned database error",id);
     }
   }
   
   void database::getWay(long id,int &version) {
-    std::cout << "getWay("<<id<<")"<<std::endl;
+    cout << "getWay("<<id<<")"<<endl;
     try {
       if (_getWay == NULL) 
         _getWay = new sqlite3_command(*_sql,"SELECT version FROM node  WHERE id = ?");
@@ -60,13 +61,14 @@ namespace osm_db {
 	version = -1;
       cur.close();
     } catch (const sqlite3x::database_error& ex) {
-      cout << "Exception in sqlite: " << ex.what() <<endl;
+      cerr << "Exception in sqlite: " << ex.what() <<endl;
+      cerr << "  errmsg = " << this->errmsg() << endl;
       version = -1;
     }
   }
   
   void database::getRelation(long id,int &version) {
-    std::cout << "getRelation("<<id<<")"<<std::endl;
+    cout << "getRelation("<<id<<")"<<endl;
     try {
       if (_getRelation == NULL) 
         _getRelation = new sqlite3_command(*_sql,"SELECT version FROM relation  WHERE id = ?");
@@ -79,12 +81,13 @@ namespace osm_db {
 	version = -1;
       cur.close();
     } catch (const sqlite3x::database_error& ex) {
-      cout << "Exception in sqlite: " << ex.what() <<endl;
+      cerr << "Exception in sqlite: " << ex.what() <<endl;
+      cerr << "  errmsg = " << this->errmsg() << endl;
       version = -1;
     }
   }
 
-  void database::getTags(long id,std::string type,std::vector<std::string> &k,std::vector<std::string> &v) {
+  void database::getTags(long id,string type,vector<string> &k,vector<string> &v) {
     if (_getTags == NULL) 
       _getTags = new sqlite3_command(*_sql,"SELECT k,v FROM  tag WHERE id=? and type = ?");
 
@@ -99,7 +102,7 @@ namespace osm_db {
     }
   }
 
-  void database::getNds(long id,std::vector<long> &ref) {
+  void database::getNds(long id,vector<long> &ref) {
     if (_getNds == NULL) 
       _getNds = new sqlite3_command(*_sql,"SELECT seq,ref FROM nd WHERE id=?");
 
@@ -118,7 +121,7 @@ namespace osm_db {
     }
   }
 
-  void database::getMembers(long id,std::vector<std::string> &type,std::vector<std::string> &role,std::vector<long> &ref) {
+  void database::getMembers(long id,vector<string> &type,vector<string> &role,vector<long> &ref) {
     if (_getMembers == NULL) 
       _getMembers = new sqlite3_command(*_sql,"SELECT seq,type,role,ref FROM member WHERE id=?");
 
@@ -146,7 +149,7 @@ namespace osm_db {
     }
   }
 
-  void database::findNode(const double latinp,const double loninp,const double diff,std::vector<long> &id,std::vector<double> &lat,std::vector<double> &lon,std::vector<double> &distance) {
+  void database::findNode(const double latinp,const double loninp,const double diff,vector<long> &id,vector<double> &lat,vector<double> &lon,vector<double> &distance) {
     if (_findNode == NULL)
       _findNode = new sqlite3_command(*_sql,"SELECT node.id,node.lat,node.lon,osmdistance(node.lat,node.lon,inp.lat,inp.lon) from node,(select ? as lat,? as lon,? as diff) as inp WHERE node.x IN (round((inp.lon+90)*20),round((inp.lon-inp.diff*2+90)*20),round((inp.lon+inp.diff*2+90)*20)) and node.y in (round((inp.lat+180)*20), round((inp.lat-inp.diff*2+180)*20),round((inp.lat+inp.diff*2+180)*20)) AND abs(node.lat-inp.lat) < inp.diff and abs(node.lon-inp.lon) < inp.diff order by 4");
 
@@ -167,7 +170,7 @@ namespace osm_db {
   }
   //  select nd.id,nd.seq,nd.ref from member,nd where member.id=162577 and member.type='way' and member.ref=nd.id and (nd.seq=0 or nd.seq = (select max(seq) from nd where id=member.ref));
 
-  void database::getRelCoords(long relationid, std::vector<double> &lat,std::vector<double> &lon) {
+  void database::getRelCoords(long relationid, vector<double> &lat,vector<double> &lon) {
     if (_getRelWays == NULL)
       _getRelWays = new sqlite3_command(*_sql,"SELECT member.ref,(SELECT ref FROM nd WHERE id=member.ref ORDER BY seq LIMIT 1) AS first,(SELECT ref FROM nd WHERE id=member.ref ORDER BY seq DESC LIMIT 1) AS last FROM member WHERE id=? AND type='way' ");
     if (_getWayAsc == NULL)
@@ -256,7 +259,7 @@ namespace osm_db {
       admlevel.push_back(cur.getint(2));
     }
   }
-  void database::findAddress(std::string querystring,std::vector<long> &nodeids,std::vector<double> &nodelats,std::vector<double> &nodelons){
+  void database::findAddress(string querystring,vector<long> &nodeids,vector<double> &nodelats,vector<double> &nodelons){
     sqlite3_command fa(*_sql,"SELECT node.id,lat,lon FROM adressen,node WHERE "+querystring+" AND adressen.type='node' AND adressen.id=node.id");
     sqlite3_cursor cur(fa.executecursor());
     while (cur.step()) {
@@ -294,10 +297,20 @@ namespace osm_db {
   }
 
   void database::getInterpolationWays(vector<long> &ids) {
-    sqlite3_command *s = new sqlite3_command(*_sql,"SELECT id FROM waytag WHERE k='addr:interpolation'");
-    sqlite3_cursor cur(s->executecursor());
+    sqlite3_command s(*_sql,"SELECT id FROM waytag WHERE k='addr:interpolation'");
+    sqlite3_cursor cur(s.executecursor());
     while (cur.step()) {
       ids.push_back(cur.getint64(0));
     } 
+  }
+
+  void database::getids(string &sqlcmd,vector<long> &ids) {
+    sqlite3_command getids(*_sql,sqlcmd);
+    sqlite3_cursor cur(getids.executecursor());
+
+    ids.clear();
+    while (cur.step())
+      ids.push_back(cur.getint64(0));
+    
   }
 }

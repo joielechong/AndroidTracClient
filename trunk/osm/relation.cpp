@@ -48,7 +48,8 @@ namespace osm {
 	_coordsLoaded = true;
       }
     } catch  (const osm_db::osm_db_error &ex) {
-      cout <<ex.what()<<endl;
+      cerr <<ex.what()<<endl;
+      cerr << "  errmsg = " << con->errmsg() << endl;
       return false;
     }
     int nvert = _lats.size();

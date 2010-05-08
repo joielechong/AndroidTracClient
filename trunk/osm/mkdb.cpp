@@ -1,5 +1,6 @@
 #include "osm_db.h"
 #include <cstring>
+#include <cstdio>
 #include <glibmm/ustring.h>
 #include <fstream>
 #include <iostream>
@@ -18,6 +19,23 @@
 using namespace std;
 using namespace osm_db;
 using namespace GZSTREAM_NAMESPACE;
+
+class sql_commands {
+public:
+  string apistr;
+  string sqlcmd;
+};
+
+sql_commands fixups[] = {
+  {"relation/%ld","SELECT id FROM member GROUP BY id HAVING count(seq)-1 != max(seq)"},
+  {"relation/%ld","SELECT DISTINCT ref FROM member WHERE type='relation' AND NOT ref IN (SELECT id FROM relation)"},
+  {"relation/%ld","SELECT DISTINCT ref FROM member WHERE type='relation' AND NOT ref IN (SELECT id FROM relation)"},
+  {"way/%ld/full","SELECT DISTINCT ref FROM member WHERE type='way' AND NOT ref IN (SELECT id FROM way)"},
+  {"node/%ld","SELECT DISTINCT ref FROM member WHERE type='node' AND NOT ref IN (SELECT id FROM node)"},
+  {"way/%ld/full","SELECT id FROM nd GROUP BY id HAVING count(seq)-1 != max(seq)"},
+  {"node/%ld","SELECT DISTINCT id FROM nd WHERE NOT ref IN (SELECT id FROM node)"},
+  {"",""}
+};
 
 #define BUFFERSIZE (1024)
 
@@ -81,13 +99,6 @@ int main(int argc, char* argv[])
     fixup = true;
   }
 
-  if (update) {
-    if (apistr == "") {
-      if (extra.size() == 0)
-	extra.push_back("-");
-    }
-  }
-  
   if (fixup)
     post = true;
   
@@ -138,28 +149,50 @@ int main(int argc, char* argv[])
     if (nieuw) {
       sql.setBoundaries();
     }
-    if (fixup) {
-      fixup(osmparser);
-    }
     
+    if (fixup) {
+      for(int i=0;fixups[i].apistr != ""; i++) {
+	vector<long> ids;
+	vector<long>::iterator id;
+	cout << "Fixup: " << fixups[i].sqlcmd <<endl;
+	sql.getids(fixups[i].sqlcmd,ids);
+	for(id=ids.begin();id != ids.end();id++) {
+	  char apistring[1024];
+	  sprintf(apistring,fixups[i].apistr.c_str(),*id);
+	  
+	  string buf;
+	  cout << "        " << apistring  << endl;
+	  SocketHandler h(NULL);
+	  osmapi::osmapiSocket sock(h, apistring);
+	  h.Add(&sock);
+	  while (h.GetCount()) {
+	    h.Select(1, 0);
+	  }
+	  buf = sock.GetData();
+	  //	cout << buf;
+	  osmparser.parse_memory(buf);
+	}
+      }    
+    }
     
     if (post) {
       cout << "Starting postprocessing" << endl;
       sql.postprocess();
     }
+
   } catch(const xmlpp::exception& ex) {
-    cout << "libxml++ exception: " << ex.what() << endl;
+    cerr << "libxml++ exception: " << ex.what() << endl;
     return 1;
   } catch (const sqlite3x::database_error& ex) {
-    cout << "Exception in sqlite: " << ex.what() <<endl;
+    cerr << "Exception in sqlite: " << ex.what() <<endl;
     return 1;
   } catch (const osm_db_error& ex) {
-    cout << "Exception in osm_db: " << ex.what() <<endl;
+    cerr << "Exception in osm_db: " << ex.what() <<endl;
     return 1;
   } catch (const Glib::ustring &ex) {
-    cout << "Exception in parser: " << ex <<endl;
+    cerr << "Exception in parser: " << ex <<endl;
   } catch (const std::exception *ex) {
-    cout << "Exception in program: " << ex->what() <<endl;
+    cerr << "Exception in program: " << ex->what() <<endl;
   }
   
   return 0;
