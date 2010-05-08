@@ -5,8 +5,21 @@ namespace osm_db {
     executenonquery("UPDATE tag SET v='associatedStreet' WHERE type='relation' AND k='type' AND v='relatedStreet'");
     executenonquery("DELETE FROM relation WHERE id in (SELECT id FROM relationtag WHERE k='type' AND NOT v in ('boundary','restriction','multipolygon','associatedStreet','boundary_segment'))");
     executenonquery("delete from relation where id in (select id from relationtag where k='type' and v='multipolygon' and not id in (select relation.id from relation,relationtag as tag1,relationtag as tag2 where tag1.k='type' and tag1.v='multipolygon' and tag1.id=relation.id and ((tag2.k='boundary' and tag2.v='administrative') or tag2.k='admin_level') and tag2.id=tag1.id))");
-    executenonquery("DELETE FROM way WHERE NOT id in (SELECT id FROM waytag WHERE k in ('highway','boundary','route','natural') OR k like 'addr:%' OR k like 'is_in%' UNION SELECT ref FROM member WHERE type = 'way')");
-    executenonquery("DELETE FROM node WHERE NOT id IN (SELECT id FROM nodetag UNION SELECT ref FROM nd UNION SELECT ref FROM member WHERE type='node')");
+
+    executenonquery("update way set donotdelete='true' where id in (select ref from member where type='way')");
+    executenonquery("update way set donotdelete='true' where id in (select id from waytag where k ='highway' or k='boundary')");
+    executenonquery("update way set donotdelete='true' where id in (select id from waytag where k ='natural' and v='coastline')");
+    executenonquery("update way set donotdelete='true' where id in (select id from waytag where k ='route' and v='ferry')");
+    executenonquery("update way set donotdelete='true' where id in (select id from waytag where k like 'addr:%' or k like 'is_in:%')");
+    executenonquery("delete from way where donotdelete='false'");
+    //    executenonquery("DELETE FROM way WHERE NOT id in (SELECT id FROM waytag WHERE k in ('highway','boundary','route','natural') OR k like 'addr:%' OR k like 'is_in%' UNION SELECT ref FROM member WHERE type = 'way')");
+
+    executenonquery("update node set donotdelete='true' where id in (select id from nodetag)");
+    executenonquery("update node set donotdelete='true' where id in (select ref from nd)");
+    executenonquery("update node set donotdelete='true' where id in (select ref from member where type='node')");
+    executenonquery("delete from node where donotdelete='false'");
+    //    executenonquery("DELETE FROM node WHERE NOT id IN (SELECT id FROM nodetag UNION SELECT ref FROM nd UNION SELECT ref FROM member WHERE type='node')");
+
     executenonquery("UPDATE tag SET v='yes' WHERE k IN ('bridge','oneway','tunnel') AND v IN ('1','YES','true','Yes')");
     executenonquery("DELETE FROM tag WHERE k IN ('bridge','oneway','tunnel') AND v IN ('NO','FALSE','No','False','no','ny','false')");
 	

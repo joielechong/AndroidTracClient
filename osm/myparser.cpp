@@ -121,6 +121,7 @@ namespace osmparser {
 	  _con->createMember(_lastid,_memcnt++,ref,type,role);
 	  } catch (const std::exception &ex) {
 	    std::cerr << "createMember mislukt: "<<ex.what() << std::endl;
+	    std::cerr << "  errmsg = " << _con->errmsg() << std::endl;
 	    std::cerr << "lastid = " << _lastid << " memcnt = " << _memcnt-1 << " ref = "<< ref << " type = "<<type<<" role = "<<role << std::endl;
 	  }
 	} else if (name == "nd" ) {
@@ -132,6 +133,7 @@ namespace osmparser {
             _prevnd = ref;
 	  } catch (const std::exception &ex) {
 	    std::cerr << "createNd mislukt: "<<ex.what() << std::endl;
+	    std::cerr << "  errmsg = " << _con->errmsg() << std::endl;
 	    std::cerr << "lastid = " << _lastid << " ndcnt = " << _ndcnt-1 << " ref = "<< ref << std::endl;
 	  }
 	} else {

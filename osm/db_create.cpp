@@ -24,8 +24,8 @@ namespace osm_db {
 	  executenonquery(regel,false);
 	} catch (const sqlite3x::database_error& ex) {
 	  if (strncmp(regel,"DROP",4) != 0) {
-	    cout << "Exception in sqlite: " << ex.what() <<endl;
-	    std::cerr << "  errmsg = " << this->errmsg() << std::endl;
+	    cerr << "Exception in sqlite: " << ex.what() <<endl;
+	    cerr << "  errmsg = " << this->errmsg() << std::endl;
 	    throw osm_db_error("Database error na commando: %s",regel);
  	  }
 	}
@@ -68,9 +68,9 @@ namespace osm_db {
       _createNode->bind(4,lon);
       _createNode->executenonquery();
     } catch (sqlite3x::database_error &ex) {
-      std::cerr << "Probleem bij aanmaken nieuwe node "<<id <<std::endl;
-      std::cerr << "Exception  = " << ex.what() << std::endl;
-      std::cerr << "  errmsg = " << this->errmsg() << std::endl;
+      cerr << "Probleem bij aanmaken nieuwe node "<<id <<std::endl;
+      cerr << "Exception  = " << ex.what() << std::endl;
+      cerr << "  errmsg = " << this->errmsg() << std::endl;
     }
   }
   
@@ -88,9 +88,9 @@ namespace osm_db {
       _createWay->bind(2,version);
       _createWay->executenonquery();
     } catch (sqlite3x::database_error &ex) {
-      std::cerr << "Probleem bij aanmaken nieuwe weg "<<id <<std::endl;
-      std::cerr << "Exception  = " << ex.what() << std::endl;
-      std::cerr << "  errmsg = " << this->errmsg() << std::endl;
+      cerr << "Probleem bij aanmaken nieuwe weg "<<id <<std::endl;
+      cerr << "Exception  = " << ex.what() << std::endl;
+      cerr << "  errmsg = " << this->errmsg() << std::endl;
     }
   }
   
@@ -108,9 +108,9 @@ namespace osm_db {
       _createRelation->bind(2,version);
       _createRelation->executenonquery();
     } catch (sqlite3x::database_error &ex) {
-      std::cerr << "Probleem bij aanmaken nieuwe relatie "<<id <<std::endl;
-      std::cerr << "Exception  = " << ex.what() << std::endl;
-      std::cerr << "  errmsg = " << this->errmsg() << std::endl;
+      cerr << "Probleem bij aanmaken nieuwe relatie "<<id <<std::endl;
+      cerr << "Exception  = " << ex.what() << std::endl;
+      cerr << "  errmsg = " << this->errmsg() << std::endl;
     }
   }
   
@@ -122,9 +122,9 @@ namespace osm_db {
       _createTag->bind(4,v);
       _createTag->executenonquery();
     } catch (sqlite3x::database_error &ex) {
-      std::cerr << "Probleem bij aanmaken nieuwe tag voor "<<type<<":"<<id << " k = " <<k << " v = " <<v <<std::endl;
-      std::cerr << "Exception  = " << ex.what() << std::endl;
-      std::cerr << "  errmsg = " << this->errmsg() << std::endl;
+      cerr << "Probleem bij aanmaken nieuwe tag voor "<<type<<":"<<id << " k = " <<k << " v = " <<v <<std::endl;
+      cerr << "Exception  = " << ex.what() << std::endl;
+      cerr << "  errmsg = " << this->errmsg() << std::endl;
     }
   }
   
@@ -135,10 +135,9 @@ namespace osm_db {
       _createNd->bind(3,(sqlite3x::int64_t)ref);
       _createNd->executenonquery();
     } catch (sqlite3x::database_error &ex) {
-      std::cerr << "Probleem bij invoeren in tabel Nd("<<id<<","<<seq<<","<<ref<<")"<<std::endl;
-      std::cerr << "Exception  = " << ex.what() << std::endl;
-      std::cerr << "  errmsg = " << this->errmsg() << std::endl;
-      throw osm_db_error("node %ld bestaat niet",id);
+      cerr << "Probleem bij invoeren in tabel Nd("<<id<<","<<seq<<","<<ref<<")"<<std::endl;
+      cerr << "Exception  = " << ex.what() << std::endl;
+      cerr << "  errmsg = " << this->errmsg() << std::endl;
     }
   }
   
@@ -149,10 +148,9 @@ namespace osm_db {
       _createNeighbour->bind(3,(sqlite3x::int64_t)id2);
       _createNeighbour->executenonquery();
     } catch (sqlite3x::database_error &ex) {
-      std::cerr << "Probleem bij invoeren in tabel neighbor("<<way<<","<<id1<<","<<id2<<")"<<std::endl;
-      std::cerr << "Exception  = " << ex.what() << std::endl;
-      std::cerr << "  errmsg = " << this->errmsg() << std::endl;
-      //      throw osm_db_error("weg %ld bestaat niet",way);
+      cerr << "Probleem bij invoeren in tabel neighbor("<<way<<","<<id1<<","<<id2<<")"<<std::endl;
+      cerr << "Exception  = " << ex.what() << std::endl;
+      cerr << "  errmsg = " << this->errmsg() << std::endl;
     }
   }
   
@@ -165,10 +163,9 @@ namespace osm_db {
       _createMember->bind(5,role);
       _createMember->executenonquery();
     }  catch (sqlite3x::database_error &ex) {
-      std::cerr << "Probleem bij invoeren in tabel Member("<<id<<","<<seq<<","<<ref<<","<<role<<","<<type<<")"<<std::endl;
-      std::cerr << "Exception  = " << ex.what() << std::endl;
-      std::cerr << "  errmsg = " << this->errmsg() << std::endl;
-      throw osm_db_error("%s bestaat niet",type.c_str());
+      cerr << "Probleem bij invoeren in tabel Member("<<id<<","<<seq<<","<<ref<<","<<role<<","<<type<<")"<<std::endl;
+      cerr << "Exception  = " << ex.what() << std::endl;
+      cerr << "  errmsg = " << this->errmsg() << std::endl;
     }
   }
 
