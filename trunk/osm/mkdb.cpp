@@ -85,7 +85,7 @@ static string apiRequest(string apistr) {
   string status = sock.GetStatus();
   string statusText = sock.GetStatusText();
   cout << "Status = " << status << endl;
-  if (status == "404") 
+  if (status == "404" || status == "410") 
     throw out_of_range("Een of meer id's ontbreken");
   else if (status != "200")
     throw runtime_error("apiRequest returned status: "+status+" "+statusText);
