@@ -187,4 +187,30 @@ namespace osm_db {
     executenonquery("DELETE FROM bound");
     executenonquery("INSERT INTO bound (minlat,maxlat,minlon,maxlon) SELECT min(lat),max(lat),min(lon),max(lon) FROM node,neighbor AS nb WHERE (NOT nb.distance IS NULL) AND (node.id=nb.id1 OR node.id=nb.id2)");
   }
+
+  void StringSplit(string str, string delim, vector<string> &results)
+  {
+    int cutAt;
+    while( (cutAt = str.find_first_of(delim)) != str.npos )
+      {
+	if(cutAt > 0)
+	  {
+	    results.push_back(str.substr(0,cutAt));
+	  }
+	str = str.substr(cutAt+1);
+      }
+    if(str.length() > 0)
+      {
+	results.push_back(str);
+      }
+  }
+  
+  void database::delElem(string apistring) {
+    vector<string> words;
+    
+    StringSplit(apistring,"/",words);
+    string query = "DELETE FROM "+words[0]+" WHERE id="+words[1];
+    executenonquery(query);
+    cout << "Verwijderd: " << words[0] << "("<<words[1]<<")" << endl;
+  }
 }

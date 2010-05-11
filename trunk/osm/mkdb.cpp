@@ -1,8 +1,10 @@
 #include "osm_db.h"
 #include <cstring>
 #include <cstdio>
+#include <vector>
 #include <glibmm/ustring.h>
 #include <fstream>
+#include <sstream>
 #include <iostream>
 #include <stdexcept>
 #include <ArgumentParser.h>
@@ -27,17 +29,89 @@ public:
 };
 
 sql_commands fixups[] = {
-  {"relation/%ld","SELECT id FROM member GROUP BY id HAVING count(seq)-1 != max(seq)"},
-  {"relation/%ld","SELECT DISTINCT ref FROM member WHERE type='relation' AND NOT ref IN (SELECT id FROM relation)"},
-  {"relation/%ld","SELECT DISTINCT ref FROM member WHERE type='relation' AND NOT ref IN (SELECT id FROM relation)"},
-  {"way/%ld/full","SELECT DISTINCT ref FROM member WHERE type='way' AND NOT ref IN (SELECT id FROM way)"},
-  {"node/%ld","SELECT DISTINCT ref FROM member WHERE type='node' AND NOT ref IN (SELECT id FROM node)"},
-  {"way/%ld/full","SELECT id FROM nd GROUP BY id HAVING count(seq)-1 != max(seq)"},
-  {"node/%ld","SELECT DISTINCT id FROM nd WHERE NOT ref IN (SELECT id FROM node)"},
+  {"relation","SELECT id FROM member GROUP BY id HAVING count(seq)-1 != max(seq)"},
+  {"relation","SELECT DISTINCT ref FROM member WHERE type='relation' AND NOT ref IN (SELECT id FROM relation)"},
+  {"relation","SELECT DISTINCT ref FROM member WHERE type='relation' AND NOT ref IN (SELECT id FROM relation)"},
+  {"way","SELECT DISTINCT ref FROM member WHERE type='way' AND NOT ref IN (SELECT id FROM way)"},
+  {"way","SELECT id FROM nd GROUP BY id HAVING count(seq)-1 != max(seq)"},
+  {"node","SELECT DISTINCT ref FROM member WHERE type='node' AND NOT ref IN (SELECT id FROM node)"},
+  {"node","SELECT DISTINCT id FROM nd WHERE NOT ref IN (SELECT id FROM node)"},
   {"",""}
 };
 
+string postprocesses[] = {
+  "UPDATE tag SET v='associatedStreet' WHERE type='relation' AND k='type' AND v='relatedStreet'",
+  "DELETE FROM relation WHERE id in (SELECT id FROM relationtag WHERE k='type' AND NOT v in ('boundary','restriction','multipolygon','associatedStreet','boundary_segment'))",
+  "delete from relation where id in (select id from relationtag where k='type' and v='multipolygon' and not id in (select relation.id from relation,relationtag as tag1,relationtag as tag2 where tag1.k='type' and tag1.v='multipolygon' and tag1.id=relation.id and ((tag2.k='boundary' and tag2.v='administrative') or tag2.k='admin_level') and tag2.id=tag1.id))",
+  
+  "update way set donotdelete='true' where id in (select ref from member where type='way')",
+  "update way set donotdelete='true' where id in (select id from waytag where k ='highway' or k='boundary')",
+  "update way set donotdelete='true' where id in (select id from waytag where k ='natural' and v='coastline')",
+  "update way set donotdelete='true' where id in (select id from waytag where k ='route' and v='ferry')",
+  "update way set donotdelete='true' where id in (select id from waytag where k like 'addr:%' or k like 'is_in:%')",
+  "delete from way where donotdelete='false'",
+//    "DELETE FROM way WHERE NOT id in (SELECT id FROM waytag WHERE k in ('highway','boundary','route','natural') OR k like 'addr:%' OR k like 'is_in%' UNION SELECT ref FROM member WHERE type = 'way')",
+
+  "update node set donotdelete='true' where id in (select id from nodetag)",
+  "update node set donotdelete='true' where id in (select ref from nd)",
+  "update node set donotdelete='true' where id in (select ref from member where type='node')",
+  "delete from node where donotdelete='false'",
+//    "DELETE FROM node WHERE NOT id IN (SELECT id FROM nodetag UNION SELECT ref FROM nd UNION SELECT ref FROM member WHERE type='node')",
+
+  "UPDATE tag SET v='yes' WHERE k IN ('bridge','oneway','tunnel') AND v IN ('1','YES','true','Yes')",
+  "DELETE FROM tag WHERE k IN ('bridge','oneway','tunnel') AND v IN ('NO','FALSE','No','False','no','ny','false')",
+  "UPDATE node SET x=round((lon+90)*20),y=round((lat+180)*20) WHERE x is null and id in (SELECT ref FROM usable_way as u,nd WHERE u.id=nd.id)",
+  "INSERT OR REPLACE INTO admin (id,name,level,minlat,maxlat,minlon,maxlon) SELECT id,name,level,minlat,maxlat,minlon,maxlon FROM admintmp",
+  "INSERT OR REPLACE INTO adressen SELECT id,'node' AS type,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:country') AS country,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:city') AS city,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:street') AS street,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:housenumber') AS housenumber,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:postcode') AS postcode FROM node WHERE NOT coalesce(country,city,street,housenumber,postcode) IS NULL",
+  "INSERT OR REPLACE INTO adressen SELECT id,'way' AS type,(SELECT v FROM waytag WHERE id=way.id AND k='addr:country') AS country,(SELECT v FROM waytag WHERE id=way.id AND k='addr:city') AS city,(SELECT v FROM waytag WHERE id=way.id AND k='addr:street') AS street,(SELECT v FROM waytag WHERE id=way.id AND k='addr:housenumber') AS housenumber,(SELECT v FROM waytag WHERE id=way.id AND k='addr:postcode') AS postcode FROM way WHERE NOT coalesce(country,city,street,housenumber,postcode) IS NULL",
+  ""
+};
+
 #define BUFFERSIZE (1024)
+
+static void postprocess(database &sql) {
+
+  for(int i = 0; postprocesses[i]!= "";i++) 
+    sql.executenonquery(postprocesses[i]);
+}
+
+static string apiRequest(string apistr) {
+  SocketHandler h(NULL);
+  osmapi::osmapiSocket sock(h, apistr);
+  h.Add(&sock);
+  while (h.GetCount()) {
+    h.Select(1, 0);
+  }
+  string status = sock.GetStatus();
+  string statusText = sock.GetStatusText();
+  cout << "Status = " << status << endl;
+  if (status == "404") 
+    throw out_of_range("Een of meer id's ontbreken");
+  else if (status != "200")
+    throw runtime_error("apiRequest returned status: "+status+" "+statusText);
+  
+  string buf = sock.GetData();
+  //	cout << buf;
+  return buf;
+}
+
+static void splitRequest(database &sql,osmparser::OSMParser &p,string elemType,string apistr) {
+  unsigned int start = apistr.find("=")+1;
+  while (start < apistr.length()) {
+    unsigned int komma = apistr.find(",",start);
+    if (komma == string::npos)
+      komma = apistr.length()+1;
+    komma--;
+    stringstream s;
+    s << elemType << "/" << apistr.substr(start,komma-start);
+    try {
+      string buf = apiRequest(s.str());
+      p.parse_memory(buf);
+    } catch ( const out_of_range &ex) {
+      sql.delElem(s.str());
+    }
+  }
+}
 
 int main(int argc, char* argv[])
 {
@@ -45,7 +119,7 @@ int main(int argc, char* argv[])
   Argument::StringArgument schemaArg("-schema","value","schema definition file",string(DATADIR)+string("/schema.sqlite.txt"),false);
   Argument::BooleanArgument updArg("-update","\tUpdate the database");
   Argument::StringArgument apiArg("-api","value","\tOnline API request e.g. node/nodeid",false);
-  Argument::BooleanArgument fixArg("-fix","\t\tcompletes incomplete relations and ways (implied by -new)");
+  Argument::BooleanArgument fixArg("-fix","\t\tcompletes incomplete relations and ways");
   Argument::BooleanArgument postArg("-post","\t\tPerform postprocessing on the database (implied by -new and -fix)");
   Argument::BooleanArgument helpArg("-help","\t\tHelp on usage");
   Argument::BooleanArgument newArg("-new","\t\tCreate new database");
@@ -96,7 +170,7 @@ int main(int argc, char* argv[])
     unlink(dbname.c_str());
     if (extra.size() == 0)
       extra.push_back("-");
-    fixup = true;
+    post = true;
   }
 
   if (fixup)
@@ -120,17 +194,12 @@ int main(int argc, char* argv[])
     //    osmparser.set_substitute_entities(true);
     
     if (apistr != "") {
-      string buf;
-      
-      SocketHandler h(NULL);
-      osmapi::osmapiSocket sock(h, apistr);
-      h.Add(&sock);
-      while (h.GetCount()) {
-	h.Select(1, 0);
+      try {
+	string buf = apiRequest(apistr);
+	osmparser.parse_memory(buf);
+      } catch (const out_of_range &ex) {
+	cerr << ex.what() << endl;
       }
-      buf = sock.GetData();
-      //	cout << buf;
-      osmparser.parse_memory(buf);
     } else  {
       for (it=extra.begin();it!=extra.end();it++) {
 	string filepath = *it;
@@ -154,30 +223,49 @@ int main(int argc, char* argv[])
       for(int i=0;fixups[i].apistr != ""; i++) {
 	vector<long> ids;
 	vector<long>::iterator id;
+	string elemtype = fixups[i].apistr;
 	cout << "Fixup: " << fixups[i].sqlcmd <<endl;
 	sql.getids(fixups[i].sqlcmd,ids);
+
+	stringstream apistring;
+	apistring.str("");
+	int count = 0;
 	for(id=ids.begin();id != ids.end();id++) {
-	  char apistring[1024];
-	  sprintf(apistring,fixups[i].apistr.c_str(),*id);
-	  
-	  string buf;
-	  cout << "        " << apistring  << endl;
-	  SocketHandler h(NULL);
-	  osmapi::osmapiSocket sock(h, apistring);
-	  h.Add(&sock);
-	  while (h.GetCount()) {
-	    h.Select(1, 0);
+	  if (count == 0) {
+	    apistring << elemtype << "s?" << elemtype << "=" << *id;
+	  } else
+	    apistring << "," << *id;
+
+	  if (count++ == 29) {
+	    cout << "        " << apistring.str()  << endl;
+	    try {
+	      string buf = apiRequest(apistring.str());
+	      osmparser.parse_memory(buf);
+	    } catch (const out_of_range &ex) {
+	      cerr << ex.what() << endl;
+	      splitRequest(sql,osmparser,elemtype,apistring.str());
+	      //	      sql.delElem(apistring);
+	    }
+	    count = 0;
 	  }
-	  buf = sock.GetData();
-	  //	cout << buf;
-	  osmparser.parse_memory(buf);
+ 	}
+	if (count != 0) {
+	  cout << "        " << apistring.str()  << endl;
+	  try {
+	    string buf = apiRequest(apistring.str());
+	    osmparser.parse_memory(buf);
+	  } catch (const out_of_range &ex) {
+	    cerr << ex.what() << endl;
+	    splitRequest(sql,osmparser,elemtype,apistring.str());
+	    //	      sql.delElem(apistring);
+	  }
 	}
       }    
     }
     
     if (post) {
       cout << "Starting postprocessing" << endl;
-      sql.postprocess();
+      postprocess(sql);
     }
 
   } catch(const xmlpp::exception& ex) {
@@ -191,8 +279,8 @@ int main(int argc, char* argv[])
     return 1;
   } catch (const Glib::ustring &ex) {
     cerr << "Exception in parser: " << ex <<endl;
-  } catch (const std::exception *ex) {
-    cerr << "Exception in program: " << ex->what() <<endl;
+  } catch (const std::exception &ex) {
+    cerr << "Exception in program: " << ex.what() <<endl;
   }
   
   return 0;

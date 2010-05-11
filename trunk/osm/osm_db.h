@@ -20,7 +20,6 @@ namespace osm_db {
     inline void setupSchemas(const std::string s) {setupSchemas(s.c_str());}
     void initializeFill();
     void initTemp();
-    void postprocess();
     inline void update(bool mode) {_update = mode;};
 	
     void createNode(long id,int version,double lat,double lon);
@@ -32,6 +31,7 @@ namespace osm_db {
     void createNeighbour(long way,int long id1,long id2);
     void createAdres(long nid,std::string type,std::string country,std::string ccity,std::string street,std::string housenumber,std::string postcode);
     void setBoundaries();
+    void delElem(std::string name);
     inline const char *errmsg() { return sqlite3_errmsg(_sql->db());}
 
     inline long createTemporaryNode(double lat,double lon) {_tempnodes--;createNode(_tempnodes,0,lat,lon); return _tempnodes;}

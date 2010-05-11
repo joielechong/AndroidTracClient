@@ -49,7 +49,6 @@ libosm_la_SOURCES = element.cpp node.cpp way.cpp relation.cpp map.cpp \
 		    osm_db_except.cpp \
 		    osm.h \
 		    db_create.cpp \
-		    db_postprocess.cpp \
 		    db_getelements.cpp \
 		    interpol.cpp
 
