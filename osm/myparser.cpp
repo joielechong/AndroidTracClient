@@ -92,7 +92,7 @@ namespace osmparser {
 	_con->createRelation(id,version);
       } else if (name == "bounds" || name == "bound") {
       } else {
-	throw new std::range_error("Onbekend element "+name);
+	throw std::range_error("Onbekend element "+name);
       }
       break;
     case 3:
@@ -137,7 +137,7 @@ namespace osmparser {
 	    std::cerr << "lastid = " << _lastid << " ndcnt = " << _ndcnt-1 << " ref = "<< ref << std::endl;
 	  }
 	} else {
-	  throw new std::range_error("Onbekend element "+name);
+	  throw std::range_error("Onbekend element "+name);
 	}
       }
       break;

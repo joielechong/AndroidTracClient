@@ -21,11 +21,11 @@ namespace osm {
   Element::~Element() {}
   
   void Element::addMember(long ref,string type,string role){
-    throw new std::range_error("Member kan niet in dit type element");
+    throw std::range_error("Member kan niet in dit type element");
   }
   
   void Element::addNd(long ref) {
-    throw new std::range_error("Nd kan niet in dit type element");
+    throw std::range_error("Nd kan niet in dit type element");
   }
   
   string Element::printTags() {
@@ -46,14 +46,14 @@ namespace osm {
   }
 
   void Element::setLat(string ref) {
-    throw new std::range_error("Lat kan alleen bij Node");
+    throw std::range_error("Lat kan alleen bij Node");
   }
   void Element::setLon(string ref) {
-    throw new std::range_error("Lon kan alleen bij Node");
+    throw std::range_error("Lon kan alleen bij Node");
   }
   
   string Element::output (){
-    throw new std::range_error("Kan Element niet printen");
+    throw std::range_error("Kan Element niet printen");
   }
   
   void Element::addTag(string k,string v) {
