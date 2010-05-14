@@ -64,6 +64,8 @@ string postprocesses[] = {
   "INSERT OR REPLACE INTO admin (id,name,level,minlat,maxlat,minlon,maxlon) SELECT id,name,level,minlat,maxlat,minlon,maxlon FROM admintmp",
   "INSERT OR REPLACE INTO adressen SELECT id,'node' AS type,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:country') AS country,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:city') AS city,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:street') AS street,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:housenumber') AS housenumber,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:postcode') AS postcode FROM node WHERE NOT coalesce(country,city,street,housenumber,postcode) IS NULL",
   "INSERT OR REPLACE INTO adressen SELECT id,'way' AS type,(SELECT v FROM waytag WHERE id=way.id AND k='addr:country') AS country,(SELECT v FROM waytag WHERE id=way.id AND k='addr:city') AS city,(SELECT v FROM waytag WHERE id=way.id AND k='addr:street') AS street,(SELECT v FROM waytag WHERE id=way.id AND k='addr:housenumber') AS housenumber,(SELECT v FROM waytag WHERE id=way.id AND k='addr:postcode') AS postcode FROM way WHERE NOT coalesce(country,city,street,housenumber,postcode) IS NULL",
+  "insert or replace into neighbor (id1,id2,way,distance) SELECT id1,id2,way,osmdistance(n1.lat,n1.lon,n2.lat,n2.lon) from nb,node as n1,node as n2 where n1.id=id1 and n2.id=id2",
+  "vacuum",
   ""
 };
 
@@ -232,7 +234,7 @@ int main(int argc, char* argv[])
 	int count = 0;
 	for(id=ids.begin();id != ids.end();id++) {
 	  if (count == 0) {
-	    apistring << elemtype << "s?" << elemtype << "=" << *id;
+	    apistring << elemtype << "s?" << elemtype << "s=" << *id;
 	  } else
 	    apistring << "," << *id;
 
@@ -247,6 +249,7 @@ int main(int argc, char* argv[])
 	      //	      sql.delElem(apistring);
 	    }
 	    count = 0;
+	    apistring.str("");
 	  }
  	}
 	if (count != 0) {

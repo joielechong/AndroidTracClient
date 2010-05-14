@@ -48,6 +48,8 @@ namespace osm_db {
     _update = false;
     sqlite3_create_function(_sql->db(),"osmdistance",4,SQLITE_ANY,NULL,osmdistance,NULL,NULL);
     sqlite3_create_function(_sql->db(),"int",1,SQLITE_ANY,NULL,osmint,NULL,NULL);
+    sqlite3_create_function(_sql->db(),"osmcalc_x",1,SQLITE_ANY,NULL,osmcalc_x,NULL,NULL);
+    sqlite3_create_function(_sql->db(),"osmcalc_y",1,SQLITE_ANY,NULL,osmcalc_y,NULL,NULL);
 
     _tempnodes = 0;
     _tempways = 0;

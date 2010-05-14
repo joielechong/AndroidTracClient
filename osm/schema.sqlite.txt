@@ -63,6 +63,8 @@ CREATE INDEX maxlat ON admin(maxlat);
 CREATE INDEX minlat ON admin(minlat);
 CREATE INDEX minlon ON admin(minlon);
 CREATE INDEX maxlon ON admin(maxlon);
+CREATE INDEX t1 on tag(id,type);
+CREATE INDEX t2 on tag(type,k);
 
 COMMIT;
 PRAGMA default_cache_size=5000;
