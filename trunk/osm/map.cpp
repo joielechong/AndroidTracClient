@@ -75,4 +75,16 @@ namespace osm {
       }
     }
   }
+
+  double Map::Astar(const Node &n1,const Node &n2) {
+  }
+
+  double Map::Astar(const Node &n1,const double lat2,const double lon2) {
+  }
+
+  double Map::Astar(const double lat1,const double lon1,const Node &n2) {
+  }
+
+  double Map::Astar(const double lat1,const double lon1,const double lat2,const double lon2) {
+  }
 }
