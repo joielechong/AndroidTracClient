@@ -18,13 +18,15 @@
 #include "myparser.h"
 #include "osmapi.h"
 
+#define MAXELEM 50
+
 using namespace std;
 using namespace osm_db;
 using namespace GZSTREAM_NAMESPACE;
 
 class sql_commands {
 public:
-  string apistr;
+  string element;
   string sqlcmd;
 };
 
@@ -33,34 +35,38 @@ sql_commands fixups[] = {
   {"relation","SELECT DISTINCT ref FROM member WHERE type='relation' AND NOT ref IN (SELECT id FROM relation)"},
   {"relation","SELECT DISTINCT ref FROM member WHERE type='relation' AND NOT ref IN (SELECT id FROM relation)"},
   {"way","SELECT DISTINCT ref FROM member WHERE type='way' AND NOT ref IN (SELECT id FROM way)"},
-  {"way","SELECT id FROM nd GROUP BY id HAVING count(seq)-1 != max(seq)"},
+  {"node","SELECT id FROM nd GROUP BY id HAVING count(seq)-1 != max(seq)"},
   {"node","SELECT DISTINCT ref FROM member WHERE type='node' AND NOT ref IN (SELECT id FROM node)"},
-  {"node","SELECT DISTINCT id FROM nd WHERE NOT ref IN (SELECT id FROM node)"},
+  {"node","SELECT DISTINCT ref FROM nd WHERE NOT ref IN (SELECT id FROM node)"},
   {"",""}
 };
 
 string postprocesses[] = {
   "UPDATE tag SET v='associatedStreet' WHERE type='relation' AND k='type' AND v='relatedStreet'",
-  "DELETE FROM relation WHERE id in (SELECT id FROM relationtag WHERE k='type' AND NOT v in ('boundary','restriction','multipolygon','associatedStreet','boundary_segment'))",
-  "delete from relation where id in (select id from relationtag where k='type' and v='multipolygon' and not id in (select relation.id from relation,relationtag as tag1,relationtag as tag2 where tag1.k='type' and tag1.v='multipolygon' and tag1.id=relation.id and ((tag2.k='boundary' and tag2.v='administrative') or tag2.k='admin_level') and tag2.id=tag1.id))",
+  "UPDATE relation SET donotdelete='true' WHERE id IN (SELECT id FROM relationtag WHERE k='type' AND v in ('boundary','restriction','associatedStreet','boundary_segment')) AND donotdelete!='true'",
+  "UPDATE relation SET donotdelete='true' WHERE id IN (SELECT id FROM relationtag WHERE (k='boundary' AND v='administrative') OR (k='admin_level')) AND id IN (SELECT id FROM relationtag WHERE k='type' AND v='multipolygon') AND donotdelete!='true'",
+  "UPDATE relation SET donotdelete='true' WHERE id in (SELECT ref FROM member WHERE type='relation') and donotdelete !='true'",
+  "DELETE FROM relation WHERE donotdelete='false'",
+  //  "DELETE FROM relation WHERE (id in (SELECT id FROM relationtag WHERE k='type' AND NOT v in ('boundary','restriction','multipolygon','associatedStreet','boundary_segment'))) OR id IN (SELECT ref FROM member WHERE type='relation')",
+  //  "DELETE FROM relation WHERE id IN (SELECT id FROM relationtag WHERE k='type' AND v='multipolygon' AND NOT id IN (SELECT relation.id FROM relation,relationtag as tag1,relationtag as tag2 where tag1.k='type' and tag1.v='multipolygon' and tag1.id=relation.id and ((tag2.k='boundary' and tag2.v='administrative') or tag2.k='admin_level') and tag2.id=tag1.id))",
   
-  "update way set donotdelete='true' where id in (select ref from member where type='way')",
-  "update way set donotdelete='true' where id in (select id from waytag where k ='highway' or k='boundary')",
-  "update way set donotdelete='true' where id in (select id from waytag where k ='natural' and v='coastline')",
-  "update way set donotdelete='true' where id in (select id from waytag where k ='route' and v='ferry')",
-  "update way set donotdelete='true' where id in (select id from waytag where k like 'addr:%' or k like 'is_in:%')",
+  "update way set donotdelete='true' where id in (select ref from member where type='way') and donotdelete != 'true'",
+  "update way set donotdelete='true' where id in (select id from waytag where k ='highway' or k='boundary') and donotdelete != 'true'",
+  "update way set donotdelete='true' where id in (select id from waytag where k ='natural' and v='coastline') and donotdelete != 'true'",
+  "update way set donotdelete='true' where id in (select id from waytag where k ='route' and v='ferry') and donotdelete != 'true'",
+  "update way set donotdelete='true' where id in (select id from waytag where k like 'addr:%' or k like 'is_in:%') and donotdelete != 'true'",
   "delete from way where donotdelete='false'",
 //    "DELETE FROM way WHERE NOT id in (SELECT id FROM waytag WHERE k in ('highway','boundary','route','natural') OR k like 'addr:%' OR k like 'is_in%' UNION SELECT ref FROM member WHERE type = 'way')",
 
-  "update node set donotdelete='true' where id in (select id from nodetag)",
-  "update node set donotdelete='true' where id in (select ref from nd)",
-  "update node set donotdelete='true' where id in (select ref from member where type='node')",
+  "update node set donotdelete='true' where id in (select id from nodetag) and donotdelete != 'true'",
+  "update node set donotdelete='true' where id in (select ref from nd) and donotdelete != 'true'",
+  "update node set donotdelete='true' where id in (select ref from member where type='node') and donotdelete != 'true'",
   "delete from node where donotdelete='false'",
 //    "DELETE FROM node WHERE NOT id IN (SELECT id FROM nodetag UNION SELECT ref FROM nd UNION SELECT ref FROM member WHERE type='node')",
 
   "UPDATE tag SET v='yes' WHERE k IN ('bridge','oneway','tunnel') AND v IN ('1','YES','true','Yes')",
   "DELETE FROM tag WHERE k IN ('bridge','oneway','tunnel') AND v IN ('NO','FALSE','No','False','no','ny','false')",
-  "UPDATE node SET x=round((lon+90)*20),y=round((lat+180)*20) WHERE x is null and id in (SELECT ref FROM usable_way as u,nd WHERE u.id=nd.id)",
+  "UPDATE node SET x=osmcalc_x(lon),y=osmcalc_y(lat) WHERE x is null and id in (SELECT ref FROM usable_way as u,nd WHERE u.id=nd.id)",
   "INSERT OR REPLACE INTO admin (id,name,level,minlat,maxlat,minlon,maxlon) SELECT id,name,level,minlat,maxlat,minlon,maxlon FROM admintmp",
   "INSERT OR REPLACE INTO adressen SELECT id,'node' AS type,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:country') AS country,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:city') AS city,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:street') AS street,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:housenumber') AS housenumber,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:postcode') AS postcode FROM node WHERE NOT coalesce(country,city,street,housenumber,postcode) IS NULL",
   "INSERT OR REPLACE INTO adressen SELECT id,'way' AS type,(SELECT v FROM waytag WHERE id=way.id AND k='addr:country') AS country,(SELECT v FROM waytag WHERE id=way.id AND k='addr:city') AS city,(SELECT v FROM waytag WHERE id=way.id AND k='addr:street') AS street,(SELECT v FROM waytag WHERE id=way.id AND k='addr:housenumber') AS housenumber,(SELECT v FROM waytag WHERE id=way.id AND k='addr:postcode') AS postcode FROM way WHERE NOT coalesce(country,city,street,housenumber,postcode) IS NULL",
@@ -172,15 +178,17 @@ int main(int argc, char* argv[])
     unlink(dbname.c_str());
     if (extra.size() == 0)
       extra.push_back("-");
+    if (remaining.size() == 0)
+      remaining.push_back("-");
     post = true;
   }
-
+  
   if (fixup)
     post = true;
   
   try {
     database sql(dbname);
-
+    
     if (nieuw) 
       sql.setupSchemas(schema);
 
@@ -203,7 +211,7 @@ int main(int argc, char* argv[])
 	cerr << ex.what() << endl;
       }
     } else  {
-      for (it=extra.begin();it!=extra.end();it++) {
+      for (it=remaining.begin();it!=remaining.end();it++) {
 	string filepath = *it;
 	if (filepath == "-") {
 	  osmparser.parse_stream(cin);
@@ -222,10 +230,10 @@ int main(int argc, char* argv[])
     }
     
     if (fixup) {
-      for(int i=0;fixups[i].apistr != ""; i++) {
+      for(int i=0;fixups[i].element != ""; i++) {
 	vector<long> ids;
 	vector<long>::iterator id;
-	string elemtype = fixups[i].apistr;
+	string elemtype = fixups[i].element;
 	cout << "Fixup: " << fixups[i].sqlcmd <<endl;
 	sql.getids(fixups[i].sqlcmd,ids);
 
@@ -238,7 +246,7 @@ int main(int argc, char* argv[])
 	  } else
 	    apistring << "," << *id;
 
-	  if (count++ == 29) {
+	  if (count++ == ((MAXELEM)-1)) {
 	    cout << "        " << apistring.str()  << endl;
 	    try {
 	      string buf = apiRequest(apistring.str());

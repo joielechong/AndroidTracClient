@@ -198,7 +198,7 @@ namespace osm {
 
   class Map {
   public:
-    Map(osm_db::database *con,const unsigned long cacheSize);
+    Map(osm_db::database *con,const unsigned long cacheSize,const string conffile="astarconf.xml");
 
     inline osm::Cache<osm::Node>& nodes() {return _nodes;}
     inline osm::Cache<osm::Way>& ways() {return _ways;}
@@ -229,6 +229,7 @@ namespace osm {
     Cache<Node> _nodes;
     Cache<Way> _ways;
     Cache<Relation> _relations;
+    string _conffile;
   };
 }
 
