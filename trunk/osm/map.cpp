@@ -98,6 +98,7 @@ namespace osm {
     
       if(!(nodeText && nodeText->is_white_space())) {//Let's ignore the indenting - you don't always want to do this.    
 	nodename = (*iter)->get_name();
+    if(!nodeText && !nodeComment && !nodename.empty()) { //Let's not say "name: text".
 	if (nodename == "highways") 
 	  process_highways(*iter);
 	else if (nodename == "profiles") 
@@ -105,6 +106,7 @@ namespace osm {
 	else
 	  throw domain_error("Foutiefconfiguratiefile: highways of profiles verwacht. Naam = "+nodename);
       }
+	  }
     }      
   }
   
