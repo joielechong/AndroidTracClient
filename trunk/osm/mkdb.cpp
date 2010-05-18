@@ -128,7 +128,7 @@ int main(int argc, char* argv[])
   Argument::BooleanArgument updArg("-update","\tUpdate the database");
   Argument::StringArgument apiArg("-api","value","\tOnline API request e.g. node/nodeid",false);
   Argument::BooleanArgument fixArg("-fix","\t\tcompletes incomplete relations and ways");
-  Argument::BooleanArgument postArg("-post","\t\tPerform postprocessing on the database (implied by -new and -fix)");
+  Argument::BooleanArgument postArg("-post","\t\tPerform postprocessing on the database (implied by -new)");
   Argument::BooleanArgument helpArg("-help","\t\tHelp on usage");
   Argument::BooleanArgument newArg("-new","\t\tCreate new database");
   Argument::ListArgument extraArg("file","\tFilename[s] to process (none or - implies stdin)",false);
