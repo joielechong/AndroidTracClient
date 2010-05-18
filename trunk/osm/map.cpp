@@ -92,6 +92,13 @@ namespace osm {
     
     xmlpp::Node::NodeList list = node->get_children();
     for(xmlpp::Node::NodeList::iterator iter = list.begin(); iter != list.end(); ++iter) {
+      const xmlpp::ContentNode* nodeContent = dynamic_cast<const xmlpp::ContentNode*>(node);
+      const xmlpp::TextNode* nodeText = dynamic_cast<const xmlpp::TextNode*>(node);
+      const xmlpp::CommentNode* nodeComment = dynamic_cast<const xmlpp::CommentNode*>(node);
+    
+      if(nodeText && nodeText->is_white_space()) //Let's ignore the indenting - you don't always want to do this.
+        next;
+    
       nodename = (*iter)->get_name();
       if (nodename == "highways") 
 	process_highways(*iter);
