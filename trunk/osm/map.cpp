@@ -96,16 +96,15 @@ namespace osm {
       const xmlpp::TextNode* nodeText = dynamic_cast<const xmlpp::TextNode*>(node);
       const xmlpp::CommentNode* nodeComment = dynamic_cast<const xmlpp::CommentNode*>(node);
     
-      if(nodeText && nodeText->is_white_space()) //Let's ignore the indenting - you don't always want to do this.
-        next;
-    
-      nodename = (*iter)->get_name();
-      if (nodename == "highways") 
-	process_highways(*iter);
-      else if (nodename == "profiles") 
-	process_profiles(*iter);
-      else
-	throw domain_error("Foutiefconfiguratiefile: highways of profiles verwacht. Naam = "+nodename);
+      if(!(nodeText && nodeText->is_white_space())) {//Let's ignore the indenting - you don't always want to do this.    
+	nodename = (*iter)->get_name();
+	if (nodename == "highways") 
+	  process_highways(*iter);
+	else if (nodename == "profiles") 
+	  process_profiles(*iter);
+	else
+	  throw domain_error("Foutiefconfiguratiefile: highways of profiles verwacht. Naam = "+nodename);
+      }
     }      
   }
   
@@ -193,6 +192,7 @@ namespace osm {
     if(parser) {
       //Walk the tree:
       const xmlpp::Node* pNode = parser.get_document()->get_root_node(); //deleted by DomParser.
+      print_node(pNode);
       process_conf(pNode);
     } else
       throw runtime_error("Kan file "+_conffile+" niet parsen");
