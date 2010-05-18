@@ -35,7 +35,7 @@ sql_commands fixups[] = {
   {"relation","SELECT DISTINCT ref FROM member WHERE type='relation' AND NOT ref IN (SELECT id FROM relation)"},
   {"relation","SELECT DISTINCT ref FROM member WHERE type='relation' AND NOT ref IN (SELECT id FROM relation)"},
   {"way","SELECT DISTINCT ref FROM member WHERE type='way' AND NOT ref IN (SELECT id FROM way)"},
-  {"node","SELECT id FROM nd GROUP BY id HAVING count(seq)-1 != max(seq)"},
+  {"way","SELECT id FROM nd GROUP BY id HAVING count(seq)-1 != max(seq)"},
   {"node","SELECT DISTINCT ref FROM member WHERE type='node' AND NOT ref IN (SELECT id FROM node)"},
   {"node","SELECT DISTINCT ref FROM nd WHERE NOT ref IN (SELECT id FROM node)"},
   {"",""}
