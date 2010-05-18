@@ -18,7 +18,7 @@
 		<highway name="pedestrian" speed="10"/>
 		<highway name="primary" speed="50"/>
 		<highway name="residential" speed="30"/>
-		<highway name="road", speed="50" extracost="10" />
+		<highway name="road" speed="50" extracost="10" />
 		<highway name="secondary" speed="50"/>
 		<highway name="secondary_link" speed="50"/>
 		<highway name="service" speed="30"/>
