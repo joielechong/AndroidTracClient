@@ -17,6 +17,8 @@ namespace osm {
     inline unsigned int extracost() const {return _extracost;}
     inline void extracost(const unsigned int e) {_extracost=e;}
 
+    inline void output(ostream &out) {out << "Speed = " << _speed << " extracost = " << _extracost;}
+
   private:
     int _extracost;
     unsigned int _speed;
@@ -63,25 +65,33 @@ namespace osm {
   static void process_highways(const xmlpp::Node* node) {
     xmlpp::Node::NodeList list = node->get_children();
     for(xmlpp::Node::NodeList::iterator iter = list.begin(); iter != list.end(); ++iter) {
-      const xmlpp::Element* nodeElement = dynamic_cast<const xmlpp::Element*>(node);
-      const xmlpp::Attribute* attribute = nodeElement->get_attribute("name");
-      Glib::ustring name,speed,extracost;
-      if (attribute)
-	name=attribute->get_value();
-      else
-	throw domain_error("highway requires name");
+      const xmlpp::ContentNode* nodeContent = dynamic_cast<const xmlpp::ContentNode*>(*iter);
+      const xmlpp::TextNode* nodeText = dynamic_cast<const xmlpp::TextNode*>(*iter);
+      const xmlpp::CommentNode* nodeComment = dynamic_cast<const xmlpp::CommentNode*>(*iter);
       
-      attribute = nodeElement->get_attribute("speed");
-      if (attribute)
-	speed=attribute->get_value();
-      attribute = nodeElement->get_attribute("extracost");
-      if (attribute)
-	extracost=attribute->get_value();
-      highways[name] = Highway();
-      if (speed.length() > 0)
-	highways[name].speed(atol(speed.c_str()));
-      if (extracost.length() > 0)
-	highways[name].extracost(atol(extracost.c_str()));
+      if(!(nodeText && nodeText->is_white_space())) {//Let's ignore the indenting - you don't always want to do this.    
+	if(!nodeText && !nodeComment) { //Let's not say "name: text".
+	  const xmlpp::Element* nodeElement = dynamic_cast<const xmlpp::Element*>(*iter);
+	  const xmlpp::Attribute* attribute = nodeElement->get_attribute("name");
+	  Glib::ustring name,speed,extracost;
+	  if (attribute)
+	    name=attribute->get_value();
+	  else
+	    throw domain_error("highway requires name");
+	  
+	  attribute = nodeElement->get_attribute("speed");
+	  if (attribute)
+	    speed=attribute->get_value();
+	  attribute = nodeElement->get_attribute("extracost");
+	  if (attribute)
+	    extracost=attribute->get_value();
+	  highways[name] = Highway();
+	  if (speed.length() > 0)
+	    highways[name].speed(atol(speed.c_str()));
+	  if (extracost.length() > 0)
+	    highways[name].extracost(atol(extracost.c_str()));
+	}
+      }
     }
   }
   
@@ -92,21 +102,21 @@ namespace osm {
     
     xmlpp::Node::NodeList list = node->get_children();
     for(xmlpp::Node::NodeList::iterator iter = list.begin(); iter != list.end(); ++iter) {
-      const xmlpp::ContentNode* nodeContent = dynamic_cast<const xmlpp::ContentNode*>(node);
-      const xmlpp::TextNode* nodeText = dynamic_cast<const xmlpp::TextNode*>(node);
-      const xmlpp::CommentNode* nodeComment = dynamic_cast<const xmlpp::CommentNode*>(node);
-    
+      const xmlpp::ContentNode* nodeContent = dynamic_cast<const xmlpp::ContentNode*>(*iter);
+      const xmlpp::TextNode* nodeText = dynamic_cast<const xmlpp::TextNode*>(*iter);
+      const xmlpp::CommentNode* nodeComment = dynamic_cast<const xmlpp::CommentNode*>(*iter);
+      
       if(!(nodeText && nodeText->is_white_space())) {//Let's ignore the indenting - you don't always want to do this.    
 	nodename = (*iter)->get_name();
-    if(!nodeText && !nodeComment && !nodename.empty()) { //Let's not say "name: text".
-	if (nodename == "highways") 
-	  process_highways(*iter);
-	else if (nodename == "profiles") 
-	  process_profiles(*iter);
-	else
-	  throw domain_error("Foutiefconfiguratiefile: highways of profiles verwacht. Naam = "+nodename);
+	if(!nodeText && !nodeComment && !nodename.empty()) { //Let's not say "name: text".
+	  if (nodename == "highways") 
+	    process_highways(*iter);
+	  else if (nodename == "profiles") 
+	    process_profiles(*iter);
+	  else
+	    throw domain_error("Foutiefconfiguratiefile: highways of profiles verwacht. Naam = "+nodename);
+	}
       }
-	  }
     }      
   }
   
@@ -194,8 +204,15 @@ namespace osm {
     if(parser) {
       //Walk the tree:
       const xmlpp::Node* pNode = parser.get_document()->get_root_node(); //deleted by DomParser.
-      print_node(pNode);
+      //      print_node(pNode);
       process_conf(pNode);
+      /*
+      for (map<string,Highway>::iterator i=highways.begin();i != highways.end(); i++) {
+	cout << "  " << (*i).first << "  ";
+	((*i).second).output(cout);
+	cout << endl;
+      }
+      */
     } else
       throw runtime_error("Kan file "+_conffile+" niet parsen");
   }
