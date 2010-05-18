@@ -98,7 +98,7 @@ namespace osm {
       else if (nodename == "profiles") 
 	process_profiles(*iter);
       else
-	throw domain_error("Foutiefconfiguratiefile: highways of profiles verwacht");
+	throw domain_error("Foutiefconfiguratiefile: highways of profiles verwacht. Naam = "+nodename);
     }      
   }
   
