@@ -42,7 +42,7 @@ namespace osm {
     inline void traffic_calming(const string t,const unsigned int e) {_traffic_calming[t]=e;}
     inline unsigned int barrier(const string b) {return _barrier[b];}
     inline void barrier(const string b,const unsigned int e) {_barrier[b]=e;}
-    inline void output(ostream &out) {out << "maxspeed = " << _maxspeed << "  avgspeed = " << _avgspeed << " ignore_oneway = " << _ignore_oneway;}
+    void output(ostream &out);
 
   private:
     unsigned int _maxspeed;

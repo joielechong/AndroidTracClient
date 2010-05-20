@@ -12,6 +12,19 @@
 namespace osm {
   using namespace std;
 
+  void Profile::output(ostream &out) {
+    out << "maxspeed = " << _maxspeed << "  avgspeed = " << _avgspeed << " ignore_oneway = " << _ignore_oneway;
+
+    map<string,unsigned int>::iterator iter;
+
+    for(iter=_allowed.begin();iter != _allowed.end();iter++) 
+      out << endl << "  Allowed : " << (*iter).first << " extracost = " << (*iter).second;
+    for(iter=_barrier.begin();iter != _barrier.end();iter++) 
+      out << endl << "  Barrier : " << (*iter).first << " extracost = " << (*iter).second;
+    for(iter=_traffic_calming.begin();iter != _traffic_calming.end();iter++) 
+      out << endl << "  Traffic Calming : " << (*iter).first << " extracost = " << (*iter).second;
+  }
+
   map<string,Highway> highways;
   map<string,Profile> profiles;
   
@@ -29,19 +42,51 @@ namespace osm {
   static void process_allowed(const xmlpp::Node *node,Profile &profile) {
     const xmlpp::TextNode* nodeText = dynamic_cast<const xmlpp::TextNode*>(node);
     const xmlpp::CommentNode* nodeComment = dynamic_cast<const xmlpp::CommentNode*>(node);
-      
+    
     if(!(nodeText && nodeText->is_white_space())) { //Let's ignore the indenting - you don't always want to do this.    
       if(!nodeText && !nodeComment) { //Let's not say "name: text".
         const xmlpp::Element* nodeElement = dynamic_cast<const xmlpp::Element*>(node);
-	Glib::ustring name,maxspeed,avgspeed,ignore_oneway;
-          
+	Glib::ustring name,extracost;
+        
         getAttribute(nodeElement,"highway",name);
         getAttribute(nodeElement,"extracost",extracost);
-        profile.allowed(name,atol(extracost.c_str));
+        profile.allowed(name,atol(extracost.c_str()));
       }
     }
- }
-
+  }
+  
+  static void process_barrier(const xmlpp::Node *node,Profile &profile) {
+    const xmlpp::TextNode* nodeText = dynamic_cast<const xmlpp::TextNode*>(node);
+    const xmlpp::CommentNode* nodeComment = dynamic_cast<const xmlpp::CommentNode*>(node);
+    
+    if(!(nodeText && nodeText->is_white_space())) { //Let's ignore the indenting - you don't always want to do this.    
+      if(!nodeText && !nodeComment) { //Let's not say "name: text".
+        const xmlpp::Element* nodeElement = dynamic_cast<const xmlpp::Element*>(node);
+	Glib::ustring name,extracost;
+        
+        getAttribute(nodeElement,"type",name);
+        getAttribute(nodeElement,"extracost",extracost);
+        profile.barrier(name,atol(extracost.c_str()));
+      }
+    }
+  }
+  
+  static void process_trafficcalming(const xmlpp::Node *node,Profile &profile) {
+    const xmlpp::TextNode* nodeText = dynamic_cast<const xmlpp::TextNode*>(node);
+    const xmlpp::CommentNode* nodeComment = dynamic_cast<const xmlpp::CommentNode*>(node);
+    
+    if(!(nodeText && nodeText->is_white_space())) { //Let's ignore the indenting - you don't always want to do this.    
+      if(!nodeText && !nodeComment) { //Let's not say "name: text".
+        const xmlpp::Element* nodeElement = dynamic_cast<const xmlpp::Element*>(node);
+	Glib::ustring name,extracost;
+        
+        getAttribute(nodeElement,"type",name);
+        getAttribute(nodeElement,"extracost",extracost);
+        profile.traffic_calming(name,atol(extracost.c_str()));
+      }
+    }
+  }
+  
   static void process_profiles(const xmlpp::Node* node) {
     xmlpp::Node::NodeList list = node->get_children();
     for(xmlpp::Node::NodeList::iterator iter = list.begin(); iter != list.end(); ++iter) {
@@ -77,8 +122,10 @@ namespace osm {
 	      if(!nodeText && !nodeComment && !nodename.empty()) { //Let's not say "name: text".
 		if (nodename == "allowed") 
 		  process_allowed(*iterp,profiles[name]);
-		else if (nodename == "barrier") 
-		else if (nodename == "traffic_calming") 
+		else if (nodename == "barrier")
+		  process_barrier(*iterp,profiles[name]);
+		else if (nodename == "traffic_calming")
+		  process_trafficcalming(*iterp,profiles[name]);
 		else
 		  throw domain_error("Foutief configuratiefile: allowed, barrier of traffic_calming verwacht. Naam = "+nodename);
 	      }
