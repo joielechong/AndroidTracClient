@@ -27,8 +27,8 @@ mkdb_SOURCES=mkdb.cpp \
 osmdatadir=$(datadir)/osm
 dist_osmdata_DATA=schema.sqlite.txt
 
-mkdb_LDADD=$(XML_LIBS) -lz -losm $(SQL_LIBS) $(ARG_LIBS) $(SOCK_LIBS) $(ACOS_LIBM) $(ASIN_LIBM) $(COS_LIBM) $(SIN_LIBM) $(SQRT_LIBM) $(POW_LIBM)
-mkdb_CPPFLAGS=$(SQL_CFLAGS) $(ARG_CFLAGS) $(XML_CFLAGS) $(SOCK_CFLAGS) -DDATADIR=\"$(datadir)/osm\"
+mkdb_LDADD=$(XML_LIBS) $(Z_LIBS) -losm $(SQL_LIBS) $(ARG_LIBS) $(SOCK_LIBS) $(ACOS_LIBM) $(ASIN_LIBM) $(COS_LIBM) $(SIN_LIBM) $(SQRT_LIBM) $(POW_LIBM)
+mkdb_CPPFLAGS=$(Z_CFLAGS) $(SQL_CFLAGS) $(ARG_CFLAGS) $(XML_CFLAGS) $(SOCK_CFLAGS) -DDATADIR=\"$(datadir)/osm\"
 
 osmtest_LDADD=-losm $(SQL_LIBS) $(ARG_LIBS)
 osmtest_CPPFLAGS=$(SQL_CFLAGS) $(ARG_CFLAGS)
@@ -44,13 +44,17 @@ lib_LTLIBRARIES = libosm.la \
 libosm_la_LDFLAGS = -version-info 0:1:0 $(ASIN_LIBM) $(COS_LIBM) $(POW_LIB) $(POW_LIBM) $(SIN_LIBM) $(SQRT_LIBM)
 libosm_la_LIBADD=$(SQL_LIBS) $(SOCK_LIBS) $(XML_LIBS)
 libosm_la_CPPFLAGS=$(SQL_CFLAGS) $(SOCK_CFLAGS) $(XML_CFLAGS)
-libosm_la_SOURCES = element.cpp node.cpp way.cpp relation.cpp map.cpp \
+libosm_la_SOURCES = element.cpp node.cpp way.cpp relation.cpp \
+		    map.cpp \
+		    astar.cpp \
 		    osm_db.cpp \
 		    osm_db_except.cpp \
 		    osm.h \
 		    db_create.cpp \
 		    db_getelements.cpp \
-		    interpol.cpp
+		    interpol.cpp \
+		    astarconf.h \
+                    osm_db.h
 
 libosmsql_la_LDFLAGS= $(ASIN_LIBM) $(COS_LIBM) $(POW_LIB) $(POW_LIBM) $(SIN_LIBM) $(SQRT_LIBM)
 libosmsql_la_SOURCES = sqlosm.c \
