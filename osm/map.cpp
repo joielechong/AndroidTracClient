@@ -1,57 +1,18 @@
 #include "osm.h"
 #include "osm_db.h"
+#include "astarconf.h"
 #include <string>
 #include <stdbool.h>
 #include <libxml++/libxml++.h>
 #include <iostream>
 #include <stdbool.h>
+#include <map>
+#include <vector>
 
 namespace osm {
   using namespace std;
 
-  class Highway {
-  public:
-    inline Highway() : _extracost(0),_speed(0) {}
-    inline unsigned int speed() const {return _speed;}
-    inline void speed(const unsigned int s) {_speed=s;}
-    inline unsigned int extracost() const {return _extracost;}
-    inline void extracost(const unsigned int e) {_extracost=e;}
-
-    inline void output(ostream &out) {out << "Speed = " << _speed << " extracost = " << _extracost;}
-
-  private:
-    int _extracost;
-    unsigned int _speed;
-  };
-
   map<string,Highway> highways;
-  
-  class Profile {
-  public:
-    inline Profile() : _maxspeed(0),_avgspeed(0),_ignore_oneway(false) {}
-
-    inline unsigned int maxspeed() const {return _maxspeed;}
-    inline void maxspeed(const unsigned int s) {_maxspeed=s;}
-    inline unsigned int avgspeed() const {return _avgspeed;}
-    inline void avgspeed(const unsigned int s) {_avgspeed=s;}
-    inline bool ignore_oneway() const {return _ignore_oneway;}
-    inline void set_ignore_oneway() {_ignore_oneway = true;}
-    inline unsigned int allowed(const string h) {return _allowed[h];}
-    inline void allowed(string h,const unsigned int e) {_allowed[h]=e;}
-    inline unsigned int traffic_calming(const string t) {return _traffic_calming[t];}
-    inline void traffic_calming(const string t,const unsigned int e) {_traffic_calming[t]=e;}
-    inline unsigned int barrier(const string b) {return _barrier[b];}
-    inline void barrier(const string b,const unsigned int e) {_barrier[b]=e;}
-
-  private:
-    unsigned int _maxspeed;
-    unsigned int _avgspeed;
-    bool _ignore_oneway;
-    map<string,unsigned int> _allowed;
-    map<string,unsigned int> _traffic_calming; 
-    map<string, unsigned int> _barrier;
-  };
-
   map<string,Profile> profiles;
   
   static void print_indentation(unsigned int indentation) {
@@ -60,16 +21,68 @@ namespace osm {
   }
 
   static void process_profiles(const xmlpp::Node* node) {
-  }
-
-  static void process_highways(const xmlpp::Node* node) {
     xmlpp::Node::NodeList list = node->get_children();
     for(xmlpp::Node::NodeList::iterator iter = list.begin(); iter != list.end(); ++iter) {
-      const xmlpp::ContentNode* nodeContent = dynamic_cast<const xmlpp::ContentNode*>(*iter);
       const xmlpp::TextNode* nodeText = dynamic_cast<const xmlpp::TextNode*>(*iter);
       const xmlpp::CommentNode* nodeComment = dynamic_cast<const xmlpp::CommentNode*>(*iter);
       
-      if(!(nodeText && nodeText->is_white_space())) {//Let's ignore the indenting - you don't always want to do this.    
+      if(!(nodeText && nodeText->is_white_space())) { //Let's ignore the indenting - you don't always want to do this.    
+	if(!nodeText && !nodeComment) { //Let's not say "name: text".
+	  const xmlpp::Element* nodeElement = dynamic_cast<const xmlpp::Element*>(*iter);
+	  const xmlpp::Attribute* attribute = nodeElement->get_attribute("name");
+	  Glib::ustring name,maxspeed,avgspeed,ignore_oneway;
+	  if (attribute)
+	    name=attribute->get_value();
+	  else
+	    throw domain_error("profile requires name");
+	  
+	  attribute = nodeElement->get_attribute("maxspeed");
+	  if (attribute)
+	    maxspeed=attribute->get_value();
+	  attribute = nodeElement->get_attribute("avgspeed");
+	  if (attribute)
+	    avgspeed=attribute->get_value();
+	  attribute = nodeElement->get_attribute("ignore_oneway");
+	  if (attribute)
+	    ignore_oneway=attribute->get_value();
+	  profiles[name] = Profile();
+	  if (maxspeed.length() > 0)
+	    profiles[name].maxspeed(atol(maxspeed.c_str()));
+	  if (avgspeed.length() > 0)
+	    profiles[name].avgspeed(atol(avgspeed.c_str()));
+	  if (atol(ignore_oneway.c_str()) != 0)
+	    profiles[name].set_ignore_oneway();
+
+	  xmlpp::Node::NodeList list = (*iter)->get_children();
+	  for(xmlpp::Node::NodeList::iterator iterp = list.begin(); iterp != list.end(); ++iterp) {
+	    const xmlpp::TextNode* nodeText = dynamic_cast<const xmlpp::TextNode*>(*iterp);
+	    const xmlpp::CommentNode* nodeComment = dynamic_cast<const xmlpp::CommentNode*>(*iterp);
+	    Glib::ustring nodename = (*iterp)->get_name();
+	    
+	    if(!(nodeText && nodeText->is_white_space())) {//Let's ignore the indenting - you don't always want to do this.    
+	      nodename = (*iterp)->get_name();
+	      if(!nodeText && !nodeComment && !nodename.empty()) { //Let's not say "name: text".
+		if (nodename == "highways") 
+		  process_profiles(*iterp);
+		else if (nodename == "profiles") 
+		  process_profiles(*iterp);
+		else
+		  throw domain_error("Foutief configuratiefile: allowed, barrier of traffic_calming verwacht. Naam = "+nodename);
+	      }
+	    }
+	  }      
+	}
+      }
+    }
+  }
+  
+  static void process_highways(const xmlpp::Node* node) {
+    xmlpp::Node::NodeList list = node->get_children();
+    for(xmlpp::Node::NodeList::iterator iter = list.begin(); iter != list.end(); ++iter) {
+      const xmlpp::TextNode* nodeText = dynamic_cast<const xmlpp::TextNode*>(*iter);
+      const xmlpp::CommentNode* nodeComment = dynamic_cast<const xmlpp::CommentNode*>(*iter);
+      
+      if(!(nodeText && nodeText->is_white_space())) { //Let's ignore the indenting - you don't always want to do this.    
 	if(!nodeText && !nodeComment) { //Let's not say "name: text".
 	  const xmlpp::Element* nodeElement = dynamic_cast<const xmlpp::Element*>(*iter);
 	  const xmlpp::Attribute* attribute = nodeElement->get_attribute("name");
@@ -102,7 +115,6 @@ namespace osm {
     
     xmlpp::Node::NodeList list = node->get_children();
     for(xmlpp::Node::NodeList::iterator iter = list.begin(); iter != list.end(); ++iter) {
-      const xmlpp::ContentNode* nodeContent = dynamic_cast<const xmlpp::ContentNode*>(*iter);
       const xmlpp::TextNode* nodeText = dynamic_cast<const xmlpp::TextNode*>(*iter);
       const xmlpp::CommentNode* nodeComment = dynamic_cast<const xmlpp::CommentNode*>(*iter);
       
@@ -206,21 +218,26 @@ namespace osm {
       const xmlpp::Node* pNode = parser.get_document()->get_root_node(); //deleted by DomParser.
       //      print_node(pNode);
       process_conf(pNode);
-      /*
+      
       for (map<string,Highway>::iterator i=highways.begin();i != highways.end(); i++) {
 	cout << "  " << (*i).first << "  ";
 	((*i).second).output(cout);
 	cout << endl;
       }
-      */
+      
+      for (map<string,Profile>::iterator i=profiles.begin();i != profiles.end(); i++) {
+	cout << "  " << (*i).first << "  ";
+	((*i).second).output(cout);
+	cout << endl;
+      }
     } else
       throw runtime_error("Kan file "+_conffile+" niet parsen");
   }
   
   bool Map::insideRelation(const long relationid,const long nodeid) {
     double lat,lon;
-    std::vector<double> lats;
-    std::vector<double> lons;
+    vector<double> lats;
+    vector<double> lons;
 
 
     lat = _nodes[nodeid].lat();
@@ -278,21 +295,5 @@ namespace osm {
 	}
       }
     }
-  }
-
-  double Map::Astar(const Node &n1,const Node &n2) {
-    return 0;
-  }
-
-  double Map::Astar(const Node &n1,const double lat2,const double lon2) {
-    return 0;
-  }
-
-  double Map::Astar(const double lat1,const double lon1,const Node &n2) {
-    return 0;
-  }
-
-  double Map::Astar(const double lat1,const double lon1,const double lat2,const double lon2) {
-    return 0;
   }
 }

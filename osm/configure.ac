@@ -36,6 +36,9 @@ AC_SUBST(SQL_LIBS)
 PKG_CHECK_MODULES(ARG, libArgV)
 AC_SUBST(ARG_CFLAGS)
 AC_SUBST(ARG_LIBS)
+PKG_CHECK_MODULES(Z, zlib >= 1.2.3)
+AC_SUBST(Z_CFLAGS)
+AC_SUBST(Z_LIBS)
 AC_CHECK_LIB([m], [main], [], [AC_MSG_ERROR([strange!! libm missing])])
 
 # Checks for header files.
