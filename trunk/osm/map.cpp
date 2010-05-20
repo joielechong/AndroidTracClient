@@ -19,6 +19,28 @@ namespace osm {
     for(unsigned int i = 0; i < indentation; ++i)
       std::cout << " ";
   }
+  
+  static void getAttribute(const xmlpp::Element *nodeElement,const string attr_name,Glib::ustring &attribute) {
+    const xmlpp::Attribute *a = nodeElement->get_attribute(attr_name);
+    if (a)
+      attribute=a->get_value();
+  }
+  
+  static void process_allowed(const xmlpp::Node *node,Profile &profile) {
+    const xmlpp::TextNode* nodeText = dynamic_cast<const xmlpp::TextNode*>(node);
+    const xmlpp::CommentNode* nodeComment = dynamic_cast<const xmlpp::CommentNode*>(node);
+      
+    if(!(nodeText && nodeText->is_white_space())) { //Let's ignore the indenting - you don't always want to do this.    
+      if(!nodeText && !nodeComment) { //Let's not say "name: text".
+        const xmlpp::Element* nodeElement = dynamic_cast<const xmlpp::Element*>(node);
+	Glib::ustring name,maxspeed,avgspeed,ignore_oneway;
+          
+        getAttribute(nodeElement,"highway",name);
+        getAttribute(nodeElement,"extracost",extracost);
+        profile.allowed(name,atol(extracost.c_str));
+      }
+    }
+ }
 
   static void process_profiles(const xmlpp::Node* node) {
     xmlpp::Node::NodeList list = node->get_children();
@@ -29,22 +51,13 @@ namespace osm {
       if(!(nodeText && nodeText->is_white_space())) { //Let's ignore the indenting - you don't always want to do this.    
 	if(!nodeText && !nodeComment) { //Let's not say "name: text".
 	  const xmlpp::Element* nodeElement = dynamic_cast<const xmlpp::Element*>(*iter);
-	  const xmlpp::Attribute* attribute = nodeElement->get_attribute("name");
 	  Glib::ustring name,maxspeed,avgspeed,ignore_oneway;
-	  if (attribute)
-	    name=attribute->get_value();
-	  else
-	    throw domain_error("profile requires name");
-	  
-	  attribute = nodeElement->get_attribute("maxspeed");
-	  if (attribute)
-	    maxspeed=attribute->get_value();
-	  attribute = nodeElement->get_attribute("avgspeed");
-	  if (attribute)
-	    avgspeed=attribute->get_value();
-	  attribute = nodeElement->get_attribute("ignore_oneway");
-	  if (attribute)
-	    ignore_oneway=attribute->get_value();
+          
+          getAttribute(nodeElement,"name",name);
+          getAttribute(nodeElement,"maxspeed",maxspeed);
+          getAttribute(nodeElement,"avgspeed",avgspeed);
+          getAttribute(nodeElement,"ignore_oneway",ignore_oneway);
+
 	  profiles[name] = Profile();
 	  if (maxspeed.length() > 0)
 	    profiles[name].maxspeed(atol(maxspeed.c_str()));
@@ -62,10 +75,10 @@ namespace osm {
 	    if(!(nodeText && nodeText->is_white_space())) {//Let's ignore the indenting - you don't always want to do this.    
 	      nodename = (*iterp)->get_name();
 	      if(!nodeText && !nodeComment && !nodename.empty()) { //Let's not say "name: text".
-		if (nodename == "highways") 
-		  process_profiles(*iterp);
-		else if (nodename == "profiles") 
-		  process_profiles(*iterp);
+		if (nodename == "allowed") 
+		  process_allowed(*iterp,profiles[name]);
+		else if (nodename == "barrier") 
+		else if (nodename == "traffic_calming") 
 		else
 		  throw domain_error("Foutief configuratiefile: allowed, barrier of traffic_calming verwacht. Naam = "+nodename);
 	      }
@@ -85,19 +98,11 @@ namespace osm {
       if(!(nodeText && nodeText->is_white_space())) { //Let's ignore the indenting - you don't always want to do this.    
 	if(!nodeText && !nodeComment) { //Let's not say "name: text".
 	  const xmlpp::Element* nodeElement = dynamic_cast<const xmlpp::Element*>(*iter);
-	  const xmlpp::Attribute* attribute = nodeElement->get_attribute("name");
 	  Glib::ustring name,speed,extracost;
-	  if (attribute)
-	    name=attribute->get_value();
-	  else
-	    throw domain_error("highway requires name");
-	  
-	  attribute = nodeElement->get_attribute("speed");
-	  if (attribute)
-	    speed=attribute->get_value();
-	  attribute = nodeElement->get_attribute("extracost");
-	  if (attribute)
-	    extracost=attribute->get_value();
+          getAttribute(nodeElement,"name",name);
+          getAttribute(nodeElement,"speed",speed);
+          getAttribute(nodeElement,"extracost",extracost);
+
 	  highways[name] = Highway();
 	  if (speed.length() > 0)
 	    highways[name].speed(atol(speed.c_str()));
