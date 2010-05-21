@@ -211,7 +211,7 @@ int main(int argc, char* argv[])
 	cerr << ex.what() << endl;
       }
     } else  {
-      for (it=remaining.begin();it!=remaining.end();it++) {
+      for (it=extra.begin();it!=extra.end();it++) {
 	string filepath = *it;
 	if (filepath == "-") {
 	  osmparser.parse_stream(cin);
