@@ -217,6 +217,7 @@ namespace osm {
     inline void findNode(const double latinp,const double loninp,const double diff,std::vector<long> &id,std::vector<double> &lat,std::vector<double> &lon,std::vector<double> &distance) { _con->findNode(latinp,loninp,diff,id,lat,lon,distance);}
     bool insideRelation(long relationid,long nodeid);
     void findAdmin(const string querystring,std::vector<string> &naam,std::vector<int> &level);
+    double distance(const Node &n1,const Node &n2) const;
     double Astar(const Node &n1,const Node &n2);
     double Astar(const Node &n1,const double lat2,const double lon2);
     double Astar(const double lat1,const double lon1,const Node &n2);
