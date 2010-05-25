@@ -112,12 +112,22 @@ static void splitRequest(database &sql,osmparser::OSMParser &p,string elemType,s
     komma--;
     stringstream s;
     s << elemType << "/" << apistr.substr(start,komma-start);
-    try {
-      string buf = apiRequest(s.str());
-      p.parse_memory(buf);
-    } catch ( const out_of_range &ex) {
-      sql.delElem(s.str());
-    }
+    bool retry;
+    int retrycount=0;
+    do {
+      try {
+	retry=false;
+	string buf = apiRequest(s.str());
+	p.parse_memory(buf);
+      } catch ( const out_of_range &ex) {
+	sql.delElem(s.str());
+      } catch (const runtime_error &ex) {
+	retry = true;
+	retrycount++;
+	if (retry < 5) 
+	  cout << "  retry: " << retrycount << endl;
+      }
+    } while (retry && retrycount < 5);
   }
 }
 
@@ -248,14 +258,24 @@ int main(int argc, char* argv[])
 
 	  if (count++ == ((MAXELEM)-1)) {
 	    cout << "        " << apistring.str()  << endl;
-	    try {
-	      string buf = apiRequest(apistring.str());
-	      osmparser.parse_memory(buf);
+	    bool retry;
+	    int retrycount = 0;
+	    do {
+	      try {
+		retry = false;
+		string buf = apiRequest(apistring.str());
+		osmparser.parse_memory(buf);
 	    } catch (const out_of_range &ex) {
-	      cerr << ex.what() << endl;
-	      splitRequest(sql,osmparser,elemtype,apistring.str());
-	      //	      sql.delElem(apistring);
-	    }
+		cerr << ex.what() << endl;
+		splitRequest(sql,osmparser,elemtype,apistring.str());
+		//	      sql.delElem(apistring);
+	      } catch (const runtime_error &ex) {
+		retry = true;
+		retrycount++;
+		if (retry < 5) 
+		  cout << "  retry: " << retrycount << endl;
+	      }
+	    } while (retry && retrycount < 5);
 	    count = 0;
 	    apistring.str("");
 	  }
