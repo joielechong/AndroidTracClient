@@ -32,7 +32,7 @@ CREATE TABLE adressen(id long,type varchar,country varchar,city varchar,street v
 
 CREATE TRIGGER nodetag BEFORE DELETE ON node FOR EACH ROW  BEGIN DELETE FROM tag where id=old.id and type='node'; DELETE FROM nd WHERE ref=old.id; DELETE FROM member where ref=old.id AND type='node'; DELETE FROM neighbor WHERE id1=old.id OR id2=old.id;END;
 CREATE TRIGGER waytag BEFORE DELETE ON way FOR EACH ROW  BEGIN DELETE FROM tag where id=old.id and type='way'; DELETE FROM member where ref =old.id AND type='way'; DELETE FROM nd WHERE id=old.id; DELETE FROM neighbor WHERE way=old.id; END;
-CREATE TRIGGER reltag BEFORE DELETE ON relation FOR EACH ROW  BEGIN DELETE FROM tag where id=old.id and type='relation'; DELETE FROM admin WHERE id=old.id; DELETE FROM member WHERE id=old.id AND type='relation'; END;
+CREATE TRIGGER reltag BEFORE DELETE ON relation FOR EACH ROW  BEGIN DELETE FROM tag where id=old.id and type='relation'; DELETE FROM admin WHERE id=old.id; DELETE FROM member WHERE ref=old.id AND type='relation'; DELETE FROM member WHERE id=old.id; END;
 
 CREATE VIEW bucket as SELECT x,y,id as node FROM node WHERE NOT (x IS NULL OR y IS NULL);
 CREATE VIEW nodetag AS SELECT * FROM tag WHERE type='node';
