@@ -9,7 +9,7 @@ using namespace std;
 int main(int argc, char* argv[])
 {
   cout <<"<HTML><HEAD>";
-cout <META HTTP-EQUIV=Content-Type: text/html; charset=UTF8";
+  cout << "<META HTTP-EQUIV=Content-Type: text/html; charset=UTF8";
   cout << "TITLE>Eisen uit DBFM</TITLE</HEAD><BODY>"<<endl;
   for (int i=1;i<argc;i++) {
     string filepath = argv[i];
