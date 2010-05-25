@@ -208,19 +208,18 @@ namespace osm {
     void InterpolatedAddresses(Way &w);
     inline void InterpolatedAddresses(long id) {InterpolatedAddresses(_ways[id]);}
     osm::Node& Address(const string country,const string city,const string street,const string housenumber,const string postcode) const;
-    double distance(Node &n1,Node &n2);
+    double distance(const Node &n1,const Node &n2) const;
     inline double distance(const long n1,const long n2) {return distance(_nodes[n1],_nodes[n2]);}
-    double cost(Node &n1,Node &n2);
+    double cost(const Node &n1,const Node &n2);
     inline double cost(const long n1,const long n2) {return cost(_nodes[n1],_nodes[n2]);}
     
 
     inline void findNode(const double latinp,const double loninp,const double diff,std::vector<long> &id,std::vector<double> &lat,std::vector<double> &lon,std::vector<double> &distance) { _con->findNode(latinp,loninp,diff,id,lat,lon,distance);}
     bool insideRelation(long relationid,long nodeid);
     void findAdmin(const string querystring,std::vector<string> &naam,std::vector<int> &level);
-    double distance(const Node &n1,const Node &n2) const;
-    double Astar(const Node &n1,const Node &n2);
-    double Astar(const Node &n1,const double lat2,const double lon2);
-    double Astar(const double lat1,const double lon1,const Node &n2);
+    double Astar(const long n1,const long n2);
+    double Astar(const long n1,const double lat2,const double lon2);
+    double Astar(const double lat1,const double lon1,const long n2);
     double Astar(const double lat1,const double lon1,const double lat2,const double lon2);
 
   private:

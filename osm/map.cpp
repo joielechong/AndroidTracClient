@@ -1,3 +1,10 @@
+
+
+
+
+
+
+
 #include "osm.h"
 #include "osm_db.h"
 #include "astarconf.h"
@@ -351,6 +358,6 @@ namespace osm {
   }
   
   double Map::distance(const Node &n1,const Node &n2) const {
-    return grootcirkel(n1.lat((),n1.lon(),n2.lat(),n2.lon());
+    return grootcirkel(n1.lat(),n1.lon(),n2.lat(),n2.lon());
   }
 }
