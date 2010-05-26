@@ -1,3 +1,4 @@
+
 #ifndef _OSM_H
 #define _OSM_H
 
@@ -196,6 +197,50 @@ namespace osm {
     unsigned long _size;
   };
 
+  class Highway {
+  public:
+    inline Highway() : _extracost(0),_speed(0) {}
+    inline unsigned int speed() const {return _speed;}
+    inline void speed(const unsigned int s) {_speed=s;}
+    inline unsigned int extracost() const {return _extracost;}
+    inline void extracost(const unsigned int e) {_extracost=e;}
+    inline void output(ostream &out) {out << "Speed = " << _speed << " extracost = " << _extracost;}
+
+  private:
+    int _extracost;
+    unsigned int _speed;
+  };
+
+  class Profile {
+  public:
+    inline Profile() : _maxspeed(0),_avgspeed(0),_ignore_oneway(false) {}
+
+    inline unsigned int maxspeed() const {return _maxspeed;}
+    inline void maxspeed(const unsigned int s) {_maxspeed=s;}
+    inline unsigned int avgspeed() const {return _avgspeed;}
+    inline void avgspeed(const unsigned int s) {_avgspeed=s;}
+    inline bool ignore_oneway() const {return _ignore_oneway;}
+    inline void set_ignore_oneway() {_ignore_oneway = true;}
+    inline unsigned int allowed(const string h) {return _allowed[h];}
+    inline void allowed(string h,const unsigned int e) {_allowed[h]=e;}
+    inline unsigned int traffic_calming(const string t) {return _traffic_calming[t];}
+    inline void traffic_calming(const string t,const unsigned int e) {_traffic_calming[t]=e;}
+    inline unsigned int barrier(const string b) {return _barrier[b];}
+    inline void barrier(const string b,const unsigned int e) {_barrier[b]=e;}
+    void output(ostream &out);
+
+  private:
+    unsigned int _maxspeed;
+    unsigned int _avgspeed;
+    bool _ignore_oneway;
+    map<string,unsigned int> _allowed;
+    map<string,unsigned int> _traffic_calming; 
+    map<string,unsigned int> _barrier;
+  };
+
+  typedef map<string,Highway> highway_type;
+  typedef map<string,Profile> profile_type;
+
   class Map {
   public:
     Map(osm_db::database *con,const unsigned long cacheSize,const string conffile="astarconf.xml");
@@ -217,19 +262,24 @@ namespace osm {
     inline void findNode(const double latinp,const double loninp,const double diff,std::vector<long> &id,std::vector<double> &lat,std::vector<double> &lon,std::vector<double> &distance) { _con->findNode(latinp,loninp,diff,id,lat,lon,distance);}
     bool insideRelation(long relationid,long nodeid);
     void findAdmin(const string querystring,std::vector<string> &naam,std::vector<int> &level);
-    double Astar(const long n1,const long n2);
-    double Astar(const long n1,const double lat2,const double lon2);
-    double Astar(const double lat1,const double lon1,const long n2);
-    double Astar(const double lat1,const double lon1,const double lat2,const double lon2);
+    double Astar(const long n1,const long n2,const string &vehicle);
+    double Astar(const long n1,const double lat2,const double lon2,const string &vehicle);
+    double Astar(const double lat1,const double lon1,const long n2,const string &vehicle);
+    double Astar(const double lat1,const double lon1,const double lat2,const double lon2,const string &vehicle);
+    void initRoute(const string &vehicle);
 
   private:
     osm_db::database *_con;
     unsigned long _cacheSize;
+    std::string _vehicle;
 
     Cache<Node> _nodes;
     Cache<Way> _ways;
     Cache<Relation> _relations;
     string _conffile;
+
+    highway_type _highways;
+    profile_type _profiles;
   };
 }
 

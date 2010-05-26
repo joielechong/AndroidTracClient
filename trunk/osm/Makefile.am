@@ -53,7 +53,6 @@ libosm_la_SOURCES = element.cpp node.cpp way.cpp relation.cpp \
 		    db_create.cpp \
 		    db_getelements.cpp \
 		    interpol.cpp \
-		    astarconf.h \
                     osm_db.h
 
 libosmsql_la_LDFLAGS= $(ASIN_LIBM) $(COS_LIBM) $(POW_LIB) $(POW_LIBM) $(SIN_LIBM) $(SQRT_LIBM)
