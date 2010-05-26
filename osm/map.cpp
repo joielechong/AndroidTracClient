@@ -1,13 +1,5 @@
-
-
-
-
-
-
-
 #include "osm.h"
 #include "osm_db.h"
-#include "astarconf.h"
 #include "grootcirkel.h"
 #include <string>
 #include <stdbool.h>
@@ -20,6 +12,9 @@
 namespace osm {
   using namespace std;
 
+  highway_type highways;
+  profile_type profiles;
+  
   void Profile::output(ostream &out) {
     out << "maxspeed = " << _maxspeed << "  avgspeed = " << _avgspeed << " ignore_oneway = " << _ignore_oneway;
 
@@ -33,9 +28,6 @@ namespace osm {
       out << endl << "  Traffic Calming : " << (*iter).first << " extracost = " << (*iter).second;
   }
 
-  map<string,Highway> highways;
-  map<string,Profile> profiles;
-  
   static void print_indentation(unsigned int indentation) {
     for(unsigned int i = 0; i < indentation; ++i)
       std::cout << " ";
@@ -279,13 +271,13 @@ namespace osm {
       //      print_node(pNode);
       process_conf(pNode);
       
-      for (map<string,Highway>::iterator i=highways.begin();i != highways.end(); i++) {
+      for (highway_type::iterator i=highways.begin();i != highways.end(); i++) {
 	cout << "  " << (*i).first << "  ";
 	((*i).second).output(cout);
 	cout << endl;
       }
       
-      for (map<string,Profile>::iterator i=profiles.begin();i != profiles.end(); i++) {
+      for (profile_type::iterator i=profiles.begin();i != profiles.end(); i++) {
 	cout << "  " << (*i).first << "  ";
 	((*i).second).output(cout);
 	cout << endl;
