@@ -10,6 +10,7 @@
 #include <DoubleArgument.h>
 #include <BooleanArgument.h>
 #include <ListArgument.h>
+#include <list>
 
 using namespace std;
 
@@ -63,9 +64,15 @@ int main(int argc, char *argv[]) {
 
   if (costArg.hasValue()) {
     string cost = costArg.getValue();
+    list<long> route;
     cout << "cost = " << cost<< endl;
-    //    map.Astar(atol(start.c_str()),atol(eind.c_str())),"");
-    map.Astar(46071276,603337746,"");
+    //    map.Astar(atol(start.c_str()),atol(eind.c_str())),string(""));
+    map.Astar(46071276,603337746,string(""),route);
+    list<long>::iterator rp;
+
+    for(rp=route.begin(); rp != route.end(); rp++) {
+      cout << *rp << endl;
+    }
   }
   
   /*
