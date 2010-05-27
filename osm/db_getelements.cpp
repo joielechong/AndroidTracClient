@@ -121,6 +121,28 @@ namespace osm_db {
     }
   }
 
+  void database::getWays(const long nodeid,vector<long> &ways) {
+    if (_getWays == NULL) 
+      _getWays = new sqlite3_command(*_sql,"SELECT way FROM neighbor AS nb, (SELECT ? AS id) AS inp WHERE id1=id  OR id2=id");
+
+    ways.clear();
+    _getWays->bind(1,(sqlite3x::int64_t)nodeid);
+    sqlite3_cursor cur(_getWays->executecursor());
+    while(cur.step())
+      ways.push_back(cur.getint64(0));
+  }
+
+  long database::getConnectingWay(const long node1,const long node2) {
+    if (_getConn == NULL)
+      _getConn = new sqlite3_command(*_sql,"SELECT way FROM neighbor AS nb, (SELECT ? AS id1,? AS id2) AS inp WHERE (nb.id1=inp.id1 AND nb.id2=inp.id2) OR (nb.id1=inp.id2 AND nb.id2=inp.id1)");
+    _getConn->bind(1,(sqlite3x::int64_t)node1);
+    _getConn->bind(2,(sqlite3x::int64_t)node2);
+    sqlite3_cursor cur(_getConn->executecursor());
+    if (cur,step())
+      return cur.getint64(0);
+    else
+      return 0;
+  }
   void database::getMembers(long id,vector<string> &type,vector<string> &role,vector<long> &ref) {
     if (_getMembers == NULL) 
       _getMembers = new sqlite3_command(*_sql,"SELECT seq,type,role,ref FROM member WHERE id=?");
@@ -325,4 +347,16 @@ namespace osm_db {
     while (cur.step())
       ids.push_back(cur.getint64(0));
   
-  }}
+  }
+  
+  void database::adminNode(const long nodeid,vector<long> &admins) {
+    if (_adminNode == NULL)
+      _adminNode = new sqlite3_command(*_sql,"SELECT admin.id FROM admin,node WHERE node.id=? and lat >= minlat and lat <= maxlat and lon >= minlon and lon <= maxlon ORDER BY level DESC,name");
+    _adminNode->bind(1,(sqlite3x::int64_t)nodeid);
+    sqlite3_cursor cur(_adminNode->executecursor());
+    admins.clear();
+    while (cur.step())
+      admins.push_back*cur.getint64(0));
+  }
+  
+}

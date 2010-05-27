@@ -48,6 +48,7 @@ namespace osm_db {
     void getRelation(const long id,int &version);
     void getTags(const long id,std::string type,std::vector<std::string> &k,std::vector<std::string> &v);
     void getNds(const long id,std::vector<long> &ref);
+    void getWays(const long nodeid,std::vector<long> &ways);
     void getMembers(const long id,std::vector<std::string> &type,std::vector<std::string> &role,std::vector<long> &ref);
     void findNode(const double latinp,const double loninp,double diff,std::vector<long> &id,std::vector<double> &lat,std::vector<double> &lon,std::vector<double> &distance);
     void getRelCoords(const long relationid, std::vector<double> &lat,std::vector<double> &lon);
@@ -57,6 +58,8 @@ namespace osm_db {
     void getInterpolationWays(std::vector<long> &ids);
     void getids(std::string &sqlcmd,std::vector<long> &ids);
     void getNeighbours(const long id,std::vector<long> &ids);
+    long getConnectingWay(const long n1,const long n2);
+    void adminNode(const long nodeid,vector<long> &admins);
 
   private: 
 
@@ -77,8 +80,10 @@ namespace osm_db {
     sqlite3x::sqlite3_command *_getRelation;
     sqlite3x::sqlite3_command *_getTags;
     sqlite3x::sqlite3_command *_getNds;
+    sqlite3x::sqlite3_command *_getWays;
     sqlite3x::sqlite3_command *_getMembers;
     sqlite3x::sqlite3_command *_getNeighbours;
+    sqlite3x::sqlite3_command *_getConn;
 
     sqlite3x::sqlite3_command *_getRelCoords;
     sqlite3x::sqlite3_command *_getRelWays;
@@ -89,6 +94,8 @@ namespace osm_db {
     sqlite3x::sqlite3_command *_findAdmin;
     sqlite3x::sqlite3_command *_findAddress;
     sqlite3x::sqlite3_command *_findHouses;
+    sqlite3x::sqlite3_command *_adminNode;
+    
 
     sqlite3x::sqlite3_command *_delTags;
     sqlite3x::sqlite3_command *_delNds;

@@ -28,21 +28,30 @@ namespace osm {
     throw std::range_error("Nd kan niet in dit type element");
   }
   
+  void Element::getTags(const long id,const string type,osm_db::database &con) {
+    vector<string> k,v;
+    con.getTags(id,type,k,v);
+    
+   for (unsigned int i=0;i<k.size();i++)
+     _tags[k[i] = v[i];
+  }
+  
   string Element::printTags() {
-    unsigned int i;
+    tag_type::iterator i;
     stringstream s;
     
-    for (i=0;i<_k.size();i++) 
-      s << "   " << _k[i] << " => " << _v[i] << endl;
+    for (i=_tags.begin();i<_tags.end();i++) 
+      s << "   " << i->first << " => " << i->second << endl;
     return s.str();
   }
 
   std::string Element::operator[](const std::string tagkey) const {
-    for (unsigned int i=0;i<_k.size();i++) {
-      if (_k[i] == tagkey)
-	return _v[i];
-    }
-    throw range_error("Key bestaat niet: "+tagkey);
+    tag_type::iterator i;
+    i = _tags.find(tagkey);
+    if (i != _tags.end()) 
+        return i->second;
+    else
+      throw range_error("Key bestaat niet: "+tagkey);
   }
 
   void Element::setLat(string ref) {
@@ -54,10 +63,5 @@ namespace osm {
   
   string Element::output (){
     throw std::range_error("Kan Element niet printen");
-  }
-  
-  void Element::addTag(string k,string v) {
-    _k.push_back(k);
-    _v.push_back(v);
-  }  
+  } 
 }
