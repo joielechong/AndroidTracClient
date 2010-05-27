@@ -9,6 +9,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <map>
+#include <list>
 
 namespace osm {
   
@@ -264,10 +265,10 @@ namespace osm {
     inline void findNode(const double latinp,const double loninp,const double diff,std::vector<long> &id,std::vector<double> &lat,std::vector<double> &lon,std::vector<double> &distance) { _con->findNode(latinp,loninp,diff,id,lat,lon,distance);}
     bool insideRelation(long relationid,long nodeid);
     void findAdmin(const string querystring,std::vector<string> &naam,std::vector<int> &level);
-    double Astar(const long n1,const long n2,const string &vehicle);
-    double Astar(const long n1,const double lat2,const double lon2,const string &vehicle);
-    double Astar(const double lat1,const double lon1,const long n2,const string &vehicle);
-    double Astar(const double lat1,const double lon1,const double lat2,const double lon2,const string &vehicle);
+    double Astar(const long n1,const long n2,const string &vehicle,list<long> &route);
+    double Astar(const long n1,const double lat2,const double lon2,const string &vehicle,list<long> &route);
+    double Astar(const double lat1,const double lon1,const long n2,const string &vehicle,list<long> &route);
+    double Astar(const double lat1,const double lon1,const double lat2,const double lon2,const string &vehicle,list<long> &route);
     void initRoute(const string &vehicle);
     inline void getNeighbours(const long nodeid,vector<long> &ids) const {_con->getNeighbours(nodeid,ids);}
 
