@@ -26,7 +26,7 @@ namespace osm_db {
   }
   
   void database::getNode(long id,int &version,double &lat,double &lon, int&x, int &y) {
-    std::cout << "getNode("<<id<<")"<<std::endl;
+    //    std::cout << "getNode("<<id<<")"<<std::endl;
     try {
       if (_getNode == NULL) 
         _getNode = new sqlite3_command(*_sql,"SELECT version,lat,lon,x,y FROM node  WHERE id = ?");
@@ -39,7 +39,7 @@ namespace osm_db {
 	x = cur.getint(3);
 	y = cur.getint(4);
       } else
-        throw std::range_error("Node does not exist");
+        throw osm_db_error("Node does not exist: %ld",id);
       cur.close();
     } catch (const sqlite3x::database_error& ex) {
       cerr << "Exception in sqlite: " << ex.what() <<endl;
@@ -313,4 +313,16 @@ namespace osm_db {
       ids.push_back(cur.getint64(0));
     
   }
-}
+
+  void database::getNeighbours(const long id,vector<long> &ids) {
+    if (_getNeighbours == NULL)
+      _getNeighbours = new sqlite3_command(*_sql,"SELECT id2 FROM neighbor WHERE id1=? UNION SELECT id1 FROM neighbor WHERE id2=?");
+    _getNeighbours->bind(1,(sqlite3x::int64_t)id);
+    _getNeighbours->bind(2,(sqlite3x::int64_t)id);
+    sqlite3_cursor cur(_getNeighbours->executecursor());
+
+    ids.clear();
+    while (cur.step())
+      ids.push_back(cur.getint64(0));
+  
+  }}

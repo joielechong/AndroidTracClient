@@ -56,6 +56,7 @@ namespace osm_db {
     void findHouses(const long id,std::vector<long> &nodeids,std::vector<double> &nodelats,std::vector<double> &nodelons,std::vector<std::string> &countriesd,std::vector<std::string> &citiess,std::vector<std::string> &streets,std::vector<std::string> &housenumbers,std::vector<std::string> &postcodes);
     void getInterpolationWays(std::vector<long> &ids);
     void getids(std::string &sqlcmd,std::vector<long> &ids);
+    void getNeighbours(const long id,std::vector<long> &ids);
 
   private: 
 
@@ -77,6 +78,7 @@ namespace osm_db {
     sqlite3x::sqlite3_command *_getTags;
     sqlite3x::sqlite3_command *_getNds;
     sqlite3x::sqlite3_command *_getMembers;
+    sqlite3x::sqlite3_command *_getNeighbours;
 
     sqlite3x::sqlite3_command *_getRelCoords;
     sqlite3x::sqlite3_command *_getRelWays;
