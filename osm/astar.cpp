@@ -5,16 +5,20 @@ namespace osm {
   using namespace std;
   
   void Map::initRoute(const string &vehicle) {
+    if (vehicle != "" && _profiles.find(vehicle) == _profiles.end())
+        throw domain_error("Onbekend voertuig : "+vehicle);
     _vehicle = vehicle;
   }
 
   double Map::cost(const long n1,const long n2,const long prevnode) { 
     double dist = distance(n1,n2);
+    if (vehicle == "") return dist;
     return dist;
   }
 
   double Map::calc_h_score(const long n1,const long n2) {
     double dist = distance(n1,n2);
+    if (vehicle == "") return dist;
     return dist;
   }
   
@@ -75,7 +79,7 @@ namespace osm {
     return 0;
   }
   
-  double Map::Astar(const long n1,const long n2,const string &vehicle,deque<long> &route) {
+  double Map::Astar(const long n1,const long n2,const string &vehicle,list<long> &route) {
     set_type startset,goalset,closedset;
     score_type gs_score,hs_score,fs_score,ds_score, gg_score,hg_score,fg_score,dg_score;
     route_type came_from,goes_to;
@@ -93,20 +97,20 @@ namespace osm {
       if (xs == 0)
         xs = AstarHelper(2,n1,goalset,closedset,fg_score,gg_score,hg_score,dg_score,goes_to);
     }
-    if (xs != 0) {]
-    
+    if (xs == 0)
+        throw range_error("Niet mogelijk om een royute te berekenen");
     return 0;
   }
   
-  double Map::Astar(const long n1,const double lat2,const double lon2,const string &vehicle) {
+  double Map::Astar(const long n1,const double lat2,const double lon2,const string &vehicle,list<long> &route) {
     return 0;
   }
   
-  double Map::Astar(const double lat1,const double lon1,const long n2,const string &vehicle) {
+  double Map::Astar(const double lat1,const double lon1,const long n2,const string &vehicle,list<long> &route) {
     return 0;
   }
   
-  double Map::Astar(const double lat1,const double lon1,const double lat2,const double lon2,const string &vehicle) {
+  double Map::Astar(const double lat1,const double lon1,const double lat2,const double lon2,const string &vehicle,list<long> &route) {
     return 0;
   }
 }
