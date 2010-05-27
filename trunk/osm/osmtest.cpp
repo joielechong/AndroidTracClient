@@ -70,8 +70,58 @@ int main(int argc, char *argv[]) {
     map.Astar(46071276,603337746,string(""),route);
     list<long>::iterator rp;
 
+    double dist = 0;
+    long prevnode = 0;
+    long prevway = 0;
+    
     for(rp=route.begin(); rp != route.end(); rp++) {
-      cout << *rp << endl;
+      cout << *rp;
+      vector<long> ways;
+      getWays(*rp,ways);
+      long w;
+      if (ways.size() == 1)
+        w=ways[0];
+      else {
+        w=getConnectingWay(prevnode,*rp);
+      }
+      
+      if (w != 0) {
+        cout << " way(" << w ;
+        Way &w = _ways[w];
+        try {
+          string naam=w[name];
+          cout << " " << naam;
+        } catch (range_error &ex) {}
+        try {
+          string ref=w[ref];
+          cout << " " << ref;
+        } catch (range_error &ex) {}
+        try {
+          string highway=w[highway];
+          cout << " " << highway;
+        } catch (range_error &ex) {}
+        try {
+          string maxspeed=w[maxspeed];
+          cout << " " << maxspeed;
+        } catch (range_error &ex) {}
+        cout << ")";
+      }
+      
+      if (prevnode != 0) {
+        double d = distance(prevnode,*rp);
+        dist += d;
+        double direction= direction(prevnode,*rp);
+        cout << " distance: " << d << " (" << dist << ") direction: " << direction;        
+      }
+      
+      vector<long> adminlist;
+      for (vector<long>::iterator i=adminlist.begin();i != adminlist.end();i++) {
+        Relation &r = _relations[*i];
+        cout << " " << r[name] << "(" << r[admin_level] << ")";
+      }
+      cout << endl;
+      prevnode = *rp;
+      prevway = w;
     }
   }
   

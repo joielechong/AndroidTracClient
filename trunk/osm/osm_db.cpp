@@ -31,6 +31,7 @@ namespace osm_db {
     _getWay = NULL;
     _getRelation = NULL;
     _getNds = NULL;
+    _getWays = NULL;
     _getMembers = NULL;
     _getTags = NULL;
     _getNeighbours = NULL;
@@ -38,6 +39,7 @@ namespace osm_db {
     _findAdmin = NULL;
     _findAddress = NULL;
     _findHouses = NULL;
+    _adminNode = NULL;
     _getRelCoords = NULL;
     _getRelWays = NULL;
     _getWayAsc = NULL;
@@ -97,6 +99,8 @@ namespace osm_db {
       delete _getTags;
     if (_getNds != NULL)
       delete _getNds;
+    if (_getWays != NULL)
+      delete _getWays;
     if (_getMembers != NULL)
       delete _getMembers;
     if (_getNeighbours != NULL)
@@ -109,6 +113,8 @@ namespace osm_db {
       delete _findAddress;
     if (_findHouses != NULL)
       delete _findHouses;
+    if (_adminNode != NULL)
+      delete _adminNode;
     if (_getRelCoords != NULL)
       delete _getRelCoords;
     if (_getRelCoords != NULL)

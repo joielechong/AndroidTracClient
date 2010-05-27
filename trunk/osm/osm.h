@@ -29,6 +29,8 @@ namespace osm {
     string _type;
   };
   
+  typedef map<string,string> tag_type;
+  
   class Element {
   public:
     Element();
@@ -38,7 +40,7 @@ namespace osm {
     
     inline long id() const { return _id;}
     inline int version() const { return _version;}
-    void addTag(string k,string v);
+    inline void addTag(const string k,const string v) {_tags[k] = v;}
     
     inline void setId(string id) {_id=atol(id.c_str());}
     inline void setVersion(string version) {_version=atol(version.c_str());}
@@ -57,8 +59,7 @@ namespace osm {
     long _id;
     int	_version;
     string _type;
-    vector<string> _k;
-    vector<string> _v;
+    tag_type _tags;
   };
   
   class Way  : public Element {
@@ -71,9 +72,9 @@ namespace osm {
     string output ();
 
     inline void addNd(const long ref) {_nds.push_back(ref);}
-    inline long getNodesCount() const { return _nds.size();}
-    inline long getNd(const long seq) const { return _nds[seq];}
-    Way * _prev,*_next;
+    inline long getNodesCount() const {return _nds.size();}
+    inline long getNd(const long seq) const {return _nds[seq];}
+    Way *_prev,*_next;
 
   private:
     vector<long> _nds;
@@ -91,13 +92,13 @@ namespace osm {
     void addMember(long ref,string type,string role);
     bool isInside(osm_db::database *con,const double lat,const double lon);
 
-    Relation * _prev,*_next;
+    Relation *_prev,*_next;
 
   private:
     vector<Member> _members;
     bool _coordsLoaded;
-    std::vector<double> _lats;
-    std::vector<double> _lons;
+    vector<double> _lats;
+    vector<double> _lons;
   };
   
   class Node  : public Element {
@@ -114,7 +115,7 @@ namespace osm {
     inline virtual void setLat(string lat) {_lat=atof(lat.c_str());}
     inline virtual void setLon(string lon) {_lon=atof(lon.c_str());}
 
-    Node * _prev,*_next;
+    Node *_prev,*_next;
     
   private:
     double _lat;
@@ -130,8 +131,8 @@ namespace osm {
   
   template <class T> class Cache{
 
-    typedef typename std::map<long,T*> cache_t;
-    typedef typename std::map<long,T*>::iterator cache_iter;
+    typedef typename map<long,T*> cache_t;
+    typedef typename map<long,T*>::iterator cache_iter;
     
   public:
     Cache(osm_db::database *con,const unsigned long size){_top = NULL;_bottom = NULL;_con=con;_size=size;}
@@ -178,14 +179,14 @@ namespace osm {
 	e = it->second;
       
       /*
-      std::cout << "top to bottom" << std::endl;
+      cout << "top to bottom" << endl;
       for (T *xxx=_top;xxx != NULL; xxx=xxx->_next)
-	std::cout << xxx->id() << " ";
-      std::cout << std::endl;
-      std::cout << "bottom to top" << std::endl;
+	cout << xxx->id() << " ";
+      cout << endl;
+      cout << "bottom to top" << endl;
       for (T *xxx=_bottom;xxx != NULL; xxx=xxx->_prev)
-	std::cout << xxx->id() << " ";
-      std::cout << std::endl;
+	cout << xxx->id() << " ";
+      cout << endl;
       */
       return *e;
     }
@@ -255,12 +256,12 @@ namespace osm {
 
     void InterpolatedAddresses();
     void InterpolatedAddresses(Way &w);
-    inline void InterpolatedAddresses(long id) {InterpolatedAddresses(_ways[id]);}
+    inline void InterpolatedAddresses(long id) {InterpolatedAddresses(_ways.id());}
     osm::Node& Address(const string country,const string city,const string street,const string housenumber,const string postcode) const;
 
-    inline void findNode(const double latinp,const double loninp,const double diff,std::vector<long> &id,std::vector<double> &lat,std::vector<double> &lon,std::vector<double> &distance) { _con->findNode(latinp,loninp,diff,id,lat,lon,distance);}
+    inline void findNode(const double latinp,const double loninp,const double diff,vector<long> &id,vector<double> &lat,vector<double> &lon,vector<double> &distance) { _con->findNode(latinp,loninp,diff,id,lat,lon,distance);}
     bool insideRelation(long relationid,long nodeid);
-    void findAdmin(const string querystring,std::vector<string> &naam,std::vector<int> &level);
+    void findAdmin(const string querystring,vector<string> &naam,vector<int> &level);
     double Astar(const long n1,const long n2,const string &vehicle,list<long> &route);
     double Astar(const long n1,const double lat2,const double lon2,const string &vehicle,list<long> &route);
     double Astar(const double lat1,const double lon1,const long n2,const string &vehicle,list<long> &route);
@@ -269,6 +270,8 @@ namespace osm {
     inline void getNeighbours(const long nodeid,vector<long> &ids) const {_con->getNeighbours(nodeid,ids);}
     double distance(const Node &n1,const Node &n2) const;
     inline double distance(const long n1,const long n2) {return distance(_nodes[n1],_nodes[n2]);}  
+    inline long getConnectingWay(const long n1,const long n2) {return _con->getConnectingWays(n1,n2);}
+    double direction(const long n1,const long n2) const;
 
   private:
     long AstarHelper(int set,long goal,set_type &openset,set_type &closedset,score_type &f,score_type &g,score_type &h,score_type &d,route_type &to);
@@ -277,7 +280,7 @@ namespace osm {
 
     osm_db::database *_con;
     unsigned long _cacheSize;
-    std::string _vehicle;
+    string _vehicle;
 
     Cache<Node> _nodes;
     Cache<Way> _ways;

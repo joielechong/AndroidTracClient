@@ -349,7 +349,29 @@ namespace osm {
     }
   }
   
+  void Map::findLocation(const long nodeid,vector<long> &adminlist) {
+    vector<long> admins;
+    
+    adminlist.clear();
+    
+    _con->adminNode(nodeid,&admins);
+    Node &n = _nodes[nodeid];
+    for (vector<long>::iterator i=admins.begin();i != admins.end();i++) {
+      Relation &r = _relations[*i];
+      if (r.isInSide(_con,n,lat(),n.lon())
+        adminlist.push_back(*i);
+    }
+  }
+  
   double Map::distance(const Node &n1,const Node &n2) const {
     return grootcirkel(n1.lat(),n1.lon(),n2.lat(),n2.lon());
+  }
+  
+  double Map::direction(const long n1, const long n2) const {
+    Node &nd1 = _nodes[n1];
+    Node &nd2 = _nodes[n2];
+    double dx = nd2.lon() - nd1.lon();
+    double dy = nd2.lat() - nd1.lat();
+    return 180.0*atan2(dx,dy)/PI;  // PI is gedefinieerd in grootcirkel.h
   }
 }
