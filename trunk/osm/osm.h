@@ -107,7 +107,7 @@ namespace osm {
     Node(long id,osm_db::database &con);
     inline ~Node() {}
     inline double lat() const { return _lat;}
-    inline double lon() const { return _lon;}
+    inline double lon() const { return _lon;}    
     string output ();
     
     inline virtual void setLat(string lat) {_lat=atof(lat.c_str());}
@@ -240,7 +240,10 @@ namespace osm {
 
   typedef map<string,Highway> highway_type;
   typedef map<string,Profile> profile_type;
-
+  typedef map<long,int> set_type;
+  typedef map<long,double> score_type;
+  typedef map<long,long> route_type; 
+  
   class Map {
   public:
     Map(osm_db::database *con,const unsigned long cacheSize,const string conffile="astarconf.xml");
@@ -255,9 +258,8 @@ namespace osm {
     osm::Node& Address(const string country,const string city,const string street,const string housenumber,const string postcode) const;
     double distance(const Node &n1,const Node &n2) const;
     inline double distance(const long n1,const long n2) {return distance(_nodes[n1],_nodes[n2]);}
-    double cost(const Node &n1,const Node &n2);
-    inline double cost(const long n1,const long n2) {return cost(_nodes[n1],_nodes[n2]);}
-    
+    double cost(const long n1,const long n2,const long prevnode);
+    double calc_h_score(const long n1,const long n2);
 
     inline void findNode(const double latinp,const double loninp,const double diff,std::vector<long> &id,std::vector<double> &lat,std::vector<double> &lon,std::vector<double> &distance) { _con->findNode(latinp,loninp,diff,id,lat,lon,distance);}
     bool insideRelation(long relationid,long nodeid);
@@ -267,8 +269,11 @@ namespace osm {
     double Astar(const double lat1,const double lon1,const long n2,const string &vehicle);
     double Astar(const double lat1,const double lon1,const double lat2,const double lon2,const string &vehicle);
     void initRoute(const string &vehicle);
+    inline void getNeighbours(const long nodeid,vector<long> &ids) const {_con->getNeighbours(nodeid,ids);}
 
   private:
+    void AstarHelper(int set,long goal,set_type &openset,set_type &closedset,score_type &f,score_type &g,score_type &h,score_type &d,route_type &to);
+
     osm_db::database *_con;
     unsigned long _cacheSize;
     std::string _vehicle;

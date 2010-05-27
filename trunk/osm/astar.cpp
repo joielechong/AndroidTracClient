@@ -4,31 +4,96 @@
 namespace osm {
   using namespace std;
   
-  typedef map<long,bool> set_type;
-  typedef map<long,double> score_type;
-  typedef map<long,long> route_type; 
-  
   void Map::initRoute(const string &vehicle) {
     _vehicle = vehicle;
   }
-  
-  static void AstarHelper(int set,long goal,set_type &openset,set_type &closedset,score_type &f,score_type &g,score_type &h,score_type &d,route_type &to) {
+
+  double Map::cost(const long n1,const long n2,const long prevnode) { 
+    double dist = distance(n1,n2);
+    return dist;
+  }
+
+  double Map::calc_h_score(const long n1,const long n2) {
+    double dist = distance(n1,n2);
+    return dist;
   }
   
-  double Map::Astar(const long n1,const long n2,const string &vehicle) {
+  long Map::AstarHelper(int set,long goal,set_type &openset,set_type &closedset,score_type &f,score_type &g,score_type &h,score_type &d,route_type &to) {
+    long xs = 0;
+    set_type::iterator k;
+
+    for (k=openset.begin();k!=openset.end();k++) {
+      if (xs == 0) 
+	xs = k->first;
+      if (f[k->first] < f[xs])
+	xs = k->first;
+    }
+    if (xs == 0)  // no more nodes to process should not happen in our situation 
+      throw runtime_error("xs = 0");
+
+    k = closedset.find(xs);
+    if (k != closedset.end() && k->second != set) {
+      cout << "set = " << set << " xs match = " << xs << endl;
+      return xs;
+    }
+    openset.erase(xs);
+    closedset[xs]=set;
+    vector<long> neighbours;
+    vector<long>::iterator y;
+
+    getNeighbours(xs,neighbours);
+    for (y=neighbours.begin();y != neighbours.end();y++) {
+      long xs1=xs;
+      long prevnode = 0;
+      route_type::iterator pn;
+      pn = to.find(xs1);
+      if (pn != to.end())
+	prevnode = pn->second;
+      k = closedset.find(*y);
+      if (k == closedset.end()) {
+	double tentative_g_score = g[xs1] + (set==1?cost(xs1,*y,prevnode):cost(*y,xs1,prevnode));
+	bool tentative_is_better = false;
+	k = openset.find(*y);
+	if (k == openset.end()) {
+	  openset[*y] = 1;
+	  tentative_is_better = true;
+	} else if (tentative_g_score < g[*y]) 
+	  tentative_is_better = true;
+	if (tentative_is_better) {
+	  to[*y] = xs1;
+	  g[*y] = tentative_g_score;
+	  h[*y] = calc_h_score(*y,goal);
+	  d[*y] = distance(*y,goal);
+	  f[*y] = g[*y] + h[*y];
+	  if (set == 1) 
+	    cout << set << " " << xs << " " << *y << " " << g[*y] << " " << h[*y] << " " << f[*y] << endl;
+	  else
+	    cout << set << " " << *y << " " << xs << " " << g[*y] << " " << h[*y] << " " << f[*y] << endl;
+	}
+      }
+    }
+    return 0;
+  }
+  
+  double Map::Astar(const long n1,const long n2,const string &vehicle,deque<long> &route) {
     set_type startset,goalset,closedset;
     score_type gs_score,hs_score,fs_score,ds_score, gg_score,hg_score,fg_score,dg_score;
     route_type came_from,goes_to;
-    
+    long xs = 0;
+
+    route.clear();
+
     initRoute(vehicle);
-    startset[n1] = true;
-    goalset[n2] = true;
+    startset[n1] = 1;
+    goalset[n2] = 1;
     gs_score[n1] = 0;
     dg_score[n2] = ds_score[n1] = distance(n1,n2);
-    while (!startset.empty() || !goalset.empty()) {
-      AstarHelper(1,n1,startset,closedset,fs_score,gs_score,hs_score,ds_score,came_from);
-      AstarHelper(2,n2,goalset,closedset,fg_score,gg_score,hg_score,dg_score,goes_to);
+    while (xs == 0 && (!startset.empty() || !goalset.empty())) {
+      long xs = AstarHelper(1,n2,startset,closedset,fs_score,gs_score,hs_score,ds_score,came_from);
+      if (xs == 0)
+        xs = AstarHelper(2,n1,goalset,closedset,fg_score,gg_score,hg_score,dg_score,goes_to);
     }
+    if (xs != 0) {]
     
     return 0;
   }
