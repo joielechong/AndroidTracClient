@@ -257,10 +257,6 @@ namespace osm {
     void InterpolatedAddresses(Way &w);
     inline void InterpolatedAddresses(long id) {InterpolatedAddresses(_ways[id]);}
     osm::Node& Address(const string country,const string city,const string street,const string housenumber,const string postcode) const;
-    double distance(const Node &n1,const Node &n2) const;
-    inline double distance(const long n1,const long n2) {return distance(_nodes[n1],_nodes[n2]);}
-    double cost(const long n1,const long n2,const long prevnode);
-    double calc_h_score(const long n1,const long n2);
 
     inline void findNode(const double latinp,const double loninp,const double diff,std::vector<long> &id,std::vector<double> &lat,std::vector<double> &lon,std::vector<double> &distance) { _con->findNode(latinp,loninp,diff,id,lat,lon,distance);}
     bool insideRelation(long relationid,long nodeid);
@@ -271,9 +267,13 @@ namespace osm {
     double Astar(const double lat1,const double lon1,const double lat2,const double lon2,const string &vehicle,list<long> &route);
     void initRoute(const string &vehicle);
     inline void getNeighbours(const long nodeid,vector<long> &ids) const {_con->getNeighbours(nodeid,ids);}
+    double distance(const Node &n1,const Node &n2) const;
+    inline double distance(const long n1,const long n2) {return distance(_nodes[n1],_nodes[n2]);}  
 
   private:
-    void AstarHelper(int set,long goal,set_type &openset,set_type &closedset,score_type &f,score_type &g,score_type &h,score_type &d,route_type &to);
+    long AstarHelper(int set,long goal,set_type &openset,set_type &closedset,score_type &f,score_type &g,score_type &h,score_type &d,route_type &to);
+    double cost(const long n1,const long n2,const long prevnode);
+    double calc_h_score(const long n1,const long n2);
 
     osm_db::database *_con;
     unsigned long _cacheSize;
