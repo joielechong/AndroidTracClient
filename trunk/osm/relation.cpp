@@ -32,7 +32,7 @@ namespace osm {
     _id = id;
     _coordsLoaded=false;
     con.getRelation(id,_version);
-    getTags(id,"relation",con);
+    getTags("relation",con);
     std::vector<long> ref;
     std::vector<std::string> type;
     std::vector<std::string> role;

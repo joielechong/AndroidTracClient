@@ -10,14 +10,16 @@
 #include <stdexcept>
 
 namespace osm_db {
-  
+
+  using namespace std;
+
   class database {
   public:
-    database(std::string naam);
+    database(string naam);
     ~database();
     
     void setupSchemas(const char *filename);
-    inline void setupSchemas(const std::string s) {setupSchemas(s.c_str());}
+    inline void setupSchemas(const string s) {setupSchemas(s.c_str());}
     void initializeFill();
     void initTemp();
     inline void update(bool mode) {_update = mode;};
@@ -25,13 +27,13 @@ namespace osm_db {
     void createNode(long id,int version,double lat,double lon);
     void createWay(long id,int version);
     void createRelation(long id,int version);
-    void createTag(long id,std::string type,std::string k,std::string v);
+    void createTag(long id,string type,string k,string v);
     void createNd(long id,int seq,long ref);
-    void createMember(long id,int seq,long ref,std::string type,std::string role);
+    void createMember(long id,int seq,long ref,string type,string role);
     void createNeighbour(long way,int long id1,long id2);
-    void createAdres(long nid,std::string type,std::string country,std::string ccity,std::string street,std::string housenumber,std::string postcode);
+    void createAdres(long nid,string type,string country,string ccity,string street,string housenumber,string postcode);
     void setBoundaries();
-    void delElem(std::string name);
+    void delElem(string name);
     inline const char *errmsg() { return sqlite3_errmsg(_sql->db());}
 
     inline long createTemporaryNode(double lat,double lon) {_tempnodes--;createNode(_tempnodes,0,lat,lon); return _tempnodes;}
@@ -40,24 +42,24 @@ namespace osm_db {
 
     inline void begin() { _trans->begin();_in_transaction=1;}
     inline void commit() { _trans->commit();_in_transaction=0;}
-    void executenonquery(std::string query,bool rep=true);
+    void executenonquery(string query,bool rep=true);
 
     void getCounts(long &nodes,long &ways,long &rel, long &bounds, long &tags,long &nds, long &mems, long &nbs);
     void getNode(const long id,int &version,double &lat,double &lon,int &x,int &y);
     void getWay(const long id,int &version);
     void getRelation(const long id,int &version);
-    void getTags(const long id,std::string type,std::vector<std::string> &k,std::vector<std::string> &v);
-    void getNds(const long id,std::vector<long> &ref);
-    void getWays(const long nodeid,std::vector<long> &ways);
-    void getMembers(const long id,std::vector<std::string> &type,std::vector<std::string> &role,std::vector<long> &ref);
-    void findNode(const double latinp,const double loninp,double diff,std::vector<long> &id,std::vector<double> &lat,std::vector<double> &lon,std::vector<double> &distance);
-    void getRelCoords(const long relationid, std::vector<double> &lat,std::vector<double> &lon);
-    void findAdmin(const double lat,const double lon,std::vector<long> &ids,std::vector<std::string> &names, std::vector<int> & admlevel);
-    void findAddress(const std::string querystring,std::vector<long> &nodeids,std::vector<double> &nodelats,std::vector<double> &nodelons);
-    void findHouses(const long id,std::vector<long> &nodeids,std::vector<double> &nodelats,std::vector<double> &nodelons,std::vector<std::string> &countriesd,std::vector<std::string> &citiess,std::vector<std::string> &streets,std::vector<std::string> &housenumbers,std::vector<std::string> &postcodes);
-    void getInterpolationWays(std::vector<long> &ids);
-    void getids(std::string &sqlcmd,std::vector<long> &ids);
-    void getNeighbours(const long id,std::vector<long> &ids);
+    void getTags(const long id,string type,vector<string> &k,vector<string> &v);
+    void getNds(const long id,vector<long> &ref);
+    void getWays(const long nodeid,vector<long> &ways);
+    void getMembers(const long id,vector<string> &type,vector<string> &role,vector<long> &ref);
+    void findNode(const double latinp,const double loninp,double diff,vector<long> &id,vector<double> &lat,vector<double> &lon,vector<double> &distance);
+    void getRelCoords(const long relationid, vector<double> &lat,vector<double> &lon);
+    void findAdmin(const double lat,const double lon,vector<long> &ids,vector<string> &names, vector<int> & admlevel);
+    void findAddress(const string querystring,vector<long> &nodeids,vector<double> &nodelats,vector<double> &nodelons);
+    void findHouses(const long id,vector<long> &nodeids,vector<double> &nodelats,vector<double> &nodelons,vector<string> &countriesd,vector<string> &citiess,vector<string> &streets,vector<string> &housenumbers,vector<string> &postcodes);
+    void getInterpolationWays(vector<long> &ids);
+    void getids(string &sqlcmd,vector<long> &ids);
+    void getNeighbours(const long id,vector<long> &ids);
     long getConnectingWay(const long n1,const long n2);
     void adminNode(const long nodeid,vector<long> &admins);
 
@@ -110,14 +112,14 @@ namespace osm_db {
     long _temprelations;
   };
 
-  class osm_db_error : public std::exception {
+  class osm_db_error : public exception {
   public:
     osm_db_error(const char *format,...);
     virtual ~osm_db_error() throw();
     virtual char const * what() const throw();
     
   private:
-    std::string m_what;
+    string m_what;
   };
 }
 

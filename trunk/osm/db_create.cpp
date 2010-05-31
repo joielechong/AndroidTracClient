@@ -185,7 +185,8 @@ namespace osm_db {
 
   void database::setBoundaries() {
     executenonquery("DELETE FROM bound");
-    executenonquery("INSERT INTO bound (minlat,maxlat,minlon,maxlon) SELECT min(lat),max(lat),min(lon),max(lon) FROM node,neighbor AS nb WHERE (NOT nb.distance IS NULL) AND (node.id=nb.id1 OR node.id=nb.id2)");
+    //    executenonquery("INSERT INTO bound (minlat,maxlat,minlon,maxlon) SELECT min(lat),max(lat),min(lon),max(lon) FROM node,neighbor AS nb WHERE (NOT nb.distance IS NULL) AND (node.id=nb.id1 OR node.id=nb.id2)");
+    executenonquery("INSERT INTO bound (minlat,maxlat,minlon,maxlon) SELECT min(lat),max(lat),min(lon),max(lon) FROM node");
   }
 
   void StringSplit(string str, string delim, vector<string> &results)

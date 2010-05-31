@@ -31,6 +31,7 @@ namespace osm_db {
     _getWay = NULL;
     _getRelation = NULL;
     _getNds = NULL;
+    _getConn = NULL;
     _getWays = NULL;
     _getMembers = NULL;
     _getTags = NULL;
@@ -99,6 +100,8 @@ namespace osm_db {
       delete _getTags;
     if (_getNds != NULL)
       delete _getNds;
+    if (_getConn != NULL)
+      delete _getConn;
     if (_getWays != NULL)
       delete _getWays;
     if (_getMembers != NULL)

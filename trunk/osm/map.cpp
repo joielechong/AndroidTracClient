@@ -12,9 +12,6 @@
 namespace osm {
   using namespace std;
 
-  highway_type highways;
-  profile_type profiles;
-  
   void Profile::output(ostream &out) {
     out << "maxspeed = " << _maxspeed << "  avgspeed = " << _avgspeed << " ignore_oneway = " << _ignore_oneway;
 
@@ -26,6 +23,13 @@ namespace osm {
       out << endl << "  Barrier : " << (*iter).first << " extracost = " << (*iter).second;
     for(iter=_traffic_calming.begin();iter != _traffic_calming.end();iter++) 
       out << endl << "  Traffic Calming : " << (*iter).first << " extracost = " << (*iter).second;
+  }
+
+  unsigned int Profile::allowed(const string h) {
+    if (_allowed.find(h) == _allowed.end())
+      throw range_error(h+" not allowed");
+    else 
+      return _allowed[h];
   }
 
   static void print_indentation(unsigned int indentation) {
@@ -87,7 +91,7 @@ namespace osm {
     }
   }
   
-  static void process_profiles(const xmlpp::Node* node) {
+  void Map::process_profiles(const xmlpp::Node* node) {
     xmlpp::Node::NodeList list = node->get_children();
     for(xmlpp::Node::NodeList::iterator iter = list.begin(); iter != list.end(); ++iter) {
       const xmlpp::TextNode* nodeText = dynamic_cast<const xmlpp::TextNode*>(*iter);
@@ -103,13 +107,13 @@ namespace osm {
           getAttribute(nodeElement,"avgspeed",avgspeed);
           getAttribute(nodeElement,"ignore_oneway",ignore_oneway);
 
-	  profiles[name] = Profile();
+	  _profiles[name] = Profile();
 	  if (maxspeed.length() > 0)
-	    profiles[name].maxspeed(atol(maxspeed.c_str()));
+	    _profiles[name].maxspeed(atol(maxspeed.c_str()));
 	  if (avgspeed.length() > 0)
-	    profiles[name].avgspeed(atol(avgspeed.c_str()));
+	    _profiles[name].avgspeed(atol(avgspeed.c_str()));
 	  if (atol(ignore_oneway.c_str()) != 0)
-	    profiles[name].set_ignore_oneway();
+	    _profiles[name].set_ignore_oneway();
 
 	  xmlpp::Node::NodeList list = (*iter)->get_children();
 	  for(xmlpp::Node::NodeList::iterator iterp = list.begin(); iterp != list.end(); ++iterp) {
@@ -121,11 +125,11 @@ namespace osm {
 	      nodename = (*iterp)->get_name();
 	      if(!nodeText && !nodeComment && !nodename.empty()) { //Let's not say "name: text".
 		if (nodename == "allowed") 
-		  process_allowed(*iterp,profiles[name]);
+		  process_allowed(*iterp,_profiles[name]);
 		else if (nodename == "barrier")
-		  process_barrier(*iterp,profiles[name]);
+		  process_barrier(*iterp,_profiles[name]);
 		else if (nodename == "traffic_calming")
-		  process_trafficcalming(*iterp,profiles[name]);
+		  process_trafficcalming(*iterp,_profiles[name]);
 		else
 		  throw domain_error("Foutief configuratiefile: allowed, barrier of traffic_calming verwacht. Naam = "+nodename);
 	      }
@@ -136,7 +140,7 @@ namespace osm {
     }
   }
   
-  static void process_highways(const xmlpp::Node* node) {
+  void Map::process_highways(const xmlpp::Node* node) {
     xmlpp::Node::NodeList list = node->get_children();
     for(xmlpp::Node::NodeList::iterator iter = list.begin(); iter != list.end(); ++iter) {
       const xmlpp::TextNode* nodeText = dynamic_cast<const xmlpp::TextNode*>(*iter);
@@ -150,17 +154,21 @@ namespace osm {
           getAttribute(nodeElement,"speed",speed);
           getAttribute(nodeElement,"extracost",extracost);
 
-	  highways[name] = Highway();
+	  _highways[name] = Highway();
 	  if (speed.length() > 0)
-	    highways[name].speed(atol(speed.c_str()));
+	    _highways[name].speed(atol(speed.c_str()));
+	  else
+	    _highways[name].speed(0);
 	  if (extracost.length() > 0)
-	    highways[name].extracost(atol(extracost.c_str()));
+	    _highways[name].extracost(atol(extracost.c_str()));
+	  else
+	    _highways[name].extracost(0);
 	}
       }
     }
   }
   
-  static void process_conf(const xmlpp::Node* node) {
+  void Map::process_conf(const xmlpp::Node* node) {
     Glib::ustring nodename = node->get_name();
     if (nodename != "astar")
       throw domain_error("Foutief configuratiefile");
@@ -257,10 +265,12 @@ namespace osm {
   Map::Map(osm_db::database *sql,const unsigned long cacheSize,string conffile) :
     _con(sql),
     _cacheSize(cacheSize),
+    _vehicle(""),
     _nodes(_con,_cacheSize),
     _ways(_con,_cacheSize),
     _relations(_con,_cacheSize),
     _conffile(conffile) {
+    
     xmlpp::DomParser parser;
     //parser.set_validate();
     parser.set_substitute_entities(); //We just want the text to be resolved/unescaped automatically.
@@ -271,19 +281,20 @@ namespace osm {
       //      print_node(pNode);
       process_conf(pNode);
       
-      for (highway_type::iterator i=highways.begin();i != highways.end(); i++) {
+      for (highway_type::iterator i=_highways.begin();i != _highways.end(); i++) {
 	cout << "  " << (*i).first << "  ";
 	((*i).second).output(cout);
 	cout << endl;
       }
       
-      for (profile_type::iterator i=profiles.begin();i != profiles.end(); i++) {
+      for (profile_type::iterator i=_profiles.begin();i != _profiles.end(); i++) {
 	cout << "  " << (*i).first << "  ";
 	((*i).second).output(cout);
 	cout << endl;
       }
     } else
       throw runtime_error("Kan file "+_conffile+" niet parsen");
+    
   }
   
   bool Map::insideRelation(const long relationid,const long nodeid) {
@@ -348,17 +359,16 @@ namespace osm {
       }
     }
   }
-  
-  void Map::findLocation(const long nodeid,vector<long> &adminlist) {
+
+  void Map::findLocation(const long id,vector<long> &adminlist) {
     vector<long> admins;
     
     adminlist.clear();
-    
-    _con->adminNode(nodeid,&admins);
-    Node &n = _nodes[nodeid];
+    _con->adminNode(id,admins);
+    Node &n = _nodes[id];
     for (vector<long>::iterator i=admins.begin();i != admins.end();i++) {
       Relation &r = _relations[*i];
-      if (r.isInSide(_con,n,lat(),n.lon())
+      if (r.isInside(_con,n.lat(),n.lon()))
         adminlist.push_back(*i);
     }
   }
@@ -367,11 +377,9 @@ namespace osm {
     return grootcirkel(n1.lat(),n1.lon(),n2.lat(),n2.lon());
   }
   
-  double Map::direction(const long n1, const long n2) const {
-    Node &nd1 = _nodes[n1];
-    Node &nd2 = _nodes[n2];
-    double dx = nd2.lon() - nd1.lon();
-    double dy = nd2.lat() - nd1.lat();
+  double Map::direction(const long n1, const long n2) {
+    double dx = _nodes[n2].lon() - _nodes[n1].lon();
+    double dy = _nodes[n2].lat() - _nodes[n1].lat();
     return 180.0*atan2(dx,dy)/PI;  // PI is gedefinieerd in grootcirkel.h
   }
 }

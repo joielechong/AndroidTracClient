@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <string>
 #include <iostream>
+#include <fstream>
 #include <stdexcept>
 #include <ArgumentParser.h>
 #include <ArgumentGroup.h>
@@ -65,64 +66,71 @@ int main(int argc, char *argv[]) {
   if (costArg.hasValue()) {
     string cost = costArg.getValue();
     list<long> route;
+
     cout << "cost = " << cost<< endl;
     //    map.Astar(atol(start.c_str()),atol(eind.c_str())),string(""));
-    map.Astar(46071276,603337746,string(""),route);
-    list<long>::iterator rp;
+    map.Astar(46071276,295961436,string("car"),route);
 
     double dist = 0;
     long prevnode = 0;
     long prevway = 0;
     
-    for(rp=route.begin(); rp != route.end(); rp++) {
-      cout << *rp;
+    ofstream gpx("route.gpx");
+    gpx << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" << endl;
+    gpx << "<gpx xmlns=\"http://www.topografix.com/GPX/1/0\"  version=\"1.0\" creator=\"osmtest\"  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"  xsi:schemaLocation=\"http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd\">" << endl;
+    gpx << "<trk>" <<endl << "<trkseg>" << endl;
+
+    for(list<long>::iterator rp=route.begin(); rp != route.end(); rp++) {
+      cout << "node = " << *rp << " prev = " << prevnode;
+      gpx << "<trkpt lat=\"" << map.nodes(*rp).lat() << "\" lon=\"" << map.nodes(*rp).lon() << "\" />" << endl;
       vector<long> ways;
-      getWays(*rp,ways);
-      long w;
+      map.getWays(*rp,ways);
+      long w = 0;
       if (ways.size() == 1)
         w=ways[0];
-      else {
-        w=getConnectingWay(prevnode,*rp);
-      }
-      
+      else if (prevnode != 0)
+        w=map.getConnectingWay(prevnode,*rp);
+
       if (w != 0) {
-        cout << " way(" << w ;
-        Way &w = _ways[w];
+        cout << " way(" << w;
+	osm::Way &way =map.ways()[w];
         try {
-          string naam=w[name];
+          string naam=way["name"];
           cout << " " << naam;
         } catch (range_error &ex) {}
         try {
-          string ref=w[ref];
+          string ref=way["ref"];
           cout << " " << ref;
         } catch (range_error &ex) {}
         try {
-          string highway=w[highway];
+          string highway=way["highway"];
           cout << " " << highway;
         } catch (range_error &ex) {}
         try {
-          string maxspeed=w[maxspeed];
+          string maxspeed=way["maxspeed"];
           cout << " " << maxspeed;
         } catch (range_error &ex) {}
         cout << ")";
       }
       
       if (prevnode != 0) {
-        double d = distance(prevnode,*rp);
+        double d = map.distance(prevnode,*rp);
         dist += d;
-        double direction= direction(prevnode,*rp);
-        cout << " distance: " << d << " (" << dist << ") direction: " << direction;        
+        double direction= map.direction(prevnode,*rp);
+        cout << " distance: " << d << " (" << dist << ") direction: " << direction;
       }
       
       vector<long> adminlist;
+      map.findLocation(*rp,adminlist);
       for (vector<long>::iterator i=adminlist.begin();i != adminlist.end();i++) {
-        Relation &r = _relations[*i];
-        cout << " " << r[name] << "(" << r[admin_level] << ")";
+	osm::Relation &r = map.relations()[*i];
+        cout << " " << r["name"] << "(" << r["admin_level"] << ")";
       }
       cout << endl;
       prevnode = *rp;
       prevway = w;
     }
+    gpx << "</trkseg>"<<endl<<"</trk>"<<endl;
   }
   
   /*

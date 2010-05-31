@@ -1,15 +1,17 @@
-
 #ifndef _OSM_H
 #define _OSM_H
 
 #include "config.h"
+#include "osm_db.h"
+#include <libxml++/libxml++.h>
 #include <vector>
 #include <string>
-#include "osm_db.h"
 #include <iostream>
 #include <cstdlib>
 #include <map>
 #include <list>
+
+#define INFINITY (9.99E99)
 
 namespace osm {
   
@@ -52,14 +54,15 @@ namespace osm {
     virtual void setLat(string lat);
     virtual void setLon(string lon);
     virtual string output();
-
-    string operator[](const string tagkey) const;
+    void getTags(const string type,osm_db::database &con);
+    string operator[](const string tagkey);
     
   protected:
     long _id;
     int	_version;
     string _type;
     tag_type _tags;
+    string _name;
   };
   
   class Way  : public Element {
@@ -78,6 +81,9 @@ namespace osm {
 
   private:
     vector<long> _nds;
+    string _highway;
+    string _ref;
+    int _oneway;
   };
   
   class Relation  : public Element {
@@ -131,7 +137,7 @@ namespace osm {
   
   template <class T> class Cache{
 
-    typedef typename map<long,T*> cache_t;
+    typedef map<long,T*> cache_t;
     typedef typename map<long,T*>::iterator cache_iter;
     
   public:
@@ -223,7 +229,7 @@ namespace osm {
     inline void avgspeed(const unsigned int s) {_avgspeed=s;}
     inline bool ignore_oneway() const {return _ignore_oneway;}
     inline void set_ignore_oneway() {_ignore_oneway = true;}
-    inline unsigned int allowed(const string h) {return _allowed[h];}
+    unsigned int allowed(const string h);
     inline void allowed(string h,const unsigned int e) {_allowed[h]=e;}
     inline unsigned int traffic_calming(const string t) {return _traffic_calming[t];}
     inline void traffic_calming(const string t,const unsigned int e) {_traffic_calming[t]=e;}
@@ -251,16 +257,20 @@ namespace osm {
     Map(osm_db::database *con,const unsigned long cacheSize,const string conffile="astarconf.xml");
 
     inline osm::Cache<osm::Node>& nodes() {return _nodes;}
+    inline osm::Node& nodes(const long id) {return _nodes[id];}
     inline osm::Cache<osm::Way>& ways() {return _ways;}
+    inline osm::Way& ways(const long id) {return _ways[id];}
     inline osm::Cache<osm::Relation>& relations() {return _relations;}
+    inline osm::Relation& relations(const long id) {return _relations[id];}
 
     void InterpolatedAddresses();
     void InterpolatedAddresses(Way &w);
-    inline void InterpolatedAddresses(long id) {InterpolatedAddresses(_ways.id());}
+    inline void InterpolatedAddresses(long id) {InterpolatedAddresses(_ways[id]);}
     osm::Node& Address(const string country,const string city,const string street,const string housenumber,const string postcode) const;
 
     inline void findNode(const double latinp,const double loninp,const double diff,vector<long> &id,vector<double> &lat,vector<double> &lon,vector<double> &distance) { _con->findNode(latinp,loninp,diff,id,lat,lon,distance);}
-    bool insideRelation(long relationid,long nodeid);
+    void findLocation(const long nodeid,vector<long> &admins);
+    bool insideRelation(const long relationid,long nodeid);
     void findAdmin(const string querystring,vector<string> &naam,vector<int> &level);
     double Astar(const long n1,const long n2,const string &vehicle,list<long> &route);
     double Astar(const long n1,const double lat2,const double lon2,const string &vehicle,list<long> &route);
@@ -270,14 +280,18 @@ namespace osm {
     inline void getNeighbours(const long nodeid,vector<long> &ids) const {_con->getNeighbours(nodeid,ids);}
     double distance(const Node &n1,const Node &n2) const;
     inline double distance(const long n1,const long n2) {return distance(_nodes[n1],_nodes[n2]);}  
-    inline long getConnectingWay(const long n1,const long n2) {return _con->getConnectingWays(n1,n2);}
-    double direction(const long n1,const long n2) const;
-
+    inline long getConnectingWay(const long n1,const long n2) {return _con->getConnectingWay(n1,n2);}
+    double direction(const long n1,const long n2);
+    inline void getWays(long id,vector<long> &ways) {_con->getWays(id,ways);}
   private:
+    void process_conf(const xmlpp::Node* node);
+    void process_profiles(const xmlpp::Node* node);
+    void process_highways(const xmlpp::Node* node);
     long AstarHelper(int set,long goal,set_type &openset,set_type &closedset,score_type &f,score_type &g,score_type &h,score_type &d,route_type &to);
     double cost(const long n1,const long n2,const long prevnode);
     double calc_h_score(const long n1,const long n2);
-
+    bool wrong_direction(Node &nodex,Node &nodey, Way &ww,string onew);
+    
     osm_db::database *_con;
     unsigned long _cacheSize;
     string _vehicle;

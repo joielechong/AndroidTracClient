@@ -23,7 +23,7 @@ namespace osm {
   Way::Way(long id,osm_db::database &con) {
     _id = id;
     con.getWay(id,_version);
-    getTags(id,"way",con);
+    getTags("way",con);
     con.getNds(id,_nds);
   }
 }

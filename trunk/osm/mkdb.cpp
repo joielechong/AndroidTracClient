@@ -76,7 +76,18 @@ string postprocesses[] = {
   ""
 };
 
+string makenb[] = {
+  "insert or replace into neighbor (id1,id2,way,distance) SELECT id1,id2,way,osmdistance(n1.lat,n1.lon,n2.lat,n2.lon) from nb,node as n1,node as n2 where n1.id=id1 and n2.id=id2",
+  ""
+};
+
 #define BUFFERSIZE (1024)
+
+static void post_nb(database &sql) {
+  
+  for(int i = 0; makenb[i]!= "";i++) 
+    sql.executenonquery(makenb[i]);
+}
 
 static void postprocess(database &sql) {
 
@@ -140,6 +151,7 @@ int main(int argc, char* argv[])
   Argument::StringArgument apiArg("-api","value","\tOnline API request e.g. node/nodeid",false);
   Argument::BooleanArgument fixArg("-fix","\t\tcompletes incomplete relations and ways");
   Argument::BooleanArgument postArg("-post","\t\tPerform postprocessing on the database (implied by -new)");
+  Argument::BooleanArgument nbArg("-nb","\t\tCreate neigbor table in the database)");
   Argument::BooleanArgument helpArg("-help","\t\tHelp on usage");
   Argument::BooleanArgument newArg("-new","\t\tCreate new database");
   Argument::ListArgument extraArg("file","\tFilename[s] to process (none or - implies stdin)",false);
@@ -154,6 +166,7 @@ int main(int argc, char* argv[])
   argparser.addArgument(schemaArg);
   argparser.addArgument(fixArg);  
   argparser.addArgument(postArg);  
+  argparser.addArgument(nbArg);  
   argparser.addArgument(apiArg);  
   argparser.addArgument(extraArg);  
 
@@ -169,6 +182,7 @@ int main(int argc, char* argv[])
   bool update = updArg.getValue();
   bool fixup = fixArg.getValue();
   bool post = postArg.getValue();
+  bool nb = nbArg.getValue();
   bool helponly = helpArg.getValue();
   string apistr = apiArg.getValue();
   list<string>extra = extraArg.getValue();
@@ -193,9 +207,6 @@ int main(int argc, char* argv[])
       remaining.push_back("-");
     post = true;
   }
-  
-  if (fixup)
-    post = true;
   
   try {
     database sql(dbname);
@@ -298,6 +309,11 @@ int main(int argc, char* argv[])
     if (post) {
       cout << "Starting postprocessing" << endl;
       postprocess(sql);
+    }
+
+    if (nb) {
+      cout << "Creating neighbours" << endl;
+      post_nb(sql);
     }
 
   } catch(const xmlpp::exception& ex) {

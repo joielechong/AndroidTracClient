@@ -49,7 +49,7 @@ namespace osm_db {
   }
   
   void database::getWay(long id,int &version) {
-    cout << "getWay("<<id<<")"<<endl;
+    //    cout << "getWay("<<id<<")"<<endl;
     try {
       if (_getWay == NULL) 
         _getWay = new sqlite3_command(*_sql,"SELECT version FROM node  WHERE id = ?");
@@ -68,7 +68,7 @@ namespace osm_db {
   }
   
   void database::getRelation(long id,int &version) {
-    cout << "getRelation("<<id<<")"<<endl;
+    //    cout << "getRelation("<<id<<")"<<endl;
     try {
       if (_getRelation == NULL) 
         _getRelation = new sqlite3_command(*_sql,"SELECT version FROM relation  WHERE id = ?");
@@ -87,7 +87,7 @@ namespace osm_db {
     }
   }
 
-  void database::getTags(long id,string type,vector<string> &k,vector<string> &v) {
+  void database::getTags(const long id,string type,vector<string> &k,vector<string> &v) {
     if (_getTags == NULL) 
       _getTags = new sqlite3_command(*_sql,"SELECT k,v FROM  tag WHERE id=? and type = ?");
 
@@ -138,11 +138,12 @@ namespace osm_db {
     _getConn->bind(1,(sqlite3x::int64_t)node1);
     _getConn->bind(2,(sqlite3x::int64_t)node2);
     sqlite3_cursor cur(_getConn->executecursor());
-    if (cur,step())
+    if (cur.step())
       return cur.getint64(0);
     else
       return 0;
   }
+
   void database::getMembers(long id,vector<string> &type,vector<string> &role,vector<long> &ref) {
     if (_getMembers == NULL) 
       _getMembers = new sqlite3_command(*_sql,"SELECT seq,type,role,ref FROM member WHERE id=?");
@@ -356,7 +357,7 @@ namespace osm_db {
     sqlite3_cursor cur(_adminNode->executecursor());
     admins.clear();
     while (cur.step())
-      admins.push_back*cur.getint64(0));
+      admins.push_back(cur.getint64(0));
   }
   
 }
