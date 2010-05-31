@@ -30,8 +30,8 @@ dist_osmdata_DATA=schema.sqlite.txt
 mkdb_LDADD=$(XML_LIBS) $(Z_LIBS) -losm $(SQL_LIBS) $(ARG_LIBS) $(SOCK_LIBS) $(ACOS_LIBM) $(ASIN_LIBM) $(COS_LIBM) $(SIN_LIBM) $(SQRT_LIBM) $(POW_LIBM)
 mkdb_CPPFLAGS=$(Z_CFLAGS) $(SQL_CFLAGS) $(ARG_CFLAGS) $(XML_CFLAGS) $(SOCK_CFLAGS) -DDATADIR=\"$(datadir)/osm\"
 
-osmtest_LDADD=-losm $(SQL_LIBS) $(ARG_LIBS)
-osmtest_CPPFLAGS=$(SQL_CFLAGS) $(ARG_CFLAGS)
+osmtest_LDADD=-losm $(SQL_LIBS) $(ARG_LIBS) $(XML_LIBS)
+osmtest_CPPFLAGS=$(SQL_CFLAGS) $(ARG_CFLAGS) $(XML_CFLAGS)
 osmtest_SOURCES=osmtest.cpp \
 		osm.h \
 		osm_db.h
