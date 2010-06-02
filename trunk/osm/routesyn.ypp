@@ -1,0 +1,82 @@
+%token STRING
+%token NODE
+%token LAT
+%token LON
+%token INTEGER
+%token FLOAT
+%token COUNTRYCODE
+%token COUNTRY
+%token CITY
+%token STREET
+%token NUMBER
+%token POSTCODE
+
+%union {
+  long l;
+  char *s;
+  double f;
+}
+
+%{
+
+using namespace std;
+
+#include <string>
+#include <stdexcept>
+
+int yylex(void);
+void yyerror (char *s) {
+     throw runtime_error(s);
+}
+
+void yyerror (string s) {
+     throw runtime_error(s);
+}
+
+%}
+
+%%
+
+route		: vehicle '(' start ',' stop ')'
+		;
+
+vehicle		: STRING
+		;
+
+start		: locatie
+		;
+
+stop		: locatie
+		;
+
+locatie		: NODE '=' num
+		| LAT '=' coor ',' LON '=' coor
+		| LON '=' coor ',' LAT '=' coor
+		| adres
+		;
+
+num		: INTEGER
+		;
+
+coor		: INTEGER
+		| FLOAT
+		;
+
+adres		: country  city
+		| country  city  street
+		| country  city  street  number
+		;
+
+country		: COUNTRY '=' COUNTRYCODE
+		|
+		;
+
+city		: CITY '=' STRING
+		;
+
+street		: STREET '=' STRING
+		;
+	
+number		: NUMBER '=' STRING
+		;
+%%

@@ -1,0 +1,39 @@
+D                       [0-9]
+S                       [-+]
+C			[A-Z]
+
+
+%{
+#include "routesyn.h"
+extern int yydebug;
+
+void routelex_init(const char *s) {
+   yy_scan_string(s);
+   yydebug=1;
+}
+
+%}
+
+%%
+
+{C}{C}			{ yylval.s=yytext;return(COUNTRYCODE); }
+\'[^\n']+\'             { yylval.s=yytext;return(STRING); }
+
+"NODE"                  { return(NODE); }
+"LAT"                   { return(LAT); }
+"LON"                   { return(LON); }
+"COUNTRY"		{ return(COUNTRY);}
+"CITY"			{ return(CITY);}
+"STREET"		{ return(STREET);}
+"NUMBER"		{ return(NUMBER);}
+"POSTCODE"		{ return(POSTCODE);}
+
+{D}+    |
+{S}{D}+                 { yylval.l=atoi(yytext); return(INTEGER); }
+{D}+"."{D}* |
+{S}{D}+"."{D}*          { yylval.f=atof(yytext); return(FLOAT); }
+
+[,()=]			{ return yytext[0]; }
+
+[ \t\n]+                /* eat up whitespace */
+[A-Za-z][A-Za-z0-9]+	{ yylval.s=yytext;return(STRING); }
