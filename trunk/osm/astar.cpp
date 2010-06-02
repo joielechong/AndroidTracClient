@@ -60,6 +60,10 @@ namespace osm {
     string oneway="";
     try { access = ww["access"];} catch (range_error &ex) {}
     try { oneway = ww["oneway"];} catch (range_error &ex) {}
+    try {
+      if (ww["junction"] == "roudabout")
+	oneway = "yes";
+    } catch (range_error &ex) {}
 
     long extracost=_highways[hw].extracost();
     

@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <string>
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <stdexcept>
 #include <ArgumentParser.h>
@@ -17,7 +18,7 @@ using namespace std;
 
 int main(int argc, char *argv[]) {
   Argument::StringArgument dbArg("-db","value","SQLite database name",string("osm.sqlite"));
-  Argument::DoubleArgument cacheArg("-cs","positive-integer","Cache size",1000L,false);
+  Argument::DoubleArgument cacheArg("-cs","positive-integer","Cache size",10000L,false);
   Argument::BooleanArgument helpArg("-help","Help on usage");
   Argument::StringArgument addrArg("-adres","adres","SQLite where clause",false);
   Argument::StringArgument costArg("-cost","start,eind","Bereken kost",false);
@@ -63,14 +64,24 @@ int main(int argc, char *argv[]) {
       cout << naam[i] <<"("<<level[i]<<")"<<std::endl;
   }
 
+  void routelex_init(const char *s);
+  int yyparse(void);
+
   if (costArg.hasValue()) {
     string cost = costArg.getValue();
     list<long> route;
 
     cout << "cost = " << cost<< endl;
-    //    map.Astar(atol(start.c_str()),atol(eind.c_str())),string(""));
-    map.Astar(46071276,295961436,string("car"),route);
-
+    //    try {
+      routelex_init(cost.c_str());
+      if (yyparse() != 0) 
+	throw runtime_error("routestring niet juist: "+cost);
+      //    } catch (runtime_error &ex) {
+      //      cerr << ex.what() << endl;
+      //    }
+    //    map.Astar(46071276,295961436,string("car"),route);
+    map.Astar(46071276,44787328,string("car"),route);
+    
     double dist = 0;
     long prevnode = 0;
     long prevway = 0;
@@ -82,7 +93,7 @@ int main(int argc, char *argv[]) {
 
     for(list<long>::iterator rp=route.begin(); rp != route.end(); rp++) {
       cout << "node = " << *rp << " prev = " << prevnode;
-      gpx << "<trkpt lat=\"" << map.nodes(*rp).lat() << "\" lon=\"" << map.nodes(*rp).lon() << "\" />" << endl;
+      gpx << "<trkpt lat=\"" << setiosflags(ios::fixed) << setprecision(6)<< map.nodes(*rp).lat() << "\" lon=\"" << map.nodes(*rp).lon() << "\" />" << endl;
       vector<long> ways;
       map.getWays(*rp,ways);
       long w = 0;

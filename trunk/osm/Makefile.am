@@ -1,6 +1,10 @@
+SHELL=/bin/sh
+
 AM_CXXFLAGS=
 AM_CFLAGS=
-SHELL=/bin/sh
+AM_YFLAGS=-dtv
+AM_LFLAGS=-v -s -B
+
 ACLOCAL_AMFLAGS=-I m4 -I gnum4
 SUBDIRS=gnulib
 EXTRA_DIST=gnum4/gnulib-cache.m4
@@ -8,7 +12,7 @@ EXTRA_DIST=gnum4/gnulib-cache.m4
 #INCLUDES=-O0 -Wall -ggdb $(DEPS_CFLAGS) $(SQL_CFLAGS) $(ARG_CFLAGS)
 INCLUDES=-O0 -Wall -ggdb
 
-SUFFIXES=".cpp .o"
+SUFFIXES=".cpp .ypp .lpp .o"
 
 bin_PROGRAMS=mkdb \
 	     dijkstra \
@@ -27,12 +31,14 @@ mkdb_SOURCES=mkdb.cpp \
 osmdatadir=$(datadir)/osm
 dist_osmdata_DATA=schema.sqlite.txt
 
-mkdb_LDADD=$(XML_LIBS) $(Z_LIBS) -losm $(SQL_LIBS) $(ARG_LIBS) $(SOCK_LIBS) $(ACOS_LIBM) $(ASIN_LIBM) $(COS_LIBM) $(SIN_LIBM) $(SQRT_LIBM) $(POW_LIBM)
+mkdb_LDADD=$(XML_LIBS) $(Z_LIBS) -losm $(SQL_LIBS) $(ARG_LIBS) $(SOCK_LIBS) $(ACOS_LIBM) $(ASIN_LIBM) $(COS_LIBM) $(SIN_LIBM) $(SQRT_LIBM) $(POW_LIBM) -ll
 mkdb_CPPFLAGS=$(Z_CFLAGS) $(SQL_CFLAGS) $(ARG_CFLAGS) $(XML_CFLAGS) $(SOCK_CFLAGS) -DDATADIR=\"$(datadir)/osm\"
 
 osmtest_LDADD=-losm $(SQL_LIBS) $(ARG_LIBS) $(XML_LIBS)
 osmtest_CPPFLAGS=$(SQL_CFLAGS) $(ARG_CFLAGS) $(XML_CFLAGS)
 osmtest_SOURCES=osmtest.cpp \
+		routesyn.ypp \
+		routelex.lpp \
 		osm.h \
 		osm_db.h
 

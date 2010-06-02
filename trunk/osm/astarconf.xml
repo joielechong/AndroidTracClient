@@ -72,16 +72,16 @@
 			<allowed highway="trunk" extracost="5" />
 			<allowed highway="trunk_link" extracost="15" />
 			<allowed highway="motorway_link" extracost="10" />
-			<allowed highway="living_street" extracost="90" />
-			<allowed highway="residential" extracost="30" />
-			<allowed highway="unclassified" extracost="30" />
-			<allowed highway="road" extracost="30" />
-			<allowed highway="service" extracost="90" />
-			<allowed highway="primary" extracost="10" />
-			<allowed highway="primary_link" extracost="20" />
-			<allowed highway="secondary" extracost="20" />
-			<allowed highway="secondary_link" extracost="30" />
-			<allowed highway="tertiary" extracost="30" />
+			<allowed highway="living_street" extracost="1100" />
+			<allowed highway="residential" extracost="50" />
+			<allowed highway="unclassified" extracost="50" />
+			<allowed highway="road" extracost="50" />
+			<allowed highway="service" extracost="110" />
+			<allowed highway="primary" extracost="20" />
+			<allowed highway="primary_link" extracost="25" />
+			<allowed highway="secondary" extracost="35" />
+			<allowed highway="secondary_link" extracost="40" />
+			<allowed highway="tertiary" extracost="50" />
 			<traffic_calming type="table" extracost="10" />
 			<barrier type="gate" extracost="99999" />
 		</profile>
