@@ -32,11 +32,6 @@ namespace osm {
       return _allowed[h];
   }
 
-  static void print_indentation(unsigned int indentation) {
-    for(unsigned int i = 0; i < indentation; ++i)
-      std::cout << " ";
-  }
-  
   static void getAttribute(const xmlpp::Element *nodeElement,const string attr_name,Glib::ustring &attribute) {
     const xmlpp::Attribute *a = nodeElement->get_attribute(attr_name);
     if (a)
@@ -192,76 +187,6 @@ namespace osm {
     }      
   }
   
-  static void print_node(const xmlpp::Node* node, unsigned int indentation = 0) {
-    std::cout << std::endl; //Separate nodes by an empty line.
-    
-    const xmlpp::ContentNode* nodeContent = dynamic_cast<const xmlpp::ContentNode*>(node);
-    const xmlpp::TextNode* nodeText = dynamic_cast<const xmlpp::TextNode*>(node);
-    const xmlpp::CommentNode* nodeComment = dynamic_cast<const xmlpp::CommentNode*>(node);
-    
-    if(nodeText && nodeText->is_white_space()) //Let's ignore the indenting - you don't always want to do this.
-      return;
-    
-    const Glib::ustring nodename = node->get_name();
-    
-    if(!nodeText && !nodeComment && !nodename.empty()) { //Let's not say "name: text".
-      print_indentation(indentation);
-      
-      const Glib::ustring namespace_prefix = node->get_namespace_prefix();
-      if(namespace_prefix.empty())
-	std::cout << "Node name = " << nodename << std::endl;
-      else
-	std::cout << "Node name = " << namespace_prefix << ":" << nodename << std::endl;
-    } else if(nodeText) { //Let's say when it's text. - e.g. let's say what that white space is.
-      print_indentation(indentation);
-      std::cout << "Text Node" << std::endl;
-    }
-    
-    //Treat the various node types differently: 
-    if(nodeText) {
-      print_indentation(indentation);
-      std::cout << "text = \"" << nodeText->get_content() << "\"" << std::endl;
-    } else if(nodeComment) {
-      print_indentation(indentation);
-      std::cout << "comment = " << nodeComment->get_content() << std::endl;
-    } else if(nodeContent) {
-      print_indentation(indentation);
-      std::cout << "content = " << nodeContent->get_content() << std::endl;
-    } else if(const xmlpp::Element* nodeElement = dynamic_cast<const xmlpp::Element*>(node)) {
-      //A normal Element node:
-      
-      //line() works only for ElementNodes.
-      print_indentation(indentation);
-      std::cout << "     line = " << node->get_line() << std::endl;
-      
-      //Print attributes:
-      const xmlpp::Element::AttributeList& attributes = nodeElement->get_attributes();
-      for(xmlpp::Element::AttributeList::const_iterator iter = attributes.begin(); iter != attributes.end(); ++iter) {
-	const xmlpp::Attribute* attribute = *iter;
-	print_indentation(indentation);
-	
-	const Glib::ustring namespace_prefix = attribute->get_namespace_prefix();
-	if(namespace_prefix.empty())
-	  std::cout << "  Attribute " << attribute->get_name() << " = " << attribute->get_value() << std::endl; 
-	else
-	  std::cout << "  Attribute " << namespace_prefix  << ":" << attribute->get_name() << " = " << attribute->get_value() << std::endl;
-      }
-      
-      const xmlpp::Attribute* attribute = nodeElement->get_attribute("title");
-      if(attribute) {
-	std::cout << "title found: =" << attribute->get_value() << std::endl;
-      }
-    }
-    
-    if(!nodeContent) {
-      //Recurse through child nodes:
-      xmlpp::Node::NodeList list = node->get_children();
-      for(xmlpp::Node::NodeList::iterator iter = list.begin(); iter != list.end(); ++iter) {
-	print_node(*iter, indentation + 2); //recursive
-      }
-    }
-  }
-  
   Map::Map(osm_db::database *sql,const unsigned long cacheSize,string conffile) :
     _con(sql),
     _cacheSize(cacheSize),
@@ -278,9 +203,9 @@ namespace osm {
     if(parser) {
       //Walk the tree:
       const xmlpp::Node* pNode = parser.get_document()->get_root_node(); //deleted by DomParser.
-      //      print_node(pNode);
       process_conf(pNode);
-      
+
+      /*
       for (highway_type::iterator i=_highways.begin();i != _highways.end(); i++) {
 	cout << "  " << (*i).first << "  ";
 	((*i).second).output(cout);
@@ -292,6 +217,8 @@ namespace osm {
 	((*i).second).output(cout);
 	cout << endl;
       }
+      */
+
     } else
       throw runtime_error("Kan file "+_conffile+" niet parsen");
     

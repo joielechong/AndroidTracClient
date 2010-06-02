@@ -20,6 +20,8 @@ AC_PROG_LIBTOOL
 AC_PROG_AWK
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
+AC_PROG_YACC
+AC_PROG_LEX
 
 gl_INIT
 
@@ -40,6 +42,7 @@ PKG_CHECK_MODULES(Z, zlib >= 1.2.3)
 AC_SUBST(Z_CFLAGS)
 AC_SUBST(Z_LIBS)
 AC_CHECK_LIB([m], [main], [], [AC_MSG_ERROR([strange!! libm missing])])
+AC_CHECK_LIB([l], [main], [], [AC_MSG_ERROR([libl missing])])
 
 # Checks for header files.
 AC_HEADER_STDC
