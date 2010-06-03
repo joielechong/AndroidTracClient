@@ -67,23 +67,33 @@ int main(int argc, char *argv[]) {
       cout << naam[i] <<"("<<level[i]<<")"<<std::endl;
   }
 
-  void routelex_init(const char *s);
-  int yyparse(void);
-
   if (costArg.hasValue()) {
     string cost = costArg.getValue();
     list<long> route;
 
     cout << "cost = " << cost<< endl;
-    //    try {
-      routelex_init(cost.c_str());
-      if (yyparse() != 0) 
-	throw runtime_error("routestring niet juist: "+cost);
-      //    } catch (runtime_error &ex) {
-      //      cerr << ex.what() << endl;
-      //    }
+    routelex_init(cost.c_str());
+    if (yyparse() != 0) 
+      throw runtime_error("routestring niet juist: "+cost);
+
+    string vehicle = inforoute.vehicle;
+    if (vehicle=="no")
+      vehicle = "";
+
+    long start = 0;
+    long eind = 0;
+
+    if (inforoute.locations[0].node)
+      start = inforoute.locations[0].nodeid;
+  
+    if (inforoute.locations[1].node)
+      eind = inforoute.locations[1].nodeid;
+
+    cout << "start = "<< start << " eind = " << eind << endl;
+
+
     //    map.Astar(46071276,295961436,string("car"),route);
-    map.Astar(46071276,44787328,string("car"),route);
+    map.Astar(start,eind,vehicle,route);
     
     double dist = 0;
     long prevnode = 0;
