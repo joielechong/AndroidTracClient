@@ -143,6 +143,62 @@ static void splitRequest(database &sql,osmparser::OSMParser &p,string elemType,s
   }
 }
 
+static void do_fixup(osmparser::OSMParser &osmparser,database &sql) {
+  
+  for(int i=0;fixups[i].element != ""; i++) {
+    vector<long> ids;
+    vector<long>::iterator id;
+    string elemtype = fixups[i].element;
+    cout << "Fixup: " << fixups[i].sqlcmd <<endl;
+    sql.getids(fixups[i].sqlcmd,ids);
+    
+    stringstream apistring;
+    apistring.str("");
+    int count = 0;
+    for(id=ids.begin();id != ids.end();id++) {
+      if (count == 0) {
+	apistring << elemtype << "s?" << elemtype << "s=" << *id;
+      } else
+	apistring << "," << *id;
+      
+      if (count++ == ((MAXELEM)-1)) {
+	cout << "        " << apistring.str()  << endl;
+	bool retry;
+	int retrycount = 0;
+	do {
+	  try {
+	    retry = false;
+	    string buf = apiRequest(apistring.str());
+	    osmparser.parse_memory(buf);
+	  } catch (const out_of_range &ex) {
+	    cerr << ex.what() << endl;
+	    splitRequest(sql,osmparser,elemtype,apistring.str());
+	    //	      sql.delElem(apistring);
+	  } catch (const runtime_error &ex) {
+	    retry = true;
+	    retrycount++;
+	    if (retry < 5) 
+	      cout << "  retry: " << retrycount << endl;
+	  }
+	} while (retry && retrycount < 5);
+	count = 0;
+	apistring.str("");
+      }
+    }
+    if (count != 0) {
+      cout << "        " << apistring.str()  << endl;
+      try {
+	string buf = apiRequest(apistring.str());
+	osmparser.parse_memory(buf);
+      } catch (const out_of_range &ex) {
+	cerr << ex.what() << endl;
+	splitRequest(sql,osmparser,elemtype,apistring.str());
+	//	sql.delElem(apistring);
+      }
+    }
+  }    
+}
+
 int main(int argc, char* argv[])
 {
   Argument::StringArgument dbArg("-db","value","\tSQLite database name",string("newosm.sqlite"),false);
@@ -251,60 +307,8 @@ int main(int argc, char* argv[])
       sql.setBoundaries();
     }
     
-    if (fixup) {
-      for(int i=0;fixups[i].element != ""; i++) {
-	vector<long> ids;
-	vector<long>::iterator id;
-	string elemtype = fixups[i].element;
-	cout << "Fixup: " << fixups[i].sqlcmd <<endl;
-	sql.getids(fixups[i].sqlcmd,ids);
-
-	stringstream apistring;
-	apistring.str("");
-	int count = 0;
-	for(id=ids.begin();id != ids.end();id++) {
-	  if (count == 0) {
-	    apistring << elemtype << "s?" << elemtype << "s=" << *id;
-	  } else
-	    apistring << "," << *id;
-
-	  if (count++ == ((MAXELEM)-1)) {
-	    cout << "        " << apistring.str()  << endl;
-	    bool retry;
-	    int retrycount = 0;
-	    do {
-	      try {
-		retry = false;
-		string buf = apiRequest(apistring.str());
-		osmparser.parse_memory(buf);
-	    } catch (const out_of_range &ex) {
-		cerr << ex.what() << endl;
-		splitRequest(sql,osmparser,elemtype,apistring.str());
-		//	      sql.delElem(apistring);
-	      } catch (const runtime_error &ex) {
-		retry = true;
-		retrycount++;
-		if (retry < 5) 
-		  cout << "  retry: " << retrycount << endl;
-	      }
-	    } while (retry && retrycount < 5);
-	    count = 0;
-	    apistring.str("");
-	  }
- 	}
-	if (count != 0) {
-	  cout << "        " << apistring.str()  << endl;
-	  try {
-	    string buf = apiRequest(apistring.str());
-	    osmparser.parse_memory(buf);
-	  } catch (const out_of_range &ex) {
-	    cerr << ex.what() << endl;
-	    splitRequest(sql,osmparser,elemtype,apistring.str());
-	    //	      sql.delElem(apistring);
-	  }
-	}
-      }    
-    }
+    if (fixup)
+      do_fixup(osmparser,sql);
     
     if (post) {
       cout << "Starting postprocessing" << endl;

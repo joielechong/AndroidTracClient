@@ -251,14 +251,14 @@ namespace osm {
     return c;
   }
 
-  void Map::findAdmin(const string querystring,std::vector<string> &naam,std::vector<int> &level) {
-    std::vector<long> nodeids;
-    std::vector<double> nodelats;
-    std::vector<double> nodelons;
-    std::vector<long> relids;
-    std::vector<string> relname;
-    std::vector<int> admlevel;
-    std::vector<long> admid;
+  void Map::findAdmin(const string querystring,vector<string> &naam,vector<int> &level) {
+    vector<long> nodeids;
+    vector<double> nodelats;
+    vector<double> nodelons;
+    vector<long> relids;
+    vector<string> relname;
+    vector<int> admlevel;
+    vector<long> admid;
     
     _con->findAddress(querystring,nodeids,nodelats,nodelons);
     //    cout << nodeids.size() << " nodes gevonden bij " << querystring << endl;

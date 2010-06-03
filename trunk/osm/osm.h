@@ -51,8 +51,8 @@ namespace osm {
     virtual void addMember(long ref,string type,string role);
     inline void addMember(string ref,string type,string role) {addMember(atol(ref.c_str()),type,role);}
     virtual string printTags();
-    virtual void setLat(string lat);
-    virtual void setLon(string lon);
+    //    virtual void setLat(string lat);
+    //    virtual void setLon(string lon);
     virtual string output();
     void getTags(const string type,osm_db::database &con);
     string operator[](const string tagkey);
@@ -115,11 +115,15 @@ namespace osm {
     Node(long id,osm_db::database &con);
     inline ~Node() {}
     inline double lat() const { return _lat;}
-    inline double lon() const { return _lon;}    
+    inline double lon() const { return _lon;}
+    inline void lat(const double latx) {_lat = latx;}    
+    inline void lon(const double lony) {_lon = lony;}    
+    inline void lat(const string latx) {lat(atof(latx.c_str()));}
+    inline void lon(const string lony) {lon(atof(lony.c_str()));}
+    inline int x() const { return _x;}
+    inline int y() const { return _y;}
+
     string output ();
-    
-    inline virtual void setLat(string lat) {_lat=atof(lat.c_str());}
-    inline virtual void setLon(string lon) {_lon=atof(lon.c_str());}
 
     Node *_prev,*_next;
     
