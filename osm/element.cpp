@@ -52,13 +52,6 @@ namespace osm {
       throw range_error("Key bestaat niet: "+tagkey);
   }
 
-  void Element::setLat(string ref) {
-    throw range_error("Lat kan alleen bij Node");
-  }
-  void Element::setLon(string ref) {
-    throw range_error("Lon kan alleen bij Node");
-  }
-  
   string Element::output (){
     throw range_error("Kan Element niet printen");
   } 

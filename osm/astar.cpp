@@ -130,6 +130,10 @@ namespace osm {
 
     return dist *3.6 / _profiles[_vehicle].avgspeed();
   }
+
+  long bestpoints[3];
+  double initialdistance;
+  double maxperc = 0;
   
   long Map::AstarHelper(int set,long goal,set_type &openset,set_type &closedset,score_type &f,score_type &g,score_type &h,score_type &d,route_type &to) {
     long xs = 0;
@@ -143,7 +147,10 @@ namespace osm {
     }
     if (xs == 0)  // no more nodes to process should not happen in our situation 
       throw runtime_error("xs = 0");
-
+    bestpoints[set] = xs;
+    double newdistance = distance(bestpoints[1],bestpoints[2]);
+    maxperc = max(maxperc,100.0*(initialdistance - newdistance)/initialdistance);
+    cout << maxperc << " ";
     k = closedset.find(xs);
     if (k != closedset.end() && k->second != set) {
       cout << "set = " << set << " xs match = " << xs << endl;
@@ -206,7 +213,10 @@ namespace osm {
     startset[n1] = 1;
     goalset[n2] = 1;
     gs_score[n1] = 0;
-    dg_score[n2] = ds_score[n1] = distance(n1,n2);
+    initialdistance = dg_score[n2] = ds_score[n1] = distance(n1,n2);
+    bestpoints[1] = n1;
+    bestpoints[2] = n2;
+    
     while (xs == 0 && (!startset.empty() || !goalset.empty())) {
       xs = AstarHelper(1,n2,startset,closedset,fs_score,gs_score,hs_score,ds_score,came_from);
       if (xs == 0)
