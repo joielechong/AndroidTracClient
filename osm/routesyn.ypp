@@ -1,9 +1,15 @@
-%token STRING
+%union {
+  long l;
+  char *s;
+  double f;
+}
+
+%token <s> STRING
 %token NODE
 %token LAT
 %token LON
-%token INTEGER
-%token FLOAT
+%token <l> INTEGER
+%token <f> FLOAT
 %token COUNTRYCODE
 %token COUNTRY
 %token CITY
@@ -11,15 +17,7 @@
 %token NUMBER
 %token POSTCODE
 
-%union {
-  long l;
-  char *s;
-  double f;
-}
-
-%type<l> INTEGER num 
-%type<s> STRING vehicle
-%type<f> FLOAT coor
+%type<l> num
 
 %{
 
