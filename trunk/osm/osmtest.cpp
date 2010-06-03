@@ -13,8 +13,11 @@
 #include <BooleanArgument.h>
 #include <ListArgument.h>
 #include <list>
+#include "routeinfo.h"
 
 using namespace std;
+
+routeinfo inforoute;
 
 int main(int argc, char *argv[]) {
   Argument::StringArgument dbArg("-db","value","SQLite database name",string("osm.sqlite"));

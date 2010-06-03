@@ -1,378 +1,350 @@
 Grammar
 
-  Number, Line, Rule
-    1  67 @1 -> /* empty */
-    2  67 program -> OPENBLOCK @1 declarations CLOSEBLOCK ';'
-    3  71 declarations -> declaration
-    4  72 declarations -> declaration ',' declarations
-    5  75 @2 -> /* empty */
-    6  75 @3 -> /* empty */
-    7  75 @4 -> /* empty */
-    8  75 declaration -> OPENBLOCK STRING @2 ',' STRING @3 ',' FLOAT @4 ',' decltype CLOSEBLOCK
-    9  82 decltype -> NORMAAL
-   10  83 decltype -> OPTIE_FL ',' FLOAT
-   11  84 decltype -> OPTIE_REL_FL ',' FLOAT
-   12  85 decltype -> OPTIE_EUR ',' FLOAT
-   13  86 decltype -> OPTIE_REL_EUR ',' FLOAT
-   14  87 decltype -> LAATSTE
+    0 $accept: program $end
+
+    1 $@1: /* empty */
+
+    2 program: OPENBLOCK $@1 declarations CLOSEBLOCK ';'
+
+    3 declarations: declaration
+    4             | declaration ',' declarations
+
+    5 $@2: /* empty */
+
+    6 $@3: /* empty */
+
+    7 $@4: /* empty */
+
+    8 declaration: OPENBLOCK STRING $@2 ',' STRING $@3 ',' FLOAT $@4 ',' decltype CLOSEBLOCK
+
+    9 decltype: NORMAAL
+   10         | OPTIE_FL ',' FLOAT
+   11         | OPTIE_REL_FL ',' FLOAT
+   12         | OPTIE_EUR ',' FLOAT
+   13         | OPTIE_REL_EUR ',' FLOAT
+   14         | LAATSTE
 
 
 Terminals, with rules where they appear
 
-$ (-1)
+$end (0) 0
 ',' (44) 4 8 10 11 12 13
 ';' (59) 2
 error (256)
-OPENBLOCK (257) 2 8
-CLOSEBLOCK (258) 2 8
-STRING (259) 8
-FLOAT (260) 8 10 11 12 13
-NORMAAL (261) 9
-OPTIE_FL (262) 10
-OPTIE_REL_FL (263) 11
-OPTIE_EUR (264) 12
-OPTIE_REL_EUR (265) 13
-LAATSTE (266) 14
+OPENBLOCK (258) 2 8
+CLOSEBLOCK (259) 2 8
+STRING (260) 8
+FLOAT (261) 8 10 11 12 13
+NORMAAL (262) 9
+OPTIE_FL (263) 10
+OPTIE_REL_FL (264) 11
+OPTIE_EUR (265) 12
+OPTIE_REL_EUR (266) 13
+LAATSTE (267) 14
 
 
 Nonterminals, with rules where they appear
 
-program (15)
-    on left: 2
-@1 (16)
+$accept (15)
+    on left: 0
+program (16)
+    on left: 2, on right: 0
+$@1 (17)
     on left: 1, on right: 2
-declarations (17)
+declarations (18)
     on left: 3 4, on right: 2 4
-declaration (18)
+declaration (19)
     on left: 8, on right: 3 4
-@2 (19)
+$@2 (20)
     on left: 5, on right: 8
-@3 (20)
+$@3 (21)
     on left: 6, on right: 8
-@4 (21)
+$@4 (22)
     on left: 7, on right: 8
-decltype (22)
+decltype (23)
     on left: 9 10 11 12 13 14, on right: 8
 
 
 state 0
 
-    OPENBLOCK	shift, and go to state 1
+    0 $accept: . program $end
 
-    program	go to state 35
+    OPENBLOCK  shift, and go to state 1
 
+    program  go to state 2
 
 
 state 1
 
-    program  ->  OPENBLOCK . @1 declarations CLOSEBLOCK ';'   (rule 2)
+    2 program: OPENBLOCK . $@1 declarations CLOSEBLOCK ';'
 
-    $default	reduce using rule 1 (@1)
+    $default  reduce using rule 1 ($@1)
 
-    @1  	go to state 2
-
+    $@1  go to state 3
 
 
 state 2
 
-    program  ->  OPENBLOCK @1 . declarations CLOSEBLOCK ';'   (rule 2)
+    0 $accept: program . $end
 
-    OPENBLOCK	shift, and go to state 3
-
-    declarations	go to state 4
-    declaration	go to state 5
-
+    $end  shift, and go to state 4
 
 
 state 3
 
-    declaration  ->  OPENBLOCK . STRING @2 ',' STRING @3 ',' FLOAT @4 ',' decltype CLOSEBLOCK   (rule 8)
+    2 program: OPENBLOCK $@1 . declarations CLOSEBLOCK ';'
 
-    STRING	shift, and go to state 6
+    OPENBLOCK  shift, and go to state 5
 
+    declarations  go to state 6
+    declaration   go to state 7
 
 
 state 4
 
-    program  ->  OPENBLOCK @1 declarations . CLOSEBLOCK ';'   (rule 2)
+    0 $accept: program $end .
 
-    CLOSEBLOCK	shift, and go to state 7
-
+    $default  accept
 
 
 state 5
 
-    declarations  ->  declaration .   (rule 3)
-    declarations  ->  declaration . ',' declarations   (rule 4)
+    8 declaration: OPENBLOCK . STRING $@2 ',' STRING $@3 ',' FLOAT $@4 ',' decltype CLOSEBLOCK
 
-    ',' 	shift, and go to state 8
-
-    $default	reduce using rule 3 (declarations)
-
+    STRING  shift, and go to state 8
 
 
 state 6
 
-    declaration  ->  OPENBLOCK STRING . @2 ',' STRING @3 ',' FLOAT @4 ',' decltype CLOSEBLOCK   (rule 8)
+    2 program: OPENBLOCK $@1 declarations . CLOSEBLOCK ';'
 
-    $default	reduce using rule 5 (@2)
-
-    @2  	go to state 9
-
+    CLOSEBLOCK  shift, and go to state 9
 
 
 state 7
 
-    program  ->  OPENBLOCK @1 declarations CLOSEBLOCK . ';'   (rule 2)
+    3 declarations: declaration .
+    4             | declaration . ',' declarations
 
-    ';' 	shift, and go to state 10
+    ','  shift, and go to state 10
 
+    $default  reduce using rule 3 (declarations)
 
 
 state 8
 
-    declarations  ->  declaration ',' . declarations   (rule 4)
+    8 declaration: OPENBLOCK STRING . $@2 ',' STRING $@3 ',' FLOAT $@4 ',' decltype CLOSEBLOCK
 
-    OPENBLOCK	shift, and go to state 3
+    $default  reduce using rule 5 ($@2)
 
-    declarations	go to state 11
-    declaration	go to state 5
-
+    $@2  go to state 11
 
 
 state 9
 
-    declaration  ->  OPENBLOCK STRING @2 . ',' STRING @3 ',' FLOAT @4 ',' decltype CLOSEBLOCK   (rule 8)
+    2 program: OPENBLOCK $@1 declarations CLOSEBLOCK . ';'
 
-    ',' 	shift, and go to state 12
-
+    ';'  shift, and go to state 12
 
 
 state 10
 
-    program  ->  OPENBLOCK @1 declarations CLOSEBLOCK ';' .   (rule 2)
+    4 declarations: declaration ',' . declarations
 
-    $default	reduce using rule 2 (program)
+    OPENBLOCK  shift, and go to state 5
 
+    declarations  go to state 13
+    declaration   go to state 7
 
 
 state 11
 
-    declarations  ->  declaration ',' declarations .   (rule 4)
+    8 declaration: OPENBLOCK STRING $@2 . ',' STRING $@3 ',' FLOAT $@4 ',' decltype CLOSEBLOCK
 
-    $default	reduce using rule 4 (declarations)
-
+    ','  shift, and go to state 14
 
 
 state 12
 
-    declaration  ->  OPENBLOCK STRING @2 ',' . STRING @3 ',' FLOAT @4 ',' decltype CLOSEBLOCK   (rule 8)
+    2 program: OPENBLOCK $@1 declarations CLOSEBLOCK ';' .
 
-    STRING	shift, and go to state 13
-
+    $default  reduce using rule 2 (program)
 
 
 state 13
 
-    declaration  ->  OPENBLOCK STRING @2 ',' STRING . @3 ',' FLOAT @4 ',' decltype CLOSEBLOCK   (rule 8)
+    4 declarations: declaration ',' declarations .
 
-    $default	reduce using rule 6 (@3)
-
-    @3  	go to state 14
-
+    $default  reduce using rule 4 (declarations)
 
 
 state 14
 
-    declaration  ->  OPENBLOCK STRING @2 ',' STRING @3 . ',' FLOAT @4 ',' decltype CLOSEBLOCK   (rule 8)
+    8 declaration: OPENBLOCK STRING $@2 ',' . STRING $@3 ',' FLOAT $@4 ',' decltype CLOSEBLOCK
 
-    ',' 	shift, and go to state 15
-
+    STRING  shift, and go to state 15
 
 
 state 15
 
-    declaration  ->  OPENBLOCK STRING @2 ',' STRING @3 ',' . FLOAT @4 ',' decltype CLOSEBLOCK   (rule 8)
+    8 declaration: OPENBLOCK STRING $@2 ',' STRING . $@3 ',' FLOAT $@4 ',' decltype CLOSEBLOCK
 
-    FLOAT	shift, and go to state 16
+    $default  reduce using rule 6 ($@3)
 
+    $@3  go to state 16
 
 
 state 16
 
-    declaration  ->  OPENBLOCK STRING @2 ',' STRING @3 ',' FLOAT . @4 ',' decltype CLOSEBLOCK   (rule 8)
+    8 declaration: OPENBLOCK STRING $@2 ',' STRING $@3 . ',' FLOAT $@4 ',' decltype CLOSEBLOCK
 
-    $default	reduce using rule 7 (@4)
-
-    @4  	go to state 17
-
+    ','  shift, and go to state 17
 
 
 state 17
 
-    declaration  ->  OPENBLOCK STRING @2 ',' STRING @3 ',' FLOAT @4 . ',' decltype CLOSEBLOCK   (rule 8)
+    8 declaration: OPENBLOCK STRING $@2 ',' STRING $@3 ',' . FLOAT $@4 ',' decltype CLOSEBLOCK
 
-    ',' 	shift, and go to state 18
-
+    FLOAT  shift, and go to state 18
 
 
 state 18
 
-    declaration  ->  OPENBLOCK STRING @2 ',' STRING @3 ',' FLOAT @4 ',' . decltype CLOSEBLOCK   (rule 8)
+    8 declaration: OPENBLOCK STRING $@2 ',' STRING $@3 ',' FLOAT . $@4 ',' decltype CLOSEBLOCK
 
-    NORMAAL	shift, and go to state 19
-    OPTIE_FL	shift, and go to state 20
-    OPTIE_REL_FL	shift, and go to state 21
-    OPTIE_EUR	shift, and go to state 22
-    OPTIE_REL_EUR	shift, and go to state 23
-    LAATSTE	shift, and go to state 24
+    $default  reduce using rule 7 ($@4)
 
-    decltype	go to state 25
-
+    $@4  go to state 19
 
 
 state 19
 
-    decltype  ->  NORMAAL .   (rule 9)
+    8 declaration: OPENBLOCK STRING $@2 ',' STRING $@3 ',' FLOAT $@4 . ',' decltype CLOSEBLOCK
 
-    $default	reduce using rule 9 (decltype)
-
+    ','  shift, and go to state 20
 
 
 state 20
 
-    decltype  ->  OPTIE_FL . ',' FLOAT   (rule 10)
+    8 declaration: OPENBLOCK STRING $@2 ',' STRING $@3 ',' FLOAT $@4 ',' . decltype CLOSEBLOCK
 
-    ',' 	shift, and go to state 26
+    NORMAAL        shift, and go to state 21
+    OPTIE_FL       shift, and go to state 22
+    OPTIE_REL_FL   shift, and go to state 23
+    OPTIE_EUR      shift, and go to state 24
+    OPTIE_REL_EUR  shift, and go to state 25
+    LAATSTE        shift, and go to state 26
 
+    decltype  go to state 27
 
 
 state 21
 
-    decltype  ->  OPTIE_REL_FL . ',' FLOAT   (rule 11)
+    9 decltype: NORMAAL .
 
-    ',' 	shift, and go to state 27
-
+    $default  reduce using rule 9 (decltype)
 
 
 state 22
 
-    decltype  ->  OPTIE_EUR . ',' FLOAT   (rule 12)
+   10 decltype: OPTIE_FL . ',' FLOAT
 
-    ',' 	shift, and go to state 28
-
+    ','  shift, and go to state 28
 
 
 state 23
 
-    decltype  ->  OPTIE_REL_EUR . ',' FLOAT   (rule 13)
+   11 decltype: OPTIE_REL_FL . ',' FLOAT
 
-    ',' 	shift, and go to state 29
-
+    ','  shift, and go to state 29
 
 
 state 24
 
-    decltype  ->  LAATSTE .   (rule 14)
+   12 decltype: OPTIE_EUR . ',' FLOAT
 
-    $default	reduce using rule 14 (decltype)
-
+    ','  shift, and go to state 30
 
 
 state 25
 
-    declaration  ->  OPENBLOCK STRING @2 ',' STRING @3 ',' FLOAT @4 ',' decltype . CLOSEBLOCK   (rule 8)
+   13 decltype: OPTIE_REL_EUR . ',' FLOAT
 
-    CLOSEBLOCK	shift, and go to state 30
-
+    ','  shift, and go to state 31
 
 
 state 26
 
-    decltype  ->  OPTIE_FL ',' . FLOAT   (rule 10)
+   14 decltype: LAATSTE .
 
-    FLOAT	shift, and go to state 31
-
+    $default  reduce using rule 14 (decltype)
 
 
 state 27
 
-    decltype  ->  OPTIE_REL_FL ',' . FLOAT   (rule 11)
+    8 declaration: OPENBLOCK STRING $@2 ',' STRING $@3 ',' FLOAT $@4 ',' decltype . CLOSEBLOCK
 
-    FLOAT	shift, and go to state 32
-
+    CLOSEBLOCK  shift, and go to state 32
 
 
 state 28
 
-    decltype  ->  OPTIE_EUR ',' . FLOAT   (rule 12)
+   10 decltype: OPTIE_FL ',' . FLOAT
 
-    FLOAT	shift, and go to state 33
-
+    FLOAT  shift, and go to state 33
 
 
 state 29
 
-    decltype  ->  OPTIE_REL_EUR ',' . FLOAT   (rule 13)
+   11 decltype: OPTIE_REL_FL ',' . FLOAT
 
-    FLOAT	shift, and go to state 34
-
+    FLOAT  shift, and go to state 34
 
 
 state 30
 
-    declaration  ->  OPENBLOCK STRING @2 ',' STRING @3 ',' FLOAT @4 ',' decltype CLOSEBLOCK .   (rule 8)
+   12 decltype: OPTIE_EUR ',' . FLOAT
 
-    $default	reduce using rule 8 (declaration)
-
+    FLOAT  shift, and go to state 35
 
 
 state 31
 
-    decltype  ->  OPTIE_FL ',' FLOAT .   (rule 10)
+   13 decltype: OPTIE_REL_EUR ',' . FLOAT
 
-    $default	reduce using rule 10 (decltype)
-
+    FLOAT  shift, and go to state 36
 
 
 state 32
 
-    decltype  ->  OPTIE_REL_FL ',' FLOAT .   (rule 11)
+    8 declaration: OPENBLOCK STRING $@2 ',' STRING $@3 ',' FLOAT $@4 ',' decltype CLOSEBLOCK .
 
-    $default	reduce using rule 11 (decltype)
-
+    $default  reduce using rule 8 (declaration)
 
 
 state 33
 
-    decltype  ->  OPTIE_EUR ',' FLOAT .   (rule 12)
+   10 decltype: OPTIE_FL ',' FLOAT .
 
-    $default	reduce using rule 12 (decltype)
-
+    $default  reduce using rule 10 (decltype)
 
 
 state 34
 
-    decltype  ->  OPTIE_REL_EUR ',' FLOAT .   (rule 13)
+   11 decltype: OPTIE_REL_FL ',' FLOAT .
 
-    $default	reduce using rule 13 (decltype)
-
+    $default  reduce using rule 11 (decltype)
 
 
 state 35
 
-    $   	go to state 36
+   12 decltype: OPTIE_EUR ',' FLOAT .
 
+    $default  reduce using rule 12 (decltype)
 
 
 state 36
 
-    $   	go to state 37
+   13 decltype: OPTIE_REL_EUR ',' FLOAT .
 
-
-
-state 37
-
-    $default	accept
-
-
+    $default  reduce using rule 13 (decltype)
