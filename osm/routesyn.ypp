@@ -17,12 +17,17 @@
   double f;
 }
 
+%type<l> INTEGER num 
+%type<s> STRING vehicle
+%type<f> FLOAT coor
+
 %{
 
 using namespace std;
 
 #include <string>
 #include <stdexcept>
+#include "routeinfo.h"
 
 int yylex(void);
 void yyerror (char *s) {
@@ -33,6 +38,8 @@ void yyerror (string s) {
      throw runtime_error(s);
 }
 
+int locptr;
+
 %}
 
 %%
@@ -40,22 +47,22 @@ void yyerror (string s) {
 route		: vehicle '(' start ',' stop ')'
 		;
 
-vehicle		: STRING
+vehicle		: STRING {inforoute.vehicle = $1;}
 		;
 
-start		: locatie
+start		: {locptr=0;} locatie
 		;
 
-stop		: locatie
+stop		: {locptr=1;} locatie
 		;
 
-locatie		: NODE '=' num
+locatie		: NODE '=' num {inforoute.locations[locptr].node=true;inforoute.locations[locptr].nodeid=$3;}
 		| LAT '=' coor ',' LON '=' coor
 		| LON '=' coor ',' LAT '=' coor
 		| adres
 		;
 
-num		: INTEGER
+num		: INTEGER {$$=$1;}
 		;
 
 coor		: INTEGER
