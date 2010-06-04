@@ -31,11 +31,32 @@ namespace osm {
     else 
       return _allowed[h];
   }
-
+ 
+   unsigned int Profile::traffic_calming(const string t) {
+     if (_traffic_calming.find(t) == _traffic_calming.end())
+       return 0;
+     else
+       return _traffic_calming[t];
+  }
+  
+  unsigned int Profile::barrier(const string b) {
+    if (_barrier.find(b) == _barrier,end())
+      return  0;
+    else
+     return _barrier[b];
+  }
+  
   static void getAttribute(const xmlpp::Element *nodeElement,const string attr_name,Glib::ustring &attribute) {
     const xmlpp::Attribute *a = nodeElement->get_attribute(attr_name);
     if (a)
       attribute=a->get_value();
+  }
+  
+  static double conv_extracost(Glib::ustring extracost) {
+    if (extracost == "INFINITY")
+      return INFINITY;
+    else
+      return  atpl(extracost.c_str());
   }
   
   static void process_allowed(const xmlpp::Node *node,Profile &profile) {
@@ -49,7 +70,7 @@ namespace osm {
         
         getAttribute(nodeElement,"highway",name);
         getAttribute(nodeElement,"extracost",extracost);
-        profile.allowed(name,atol(extracost.c_str()));
+        profile.allowed(name,conv_extracost(extracost.c_str()));
       }
     }
   }
@@ -65,7 +86,7 @@ namespace osm {
         
         getAttribute(nodeElement,"type",name);
         getAttribute(nodeElement,"extracost",extracost);
-        profile.barrier(name,atol(extracost.c_str()));
+        profile.barrier(name,conv_extracost(extracost.c_str()));
       }
     }
   }
@@ -81,7 +102,7 @@ namespace osm {
         
         getAttribute(nodeElement,"type",name);
         getAttribute(nodeElement,"extracost",extracost);
-        profile.traffic_calming(name,atol(extracost.c_str()));
+        profile.traffic_calming(name,conv_extracost(extracost.c_str()));
       }
     }
   }
@@ -155,7 +176,7 @@ namespace osm {
 	  else
 	    _highways[name].speed(0);
 	  if (extracost.length() > 0)
-	    _highways[name].extracost(atol(extracost.c_str()));
+	    _highways[name].extracost(conv_extracost(extracost.c_str()));
 	  else
 	    _highways[name].extracost(0);
 	}
