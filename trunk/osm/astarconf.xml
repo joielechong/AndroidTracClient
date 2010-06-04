@@ -51,7 +51,7 @@
 			<traffic_calming type="table" extracost="0" />
 			<barrier type="gate" extracost="99999" />
 		</profile>
-		<profile name="bicycle" maxspeed="15" avgspeed="12" ignore_oneway="0">
+		<profile name="bicycle" maxspeed="20" avgspeed="12" ignore_oneway="0">
 			<allowed highway="track" extracost="5" />
 			<allowed highway="cycleway" extracost="0" />
 			<allowed highway="residential" extracost="30" />
