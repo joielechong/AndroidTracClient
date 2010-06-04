@@ -174,7 +174,7 @@ namespace osm_db {
 
   void database::findNode(const double latinp,const double loninp,const double diff,vector<long> &id,vector<double> &lat,vector<double> &lon,vector<double> &distance) {
     if (_findNode == NULL)
-      _findNode = new sqlite3_command(*_sql,"SELECT node.id,node.lat,node.lon,osmdistance(node.lat,node.lon,inp.lat,inp.lon) from node,(select ? as lat,? as lon,? as diff) as inp WHERE node.x IN (osmcalc_x(inp.lon),osmcalc_x(inp.lon-inp.diff*2),osm_calc_x(inp.lon+inp.diff*2)) and node.y in (osmcalc_y(inp.lat), osmcalc_y(inp.lat-inp.diff*2),osmcalc_y(inp.lat+inp.diff*2)) AND abs(node.lat-inp.lat) < inp.diff and abs(node.lon-inp.lon) < inp.diff order by 4");
+      _findNode = new sqlite3_command(*_sql,"SELECT node.id,node.lat,node.lon,osmdistance(node.lat,node.lon,inp.lat,inp.lon) from node,(select ? as lat,? as lon,? as diff) as inp WHERE node.x >= osmcalc_x(inp.lon-inp.diff*2) ANMD node.x <= osm_calc_x(inp.lon+inp.diff*2) and node.y >= osmcalc_y(inp.lat-inp.diff*2) AND node.y <=smcalc_y(inp.lat+inp.diff*2) AND abs(node.lat-inp.lat) < inp.diff and abs(node.lon-inp.lon) < inp.diff order by 4");
 
     id.clear();
     lat.clear();

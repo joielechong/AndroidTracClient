@@ -69,19 +69,17 @@ namespace osm {
     
     Node &nodey = nodes(y);
     if (_vehicle == "foot") {
-      string fa="";
-      try { fa = ww["fa"];} catch (range_error &ex) {}
+      string fa;
+      try { fa = ww["fa"];} catch (range_error &ex) {fa="";}
       if ((fa == "no") || (access == "no" && fa != "yes"))
 	return INFINITY;
       try { extracost += _profiles[_vehicle].allowed(hw);} catch (range_error &ex) {return INFINITY;}
     } else if (_vehicle == "bicycle") {
-      string ca="";
-      try { ca = ww["ca"];} catch (range_error &ex) {}
-      if ((ca == "no") || (access == "no" && ca != "yes"))
-	return INFINITY;
+      string cw;
+      try { cw = ww["cw"];} catch (range_error &ex) {cw="";}
+      string ca;
+      try { ca = ww["ca"];} catch (range_error &ex) {ca="";}
 
-      string cw="";
-      try { cw = ww["cw"];} catch (range_error &ex) {}
 
       try { 
 	extracost += _profiles[_vehicle].allowed(hw);
@@ -91,6 +89,10 @@ namespace osm {
       }
       if (cw != "")
 	extracost = 0; // prefer cycle track or lane
+      else {
+        if ((ca == "no") || (access == "no" && ca != "yes"))
+	  return INFINITY;
+      }
       if (oneway != "" && cw != "opposite") {
 	if (wrong_direction(nodes(x),nodey,ww,oneway))
 	  return INFINITY;
@@ -98,8 +100,8 @@ namespace osm {
       try {extracost += _highways[nodey["highway"]].extracost();} catch (range_error &ex) {};
 
     } else if (_vehicle == "car") {
-      string ma="";
-      try { ma = ww["ma"];} catch (range_error &ex) {}
+      string ma;
+      try { ma = ww["ma"];} catch (range_error &ex) {ma=""}
       if ((ma == "no") || (access == "no" && ma != "yes"))
 	return INFINITY;
       try { extracost += _profiles[_vehicle].allowed(hw);} catch (range_error &ex) {return INFINITY;}
@@ -111,6 +113,9 @@ namespace osm {
     }
     if (access == "no")
       return INFINITY;
+      
+      $extracost += _profiles[_vehicle].traffic_calming(nodey["traffic_calming"]);
+      $extracost += _profiles[_vehicle].barrier(nodey["barrier"]);
     /*	
 	$extracost += $profiles{$vehicle}->{barrier}->{type}->{$$nodey{barrier}} if exists($$nodey{barrier}) and exists($profiles{$vehicle}->{barrier}->{type}->{$$nodey{barrier}});
 	my $name=$$wwtag{name};
@@ -121,7 +126,10 @@ namespace osm {
 #	print "cost $x $y $d $speed $hw $cost $extracost $ma $access $name $ref\n";
 #	print "cost $x $y $d $speed $cost $extracost\n";
 */
-    return kost+extracost;
+    kost += extracost;
+    kost=max(INFINITY,kost);
+    
+    return kost;
   }
 
   double Map::calc_h_score(const long n1,const long n2) {
