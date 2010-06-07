@@ -55,11 +55,11 @@
                         <barrier type="cycle_barrier" extracost="0" />
                         <barrier type="lift_gate" extracost="10" />
 		</profile>
-		<profile name="bicycle" maxspeed="20" avgspeed="12" ignore_oneway="0">
+		<profile name="bicycle" maxspeed="20" avgspeed="15" ignore_oneway="0">
 			<allowed highway="track" extracost="30" />
 			<allowed highway="cycleway" extracost="0" />
-			<allowed highway="residential" extracost="30" />
-			<allowed highway="living_street" extracost="30" />
+			<allowed highway="residential" extracost="90" />
+			<allowed highway="living_street" extracost="130" />
 			<allowed highway="unclassified" extracost="30" />
 			<allowed highway="road" extracost="30" />
 			<allowed highway="service" extracost="90" />
@@ -80,7 +80,7 @@
 			<allowed highway="trunk" extracost="5" />
 			<allowed highway="trunk_link" extracost="15" />
 			<allowed highway="motorway_link" extracost="10" />
-			<allowed highway="living_street" extracost="1100" />
+			<allowed highway="living_street" extracost="110" />
 			<allowed highway="residential" extracost="50" />
 			<allowed highway="unclassified" extracost="50" />
 			<allowed highway="road" extracost="50" />

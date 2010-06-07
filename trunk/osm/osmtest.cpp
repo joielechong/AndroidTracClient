@@ -86,12 +86,12 @@ int main(int argc, char *argv[]) {
     if (inforoute.locations[0].node)
       start = inforoute.locations[0].nodeid;
     else if (inforoute.locations[0].coord)
-      start = map.findNode(inforoute.locations[0].lat,inforoute.locations[0].lon,vehicle);
+      start = map.findCoor(inforoute.locations[0].lat,inforoute.locations[0].lon,vehicle);
 
     if (inforoute.locations[1].node)
       eind = inforoute.locations[1].nodeid;
     else if (inforoute.locations[1].coord)
-      eind = map.findNode(inforoute.locations[1].lat,inforoute.locations[1].lon,vehicle);
+      eind = map.findCoor(inforoute.locations[1].lat,inforoute.locations[1].lon,vehicle);
 
     cout << "start = "<< start << " eind = " << eind << endl;
 
