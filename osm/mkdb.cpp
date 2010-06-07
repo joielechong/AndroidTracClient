@@ -78,6 +78,7 @@ string postprocesses[] = {
 string makenb[] = {
   "delete from neighbor",
   "insert or replace into neighbor (id1,id2,way,distance) SELECT id1,id2,way,osmdistance(n1.lat,n1.lon,n2.lat,n2.lon) from nb,node as n1,node as n2 where n1.id=id1 and n2.id=id2",
+  "VACUUM",
   ""
 };
 

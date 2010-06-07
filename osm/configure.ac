@@ -51,8 +51,18 @@ AC_CHECK_HEADERS([cmath cstdio cstdlib cstring fstream iostream list map sstream
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
 AC_C_INLINE
+AC_TYPE_INT16_T
+AC_TYPE_INT32_T
 AC_TYPE_INT64_T
+AC_TYPE_INT8_T
 AC_TYPE_SIZE_T
+AC_TYPE_UINT16_T
+AC_TYPE_UINT32_T
+AC_TYPE_UINT8_T
+
+# Checks for library functions.
+AC_FUNC_MALLOC
+AC_FUNC_REALLOC
 
 # Checks for library functions.
 AC_CHECK_FUNCS([unlink strncmp memset pow strlen strtod atof strtol atol sin cos asin sqrt], [], [AC_MSG_ERROR([required functions missing])])

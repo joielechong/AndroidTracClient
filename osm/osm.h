@@ -86,7 +86,7 @@ namespace osm {
     int _oneway;
   };
   
-  class Relation  : public Element {
+  class Relation : public Element {
   public:
     inline Relation() : Element() {_type="relation";_coordsLoaded=false;}
     inline Relation(long id,int version) : Element(id,version) {_coordsLoaded=false;}
@@ -273,6 +273,7 @@ namespace osm {
     osm::Node& Address(const string country,const string city,const string street,const string housenumber,const string postcode) const;
 
     inline void findNode(const double latinp,const double loninp,const double diff,vector<long> &id,vector<double> &lat,vector<double> &lon,vector<double> &distance) { _con->findNode(latinp,loninp,diff,id,lat,lon,distance);}
+    long findCoor(const double lat,const double lon, const string vehicle);
     void findLocation(const long nodeid,vector<long> &admins);
     bool insideRelation(const long relationid,long nodeid);
     void findAdmin(const string querystring,vector<string> &naam,vector<int> &level);

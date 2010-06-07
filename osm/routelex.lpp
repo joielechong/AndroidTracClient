@@ -9,7 +9,7 @@ extern int yydebug;
 
 void routelex_init(const char *s) {
    yy_scan_string(s);
-   yydebug=1;
+   yydebug=0;
 }
 
 %}

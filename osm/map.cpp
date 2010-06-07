@@ -320,6 +320,10 @@ namespace osm {
         adminlist.push_back(*i);
     }
   }
+
+  long Map::findCoor(const double lat,const double lon,const string vehicle) {
+    throw runtime_error("findCoor : Not yet implemented");
+  }
   
   double Map::distance(const Node &n1,const Node &n2) const {
     return grootcirkel(n1.lat(),n1.lon(),n2.lat(),n2.lon());
