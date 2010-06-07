@@ -10,7 +10,7 @@ namespace osm_db {
   using namespace std;
   using namespace sqlite3x;
   
-  void database::getCounts(long &nodes,long &ways,long &rels, long &bounds, long &tags,long &nds, long &mems, long &nbs) {
+  void database::getCounts(long &nodes,long &ways,long &rels, long &bounds, long &tags,long &nds, long &mems) {
     if (_getCounts == NULL) 
       _getCounts = new sqlite3_command(*_sql,"SELECT * FROM counts");
     sqlite3_cursor cur(_getCounts->executecursor());
@@ -22,7 +22,6 @@ namespace osm_db {
     tags = cur.getint64(4);
     nds = cur.getint64(5);
     mems = cur.getint64(6);
-    nbs = cur.getint64(7);
   }
   
   void database::getNode(long id,int &version,double &lat,double &lon, int&x, int &y) {
@@ -123,7 +122,7 @@ namespace osm_db {
 
   void database::getWays(const long nodeid,vector<long> &ways) {
     if (_getWays == NULL) 
-      _getWays = new sqlite3_command(*_sql,"SELECT way FROM neighbor AS nb, (SELECT ? AS id) AS inp WHERE id1=id  OR id2=id");
+      _getWays = new sqlite3_command(*_sql,"SELECT way FROM nb WHERE id1=?");
 
     ways.clear();
     _getWays->bind(1,(sqlite3x::int64_t)nodeid);
@@ -134,7 +133,7 @@ namespace osm_db {
 
   long database::getConnectingWay(const long node1,const long node2) {
     if (_getConn == NULL)
-      _getConn = new sqlite3_command(*_sql,"SELECT way FROM neighbor AS nb, (SELECT ? AS id1,? AS id2) AS inp WHERE (nb.id1=inp.id1 AND nb.id2=inp.id2) OR (nb.id1=inp.id2 AND nb.id2=inp.id1)");
+      _getConn = new sqlite3_command(*_sql,"SELECT way FROM nb WHERE id1=? and id2=?");
     _getConn->bind(1,(sqlite3x::int64_t)node1);
     _getConn->bind(2,(sqlite3x::int64_t)node2);
     sqlite3_cursor cur(_getConn->executecursor());
@@ -339,9 +338,8 @@ namespace osm_db {
 
   void database::getNeighbours(const long id,vector<long> &ids) {
     if (_getNeighbours == NULL)
-      _getNeighbours = new sqlite3_command(*_sql,"SELECT id2 FROM neighbor WHERE id1=? UNION SELECT id1 FROM neighbor WHERE id2=?");
+      _getNeighbours = new sqlite3_command(*_sql,"SELECT id2 FROM nb WHERE id1=?");
     _getNeighbours->bind(1,(sqlite3x::int64_t)id);
-    _getNeighbours->bind(2,(sqlite3x::int64_t)id);
     sqlite3_cursor cur(_getNeighbours->executecursor());
 
     ids.clear();

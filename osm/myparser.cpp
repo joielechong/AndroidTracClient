@@ -19,9 +19,9 @@
 namespace osmparser {
   
   void OSMParser::printCounts() { 
-    long nodes,ways,rels,bounds,tags,nds,mems,nbs; 
-    _con->getCounts(nodes,ways,rels,bounds,tags,nds,mems,nbs); 
-    std::cout << _counter << ": " << nodes << " nodes " << ways << " ways " << rels << " relations " << tags << " tags " << nds << " nds " << mems << " members " << nbs << " neighbours" << std::endl; 
+    long nodes,ways,rels,bounds,tags,nds,mems; 
+    _con->getCounts(nodes,ways,rels,bounds,tags,nds,mems); 
+    std::cout << _counter << ": " << nodes << " nodes " << ways << " ways " << rels << " relations " << tags << " tags " << nds << " nds " << mems << " members " << std::endl; 
   }
   
   void OSMParser::on_start_document() {
@@ -52,7 +52,6 @@ namespace osmparser {
 	if (iter->name == "id") {
 	  id = atol(iter->value.c_str());
 	  _lastid = id;
-          _prevnd = 0;
 	  _memcnt = 0;
 	  _ndcnt = 0;
 	  _is_highway = false;
@@ -87,7 +86,6 @@ namespace osmparser {
       _con->createNode(id,version,lat,lon);
       } else if (name == "way") {
 	_con->createWay(id,version);
-        _ndlist.clear();
       } else if (name == "relation") {
 	_con->createRelation(id,version);
       } else if (name == "bounds" || name == "bound") {
@@ -128,9 +126,6 @@ namespace osmparser {
 	  try {
             int seq = _ndcnt++;
 	    _con->createNd(_lastid,seq,ref);
-            _ndlist.push_back(ref);
-            if (seq > 0 && _is_highway)
-            _prevnd = ref;
 	  } catch (const std::exception &ex) {
 	    std::cerr << "createNd mislukt: "<<ex.what() << std::endl;
 	    std::cerr << "  errmsg = " << _con->errmsg() << std::endl;
@@ -146,16 +141,8 @@ namespace osmparser {
   
   void OSMParser::on_end_element(const Glib::ustring& name) {
     //  std::cout << "on_end_element()" << std::endl;
-    if (_depth == 2) {
-      if (name == "way") {
-        if (_is_highway) {
-          for (unsigned int i=1;i<_ndlist.size();i++) 
-          _con->createNeighbour(_lastid,_ndlist[i-1],_ndlist[i]);
-        }
-        _ndlist.clear();
-      }
+    if (_depth == 2)
       _lastid = 0;
-    }
     _depth--;
     _counter++;
     if ((_counter%10000) == 0) {

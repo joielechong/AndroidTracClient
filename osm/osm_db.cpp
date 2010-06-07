@@ -25,7 +25,6 @@ namespace osm_db {
     _createNd = NULL;
     _createMember = NULL;
     _createAdres = NULL;
-    _createNeighbour = NULL;
     _getCounts = NULL;
     _getNode = NULL;
     _getWay = NULL;
@@ -90,8 +89,6 @@ namespace osm_db {
       delete _createMember;
     if (_createAdres != NULL)
       delete _createAdres;
-    if (_createNeighbour != NULL)
-      delete _createNeighbour;
     if (_getCounts != NULL)
       delete _getCounts;
     if (_getNode != NULL)

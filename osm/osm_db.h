@@ -30,7 +30,6 @@ namespace osm_db {
     void createTag(long id,string type,string k,string v);
     void createNd(long id,int seq,long ref);
     void createMember(long id,int seq,long ref,string type,string role);
-    void createNeighbour(long way,int long id1,long id2);
     void createAdres(long nid,string type,string country,string ccity,string street,string housenumber,string postcode);
     void setBoundaries();
     void delElem(string name);
@@ -44,7 +43,7 @@ namespace osm_db {
     inline void commit() { _trans->commit();_in_transaction=0;}
     void executenonquery(string query,bool rep=true);
 
-    void getCounts(long &nodes,long &ways,long &rel, long &bounds, long &tags,long &nds, long &mems, long &nbs);
+    void getCounts(long &nodes,long &ways,long &rel, long &bounds, long &tags,long &nds, long &mems);
     void getNode(const long id,int &version,double &lat,double &lon,int &x,int &y);
     void getWay(const long id,int &version);
     void getRelation(const long id,int &version);
@@ -74,7 +73,6 @@ namespace osm_db {
     sqlite3x::sqlite3_command *_createNd;
     sqlite3x::sqlite3_command *_createMember;
     sqlite3x::sqlite3_command *_createAdres;
-    sqlite3x::sqlite3_command *_createNeighbour;
 
     sqlite3x::sqlite3_command *_getCounts;
     sqlite3x::sqlite3_command *_getNode;

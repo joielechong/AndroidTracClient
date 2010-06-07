@@ -235,9 +235,9 @@ namespace osm {
     inline void set_ignore_oneway() {_ignore_oneway = true;}
     unsigned int allowed(const string h);
     inline void allowed(string h,const unsigned int e) {_allowed[h]=e;}
-    inline unsigned int traffic_calming(const string t) {return _traffic_calming[t];}
+    unsigned int traffic_calming(const string t);
     inline void traffic_calming(const string t,const unsigned int e) {_traffic_calming[t]=e;}
-    inline unsigned int barrier(const string b) {return _barrier[b];}
+    unsigned int barrier(const string b);
     inline void barrier(const string b,const unsigned int e) {_barrier[b]=e;}
     void output(ostream &out);
 

@@ -40,7 +40,7 @@ namespace osm {
   }
   
   unsigned int Profile::barrier(const string b) {
-    if (_barrier.find(b) == _barrier,end())
+    if (_barrier.find(b) == _barrier.end())
       return  0;
     else
      return _barrier[b];
@@ -56,7 +56,7 @@ namespace osm {
     if (extracost == "INFINITY")
       return INFINITY;
     else
-      return  atpl(extracost.c_str());
+      return  atol(extracost.c_str());
   }
   
   static void process_allowed(const xmlpp::Node *node,Profile &profile) {

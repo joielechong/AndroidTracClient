@@ -39,14 +39,12 @@ namespace osm_db {
       _createNode = new sqlite3_command(*_sql,"INSERT OR REPLACE INTO node (id,version,lat,lon) VALUES (?,?,?,?)");
       _createWay = new sqlite3_command(*_sql,"INSERT OR REPLACE INTO way (id,version) VALUES (?,?)");
       _createRelation = new sqlite3_command(*_sql,"INSERT OR REPLACE INTO relation (id,version) VALUES (?,?)");
-      _createNeighbour = new sqlite3_command(*_sql,"INSERT OR REPLACE INTO neighbor (way,id1,id2,distance) SELECT inp.way,inp.id1,inp.id2,osmdistance(nd1.lat,nd1.lon,nd2.lat,nd2.lon) FROM (SELECT ? as way,? as id1, ? as id2) as inp,node as nd1,node as nd2 WHERE inp.id1=nd1.id AND inp.id2=nd2.id");
       _delTags = new sqlite3_command(*_sql,"DELETE FROM tag WHERE id=? AND type = ?");
       _delNds = new sqlite3_command(*_sql,"DELETE FROM nd WHERE id=?");
       _delMems = new sqlite3_command(*_sql,"DELETE FROM member WHERE id=?");
     } else {
       _createNode = new sqlite3_command(*_sql,"INSERT INTO node (id,version,lat,lon) VALUES (?,?,?,?)");
       _createWay = new sqlite3_command(*_sql,"INSERT INTO way (id,version) VALUES (?,?)");
-      _createNeighbour = new sqlite3_command(*_sql,"INSERT INTO neighbor (way,id1,id2,distance) SELECT inp.way,inp.id1,inp.id2,osmdistance(nd1.lat,nd1.lon,nd2.lat,nd2.lon) FROM (SELECT ? as way,? as id1, ? as id2) as inp,node as nd1,node as nd2 WHERE inp.id1=nd1.id AND inp.id2=nd2.id");
       _createRelation = new sqlite3_command(*_sql,"INSERT INTO relation (id,version) VALUES (?,?)");
     }
     _createTag = new sqlite3_command(*_sql,"INSERT INTO tag (id,type,k,v) VALUES(?,?,?,?)");
@@ -141,19 +139,6 @@ namespace osm_db {
     }
   }
   
-  void database::createNeighbour(long way,int long id1,long id2) {
-    try {
-      _createNeighbour->bind(1,(sqlite3x::int64_t)way);
-      _createNeighbour->bind(2,(sqlite3x::int64_t)id1);
-      _createNeighbour->bind(3,(sqlite3x::int64_t)id2);
-      _createNeighbour->executenonquery();
-    } catch (sqlite3x::database_error &ex) {
-      cerr << "Probleem bij invoeren in tabel neighbor("<<way<<","<<id1<<","<<id2<<")"<<std::endl;
-      cerr << "Exception  = " << ex.what() << std::endl;
-      cerr << "  errmsg = " << this->errmsg() << std::endl;
-    }
-  }
-  
   void database::createMember(long id,int seq,long ref,string type,string role) {
     try {
       _createMember->bind(1,(sqlite3x::int64_t)id);
@@ -185,7 +170,6 @@ namespace osm_db {
 
   void database::setBoundaries() {
     executenonquery("DELETE FROM bound");
-    //    executenonquery("INSERT INTO bound (minlat,maxlat,minlon,maxlon) SELECT min(lat),max(lat),min(lon),max(lon) FROM node,neighbor AS nb WHERE (NOT nb.distance IS NULL) AND (node.id=nb.id1 OR node.id=nb.id2)");
     executenonquery("INSERT INTO bound (minlat,maxlat,minlon,maxlon) SELECT min(lat),max(lat),min(lon),max(lon) FROM node");
   }
 
