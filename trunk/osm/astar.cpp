@@ -102,7 +102,7 @@ namespace osm {
 
     } else if (_vehicle == "car") {
       string ma;
-      try { ma = ww["ma"];} catch (range_error &ex) {ma="";}
+      try { ma = ww["motorcar"];} catch (range_error &ex) {ma="";}
       if ((ma == "no") || (access == "no" && ma != "yes"))
 	return INFINITY;
       try { extracost += _profiles[_vehicle].allowed(hw);} catch (range_error &ex) {return INFINITY;}
