@@ -56,10 +56,10 @@ namespace osm {
 
     double kost = dist *3.6 / speed;
 
-    string access="yes";
-    string oneway="";
-    try { access = ww["access"];} catch (range_error &ex) {}
-    try { oneway = ww["oneway"];} catch (range_error &ex) {}
+    string access;
+    string oneway;
+    try { access = ww["access"];} catch (range_error &ex) {access="yes";}
+    try { oneway = ww["oneway"];} catch (range_error &ex) {oneway="";}
     try {
       if (ww["junction"] == "roudabout")
 	oneway = "yes";
@@ -70,22 +70,23 @@ namespace osm {
     Node &nodey = nodes(y);
     if (_vehicle == "foot") {
       string fa;
-      try { fa = ww["fa"];} catch (range_error &ex) {fa="";}
+      try { fa = ww["foot"];} catch (range_error &ex) {fa="";}
       if ((fa == "no") || (access == "no" && fa != "yes"))
 	return INFINITY;
       try { extracost += _profiles[_vehicle].allowed(hw);} catch (range_error &ex) {return INFINITY;}
     } else if (_vehicle == "bicycle") {
       string cw;
-      try { cw = ww["cw"];} catch (range_error &ex) {cw="";}
+      try { cw = ww["cycleway"];} catch (range_error &ex) {cw="";}
       string ca;
-      try { ca = ww["ca"];} catch (range_error &ex) {ca="";}
+      try { ca = ww["bicycle"];} catch (range_error &ex) {ca="";}
 
-
-      try { 
-	extracost += _profiles[_vehicle].allowed(hw);
-      } catch (range_error &ex) {
-	if (cw == "") 
-	  return INFINITY;
+      if (ca != "yes") {
+	try { 
+	  extracost += _profiles[_vehicle].allowed(hw);
+	} catch (range_error &ex) {
+	  if (cw == "") 
+	    return INFINITY;
+	}
       }
       if (cw != "")
 	extracost = 0; // prefer cycle track or lane
@@ -101,7 +102,7 @@ namespace osm {
 
     } else if (_vehicle == "car") {
       string ma;
-      try { ma = ww["ma"];} catch (range_error &ex) {ma=""}
+      try { ma = ww["ma"];} catch (range_error &ex) {ma="";}
       if ((ma == "no") || (access == "no" && ma != "yes"))
 	return INFINITY;
       try { extracost += _profiles[_vehicle].allowed(hw);} catch (range_error &ex) {return INFINITY;}
@@ -113,25 +114,16 @@ namespace osm {
     }
     if (access == "no")
       return INFINITY;
-      
-      $extracost += _profiles[_vehicle].traffic_calming(nodey["traffic_calming"]);
-      $extracost += _profiles[_vehicle].barrier(nodey["barrier"]);
-    /*	
-	$extracost += $profiles{$vehicle}->{barrier}->{type}->{$$nodey{barrier}} if exists($$nodey{barrier}) and exists($profiles{$vehicle}->{barrier}->{type}->{$$nodey{barrier}});
-	my $name=$$wwtag{name};
-	my $ref=$$wwtag{ref};
-	$ref="" unless defined($ref);
-	$name="" unless defined($name);
-	
-#	print "cost $x $y $d $speed $hw $cost $extracost $ma $access $name $ref\n";
-#	print "cost $x $y $d $speed $cost $extracost\n";
-*/
+    
+    try {extracost += _profiles[_vehicle].traffic_calming(nodey["traffic_calming"]);} catch (range_error &ex) {};
+    try {extracost += _profiles[_vehicle].barrier(nodey["barrier"]);} catch (range_error &ex) {};
+ 
     kost += extracost;
-    kost=max(INFINITY,kost);
+    kost=min(INFINITY,kost);
     
     return kost;
   }
-
+  
   double Map::calc_h_score(const long n1,const long n2) {
     double dist = distance(n1,n2);
     if (_vehicle == "") return dist;
@@ -193,12 +185,12 @@ namespace osm {
 	  h[*y] = calc_h_score(*y,goal);
 	  d[*y] = distance(*y,goal);
 	  f[*y] = g[*y] + h[*y];
-	  string name="";
-	  string ref="";
+	  string name;
+	  string ref;
 	  long w = getConnectingWay(xs,*y);
 	  osm::Way &ww = ways(w);
-	  try { name = ww["name"];} catch (range_error &ex) {}
-	  try { ref = ww["ref"];} catch (range_error &ex) {}
+	  try { name = ww["name"];} catch (range_error &ex) {name="";}
+	  try { ref = ww["ref"];} catch (range_error &ex) {ref="";}
 
 	  if (set == 1) 
 	    cout << set << " " << xs << " " << *y << " " << g[*y] << " " << h[*y] << " " << f[*y] << " "+name+" "+ref <<endl;

@@ -31,12 +31,10 @@ namespace osmparser {
     long _counter;
     osm_db::database *_con;
     long _lastid;
-    long _prevnd;
     std::string _type;
     int _memcnt;
     int _ndcnt;
     bool _is_highway;
-    std::vector<long> _ndlist;
   };
 }
 #endif //_MYPARSER_H

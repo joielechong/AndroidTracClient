@@ -2,7 +2,7 @@
 <astar>
 	<highways>
 		<highway name="bus_stop"/>
-		<highway name="crossing" extracost="10"/>
+		<highway name="crossing" extracost="5"/>
 		<highway name="bridleway" speed="5"/>	<!-- ruiterpad -->
 		<highway name="cycleway" speed="15"/>
 		<highway name="primary_link" speed="15"/>
@@ -58,8 +58,8 @@
 		<profile name="bicycle" maxspeed="20" avgspeed="15" ignore_oneway="0">
 			<allowed highway="track" extracost="30" />
 			<allowed highway="cycleway" extracost="0" />
-			<allowed highway="residential" extracost="90" />
-			<allowed highway="living_street" extracost="130" />
+			<allowed highway="residential" extracost="0" />
+			<allowed highway="living_street" extracost="0" />
 			<allowed highway="unclassified" extracost="30" />
 			<allowed highway="road" extracost="30" />
 			<allowed highway="service" extracost="90" />
@@ -68,7 +68,7 @@
 			<allowed highway="secondary" extracost="30" />
 			<allowed highway="secondary_link" extracost="30" />
 			<allowed highway="tertiary" extracost="30" />
-			<traffic_calming type="table" extracost="1" />
+			<traffic_calming type="table" extracost="0" />
 			<barrier type="gate" extracost="1000" />
 			<barrier type="bollard" extracost="0" />
 			<barrier type="block" extracost="100" />
