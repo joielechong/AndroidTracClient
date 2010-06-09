@@ -48,22 +48,17 @@ namespace osm {
 	_coordsLoaded = true;
       }
     } catch  (const osm_db::osm_db_error &ex) {
-      cerr <<ex.what()<<endl;
-      cerr << "  errmsg = " << con->errmsg() << endl;
-      return false;
+      throw runtime_error(ex.what());
     }
     int nvert = _lats.size();
     bool c=false;
-    //    cout << nvert << " nodes"<<endl;
     int j=nvert - 1;
     for (int i=0;i<nvert;j=i++) {
       if ((_lons[i] > lon ) != (_lons[j] > lon)) {
 	double l2 = (_lats[j]-_lats[i])*(lon-_lons[i])/(_lons[j]-_lons[i]) + _lats[i];
-	//	cout << "l2 = " << l2 << endl;
 	if (lat < l2)
 	  c = !c;
       }
-      //      cout << i << " " << lon << " " << _lons[j] << " " << _lons[i] << " : " << lat << " " << _lats[j] << " " << _lats[i] << " = " << c << endl;
     }
     return c;
   }

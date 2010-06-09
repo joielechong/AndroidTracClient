@@ -16,8 +16,10 @@
 %token STREET
 %token NUMBER
 %token POSTCODE
+%token LATLON
 
 %type<l> num
+%type<f> coor
 
 %{
 
@@ -55,8 +57,11 @@ stop		: {locptr=1;} locatie
 		;
 
 locatie		: NODE '=' num {inforoute.locations[locptr].node=true;inforoute.locations[locptr].nodeid=$3;}
-		| LAT '=' coor ',' LON '=' coor
-		| LON '=' coor ',' LAT '=' coor
+		| num {inforoute.locations[locptr].node=true;inforoute.locations[locptr].nodeid=$1;}
+		| LAT '=' coor ',' LON '=' coor {inforoute.locations[locptr].coord=true;inforoute.locations[locptr].lat=$3;inforoute.locations[locptr].lon=$7;}
+		| LON '=' coor ',' LAT '=' coor {inforoute.locations[locptr].coord=true;inforoute.locations[locptr].lat=$7;inforoute.locations[locptr].lon=$3;}
+		| LATLON '=' '(' coor ',' coor ')' {inforoute.locations[locptr].coord=true;inforoute.locations[locptr].lat=$4;inforoute.locations[locptr].lon=$6;}
+		| '(' coor ',' coor ')' {inforoute.locations[locptr].coord=true;inforoute.locations[locptr].lat=$2;inforoute.locations[locptr].lon=$4;}
 		| adres
 		;
 

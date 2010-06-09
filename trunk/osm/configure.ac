@@ -46,7 +46,7 @@ AC_CHECK_LIB([l], [main], [], [AC_MSG_ERROR([libl missing])])
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([cmath cstdio cstdlib cstring fstream iostream list map sstream stdexcept string vector stdlib.h string.h], [], [AC_MSG_ERROR([required headers not found])])
+AC_CHECK_HEADERS([cmath cstdio cstdlib cstring fstream iostream list map sstream stdexcept string vector stdlib.h string.h libintl.h malloc.h stddef.h], [], [AC_MSG_ERROR([required headers not found])])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
@@ -63,6 +63,7 @@ AC_TYPE_UINT8_T
 # Checks for library functions.
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
+AC_FUNC_ALLOCA
 
 # Checks for library functions.
 AC_CHECK_FUNCS([unlink strncmp memset pow strlen strtod atof strtol atol sin cos asin sqrt], [], [AC_MSG_ERROR([required functions missing])])

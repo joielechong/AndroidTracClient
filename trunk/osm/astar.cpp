@@ -117,6 +117,7 @@ namespace osm {
     
     try {extracost += _profiles[_vehicle].traffic_calming(nodey["traffic_calming"]);} catch (range_error &ex) {};
     try {extracost += _profiles[_vehicle].barrier(nodey["barrier"]);} catch (range_error &ex) {};
+    try {extracost += _profiles[_vehicle].barrier(nodey["highway"]);} catch (range_error &ex) {};
  
     kost += extracost;
     kost=min(INFINITY,kost);
@@ -150,7 +151,6 @@ namespace osm {
     bestpoints[set] = xs;
     double newdistance = distance(bestpoints[1],bestpoints[2]);
     maxperc = max(maxperc,100.0*(initialdistance - newdistance)/initialdistance);
-    cout << "P " << maxperc << endl;;
     k = closedset.find(xs);
     if (k != closedset.end() && k->second != set) {
       cout << "S set = " << set << " xs match = " << xs << endl;
@@ -191,11 +191,11 @@ namespace osm {
 	  osm::Way &ww = ways(w);
 	  try { name = ww["name"];} catch (range_error &ex) {name="";}
 	  try { ref = ww["ref"];} catch (range_error &ex) {ref="";}
-
+	  cout << set << " " << maxperc << " ";
 	  if (set == 1) 
-	    cout << set << " " << xs << " " << *y << " " << g[*y] << " " << h[*y] << " " << f[*y] << " "+name+" "+ref <<endl;
+	    cout << " " << xs << " " << *y << " " << g[*y] << " " << h[*y] << " " << f[*y] << " "+name+" "+ref <<endl;
 	  else
-	    cout << set << " " << *y << " " << xs << " " << g[*y] << " " << h[*y] << " " << f[*y] << " "+name+" "+ref <<endl;
+	    cout << " " << *y << " " << xs << " " << g[*y] << " " << h[*y] << " " << f[*y] << " "+name+" "+ref <<endl;
 
 	}
       }

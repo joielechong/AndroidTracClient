@@ -61,7 +61,8 @@ namespace osm_db {
     void getNeighbours(const long id,vector<long> &ids);
     long getConnectingWay(const long n1,const long n2);
     void adminNode(const long nodeid,vector<long> &admins);
-
+    void findCoor(const double lat,const double lon,vector<long> &ways,vector<long> &nodes,vector<double> &distances);
+ 
   private: 
 
     sqlite3x::sqlite3_connection *_sql;
@@ -91,6 +92,7 @@ namespace osm_db {
     sqlite3x::sqlite3_command *_getWayDesc;
 
     sqlite3x::sqlite3_command *_findNode;
+    sqlite3x::sqlite3_command *_findCoor;
     sqlite3x::sqlite3_command *_findAdmin;
     sqlite3x::sqlite3_command *_findAddress;
     sqlite3x::sqlite3_command *_findHouses;
