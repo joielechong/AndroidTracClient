@@ -21,6 +21,8 @@ namespace osm {
       out << endl << "  Allowed : " << (*iter).first << " extracost = " << (*iter).second;
     for(iter=_barrier.begin();iter != _barrier.end();iter++) 
       out << endl << "  Barrier : " << (*iter).first << " extracost = " << (*iter).second;
+    for(iter=_highway.begin();iter != _highway.end();iter++) 
+      out << endl << "  Highway : " << (*iter).first << " extracost = " << (*iter).second;
     for(iter=_traffic_calming.begin();iter != _traffic_calming.end();iter++) 
       out << endl << "  Traffic Calming : " << (*iter).first << " extracost = " << (*iter).second;
   }
@@ -44,6 +46,13 @@ namespace osm {
       return  0;
     else
      return _barrier[b];
+  }
+  
+  unsigned int Profile::highway(const string h) {
+    if (_highway.find(h) == _highway.end())
+      return  0;
+    else
+     return _highway[h];
   }
   
   static void getAttribute(const xmlpp::Element *nodeElement,const string attr_name,Glib::ustring &attribute) {
@@ -87,6 +96,22 @@ namespace osm {
         getAttribute(nodeElement,"type",name);
         getAttribute(nodeElement,"extracost",extracost);
         profile.barrier(name,conv_extracost(extracost.c_str()));
+      }
+    }
+  }
+  
+  static void process_highway(const xmlpp::Node *node,Profile &profile) {
+    const xmlpp::TextNode* nodeText = dynamic_cast<const xmlpp::TextNode*>(node);
+    const xmlpp::CommentNode* nodeComment = dynamic_cast<const xmlpp::CommentNode*>(node);
+    
+    if(!(nodeText && nodeText->is_white_space())) { //Let's ignore the indenting - you don't always want to do this.    
+      if(!nodeText && !nodeComment) { //Let's not say "name: text".
+        const xmlpp::Element* nodeElement = dynamic_cast<const xmlpp::Element*>(node);
+	Glib::ustring name,extracost;
+        
+        getAttribute(nodeElement,"name",name);
+        getAttribute(nodeElement,"extracost",extracost);
+        profile.highway(name,conv_extracost(extracost.c_str()));
       }
     }
   }
@@ -144,10 +169,12 @@ namespace osm {
 		  process_allowed(*iterp,_profiles[name]);
 		else if (nodename == "barrier")
 		  process_barrier(*iterp,_profiles[name]);
+		else if (nodename == "highway")
+		  process_highway(*iterp,_profiles[name]);
 		else if (nodename == "traffic_calming")
 		  process_trafficcalming(*iterp,_profiles[name]);
 		else
-		  throw domain_error("Foutief configuratiefile: allowed, barrier of traffic_calming verwacht. Naam = "+nodename);
+		  throw domain_error("Foutief configuratiefile: allowed, barrier, highway of traffic_calming verwacht. Naam = "+nodename);
 	      }
 	    }
 	  }      
@@ -315,14 +342,29 @@ namespace osm {
     _con->adminNode(id,admins);
     Node &n = _nodes[id];
     for (vector<long>::iterator i=admins.begin();i != admins.end();i++) {
-      Relation &r = _relations[*i];
-      if (r.isInside(_con,n.lat(),n.lon()))
-        adminlist.push_back(*i);
+      try {
+	Relation &r = _relations[*i];
+	if (r.isInside(_con,n.lat(),n.lon()))
+	  adminlist.push_back(*i);
+      } catch (runtime_error &ex) {}
     }
   }
 
   long Map::findCoor(const double lat,const double lon,const string vehicle) {
-    throw runtime_error("findCoor : Not yet implemented");
+
+    vector<long> ways;
+    vector<long> nodes;
+    vector<double> distances;
+
+    cout << lat << " " << lon << " " << vehicle << endl;
+    _con->findCoor(lat,lon,ways,nodes,distances);
+
+    for (unsigned int i = 0; i < ways.size(); i++) {
+      cout << ways[i] << " " << nodes[i] << " " << distances[i] << " "+_ways[ways[i]]["highway"] << endl;
+      if (_profiles[vehicle].is_allowed(_ways[ways[i]]["highway"]))
+	return nodes[i];
+    }
+    throw runtime_error("Kan geen geschikte node vinden bij coordinaten");
   }
   
   double Map::distance(const Node &n1,const Node &n2) const {

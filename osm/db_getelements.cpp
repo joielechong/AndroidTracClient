@@ -171,9 +171,25 @@ namespace osm_db {
     }
   }
 
+  void database::findCoor(const double lat,const double lon,vector<long> &ways,vector<long> &nodes,vector<double> &distances) {
+    if (_findCoor == NULL) 
+      _findCoor = new sqlite3_command(*_sql,"SELECT DISTINCT osmdistance(inp.lat,inp.lon,n.lat,n.lon),n.id,wt.id FROM (SELECT ? as lon,? as lat) as inp,node as n,nb,waytag as wt WHERE n.x=osmcalc_x(inp.lon) and n.y=osmcalc_y(inp.lat) and abs(inp.lat-n.lat)<0.001 and abs(inp.lon-n.lon) <0.001 and n.id=nb.id1 and nb.way=wt.id and osmdistance(inp.lat,inp.lon,n.lat,n.lon)<50 order by 1");
+    ways.clear();
+    nodes.clear();
+    distances.clear();
+    _findCoor->bind(1,lon);
+    _findCoor->bind(2,lat);
+    sqlite3_cursor cur(_findCoor->executecursor());
+    while (cur.step()) {
+      ways.push_back(cur.getint64(2));
+      nodes.push_back(cur.getint64(1));
+      distances.push_back(cur.getdouble(0));
+    }
+  }
+
   void database::findNode(const double latinp,const double loninp,const double diff,vector<long> &id,vector<double> &lat,vector<double> &lon,vector<double> &distance) {
     if (_findNode == NULL)
-      _findNode = new sqlite3_command(*_sql,"SELECT node.id,node.lat,node.lon,osmdistance(node.lat,node.lon,inp.lat,inp.lon) from node,(select ? as lat,? as lon,? as diff) as inp WHERE node.x >= osmcalc_x(inp.lon-inp.diff*2) ANMD node.x <= osm_calc_x(inp.lon+inp.diff*2) and node.y >= osmcalc_y(inp.lat-inp.diff*2) AND node.y <=smcalc_y(inp.lat+inp.diff*2) AND abs(node.lat-inp.lat) < inp.diff and abs(node.lon-inp.lon) < inp.diff order by 4");
+      _findNode = new sqlite3_command(*_sql,"SELECT node.id,node.lat,node.lon,osmdistance(node.lat,node.lon,inp.lat,inp.lon) from node,(select ? as lat,? as lon,? as diff) as inp WHERE node.x >= osmcalc_x(inp.lon-inp.diff*2) AND node.x <= osm_calc_x(inp.lon+inp.diff*2) and node.y >= osmcalc_y(inp.lat-inp.diff*2) AND node.y <=smcalc_y(inp.lat+inp.diff*2) AND abs(node.lat-inp.lat) < inp.diff and abs(node.lon-inp.lon) < inp.diff order by 4");
 
     id.clear();
     lat.clear();
@@ -243,8 +259,6 @@ namespace osm_db {
 
       if (!found) 
 	throw osm_db_error("relatie %d niet goed: next = %d",relationid,next);
-      
-      //      cout << first << " " << next << " " << asc << " " << curway << " " << ways[curway] << endl;
 
       if (first == -1)
 	first = firstnode[curway];

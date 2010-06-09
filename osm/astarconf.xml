@@ -2,12 +2,12 @@
 <astar>
 	<highways>
 		<highway name="bus_stop"/>
-		<highway name="crossing" extracost="5"/>
 		<highway name="bridleway" speed="5"/>	<!-- ruiterpad -->
+		<highway name="crossing"/>
 		<highway name="cycleway" speed="15"/>
 		<highway name="primary_link" speed="15"/>
 		<highway name="construction" speed="15"/>
-		<highway name="footway" speed="10"/>
+		<highway name="footway" speed="5"/>
 		<highway name="living_street" speed="15"/>
 		<highway name="motorway" speed="120"/>
 		<highway name="trunk" speed="100"/>
@@ -15,7 +15,7 @@
 		<highway name="motorway_junction"/>
 		<highway name="motorway_link" speed="120"/>
 		<highway name="path" speed="5"/>
-		<highway name="pedestrian" speed="10"/>
+		<highway name="pedestrian" speed="5"/>
 		<highway name="primary" speed="50"/>
 		<highway name="residential" speed="30"/>
 		<highway name="road" speed="50" extracost="10" />
@@ -49,33 +49,34 @@
 			<allowed highway="secondary_link" extracost="30" />
 			<allowed highway="tertiary" extracost="30" />
 			<traffic_calming type="table" extracost="0" />
-			<barrier type="gate" extracost="500" />
+			<barrier type="gate" extracost="100" />
 			<barrier type="bollard" extracost="0" />
 			<barrier type="block" extracost="0" />
                         <barrier type="cycle_barrier" extracost="0" />
                         <barrier type="lift_gate" extracost="10" />
 		</profile>
-		<profile name="bicycle" maxspeed="20" avgspeed="15" ignore_oneway="0">
+		<profile name="bicycle" maxspeed="15" avgspeed="8" ignore_oneway="0">
+			<allowed highway="footway" extracost="3" />
 			<allowed highway="track" extracost="30" />
 			<allowed highway="cycleway" extracost="0" />
-			<allowed highway="residential" extracost="0" />
-			<allowed highway="living_street" extracost="0" />
-			<allowed highway="unclassified" extracost="30" />
-			<allowed highway="road" extracost="30" />
+			<allowed highway="residential" extracost="5" />
+			<allowed highway="living_street" extracost="5" />
+			<allowed highway="unclassified" extracost="5" />
+			<allowed highway="road" extracost="5" />
 			<allowed highway="service" extracost="90" />
-			<allowed highway="primary" extracost="30" />
-			<allowed highway="primary_link" extracost="30" />
-			<allowed highway="secondary" extracost="30" />
-			<allowed highway="secondary_link" extracost="30" />
-			<allowed highway="tertiary" extracost="30" />
+			<allowed highway="primary" extracost="5" />
+			<allowed highway="primary_link" extracost="5" />
+			<allowed highway="secondary" extracost="5" />
+			<allowed highway="secondary_link" extracost="5" />
+			<allowed highway="tertiary" extracost="5" />
 			<traffic_calming type="table" extracost="0" />
-			<barrier type="gate" extracost="1000" />
+			<barrier type="gate" extracost="100" />
 			<barrier type="bollard" extracost="0" />
-			<barrier type="block" extracost="100" />
-                        <barrier type="cycle_barrier" extracost="100" />
-                        <barrier type="lift_gate" extracost="50" />
+			<barrier type="block" extracost="10" />
+                        <barrier type="cycle_barrier" extracost="3" />
+                        <barrier type="lift_gate" extracost="10" />
 		</profile>
-		<profile name="car" maxspeed="160" avgspeed="90" ignore_oneway="0">
+		<profile name="car" maxspeed="160" avgspeed="80" ignore_oneway="0">
 			<allowed highway="motorway" extracost="0" />
 			<allowed highway="trunk" extracost="5" />
 			<allowed highway="trunk_link" extracost="15" />
@@ -91,11 +92,12 @@
 			<allowed highway="secondary_link" extracost="40" />
 			<allowed highway="tertiary" extracost="50" />
 			<traffic_calming type="table" extracost="10" />
-			<barrier type="gate" extracost="1000" />
+			<barrier type="gate" extracost="200" />
 			<barrier type="bollard" extracost="INFINITY" />
 			<barrier type="block" extracost="INFINITY" />
 			<barrier type="cycle_barrier" extracost="INFINITY" />
                         <barrier type="lift_gate" extracost="1000" />
+			<highway name="crossing" extracost="5"/>
 		</profile>
 	</profiles>
 </astar>

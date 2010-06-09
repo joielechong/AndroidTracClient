@@ -15,7 +15,6 @@ INCLUDES=-O0 -Wall -ggdb
 SUFFIXES=".cpp .ypp .lpp .o"
 
 bin_PROGRAMS=mkdb \
-	     dijkstra \
 	     osmtest
 
 mkdb_SOURCES=mkdb.cpp \
@@ -41,8 +40,6 @@ osmtest_SOURCES=osmtest.cpp \
 		routelex.lpp \
 		osm.h \
 		osm_db.h
-
-dijkstra_SOURCES=dijkstra.cpp
 
 lib_LTLIBRARIES = libosm.la \
 		  libosmsql.la

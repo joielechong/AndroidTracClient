@@ -36,6 +36,7 @@ namespace osm_db {
     _getTags = NULL;
     _getNeighbours = NULL;
     _findNode = NULL;
+    _findCoor = NULL;
     _findAdmin = NULL;
     _findAddress = NULL;
     _findHouses = NULL;
@@ -106,7 +107,9 @@ namespace osm_db {
     if (_getNeighbours != NULL)
       delete _getNeighbours;
     if (_findNode != NULL)
-      delete _findNode;
+      delete _findCoor;
+    if (_findNode != NULL)
+      delete _findCoor;
     if (_findAdmin != NULL)
       delete _findAdmin;
     if (_findAddress != NULL)

@@ -234,11 +234,14 @@ namespace osm {
     inline bool ignore_oneway() const {return _ignore_oneway;}
     inline void set_ignore_oneway() {_ignore_oneway = true;}
     unsigned int allowed(const string h);
+    inline bool is_allowed(const string h) {return _allowed.find(h) != _allowed.end();}
     inline void allowed(string h,const unsigned int e) {_allowed[h]=e;}
     unsigned int traffic_calming(const string t);
     inline void traffic_calming(const string t,const unsigned int e) {_traffic_calming[t]=e;}
     unsigned int barrier(const string b);
     inline void barrier(const string b,const unsigned int e) {_barrier[b]=e;}
+    unsigned int highway(const string h);
+    inline void highway(const string h,const unsigned int e) {_highway[h]=e;}
     void output(ostream &out);
 
   private:
@@ -248,6 +251,7 @@ namespace osm {
     map<string,unsigned int> _allowed;
     map<string,unsigned int> _traffic_calming; 
     map<string,unsigned int> _barrier;
+    map<string,unsigned int> _highway;
   };
 
   typedef map<string,Highway> highway_type;

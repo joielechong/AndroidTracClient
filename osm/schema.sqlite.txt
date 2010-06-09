@@ -12,7 +12,6 @@ DROP TABLE admin;
 DROP TABLE tag;
 DROP TABLE nd;
 DROP TABLE member;
-DROP TABLE neighbor;
 DROP TABLE bound;
 DROP TABLE relation;
 DROP TABLE way;
@@ -26,12 +25,11 @@ CREATE TABLE bound (minlat double not null,maxlat double not null,minlon double 
 
 CREATE TABLE nd (id long not null,seq integer not null,ref long not null,primary key (id,seq));
 CREATE TABLE member (id long not null,seq integer not null,type varchar not null,ref long not null, role varchar, primary key (id,seq));
-CREATE TABLE neighbor (id1 long not null,id2 long not null, way long not null,distance double default NULL,unique(id1,id2,way));
 CREATE TABLE admin (id long primary key,name varchar, level integer,minlat double,maxlat double,minlon double,maxlon double);
 CREATE TABLE adressen(id long,type varchar,country varchar,city varchar,street varchar,housenumber varchar,postcode varchar,primary key(id,type));
 
-CREATE TRIGGER nodetag BEFORE DELETE ON node FOR EACH ROW  BEGIN DELETE FROM tag where id=old.id and type='node'; DELETE FROM nd WHERE ref=old.id; DELETE FROM member where ref=old.id AND type='node'; DELETE FROM neighbor WHERE id1=old.id OR id2=old.id;END;
-CREATE TRIGGER waytag BEFORE DELETE ON way FOR EACH ROW  BEGIN DELETE FROM tag where id=old.id and type='way'; DELETE FROM member where ref =old.id AND type='way'; DELETE FROM nd WHERE id=old.id; DELETE FROM neighbor WHERE way=old.id; END;
+CREATE TRIGGER nodetag BEFORE DELETE ON node FOR EACH ROW  BEGIN DELETE FROM tag where id=old.id and type='node'; DELETE FROM nd WHERE ref=old.id; DELETE FROM member where ref=old.id AND type='node'; END;
+CREATE TRIGGER waytag BEFORE DELETE ON way FOR EACH ROW  BEGIN DELETE FROM tag where id=old.id and type='way'; DELETE FROM member where ref =old.id AND type='way'; DELETE FROM nd WHERE id=old.id;  END;
 CREATE TRIGGER reltag BEFORE DELETE ON relation FOR EACH ROW  BEGIN DELETE FROM tag where id=old.id and type='relation'; DELETE FROM admin WHERE id=old.id; DELETE FROM member WHERE ref=old.id AND type='relation'; DELETE FROM member WHERE id=old.id; END;
 
 CREATE VIEW bucket as SELECT x,y,id as node FROM node WHERE NOT (x IS NULL OR y IS NULL);
@@ -44,20 +42,15 @@ CREATE VIEW admin1 as select relation.id, (select t1.v from relationtag as t1 wh
 CREATE VIEW admin2 as select member.id,min(lat) as minlat,max(lat) as maxlat,min(lon) as minlon, max(lon) as maxlon from member,nd,node where member.type='way' and member.ref=nd.id and nd.ref=node.id group by member.id;
 CREATE VIEW admintmp as select admin1.*,minlat,maxlat,minlon,maxlon from admin1,admin2 where admin1.id=admin2.id;
 
-CREATE VIEW nbold as select ref as id1,(select nd1.ref from nd as nd1 where nd.id=nd1.id and nd1.seq=(nd.seq+1)) as id2,nd.id as way from nd,usable_way as u where nd.id=u.id and not id2 is null;
-
 CREATE VIEW nb AS SELECT nd0.ref AS id1,nd1.ref AS id2,wt.id AS way,osmdistance(n1.lat,n1.lon,n2.lat,n2.lon) AS disance FROM nd AS nd0 ,nd AS nd1,usable_way AS wt,node AS n1,node AS n2 where nd0.id=nd1.id AND nd1.seq IN (nd0.seq-1,nd0.seq+1) AND wt.id=nd0.id AND n1.id=nd0.ref AND n2.id=nd1.ref;
 
-CREATE VIEW counts as SELECT (select max(rowid) from node) as nodes,(select max(rowid) from way) as ways,(select max(rowid) from relation) as relations,(select max(rowid) from bound) as bounds, (select max(rowid) from tag) as tags, (select max(rowid) from nd) as nds, (select max(rowid) from member) as mems, (select max(rowid) from neighbor) as nbs;
+CREATE VIEW counts as SELECT (select max(rowid) from node) as nodes,(select max(rowid) from way) as ways,(select max(rowid) from relation) as relations,(select max(rowid) from bound) as bounds, (select max(rowid) from tag) as tags, (select max(rowid) from nd) as nds, (select max(rowid) from member) as mems;
 CREATE VIEW incomplete_relations AS SELECT distinct relation.id FROM relation,relationtag as tag,member WHERE  relation.id=tag.id and tag.k='type' and tag.v in ('multiploygon','boundary')  and relation.id=member.id AND ((member.type='relation' AND  not ref in (select id from relation)) or (member.type='way' and not ref in (select id from way)) or (member.type='node' and not ref in (select id from node)));
 
 CREATE INDEX nd_ref ON nd(ref);
 CREATE INDEX ndx ON node(x);
 CREATE INDEX ndy ON node(y);
 CREATE INDEX mb1 ON member(ref);
-CREATE INDEX nb1 ON neighbor(id1);
-CREATE INDEX nb2 ON neighbor(id2);
-CREATE INDEX nb3 ON neighbor(way);
 CREATE INDEX b1 ON bound(minlat);
 CREATE INDEX b2 ON bound(maxlat);
 CREATE INDEX b3 ON bound(minlon);
