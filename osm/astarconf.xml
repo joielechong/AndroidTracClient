@@ -36,7 +36,7 @@
 			<allowed highway="pedestrian" extracost="0" />
 			<allowed highway="path" extracost="0" />
 			<allowed highway="track" extracost="0" />
-			<allowed highway="cycleway" extracost="10" />
+			<allowed highway="cycleway" extracost="5" />
 			<allowed highway="steps" extracost="2" />
 			<allowed highway="residential" extracost="0" />
 			<allowed highway="living_street" extracost="0" />
