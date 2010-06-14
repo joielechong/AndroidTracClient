@@ -314,6 +314,29 @@ namespace osm {
     highway_type _highways;
     profile_type _profiles;
   };
+
+  class osm_error : public exception {
+  public:
+    osm_error(const char *format,...);
+    virtual ~osm_error() throw();
+    virtual char const * what() const throw();
+    
+  protected:
+    string m_what;
+  };
+  
+  class node_error : public osm_error {
+  };
+  
+  class way_error : public osm_error {
+  };
+  
+  class relation public osm_error {
+  };
+  
+  class map_error : public osm_error {
+  };
+  
 }
 
 #endif
