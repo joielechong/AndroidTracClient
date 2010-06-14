@@ -49,6 +49,7 @@ libosm_la_LIBADD=$(SQL_LIBS) $(SOCK_LIBS) $(XML_LIBS)
 libosm_la_CPPFLAGS=$(SQL_CFLAGS) $(SOCK_CFLAGS) $(XML_CFLAGS)
 libosm_la_SOURCES = element.cpp node.cpp way.cpp relation.cpp \
 		    map.cpp \
+			map_conf.cpp \
 		    astar.cpp \
 		    osm_db.cpp \
 		    osm_db_except.cpp \

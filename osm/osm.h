@@ -293,6 +293,7 @@ namespace osm {
     double direction(const long n1,const long n2);
     inline void getWays(long id,vector<long> &ways) {_con->getWays(id,ways);}
   private:
+    void load_conf();
     void process_conf(const xmlpp::Node* node);
     void process_profiles(const xmlpp::Node* node);
     void process_highways(const xmlpp::Node* node);
