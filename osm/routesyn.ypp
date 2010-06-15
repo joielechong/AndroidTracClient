@@ -10,12 +10,12 @@
 %token LON
 %token <l> INTEGER
 %token <f> FLOAT
-%token COUNTRYCODE
-%token COUNTRY
-%token CITY
-%token STREET
-%token NUMBER
-%token POSTCODE
+%token <s>COUNTRYCODE
+%token <s>COUNTRY
+%token <s>CITY
+%token <s>STREET
+%token <s>NUMBER
+%token <s>POSTCODE
 %token LATLON
 
 %type<l> num
@@ -56,37 +56,52 @@ start		: {locptr=0;} locatie
 stop		: {locptr=1;} locatie
 		;
 
-locatie		: NODE '=' num {inforoute.locations[locptr].node=true;inforoute.locations[locptr].nodeid=$3;}
-		| num {inforoute.locations[locptr].node=true;inforoute.locations[locptr].nodeid=$1;}
-		| LAT '=' coor ',' LON '=' coor {inforoute.locations[locptr].coord=true;inforoute.locations[locptr].lat=$3;inforoute.locations[locptr].lon=$7;}
-		| LON '=' coor ',' LAT '=' coor {inforoute.locations[locptr].coord=true;inforoute.locations[locptr].lat=$7;inforoute.locations[locptr].lon=$3;}
-		| LATLON '=' '(' coor ',' coor ')' {inforoute.locations[locptr].coord=true;inforoute.locations[locptr].lat=$4;inforoute.locations[locptr].lon=$6;}
-		| '(' coor ',' coor ')' {inforoute.locations[locptr].coord=true;inforoute.locations[locptr].lat=$2;inforoute.locations[locptr].lon=$4;}
-		| adres
+locatie		: nodeloc {inforoute.locations[locptr].node=true;}
+		| coorloc {inforoute.locations[locptr].coord=true;}
+		| addrloc {inforoute.locations[locptr].address=true;}
 		;
 
-num		: INTEGER {$$=$1;}
+nodeloc		: NODE '=' num {inforoute.locations[locptr].nodeid=$3;}
+		| num {inforoute.locations[locptr].nodeid=$1;}
 		;
 
-coor		: INTEGER
+coorloc		: LAT '=' coor ',' LON '=' coor {inforoute.locations[locptr].lat=$3;inforoute.locations[locptr].lon=$7;}
+		| LON '=' coor ',' LAT '=' coor {inforoute.locations[locptr].lat=$7;inforoute.locations[locptr].lon=$3;}
+		| LATLON '=' '(' coor ',' coor ')' {inforoute.locations[locptr].lat=$4;inforoute.locations[locptr].lon=$6;}
+		| '(' coor ',' coor ')' {inforoute.locations[locptr].lat=$2;inforoute.locations[locptr].lon=$4;}
+		;
+
+num		: INTEGER
+		;
+
+coor		: INTEGER {$$=(double)$1;}
 		| FLOAT
 		;
 
-adres		: country  city
-		| country  city  street
-		| country  city  street  number
+
+addrloc		: addr_elem
+		| addrloc addr_elem
 		;
 
-country		: COUNTRY '=' COUNTRYCODE
-		|
+addr_elem	: country
+		| city
+		| street
+		| number
+		| postcode
+		; 
+
+country		: COUNTRY '=' COUNTRYCODE {inforoute.locations[locptr].country=$3;}
 		;
 
-city		: CITY '=' STRING
+city		: CITY '=' STRING {inforoute.locations[locptr].city=$3;}
 		;
 
-street		: STREET '=' STRING
+street		: STREET '=' STRING {inforoute.locations[locptr].street=$3;}
 		;
 	
-number		: NUMBER '=' STRING
+number		: NUMBER '=' STRING {inforoute.locations[locptr].number=$3;}
+		;
+
+postcode	: POSTCODE '=' STRING {inforoute.locations[locptr].postcode=$3;}
 		;
 %%

@@ -87,11 +87,19 @@ int main(int argc, char *argv[]) {
       start = inforoute.locations[0].nodeid;
     else if (inforoute.locations[0].coord)
       start = map.findCoor(inforoute.locations[0].lat,inforoute.locations[0].lon,vehicle);
+    else if (inforoute.locations[0].address)
+      start = map.findAddress(inforoute.locations[0].country,inforoute.locations[0].city,inforoute.locations[0].street,inforoute.locations[0].number,inforoute.locations[0].postcode,vehicle);
+    else
+      throw runtime_error("geen geldig startadres gegeven");
 
     if (inforoute.locations[1].node)
       eind = inforoute.locations[1].nodeid;
     else if (inforoute.locations[1].coord)
       eind = map.findCoor(inforoute.locations[1].lat,inforoute.locations[1].lon,vehicle);
+    else if (inforoute.locations[1].address)
+      eind = map.findAddress(inforoute.locations[1].country,inforoute.locations[1].city,inforoute.locations[1].street,inforoute.locations[1].number,inforoute.locations[1].postcode,vehicle);
+    else
+      throw runtime_error("geen geldig eindadres gegeven");
 
     cout << "start = "<< start << " eind = " << eind << endl;
 
