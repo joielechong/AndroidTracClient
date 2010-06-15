@@ -277,7 +277,10 @@ namespace osm {
     osm::Node& Address(const string country,const string city,const string street,const string housenumber,const string postcode) const;
 
     inline void findNode(const double latinp,const double loninp,const double diff,vector<long> &id,vector<double> &lat,vector<double> &lon,vector<double> &distance) { _con->findNode(latinp,loninp,diff,id,lat,lon,distance);}
+
     long findCoor(const double lat,const double lon, const string vehicle);
+    long findAddress(const string country,const string city,const string street,const string number,const string postcode,const string vehicle);
+
     void findLocation(const long nodeid,vector<long> &admins);
     bool insideRelation(const long relationid,long nodeid);
     void findAdmin(const string querystring,vector<string> &naam,vector<int> &level);
@@ -292,6 +295,7 @@ namespace osm {
     inline long getConnectingWay(const long n1,const long n2) {return _con->getConnectingWay(n1,n2);}
     double direction(const long n1,const long n2);
     inline void getWays(long id,vector<long> &ways) {_con->getWays(id,ways);}
+
   private:
     void load_conf();
     void process_conf(const xmlpp::Node* node);
@@ -331,7 +335,7 @@ namespace osm {
   class way_error : public osm_error {
   };
   
-  class relation public osm_error {
+  class relation : public osm_error {
   };
   
   class map_error : public osm_error {

@@ -118,6 +118,36 @@ namespace osm {
     throw runtime_error("Kan geen geschikte node vinden bij coordinaten");
   }
   
+  long Map::findAddress(const string country,const string city,const string street,const string number,const string postcode,const string vehicle) {
+    string query;
+    query.clear();
+    if (! country.empty())
+      query = "country='"+country+"'";
+    if (!city.empty())
+      query += " AND city='"+city+"'";
+    if (!street.empty())
+      query += " AND street='"+street+"'";
+    if (!number.empty())
+      query += " AND housenumber='"+number+"'";
+    if (!postcode.empty())
+      query += " AND postcode='"+postcode+"'";
+    if (query.substr(0,5) == " AND ") 
+      query.replace(0,5,"");
+
+    vector<long> nodes,ways;
+    vector<double> distances;
+    _con->ndAddress(query,ways,nodes,distances);
+    for (unsigned int i = 0; i < ways.size(); i++) {
+      cout << ways[i] << " " << nodes[i] << " " << distances[i] << " "+_ways[ways[i]]["highway"] << endl;
+      if (_profiles[vehicle].is_allowed(_ways[ways[i]]["highway"]))
+	return nodes[i];
+    }
+    //    throw runtime_error("Kan geen geschikte node vinden bij coordinaten");
+    
+
+    return 0;
+  }
+  
   double Map::distance(const Node &n1,const Node &n2) const {
     return grootcirkel(n1.lat(),n1.lon(),n2.lat(),n2.lon());
   }

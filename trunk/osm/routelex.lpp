@@ -17,7 +17,7 @@ void routelex_init(const char *s) {
 %%
 
 {C}{C}			{ yylval.s=yytext;return(COUNTRYCODE); }
-\'[^\n']+\'             { yylval.s=yytext;return(STRING); }
+\'[^\n']+\'             { yylval.s=yytext+1;size_t l=strlen(yylval.s);yylval.s[l-1]=0; return(STRING); }
 
 "NODE"                  { return(NODE); }
 "LAT"                   { return(LAT); }

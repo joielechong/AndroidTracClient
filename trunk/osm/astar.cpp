@@ -158,44 +158,76 @@ namespace osm {
     }
     openset.erase(xs);
     closedset[xs]=set;
-    vector<long> neighbours;
-    vector<long>::iterator y;
 
+    vector<long> neighbours;
     getNeighbours(xs,neighbours);
-    for (y=neighbours.begin();y != neighbours.end();y++) {
+
+    for (vector<long>::iterator yi=neighbours.begin();yi != neighbours.end();yi++) {
       long xs1=xs;
       long prevnode = 0;
+      long y = *yi;
       route_type::iterator pn;
       pn = to.find(xs1);
       if (pn != to.end())
 	prevnode = pn->second;
-      k = closedset.find(*y);
+      k = closedset.find(y);
       if (k == closedset.end()) {
-	double tentative_g_score = g[xs1] + (set==1?cost(xs1,*y,prevnode):cost(*y,xs1,prevnode));
-	bool tentative_is_better = false;
-	k = openset.find(*y);
-	if (k == openset.end()) {
-	  openset[*y] = 1;
-	  tentative_is_better = true;
-	} else if (tentative_g_score < g[*y]) 
-	  tentative_is_better = true;
-	if (tentative_is_better) {
-	  to[*y] = xs1;
-	  g[*y] = tentative_g_score;
-	  h[*y] = calc_h_score(*y,goal);
-	  d[*y] = distance(*y,goal);
-	  f[*y] = g[*y] + h[*y];
+	vector<long> ynb;
+	getNeighbours(y,ynb);
+	while (ynb.size() == 2 && k == closedset.end() && g[xs1] != INFINITY) {
 	  string name;
 	  string ref;
-	  long w = getConnectingWay(xs,*y);
+	  long w = getConnectingWay(xs,y);
+	  osm::Way &ww = ways(w);
+	  try { name = ww["name"];} catch (range_error &ex) {name="";}
+	  try { ref = ww["ref"];} catch (range_error &ex) {ref="";}
+	  cout << "Proceeding on " << y << " from " << xs1;
+	  if (prevnode != 0) 
+	    cout << " and " << prevnode;
+	  cout << " ynb0 = " << ynb[0] << " ynb1 = " << ynb[1];
+	  g[y] = min(g[xs1] + (set==1?cost(xs1,y,prevnode):cost(y,xs1,prevnode)),INFINITY);
+	  cout << " g = " << g[y] << "("+name+" "+ref+")" << endl;
+	  to[y]=xs1;
+	  prevnode = xs1;
+
+	  if (ynb[0] == xs1) {
+	    xs1=y;
+	    y = ynb[1];
+	  } else {
+	    xs1=y;
+	    y = ynb[0];
+	  }
+	  closedset[xs1] = set;
+	  getNeighbours(y,ynb);
+	  k = closedset.find(y);
+	}
+      }
+      if (k == closedset.end() && g[xs1] != INFINITY) {
+	double tentative_g_score = min(g[xs1] + (set==1?cost(xs1,y,prevnode):cost(y,xs1,prevnode)),INFINITY);
+	bool tentative_is_better = false;
+	k = openset.find(y);
+	if (k == openset.end()) {
+	  openset[y] = 1;
+	  tentative_is_better = true;
+	} else if (tentative_g_score < g[y]) 
+	  tentative_is_better = true;
+	if (tentative_is_better) {
+	  to[y] = xs1;
+	  g[y] = tentative_g_score;
+	  h[y] = calc_h_score(y,goal);
+	  d[y] = distance(y,goal);
+	  f[y] = min(g[y] + h[y],INFINITY);
+	  string name;
+	  string ref;
+	  long w = getConnectingWay(xs,y);
 	  osm::Way &ww = ways(w);
 	  try { name = ww["name"];} catch (range_error &ex) {name="";}
 	  try { ref = ww["ref"];} catch (range_error &ex) {ref="";}
 	  cout << set << " " << maxperc << " ";
 	  if (set == 1) 
-	    cout << " " << xs << " " << *y << " " << g[*y] << " " << h[*y] << " " << f[*y] << " "+name+" "+ref <<endl;
+	    cout << " " << xs << " " << y << " " << g[y] << " " << h[y] << " " << f[y] << " "+name+" "+ref <<endl;
 	  else
-	    cout << " " << *y << " " << xs << " " << g[*y] << " " << h[*y] << " " << f[*y] << " "+name+" "+ref <<endl;
+	    cout << " " << y << " " << xs << " " << g[y] << " " << h[y] << " " << f[y] << " "+name+" "+ref <<endl;
 
 	}
       }

@@ -9,7 +9,7 @@ using namespace std;
 class location {
 
  public:
-  inline location() :node(false), coord(false), address(false) {}
+  inline location() :node(false), coord(false), address(false) {country.clear();city.clear();street.clear();number.clear();postcode.clear();}
 
   bool node;
   long nodeid;
