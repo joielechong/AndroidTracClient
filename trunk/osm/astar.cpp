@@ -13,12 +13,29 @@ namespace osm {
   }
 
   bool Map::wrong_direction(Node &nodex,Node &nodey,Way &ww,string onew) {
-    for (long seq=0; seq<ww.getNodesCount(); seq++) {
-      if ( ww.getNd(seq) == nodey.id() )
-	return (onew != "rev");
-      if ( ww.getNd(seq) == nodex.id() )
-	return (onew == "rev");
-    }
+    long seqx=-1;
+	long seqy=-1;
+	if (oneway == "yes") {
+      for (long seq=0; seq<ww.getNodesCount(); seq++) {
+		if (ww.getNd(seq) == nodex.id() && seqx == -1)
+		  seqx = seq;
+		if (ww.getNd(seq) == nodey.id() && seqy == -1)
+		  seqy = seq;
+	  }
+	  if (seqx != -1 && seqy != -1 && seqx < seqy)
+		return true;
+	} else { // rev
+      for (long seq=ww.getNodesCount()-1; seq >=0;seq--) {
+		if (ww.getNd(seq) == nodex.id() && seqx == -1)
+		  seqx = seq;
+		if (ww.getNd(seq) == nodey.id() && seqy == -1)
+		  seqy = seq;
+	  }
+	  if (seqx != -1 && seqy != -1 && seqx > seqy)
+		return true;
+	}
+	if (seqx != -1 && seqy != -1)
+	  return false;
     throw runtime_error("nodes not found in wrong direction");
   }
   
@@ -61,7 +78,7 @@ namespace osm {
     try { access = ww["access"];} catch (range_error &ex) {access="yes";}
     try { oneway = ww["oneway"];} catch (range_error &ex) {oneway="";}
     try {
-      if (ww["junction"] == "roudabout")
+      if (ww["junction"] == "roundabout")
 	oneway = "yes";
     } catch (range_error &ex) {}
 
