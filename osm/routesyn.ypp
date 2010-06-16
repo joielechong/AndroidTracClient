@@ -16,7 +16,6 @@
 %token <s>STREET
 %token <s>NUMBER
 %token <s>POSTCODE
-%token LATLON
 
 %type<l> num
 %type<f> coor
@@ -67,7 +66,6 @@ nodeloc		: NODE '=' num {inforoute.locations[locptr].nodeid=$3;}
 
 coorloc		: LAT '=' coor ',' LON '=' coor {inforoute.locations[locptr].lat=$3;inforoute.locations[locptr].lon=$7;}
 		| LON '=' coor ',' LAT '=' coor {inforoute.locations[locptr].lat=$7;inforoute.locations[locptr].lon=$3;}
-		| LATLON '=' '(' coor ',' coor ')' {inforoute.locations[locptr].lat=$4;inforoute.locations[locptr].lon=$6;}
 		| '(' coor ',' coor ')' {inforoute.locations[locptr].lat=$2;inforoute.locations[locptr].lon=$4;}
 		;
 

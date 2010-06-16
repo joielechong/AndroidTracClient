@@ -22,12 +22,13 @@ void routelex_init(const char *s) {
 "NODE"                  { return(NODE); }
 "LAT"                   { return(LAT); }
 "LON"                   { return(LON); }
-"LATLON"                { return(LATLON);}
 "COUNTRY"		{ return(COUNTRY);}
 "CITY"			{ return(CITY);}
 "STREET"		{ return(STREET);}
 "NUMBER"		{ return(NUMBER);}
 "POSTCODE"		{ return(POSTCODE);}
+"PC"            { return(POSTCODE);}
+"ZIP"           { return(POSTCODE);}
 
 {D}+    |
 {S}{D}+                 { yylval.l=atoi(yytext); return(INTEGER); }
