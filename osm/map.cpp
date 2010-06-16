@@ -133,18 +133,26 @@ namespace osm {
       query += " AND postcode='"+postcode+"'";
     if (query.substr(0,5) == " AND ") 
       query.replace(0,5,"");
-
+    
     vector<long> nodes,ways;
     vector<double> distances;
     _con->ndAddress(query,ways,nodes,distances);
-    for (unsigned int i = 0; i < ways.size(); i++) {
-      cout << ways[i] << " " << nodes[i] << " " << distances[i] << " "+_ways[ways[i]]["highway"] << endl;
-      if (vehicle == "" || _profiles[vehicle].is_allowed(_ways[ways[i]]["highway"]))
-	return nodes[i];
+    if (ways.size() > 0) {
+      long nodefnd = 0;
+      for (unsigned int i = 0; i < ways.size(); i++) {
+	cout << ways[i] << " " << nodes[i] << " " << distances[i] << " "+_ways[ways[i]]["highway"] << endl;
+	if (vehicle == "" || _profiles[vehicle].is_allowed(_ways[ways[i]]["highway"])) {
+	  if (nodefnd == 0) 
+	    nodefnd = nodes[i];
+	  if (_ways[ways[i]]["name"] == street)
+	    return nodes[i];
+	}
+      }
+      if (nodefnd != 0)
+	return nodefnd;
     }
     //    throw runtime_error("Kan geen geschikte node vinden bij coordinaten");
     
-
     return 0;
   }
   
