@@ -56,6 +56,7 @@ namespace osm_db {
     void findAdmin(const double lat,const double lon,vector<long> &ids,vector<string> &names, vector<int> & admlevel);
     void findAddress(const string querystring,vector<long> &nodeids,vector<double> &nodelats,vector<double> &nodelons);
     void findHouses(const long id,vector<long> &nodeids,vector<double> &nodelats,vector<double> &nodelons,vector<string> &countriesd,vector<string> &citiess,vector<string> &streets,vector<string> &housenumbers,vector<string> &postcodes);
+    int getDirection(const long x,const long y,const long w);
     void getInterpolationWays(vector<long> &ids);
     void getids(string &sqlcmd,vector<long> &ids);
     void getNeighbours(const long id,vector<long> &ids);
@@ -86,6 +87,7 @@ namespace osm_db {
     sqlite3x::sqlite3_command *_getMembers;
     sqlite3x::sqlite3_command *_getNeighbours;
     sqlite3x::sqlite3_command *_getConn;
+    sqlite3x::sqlite3_command *_getDirection;
 
     sqlite3x::sqlite3_command *_getRelCoords;
     sqlite3x::sqlite3_command *_getRelWays;
