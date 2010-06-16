@@ -39,3 +39,4 @@ void routelex_init(const char *s) {
 
 [ \t\n]+                /* eat up whitespace */
 [A-Za-z][A-Za-z0-9]+	{ yylval.s=yytext;return(STRING); }
+
