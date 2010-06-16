@@ -166,7 +166,7 @@ int main(int argc, char *argv[]) {
       prevnode = *rp;
       prevway = w;
     }
-    gpx << "</trkseg>"<<endl<<"</trk>"<<endl;
+    gpx << "</trkseg>"<<endl<<"</trk>"<<endl<<"</gpx>"<<endl;
   }
   
   /*
