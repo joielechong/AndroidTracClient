@@ -35,6 +35,7 @@ namespace osm_db {
     _getMembers = NULL;
     _getTags = NULL;
     _getNeighbours = NULL;
+    _getDirection = NULL;
     _findNode = NULL;
     _findCoor = NULL;
     _findAdmin = NULL;
@@ -106,6 +107,8 @@ namespace osm_db {
       delete _getMembers;
     if (_getNeighbours != NULL)
       delete _getNeighbours;
+    if (_getDirection != NULL)
+      delete _getDirection;
     if (_findNode != NULL)
       delete _findCoor;
     if (_findNode != NULL)

@@ -139,7 +139,7 @@ namespace osm {
     _con->ndAddress(query,ways,nodes,distances);
     for (unsigned int i = 0; i < ways.size(); i++) {
       cout << ways[i] << " " << nodes[i] << " " << distances[i] << " "+_ways[ways[i]]["highway"] << endl;
-      if (_profiles[vehicle].is_allowed(_ways[ways[i]]["highway"]))
+      if (vehicle == "" || _profiles[vehicle].is_allowed(_ways[ways[i]]["highway"]))
 	return nodes[i];
     }
     //    throw runtime_error("Kan geen geschikte node vinden bij coordinaten");

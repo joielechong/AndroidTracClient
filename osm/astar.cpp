@@ -13,30 +13,15 @@ namespace osm {
   }
 
   bool Map::wrong_direction(Node &nodex,Node &nodey,Way &ww,string onew) {
-    long seqx=-1;
-	long seqy=-1;
-	if (oneway == "yes") {
-      for (long seq=0; seq<ww.getNodesCount(); seq++) {
-		if (ww.getNd(seq) == nodex.id() && seqx == -1)
-		  seqx = seq;
-		if (ww.getNd(seq) == nodey.id() && seqy == -1)
-		  seqy = seq;
-	  }
-	  if (seqx != -1 && seqy != -1 && seqx < seqy)
-		return true;
-	} else { // rev
-      for (long seq=ww.getNodesCount()-1; seq >=0;seq--) {
-		if (ww.getNd(seq) == nodex.id() && seqx == -1)
-		  seqx = seq;
-		if (ww.getNd(seq) == nodey.id() && seqy == -1)
-		  seqy = seq;
-	  }
-	  if (seqx != -1 && seqy != -1 && seqx > seqy)
-		return true;
-	}
-	if (seqx != -1 && seqy != -1)
-	  return false;
-    throw runtime_error("nodes not found in wrong direction");
+
+    int dir = _con->getDirection(nodex.id(),nodey.id(),ww.id());
+    if (dir == 0)
+      throw runtime_error("geen directe verbinding tussen nodes");
+
+    if (onew=="rev")
+      return (dir == -1);
+    else
+      return (dir == 1);
   }
   
   double Map::cost(const long x,const long y,const long prevnode) { 
@@ -198,12 +183,12 @@ namespace osm {
 	  osm::Way &ww = ways(w);
 	  try { name = ww["name"];} catch (range_error &ex) {name="";}
 	  try { ref = ww["ref"];} catch (range_error &ex) {ref="";}
-	  cout << "Proceeding on " << y << " from " << xs1;
-	  if (prevnode != 0) 
-	    cout << " and " << prevnode;
-	  cout << " ynb0 = " << ynb[0] << " ynb1 = " << ynb[1];
+	  //	  cout << "Proceeding on " << y << " from " << xs1;
+	  //	  if (prevnode != 0) 
+	    //	    cout << " and " << prevnode;
+	  //	  cout << " ynb0 = " << ynb[0] << " ynb1 = " << ynb[1];
 	  g[y] = min(g[xs1] + (set==1?cost(xs1,y,prevnode):cost(y,xs1,prevnode)),INFINITY);
-	  cout << " g = " << g[y] << "("+name+" "+ref+")" << endl;
+	  //	  cout << " g = " << g[y] << "("+name+" "+ref+")" << endl;
 	  to[y]=xs1;
 	  prevnode = xs1;
 

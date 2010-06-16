@@ -374,6 +374,18 @@ namespace osm_db {
       ids.push_back(cur.getint64(0));
   
   }
+
+  int database::getDirection(const long x,const long y,const long w) {
+    if (_getDirection == NULL)
+      _getDirection = new sqlite3_command(*_sql,"SELECT (x.seq-y.seq) FROM nd AS x,nd AS y  WHERE x.id=? AND x.ref=? AND y.id=x.id AND y.ref=? AND abs(y.seq-x.seq)==1");
+    _getDirection->bind(1,(sqlite3x::int64_t)w);
+    _getDirection->bind(2,(sqlite3x::int64_t)x);
+    _getDirection->bind(3,(sqlite3x::int64_t)y);
+    sqlite3_cursor cur(_getDirection->executecursor());
+    if (cur.step())
+      return cur.getint64(0);
+    return 0;
+  }
   
   void database::adminNode(const long nodeid,vector<long> &admins) {
     if (_adminNode == NULL)
