@@ -120,6 +120,9 @@ namespace osm {
   
   long Map::findAddress(const string country,const string city,const string street,const string number,const string postcode,const string vehicle) {
     string query;
+
+    // eerst de adressen database proberen of het adres er is.
+
     query.clear();
     if (! country.empty())
       query = "country='"+country+"'";
@@ -134,9 +137,9 @@ namespace osm {
     if (query.substr(0,5) == " AND ") 
       query.replace(0,5,"");
     
-    vector<long> nodes,ways;
+    vector<long> nodes,ways,intpolways,assocways;
     vector<double> distances;
-    _con->ndAddress(query,ways,nodes,distances);
+    _con->ndAddress(query,ways,nodes,distances,intpolways,assocways);
     if (ways.size() > 0) {
       long nodefnd = 0;
       for (unsigned int i = 0; i < ways.size(); i++) {
@@ -144,13 +147,16 @@ namespace osm {
 	if (vehicle == "" || _profiles[vehicle].is_allowed(_ways[ways[i]]["highway"])) {
 	  if (nodefnd == 0) 
 	    nodefnd = nodes[i];
-	  if (_ways[ways[i]]["name"] == street)
-	    return nodes[i];
+	  try {
+	    if (_ways[ways[i]]["name"] == street)
+	      return nodes[i];
+	  } catch (range_error &ex) {}
 	}
       }
       if (nodefnd != 0)
 	return nodefnd;
     }
+
     //    throw runtime_error("Kan geen geschikte node vinden bij coordinaten");
     
     return 0;

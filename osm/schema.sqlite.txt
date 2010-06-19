@@ -17,16 +17,16 @@ DROP TABLE relation;
 DROP TABLE way;
 DROP TABLE node;
 
-CREATE TABLE node (id long primary key,lat double not null,lon double not null, version integer not null,donotdelete boolean default 'false',x integer DEFAULT NULL,y integer DEFAULT NULL);
-CREATE TABLE tag (id long not null,type varchar not null,k varchar not null,v varchar not null, primary key (id,type,k));
-CREATE TABLE way (id long primary key,version integer not null,donotdelete boolean default 'false');
-CREATE TABLE relation (id long primary key,version integer not null,donotdelete boolean default 'false');
-CREATE TABLE bound (minlat double not null,maxlat double not null,minlon double not null, maxlon double not null,unique(minlat,maxlat,minlon,maxlon));
+CREATE TABLE node (id long PRIMARY KEY,lat double NOT NULL,lon double NOT NULL, version integer NOT NULL,donotdelete boolean DEFAULT 'false',x integer DEFAULT NULL,y integer DEFAULT NULL);
+CREATE TABLE tag (id long NOT NULL,type varchar NOT NULL,k varchar NOT NULL,v varchar NOT NULL, PRIMARY KEY (id,type,k));
+CREATE TABLE way (id long PRIMARY KEY,version integer NOT NULL,donotdelete boolean DEFAULT 'false');
+CREATE TABLE relation (id long PRIMARY KEY,version integer NOT NULL,donotdelete boolean DEFAULT 'false');
+CREATE TABLE bound (minlat double NOT NULL,maxlat double NOT NULL,minlon double NOT NULL, maxlon double NOT NULL,UNIQUE(minlat,maxlat,minlon,maxlon));
 
-CREATE TABLE nd (id long not null,seq integer not null,ref long not null,primary key (id,seq));
-CREATE TABLE member (id long not null,seq integer not null,type varchar not null,ref long not null, role varchar, primary key (id,seq));
-CREATE TABLE admin (id long primary key,name varchar, level integer,minlat double,maxlat double,minlon double,maxlon double,long way);
-CREATE TABLE adressen(id long,type varchar,country varchar,city varchar,street varchar,housenumber varchar,postcode varchar,primary key(id,type));
+CREATE TABLE nd (id long NOT NULL,seq integer NOT NULL,ref long NOT NULL,PRIMARY KEY (id,seq));
+CREATE TABLE member (id long NOT NULL,seq integer NOT NULL,type varchar NOT NULL,ref long NOT NULL, role varchar, PRIMARY KEY(id,seq));
+CREATE TABLE admin (id long PRIMARY KEY,name varchar, level integer,minlat double,maxlat double,minlon double,maxlon double,long way);
+CREATE TABLE adressen(id long,type varchar,country varchar,city varchar,street varchar,housenumber varchar,postcode varchar,assocway long DEFAULT NULL,intpolway long DEFAULT NULL,PRIMARY KEY(id,type));
 
 CREATE TRIGGER nodetag BEFORE DELETE ON node FOR EACH ROW  BEGIN DELETE FROM tag where id=old.id and type='node'; DELETE FROM nd WHERE ref=old.id; DELETE FROM member where ref=old.id AND type='node'; END;
 CREATE TRIGGER waytag BEFORE DELETE ON way FOR EACH ROW  BEGIN DELETE FROM tag where id=old.id and type='way'; DELETE FROM member where ref =old.id AND type='way'; DELETE FROM nd WHERE id=old.id;  END;
@@ -36,13 +36,13 @@ CREATE VIEW bucket as SELECT x,y,id as node FROM node WHERE NOT (x IS NULL OR y 
 CREATE VIEW nodetag AS SELECT * FROM tag WHERE type='node';
 CREATE VIEW waytag AS SELECT * FROM tag WHERE type='way';
 CREATE VIEW relationtag AS SELECT * FROM tag WHERE type='relation';
-CREATE VIEW usable_way as select way.* from way,waytag as tag where way.id=tag.id and (k='highway' or (k='route' and v='ferry'));
+CREATE VIEW usable_way AS SELECT way.* FROM way,waytag AS tag WHERE way.id=tag.id AND (k='highway' OR (k='route' AND v='ferry'));
 
-CREATE VIEW admin1 as select relation.id, (select t1.v from relationtag as t1 where t1.id=relation.id and t1.k='name') as name, (select t2.v from relationtag as t2 where t2.id=tag.id and t2.k='admin_level') as level from relation,relationtag as tag where relation.id=tag.id and tag.k='type' and tag.v in ('boundary','multipolygon') and not name is null and not level is null;
-CREATE VIEW admin2 as select member.id,min(lat) as minlat,max(lat) as maxlat,min(lon) as minlon, max(lon) as maxlon from member,nd,node where member.type='way' and member.ref=nd.id and nd.ref=node.id group by member.id;
-CREATE VIEW admintmp as select admin1.*,minlat,maxlat,minlon,maxlon from admin1,admin2 where admin1.id=admin2.id;
-CREATE VIEW nb as select nd0.ref as id1 ,nd1.ref as id2,wt.id as way,osmdistance(n1.lat,n1.lon,n2.lat,n2.lon) as disance from nd as nd0 ,nd as nd1,usable_way as wt,node as n1,node as n2 where nd0.id=nd1.id and nd1.seq in (nd0.seq-1,nd0.seq+1) and wt.id=nd0.id and n1.id=nd0.ref and n2.id=nd1.ref;
-CREATE VIEW counts as SELECT (select max(rowid) from node) as nodes,(select max(rowid) from way) as ways,(select max(rowid) from relation) as relations,(select max(rowid) from bound) as bounds, (select max(rowid) from tag) as tags, (select max(rowid) from nd) as nds, (select max(rowid) from member) as mems;
+CREATE VIEW admin1 AS SELECT relation.id, (SELECT t1.v FROM relationtag AS t1 WHERE t1.id=relation.id AND t1.k='name') AS name, (SELECT t2.v FROM relationtag AS t2 WHERE t2.id=tag.id AND t2.k='admin_level') AS level FROM relation,relationtag AS tag WHERE relation.id=tag.id AND tag.k='type' AND tag.v IN ('boundary','multipolygon') AND NOT name IS NULL AND NOT level IS NULL;
+CREATE VIEW admin2 AS SELECT member.id,min(lat) AS minlat,max(lat) AS maxlat,min(lon) AS minlon, max(lon) AS maxlon FROM member,nd,node WHERE member.type='way' AND member.ref=nd.id AND nd.ref=node.id GROUP BY member.id;
+CREATE VIEW admintmp AS SELECT admin1.*,minlat,maxlat,minlon,maxlon FROM admin1,admin2 WHERE admin1.id=admin2.id;
+CREATE VIEW nb AS SELECT nd0.ref AS id1 ,nd1.ref AS id2,wt.id AS way,osmdistance(n1.lat,n1.lon,n2.lat,n2.lon) AS distance FROM nd AS nd0 ,nd AS nd1,usable_way AS wt,node AS n1,node AS n2 WHERE nd0.id=nd1.id AND nd1.seq IN (nd0.seq-1,nd0.seq+1) AND wt.id=nd0.id AND n1.id=nd0.ref AND n2.id=nd1.ref;
+CREATE VIEW counts AS SELECT (SELECT max(rowid) FROM node) AS nodes,(SELECT max(rowid) FROM way) AS ways,(SELECT max(rowid) FROM relation) AS relations,(SELECT max(rowid) FROM bound) AS bounds, (SELECT max(rowid) FROM tag) AS tags, (SELECT max(rowid) FROM nd) AS nds, (SELECT max(rowid) FROM member) AS mems;
 
 CREATE INDEX nd_ref ON nd(ref);
 CREATE INDEX ndx ON node(x);
