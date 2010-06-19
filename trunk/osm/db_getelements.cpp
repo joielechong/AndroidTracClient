@@ -295,16 +295,20 @@ namespace osm_db {
       admlevel.push_back(cur.getint(2));
     }
   }
-  void database::ndAddress(const string querystring,vector<long> &ways,vector<long> &nodes,vector<double> &distances) {
-    sqlite3_command fa(*_sql,"SELECT DISTINCT osmdistance(inp.lat,inp.lon,n.lat,n.lon),n.id,wt.id FROM (SELECT lat,lon FROM adressen,node WHERE "+querystring+" AND adressen.type='node' AND adressen.id=node.id UNION SELECT lat,lon FROM adressen,nd,node WHERE "+querystring+" AND adressen.type='way' AND adressen.id=nd.id AND nd.ref=node.id) as inp,node as n,nb,waytag as wt WHERE n.x=osmcalc_x(inp.lon) and n.y=osmcalc_y(inp.lat) and abs(inp.lat-n.lat)<0.001 and abs(inp.lon-n.lon) <0.001 and n.id=nb.id1 and nb.way=wt.id and osmdistance(inp.lat,inp.lon,n.lat,n.lon)<50 order by 1");
+  void database::ndAddress(const string querystring,vector<long> &ways,vector<long> &nodes,vector<double> &distances,vector<long> &intpolways,vector<long> &assocways) {
+    sqlite3_command fa(*_sql,"SELECT DISTINCT osmdistance(inp.lat,inp.lon,n.lat,n.lon),n.id,wt.id,intpolway,assocway FROM (SELECT lat,lon,intpolway,assocway FROM adressen,node WHERE "+querystring+" AND adressen.type='node' AND adressen.id=node.id UNION SELECT lat,lon,intpolway,assocway FROM adressen,nd,node WHERE "+querystring+" AND adressen.type='way' AND adressen.id=nd.id AND nd.ref=node.id) as inp,node as n,nb,waytag as wt WHERE n.x=osmcalc_x(inp.lon) and n.y=osmcalc_y(inp.lat) and abs(inp.lat-n.lat)<0.001 and abs(inp.lon-n.lon) <0.001 and n.id=nb.id1 and nb.way=wt.id and osmdistance(inp.lat,inp.lon,n.lat,n.lon)<50 order by 1");
     ways.clear();
     nodes.clear();
     distances.clear();
+    intpolways.clear();
+    assocways.clear();
     sqlite3_cursor cur(fa.executecursor());
     while (cur.step()) {
       ways.push_back(cur.getint64(2));
       nodes.push_back(cur.getint64(1));
       distances.push_back(cur.getdouble(0));
+      intpolways.push_back(cur.getint64(3));
+      assocways.push_back(cur.getint64(4));
     }
   }
 

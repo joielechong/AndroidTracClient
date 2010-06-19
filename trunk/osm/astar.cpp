@@ -40,8 +40,11 @@ namespace osm {
       return INFINITY;
     }
     try {
-      if (ww["route"] == "ferry") 
+      if (ww["route"] == "ferry") {
 	hw = "unclassified";
+	speed = 10;
+	cout << "op de ferry w= "<< w <<endl;
+      }
     } catch (range_error &ex) {}
     try {
       double maxspeed = atol(ww["maxspeed"].c_str());

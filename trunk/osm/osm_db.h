@@ -63,7 +63,7 @@ namespace osm_db {
     long getConnectingWay(const long n1,const long n2);
     void adminNode(const long nodeid,vector<long> &admins);
     void findCoor(const double lat,const double lon,vector<long> &ways,vector<long> &nodes,vector<double> &distances);
-    void ndAddress(const string querystring,vector<long> &ways,vector<long> &nodes,vector<double> &distances);
+    void ndAddress(const string querystring,vector<long> &ways,vector<long> &nodes,vector<double> &distances,vector<long> &intpolways,vector<long> &assocways);
  
   private: 
 
