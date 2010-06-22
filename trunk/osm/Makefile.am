@@ -1,9 +1,9 @@
 SHELL=/bin/sh
 
 AM_CXXFLAGS=
-AM_CFLAGS=
-AM_YFLAGS=-dtv
-AM_LFLAGS=-v -s -B
+AM_CFLAGS=	
+AM_YFLAGS=-dtv	
+AM_LFLAGS=-v -s	-B
 
 ACLOCAL_AMFLAGS=-I m4 -I gnum4
 SUBDIRS=gnulib
@@ -22,8 +22,8 @@ mkdb_SOURCES= grootcirkel.h \
          gzstream.h \
 	     mkdb.cpp \
          myfuncs.h \
-	     myparser.cpp \
-         myparser.h \
+	     osmparser.cpp \
+         osmparser.h \
 	     osm_db.h \
          osmapi.cpp \
 	     osmapi.h

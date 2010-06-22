@@ -15,7 +15,7 @@
 #include <SocketHandler.h>
 #include <StdoutLog.h>
 #include "gzstream.h"
-#include "myparser.h"
+#include "osmparser.h"
 #include "osmapi.h"
 
 #define MAXELEM 50

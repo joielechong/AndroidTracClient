@@ -1,5 +1,5 @@
 #include "osm_db.h"
-#include "myparser.h"
+#include "osmparser.h"
 #include <iostream>
 #include <string>
 #include <glibmm/ustring.h>
@@ -44,17 +44,24 @@ namespace osmparser {
     int version=-1;
     double lat=-999,lon=-999;
     std::string type,role,k,v;
+
+    if (_depth == 1 && name != "osm")
+      throw std::runtime_error("Incorrect planet file");
     
     for(xmlpp::SaxParser::AttributeList::const_iterator iter = attributes.begin(); iter != attributes.end(); ++iter) {
       //    std::cout << "  Attribute: " << iter->name << " = " << iter->value.c_str() << std::endl;
       switch (_depth) {
+      case 1:
+	if (iter->name == "version" && iter->value != "0.6")
+	  throw std::runtime_error("Planetfile uses wrong api version: "+iter->value);
+	break;
+
       case 2:
 	if (iter->name == "id") {
 	  id = atol(iter->value.c_str());
 	  _lastid = id;
 	  _memcnt = 0;
 	  _ndcnt = 0;
-	  _is_highway = false;
 	} else if (iter->name == "version") {
 	  version = atol(iter->value.c_str());
 	} else if (iter->name == "lat") {
@@ -111,8 +118,6 @@ namespace osmparser {
 		 strncmp(k.c_str(),"note",4) == 0 ||
 		 strncasecmp(k.c_str(),"opengeo",7) == 0)) {
 	    _con->createTag(_lastid,_type,k,v);
-	    if ((k == "highway") || k == "boundary" || (k == "route" && v == "ferry") || (k=="natural" && v=="coastline"))
-	      _is_highway = true;
 	  }
 	} else if (name == "member") {
 	  try {

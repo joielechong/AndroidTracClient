@@ -37,15 +37,17 @@ namespace osm {
     try {
       hw = ww["highway"];
     } catch (range_error &ex) {
-      return INFINITY;
-    }
-    try {
-      if (ww["route"] == "ferry") {
-	hw = "unclassified";
-	speed = 10;
-	cout << "op de ferry w= "<< w <<endl;
+      try {
+	if (ww["route"] == "ferry") {
+	  hw = "unclassified";
+	  speed = 5;
+	  cout << "op de ferry w= "<< w <<endl;
+	}
+      } catch (range_error &ex) {
+	return INFINITY;
       }
-    } catch (range_error &ex) {}
+    }
+
     try {
       double maxspeed = atol(ww["maxspeed"].c_str());
       if (maxspeed < speed)
@@ -176,6 +178,7 @@ namespace osm {
       if (pn != to.end())
 	prevnode = pn->second;
       k = closedset.find(y);
+#ifdef ACCELL
       if (k == closedset.end()) {
 	vector<long> ynb;
 	getNeighbours(y,ynb);
@@ -207,6 +210,7 @@ namespace osm {
 	  k = closedset.find(y);
 	}
       }
+#endif
       if (k == closedset.end() && g[xs1] != INFINITY) {
 	double tentative_g_score = min(g[xs1] + (set==1?cost(xs1,y,prevnode):cost(y,xs1,prevnode)),INFINITY);
 	bool tentative_is_better = false;
@@ -230,9 +234,9 @@ namespace osm {
 	  try { ref = ww["ref"];} catch (range_error &ex) {ref="";}
 	  cout << set << " " << maxperc << " ";
 	  if (set == 1) 
-	    cout << " " << xs << " " << y << " " << g[y] << " " << h[y] << " " << f[y] << " "+name+" "+ref <<endl;
+	    cout << " " << xs << " " << y << " " << f[xs] << " " << g[y] << " " << h[y] << " " << f[y] << " "+name+" "+ref <<endl;
 	  else
-	    cout << " " << y << " " << xs << " " << g[y] << " " << h[y] << " " << f[y] << " "+name+" "+ref <<endl;
+	    cout << " " << y << " " << xs << " " << f[xs] << " " << g[y] << " " << h[y] << " " << f[y] << " "+name+" "+ref <<endl;
 
 	}
       }
