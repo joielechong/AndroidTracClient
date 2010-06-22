@@ -54,7 +54,7 @@ class GenParser : public xmlpp::SaxParser {
     virtual void on_end_element(const Glib::ustring& name);
     
   private:
-    string _mode;
+    std::string _mode;
     double _minlat,_minlon,_maxlat,_maxlon;
   };
 }
