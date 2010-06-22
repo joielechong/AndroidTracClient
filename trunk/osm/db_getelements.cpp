@@ -357,6 +357,19 @@ namespace osm_db {
     } 
   }
 
+  void database::getBound(double &minlat,double &minlon,double &maxlat,double &maxlon) {
+    sqlite3_command s(*_sql,"SELECT minlat,minlon,maxlat,maxlon FROM bound");
+    sqlite3_cursor cur(s.executecursor());
+    
+    if (cur.step()) {
+      minlat=cur.getdouble(0);
+      minlon=cur.getdouble(1);
+      maxlon=cur.getdouble(2);
+      maxlat=cur.getdouble(3);
+    } else 
+      throw osm_db_error("Geen boundary beschikbaar");
+  }
+
   void database::getids(string &sqlcmd,vector<long> &ids) {
     sqlite3_command getids(*_sql,sqlcmd);
     sqlite3_cursor cur(getids.executecursor());

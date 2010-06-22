@@ -39,14 +39,23 @@ class GenParser : public xmlpp::SaxParser {
   public:
     inline OSMParser() : GenParser() {}
     inline virtual ~OSMParser() {};
-    
-    inline int getDepth() {return _depth;}
-    inline void setDBconn(osm_db::database *con) {_con=con;};
-    
-  protected:
     //overrides:
     virtual void on_start_element(const Glib::ustring& name, const AttributeList& properties);
     virtual void on_end_element(const Glib::ustring& name);    
+  };
+  
+  class OSCParser : public GenParser {
+  public:
+	inline OSCParser () : GenParser() {}
+    inline virtual ~OSCParser() {};
+    //overrides:
+    virtual void on_start_document();
+    virtual void on_start_element(const Glib::ustring& name, const AttributeList& properties);
+    virtual void on_end_element(const Glib::ustring& name);
+    
+  private:
+    string _mode;
+    double _minlat,_minlon,_maxlat,_maxlon;
   };
 }
 #endif //_OSMPARSER_H
