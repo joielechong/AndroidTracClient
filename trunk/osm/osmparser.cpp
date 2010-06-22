@@ -18,7 +18,7 @@
 
 namespace osmparser {
   
-  void OSMParser::printCounts() { 
+  void GenParser::printCounts() { 
     long nodes,ways,rels,bounds,tags,nds,mems; 
     _con->getCounts(nodes,ways,rels,bounds,tags,nds,mems); 
     std::cout << _counter << ": " << nodes << " nodes " << ways << " ways " << rels << " relations " << tags << " tags " << nds << " nds " << mems << " members " << std::endl; 
