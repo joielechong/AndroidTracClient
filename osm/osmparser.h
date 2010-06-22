@@ -20,8 +20,8 @@ class GenParser : public xmlpp::SaxParser {
     
   protected:
     //overrides:
-    virtual void on_start_document() = 0;
-    virtual void on_end_document() = 0;
+    virtual void on_start_document();
+    virtual void on_end_document();
     virtual void on_start_element(const Glib::ustring& name, const AttributeList& properties) = 0;
     virtual void on_end_element(const Glib::ustring& name) = 0;
     void printCounts();
@@ -45,8 +45,6 @@ class GenParser : public xmlpp::SaxParser {
     
   protected:
     //overrides:
-    virtual void on_start_document();
-    virtual void on_end_document();
     virtual void on_start_element(const Glib::ustring& name, const AttributeList& properties);
     virtual void on_end_element(const Glib::ustring& name);    
   };

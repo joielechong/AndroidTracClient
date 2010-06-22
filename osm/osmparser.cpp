@@ -24,12 +24,12 @@ namespace osmparser {
     std::cout << _counter << ": " << nodes << " nodes " << ways << " ways " << rels << " relations " << tags << " tags " << nds << " nds " << mems << " members " << std::endl; 
   }
   
-  void OSMParser::on_start_document() {
+  void GenParser::on_start_document() {
     //  std::cout << "on_start_document()" << std::endl;
     _con->begin();
   }
   
-  void OSMParser::on_end_document() {
+  void GenParser::on_end_document() {
     //  std::cout << "on_end_document()" << std::endl;
     _con->commit();
     printCounts();
