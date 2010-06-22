@@ -1,5 +1,5 @@
-#ifndef _OSM_MYPARSER_H
-#define _OSM_MYPARSER_H
+#ifndef _OSM_PARSER_H
+#define _OSM_PARSER_H
 
 #include <libxml++/libxml++.h>
 #include <string>
@@ -10,7 +10,7 @@
 namespace osmparser {
   class OSMParser : public xmlpp::SaxParser {
   public:
-    inline OSMParser() : xmlpp::SaxParser(), _depth(0),_counter(0), _lastid(0), _memcnt(0), _ndcnt(0), _is_highway(false) {}
+    inline OSMParser() : xmlpp::SaxParser(), _depth(0),_counter(0), _lastid(0), _memcnt(0), _ndcnt(0) {}
     inline virtual ~OSMParser() {};
     
     inline int getDepth() {return _depth;}
@@ -34,7 +34,6 @@ namespace osmparser {
     std::string _type;
     int _memcnt;
     int _ndcnt;
-    bool _is_highway;
   };
 }
-#endif //_MYPARSER_H
+#endif //_OSMPARSER_H
