@@ -35,7 +35,7 @@ class GenParser : public xmlpp::SaxParser {
     int _ndcnt;
 };
 
-  class OSMParser : public xmlpp::SaxParser {
+  class OSMParser : public GenParser {
   public:
     inline OSMParser() : GenParser() {}
     inline virtual ~OSMParser() {};
