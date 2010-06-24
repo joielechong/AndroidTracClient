@@ -75,7 +75,6 @@ namespace osm {
 	  hw = "unclassified";
 	  speed = 20;
 	  extracost=300;
-	  cout << "op de ferry w= "<< w <<endl;
 	}
       } catch (range_error &ex) {
 	return INFINITY;
@@ -102,7 +101,7 @@ namespace osm {
     try { access = ww["access"];} catch (range_error &ex) {access="yes";}
     try { oneway = ww["oneway"];} catch (range_error &ex) {oneway="";}
     try {
-      if (ww["junction"] == "roundabout")
+      if (ww["junction"] == "roundabout" && oneway == "")
 	oneway = "yes";
     } catch (range_error &ex) {}
 
