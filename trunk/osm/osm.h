@@ -304,7 +304,8 @@ namespace osm {
     long AstarHelper(int set,long goal,set_type &openset,set_type &closedset,score_type &f,score_type &g,score_type &h,score_type &d,route_type &to);
     double cost(const long n1,const long n2,const long prevnode);
     double calc_h_score(const long n1,const long n2);
-    bool wrong_direction(Node &nodex,Node &nodey, Way &ww,string onew);
+    bool wrong_direction(Node &nodex,Node &nodey, Way &ww,string onew) const;
+    long curvecost(const long x,const long y,const long p) const;
     
     osm_db::database *_con;
     unsigned long _cacheSize;

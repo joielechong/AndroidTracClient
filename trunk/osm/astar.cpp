@@ -13,7 +13,7 @@ namespace osm {
     _vehicle = vehicle;
   }
 
-  bool Map::wrong_direction(Node &nodex,Node &nodey,Way &ww,string onew) {
+  bool Map::wrong_direction(Node &nodex,Node &nodey,Way &ww,string onew) const {
 
     int dir = _con->getDirection(nodex.id(),nodey.id(),ww.id());
     if (dir == 0)
@@ -25,7 +25,7 @@ namespace osm {
       return (dir == 1);
   }
   
-  long Map::curvecost(const long x,const long y,const long p) {
+  long Map::curvecost(const long x,const long y,const long p) const {
     if (p == 0)
       return 0;
     Node &ndx=nodes(x);
