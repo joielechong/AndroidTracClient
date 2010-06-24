@@ -148,9 +148,10 @@ namespace osm {
 	  if (nodefnd == 0) 
 	    nodefnd = nodes[i];
 	  try {
+	    cerr << "Vlak voor de naam opvragen " << endl;
 	    if (_ways[ways[i]]["name"] == street)
 	      return nodes[i];
-	  } catch (range_error &ex) {}
+	  } catch (range_error &ex) {cerr << "Naam bestaat niet"<<endl;}
 	}
       }
       if (nodefnd != 0)
