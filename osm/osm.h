@@ -11,7 +11,7 @@
 #include <map>
 #include <list>
 
-#define INFINITY (9.99E99)
+#define INFINITY ((double)9.99E99)
 
 namespace osm {
   
@@ -305,7 +305,7 @@ namespace osm {
     double cost(const long n1,const long n2,const long prevnode);
     double calc_h_score(const long n1,const long n2);
     bool wrong_direction(Node &nodex,Node &nodey, Way &ww,string onew) const;
-    long curvecost(const long x,const long y,const long p) const;
+    long curvecost(const long x,const long y,const long p);
     
     osm_db::database *_con;
     unsigned long _cacheSize;

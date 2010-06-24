@@ -25,21 +25,21 @@ namespace osm {
       return (dir == 1);
   }
   
-  long Map::curvecost(const long x,const long y,const long p) const {
+  long Map::curvecost(const long x,const long y,const long p) {
     if (p == 0)
       return 0;
     Node &ndx=nodes(x);
     Node &ndy=nodes(y);
     Node &ndp=nodes(p);
     
-    double dx1 = ndy.lon-ndx.lon;
-    double dy1 = ndy.lat-ndx.lat;
-    double dx2 = ndx.lon-ndp.lon;
-    double dy2 = ndx.lat-ndp.lat;
+    double dx1 = ndy.lon()-ndx.lon();
+    double dy1 = ndy.lat()-ndx.lat();
+    double dx2 = ndx.lon()-ndp.lon();
+    double dy2 = ndx.lat()-ndp.lat();
     
     double h1 = 180.0 * atan2(dy1,dx1) / PI;
     double h2 = 180.0 * atan2(dy2,dx2) / PI;
-    double dh = abs(h2-h1);
+    double dh = fabs(h2-h1);
     if (dh > 180) 
       dh = 360 - dh;
 
@@ -50,7 +50,7 @@ namespace osm {
     else if (dh < 150)
       return 50 + 50*(dh-120)/30;
 
-    return 100 + 1900 * *dh-150)/30;
+    return 100 + 1900 * (dh-150)/30;
   }
   
   double Map::cost(const long x,const long y,const long prevnode) { 
@@ -159,7 +159,8 @@ namespace osm {
     try {extracost += _profiles[_vehicle].barrier(nodey["highway"]);} catch (range_error &ex) {};
  
     kost += extracost;
-    kost=min(INFINITY,kost);
+    if (kost > INFINITY)
+      kost = INFINITY;
     
     return kost;
   }
@@ -244,7 +245,9 @@ namespace osm {
       }
 #endif
       if (k == closedset.end() && g[xs1] != INFINITY) {
-	double tentative_g_score = min(g[xs1] + (set==1?cost(xs1,y,prevnode):cost(y,xs1,prevnode)),INFINITY);
+	double tentative_g_score = g[xs1] + (set==1?cost(xs1,y,prevnode):cost(y,xs1,prevnode));
+	if (tentative_g_score >INFINITY)
+	  tentative_g_score = INFINITY;
 	bool tentative_is_better = false;
 	k = openset.find(y);
 	if (k == openset.end()) {
@@ -257,7 +260,9 @@ namespace osm {
 	  g[y] = tentative_g_score;
 	  h[y] = calc_h_score(y,goal);
 	  d[y] = distance(y,goal);
-	  f[y] = min(g[y] + h[y],INFINITY);
+	  f[y] = g[y] + h[y];
+	  if (f[y] > INFINITY)
+	    f[y] = INFINITY;
 	  string name;
 	  string ref;
 	  long w = getConnectingWay(xs,y);
