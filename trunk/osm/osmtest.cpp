@@ -167,6 +167,8 @@ int main(int argc, char *argv[]) {
       prevway = w;
     }
     gpx << "</trkseg>"<<endl<<"</trk>"<<endl<<"</gpx>"<<endl;
+    cout << map.costcounter() << " verschillende wegen geprobeerd" << endl;
+    cout << "Gevonden weg bestaat uit "<< route.size() << " elementen"<<endl;
   }
   
   /*

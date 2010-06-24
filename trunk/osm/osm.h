@@ -270,6 +270,9 @@ namespace osm {
     inline osm::Way& ways(const long id) {return _ways[id];}
     inline osm::Cache<osm::Relation>& relations() {return _relations;}
     inline osm::Relation& relations(const long id) {return _relations[id];}
+    
+    inline long costcounter() const {return _costcounter;}
+    inline void costcounter(long c) {_costcounter = c;}
 
     void InterpolatedAddresses();
     void InterpolatedAddresses(Way &w);
@@ -318,6 +321,8 @@ namespace osm {
 
     highway_type _highways;
     profile_type _profiles;
+    
+    long _costcounter;
   };
 
   class osm_error : public exception {
