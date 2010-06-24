@@ -2,6 +2,7 @@
 #include <map>
 #include <cstdlib>
 #include <stdbool.h>
+#include "grootcirkel.h"
 
 namespace osm {
   using namespace std;
@@ -22,6 +23,34 @@ namespace osm {
       return (dir == -1);
     else
       return (dir == 1);
+  }
+  
+  long Map::curvecost(const long x,const long y,const long p) {
+    if (p == 0)
+      return 0;
+    Node &ndx=nodes(x);
+    Node &ndy=nodes(y);
+    Node &ndp=nodes(p);
+    
+    double dx1 = ndy.lon-ndx.lon;
+    double dy1 = ndy.lat-ndx.lat;
+    double dx2 = ndx.lon-ndp.lon;
+    double dy2 = ndx.lat-ndp.lat;
+    
+    double h1 = 180.0 * atan2(dy1,dx1) / PI;
+    double h2 = 180.0 * atan2(dy2,dx2) / PI;
+    double dh = abs(h2-h1);
+    if (dh > 180) 
+      dh = 360 - dh;
+
+    if (dh < 90)
+      return 10 * (dh/90);
+    else if (dh < 120) 
+      return 10 + 40*(dh-90)/30;
+    else if (dh < 150)
+      return 50 + 50*(dh-120)/30;
+
+    return 100 + 1900 * *dh-150)/30;
   }
   
   double Map::cost(const long x,const long y,const long prevnode) { 
@@ -120,6 +149,7 @@ namespace osm {
 	  return INFINITY;
       }
       try { extracost += _highways[nodey["highway"]].extracost();} catch (range_error &ex) {};
+      extracost += curvecost(x,y,prevnode);
     }
     if (access == "no")
       return INFINITY;
