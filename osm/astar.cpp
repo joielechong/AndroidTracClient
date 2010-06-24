@@ -25,6 +25,7 @@ namespace osm {
   }
   
   double Map::cost(const long x,const long y,const long prevnode) { 
+    long extracost = 0;
     double dist = distance(x,y);
     if (_vehicle == "") return dist;
 
@@ -40,7 +41,8 @@ namespace osm {
       try {
 	if (ww["route"] == "ferry") {
 	  hw = "unclassified";
-	  speed = 5;
+	  speed = 20;
+	  extracost=300;
 	  cout << "op de ferry w= "<< w <<endl;
 	}
       } catch (range_error &ex) {
@@ -72,7 +74,7 @@ namespace osm {
 	oneway = "yes";
     } catch (range_error &ex) {}
 
-    long extracost=_highways[hw].extracost();
+    extracost += _highways[hw].extracost();
     
     Node &nodey = nodes(y);
     if (_vehicle == "foot") {
