@@ -55,6 +55,9 @@ namespace osm {
   
   double Map::cost(const long x,const long y,const long prevnode) { 
     long extracost = 0;
+    
+    _costcounter++;
+    
     double dist = distance(x,y);
     if (_vehicle == "") return dist;
 

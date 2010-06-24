@@ -18,7 +18,8 @@ namespace osm {
     _nodes(_con,_cacheSize),
     _ways(_con,_cacheSize),
     _relations(_con,_cacheSize),
-    _conffile(conffile) {
+    _conffile(conffile),
+    _costcounter(0) {
     
 	load_conf();
   }
