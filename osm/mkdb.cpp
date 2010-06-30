@@ -47,8 +47,6 @@ string postprocesses[] = {
   "UPDATE relation SET donotdelete='true' WHERE id IN (SELECT id FROM relationtag WHERE (k='boundary' AND v='administrative') OR (k='admin_level')) AND id IN (SELECT id FROM relationtag WHERE k='type' AND v='multipolygon') AND donotdelete!='true'",
   "UPDATE relation SET donotdelete='true' WHERE id in (SELECT ref FROM member WHERE type='relation') and donotdelete !='true'",
   "DELETE FROM relation WHERE donotdelete='false'",
-  //  "DELETE FROM relation WHERE (id in (SELECT id FROM relationtag WHERE k='type' AND NOT v in ('boundary','restriction','multipolygon','associatedStreet','boundary_segment'))) OR id IN (SELECT ref FROM member WHERE type='relation')",
-  //  "DELETE FROM relation WHERE id IN (SELECT id FROM relationtag WHERE k='type' AND v='multipolygon' AND NOT id IN (SELECT relation.id FROM relation,relationtag as tag1,relationtag as tag2 where tag1.k='type' and tag1.v='multipolygon' and tag1.id=relation.id and ((tag2.k='boundary' and tag2.v='administrative') or tag2.k='admin_level') and tag2.id=tag1.id))",
   
   "update way set donotdelete='true' where id in (select ref from member where type='way') and donotdelete != 'true'",
   "update way set donotdelete='true' where id in (select id from waytag where k ='highway' or k='boundary') and donotdelete != 'true'",
@@ -56,25 +54,20 @@ string postprocesses[] = {
   "update way set donotdelete='true' where id in (select id from waytag where k ='route' and v='ferry') and donotdelete != 'true'",
   "update way set donotdelete='true' where id in (select id from waytag where k like 'addr:%' or k like 'is_in:%') and donotdelete != 'true'",
   "delete from way where donotdelete='false'",
-//    "DELETE FROM way WHERE NOT id in (SELECT id FROM waytag WHERE k in ('highway','boundary','route','natural') OR k like 'addr:%' OR k like 'is_in%' UNION SELECT ref FROM member WHERE type = 'way')",
 
   "update node set donotdelete='true' where id in (select id from nodetag) and donotdelete != 'true'",
   "update node set donotdelete='true' where id in (select ref from nd) and donotdelete != 'true'",
   "update node set donotdelete='true' where id in (select ref from member where type='node') and donotdelete != 'true'",
   "delete from node where donotdelete='false'",
-//    "DELETE FROM node WHERE NOT id IN (SELECT id FROM nodetag UNION SELECT ref FROM nd UNION SELECT ref FROM member WHERE type='node')",
 
   "UPDATE tag SET v='yes' WHERE k IN ('bridge','oneway','tunnel') AND v IN ('1','YES','true','Yes')",
   "DELETE FROM tag WHERE k IN ('bridge','oneway','tunnel') AND v IN ('NO','FALSE','No','False','no','ny','false')",
   "UPDATE node SET x=osmcalc_x(lon),y=osmcalc_y(lat) WHERE x is null and id in (SELECT ref FROM usable_way as u,nd WHERE u.id=nd.id)",
   "INSERT OR REPLACE INTO admin (id,name,level,minlat,maxlat,minlon,maxlon) SELECT id,name,level,minlat,maxlat,minlon,maxlon FROM admintmp",
-  //  "INSERT OR REPLACE INTO adressen (id,type,country,city,street,housenumber,postcode,intpolway) SELECT id,'node' AS type,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:country') AS country,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:city') AS city,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:street') AS street,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:housenumber') AS housenumber,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:postcode') AS postcode, (SELECT wt.id FROM nd,waytag as wt WHERE nd.ref=node.id and nd.id=wt.id and wt.k='addr:interpolation') as intpolway FROM node WHERE NOT coalesce(country,city,street,housenumber,postcode) IS NULL",
   "INSERT OR REPLACE INTO adressen (id,type,country,city,street,housenumber,postcode,intpolway,assocway) SELECT id,'node' AS type,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:country') AS country,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:city') AS city,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:street') AS street,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:housenumber') AS housenumber,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:postcode') AS postcode, (SELECT wt.id FROM nd,waytag as wt WHERE nd.ref=node.id and nd.id=wt.id and wt.k='addr:interpolation') as intpolway,(select m1.ref from tag, member as m,relationtag as rt,member as m1 where tag.id=node.id and tag.type='node' and tag.k like 'addr:%' and m.type=tag.type and m.ref=tag.id and m.id=rt.id and rt.k='type' and rt.v='associatedStreet' and m1.id=rt.id and m1.role='street') as assocway FROM node WHERE NOT coalesce(country,city,street,housenumber,postcode) IS NULL",
 
-  //SELECT id,'node' AS type,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:country') AS country,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:city') AS city,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:street') AS street,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:housenumber') AS housenumber,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:postcode') AS postcode FROM node WHERE NOT coalesce(country,city,street,housenumber,postcode) IS NULL",
   "INSERT OR REPLACE INTO adressen (id,type,country,city,street,housenumber,postcode,assocway) SELECT id,'way' AS type,(SELECT v FROM waytag WHERE id=way.id AND k='addr:country') AS country,(SELECT v FROM waytag WHERE id=way.id AND k='addr:city') AS city,(SELECT v FROM waytag WHERE id=way.id AND k='addr:street') AS street,(SELECT v FROM waytag WHERE id=way.id AND k='addr:housenumber') AS housenumber,(SELECT v FROM waytag WHERE id=way.id AND k='addr:postcode') AS postcode, (select m1.ref from tag, member as m,relationtag as rt,member as m1 where tag.id=way.id and tag.type='way' and tag.k like 'addr:%' and m.type=tag.type and m.ref=tag.id and m.id=rt.id and rt.k='type' and rt.v='associatedStreet' and m1.id=rt.id and m1.role='street') as assocway FROM way WHERE NOT coalesce(country,city,street,housenumber,postcode) IS NULL",
-  //  "INSERT OR REPLACE INTO adressen (id,type,country,city,street,housenumber,postcode) SELECT id,'way' AS type,(SELECT v FROM waytag WHERE id=way.id AND k='addr:country') AS country,(SELECT v FROM waytag WHERE id=way.id AND k='addr:city') AS city,(SELECT v FROM waytag WHERE id=way.id AND k='addr:street') AS street,(SELECT v FROM waytag WHERE id=way.id AND k='addr:housenumber') AS housenumber,(SELECT v FROM waytag WHERE id=way.id AND k='addr:postcode') AS postcode, (SELECT wt.id FROM nd,waytag as wt WHERE nd.ref=node.id and nd.id=wt.id and wt.k='addr:interpolation') as intpolway,(select m1.ref from tag, member as m,relationtag as rt,member as m1 where tag.id=way.id and tag.type='way' and tag.k like 'addr:%' and m.type=tag.type and m.ref=tag.id and m.id=rt.id and rt.k='type' and rt.v='associatedStreet' and m1.id=rt.id and m1.role='street') as assocway FROM way WHERE NOT coalesce(country,city,street,housenumber,postcode) IS NULL",
-  //  "insert or replace into neighbor (id1,id2,way,distance) SELECT id1,id2,way,osmdistance(n1.lat,n1.lon,n2.lat,n2.lon) from nb,node as n1,node as n2 where n1.id=id1 and n2.id=id2",
+
   "vacuum",
   ""
 };
@@ -250,7 +243,6 @@ int main(int argc, char* argv[])
       extra.push_back("-");
     if (remaining.size() == 0)
       remaining.push_back("-");
-    post = true;
   }
   
   try {
