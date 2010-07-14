@@ -5,7 +5,7 @@
 #include <cstdarg>
 #include <cstdio>
 
-namespace osm_db {  
+namespace osm {  
   osm_error::osm_error(const char *format,...)
   {
     const int buffsz = static_cast<int>( std::max( (size_t) 2048, strlen(format) * 2 ) );

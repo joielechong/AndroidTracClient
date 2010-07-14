@@ -60,6 +60,7 @@ libosm_la_SOURCES = astar.cpp \
 		    osm_db.cpp \
             osm_db.h \
 		    osm_db_except.cpp \
+                    osm_except.cpp \
 			relation.cpp \
 			way.cpp
 

@@ -61,6 +61,7 @@ string postprocesses[] = {
   "delete from node where donotdelete='false'",
 
   "UPDATE tag SET v='yes' WHERE k IN ('bridge','oneway','tunnel') AND v IN ('1','YES','true','Yes')",
+  "UPDATE tag set v='opposite' WHERE k='cycleway' and v in ('opposite_lane','opposite_track')",
   "DELETE FROM tag WHERE k IN ('bridge','oneway','tunnel') AND v IN ('NO','FALSE','No','False','no','ny','false')",
   "UPDATE node SET x=osmcalc_x(lon),y=osmcalc_y(lat) WHERE x is null and id in (SELECT ref FROM usable_way as u,nd WHERE u.id=nd.id)",
   "INSERT OR REPLACE INTO admin (id,name,level,minlat,maxlat,minlon,maxlon) SELECT id,name,level,minlat,maxlat,minlon,maxlon FROM admintmp",
@@ -191,7 +192,7 @@ int main(int argc, char* argv[])
   Argument::BooleanArgument updArg("-update","\tUpdate the database");
   Argument::StringArgument apiArg("-api","value","\tOnline API request e.g. node/nodeid",false);
   Argument::BooleanArgument fixArg("-fix","\t\tcompletes incomplete relations and ways");
-  Argument::BooleanArgument postArg("-post","\t\tPerform postprocessing on the database (implied by -new)");
+  Argument::BooleanArgument postArg("-post","\t\tPerform postprocessing on the database");
   Argument::BooleanArgument helpArg("-help","\t\tHelp on usage");
   Argument::BooleanArgument newArg("-new","\t\tCreate new database");
   Argument::ListArgument extraArg("file","\tFilename[s] to process (none or - implies stdin)",false);

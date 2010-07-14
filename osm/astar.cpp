@@ -117,6 +117,8 @@ namespace osm {
     } else if (_vehicle == "bicycle") {
       string cw;
       try { cw = ww["cycleway"];} catch (range_error &ex) {cw="";}
+      if (cw == "opposite_lane")
+	cw = "opposite";
       string ca;
       try { ca = ww["bicycle"];} catch (range_error &ex) {ca="";}
 
@@ -134,7 +136,7 @@ namespace osm {
         if ((ca == "no") || (access == "no" && ca != "yes"))
 	  return INFINITY;
       }
-      if (oneway != "" && cw != "opposite") {
+      if (oneway != "" && cw != "opposite" && cw != "both") {
 	if (wrong_direction(nodes(x),nodey,ww,oneway))
 	  return INFINITY;
       }

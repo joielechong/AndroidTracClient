@@ -341,7 +341,7 @@ namespace osm {
   class way_error : public osm_error {
   };
   
-  class relation : public osm_error {
+  class relation_error : public osm_error {
   };
   
   class map_error : public osm_error {
