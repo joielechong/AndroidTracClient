@@ -144,7 +144,7 @@ namespace osm {
     if (ways.size() > 0) {
       long nodefnd = 0;
       for (unsigned int i = 0; i < ways.size(); i++) {
-	cout << ways[i] << " " << nodes[i] << " " << distances[i] << " "+_ways[ways[i]]["highway"] << endl;
+	cout << ways[i] << " " << nodes[i] << " " << distances[i] << " "+_ways[ways[i]]["highway"] << " " << assocways[i] << endl;
 	if (vehicle == "" || _profiles[vehicle].is_allowed(_ways[ways[i]]["highway"])) {
 	  if (nodefnd == 0) 
 	    nodefnd = nodes[i];
