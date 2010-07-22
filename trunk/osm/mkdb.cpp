@@ -60,9 +60,9 @@ string postprocesses[] = {
   "update node set donotdelete='true' where id in (select ref from member where type='node') and donotdelete != 'true'",
   "delete from node where donotdelete='false'",
 
-  "UPDATE tag SET v='yes' WHERE k IN ('bridge','oneway','tunnel') AND v IN ('1','YES','true','Yes')",
+  "UPDATE tag SET v='yes' WHERE k IN ('bridge','oneway','tunnel','motorroad','bicyle','foot') AND v IN ('1','YES','true','Yes')",
   "UPDATE tag set v='opposite' WHERE k='cycleway' and v in ('opposite_lane','opposite_track')",
-  "DELETE FROM tag WHERE k IN ('bridge','oneway','tunnel') AND v IN ('NO','FALSE','No','False','no','ny','false')",
+  "DELETE FROM tag WHERE k IN ('bridge','oneway','tunnel','motorroad') AND v IN ('NO','FALSE','No','False','no','ny','false')",
   "UPDATE node SET x=osmcalc_x(lon),y=osmcalc_y(lat) WHERE x is null and id in (SELECT ref FROM usable_way as u,nd WHERE u.id=nd.id)",
   "INSERT OR REPLACE INTO admin (id,name,level,minlat,maxlat,minlon,maxlon) SELECT id,name,level,minlat,maxlat,minlon,maxlon FROM admintmp",
   "INSERT OR REPLACE INTO adressen (id,type,country,city,street,housenumber,postcode,intpolway,assocway) SELECT id,'node' AS type,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:country') AS country,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:city') AS city,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:street') AS street,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:housenumber') AS housenumber,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:postcode') AS postcode, (SELECT wt.id FROM nd,waytag as wt WHERE nd.ref=node.id and nd.id=wt.id and wt.k='addr:interpolation') as intpolway,(select m1.ref from tag, member as m,relationtag as rt,member as m1 where tag.id=node.id and tag.type='node' and tag.k like 'addr:%' and m.type=tag.type and m.ref=tag.id and m.id=rt.id and rt.k='type' and rt.v='associatedStreet' and m1.id=rt.id and m1.role='street') as assocway FROM node WHERE NOT coalesce(country,city,street,housenumber,postcode) IS NULL",

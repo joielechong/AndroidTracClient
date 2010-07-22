@@ -1,4 +1,9 @@
 PRAGMA user_version = 2;
+PRAGMA temp_store_directory='/usr/local/tmp/';
+PRAGMA default_cache_size=5000;
+PRAGMA synchronous=off;
+PRAGMA temp_store=2;
+
 BEGIN TRANSACTION;
 
 DROP VIEW counts;
@@ -64,6 +69,3 @@ CREATE INDEX t4 on tag(id,type,k);
 CREATE INDEX t5 on tag(id);
 
 COMMIT;
-PRAGMA default_cache_size=5000;
-PRAGMA synchronous=off;
-PRAGMA temp_store=2;

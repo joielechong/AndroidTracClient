@@ -111,6 +111,13 @@ namespace osm {
     if (_vehicle == "foot") {
       string fa;
       try { fa = ww["foot"];} catch (range_error &ex) {fa="";}
+      if (fa == "") {
+	try {
+	  if (ww["motorroad"] == "yes") {
+	    fa="no";
+	  }
+	} catch (range_error &ex) {}	
+      }
       if ((fa == "no") || (access == "no" && fa != "yes"))
 	return INFINITY;
       try { extracost += _profiles[_vehicle].allowed(hw);} catch (range_error &ex) {return INFINITY;}
@@ -121,6 +128,13 @@ namespace osm {
 	cw = "opposite";
       string ca;
       try { ca = ww["bicycle"];} catch (range_error &ex) {ca="";}
+      if (ca == "") {
+	try {
+	  if (ww["motorroad"] == "yes") {
+	    ca="no";
+	  }
+	} catch (range_error &ex) {}	
+      }
 
       if (ca != "yes") {
 	try { 
