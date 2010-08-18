@@ -55,7 +55,7 @@
                         <barrier type="cycle_barrier" extracost="0" />
                         <barrier type="lift_gate" extracost="10" />
 		</profile>
-		<profile name="bicycle" maxspeed="15" avgspeed="12" ignore_oneway="0">
+		<profile name="bicycle" maxspeed="12" avgspeed="10" ignore_oneway="0">
 			<allowed highway="footway" extracost="3" />
 			<allowed highway="track" extracost="30" />
 			<allowed highway="cycleway" extracost="0" />
