@@ -271,8 +271,10 @@ namespace osm {
 	if (k == openset.end()) {
 	  openset[y] = 1;
 	  tentative_is_better = true;
-	} else if (tentative_g_score < g[y]) 
+	} else if (tentative_g_score < g[y]) {
 	  tentative_is_better = true;
+	  double dg = g[y] - tentative_g_score;
+	}
 	if (tentative_is_better) {
 	  to[y] = xs1;
 	  g[y] = tentative_g_score;
