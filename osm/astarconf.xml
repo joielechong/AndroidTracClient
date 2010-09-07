@@ -58,6 +58,7 @@
 		<profile name="bicycle" maxspeed="12" avgspeed="10" ignore_oneway="0">
 			<allowed highway="footway" extracost="3" />
 			<allowed highway="track" extracost="30" />
+			<allowed highway="pedestrian" extracost="3" />
 			<allowed highway="cycleway" extracost="0" />
 			<allowed highway="residential" extracost="5" />
 			<allowed highway="living_street" extracost="5" />
