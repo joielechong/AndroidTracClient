@@ -74,7 +74,7 @@ namespace osm {
 	if (ww["route"] == "ferry") {
 	  hw = "unclassified";
 	  speed = 30;
-	  extracost=600;
+//	  extracost=600;
 	}
       } catch (range_error &ex) {
 	return INFINITY;
