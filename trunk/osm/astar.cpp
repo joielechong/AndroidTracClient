@@ -73,8 +73,8 @@ namespace osm {
       try {
 	if (ww["route"] == "ferry") {
 	  hw = "unclassified";
-	  speed = 20;
-	  extracost=300;
+	  speed = 30;
+	  extracost=600;
 	}
       } catch (range_error &ex) {
 	return INFINITY;
@@ -273,7 +273,16 @@ namespace osm {
 	  tentative_is_better = true;
 	} else if (tentative_g_score < g[y]) {
 	  tentative_is_better = true;
+	  cout << "verbetering van " << y << endl << "oud = " << g[y] << " nieuw = " << tentative_g_score << endl;
 	  double dg = g[y] - tentative_g_score;
+	  
+	  route_type::iterator xx;
+	  for (xx=to.begin();xx!=to.end();xx++) {
+	    long z1=xx->first;
+	    long z2=xx->second;
+	    if (z2 == y || z1 == y) 
+	      cout << "  xx  " << z1 << "  " << z2 << "  " << g[z1] << endl;
+	  }
 	}
 	if (tentative_is_better) {
 	  to[y] = xs1;
