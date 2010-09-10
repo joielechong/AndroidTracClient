@@ -196,8 +196,9 @@ namespace osm {
   
   long Map::AstarHelper(int set,long goal,set_type &openset,set_type &closedset,score_type &f,score_type &g,score_type &h,score_type &d,route_type &to) {
     long xs = 0;
-
-    for (set_type::iterator k=openset.begin();k!=openset.end();k++) {
+    set_type::iterator k;
+    
+    for (k=openset.begin();k!=openset.end();k++) {
       if (xs == 0) 
 	xs = k->first;
       if (f[k->first] < f[xs])
