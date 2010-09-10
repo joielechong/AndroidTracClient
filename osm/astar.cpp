@@ -251,8 +251,10 @@ namespace osm {
             if (y1 != xs) {
               k = closedset.find(y1);
               if (k != closedset.end()) {
-                if (k->second == set)
+                if (k->second == set) {
+                  cout << "   opnieuw open " << y1 << endl;
                   closedset.erase(y1);
+                }
               }
             }
           }
