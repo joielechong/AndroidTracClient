@@ -246,7 +246,7 @@ namespace osm {
 	  openset[y] = 1;
           cerr << "added to openset" << endl;
         }
-        if (g.find(y) != g.find.end()) {
+        if (g.find(y) != g.end()) {
           if (tentative_g_score < g[y] || g[y] == 0) {
             tentative_is_better = true;
 	    cout << "verbetering van " << y << endl << "oud = " << g[y] << " nieuw = " << tentative_g_score << endl;
