@@ -206,6 +206,9 @@ namespace osm {
     }
     if (xs == 0)  // no more nodes to process should not happen in our situation 
       throw runtime_error("xs = 0");
+      
+    cerr << "xs = " << xs << endl;
+    
     bestpoints[set] = xs;
     double newdistance = distance(bestpoints[1],bestpoints[2]);
     maxperc = max(maxperc,100.0*(initialdistance - newdistance)/initialdistance);
@@ -229,8 +232,11 @@ namespace osm {
 
     for (vector<long>::iterator yi=neighbours.begin();yi != neighbours.end();yi++) {
       long y = *yi;
+      
+      cerr << "y = " << y << endl;
 
       if (closedset.find(y) == closedset.end()) { // && g[xs] != INFINITY) {
+        cerr << "not closed"<<endl;
 	double tentative_g_score = g[xs] + (set==1?cost(xs,y,prevnode):cost(y,xs,prevnode));
 	if (tentative_g_score >INFINITY)
 	  tentative_g_score = INFINITY;
@@ -238,6 +244,7 @@ namespace osm {
 
 	if (openset.find(y) == openset.end()) {
 	  openset[y] = 1;
+          cerr << "added to openset" << endl;
         }
         try {
           if (tentative_g_score < g[y] ) {
@@ -245,7 +252,7 @@ namespace osm {
 	    cout << "verbetering van " << y << endl << "oud = " << g[y] << " nieuw = " << tentative_g_score << endl;
 //
 // alle nodes die vanaf y bereikbaar zijn moeten opnieuw worden berekend (behalve xs1)
-// dus als ze al in closedset staandaar weer uit verwijderen
+// dus als ze al in closedset staan daar weer uit verwijderen
 //	  
             vector<long> ynb;
             getNeighbours(y,ynb);
@@ -264,7 +271,9 @@ namespace osm {
           }
         } catch (range_error &ex) { 
           tentative_is_better = true;
+          cerr << "range error gehad" << endl;
 	}
+        
 	if (tentative_is_better) {
 	  to[y] = xs;
 	  g[y] = tentative_g_score;
