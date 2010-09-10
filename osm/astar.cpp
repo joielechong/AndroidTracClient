@@ -207,7 +207,7 @@ namespace osm {
     if (xs == 0)  // no more nodes to process should not happen in our situation 
       throw runtime_error("xs = 0");
       
-    cerr << "xs = " << xs << endl;
+//    cerr << "xs = " << xs << endl;
     
     bestpoints[set] = xs;
     double newdistance = distance(bestpoints[1],bestpoints[2]);
@@ -233,10 +233,10 @@ namespace osm {
     for (vector<long>::iterator yi=neighbours.begin();yi != neighbours.end();yi++) {
       long y = *yi;
       
-      cerr << "y = " << y << endl;
+//      cerr << "y = " << y << endl;
 
       if (closedset.find(y) == closedset.end()) { // && g[xs] != INFINITY) {
-        cerr << "not closed"<<endl;
+//        cerr << "not closed"<<endl;
 	double tentative_g_score = g[xs] + (set==1?cost(xs,y,prevnode):cost(y,xs,prevnode));
 	if (tentative_g_score >INFINITY)
 	  tentative_g_score = INFINITY;
@@ -244,7 +244,7 @@ namespace osm {
 
 	if (openset.find(y) == openset.end()) {
 	  openset[y] = 1;
-          cerr << "added to openset" << endl;
+//          cerr << "added to openset" << endl;
         }
         if (g.find(y) != g.end()) {
           if (tentative_g_score < g[y] || g[y] == 0) {
@@ -271,7 +271,7 @@ namespace osm {
           }
         } else { 
           tentative_is_better = true;
-          cerr << "bestond nog niet" << endl;
+//          cerr << "bestond nog niet" << endl;
 	}
         
 	if (tentative_is_better) {
