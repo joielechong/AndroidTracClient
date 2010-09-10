@@ -246,8 +246,8 @@ namespace osm {
 	  openset[y] = 1;
           cerr << "added to openset" << endl;
         }
-        try {
-          if (tentative_g_score < g[y] ) {
+        if (g.find(y) != g.find.end()) {
+          if (tentative_g_score < g[y] || g[y] == 0) {
             tentative_is_better = true;
 	    cout << "verbetering van " << y << endl << "oud = " << g[y] << " nieuw = " << tentative_g_score << endl;
 //
@@ -269,9 +269,9 @@ namespace osm {
               }
             }
           }
-        } catch (range_error &ex) { 
+        } else { 
           tentative_is_better = true;
-          cerr << "range error gehad" << endl;
+          cerr << "bestond nog niet" << endl;
 	}
         
 	if (tentative_is_better) {
