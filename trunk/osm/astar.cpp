@@ -196,9 +196,8 @@ namespace osm {
   
   long Map::AstarHelper(int set,long goal,set_type &openset,set_type &closedset,score_type &f,score_type &g,score_type &h,score_type &d,route_type &to) {
     long xs = 0;
-    set_type::iterator k;
 
-    for (k=openset.begin();k!=openset.end();k++) {
+    for (set_type::iterator k=openset.begin();k!=openset.end();k++) {
       if (xs == 0) 
 	xs = k->first;
       if (f[k->first] < f[xs])
@@ -209,83 +208,57 @@ namespace osm {
     bestpoints[set] = xs;
     double newdistance = distance(bestpoints[1],bestpoints[2]);
     maxperc = max(maxperc,100.0*(initialdistance - newdistance)/initialdistance);
-    k = closedset.find(xs);
-    if (k != closedset.end() && k->second != set) {
+
+    if (closedset.find(xs) != closedset.end() && k->second != set) {
       cout << "S set = " << set << " xs match = " << xs << endl;
       return xs;
     }
     openset.erase(xs);
     closedset[xs]=set;
 
+    long prevnode = 0;
+    route_type::iterator pn;
+    pn = to.find(xs);
+    if (pn != to.end())
+      prevnode = pn->second;
+
     vector<long> neighbours;
     getNeighbours(xs,neighbours);
 
     for (vector<long>::iterator yi=neighbours.begin();yi != neighbours.end();yi++) {
-      long xs1=xs;
-      long prevnode = 0;
       long y = *yi;
-      route_type::iterator pn;
-      pn = to.find(xs1);
-      if (pn != to.end())
-	prevnode = pn->second;
-      k = closedset.find(y);
-#ifdef ACCELL
-      if (k == closedset.end()) {
-	vector<long> ynb;
-	getNeighbours(y,ynb);
-	while (ynb.size() == 2 && k == closedset.end() && g[xs1] != INFINITY) {
-	  string name;
-	  string ref;
-	  long w = getConnectingWay(xs,y);
-	  osm::Way &ww = ways(w);
-	  try { name = ww["name"];} catch (range_error &ex) {name="";}
-	  try { ref = ww["ref"];} catch (range_error &ex) {ref="";}
-	  //	  cout << "Proceeding on " << y << " from " << xs1;
-	  //	  if (prevnode != 0) 
-	    //	    cout << " and " << prevnode;
-	  //	  cout << " ynb0 = " << ynb[0] << " ynb1 = " << ynb[1];
-	  g[y] = min(g[xs1] + (set==1?cost(xs1,y,prevnode):cost(y,xs1,prevnode)),INFINITY);
-	  //	  cout << " g = " << g[y] << "("+name+" "+ref+")" << endl;
-	  to[y]=xs1;
-	  prevnode = xs1;
 
-	  if (ynb[0] == xs1) {
-	    xs1=y;
-	    y = ynb[1];
-	  } else {
-	    xs1=y;
-	    y = ynb[0];
-	  }
-	  closedset[xs1] = set;
-	  getNeighbours(y,ynb);
-	  k = closedset.find(y);
-	}
-      }
-#endif
-      if (k == closedset.end() && g[xs1] != INFINITY) {
-	double tentative_g_score = g[xs1] + (set==1?cost(xs1,y,prevnode):cost(y,xs1,prevnode));
+      if (closedset.find(y) == closedset.end() && g[xs] != INFINITY) {
+	double tentative_g_score = g[xs] + (set==1?cost(xs,y,prevnode):cost(y,xs,prevnode));
 	if (tentative_g_score >INFINITY)
 	  tentative_g_score = INFINITY;
 	bool tentative_is_better = false;
-	k = openset.find(y);
-	if (k == openset.end()) {
+
+	if (openset.find(y) == openset.end()) {
 	  openset[y] = 1;
 	  tentative_is_better = true;
 	} else if (tentative_g_score < g[y]) {
 	  tentative_is_better = true;
 	  cout << "verbetering van " << y << endl << "oud = " << g[y] << " nieuw = " << tentative_g_score << endl;
-	  double dg = g[y] - tentative_g_score;
-	  
-	  route_type::iterator xx;
-	  for (xx=to.begin();xx!=to.end();xx++) {
-	    long z1=xx->first;
-	    long z2=xx->second;
-	    if (z2 == y || z1 == y) 
-	      cout << "  xx  " << z1 << "  " << z2 << "  " << g[z1] << endl;
-	  }
+//
+// all nodes die vanaf y bereikbaar zijn moeten opnieuw worden berekend (behalve xs1)
+// dus als ze al in closedset staan terug in openset zetten
+//	  
+          vector<long> ynb;
+          getNeighbours(y,ynb);
+          for (vector<long>::iterator y1i=ynb.begin();y1i != ynb.end();y1i++) {
+            long y1=*y1i;
+            if (y1 != xs) {
+              k = closedset.find(y1);
+              if (k != closedset.end()) {
+                if (k->second == set)
+                  closedset.erase(y1);
+              }
+            }
+          }
 	}
 	if (tentative_is_better) {
-	  to[y] = xs1;
+	  to[y] = xs;
 	  g[y] = tentative_g_score;
 	  h[y] = calc_h_score(y,goal);
 	  d[y] = distance(y,goal);
