@@ -209,7 +209,8 @@ namespace osm {
     double newdistance = distance(bestpoints[1],bestpoints[2]);
     maxperc = max(maxperc,100.0*(initialdistance - newdistance)/initialdistance);
 
-    if (closedset.find(xs) != closedset.end() && k->second != set) {
+    k = closedset.find(xs);
+    if (k != closedset.end() && k->second != set) {
       cout << "S set = " << set << " xs match = " << xs << endl;
       return xs;
     }
