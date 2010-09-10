@@ -230,7 +230,7 @@ namespace osm {
     for (vector<long>::iterator yi=neighbours.begin();yi != neighbours.end();yi++) {
       long y = *yi;
 
-      if (closedset.find(y) == closedset.end() && g[xs] != INFINITY) {
+      if (closedset.find(y) == closedset.end()) { // && g[xs] != INFINITY) {
 	double tentative_g_score = g[xs] + (set==1?cost(xs,y,prevnode):cost(y,xs,prevnode));
 	if (tentative_g_score >INFINITY)
 	  tentative_g_score = INFINITY;
@@ -238,28 +238,32 @@ namespace osm {
 
 	if (openset.find(y) == openset.end()) {
 	  openset[y] = 1;
-	  tentative_is_better = true;
-	} else if (tentative_g_score < g[y]) {
-	  tentative_is_better = true;
-	  cout << "verbetering van " << y << endl << "oud = " << g[y] << " nieuw = " << tentative_g_score << endl;
+        }
+        try {
+          if (tentative_g_score < g[y] ) {
+            tentative_is_better = true;
+	    cout << "verbetering van " << y << endl << "oud = " << g[y] << " nieuw = " << tentative_g_score << endl;
 //
-// all nodes die vanaf y bereikbaar zijn moeten opnieuw worden berekend (behalve xs1)
-// dus als ze al in closedset staan terug in openset zetten
+// alle nodes die vanaf y bereikbaar zijn moeten opnieuw worden berekend (behalve xs1)
+// dus als ze al in closedset staandaar weer uit verwijderen
 //	  
-          vector<long> ynb;
-          getNeighbours(y,ynb);
-          for (vector<long>::iterator y1i=ynb.begin();y1i != ynb.end();y1i++) {
-            long y1=*y1i;
-            if (y1 != xs) {
-              k = closedset.find(y1);
-              if (k != closedset.end()) {
-                if (k->second == set) {
-                  cout << "   opnieuw open " << y1 << endl;
-                  closedset.erase(y1);
+            vector<long> ynb;
+            getNeighbours(y,ynb);
+            for (vector<long>::iterator y1i=ynb.begin();y1i != ynb.end();y1i++) {
+              long y1=*y1i;
+              if (y1 != xs) {
+                k = closedset.find(y1);
+                if (k != closedset.end()) {
+                  if (k->second == set) {
+                    cout << "   opnieuw open " << y1 << endl;
+                    closedset.erase(y1);
+                  }
                 }
               }
             }
           }
+        } catch (range_error &ex) { 
+          tentative_is_better = true;
 	}
 	if (tentative_is_better) {
 	  to[y] = xs;
