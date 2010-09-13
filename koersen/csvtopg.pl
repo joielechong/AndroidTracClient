@@ -17,7 +17,7 @@ my $dllist = XMLin("$home/etc/dl.xml");
 my %dllist = %{$dllist->{source}};
 
 my $fdbh = new FondsenDB;
-$fdbh->{dryrun} = 1;
+$fdbh->{dryrun} = 0;
 
 DataSource::opencsvlog("/web/www/dailycsvlog.txt");
 
