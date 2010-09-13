@@ -112,7 +112,7 @@
 	  $self->{'content'} = $res->content;
 	  $self->{'url'} = $url;
         } else {
-          print "Fout na request: $url\n"
+          print "Fout na request: $url\n";
           print "  Status : ",$res->status_line,"\n";
           $self->{'content'} = "";
         }
