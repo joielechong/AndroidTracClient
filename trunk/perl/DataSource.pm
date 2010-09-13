@@ -112,8 +112,8 @@
 	  $self->{'content'} = $res->content;
 	  $self->{'url'} = $url;
         } else {
-          cerr << "Fout na request: "<< $url << endl;
-          cerr << "  Status : " << $res->status_line << endl;
+          print "Fout na request: $url\n"
+          print "  Status : ",$res->status_line,"\n";
           $self->{'content'} = "";
         }
     }
