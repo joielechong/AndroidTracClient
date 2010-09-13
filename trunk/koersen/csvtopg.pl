@@ -9,6 +9,7 @@ use FondsenDB;
 use DataSource;
 use XML::Simple;
 use Data::Dumper;
+use Net::SSL;
 
 my $home=$ENV{'HOME'};
 $home = "" unless defined $home;
