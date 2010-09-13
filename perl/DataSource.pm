@@ -32,6 +32,10 @@
 	return DataSource::OHRA->new();
     }
     
+    sub laad_EuroBench {
+	return DataSource::EuroBench->new();
+    }
+    
     sub laad_ASR {
 	return DataSource::ASR->new();
     }
@@ -521,6 +525,59 @@
 	    $time_t = POSIX::mktime(0,0,0,$day,$month-1,$year-1900);
 	    $fdbh->storeKoers($f,$time_t,$k2,$k2,$k2,$k2,0,'N/A') unless $k2 eq "-";
 	    $self->outputKoers($f,$time_t,$k2,$k2,$k2,$k2,0,'N/A') unless $k2 eq "-";
+	}
+    }
+}
+
+{
+    package DataSource::EuroBench;
+    require Exporter;
+    @ISA = qw(DataSource);
+    use strict;
+    use POSIX qw {mktime strftime};
+    use HTML::TagParser;
+    use Data::Dumper;
+    
+    BEGIN {
+	$DataSource::EuroBench::VERSION = "0.1";
+    }
+    
+    sub new {
+	my $this = shift;
+        my $class = ref($this) || $this;
+        my $self = {};
+        bless $self, $class;
+        $self->initialize();
+        return $self;
+    }
+    
+    sub process {
+	my $self = shift;
+	my $fdbh = shift;
+	
+	my $html = HTML::TagParser->new( $self->{'content'} );
+	return unless defined($html);
+#	print Dumper $html;
+	
+	my @classes=('FundName','Right');;
+	
+	my @fondslist = $html->getElementsByClassName('FundName');
+	my @koerslist = $html->getElementsByClassName('Right');
+	
+	my $nfonds=$#fondslist;
+	my $nkoers=$#koerslist;
+	
+	for (my $i=0;$i<=$nfonds;$i++) {
+	    my $f = $fondslist[$i]->innerText;
+	    my $k1 = $koerslist[$i*4]->innerText;
+            my $datum = $koerslist[$i*4+1]->innerText;
+	    $k1 =~ s/^....//;
+	    $k1 =~ s/\.//;
+	    $k1 =~ s/,/./;
+	    my ($day,$month,$year) = split("-",$datum);
+	    my $time_t = POSIX::mktime(0,0,0,$day,$month-1,$year-1900);
+	    $fdbh->storeKoers($f,$time_t,$k1,$k1,$k1,$k1,0,'N/A') unless $k1 eq "-";
+	    $self->outputKoers($f,$time_t,$k1,$k1,$k1,$k1,0,'N/A') unless $k2 eq "-";
 	}
     }
 }
