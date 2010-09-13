@@ -107,9 +107,15 @@
 	    $req->header($key=>$value);
 	}
 	my $res = $self->{ua}->request($req);
-	$cookie_jar->extract_cookies($res);
-	$self->{'content'} = $res->content;
-	$self->{'url'} = $url;
+        if ($res->is_success) {
+	  $cookie_jar->extract_cookies($res);
+	  $self->{'content'} = $res->content;
+	  $self->{'url'} = $url;
+        } else {
+          cerr << "Fout na request: "<< $url << endl;
+          cerr << "  Status : " << $res->status_line << endl;
+          $self->{'content'} = "";
+        }
     }
     
     sub inSkipList {
