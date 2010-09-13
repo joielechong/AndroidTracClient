@@ -577,7 +577,7 @@
 	    my ($day,$month,$year) = split("-",$datum);
 	    my $time_t = POSIX::mktime(0,0,0,$day,$month-1,$year-1900);
 	    $fdbh->storeKoers($f,$time_t,$k1,$k1,$k1,$k1,0,'N/A') unless $k1 eq "-";
-	    $self->outputKoers($f,$time_t,$k1,$k1,$k1,$k1,0,'N/A') unless $k2 eq "-";
+	    $self->outputKoers($f,$time_t,$k1,$k1,$k1,$k1,0,'N/A') unless $k1 eq "-";
 	}
     }
 }
