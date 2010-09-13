@@ -566,11 +566,12 @@
 	
 	my $nfonds=$#fondslist;
 	my $nkoers=$#koerslist;
-	
+        
+	my $fcorr = 0;
 	for (my $i=0;$i<=$nfonds;$i++) {
 	    my $f = $fondslist[$i]->innerText;
-	    my $k1 = $koerslist[$i*4]->innerText;
-            my $datum = $koerslist[$i*4+1]->innerText;
+	    my $k1 = $koerslist[($i-$fcorr)*4]->innerText;
+            my $datum = $koerslist[($i-$fcorr)*4+1]->innerText;
 	    $k1 =~ s/^....//;
 	    $k1 =~ s/\.//;
 	    $k1 =~ s/,/./;
@@ -578,6 +579,10 @@
 	    my $time_t = POSIX::mktime(0,0,0,$day,$month-1,$year-1900);
 	    $fdbh->storeKoers($f,$time_t,$k1,$k1,$k1,$k1,0,'N/A') unless $k1 eq "-";
 	    $self->outputKoers($f,$time_t,$k1,$k1,$k1,$k1,0,'N/A') unless $k1 eq "-";
+            if ($f=~m/^Safe/) {
+              $i++;
+              $fcorr++;
+            }
 	}
     }
 }
