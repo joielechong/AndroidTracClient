@@ -488,7 +488,7 @@ void build_metadata_db(struct ushare_t *ut) {
   ut->init = 1;
   
   mtd.ut = ut;
-  mtd.initial_wait=300;
+  mtd.initial_wait=30;
   mtd.loop_wait=3600;   /* this must become configurable */
   mtd.verify_wait=1;
   
@@ -497,6 +497,6 @@ void build_metadata_db(struct ushare_t *ut) {
   log_verbose(_("Starting newfilesdata thread...\n"));
   if (pthread_create(&mtd.threadid1,NULL,newfilesthread,NULL))
     log_info(_("New files thread failed to start, no dynamic updates\n"));
-  if (pthread_create(&mtd.threadid2,NULL,verifythread,NULL))
-    log_info(_("Metadata thread failed to start, no dynamic updates\n"));
+  //  if (pthread_create(&mtd.threadid2,NULL,verifythread,NULL))
+  //  log_info(_("Metadata thread failed to start, no dynamic updates\n"));
 }
