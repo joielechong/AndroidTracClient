@@ -31,7 +31,9 @@
 #include "config.h"
 #include <stdio.h>
 #include <sys/types.h>
+#ifdef _HAVE_NETDB_H
 #include <netdb.h>
+#endif
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>

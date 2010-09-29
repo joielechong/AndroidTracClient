@@ -1,181 +1,191 @@
-htget.o htget.o: ../htget.cpp config.h /usr/include/stdio.h \
-  /usr/include/features.h /usr/include/sys/cdefs.h \
-  /usr/include/gnu/stubs.h \
-  /usr/lib/gcc-lib/i486-slackware-linux/3.3.6/include/stddef.h \
-  /usr/include/bits/types.h /usr/include/bits/wordsize.h \
-  /usr/include/bits/typesizes.h /usr/include/libio.h \
-  /usr/include/_G_config.h /usr/include/wchar.h /usr/include/bits/wchar.h \
-  /usr/include/gconv.h \
-  /usr/lib/gcc-lib/i486-slackware-linux/3.3.6/include/stdarg.h \
-  /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h \
-  /usr/include/bits/stdio.h /usr/include/sys/types.h /usr/include/time.h \
-  /usr/include/endian.h /usr/include/bits/endian.h \
-  /usr/include/sys/select.h /usr/include/bits/select.h \
-  /usr/include/bits/sigset.h /usr/include/bits/time.h \
-  /usr/include/sys/sysmacros.h /usr/include/bits/pthreadtypes.h \
-  /usr/include/bits/sched.h /usr/include/netdb.h \
-  /usr/include/netinet/in.h /usr/include/stdint.h \
-  /usr/include/sys/socket.h /usr/include/sys/uio.h \
-  /usr/include/bits/uio.h /usr/include/bits/socket.h \
-  /usr/lib/gcc-lib/i486-slackware-linux/3.3.6/include/limits.h \
-  /usr/lib/gcc-lib/i486-slackware-linux/3.3.6/include/syslimits.h \
-  /usr/include/limits.h /usr/include/bits/posix1_lim.h \
-  /usr/include/bits/local_lim.h /usr/include/linux/limits.h \
-  /usr/include/bits/posix2_lim.h /usr/include/bits/xopen_lim.h \
-  /usr/include/bits/sockaddr.h /usr/include/asm/socket.h \
-  /usr/include/asm/sockios.h /usr/include/bits/in.h \
-  /usr/include/bits/byteswap.h /usr/include/rpc/netdb.h \
-  /usr/include/bits/siginfo.h /usr/include/bits/netdb.h \
-  /usr/include/errno.h /usr/include/bits/errno.h \
-  /usr/include/linux/errno.h /usr/include/asm/errno.h \
-  /usr/include/string.h /usr/include/xlocale.h /usr/include/stdlib.h \
-  /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h \
-  /usr/include/alloca.h ../sockextr.h /usr/include/sys/param.h \
-  /usr/include/linux/param.h /usr/include/asm/param.h \
-  /usr/include/unistd.h /usr/include/bits/posix_opt.h \
-  /usr/include/bits/environments.h /usr/include/bits/confname.h \
-  /usr/include/getopt.h /usr/include/arpa/inet.h
+htget.o htget.o: ../htget.cpp ./config.h \
+  /opt/mingw32/usr/local/include/stdio.h \
+  /opt/mingw32/usr/local/include/_mingw.h \
+  /opt/mingw32/lib/gcc/i386-mingw32/3.4.5/include/stddef.h \
+  /opt/mingw32/lib/gcc/i386-mingw32/3.4.5/include/stdarg.h \
+  /opt/mingw32/usr/local/include/sys/types.h \
+  /opt/mingw32/usr/local/include/errno.h \
+  /opt/mingw32/usr/local/include/string.h \
+  /opt/mingw32/usr/local/include/stdlib.h ../sockextr.h \
+  /opt/mingw32/usr/local/include/unistd.h \
+  /opt/mingw32/usr/local/include/io.h \
+  /opt/mingw32/usr/local/include/process.h \
+  /opt/mingw32/usr/local/include/stdint.h \
+  /opt/mingw32/usr/local/include/getopt.h \
+  /opt/mingw32/usr/local/include/winsock2.h \
+  /opt/mingw32/usr/local/include/windows.h \
+  /opt/mingw32/usr/local/include/windef.h \
+  /opt/mingw32/usr/local/include/winnt.h \
+  /opt/mingw32/usr/local/include/winerror.h \
+  /opt/mingw32/usr/local/include/basetsd.h \
+  /opt/mingw32/usr/local/include/pshpack4.h \
+  /opt/mingw32/usr/local/include/poppack.h \
+  /opt/mingw32/usr/local/include/wincon.h \
+  /opt/mingw32/usr/local/include/winbase.h \
+  /opt/mingw32/usr/local/include/wingdi.h \
+  /opt/mingw32/usr/local/include/winuser.h \
+  /opt/mingw32/usr/local/include/winnls.h \
+  /opt/mingw32/usr/local/include/winver.h \
+  /opt/mingw32/usr/local/include/winnetwk.h \
+  /opt/mingw32/usr/local/include/winreg.h \
+  /opt/mingw32/usr/local/include/winsvc.h \
+  /opt/mingw32/usr/local/include/cderr.h \
+  /opt/mingw32/usr/local/include/dde.h \
+  /opt/mingw32/usr/local/include/ddeml.h \
+  /opt/mingw32/usr/local/include/dlgs.h \
+  /opt/mingw32/usr/local/include/imm.h \
+  /opt/mingw32/usr/local/include/lzexpand.h \
+  /opt/mingw32/usr/local/include/mmsystem.h \
+  /opt/mingw32/usr/local/include/nb30.h \
+  /opt/mingw32/usr/local/include/rpc.h \
+  /opt/mingw32/usr/local/include/rpcdce.h \
+  /opt/mingw32/usr/local/include/basetyps.h \
+  /opt/mingw32/usr/local/include/rpcdcep.h \
+  /opt/mingw32/usr/local/include/rpcnsi.h \
+  /opt/mingw32/usr/local/include/rpcnterr.h \
+  /opt/mingw32/usr/local/include/shellapi.h \
+  /opt/mingw32/usr/local/include/pshpack2.h \
+  /opt/mingw32/usr/local/include/winperf.h \
+  /opt/mingw32/usr/local/include/commdlg.h \
+  /opt/mingw32/usr/local/include/winspool.h \
+  /opt/mingw32/usr/local/include/ole2.h \
+  /opt/mingw32/usr/local/include/objbase.h \
+  /opt/mingw32/usr/local/include/rpcndr.h \
+  /opt/mingw32/usr/local/include/rpcnsip.h \
+  /opt/mingw32/usr/local/include/objfwd.h \
+  /opt/mingw32/usr/local/include/wtypes.h \
+  /opt/mingw32/usr/local/include/unknwn.h \
+  /opt/mingw32/usr/local/include/objidl.h \
+  /opt/mingw32/usr/local/include/cguid.h \
+  /opt/mingw32/usr/local/include/olectlid.h \
+  /opt/mingw32/usr/local/include/oleauto.h \
+  /opt/mingw32/usr/local/include/oaidl.h \
+  /opt/mingw32/usr/local/include/oleidl.h
 
-config.h:
+./config.h:
 
-/usr/include/stdio.h:
+/opt/mingw32/usr/local/include/stdio.h:
 
-/usr/include/features.h:
+/opt/mingw32/usr/local/include/_mingw.h:
 
-/usr/include/sys/cdefs.h:
+/opt/mingw32/lib/gcc/i386-mingw32/3.4.5/include/stddef.h:
 
-/usr/include/gnu/stubs.h:
+/opt/mingw32/lib/gcc/i386-mingw32/3.4.5/include/stdarg.h:
 
-/usr/lib/gcc-lib/i486-slackware-linux/3.3.6/include/stddef.h:
+/opt/mingw32/usr/local/include/sys/types.h:
 
-/usr/include/bits/types.h:
+/opt/mingw32/usr/local/include/errno.h:
 
-/usr/include/bits/wordsize.h:
+/opt/mingw32/usr/local/include/string.h:
 
-/usr/include/bits/typesizes.h:
-
-/usr/include/libio.h:
-
-/usr/include/_G_config.h:
-
-/usr/include/wchar.h:
-
-/usr/include/bits/wchar.h:
-
-/usr/include/gconv.h:
-
-/usr/lib/gcc-lib/i486-slackware-linux/3.3.6/include/stdarg.h:
-
-/usr/include/bits/stdio_lim.h:
-
-/usr/include/bits/sys_errlist.h:
-
-/usr/include/bits/stdio.h:
-
-/usr/include/sys/types.h:
-
-/usr/include/time.h:
-
-/usr/include/endian.h:
-
-/usr/include/bits/endian.h:
-
-/usr/include/sys/select.h:
-
-/usr/include/bits/select.h:
-
-/usr/include/bits/sigset.h:
-
-/usr/include/bits/time.h:
-
-/usr/include/sys/sysmacros.h:
-
-/usr/include/bits/pthreadtypes.h:
-
-/usr/include/bits/sched.h:
-
-/usr/include/netdb.h:
-
-/usr/include/netinet/in.h:
-
-/usr/include/stdint.h:
-
-/usr/include/sys/socket.h:
-
-/usr/include/sys/uio.h:
-
-/usr/include/bits/uio.h:
-
-/usr/include/bits/socket.h:
-
-/usr/lib/gcc-lib/i486-slackware-linux/3.3.6/include/limits.h:
-
-/usr/lib/gcc-lib/i486-slackware-linux/3.3.6/include/syslimits.h:
-
-/usr/include/limits.h:
-
-/usr/include/bits/posix1_lim.h:
-
-/usr/include/bits/local_lim.h:
-
-/usr/include/linux/limits.h:
-
-/usr/include/bits/posix2_lim.h:
-
-/usr/include/bits/xopen_lim.h:
-
-/usr/include/bits/sockaddr.h:
-
-/usr/include/asm/socket.h:
-
-/usr/include/asm/sockios.h:
-
-/usr/include/bits/in.h:
-
-/usr/include/bits/byteswap.h:
-
-/usr/include/rpc/netdb.h:
-
-/usr/include/bits/siginfo.h:
-
-/usr/include/bits/netdb.h:
-
-/usr/include/errno.h:
-
-/usr/include/bits/errno.h:
-
-/usr/include/linux/errno.h:
-
-/usr/include/asm/errno.h:
-
-/usr/include/string.h:
-
-/usr/include/xlocale.h:
-
-/usr/include/stdlib.h:
-
-/usr/include/bits/waitflags.h:
-
-/usr/include/bits/waitstatus.h:
-
-/usr/include/alloca.h:
+/opt/mingw32/usr/local/include/stdlib.h:
 
 ../sockextr.h:
 
-/usr/include/sys/param.h:
+/opt/mingw32/usr/local/include/unistd.h:
 
-/usr/include/linux/param.h:
+/opt/mingw32/usr/local/include/io.h:
 
-/usr/include/asm/param.h:
+/opt/mingw32/usr/local/include/process.h:
 
-/usr/include/unistd.h:
+/opt/mingw32/usr/local/include/stdint.h:
 
-/usr/include/bits/posix_opt.h:
+/opt/mingw32/usr/local/include/getopt.h:
 
-/usr/include/bits/environments.h:
+/opt/mingw32/usr/local/include/winsock2.h:
 
-/usr/include/bits/confname.h:
+/opt/mingw32/usr/local/include/windows.h:
 
-/usr/include/getopt.h:
+/opt/mingw32/usr/local/include/windef.h:
 
-/usr/include/arpa/inet.h:
+/opt/mingw32/usr/local/include/winnt.h:
+
+/opt/mingw32/usr/local/include/winerror.h:
+
+/opt/mingw32/usr/local/include/basetsd.h:
+
+/opt/mingw32/usr/local/include/pshpack4.h:
+
+/opt/mingw32/usr/local/include/poppack.h:
+
+/opt/mingw32/usr/local/include/wincon.h:
+
+/opt/mingw32/usr/local/include/winbase.h:
+
+/opt/mingw32/usr/local/include/wingdi.h:
+
+/opt/mingw32/usr/local/include/winuser.h:
+
+/opt/mingw32/usr/local/include/winnls.h:
+
+/opt/mingw32/usr/local/include/winver.h:
+
+/opt/mingw32/usr/local/include/winnetwk.h:
+
+/opt/mingw32/usr/local/include/winreg.h:
+
+/opt/mingw32/usr/local/include/winsvc.h:
+
+/opt/mingw32/usr/local/include/cderr.h:
+
+/opt/mingw32/usr/local/include/dde.h:
+
+/opt/mingw32/usr/local/include/ddeml.h:
+
+/opt/mingw32/usr/local/include/dlgs.h:
+
+/opt/mingw32/usr/local/include/imm.h:
+
+/opt/mingw32/usr/local/include/lzexpand.h:
+
+/opt/mingw32/usr/local/include/mmsystem.h:
+
+/opt/mingw32/usr/local/include/nb30.h:
+
+/opt/mingw32/usr/local/include/rpc.h:
+
+/opt/mingw32/usr/local/include/rpcdce.h:
+
+/opt/mingw32/usr/local/include/basetyps.h:
+
+/opt/mingw32/usr/local/include/rpcdcep.h:
+
+/opt/mingw32/usr/local/include/rpcnsi.h:
+
+/opt/mingw32/usr/local/include/rpcnterr.h:
+
+/opt/mingw32/usr/local/include/shellapi.h:
+
+/opt/mingw32/usr/local/include/pshpack2.h:
+
+/opt/mingw32/usr/local/include/winperf.h:
+
+/opt/mingw32/usr/local/include/commdlg.h:
+
+/opt/mingw32/usr/local/include/winspool.h:
+
+/opt/mingw32/usr/local/include/ole2.h:
+
+/opt/mingw32/usr/local/include/objbase.h:
+
+/opt/mingw32/usr/local/include/rpcndr.h:
+
+/opt/mingw32/usr/local/include/rpcnsip.h:
+
+/opt/mingw32/usr/local/include/objfwd.h:
+
+/opt/mingw32/usr/local/include/wtypes.h:
+
+/opt/mingw32/usr/local/include/unknwn.h:
+
+/opt/mingw32/usr/local/include/objidl.h:
+
+/opt/mingw32/usr/local/include/cguid.h:
+
+/opt/mingw32/usr/local/include/olectlid.h:
+
+/opt/mingw32/usr/local/include/oleauto.h:
+
+/opt/mingw32/usr/local/include/oaidl.h:
+
+/opt/mingw32/usr/local/include/oleidl.h:
