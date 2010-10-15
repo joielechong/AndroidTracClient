@@ -18,7 +18,7 @@
 		<highway name="pedestrian" speed="5"/>
 		<highway name="primary" speed="50"/>
 		<highway name="residential" speed="30"/>
-		<highway name="road" speed="50" extracost="10" />
+		<highway name="road" speed="30" />
 		<highway name="secondary" speed="50"/>
 		<highway name="secondary_link" speed="50"/>
 		<highway name="service" speed="30"/>
@@ -70,6 +70,7 @@
 			<allowed highway="secondary" extracost="5" />
 			<allowed highway="secondary_link" extracost="5" />
 			<allowed highway="tertiary" extracost="5" />
+			<allowed highway="turning_circle" extracost="5" />
 			<traffic_calming type="table" extracost="0" />
 			<barrier type="gate" extracost="100" />
 			<barrier type="bollard" extracost="0" />
@@ -92,6 +93,7 @@
 			<allowed highway="secondary" extracost="35" />
 			<allowed highway="secondary_link" extracost="35" />
 			<allowed highway="tertiary" extracost="45" />
+			<allowed highway="turning_circle" extracost="15" />
 			<traffic_calming type="table" extracost="10" />
 			<traffic_calming type="choker" extracost="15" />
 			<barrier type="gate" extracost="200" />

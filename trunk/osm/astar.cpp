@@ -74,7 +74,8 @@ namespace osm {
 	if (ww["route"] == "ferry") {
 	  hw = "unclassified";
 	  speed = 12;
-//	  extracost=600;
+          long cnt = ww.getNodesCount() -1;
+	  extracost=(cnt >0 ? 600 / cnt : 600);
 	}
       } catch (range_error &ex) {
 	return INFINITY;
@@ -105,7 +106,7 @@ namespace osm {
 	oneway = "yes";
     } catch (range_error &ex) {}
 
-    extracost += _highways[hw].extracost();
+    extracost += ((ww.getNodesCount() - 1) > 0 ? _highways[hw].extracost() / cnt : _highways[hw].extracost());
     
     Node &nodey = nodes(y);
     if (_vehicle == "foot") {
