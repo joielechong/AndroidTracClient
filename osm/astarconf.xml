@@ -93,10 +93,9 @@
 			<allowed highway="secondary_link" extracost="35" />
 			<allowed highway="tertiary" extracost="45" />
 			<traffic_calming type="table" extracost="10" />
+			<traffic_calming type="choker" extracost="15" />
 			<barrier type="gate" extracost="200" />
-			<barrier type="bollard" extracost="INFINITY" />
-			<barrier type="block" extracost="INFINITY" />
-			<barrier type="cycle_barrier" extracost="INFINITY" />
+			<barrier type="*" extracost="INFINITY" />
                         <barrier type="lift_gate" extracost="1000" />
 			<highway name="crossing" extracost="5"/>
 		</profile>
