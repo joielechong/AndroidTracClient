@@ -106,7 +106,8 @@ namespace osm {
 	oneway = "yes";
     } catch (range_error &ex) {}
 
-    extracost += ((ww.getNodesCount() - 1) > 0 ? _highways[hw].extracost() / cnt : _highways[hw].extracost());
+    long cnt = ww.getNodesCount() - 1;
+    extracost += (cnt > 0 ? _highways[hw].extracost() / cnt : _highways[hw].extracost());
     
     Node &nodey = nodes(y);
     if (_vehicle == "foot") {
