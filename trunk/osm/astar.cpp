@@ -67,6 +67,9 @@ namespace osm {
       throw range_error("Kan weg niet vinden");
     osm::Way &ww = ways(w);
     string hw;
+    long cnt = ww.getNodesCount() - 1;
+    if (cnt < 1) cnt = 1;
+    
     try {
       hw = ww["highway"];
     } catch (range_error &ex) {
@@ -74,8 +77,7 @@ namespace osm {
 	if (ww["route"] == "ferry") {
 	  hw = "unclassified";
 	  speed = 12;
-          long cnt = ww.getNodesCount() -1;
-	  extracost=(cnt >0 ? 600 / cnt : 600);
+ 	  extracost= 600 / cnt;
 	}
       } catch (range_error &ex) {
 	return INFINITY;
@@ -106,8 +108,7 @@ namespace osm {
 	oneway = "yes";
     } catch (range_error &ex) {}
 
-    long cnt = ww.getNodesCount() - 1;
-    extracost += (cnt > 0 ? _highways[hw].extracost() / cnt : _highways[hw].extracost());
+    extracost += _highways[hw].extracost()/cnt;
     
     Node &nodey = nodes(y);
     if (_vehicle == "foot") {
@@ -122,7 +123,7 @@ namespace osm {
       }
       if ((fa == "no") || (access == "no" && fa != "yes"))
 	return INFINITY;
-      try { extracost += _profiles[_vehicle].allowed(hw);} catch (range_error &ex) {return INFINITY;}
+      try { extracost += _profiles[_vehicle].allowed(hw)/cnt;} catch (range_error &ex) {return INFINITY;}
     } else if (_vehicle == "bicycle") {
       string cw;
       try { cw = ww["cycleway"];} catch (range_error &ex) {cw="";}
@@ -140,7 +141,7 @@ namespace osm {
 
       if (ca != "yes") {
 	try { 
-	  extracost += _profiles[_vehicle].allowed(hw);
+	  extracost += _profiles[_vehicle].allowed(hw)/cnt;
 	} catch (range_error &ex) {
 	  if (cw == "") 
 	    return INFINITY;
@@ -163,7 +164,7 @@ namespace osm {
       try { ma = ww["motorcar"];} catch (range_error &ex) {ma="";}
       if ((ma == "no") || (access == "no" && ma != "yes"))
 	return INFINITY;
-      try { extracost += _profiles[_vehicle].allowed(hw);} catch (range_error &ex) {return INFINITY;}
+      try { extracost += _profiles[_vehicle].allowed(hw)/cnt;} catch (range_error &ex) {return INFINITY;}
       if (oneway != "") {
 	if (wrong_direction(nodes(x),nodey,ww,oneway))
 	  return INFINITY;
