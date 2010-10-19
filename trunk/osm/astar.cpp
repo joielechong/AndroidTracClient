@@ -108,7 +108,7 @@ namespace osm {
 	oneway = "yes";
     } catch (range_error &ex) {}
 
-    extracost += _highways[hw].extracost()/cnt;
+    extracost += _highways[hw].extracost()*dist/1000.0;
     
     Node &nodey = nodes(y);
     if (_vehicle == "foot") {
@@ -123,7 +123,7 @@ namespace osm {
       }
       if ((fa == "no") || (access == "no" && fa != "yes"))
 	return INFINITY;
-      try { extracost += _profiles[_vehicle].allowed(hw)/cnt;} catch (range_error &ex) {return INFINITY;}
+      try { extracost += _profiles[_vehicle].allowed(hw)*dist/1000.0;} catch (range_error &ex) {return INFINITY;}
     } else if (_vehicle == "bicycle") {
       string cw;
       try { cw = ww["cycleway"];} catch (range_error &ex) {cw="";}
@@ -141,7 +141,7 @@ namespace osm {
 
       if (ca != "yes") {
 	try { 
-	  extracost += _profiles[_vehicle].allowed(hw)/cnt;
+	  extracost += _profiles[_vehicle].allowed(hw)*dist/1000.0;
 	} catch (range_error &ex) {
 	  if (cw == "") 
 	    return INFINITY;
@@ -164,7 +164,7 @@ namespace osm {
       try { ma = ww["motorcar"];} catch (range_error &ex) {ma="";}
       if ((ma == "no") || (access == "no" && ma != "yes"))
 	return INFINITY;
-      try { extracost += _profiles[_vehicle].allowed(hw)/cnt;} catch (range_error &ex) {return INFINITY;}
+      try { extracost += _profiles[_vehicle].allowed(hw)*dist/1000.0;} catch (range_error &ex) {return INFINITY;}
       if (oneway != "") {
 	if (wrong_direction(nodes(x),nodey,ww,oneway))
 	  return INFINITY;
