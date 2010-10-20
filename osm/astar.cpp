@@ -54,36 +54,40 @@ namespace osm {
   }
   
   double Map::cost(const long x,const long y,const long prevnode) { 
-    long extracost = 0;
-    
     _costcounter++;
-    
     double dist = distance(x,y);
     if (_vehicle == "") return dist;
 
+    long extracost = 0; 
     double speed = _profiles[_vehicle].maxspeed();
     long w = getConnectingWay(x,y);
     if (w == 0)
       throw range_error("Kan weg niet vinden");
     osm::Way &ww = ways(w);
     string hw;
+    
     long cnt = ww.getNodesCount() - 1;
     if (cnt < 1) cnt = 1;
     
+// type weg
+
     try {
       hw = ww["highway"];
     } catch (range_error &ex) {
       try {
 	if (ww["route"] == "ferry") {
 	  hw = "unclassified";
-	  speed = 12;
- 	  extracost= 600 / cnt;
+	  speed = 12;    // vehicle speed is niet belangrijk
+ 	  extracost= 600 / cnt; // 10 minuten vertraging
 	}
       } catch (range_error &ex) {
 	return INFINITY;
       }
     }
 
+// bepaal maximum snelheid
+// eerst uit de weg halen anders de standaard snelheid voor zo'n weg
+    
     try {
       double maxspeed = atol(ww["maxspeed"].c_str());
       if (maxspeed < speed)
@@ -97,7 +101,11 @@ namespace osm {
     if (speed == 0)
       return INFINITY;
 
+// basis kost is de tijd die je er op nominale snelheid over doet
+
     double kost = dist *3.6 / speed;
+
+// beperkingen aflopen
 
     string access;
     string oneway;
@@ -108,9 +116,9 @@ namespace osm {
 	oneway = "yes";
     } catch (range_error &ex) {}
 
-    extracost += _highways[hw].extracost()*dist/1000.0;
-    
-    Node &nodey = nodes(y);
+    extracost += _highways[hw].extracost()*dist/1000.0;   // extracost gaat per kilometer als ze op een weg slaan    
+    Node &nodey = nodes(y);                               // node waar we naar toe gaan
+
     if (_vehicle == "foot") {
       string fa;
       try { fa = ww["foot"];} catch (range_error &ex) {fa="";}
@@ -124,10 +132,11 @@ namespace osm {
       if ((fa == "no") || (access == "no" && fa != "yes"))
 	return INFINITY;
       try { extracost += _profiles[_vehicle].allowed(hw)*dist/1000.0;} catch (range_error &ex) {return INFINITY;}
+      try { extracost += _highways[nodey["highway"]].extracost();} catch (range_error &ex) {};
     } else if (_vehicle == "bicycle") {
       string cw;
       try { cw = ww["cycleway"];} catch (range_error &ex) {cw="";}
-      if (cw == "opposite_lane")
+      if (cw == "opposite_lane" || cw == "opposite_track" || cw == "both")
 	cw = "opposite";
       string ca;
       try { ca = ww["bicycle"];} catch (range_error &ex) {ca="";}
@@ -139,7 +148,7 @@ namespace osm {
 	} catch (range_error &ex) {}	
       }
 
-      if (ca != "yes") {
+      if (ca != "yes") {  // als expliciet toegestaan dan geen extracost meenemen (dus extracost voor dit type weg is dan 0 ongeacht profiel waarde)
 	try { 
 	  extracost += _profiles[_vehicle].allowed(hw)*dist/1000.0;
 	} catch (range_error &ex) {
@@ -153,12 +162,11 @@ namespace osm {
         if ((ca == "no") || (access == "no" && ca != "yes"))
 	  return INFINITY;
       }
-      if (oneway != "" && cw != "opposite" && cw != "both") {
+      if (oneway != "" && cw != "opposite") {
 	if (wrong_direction(nodes(x),nodey,ww,oneway))
 	  return INFINITY;
       }
       try {extracost += _highways[nodey["highway"]].extracost();} catch (range_error &ex) {};
-
     } else if (_vehicle == "car") {
       string ma;
       try { ma = ww["motorcar"];} catch (range_error &ex) {ma="";}
@@ -172,12 +180,29 @@ namespace osm {
       try { extracost += _highways[nodey["highway"]].extracost();} catch (range_error &ex) {};
       extracost += curvecost(x,y,prevnode);
     }
+    
+//  als nog steeds access = no dan mag het echt niet
+
     if (access == "no")
       return INFINITY;
-    
-    try {extracost += _profiles[_vehicle].traffic_calming(nodey["traffic_calming"]);} catch (range_error &ex) {};
-    try {extracost += _profiles[_vehicle].barrier(nodey["barrier"]);} catch (range_error &ex) {};
-    try {extracost += _profiles[_vehicle].barrier(nodey["highway"]);} catch (range_error &ex) {};
+
+// nog wat beperkingen  (als waarde * dan voor alle niet expliciet gespecificeerde in profiel)
+      
+    try { 
+      extracost += _profiles[_vehicle].traffic_calming(nodey["traffic_calming"]);
+    } catch (range_error &ex) {
+      try { extracost += _profiles[_vehicle].traffic_calming("*");} catch (range_error &ex1) {};
+    };
+    try { 
+      extracost += _profiles[_vehicle].barrier(nodey["barrier"]);
+    } catch (range_error &ex) {
+      try { extracost += _profiles[_vehicle].barrier("*");} catch (range_error &ex1) {};
+    };
+    try { 
+      extracost += _profiles[_vehicle].barrier(nodey["highway"]);
+    } catch (range_error &ex) {
+      try { extracost += _profiles[_vehicle].highway("*");} catch (range_error &ex1) {};
+    };
  
     kost += extracost;
     if (kost > INFINITY)
