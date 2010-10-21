@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include "grootcirkel.h"
 
+#define EXTRACOST_FACTOR (100.0)
+
 namespace osm {
   using namespace std;
   
@@ -116,7 +118,7 @@ namespace osm {
 	oneway = "yes";
     } catch (range_error &ex) {}
 
-    extracost += _highways[hw].extracost()*dist/1000.0;   // extracost gaat per kilometer als ze op een weg slaan    
+    extracost += _highways[hw].extracost()*dist/EXTRACOST_FACTOR;   // extracost gaat per kilometer als ze op een weg slaan    
     Node &nodey = nodes(y);                               // node waar we naar toe gaan
 
     if (_vehicle == "foot") {
@@ -131,7 +133,7 @@ namespace osm {
       }
       if ((fa == "no") || (access == "no" && fa != "yes"))
 	return INFINITY;
-      try { extracost += _profiles[_vehicle].allowed(hw)*dist/1000.0;} catch (range_error &ex) {return INFINITY;}
+      try { extracost += _profiles[_vehicle].allowed(hw)*dist/EXTRACOST_FACTOR;} catch (range_error &ex) {return INFINITY;}
       try { extracost += _highways[nodey["highway"]].extracost();} catch (range_error &ex) {};
     } else if (_vehicle == "bicycle") {
       string cw;
@@ -150,7 +152,7 @@ namespace osm {
 
       if (ca != "yes") {  // als expliciet toegestaan dan geen extracost meenemen (dus extracost voor dit type weg is dan 0 ongeacht profiel waarde)
 	try { 
-	  extracost += _profiles[_vehicle].allowed(hw)*dist/1000.0;
+	  extracost += _profiles[_vehicle].allowed(hw)*dist/EXTRACOST_FACTOR;
 	} catch (range_error &ex) {
 	  if (cw == "") 
 	    return INFINITY;
@@ -172,7 +174,7 @@ namespace osm {
       try { ma = ww["motorcar"];} catch (range_error &ex) {ma="";}
       if ((ma == "no") || (access == "no" && ma != "yes"))
 	return INFINITY;
-      try { extracost += _profiles[_vehicle].allowed(hw)*dist/1000.0;} catch (range_error &ex) {return INFINITY;}
+      try { extracost += _profiles[_vehicle].allowed(hw)*dist/EXTRACOST_FACTOR;} catch (range_error &ex) {return INFINITY;}
       if (oneway != "") {
 	if (wrong_direction(nodes(x),nodey,ww,oneway))
 	  return INFINITY;
