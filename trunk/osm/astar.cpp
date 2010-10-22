@@ -55,7 +55,7 @@ namespace osm {
     return 100 + 1900 * (dh-150)/30;
   }
   
-  double Map::cost(const long x,const long y,const long prevnode,bool ignoreExtra) { 
+  double Map::cost(const long x,const long y,const long prevnode,const bool ignoreExtra) { 
     _costcounter++;
     double dist = distance(x,y);
     if (_vehicle == "") return dist;
@@ -228,7 +228,7 @@ namespace osm {
   double initialdistance;
   double maxperc = 0;
   
-  long Map::AstarHelper(int set,long goal,set_type &openset,set_type &closedset,score_type &f,score_type &g,score_type &h,score_type &d,route_type &to,bool ignoreExtra) {
+  long Map::AstarHelper(int set,long goal,set_type &openset,set_type &closedset,score_type &f,score_type &g,score_type &h,score_type &d,route_type &to,const bool ignoreExtra) {
     long xs = 0;
     set_type::iterator k;
     
@@ -271,7 +271,7 @@ namespace osm {
 
       if (closedset.find(y) == closedset.end()) { // && g[xs] != INFINITY) {
 //        cerr << "not closed"<<endl;
-	double tentative_g_score = g[xs] + (set==1?cost(xs,y,prevnode):cost(y,xs,prevnode));
+	double tentative_g_score = g[xs] + (set==1?cost(xs,y,prevnode,ignoreExtra):cost(y,xs,prevnode,ignoreExtra));
 	if (tentative_g_score >INFINITY)
 	  tentative_g_score = INFINITY;
 	bool tentative_is_better = false;
@@ -334,7 +334,7 @@ namespace osm {
     return 0;
   }
   
-  double Map::Astar(const long n1,const long n2,const string &vehicle,list<long> &route,bool ignoreExtra) {
+  double Map::Astar(const long n1,const long n2,const string &vehicle,list<long> &route,const bool ignoreExtra) {
     set_type startset,goalset,closedset;
     score_type gs_score,hs_score,fs_score,ds_score, gg_score,hg_score,fg_score,dg_score;
     route_type came_from,goes_to;
@@ -349,9 +349,9 @@ namespace osm {
     bestpoints[2] = n2;
     
     while (xs == 0 && (!startset.empty() || !goalset.empty())) {
-      xs = AstarHelper(1,n2,startset,closedset,fs_score,gs_score,hs_score,ds_score,came_from,bool ignoreExtra);
+      xs = AstarHelper(1,n2,startset,closedset,fs_score,gs_score,hs_score,ds_score,came_from,ignoreExtra);
       if (xs == 0)
-        xs = AstarHelper(2,n1,goalset,closedset,fg_score,gg_score,hg_score,dg_score,goes_to,bool ignoreExtra);
+        xs = AstarHelper(2,n1,goalset,closedset,fg_score,gg_score,hg_score,dg_score,goes_to,ignoreExtra);
     }
 
     route.clear();
@@ -374,15 +374,15 @@ namespace osm {
     return 0;
   }
   
-  double Map::Astar(const long n1,const double lat2,const double lon2,const string &vehicle,list<long> &route,bool ignoreExtra) {
+  double Map::Astar(const long n1,const double lat2,const double lon2,const string &vehicle,list<long> &route,const bool ignoreExtra) {
     return 0;
   }
   
-  double Map::Astar(const double lat1,const double lon1,const long n2,const string &vehicle,list<long> &route,bool ignoreExtra) {
+  double Map::Astar(const double lat1,const double lon1,const long n2,const string &vehicle,list<long> &route,const bool ignoreExtra) {
     return 0;
   }
   
-  double Map::Astar(const double lat1,const double lon1,const double lat2,const double lon2,const string &vehicle,list<long> &route,bool ignoreExtra) {
+  double Map::Astar(const double lat1,const double lon1,const double lat2,const double lon2,const string &vehicle,list<long> &route,const bool ignoreExtra) {
     return 0;
   }
 }
