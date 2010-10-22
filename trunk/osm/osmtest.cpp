@@ -25,6 +25,7 @@ int main(int argc, char *argv[]) {
   Argument::BooleanArgument helpArg("-help","Help on usage");
   Argument::StringArgument addrArg("-adres","adres","SQLite where clause",false);
   Argument::StringArgument costArg("-cost","start,eind","Bereken kost",false);
+  Argument::BooleanArgument ignoreArg("-ignoreextra","Extracost altijd op 0");
   Argument::ListArgument extraArg("arg","Extra argumenten",false);
   Argument::ArgumentParser parser;
 
@@ -32,6 +33,7 @@ int main(int argc, char *argv[]) {
   parser.addArgument(cacheArg);
   parser.addArgument(addrArg);
   parser.addArgument(costArg);
+  parser.addArgument(ignoreArg);
   parser.addArgument(helpArg);
   parser.addArgument(extraArg);
   parser.parse(argc,argv);
@@ -44,6 +46,7 @@ int main(int argc, char *argv[]) {
   string dbname = dbArg.getValue();
   long cachesize = cacheArg.getValue();
   bool help = helpArg.getValue();
+  bool ignoreExtra = ignoreArg.getValue();
   list<string> extra = extraArg.getValue();
   list<string>::iterator it;
 
@@ -105,7 +108,7 @@ int main(int argc, char *argv[]) {
 
 
     //    map.Astar(46071276,295961436,string("car"),route);
-    map.Astar(start,eind,vehicle,route);
+    map.Astar(start,eind,vehicle,route,ignoreExtra);
     
     double dist = 0;
     long prevnode = 0;

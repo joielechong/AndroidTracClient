@@ -287,10 +287,10 @@ namespace osm {
     void findLocation(const long nodeid,vector<long> &admins);
     bool insideRelation(const long relationid,long nodeid);
     void findAdmin(const string querystring,vector<string> &naam,vector<int> &level);
-    double Astar(const long n1,const long n2,const string &vehicle,list<long> &route);
-    double Astar(const long n1,const double lat2,const double lon2,const string &vehicle,list<long> &route);
-    double Astar(const double lat1,const double lon1,const long n2,const string &vehicle,list<long> &route);
-    double Astar(const double lat1,const double lon1,const double lat2,const double lon2,const string &vehicle,list<long> &route);
+    double Astar(const long n1,const long n2,const string &vehicle,list<long> &route,bool ignoreExtra=false);
+    double Astar(const long n1,const double lat2,const double lon2,const string &vehicle,list<long> &route,bool ignoreExtra=false);
+    double Astar(const double lat1,const double lon1,const long n2,const string &vehicle,list<long> &route,bool ignoreExtra=false);
+    double Astar(const double lat1,const double lon1,const double lat2,const double lon2,const string &vehicle,list<long> &route,bool ignoreExtra=false);
     void initRoute(const string &vehicle);
     inline void getNeighbours(const long nodeid,vector<long> &ids) const {_con->getNeighbours(nodeid,ids);}
     double distance(const Node &n1,const Node &n2) const;
@@ -304,8 +304,8 @@ namespace osm {
     void process_conf(const xmlpp::Node* node);
     void process_profiles(const xmlpp::Node* node);
     void process_highways(const xmlpp::Node* node);
-    long AstarHelper(int set,long goal,set_type &openset,set_type &closedset,score_type &f,score_type &g,score_type &h,score_type &d,route_type &to);
-    double cost(const long n1,const long n2,const long prevnode);
+    long AstarHelper(int set,long goal,set_type &openset,set_type &closedset,score_type &f,score_type &g,score_type &h,score_type &d,route_type &to,bool ignoreExtra=false);
+    double cost(const long n1,const long n2,const long prevnode,bool ignoreExtra=false);
     double calc_h_score(const long n1,const long n2);
     bool wrong_direction(Node &nodex,Node &nodey, Way &ww,string onew) const;
     long curvecost(const long x,const long y,const long p);
