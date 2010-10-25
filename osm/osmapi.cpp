@@ -2,35 +2,31 @@
 #include <SocketHandler.h>
 #include <StdoutLog.h>
 #include <stdbool.h>
-#include <iostream>
 
 namespace osmapi {
   using namespace std;
   
-  osmapiSocket::osmapiSocket(ISocketHandler& h,const std::string apistr) : HTTPSocket(h)
+  osmapiSocket::osmapiSocket(ISocketHandler& h,const std::string& apistr) : HTTPSocket(h)
 									 , m_host("api.openstreetmap.org")
 									 , m_port(80)
 									 , m_apistr(apistr)
 									 , m_first(false)
 									 , m_sz(0)
 									 , m_buf("") {
-    cerr << "Open: Host = " << m_host << " apistr = " << m_apistr << endl;
     Open(m_host, m_port);
   }
   
-  osmapiSocket::osmapiSocket(ISocketHandler& h,const std::string apistr,const std::string host) : HTTPSocket(h)
+  osmapiSocket::osmapiSocket(ISocketHandler& h,const std::string& apistr,const std::string& host) : HTTPSocket(h)
 									 , m_host(host)
 									 , m_port(80)
 									 , m_apistr(apistr)
 									 , m_first(false)
 									 , m_sz(0)
 									 , m_buf("") {
-    cerr << "Open_x: Host = " << m_host << " apistr = " << m_apistr << endl;
     Open(m_host, m_port);
   }
   
   void osmapiSocket::OnConnect() {
-    cerr << "OnConnect: Host = " << m_host << " apistr = " << m_apistr << endl;
     Send("GET /api/0.6/" + m_apistr + " HTTP/1.0\r\n");
     Send("Host: " + m_host + "\r\n");
     Send("\r\n");
@@ -43,7 +39,7 @@ namespace osmapi {
   }
   
   void osmapiSocket::OnHeader(const std::string& key, const std::string& value) {
-    //    fprintf(stderr, "%s: %s\n", key.c_str(), value.c_str());
+    fprintf(stderr, "Header: %s: %s\n", key.c_str(), value.c_str());
   }
   
   void osmapiSocket::OnHeaderComplete() {
