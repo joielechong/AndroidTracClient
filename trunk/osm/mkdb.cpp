@@ -110,7 +110,7 @@ static string xapiRequest(string apistr,std::string host="www.informationfreeway
 }
 
 static string apiRequest(string apistr) {
-  return xapiRequest(apistr,"api.opentreetmap.org");
+  return xapiRequest(apistr,"api.openstreetmap.org");
 }
 
 static void splitRequest(database &sql,osmparser::OSMParser &p,string elemType,string apistr) {
