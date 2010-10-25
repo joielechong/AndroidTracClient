@@ -84,7 +84,6 @@ static void postprocess(database &sql) {
 static string xapiRequest(string apistr,std::string host="www.informationfreeway.org") {
   SocketHandler h(NULL);
   osmapi::osmapiSocket sock(h, apistr,host);
-  osmapi::osmapiSocket sock(h, apistr,);
   h.Add(&sock);
   while (h.GetCount()) {
     h.Select(1, 0);
