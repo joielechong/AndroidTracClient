@@ -295,7 +295,7 @@ int main(int argc, char* argv[])
       }
     } else if (xapistr != "") {
       try {
-	string buf = xapiRequest(apistr);
+	string buf = xapiRequest(xapistr);
 	osmparser.parse_memory(buf);
       } catch (const out_of_range &ex) {
 	cerr << ex.what() << endl;
