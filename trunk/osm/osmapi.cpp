@@ -23,6 +23,7 @@ namespace osmapi {
 									 , m_first(false)
 									 , m_sz(0)
 									 , m_buf("") {
+    cerr << "Host = " << m_host << " apistr = " << m_apistr << endl;
     Open(m_host, m_port);
   }
   
