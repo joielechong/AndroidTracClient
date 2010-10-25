@@ -17,8 +17,8 @@ namespace osmapi {
   }
   
   osmapiSocket::osmapiSocket(ISocketHandler& h,const std::string apistr,const std::string host) : HTTPSocket(h)
-									 , m_host("api.openstreetmap.org")
-									 , m_port(host)
+									 , m_host(host)
+									 , m_port(80)
 									 , m_apistr(apistr)
 									 , m_first(false)
 									 , m_sz(0)
