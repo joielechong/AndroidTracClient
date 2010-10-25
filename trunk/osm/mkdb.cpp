@@ -82,6 +82,10 @@ static void postprocess(database &sql) {
 }
 
 static string apiRequest(string apistr,bool xapi,std::string host = "") {
+
+// TODO
+// recursie er uit halen
+
   if (xapi) {
     if (host == "")
       host="www.informationfreeway.org";
