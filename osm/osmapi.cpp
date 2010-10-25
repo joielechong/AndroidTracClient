@@ -6,17 +6,6 @@
 namespace osmapi {
   using namespace std;
   
-  osmapiSocket::osmapiSocket(ISocketHandler& h,const std::string& apistr) : HTTPSocket(h)
-									 , m_host("api.openstreetmap.org")
-									 , m_port(80)
-									 , m_apistr(apistr)
-									 , m_first(false)
-									 , m_sz(0)
-									 , m_buf("")
-                                                                         , m_locstr("") {
-    Open(m_host, m_port);
-  }
-  
   osmapiSocket::osmapiSocket(ISocketHandler& h,const std::string& apistr,const std::string& host) : HTTPSocket(h)
 									 , m_host(host)
 									 , m_port(80)
@@ -25,6 +14,7 @@ namespace osmapi {
 									 , m_sz(0)
 									 , m_buf("")
                                                                          , m_locstr("") {
+    fprintf(stderr,"host = %s, apistr = %s\n",m_host.c_str(),m_apistr.c_str());
     Open(m_host, m_port);
   }
   
@@ -41,7 +31,7 @@ namespace osmapi {
   }
   
   void osmapiSocket::OnHeader(const std::string& key, const std::string& value) {
-//    fprintf(stderr, "Header: %s: %s\n", key.c_str(), value.c_str());
+    fprintf(stderr, "Header: %s: %s\n", key.c_str(), value.c_str());
     if (key == "Location") {
        m_locstr = value;
     }

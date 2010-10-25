@@ -7,8 +7,7 @@ namespace osmapi {
   class osmapiSocket : public HTTPSocket
   {
   public:
-    osmapiSocket(ISocketHandler& h,const std::string& apistr);
-    osmapiSocket(ISocketHandler& h,const std::string& apistr,const std::string& host);
+    osmapiSocket(ISocketHandler& h,const std::string& apistr,const std::string& host="api.openstreetmap.org");
     void OnConnect();
     void OnFirst();
     void OnDisconnect();
