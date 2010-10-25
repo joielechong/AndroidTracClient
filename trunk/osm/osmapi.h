@@ -16,6 +16,7 @@ namespace osmapi {
     void OnHeaderComplete();
     void OnData(const char *buf, size_t sz);
     void OnDelete();
+    std::string getLocation() {return m_locstr;}
     inline std::string GetData() { return m_buf;}
     
   private:
@@ -25,5 +26,6 @@ namespace osmapi {
     bool m_first;
     size_t m_sz;
     std::string m_buf;
+    std::string m_locstr;
   };
 }

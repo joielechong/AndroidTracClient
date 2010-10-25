@@ -12,7 +12,8 @@ namespace osmapi {
 									 , m_apistr(apistr)
 									 , m_first(false)
 									 , m_sz(0)
-									 , m_buf("") {
+									 , m_buf("")
+                                                                         , m_locstr("") {
     Open(m_host, m_port);
   }
   
@@ -22,7 +23,8 @@ namespace osmapi {
 									 , m_apistr(apistr)
 									 , m_first(false)
 									 , m_sz(0)
-									 , m_buf("") {
+									 , m_buf("")
+                                                                         , m_locstr("") {
     Open(m_host, m_port);
   }
   
@@ -39,7 +41,10 @@ namespace osmapi {
   }
   
   void osmapiSocket::OnHeader(const std::string& key, const std::string& value) {
-    fprintf(stderr, "Header: %s: %s\n", key.c_str(), value.c_str());
+//    fprintf(stderr, "Header: %s: %s\n", key.c_str(), value.c_str());
+    if (key == "Location") {
+       m_locstr = value;
+    }
   }
   
   void osmapiSocket::OnHeaderComplete() {
