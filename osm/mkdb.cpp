@@ -81,9 +81,10 @@ static void postprocess(database &sql) {
     sql.executenonquery(postprocesses[i]);
 }
 
-static string apiRequest(string apistr) {
+static string xapiRequest(string apistr,std::string host="www.informationfreeway.org") {
   SocketHandler h(NULL);
-  osmapi::osmapiSocket sock(h, apistr);
+  osmapi::osmapiSocket sock(h, apistr,host);
+  osmapi::osmapiSocket sock(h, apistr,);
   h.Add(&sock);
   while (h.GetCount()) {
     h.Select(1, 0);
@@ -93,6 +94,14 @@ static string apiRequest(string apistr) {
   cout << "Status = " << status << endl;
   if (status == "404" || status == "410") 
     throw out_of_range("Een of meer id's ontbreken");
+  else if (status == "302")
+    string location = sock.getLocation();
+    cerr << "Location = " << location << endl;
+    int c1 = location.find("/api/0.6");
+    int c2 = location.find("//");
+    string newhost = location.substr(c2+2,c1-c2-2);
+    cerr << "Newhost = " << newhost << endl;
+    return xapiRequest(apistr,newhost);
   else if (status != "200")
     throw runtime_error("apiRequest returned status: "+status+" "+statusText);
   
@@ -101,25 +110,8 @@ static string apiRequest(string apistr) {
   return buf;
 }
 
-static string xapiRequest(string apistr) {
-  SocketHandler h(NULL);
-//  osmapi::osmapiSocket sock(h, apistr,"xapi.openstreetmap.org");
-  osmapi::osmapiSocket sock(h, apistr,"www.informationfreeway.org");
-  h.Add(&sock);
-  while (h.GetCount()) {
-    h.Select(1, 0);
-  }
-  string status = sock.GetStatus();
-  string statusText = sock.GetStatusText();
-  cout << "Status = " << status << endl;
-  if (status == "404" || status == "410") 
-    throw out_of_range("Een of meer id's ontbreken");
-  else if (status != "200")
-    throw runtime_error("apiRequest returned status: "+status+" "+statusText);
-  
-  string buf = sock.GetData();
-  //	cout << buf;
-  return buf;
+static string apiRequest(string apistr) {
+  return xapiRequest(apistr,"api.opentreetmap.org");
 }
 
 static void splitRequest(database &sql,osmparser::OSMParser &p,string elemType,string apistr) {
