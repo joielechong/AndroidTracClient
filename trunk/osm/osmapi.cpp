@@ -14,7 +14,7 @@ namespace osmapi {
 									 , m_first(false)
 									 , m_sz(0)
 									 , m_buf("") {
-    cerr << "Host = " << m_host << " apistr = " << m_apistr << endl;
+    cerr << "Open: Host = " << m_host << " apistr = " << m_apistr << endl;
     Open(m_host, m_port);
   }
   
@@ -25,11 +25,12 @@ namespace osmapi {
 									 , m_first(false)
 									 , m_sz(0)
 									 , m_buf("") {
-    cerr << "Host = " << m_host << " apistr = " << m_apistr << endl;
+    cerr << "Open_x: Host = " << m_host << " apistr = " << m_apistr << endl;
     Open(m_host, m_port);
   }
   
   void osmapiSocket::OnConnect() {
+    cerr << "OnConnect: Host = " << m_host << " apistr = " << m_apistr << endl;
     Send("GET /api/0.6/" + m_apistr + " HTTP/1.0\r\n");
     Send("Host: " + m_host + "\r\n");
     Send("\r\n");
