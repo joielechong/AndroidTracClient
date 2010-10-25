@@ -81,10 +81,13 @@ static void postprocess(database &sql) {
     sql.executenonquery(postprocesses[i]);
 }
 
-static string apiRequest(string apistr,bool xapi) {
-  std::string host = "api.openstreetmap.org";
-  if (xapi) 
-    host="www.informationfreeway.org";
+static string apiRequest(string apistr,bool xapi,std::string host = "") {
+  if (xapi) {
+    if (host == "")
+      host="www.informationfreeway.org";
+  } else {
+    host = "api.openstreetmap.org";
+  }
 
   SocketHandler h(NULL);
   osmapi::osmapiSocket sock(h, apistr,host);
@@ -104,7 +107,7 @@ static string apiRequest(string apistr,bool xapi) {
     int c2 = location.find("//");
     string newhost = location.substr(c2+2,c1-c2-2);
     cerr << "Newhost = " << newhost << endl;
-    return xapiRequest(apistr,newhost);
+    return apiRequest(apistr,(1==1),newhost);
   } else if (status != "200")
     throw runtime_error("apiRequest returned status: "+status+" "+statusText);
   
