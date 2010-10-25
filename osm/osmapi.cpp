@@ -2,6 +2,7 @@
 #include <SocketHandler.h>
 #include <StdoutLog.h>
 #include <stdbool.h>
+#include <iostream>
 
 namespace osmapi {
   using namespace std;
