@@ -81,7 +81,11 @@ static void postprocess(database &sql) {
     sql.executenonquery(postprocesses[i]);
 }
 
-static string xapiRequest(string apistr,std::string host="www.informationfreeway.org") {
+static string apiRequest(string apistr,bool xapi) {
+  std::string host = "api.openstreetmap.org";
+  if (xapi) 
+    host="www.informationfreeway.org";
+
   SocketHandler h(NULL);
   osmapi::osmapiSocket sock(h, apistr,host);
   h.Add(&sock);
@@ -109,11 +113,7 @@ static string xapiRequest(string apistr,std::string host="www.informationfreeway
   return buf;
 }
 
-static string apiRequest(string apistr) {
-  return xapiRequest(apistr,"api.openstreetmap.org");
-}
-
-static void splitRequest(database &sql,osmparser::OSMParser &p,string elemType,string apistr) {
+static void splitRequest(database &sql,osmparser::OSMParser &p,string elemType,string apistr,bool xapi) {
   unsigned int start = apistr.find("=")+1;
   while (start < apistr.length()) {
     unsigned int komma = apistr.find(",",start);
@@ -127,7 +127,7 @@ static void splitRequest(database &sql,osmparser::OSMParser &p,string elemType,s
     do {
       try {
 	retry=false;
-	string buf = apiRequest(s.str());
+	string buf = apiRequest(s.str(),xapi);
 	p.parse_memory(buf);
       } catch ( const out_of_range &ex) {
 	sql.delElem(s.str());
@@ -141,7 +141,7 @@ static void splitRequest(database &sql,osmparser::OSMParser &p,string elemType,s
   }
 }
 
-static void do_fixup(osmparser::OSMParser &osmparser,database &sql) {
+static void do_fixup(osmparser::OSMParser &osmparser,database &sql,bool xapi) {
   
   for(int i=0;fixups[i].element != ""; i++) {
     vector<long> ids;
@@ -166,11 +166,11 @@ static void do_fixup(osmparser::OSMParser &osmparser,database &sql) {
 	do {
 	  try {
 	    retry = false;
-	    string buf = apiRequest(apistring.str());
+	    string buf = apiRequest(apistring.str(),xapi);
 	    osmparser.parse_memory(buf);
 	  } catch (const out_of_range &ex) {
 	    cerr << ex.what() << endl;
-	    splitRequest(sql,osmparser,elemtype,apistring.str());
+	    splitRequest(sql,osmparser,elemtype,apistring.str(),xapi);
 	    //	      sql.delElem(apistring);
 	  } catch (const runtime_error &ex) {
 	    retry = true;
@@ -186,11 +186,11 @@ static void do_fixup(osmparser::OSMParser &osmparser,database &sql) {
     if (count != 0) {
       cout << "        " << apistring.str()  << endl;
       try {
-	string buf = apiRequest(apistring.str());
+	string buf = apiRequest(apistring.str(),xapi);
 	osmparser.parse_memory(buf);
       } catch (const out_of_range &ex) {
 	cerr << ex.what() << endl;
-	splitRequest(sql,osmparser,elemtype,apistring.str());
+	splitRequest(sql,osmparser,elemtype,apistring.str(),xapi);
 	//	sql.delElem(apistring);
       }
     }
@@ -203,7 +203,7 @@ int main(int argc, char* argv[])
   Argument::StringArgument schemaArg("-schema","value","schema definition file",string(DATADIR)+string("/schema.sqlite.txt"),false);
   Argument::BooleanArgument updArg("-update","\tUpdate the database");
   Argument::StringArgument apiArg("-api","value","\tOnline API request e.g. node/nodeid",false);
-  Argument::StringArgument xapiArg("-xapi","value","\tOnline XAPI request e.g. node/nodeid",false);
+  Argument::BooleanArgument xapiArg("-xapi","\tUse XAPI requests");
   Argument::BooleanArgument fixArg("-fix","\t\tcompletes incomplete relations and ways");
   Argument::BooleanArgument postArg("-post","\t\tPerform postprocessing on the database");
   Argument::BooleanArgument helpArg("-help","\t\tHelp on usage");
@@ -238,7 +238,7 @@ int main(int argc, char* argv[])
   bool post = postArg.getValue();
   bool helponly = helpArg.getValue();
   string apistr = apiArg.getValue();
-  string xapistr = xapiArg.getValue();
+  bool xapi = xapiArg.getValue();
   list<string>extra = extraArg.getValue();
 
   list<string>::iterator it;
@@ -280,14 +280,7 @@ int main(int argc, char* argv[])
     
     if (apistr != "") {
       try {
-	string buf = apiRequest(apistr);
-	osmparser.parse_memory(buf);
-      } catch (const out_of_range &ex) {
-	cerr << ex.what() << endl;
-      }
-    } else if (xapistr != "") {
-      try {
-	string buf = xapiRequest(xapistr);
+	string buf = apiRequest(apistr,xapi);
 	osmparser.parse_memory(buf);
       } catch (const out_of_range &ex) {
 	cerr << ex.what() << endl;
@@ -311,7 +304,7 @@ int main(int argc, char* argv[])
       sql.setBoundaries();
     
     if (fixup)
-      do_fixup(osmparser,sql);
+      do_fixup(osmparser,sql,xapi);
     
     if (post) {
       cout << "Starting postprocessing" << endl;
