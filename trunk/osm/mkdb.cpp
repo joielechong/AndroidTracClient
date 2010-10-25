@@ -101,6 +101,26 @@ static string apiRequest(string apistr) {
   return buf;
 }
 
+static string xapiRequest(string apistr) {
+  SocketHandler h(NULL);
+  osmapi::osmapiSocket sock(h, apistr,"www.informationfreeway.org");
+  h.Add(&sock);
+  while (h.GetCount()) {
+    h.Select(1, 0);
+  }
+  string status = sock.GetStatus();
+  string statusText = sock.GetStatusText();
+  cout << "Status = " << status << endl;
+  if (status == "404" || status == "410") 
+    throw out_of_range("Een of meer id's ontbreken");
+  else if (status != "200")
+    throw runtime_error("apiRequest returned status: "+status+" "+statusText);
+  
+  string buf = sock.GetData();
+  //	cout << buf;
+  return buf;
+}
+
 static void splitRequest(database &sql,osmparser::OSMParser &p,string elemType,string apistr) {
   unsigned int start = apistr.find("=")+1;
   while (start < apistr.length()) {
@@ -191,6 +211,7 @@ int main(int argc, char* argv[])
   Argument::StringArgument schemaArg("-schema","value","schema definition file",string(DATADIR)+string("/schema.sqlite.txt"),false);
   Argument::BooleanArgument updArg("-update","\tUpdate the database");
   Argument::StringArgument apiArg("-api","value","\tOnline API request e.g. node/nodeid",false);
+  Argument::StringArgument xapiArg("-xapi","value","\tOnline XAPI request e.g. node/nodeid",false);
   Argument::BooleanArgument fixArg("-fix","\t\tcompletes incomplete relations and ways");
   Argument::BooleanArgument postArg("-post","\t\tPerform postprocessing on the database");
   Argument::BooleanArgument helpArg("-help","\t\tHelp on usage");
@@ -208,6 +229,7 @@ int main(int argc, char* argv[])
   argparser.addArgument(fixArg);  
   argparser.addArgument(postArg);  
   argparser.addArgument(apiArg);  
+  argparser.addArgument(xapiArg);  
   argparser.addArgument(extraArg);  
 
   list<string> remaining = argparser.parse(argc,argv);
@@ -224,6 +246,7 @@ int main(int argc, char* argv[])
   bool post = postArg.getValue();
   bool helponly = helpArg.getValue();
   string apistr = apiArg.getValue();
+  string xapistr = xapiArg.getValue();
   list<string>extra = extraArg.getValue();
 
   list<string>::iterator it;
@@ -266,6 +289,13 @@ int main(int argc, char* argv[])
     if (apistr != "") {
       try {
 	string buf = apiRequest(apistr);
+	osmparser.parse_memory(buf);
+      } catch (const out_of_range &ex) {
+	cerr << ex.what() << endl;
+      }
+    } elsif (xapistr != "") {
+      try {
+	string buf = xapiRequest(apistr);
 	osmparser.parse_memory(buf);
       } catch (const out_of_range &ex) {
 	cerr << ex.what() << endl;

@@ -8,6 +8,7 @@ namespace osmapi {
   {
   public:
     osmapiSocket(ISocketHandler& h,const std::string apistr);
+    osmapiSocket(ISocketHandler& h,const std::string apistr,const string host);
     void OnConnect();
     void OnFirst();
     void OnDisconnect();
