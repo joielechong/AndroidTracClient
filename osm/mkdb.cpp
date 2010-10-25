@@ -93,7 +93,7 @@ static string xapiRequest(string apistr,std::string host="www.informationfreeway
   cout << "Status = " << status << endl;
   if (status == "404" || status == "410") 
     throw out_of_range("Een of meer id's ontbreken");
-  else if (status == "302")
+  else if (status == "302") {
     string location = sock.getLocation();
     cerr << "Location = " << location << endl;
     int c1 = location.find("/api/0.6");
@@ -101,7 +101,7 @@ static string xapiRequest(string apistr,std::string host="www.informationfreeway
     string newhost = location.substr(c2+2,c1-c2-2);
     cerr << "Newhost = " << newhost << endl;
     return xapiRequest(apistr,newhost);
-  else if (status != "200")
+  } else if (status != "200")
     throw runtime_error("apiRequest returned status: "+status+" "+statusText);
   
   string buf = sock.GetData();
