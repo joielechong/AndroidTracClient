@@ -103,8 +103,8 @@ static string apiRequest(string apistr) {
 
 static string xapiRequest(string apistr) {
   SocketHandler h(NULL);
-  osmapi::osmapiSocket sock(h, apistr,"xapi.openstreetmap.org");
-//  osmapi::osmapiSocket sock(h, apistr,"www.informationfreeway.org");
+//  osmapi::osmapiSocket sock(h, apistr,"xapi.openstreetmap.org");
+  osmapi::osmapiSocket sock(h, apistr,"www.informationfreeway.org");
   h.Add(&sock);
   while (h.GetCount()) {
     h.Select(1, 0);
