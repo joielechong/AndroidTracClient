@@ -293,14 +293,14 @@ int main(int argc, char* argv[])
       } catch (const out_of_range &ex) {
 	cerr << ex.what() << endl;
       }
-    } elsif (xapistr != "") {
+    } else if (xapistr != "") {
       try {
 	string buf = xapiRequest(apistr);
 	osmparser.parse_memory(buf);
       } catch (const out_of_range &ex) {
 	cerr << ex.what() << endl;
       }
-    } else  {
+    } else {
       for (it=extra.begin();it!=extra.end();it++) {
 	string filepath = *it;
 	if (filepath == "-") {
