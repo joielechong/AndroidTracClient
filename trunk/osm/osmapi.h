@@ -2,6 +2,7 @@
 #include <HTTPSocket.h>
 #include <stdbool.h>
 #include <string>
+#include <map>
 
 namespace osmapi {
   class osmapiSocket : public HTTPSocket
@@ -15,7 +16,7 @@ namespace osmapi {
     void OnHeaderComplete();
     void OnData(const char *buf, size_t sz);
     void OnDelete();
-    std::string getLocation() {return m_locstr;}
+    std::string getLocation();
     inline std::string GetData() { return m_buf;}
     
   private:
@@ -25,6 +26,6 @@ namespace osmapi {
     bool m_first;
     size_t m_sz;
     std::string m_buf;
-    std::string m_locstr;
+    map<std::string,std::string> m_header;
   };
 }
