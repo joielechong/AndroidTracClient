@@ -139,11 +139,12 @@ namespace osm {
       if(!(nodeText && nodeText->is_white_space())) { //Let's ignore the indenting - you don't always want to do this.    
 	if(!nodeText && !nodeComment) { //Let's not say "name: text".
 	  const xmlpp::Element* nodeElement = dynamic_cast<const xmlpp::Element*>(*iter);
-	  Glib::ustring name,maxspeed,avgspeed,ignore_oneway;
+	  Glib::ustring name,maxspeed,avgspeed,ignore_oneway,curvefactor;
           
           getAttribute(nodeElement,"name",name);
           getAttribute(nodeElement,"maxspeed",maxspeed);
           getAttribute(nodeElement,"avgspeed",avgspeed);
+          getAttribute(nodeElement,"curvefactor",curvefactor);
           getAttribute(nodeElement,"ignore_oneway",ignore_oneway);
 
 	  _profiles[name] = Profile();
@@ -151,6 +152,8 @@ namespace osm {
 	    _profiles[name].maxspeed(atol(maxspeed.c_str()));
 	  if (avgspeed.length() > 0)
 	    _profiles[name].avgspeed(atol(avgspeed.c_str()));
+	  if (curvefactor.length() > 0)
+	    _profiles[name].curvefactor(atod(curvefactor.c_str()));
 	  if (atol(ignore_oneway.c_str()) != 0)
 	    _profiles[name].set_ignore_oneway();
 
