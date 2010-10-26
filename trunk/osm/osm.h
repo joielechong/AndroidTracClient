@@ -225,7 +225,7 @@ namespace osm {
 
   class Profile {
   public:
-    inline Profile() : _maxspeed(0),_avgspeed(0),_ignore_oneway(false) {}
+    inline Profile() : _maxspeed(0),_avgspeed(0),_ignore_oneway(false),_curvefactor(1.0) {}
 
     inline unsigned int maxspeed() const {return _maxspeed;}
     inline void maxspeed(const unsigned int s) {_maxspeed=s;}
@@ -233,6 +233,8 @@ namespace osm {
     inline void avgspeed(const unsigned int s) {_avgspeed=s;}
     inline bool ignore_oneway() const {return _ignore_oneway;}
     inline void set_ignore_oneway() {_ignore_oneway = true;}
+    inline const double curvefactor() const {return _curvefactor;}
+    inline void curvefactor(const double c) {_curvefactor = c;}
     unsigned int allowed(const string h);
     inline bool is_allowed(const string h) {return _allowed.find(h) != _allowed.end();}
     inline void allowed(string h,const unsigned int e) {_allowed[h]=e;}
@@ -248,6 +250,7 @@ namespace osm {
     unsigned int _maxspeed;
     unsigned int _avgspeed;
     bool _ignore_oneway;
+    double _curvefactor;
     map<string,unsigned int> _allowed;
     map<string,unsigned int> _traffic_calming; 
     map<string,unsigned int> _barrier;

@@ -167,7 +167,7 @@ namespace osm {
       if (oneway != "" && cw != "opposite") {
 	if (wrong_direction(nodes(x),nodey,ww,oneway))
 	  return INFINITY;
-      }
+     }
       try {extracost += _highways[nodey["highway"]].extracost();} catch (range_error &ex) {};
     } else if (_vehicle == "car") {
       string ma;
@@ -180,7 +180,6 @@ namespace osm {
 	  return INFINITY;
       }
       try { extracost += _highways[nodey["highway"]].extracost();} catch (range_error &ex) {};
-      extracost += curvecost(x,y,prevnode);
     }
     
 //  als nog steeds access = no dan mag het echt niet
@@ -188,6 +187,7 @@ namespace osm {
     if (access == "no")
       return INFINITY;
 
+    extracost += curvecost(x,y,prevnode) * _profiles[_vehicle].curvefactor();
 // nog wat beperkingen  (als waarde * dan voor alle niet expliciet gespecificeerde in profiel)
       
     try { 
