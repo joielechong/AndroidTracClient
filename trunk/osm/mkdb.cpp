@@ -192,14 +192,25 @@ static void do_fixup(osmparser::OSMParser &osmparser,database &sql,bool xapi) {
     }
     if (count != 0) {
       cout << "        " << apistring.str()  << endl;
-      try {
-	string buf = apiRequest(apistring.str(),xapi);
-	osmparser.parse_memory(buf);
-      } catch (const out_of_range &ex) {
-	cerr << ex.what() << endl;
-	splitRequest(sql,osmparser,elemtype,apistring.str(),xapi);
+      bool retry;
+      int retrycount = 0;
+      do {
+        try {
+	  string buf = apiRequest(apistring.str(),xapi);
+	  osmparser.parse_memory(buf);
+        } catch (const out_of_range &ex) {
+	  cerr << ex.what() << endl;
+	  splitRequest(sql,osmparser,elemtype,apistring.str(),xapi);
 	//	sql.delElem(apistring);
-      }
+	} catch (const runtime_error &ex) {
+	  retry = true;
+	  retrycount++;
+	  if (retry < 5) 
+	    cout << "  retry: " << retrycount << endl;
+        }
+      } while (retry && retrycount < 5);
+      count = 0;
+      apistring.str("");
     }
   }    
 }

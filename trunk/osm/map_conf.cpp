@@ -153,7 +153,7 @@ namespace osm {
 	  if (avgspeed.length() > 0)
 	    _profiles[name].avgspeed(atol(avgspeed.c_str()));
 	  if (curvefactor.length() > 0)
-	    _profiles[name].curvefactor(atod(curvefactor.c_str()));
+	    _profiles[name].curvefactor(strtod(curvefactor.c_str(),NULL));
 	  if (atol(ignore_oneway.c_str()) != 0)
 	    _profiles[name].set_ignore_oneway();
 

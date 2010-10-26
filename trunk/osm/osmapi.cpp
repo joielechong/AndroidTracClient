@@ -2,6 +2,7 @@
 #include <SocketHandler.h>
 #include <StdoutLog.h>
 #include <stdbool.h>
+#include <stdexcept>
 
 namespace osmapi {
   using namespace std;
@@ -54,11 +55,11 @@ namespace osmapi {
     //    fprintf(stderr, "Content length: %d\n", m_sz);
   }
   
-  std::string getLocation() {
+  std::string osmapiSocket::getLocation() {
     std::string location="";
     try {
       location = m_header["Location"];
-    } catch (range_error &ex) {}
+    } catch (std::range_error &ex) {}
     return location;
   }
 }

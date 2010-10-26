@@ -26,6 +26,6 @@ namespace osmapi {
     bool m_first;
     size_t m_sz;
     std::string m_buf;
-    map<std::string,std::string> m_header;
+    std::map<std::string,std::string> m_header;
   };
 }
