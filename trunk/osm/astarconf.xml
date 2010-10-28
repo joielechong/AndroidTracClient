@@ -57,7 +57,7 @@
                         <barrier type="lift_gate" extracost="10" />
 			<barrier type="*" extracost="INFINITY" />
 		</profile>
-		<profile name="bicycle" maxspeed="17" avgspeed="12" ignore_oneway="0" curvefactor="0.25">
+		<profile name="bicycle" maxspeed="17" avgspeed="12" ignore_oneway="0" curvefactor="0">
 			<allowed highway="footway" extracost="3" />
 			<allowed highway="track" extracost="30" />
 			<allowed highway="pedestrian" extracost="3" />
