@@ -308,6 +308,12 @@ namespace osm {
 //          cerr << "bestond nog niet" << endl;
 	}
         
+	  string name;
+	  string ref;
+	  long w = getConnectingWay(xs,y);
+	  osm::Way &ww = ways(w);
+	  try { name = ww["name"];} catch (range_error &ex) {name="";}
+	  try { ref = ww["ref"];} catch (range_error &ex) {ref="";}
 	if (tentative_is_better) {
 	  to[y] = xs;
 	  g[y] = tentative_g_score;
@@ -322,13 +328,18 @@ namespace osm {
 	  osm::Way &ww = ways(w);
 	  try { name = ww["name"];} catch (range_error &ex) {name="";}
 	  try { ref = ww["ref"];} catch (range_error &ex) {ref="";}
-	  cout << set << " " << maxperc << " ";
+	  cout << set << " " << maxperc;
 	  if (set == 1) 
 	    cout << " " << xs << " " << y << " " << f[xs] << " " << g[y] << " " << h[y] << " " << f[y] << " "+name+" "+ref <<endl;
 	  else
 	    cout << " " << y << " " << xs << " " << f[xs] << " " << g[y] << " " << h[y] << " " << f[y] << " "+name+" "+ref <<endl;
-
-	}
+	} else {
+	  cout << set << " XXXXXX";
+	  if (set == 1) 
+	    cout << " " << xs << " " << y << " " << f[xs] << " " << g[y] << "/" << tentative_g_score << " " << h[y] << " " << f[y] << " "+name+" "+ref <<endl;
+	  else
+	    cout << " " << y << " " << xs << " " << f[xs] << " " << g[y] << "/" << tentative_g_score << " " << h[y] << " " << f[y] << " "+name+" "+ref <<endl;
+        }
       }
     }
     return 0;
