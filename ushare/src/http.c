@@ -78,7 +78,7 @@ set_info_file (struct File_Info *info, const size_t length,
   info->content_type = ixmlCloneDOMString (content_type);
 }
 
-int urlpath(const char *s) {
+static int urlpath(const char *s) {
   int i;
   
   i=(!strncmp(s,"http://",7) || !strncmp(s,"https://",8) || !strncmp(s,"ftp://",6));
