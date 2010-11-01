@@ -126,25 +126,27 @@ static void splitRequest(database &sql,osmparser::OSMParser &p,string elemType,s
     unsigned int komma = apistr.find(",",start);
     if (komma == string::npos)
       komma = apistr.length()+1;
-    komma--;
     stringstream s;
     s << elemType << "/" << apistr.substr(start,komma-start);
+    start = komma+1;
     bool retry;
     int retrycount=0;
     do {
       try {
 	retry=false;
-	string buf = apiRequest(s.str(),xapi);
+	string buf = apiRequest(s.str(),xapi&&(retrycount<4));
 	p.parse_memory(buf);
       } catch ( const out_of_range &ex) {
 	sql.delElem(s.str());
       } catch (const runtime_error &ex) {
 	retry = true;
 	retrycount++;
-	if (retry < 5) 
+	if (retrycount < 5) 
 	  cout << "  retry: " << retrycount << endl;
       }
     } while (retry && retrycount < 5);
+    if (retry)
+      throw runtime_error("apiRequest failed after 5 retries");
   }
 }
 
@@ -173,10 +175,11 @@ static void do_fixup(osmparser::OSMParser &osmparser,database &sql,bool xapi) {
 	do {
 	  try {
 	    retry = false;
-	    string buf = apiRequest(apistring.str(),xapi);
+	    string buf = apiRequest(apistring.str(),xapi&&(retrycount<4));
 	    osmparser.parse_memory(buf);
 	  } catch (const out_of_range &ex) {
 	    cerr << ex.what() << endl;
+	    retry=false;
 	    splitRequest(sql,osmparser,elemtype,apistring.str(),xapi);
 	    //	      sql.delElem(apistring);
 	  } catch (const runtime_error &ex) {
@@ -186,6 +189,8 @@ static void do_fixup(osmparser::OSMParser &osmparser,database &sql,bool xapi) {
 	      cout << "  retry: " << retrycount << endl;
 	  }
 	} while (retry && retrycount < 5);
+	if (retry)
+	  throw runtime_error("apiRequest failed after 5 retries");
 	count = 0;
 	apistring.str("");
       }
@@ -196,10 +201,12 @@ static void do_fixup(osmparser::OSMParser &osmparser,database &sql,bool xapi) {
       int retrycount = 0;
       do {
         try {
-	  string buf = apiRequest(apistring.str(),xapi);
+	  retry = false;
+	  string buf = apiRequest(apistring.str(),xapi&&(retrycount<4));
 	  osmparser.parse_memory(buf);
         } catch (const out_of_range &ex) {
 	  cerr << ex.what() << endl;
+	  retry=false;
 	  splitRequest(sql,osmparser,elemtype,apistring.str(),xapi);
 	//	sql.delElem(apistring);
 	} catch (const runtime_error &ex) {
@@ -209,6 +216,8 @@ static void do_fixup(osmparser::OSMParser &osmparser,database &sql,bool xapi) {
 	    cout << "  retry: " << retrycount << endl;
         }
       } while (retry && retrycount < 5);
+      if (retry)
+	throw runtime_error("apiRequest failed after 5 retries");
       count = 0;
       apistring.str("");
     }
