@@ -60,7 +60,7 @@ string postprocesses[] = {
   "update node set donotdelete='true' where id in (select ref from member where type='node') and donotdelete != 'true'",
   "delete from node where donotdelete='false'",
 
-  "UPDATE tag SET v='yes' WHERE k IN ('bridge','oneway','tunnel','motorroad','bicyle','foot') AND v IN ('1','YES','true','Yes')",
+  "UPDATE tag SET v='yes' WHERE k IN ('bridge','oneway','tunnel','motorroad','bicycle','foot') AND v IN ('1','YES','true','Yes')",
   "UPDATE tag set v='opposite' WHERE k='cycleway' and v in ('opposite_lane','opposite_track')",
   "DELETE FROM tag WHERE k IN ('bridge','oneway','tunnel','motorroad') AND v IN ('NO','FALSE','No','False','no','ny','false')",
   "UPDATE node SET x=osmcalc_x(lon),y=osmcalc_y(lat) WHERE x is null and id in (SELECT ref FROM usable_way as u,nd WHERE u.id=nd.id)",
