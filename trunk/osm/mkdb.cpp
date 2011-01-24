@@ -18,7 +18,7 @@
 #include "osmparser.h"
 #include "osmapi.h"
 
-#define MAXELEM 50
+#define MAXELEM 75
 
 using namespace std;
 using namespace osm_db;
