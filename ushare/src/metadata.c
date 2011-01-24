@@ -489,7 +489,7 @@ void build_metadata_db(struct ushare_t *ut) {
   
   mtd.ut = ut;
   mtd.initial_wait=30;
-  mtd.loop_wait=3600;   /* this must become configurable */
+  mtd.loop_wait=12*3600;   /* this must become configurable */
   mtd.verify_wait=1;
   
   pthread_mutex_init (&mtd.db_mutex, NULL);
