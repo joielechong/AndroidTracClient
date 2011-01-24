@@ -4,6 +4,8 @@ PRAGMA default_cache_size=5000;
 PRAGMA synchronous=off;
 PRAGMA temp_store=2;
 
+PRAGMA auto_vacuum='full';
+
 BEGIN TRANSACTION;
 
 DROP VIEW counts;
