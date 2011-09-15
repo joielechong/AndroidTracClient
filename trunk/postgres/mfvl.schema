@@ -64,6 +64,18 @@ ALTER PROCEDURAL LANGUAGE plpgsql OWNER TO postgres;
 SET search_path = public, pg_catalog;
 
 --
+-- Name: dblink_pkey_results; Type: TYPE; Schema: public; Owner: mfvl
+--
+
+CREATE TYPE dblink_pkey_results AS (
+	"position" integer,
+	colname text
+);
+
+
+ALTER TYPE public.dblink_pkey_results OWNER TO mfvl;
+
+--
 -- Name: testrowperl; Type: TYPE; Schema: public; Owner: mfvl
 --
 
@@ -315,6 +327,7 @@ CREATE FUNCTION af_contact_del() RETURNS trigger
 	delete from telephone where contact_id=old.id;
 	delete from mail where contact_id=old.id;
 	delete from relaties where contact_id=old.id;
+	delete from website where contact_id=old.id;
 	update relaties set relatie_id = null where relatie_id=old.id;
 return old;
 end;$$;
@@ -481,6 +494,424 @@ CREATE FUNCTION crosstab(text, text) RETURNS SETOF record
 ALTER FUNCTION public.crosstab(text, text) OWNER TO mfvl;
 
 --
+-- Name: dblink(text, text); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink(text, text) RETURNS SETOF record
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_record';
+
+
+ALTER FUNCTION public.dblink(text, text) OWNER TO mfvl;
+
+--
+-- Name: dblink(text, text, boolean); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink(text, text, boolean) RETURNS SETOF record
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_record';
+
+
+ALTER FUNCTION public.dblink(text, text, boolean) OWNER TO mfvl;
+
+--
+-- Name: dblink(text); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink(text) RETURNS SETOF record
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_record';
+
+
+ALTER FUNCTION public.dblink(text) OWNER TO mfvl;
+
+--
+-- Name: dblink(text, boolean); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink(text, boolean) RETURNS SETOF record
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_record';
+
+
+ALTER FUNCTION public.dblink(text, boolean) OWNER TO mfvl;
+
+--
+-- Name: dblink_build_sql_delete(text, int2vector, integer, text[]); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_build_sql_delete(text, int2vector, integer, text[]) RETURNS text
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_build_sql_delete';
+
+
+ALTER FUNCTION public.dblink_build_sql_delete(text, int2vector, integer, text[]) OWNER TO mfvl;
+
+--
+-- Name: dblink_build_sql_insert(text, int2vector, integer, text[], text[]); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_build_sql_insert(text, int2vector, integer, text[], text[]) RETURNS text
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_build_sql_insert';
+
+
+ALTER FUNCTION public.dblink_build_sql_insert(text, int2vector, integer, text[], text[]) OWNER TO mfvl;
+
+--
+-- Name: dblink_build_sql_update(text, int2vector, integer, text[], text[]); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_build_sql_update(text, int2vector, integer, text[], text[]) RETURNS text
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_build_sql_update';
+
+
+ALTER FUNCTION public.dblink_build_sql_update(text, int2vector, integer, text[], text[]) OWNER TO mfvl;
+
+--
+-- Name: dblink_cancel_query(text); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_cancel_query(text) RETURNS text
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_cancel_query';
+
+
+ALTER FUNCTION public.dblink_cancel_query(text) OWNER TO mfvl;
+
+--
+-- Name: dblink_close(text); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_close(text) RETURNS text
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_close';
+
+
+ALTER FUNCTION public.dblink_close(text) OWNER TO mfvl;
+
+--
+-- Name: dblink_close(text, boolean); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_close(text, boolean) RETURNS text
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_close';
+
+
+ALTER FUNCTION public.dblink_close(text, boolean) OWNER TO mfvl;
+
+--
+-- Name: dblink_close(text, text); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_close(text, text) RETURNS text
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_close';
+
+
+ALTER FUNCTION public.dblink_close(text, text) OWNER TO mfvl;
+
+--
+-- Name: dblink_close(text, text, boolean); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_close(text, text, boolean) RETURNS text
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_close';
+
+
+ALTER FUNCTION public.dblink_close(text, text, boolean) OWNER TO mfvl;
+
+--
+-- Name: dblink_connect(text); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_connect(text) RETURNS text
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_connect';
+
+
+ALTER FUNCTION public.dblink_connect(text) OWNER TO mfvl;
+
+--
+-- Name: dblink_connect(text, text); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_connect(text, text) RETURNS text
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_connect';
+
+
+ALTER FUNCTION public.dblink_connect(text, text) OWNER TO mfvl;
+
+--
+-- Name: dblink_connect_u(text); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_connect_u(text) RETURNS text
+    LANGUAGE c STRICT SECURITY DEFINER
+    AS '$libdir/dblink', 'dblink_connect';
+
+
+ALTER FUNCTION public.dblink_connect_u(text) OWNER TO mfvl;
+
+--
+-- Name: dblink_connect_u(text, text); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_connect_u(text, text) RETURNS text
+    LANGUAGE c STRICT SECURITY DEFINER
+    AS '$libdir/dblink', 'dblink_connect';
+
+
+ALTER FUNCTION public.dblink_connect_u(text, text) OWNER TO mfvl;
+
+--
+-- Name: dblink_current_query(); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_current_query() RETURNS text
+    LANGUAGE c
+    AS '$libdir/dblink', 'dblink_current_query';
+
+
+ALTER FUNCTION public.dblink_current_query() OWNER TO mfvl;
+
+--
+-- Name: dblink_disconnect(); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_disconnect() RETURNS text
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_disconnect';
+
+
+ALTER FUNCTION public.dblink_disconnect() OWNER TO mfvl;
+
+--
+-- Name: dblink_disconnect(text); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_disconnect(text) RETURNS text
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_disconnect';
+
+
+ALTER FUNCTION public.dblink_disconnect(text) OWNER TO mfvl;
+
+--
+-- Name: dblink_error_message(text); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_error_message(text) RETURNS text
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_error_message';
+
+
+ALTER FUNCTION public.dblink_error_message(text) OWNER TO mfvl;
+
+--
+-- Name: dblink_exec(text, text); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_exec(text, text) RETURNS text
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_exec';
+
+
+ALTER FUNCTION public.dblink_exec(text, text) OWNER TO mfvl;
+
+--
+-- Name: dblink_exec(text, text, boolean); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_exec(text, text, boolean) RETURNS text
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_exec';
+
+
+ALTER FUNCTION public.dblink_exec(text, text, boolean) OWNER TO mfvl;
+
+--
+-- Name: dblink_exec(text); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_exec(text) RETURNS text
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_exec';
+
+
+ALTER FUNCTION public.dblink_exec(text) OWNER TO mfvl;
+
+--
+-- Name: dblink_exec(text, boolean); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_exec(text, boolean) RETURNS text
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_exec';
+
+
+ALTER FUNCTION public.dblink_exec(text, boolean) OWNER TO mfvl;
+
+--
+-- Name: dblink_fetch(text, integer); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_fetch(text, integer) RETURNS SETOF record
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_fetch';
+
+
+ALTER FUNCTION public.dblink_fetch(text, integer) OWNER TO mfvl;
+
+--
+-- Name: dblink_fetch(text, integer, boolean); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_fetch(text, integer, boolean) RETURNS SETOF record
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_fetch';
+
+
+ALTER FUNCTION public.dblink_fetch(text, integer, boolean) OWNER TO mfvl;
+
+--
+-- Name: dblink_fetch(text, text, integer); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_fetch(text, text, integer) RETURNS SETOF record
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_fetch';
+
+
+ALTER FUNCTION public.dblink_fetch(text, text, integer) OWNER TO mfvl;
+
+--
+-- Name: dblink_fetch(text, text, integer, boolean); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_fetch(text, text, integer, boolean) RETURNS SETOF record
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_fetch';
+
+
+ALTER FUNCTION public.dblink_fetch(text, text, integer, boolean) OWNER TO mfvl;
+
+--
+-- Name: dblink_get_connections(); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_get_connections() RETURNS text[]
+    LANGUAGE c
+    AS '$libdir/dblink', 'dblink_get_connections';
+
+
+ALTER FUNCTION public.dblink_get_connections() OWNER TO mfvl;
+
+--
+-- Name: dblink_get_pkey(text); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_get_pkey(text) RETURNS SETOF dblink_pkey_results
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_get_pkey';
+
+
+ALTER FUNCTION public.dblink_get_pkey(text) OWNER TO mfvl;
+
+--
+-- Name: dblink_get_result(text); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_get_result(text) RETURNS SETOF record
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_get_result';
+
+
+ALTER FUNCTION public.dblink_get_result(text) OWNER TO mfvl;
+
+--
+-- Name: dblink_get_result(text, boolean); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_get_result(text, boolean) RETURNS SETOF record
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_get_result';
+
+
+ALTER FUNCTION public.dblink_get_result(text, boolean) OWNER TO mfvl;
+
+--
+-- Name: dblink_is_busy(text); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_is_busy(text) RETURNS integer
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_is_busy';
+
+
+ALTER FUNCTION public.dblink_is_busy(text) OWNER TO mfvl;
+
+--
+-- Name: dblink_open(text, text); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_open(text, text) RETURNS text
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_open';
+
+
+ALTER FUNCTION public.dblink_open(text, text) OWNER TO mfvl;
+
+--
+-- Name: dblink_open(text, text, boolean); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_open(text, text, boolean) RETURNS text
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_open';
+
+
+ALTER FUNCTION public.dblink_open(text, text, boolean) OWNER TO mfvl;
+
+--
+-- Name: dblink_open(text, text, text); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_open(text, text, text) RETURNS text
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_open';
+
+
+ALTER FUNCTION public.dblink_open(text, text, text) OWNER TO mfvl;
+
+--
+-- Name: dblink_open(text, text, text, boolean); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_open(text, text, text, boolean) RETURNS text
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_open';
+
+
+ALTER FUNCTION public.dblink_open(text, text, text, boolean) OWNER TO mfvl;
+
+--
+-- Name: dblink_send_query(text, text); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION dblink_send_query(text, text) RETURNS integer
+    LANGUAGE c STRICT
+    AS '$libdir/dblink', 'dblink_send_query';
+
+
+ALTER FUNCTION public.dblink_send_query(text, text) OWNER TO mfvl;
+
+--
 -- Name: display_field(text); Type: FUNCTION; Schema: public; Owner: mfvl
 --
 
@@ -616,6 +1047,21 @@ end;$$;
 
 
 ALTER FUNCTION public.insert_tel() OWNER TO mfvl;
+
+--
+-- Name: insert_web(); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION insert_web() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$begin
+new.class='WEB';
+new.webpagina = lower(new.webpagina);
+return new;
+end;$$;
+
+
+ALTER FUNCTION public.insert_web() OWNER TO mfvl;
 
 --
 -- Name: ldap_create(); Type: FUNCTION; Schema: public; Owner: mfvl
@@ -790,6 +1236,20 @@ $$;
 ALTER FUNCTION public.update_number() OWNER TO mfvl;
 
 --
+-- Name: update_web(); Type: FUNCTION; Schema: public; Owner: mfvl
+--
+
+CREATE FUNCTION update_web() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$begin
+new.webpagina = lower(new.webpagina);
+return new;
+end;$$;
+
+
+ALTER FUNCTION public.update_web() OWNER TO mfvl;
+
+--
 -- Name: ||+; Type: OPERATOR; Schema: public; Owner: mfvl
 --
 
@@ -810,18 +1270,33 @@ SET search_path = ms, pg_catalog;
 
 CREATE TABLE mediacontent (
     id integer NOT NULL,
-    fullpath text NOT NULL,
-    dlna_mime text,
-    dlna_id text,
-    title text NOT NULL,
-    url text,
+    fullpath character varying NOT NULL,
+    dlna_mime character varying,
+    dlna_id character varying,
+    title character varying NOT NULL,
     size bigint,
     parent_id integer,
-    dlna_class integer
+    dlna_class integer,
+    artist character varying,
+    date date,
+    genre character varying,
+    album character varying,
+    resolution character varying,
+    duration integer
 );
 
 
 ALTER TABLE ms.mediacontent OWNER TO mfvl;
+
+--
+-- Name: mediabydate; Type: VIEW; Schema: ms; Owner: mfvl
+--
+
+CREATE VIEW mediabydate AS
+    SELECT mediacontent.id, mediacontent.fullpath, mediacontent.dlna_mime, mediacontent.dlna_id, mediacontent.title, mediacontent.size, mediacontent.parent_id, mediacontent.dlna_class, mediacontent.artist, mediacontent.date, mediacontent.genre, mediacontent.album, mediacontent.resolution, mediacontent.duration, date_part('year'::text, (mediacontent.date)::timestamp without time zone) AS year, date_part('month'::text, (mediacontent.date)::timestamp without time zone) AS month, date_part('day'::text, (mediacontent.date)::timestamp without time zone) AS day FROM mediacontent;
+
+
+ALTER TABLE ms.mediabydate OWNER TO mfvl;
 
 SET search_path = pois, pg_catalog;
 
@@ -1501,6 +1976,16 @@ CREATE VIEW kerstkaart AS
 
 ALTER TABLE public.kerstkaart OWNER TO mfvl;
 
+--
+-- Name: kerstmail; Type: VIEW; Schema: public; Owner: mfvl
+--
+
+CREATE VIEW kerstmail AS
+    SELECT contacts.id, contacts.cn, mail.mailaddress, mail.type, mail.priority FROM contacts, mail, catcontact, categories WHERE ((((((categories.categorie)::text = 'kerstmail'::text) AND (categories.id = catcontact.cat_id)) AND (catcontact.contact_id = contacts.id)) AND (contacts.id = mail.contact_id)) AND (mail.priority = 1)) ORDER BY contacts.fileas;
+
+
+ALTER TABLE public.kerstmail OWNER TO mfvl;
+
 SET default_with_oids = true;
 
 --
@@ -1828,6 +2313,38 @@ CREATE VIEW mp3cdcontents AS
 
 ALTER TABLE public.mp3cdcontents OWNER TO mfvl;
 
+--
+-- Name: naw1; Type: VIEW; Schema: public; Owner: mfvl
+--
+
+CREATE VIEW naw1 AS
+    SELECT naw.id, naw.contact_id, naw.class, naw.straat, naw.provincie, naw.postcode, naw.stad, naw.land, naw.adr_type, naw.standaard, naw.lat, naw.lon, naw.inmio, naw.mioicon, (((((((naw.straat)::text || ', '::text) || (naw.postcode)::text) || ' '::text) || (naw.stad)::text) || ', '::text) || (naw.land)::text) AS adres FROM naw;
+
+
+ALTER TABLE public.naw1 OWNER TO mfvl;
+
+--
+-- Name: packages; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE packages (
+    packagename character varying NOT NULL,
+    baseurl character varying NOT NULL,
+    template character varying NOT NULL,
+    current_major integer NOT NULL,
+    current_minor integer NOT NULL,
+    current_pl character varying NOT NULL,
+    latest_major integer,
+    latest_minor integer,
+    latest_pl character varying,
+    configurestring text,
+    conectfailures integer DEFAULT 0 NOT NULL,
+    buildfailures integer DEFAULT 0 NOT NULL
+);
+
+
+ALTER TABLE public.packages OWNER TO mfvl;
+
 SET default_with_oids = true;
 
 --
@@ -2113,7 +2630,7 @@ ALTER TABLE public.tijdelijk OWNER TO mfvl;
 --
 
 CREATE VIEW vakantie AS
-    SELECT DISTINCT contacts.id, contacts.naam, naw.straat, naw.postcode, naw.stad, CASE naw.land WHEN 'Nederland'::text THEN NULL::character varying ELSE naw.land END AS land FROM contacts, naw, catcontact, categories WHERE (((((naw.standaard = true) AND (naw.contact_id = contacts.id)) AND (contacts.id = catcontact.contact_id)) AND (catcontact.cat_id = categories.id)) AND ((categories.categorie)::text = ANY (ARRAY['holiday cards'::text, 'helgavakantie'::text]))) ORDER BY CASE naw.land WHEN 'Nederland'::text THEN NULL::character varying ELSE naw.land END, naw.postcode, contacts.id, contacts.naam, naw.straat, naw.stad;
+    SELECT DISTINCT contacts.id, contacts.naam, naw.straat, naw.postcode, naw.stad, naw.land FROM contacts, naw, catcontact, categories WHERE (((((naw.standaard = true) AND (naw.contact_id = contacts.id)) AND (contacts.id = catcontact.contact_id)) AND (catcontact.cat_id = categories.id)) AND ((categories.categorie)::text = ANY (ARRAY['holiday cards'::text, 'helgavakantie'::text]))) ORDER BY naw.land, naw.postcode, contacts.id, contacts.naam, naw.straat, naw.stad;
 
 
 ALTER TABLE public.vakantie OWNER TO mfvl;
@@ -2136,10 +2653,25 @@ ALTER TABLE public.video_aspect OWNER TO mfvl;
 --
 
 CREATE VIEW videoonderwerpen AS
-    SELECT date(videos.tijdstip) AS date, videos.onderwerp, videos.dvdnr, (sum(videos.duur) / (60)::double precision) FROM videos WHERE ((videos.duur > (3)::double precision) AND (NOT (videos.dvdnr IS NULL))) GROUP BY date(videos.tijdstip), videos.onderwerp, videos.dvdnr ORDER BY date(videos.tijdstip), videos.onderwerp, videos.dvdnr;
+    SELECT date(videos.tijdstip) AS date, videos.onderwerp, videos.dvdnr, (sum(videos.duur) / (60)::double precision) AS totduur FROM videos WHERE ((videos.duur > (3)::double precision) AND (NOT (videos.dvdnr IS NULL))) GROUP BY date(videos.tijdstip), videos.onderwerp, videos.dvdnr ORDER BY date(videos.tijdstip), videos.onderwerp, videos.dvdnr;
 
 
 ALTER TABLE public.videoonderwerpen OWNER TO mfvl;
+
+SET default_with_oids = true;
+
+--
+-- Name: website; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE website (
+    webpagina character varying NOT NULL,
+    type character varying
+)
+INHERITS (attr);
+
+
+ALTER TABLE public.website OWNER TO mfvl;
 
 SET search_path = pois, pg_catalog;
 
@@ -2508,6 +3040,14 @@ ALTER TABLE ONLY naw
 
 
 --
+-- Name: packages_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY packages
+    ADD CONSTRAINT packages_pkey PRIMARY KEY (packagename);
+
+
+--
 -- Name: rekeningnummer_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
 --
 
@@ -2651,6 +3191,22 @@ ALTER TABLE ONLY videos
     ADD CONSTRAINT videos_pkey PRIMARY KEY (tijdstip);
 
 
+--
+-- Name: website_contact_id_key; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY website
+    ADD CONSTRAINT website_contact_id_key UNIQUE (contact_id, webpagina);
+
+
+--
+-- Name: website_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY website
+    ADD CONSTRAINT website_pkey PRIMARY KEY (id);
+
+
 SET search_path = ms, pg_catalog;
 
 --
@@ -2661,10 +3217,10 @@ CREATE UNIQUE INDEX med_fn_idx ON mediacontent USING btree (fullpath);
 
 
 --
--- Name: med_id_odx; Type: INDEX; Schema: ms; Owner: mfvl; Tablespace: 
+-- Name: med_parent_idx; Type: INDEX; Schema: ms; Owner: mfvl; Tablespace: 
 --
 
-CREATE UNIQUE INDEX med_id_odx ON mediacontent USING btree (id);
+CREATE INDEX med_parent_idx ON mediacontent USING btree (parent_id);
 
 
 SET search_path = pois, pg_catalog;
@@ -2788,6 +3344,15 @@ CREATE UNIQUE INDEX telfort_001 ON telfort USING btree (tijd, type, nummer);
 --
 
 CREATE UNIQUE INDEX telfort_002 ON telfort USING btree (tijd, type, bedrag) WHERE ((type)::text = 'GPRS dataverkeer'::text);
+
+
+SET search_path = ms, pg_catalog;
+
+--
+-- Name: ms_del; Type: RULE; Schema: ms; Owner: mfvl
+--
+
+CREATE RULE ms_del AS ON DELETE TO mediacontent WHERE ((old.id = 0) OR (old.parent_id = 0)) DO INSTEAD NOTHING;
 
 
 SET search_path = pois, pg_catalog;
@@ -3071,7 +3636,7 @@ CREATE RULE invoer_ins_company AS ON INSERT TO invoer WHERE (((new.voornaam IS N
 -- Name: invoer_ins_person; Type: RULE; Schema: public; Owner: mfvl
 --
 
-CREATE RULE invoer_ins_person AS ON INSERT TO invoer WHERE (NOT ((new.voornaam IS NULL) OR (new.achternaam IS NULL))) DO INSTEAD INSERT INTO contacts (fileas, naam, cn, voornaam, voorletters, tussenvoegsel, achternaam, company, function, geboortedatum, geslacht, webpagina) VALUES (nonull_append_strings((((new.achternaam)::text || ', '::text) || (new.voornaam)::text), (new.tussenvoegsel)::text), ((nonull_append_strings((new.voornaam)::text, (new.tussenvoegsel)::text) || ' '::text) || (new.achternaam)::text), ((nonull_append_strings((new.voornaam)::text, (new.tussenvoegsel)::text) || ' '::text) || (new.achternaam)::text), new.voornaam, new.voorletters, new.tussenvoegsel, new.achternaam, new.company, new.function, new.geboortedatum, new.geslacht, new.webpagina);
+CREATE RULE invoer_ins_person AS ON INSERT TO invoer WHERE ((NOT (new.voornaam IS NULL)) OR (NOT (new.achternaam IS NULL))) DO INSTEAD INSERT INTO contacts (fileas, naam, cn, voornaam, voorletters, tussenvoegsel, achternaam, company, function, geboortedatum, geslacht, webpagina) VALUES (nonull_append_strings((((new.achternaam)::text || ', '::text) || (new.voornaam)::text), (new.tussenvoegsel)::text), ((nonull_append_strings((new.voornaam)::text, (new.tussenvoegsel)::text) || ' '::text) || (new.achternaam)::text), ((nonull_append_strings((new.voornaam)::text, (new.tussenvoegsel)::text) || ' '::text) || (new.achternaam)::text), new.voornaam, new.voorletters, new.tussenvoegsel, new.achternaam, new.company, new.function, new.geboortedatum, new.geslacht, new.webpagina);
 
 
 --
@@ -3100,6 +3665,20 @@ CREATE RULE kerstkaart_ins AS ON INSERT TO kerstkaart DO INSTEAD NOTHING;
 --
 
 CREATE RULE kerstkaart_ins_id AS ON INSERT TO kerstkaart WHERE (NOT (new.id IS NULL)) DO INSTEAD INSERT INTO catcontact (contact_id, cat_id) SELECT new.id, categories.id FROM categories WHERE ((categories.categorie)::text = 'kerstkaart'::text);
+
+
+--
+-- Name: kerstmail_ins; Type: RULE; Schema: public; Owner: mfvl
+--
+
+CREATE RULE kerstmail_ins AS ON INSERT TO kerstmail DO INSTEAD NOTHING;
+
+
+--
+-- Name: kerstmail_ins_cn; Type: RULE; Schema: public; Owner: mfvl
+--
+
+CREATE RULE kerstmail_ins_cn AS ON INSERT TO kerstmail WHERE (NOT (new.cn IS NULL)) DO INSTEAD INSERT INTO catcontact (contact_id, cat_id) SELECT c.id, ca.id FROM contacts c, categories ca WHERE (((c.cn)::text = (new.cn)::text) AND ((ca.categorie)::text = 'kerstmail'::text));
 
 
 --
@@ -3198,6 +3777,20 @@ CREATE RULE upd_telnummer3 AS ON UPDATE TO telnummer WHERE (((old.prio <> new.pr
 --
 
 CREATE RULE upd_telnummer4 AS ON UPDATE TO telnummer WHERE (((old.list <> new.list) OR ((old.list IS NULL) AND (NOT (new.list IS NULL)))) OR ((new.list IS NULL) AND (NOT (old.list IS NULL)))) DO INSTEAD UPDATE telephone t SET list = new.list FROM contacts c WHERE ((((c.naam)::text = (old.naam)::text) AND (c.id = t.contact_id)) AND ((t.number)::text = (old.number)::text));
+
+
+--
+-- Name: vo_upd; Type: RULE; Schema: public; Owner: mfvl
+--
+
+CREATE RULE vo_upd AS ON UPDATE TO videoonderwerpen DO INSTEAD NOTHING;
+
+
+--
+-- Name: vo_upd_dvd; Type: RULE; Schema: public; Owner: mfvl
+--
+
+CREATE RULE vo_upd_dvd AS ON UPDATE TO videoonderwerpen WHERE (((old.date = new.date) AND ((old.onderwerp)::text = (new.onderwerp)::text)) AND (old.dvdnr <> new.dvdnr)) DO INSTEAD UPDATE videos SET dvdnr = new.dvdnr WHERE (((date(videos.tijdstip) = old.date) AND ((videos.onderwerp)::text = (old.onderwerp)::text)) AND (videos.dvdnr = old.dvdnr));
 
 
 SET search_path = pois, pg_catalog;
@@ -3395,6 +3988,26 @@ CREATE TRIGGER af_tel_upd
 
 
 --
+-- Name: af_website_del; Type: TRIGGER; Schema: public; Owner: mfvl
+--
+
+CREATE TRIGGER af_website_del
+    BEFORE DELETE ON website
+    FOR EACH ROW
+    EXECUTE PROCEDURE af_updtime1();
+
+
+--
+-- Name: af_website_upd; Type: TRIGGER; Schema: public; Owner: mfvl
+--
+
+CREATE TRIGGER af_website_upd
+    BEFORE INSERT OR UPDATE ON website
+    FOR EACH ROW
+    EXECUTE PROCEDURE af_updtime();
+
+
+--
 -- Name: insert_cat; Type: TRIGGER; Schema: public; Owner: mfvl
 --
 
@@ -3465,6 +4078,16 @@ CREATE TRIGGER insert_tel
 
 
 --
+-- Name: insert_web; Type: TRIGGER; Schema: public; Owner: mfvl
+--
+
+CREATE TRIGGER insert_web
+    BEFORE INSERT ON website
+    FOR EACH ROW
+    EXECUTE PROCEDURE insert_web();
+
+
+--
 -- Name: ldap_create; Type: TRIGGER; Schema: public; Owner: mfvl
 --
 
@@ -3532,6 +4155,26 @@ CREATE TRIGGER update_tel
     BEFORE UPDATE ON telephone
     FOR EACH ROW
     EXECUTE PROCEDURE update_number();
+
+
+--
+-- Name: update_web; Type: TRIGGER; Schema: public; Owner: mfvl
+--
+
+CREATE TRIGGER update_web
+    BEFORE UPDATE ON website
+    FOR EACH ROW
+    EXECUTE PROCEDURE update_web();
+
+
+SET search_path = ms, pg_catalog;
+
+--
+-- Name: parent; Type: FK CONSTRAINT; Schema: ms; Owner: mfvl
+--
+
+ALTER TABLE ONLY mediacontent
+    ADD CONSTRAINT parent FOREIGN KEY (parent_id) REFERENCES mediacontent(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 SET search_path = pois, pg_catalog;
@@ -3707,6 +4350,22 @@ ALTER TABLE ONLY telephone
 
 
 --
+-- Name: website_contact_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY website
+    ADD CONSTRAINT website_contact_id_fkey FOREIGN KEY (contact_id) REFERENCES contacts(id);
+
+
+--
+-- Name: website_type_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY website
+    ADD CONSTRAINT website_type_fkey FOREIGN KEY (type) REFERENCES adr_types(adr_type);
+
+
+--
 -- Name: pois; Type: ACL; Schema: -; Owner: mfvl
 --
 
@@ -3738,6 +4397,28 @@ REVOKE ALL ON TABLE posten FROM mfvl;
 GRANT ALL ON TABLE posten TO mfvl;
 GRANT ALL ON TABLE posten TO httpd;
 
+
+SET search_path = public, pg_catalog;
+
+--
+-- Name: dblink_connect_u(text); Type: ACL; Schema: public; Owner: mfvl
+--
+
+REVOKE ALL ON FUNCTION dblink_connect_u(text) FROM PUBLIC;
+REVOKE ALL ON FUNCTION dblink_connect_u(text) FROM mfvl;
+GRANT ALL ON FUNCTION dblink_connect_u(text) TO mfvl;
+
+
+--
+-- Name: dblink_connect_u(text, text); Type: ACL; Schema: public; Owner: mfvl
+--
+
+REVOKE ALL ON FUNCTION dblink_connect_u(text, text) FROM PUBLIC;
+REVOKE ALL ON FUNCTION dblink_connect_u(text, text) FROM mfvl;
+GRANT ALL ON FUNCTION dblink_connect_u(text, text) TO mfvl;
+
+
+SET search_path = pois, pg_catalog;
 
 --
 -- Name: cameratypes; Type: ACL; Schema: pois; Owner: mfvl

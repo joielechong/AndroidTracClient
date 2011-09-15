@@ -370,6 +370,38 @@ CREATE TABLE koerstemp (
 ALTER TABLE public.koerstemp OWNER TO mfvl;
 
 --
+-- Name: vertaal; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE vertaal (
+    naam1 character varying,
+    naam2 character varying
+);
+
+
+ALTER TABLE public.vertaal OWNER TO mfvl;
+
+--
+-- Name: rektrans; Type: VIEW; Schema: public; Owner: mfvl
+--
+
+CREATE VIEW rektrans AS
+    SELECT rekening.id, rekening.naam FROM rekening UNION SELECT rekening.id, vertaal.naam1 AS naam FROM vertaal, rekening WHERE ((rekening.naam)::text = (vertaal.naam2)::text);
+
+
+ALTER TABLE public.rektrans OWNER TO mfvl;
+
+--
+-- Name: krk; Type: VIEW; Schema: public; Owner: mfvl
+--
+
+CREATE VIEW krk AS
+    SELECT r.naam, k.datum, k.volume, k.open, k.hoog, k.laag, k.slot FROM koersid k, rektrans r WHERE (k.id = r.id);
+
+
+ALTER TABLE public.krk OWNER TO mfvl;
+
+--
 -- Name: rekening_id_seq; Type: SEQUENCE; Schema: public; Owner: mfvl
 --
 
@@ -401,28 +433,6 @@ CREATE TABLE reksoort (
 
 
 ALTER TABLE public.reksoort OWNER TO mfvl;
-
---
--- Name: vertaal; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
---
-
-CREATE TABLE vertaal (
-    naam1 character varying,
-    naam2 character varying
-);
-
-
-ALTER TABLE public.vertaal OWNER TO mfvl;
-
---
--- Name: rektrans; Type: VIEW; Schema: public; Owner: mfvl
---
-
-CREATE VIEW rektrans AS
-    SELECT rekening.id, rekening.naam FROM rekening UNION SELECT rekening.id, vertaal.naam1 AS naam FROM vertaal, rekening WHERE ((rekening.naam)::text = (vertaal.naam2)::text);
-
-
-ALTER TABLE public.rektrans OWNER TO mfvl;
 
 --
 -- Name: spaar; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
@@ -612,6 +622,26 @@ REVOKE ALL ON SCHEMA public FROM PUBLIC;
 REVOKE ALL ON SCHEMA public FROM postgres;
 GRANT ALL ON SCHEMA public TO postgres;
 GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- Name: koersen_gisteren; Type: ACL; Schema: public; Owner: mfvl
+--
+
+REVOKE ALL ON TABLE koersen_gisteren FROM PUBLIC;
+REVOKE ALL ON TABLE koersen_gisteren FROM mfvl;
+GRANT ALL ON TABLE koersen_gisteren TO mfvl;
+GRANT SELECT ON TABLE koersen_gisteren TO httpd;
+
+
+--
+-- Name: koersen_vandaag; Type: ACL; Schema: public; Owner: mfvl
+--
+
+REVOKE ALL ON TABLE koersen_vandaag FROM PUBLIC;
+REVOKE ALL ON TABLE koersen_vandaag FROM mfvl;
+GRANT ALL ON TABLE koersen_vandaag TO mfvl;
+GRANT SELECT ON TABLE koersen_vandaag TO httpd;
 
 
 --

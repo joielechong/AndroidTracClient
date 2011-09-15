@@ -9,7 +9,7 @@ my $sth_in = $dbh->prepare("INSERT INTO videos (tijdstip,directory,naam,duur,asp
 my $sth_upasp = $dbh->prepare("UPDATE videos set aspect=? where directory=? and naam=?");
 my $sth_sel = $dbh->prepare("SELECT aspect from videos where directory=? and naam=?");
 
-my $dir = "/data/JVC-20060819/SD_VIDEO/";
+my $dir = "/data/HomeVideos/JVC-20060819/SD_VIDEO/";
 
 opendir (DIR1,$dir) || die "Kan $dir niet openen\n";
 my @dirs = grep { /^PRG/ } readdir(DIR1);

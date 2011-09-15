@@ -252,7 +252,7 @@
     
     
     BEGIN {
-	$DataSource::Yahoo::VERSION = "0.1";
+	$DataSource::Yahoo::VERSION = "0.2";
     }
     
     sub max{
@@ -310,6 +310,7 @@
 		$linenumber++;
 #			print Dumper($hr);
 #			print $hr->{DATE}," ",$hr->{TIME},"\n";
+		next unless defined $hr->{TIME} and defined $hr->{DATE};
 		next if (($hr->{TIME} eq 'N/A') or ($hr->{DATE} eq 'N/A'));
 		my $time_t = $self->parse_time($hr->{DATE},$hr->{TIME});
 	        unless (defined($time_t)) {
@@ -519,6 +520,8 @@
 	    $k1 =~ s/,/./;
 	    $k2 =~ s/,/./;
 	    my ($day,$month,$year) = split("-",$datum1);
+	    next unless defined($year);
+	    next unless defined($month);
 	    my $time_t = POSIX::mktime(0,0,0,$day,$month-1,$year-1900);
 	    $fdbh->storeKoers($f,$time_t,$k1,$k1,$k1,$k1,0,'N/A') unless $k1 eq "-";
 	    ($day,$month,$year) = split("-",$datum2);

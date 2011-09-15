@@ -84,7 +84,7 @@ foreach ($gm_results as $r) {
 	if ($id === FALSE) {
 	  throw new Exception('GMail contacts not loaded?');
 	} else if ($id == -1) {
-	  $newid = $cdb->createContact($r);
+//	  $newid = $cdb->createContact($r);
 	} else {
 	}
   //  if ($r->getId() !== FALSE) {

@@ -20,8 +20,8 @@ my $dbh = DBI->connect("dbi:Pg:dbname=mfvl");
 
 my $sth1=$dbh->prepare("SELECT DISTINCT type FROM pois.flitspalen WHERE NOT type IN ('Overig', 'mobiel') ");
 my $sth2=$dbh->prepare("SELECT DISTINCT snelheid FROM pois.flitspalen WHERE type=?");
-#my $sth3=$dbh->prepare("SELECT id,lat,lon,commentaar,richting,bidirectioneel FROM pois.flitspalen WHERE type = ? and snelheid=? and not land in ('CH','A','D') ORDER BY lon,lat");
-my $sth3=$dbh->prepare("SELECT id,lat,lon,commentaar,richting,bidirectioneel FROM pois.flitspalen WHERE type = ? and snelheid=? ORDER BY lon,lat");
+my $sth3=$dbh->prepare("SELECT id,lat,lon,commentaar,richting,bidirectioneel FROM pois.flitspalen WHERE type = ? and snelheid=? and not land in ('CH','A','D') ORDER BY lon,lat");
+#my $sth3=$dbh->prepare("SELECT id,lat,lon,commentaar,richting,bidirectioneel FROM pois.flitspalen WHERE type = ? and snelheid=? ORDER BY lon,lat");
 
 my %typconv = ("roodlicht"=>"REDLIGHT",
                "snelheid"=>"GATSO",

@@ -2,18 +2,12 @@
 -- PostgreSQL database dump
 --
 
+SET statement_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = off;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 SET escape_string_warning = off;
-
---
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
---
-
-COMMENT ON SCHEMA public IS 'Standard public schema';
-
 
 --
 -- Name: plperl; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: postgres
@@ -22,12 +16,16 @@ COMMENT ON SCHEMA public IS 'Standard public schema';
 CREATE PROCEDURAL LANGUAGE plperl;
 
 
+ALTER PROCEDURAL LANGUAGE plperl OWNER TO postgres;
+
 --
 -- Name: plpgsql; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: postgres
 --
 
 CREATE PROCEDURAL LANGUAGE plpgsql;
 
+
+ALTER PROCEDURAL LANGUAGE plpgsql OWNER TO postgres;
 
 SET search_path = public, pg_catalog;
 
@@ -77,7 +75,8 @@ ALTER TYPE public.tablefunc_crosstab_4 OWNER TO mfvl;
 -- Name: add_categorie(); Type: FUNCTION; Schema: public; Owner: mfvl
 --
 
-CREATE FUNCTION add_categorie() RETURNS "trigger"
+CREATE FUNCTION add_categorie() RETURNS trigger
+    LANGUAGE plpgsql
     AS $$
 declare 
   newcat varchar;
@@ -126,8 +125,7 @@ begin
     end if;
   end if;
   return NEW;
-end; $$
-    LANGUAGE plpgsql;
+end; $$;
 
 
 ALTER FUNCTION public.add_categorie() OWNER TO mfvl;
@@ -136,12 +134,12 @@ ALTER FUNCTION public.add_categorie() OWNER TO mfvl;
 -- Name: af_album_del(); Type: FUNCTION; Schema: public; Owner: mfvl
 --
 
-CREATE FUNCTION af_album_del() RETURNS "trigger"
+CREATE FUNCTION af_album_del() RETURNS trigger
+    LANGUAGE plpgsql
     AS $$begin 
   delete from albumfoto where albumid=old.id; 
   return old; 
-end;$$
-    LANGUAGE plpgsql;
+end;$$;
 
 
 ALTER FUNCTION public.af_album_del() OWNER TO mfvl;
@@ -150,12 +148,16 @@ ALTER FUNCTION public.af_album_del() OWNER TO mfvl;
 -- Name: af_fotos_del(); Type: FUNCTION; Schema: public; Owner: mfvl
 --
 
-CREATE FUNCTION af_fotos_del() RETURNS "trigger"
-    AS $$begin 
-  delete from albumfoto where fotoid=old.id; 
-  return old; 
-end;$$
-    LANGUAGE plpgsql;
+CREATE FUNCTION af_fotos_del() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$declare
+  thumb oid;
+begin
+  thumb := old.thumbnail;
+  delete from albumfoto where fotoid=old.id;
+  perform 'select lo_unlink(old.thumbnail)';
+  return old;
+end;$$;
 
 
 ALTER FUNCTION public.af_fotos_del() OWNER TO mfvl;
@@ -164,12 +166,12 @@ ALTER FUNCTION public.af_fotos_del() OWNER TO mfvl;
 -- Name: af_fotos_ins(); Type: FUNCTION; Schema: public; Owner: mfvl
 --
 
-CREATE FUNCTION af_fotos_ins() RETURNS "trigger"
+CREATE FUNCTION af_fotos_ins() RETURNS trigger
+    LANGUAGE plpgsql
     AS $$begin
   insert into albumfoto values (0,new.id,new.id);
   return new;
-end;$$
-    LANGUAGE plpgsql;
+end;$$;
 
 
 ALTER FUNCTION public.af_fotos_ins() OWNER TO mfvl;
@@ -179,8 +181,8 @@ ALTER FUNCTION public.af_fotos_ins() OWNER TO mfvl;
 --
 
 CREATE FUNCTION connectby(text, text, text, text, integer, text) RETURNS SETOF record
-    AS '$libdir/tablefunc', 'connectby_text'
-    LANGUAGE c STABLE STRICT;
+    LANGUAGE c STABLE STRICT
+    AS '$libdir/tablefunc', 'connectby_text';
 
 
 ALTER FUNCTION public.connectby(text, text, text, text, integer, text) OWNER TO mfvl;
@@ -190,8 +192,8 @@ ALTER FUNCTION public.connectby(text, text, text, text, integer, text) OWNER TO 
 --
 
 CREATE FUNCTION connectby(text, text, text, text, integer) RETURNS SETOF record
-    AS '$libdir/tablefunc', 'connectby_text'
-    LANGUAGE c STABLE STRICT;
+    LANGUAGE c STABLE STRICT
+    AS '$libdir/tablefunc', 'connectby_text';
 
 
 ALTER FUNCTION public.connectby(text, text, text, text, integer) OWNER TO mfvl;
@@ -201,8 +203,8 @@ ALTER FUNCTION public.connectby(text, text, text, text, integer) OWNER TO mfvl;
 --
 
 CREATE FUNCTION connectby(text, text, text, text, text, integer, text) RETURNS SETOF record
-    AS '$libdir/tablefunc', 'connectby_text_serial'
-    LANGUAGE c STABLE STRICT;
+    LANGUAGE c STABLE STRICT
+    AS '$libdir/tablefunc', 'connectby_text_serial';
 
 
 ALTER FUNCTION public.connectby(text, text, text, text, text, integer, text) OWNER TO mfvl;
@@ -212,8 +214,8 @@ ALTER FUNCTION public.connectby(text, text, text, text, text, integer, text) OWN
 --
 
 CREATE FUNCTION connectby(text, text, text, text, text, integer) RETURNS SETOF record
-    AS '$libdir/tablefunc', 'connectby_text_serial'
-    LANGUAGE c STABLE STRICT;
+    LANGUAGE c STABLE STRICT
+    AS '$libdir/tablefunc', 'connectby_text_serial';
 
 
 ALTER FUNCTION public.connectby(text, text, text, text, text, integer) OWNER TO mfvl;
@@ -223,8 +225,8 @@ ALTER FUNCTION public.connectby(text, text, text, text, text, integer) OWNER TO 
 --
 
 CREATE FUNCTION crosstab(text) RETURNS SETOF record
-    AS '$libdir/tablefunc', 'crosstab'
-    LANGUAGE c STABLE STRICT;
+    LANGUAGE c STABLE STRICT
+    AS '$libdir/tablefunc', 'crosstab';
 
 
 ALTER FUNCTION public.crosstab(text) OWNER TO mfvl;
@@ -234,8 +236,8 @@ ALTER FUNCTION public.crosstab(text) OWNER TO mfvl;
 --
 
 CREATE FUNCTION crosstab(text, integer) RETURNS SETOF record
-    AS '$libdir/tablefunc', 'crosstab'
-    LANGUAGE c STABLE STRICT;
+    LANGUAGE c STABLE STRICT
+    AS '$libdir/tablefunc', 'crosstab';
 
 
 ALTER FUNCTION public.crosstab(text, integer) OWNER TO mfvl;
@@ -245,8 +247,8 @@ ALTER FUNCTION public.crosstab(text, integer) OWNER TO mfvl;
 --
 
 CREATE FUNCTION crosstab(text, text) RETURNS SETOF record
-    AS '$libdir/tablefunc', 'crosstab_hash'
-    LANGUAGE c STABLE STRICT;
+    LANGUAGE c STABLE STRICT
+    AS '$libdir/tablefunc', 'crosstab_hash';
 
 
 ALTER FUNCTION public.crosstab(text, text) OWNER TO mfvl;
@@ -256,8 +258,8 @@ ALTER FUNCTION public.crosstab(text, text) OWNER TO mfvl;
 --
 
 CREATE FUNCTION crosstab2(text) RETURNS SETOF tablefunc_crosstab_2
-    AS '$libdir/tablefunc', 'crosstab'
-    LANGUAGE c STABLE STRICT;
+    LANGUAGE c STABLE STRICT
+    AS '$libdir/tablefunc', 'crosstab';
 
 
 ALTER FUNCTION public.crosstab2(text) OWNER TO mfvl;
@@ -267,8 +269,8 @@ ALTER FUNCTION public.crosstab2(text) OWNER TO mfvl;
 --
 
 CREATE FUNCTION crosstab3(text) RETURNS SETOF tablefunc_crosstab_3
-    AS '$libdir/tablefunc', 'crosstab'
-    LANGUAGE c STABLE STRICT;
+    LANGUAGE c STABLE STRICT
+    AS '$libdir/tablefunc', 'crosstab';
 
 
 ALTER FUNCTION public.crosstab3(text) OWNER TO mfvl;
@@ -278,8 +280,8 @@ ALTER FUNCTION public.crosstab3(text) OWNER TO mfvl;
 --
 
 CREATE FUNCTION crosstab4(text) RETURNS SETOF tablefunc_crosstab_4
-    AS '$libdir/tablefunc', 'crosstab'
-    LANGUAGE c STABLE STRICT;
+    LANGUAGE c STABLE STRICT
+    AS '$libdir/tablefunc', 'crosstab';
 
 
 ALTER FUNCTION public.crosstab4(text) OWNER TO mfvl;
@@ -288,25 +290,25 @@ ALTER FUNCTION public.crosstab4(text) OWNER TO mfvl;
 -- Name: day(date); Type: FUNCTION; Schema: public; Owner: mfvl
 --
 
-CREATE FUNCTION "day"(datum date) RETURNS integer
-    AS $$begin return date_part('day',datum); end;$$
-    LANGUAGE plpgsql;
+CREATE FUNCTION day(datum date) RETURNS integer
+    LANGUAGE plpgsql
+    AS $$begin return date_part('day',datum); end;$$;
 
 
-ALTER FUNCTION public."day"(datum date) OWNER TO mfvl;
+ALTER FUNCTION public.day(datum date) OWNER TO mfvl;
 
 --
 -- Name: getfirstlow(text); Type: FUNCTION; Schema: public; Owner: mfvl
 --
 
 CREATE FUNCTION getfirstlow(text) RETURNS text
+    LANGUAGE plperl
     AS $_$ 
 my $value = shift;
 $value =~ s/^\W+//;
 $value =~ s/^$/inconnu/;
 return substr(lc($value),0,1);
-$_$
-    LANGUAGE plperl;
+$_$;
 
 
 ALTER FUNCTION public.getfirstlow(text) OWNER TO mfvl;
@@ -315,20 +317,20 @@ ALTER FUNCTION public.getfirstlow(text) OWNER TO mfvl;
 -- Name: month(date); Type: FUNCTION; Schema: public; Owner: mfvl
 --
 
-CREATE FUNCTION "month"(datum date) RETURNS integer
-    AS $$begin return date_part('month',datum); end;$$
-    LANGUAGE plpgsql;
+CREATE FUNCTION month(datum date) RETURNS integer
+    LANGUAGE plpgsql
+    AS $$begin return date_part('month',datum); end;$$;
 
 
-ALTER FUNCTION public."month"(datum date) OWNER TO mfvl;
+ALTER FUNCTION public.month(datum date) OWNER TO mfvl;
 
 --
 -- Name: normal_rand(integer, double precision, double precision); Type: FUNCTION; Schema: public; Owner: mfvl
 --
 
 CREATE FUNCTION normal_rand(integer, double precision, double precision) RETURNS SETOF double precision
-    AS '$libdir/tablefunc', 'normal_rand'
-    LANGUAGE c STRICT;
+    LANGUAGE c STRICT
+    AS '$libdir/tablefunc', 'normal_rand';
 
 
 ALTER FUNCTION public.normal_rand(integer, double precision, double precision) OWNER TO mfvl;
@@ -338,8 +340,8 @@ ALTER FUNCTION public.normal_rand(integer, double precision, double precision) O
 --
 
 CREATE FUNCTION plpgsql_call_handler() RETURNS language_handler
-    AS '/usr/local/pgsql/lib/plpgsql.so', 'plpgsql_call_handler'
-    LANGUAGE c;
+    LANGUAGE c
+    AS '/usr/local/pgsql/lib/plpgsql.so', 'plpgsql_call_handler';
 
 
 ALTER FUNCTION public.plpgsql_call_handler() OWNER TO mfvl;
@@ -349,13 +351,13 @@ ALTER FUNCTION public.plpgsql_call_handler() OWNER TO mfvl;
 --
 
 CREATE FUNCTION tolower(text) RETURNS text
+    LANGUAGE plperl
     AS $_$ 
 my $value = shift;
 $value =~ s/^\W+//;
 $value =~ s/^$/inconnu/;
 return lc($value);
-$_$
-    LANGUAGE plperl;
+$_$;
 
 
 ALTER FUNCTION public.tolower(text) OWNER TO mfvl;
@@ -364,49 +366,70 @@ ALTER FUNCTION public.tolower(text) OWNER TO mfvl;
 -- Name: tp_fietsers_del(); Type: FUNCTION; Schema: public; Owner: mfvl
 --
 
-CREATE FUNCTION tp_fietsers_del() RETURNS "trigger"
+CREATE FUNCTION tp_fietsers_del() RETURNS trigger
+    LANGUAGE plpgsql
     AS $$begin
   delete from type where type.id=old.id;
   return old; 
-end;$$
-    LANGUAGE plpgsql;
+end;$$;
 
 
 ALTER FUNCTION public.tp_fietsers_del() OWNER TO mfvl;
 
 --
+-- Name: vulalbums(); Type: FUNCTION; Schema: public; Owner: httpd
+--
+
+CREATE FUNCTION vulalbums() RETURNS integer
+    LANGUAGE plpgsql
+    AS $$BEGIN
+create temporary table albumtemp (naam varchar);
+insert into albumtemp select distinct to_char(datum,'YYYY') from fotos;
+insert into albumtemp select distinct to_char(datum,'YYYY-MM') from fotos;
+delete from albumtemp where naam is null;
+insert into album (naam) select naam from albumtemp where not naam in (select naam from album);
+insert into albumfoto (albumid,fotoid,seqnr) select a.id,f.id,f.id from fotos as f,album as a where (a.naam=to_char(f.datum,'YYYY') or a.naam=to_char(f.datum,'YYYY-MM')) and not a.id in (select albumid from albumfoto where fotoid=f.id);
+
+return 0;
+end;$$;
+
+
+ALTER FUNCTION public.vulalbums() OWNER TO httpd;
+
+--
 -- Name: year(date); Type: FUNCTION; Schema: public; Owner: mfvl
 --
 
-CREATE FUNCTION "year"(datum date) RETURNS integer
-    AS $$begin return date_part('year',datum); end;$$
-    LANGUAGE plpgsql;
+CREATE FUNCTION year(datum date) RETURNS integer
+    LANGUAGE plpgsql
+    AS $$begin return date_part('year',datum); end;$$;
 
 
-ALTER FUNCTION public."year"(datum date) OWNER TO mfvl;
+ALTER FUNCTION public.year(datum date) OWNER TO mfvl;
 
 SET default_tablespace = '';
 
 SET default_with_oids = true;
 
 --
--- Name: giro; Type: TABLE; Schema: public; Owner: root; Tablespace: 
+-- Name: giro; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
 --
 
 CREATE TABLE giro (
     girorekening bigint,
     datum integer,
-    "type" character(2),
+    type character(2),
     volgnr integer,
     rekening bigint,
     naam character varying,
     bedrag double precision,
     omschrijving character varying,
-    categorie character varying DEFAULT 'NTB'::character varying
+    categorie character varying DEFAULT 'NTB'::character varying,
+    id integer NOT NULL
 );
 
 
-ALTER TABLE public.giro OWNER TO root;
+ALTER TABLE public.giro OWNER TO mfvl;
 
 --
 -- Name: BIJFINkaart; Type: VIEW; Schema: public; Owner: mfvl
@@ -447,6 +470,7 @@ ALTER TABLE public.album OWNER TO mfvl;
 --
 
 CREATE SEQUENCE album_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -469,7 +493,7 @@ ALTER SEQUENCE album_id_seq OWNED BY album.id;
 CREATE TABLE album_users (
     userid integer NOT NULL,
     albumid integer NOT NULL,
-    "read" boolean DEFAULT false,
+    read boolean DEFAULT false,
     modify boolean DEFAULT false
 );
 
@@ -498,8 +522,8 @@ ALTER TABLE public.albumfoto OWNER TO mfvl;
 --
 
 CREATE TABLE autocat (
-    girorekening bigint,
-    rekening integer,
+    girorekening bigint NOT NULL,
+    rekening integer NOT NULL,
     categorie character varying
 );
 
@@ -545,7 +569,7 @@ CREATE TABLE fietsers (
     voorkeur character varying,
     aanmaak date,
     wijzig date,
-    "password" character varying,
+    password character varying,
     groep character varying DEFAULT 'fietser'::character varying,
     hits integer DEFAULT 0
 );
@@ -574,6 +598,7 @@ ALTER TABLE public.fietslinks OWNER TO mfvl;
 --
 
 CREATE SEQUENCE fietslinks_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -589,21 +614,6 @@ ALTER TABLE public.fietslinks_id_seq OWNER TO mfvl;
 ALTER SEQUENCE fietslinks_id_seq OWNED BY fietslinks.id;
 
 
-SET default_with_oids = false;
-
---
--- Name: filetemp; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
---
-
-CREATE TABLE filetemp (
-    filename character varying NOT NULL
-);
-
-
-ALTER TABLE public.filetemp OWNER TO mfvl;
-
-SET default_with_oids = true;
-
 --
 -- Name: foto_users; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
 --
@@ -611,8 +621,8 @@ SET default_with_oids = true;
 CREATE TABLE foto_users (
     id integer NOT NULL,
     email character varying,
-    "password" character varying,
-    "read" boolean DEFAULT false,
+    password character varying,
+    read boolean DEFAULT false,
     modify boolean DEFAULT false
 );
 
@@ -624,6 +634,7 @@ ALTER TABLE public.foto_users OWNER TO mfvl;
 --
 
 CREATE SEQUENCE foto_users_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -653,17 +664,33 @@ CREATE TABLE fotos (
     filmnr integer,
     fotonr integer,
     hitcount integer,
-    auteur character varying
+    auteur character varying,
+    insidethumb boolean DEFAULT false NOT NULL
 );
 
 
 ALTER TABLE public.fotos OWNER TO mfvl;
 
 --
+-- Name: COLUMN fotos.thumbnail; Type: COMMENT; Schema: public; Owner: mfvl
+--
+
+COMMENT ON COLUMN fotos.thumbnail IS 'Link naar het large object (vervangen door BLOB?)';
+
+
+--
+-- Name: COLUMN fotos.insidethumb; Type: COMMENT; Schema: public; Owner: mfvl
+--
+
+COMMENT ON COLUMN fotos.insidethumb IS 'Waar als thumbnail al in de jpeg zit';
+
+
+--
 -- Name: fotos_id_seq; Type: SEQUENCE; Schema: public; Owner: mfvl
 --
 
 CREATE SEQUENCE fotos_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -684,7 +711,7 @@ ALTER SEQUENCE fotos_id_seq OWNED BY fotos.id;
 --
 
 CREATE VIEW giro1 AS
-    SELECT (giro.datum / 10000) AS jaar, mod((giro.datum / 100), 100) AS maand, mod(giro.datum, 100) AS dag, giro.girorekening, giro."type", giro.volgnr, giro.rekening, giro.naam, giro.bedrag, giro.omschrijving, giro.categorie FROM giro;
+    SELECT (giro.datum / 10000) AS jaar, mod((giro.datum / 100), 100) AS maand, mod(giro.datum, 100) AS dag, giro.girorekening, giro.type, giro.volgnr, giro.rekening, giro.naam, giro.bedrag, giro.omschrijving, giro.categorie FROM giro;
 
 
 ALTER TABLE public.giro1 OWNER TO mfvl;
@@ -700,14 +727,68 @@ CREATE VIEW giro2 AS
 ALTER TABLE public.giro2 OWNER TO mfvl;
 
 --
+-- Name: giro_id_seq; Type: SEQUENCE; Schema: public; Owner: mfvl
+--
+
+CREATE SEQUENCE giro_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.giro_id_seq OWNER TO mfvl;
+
+--
+-- Name: giro_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mfvl
+--
+
+ALTER SEQUENCE giro_id_seq OWNED BY giro.id;
+
+
+--
 -- Name: giro_maand; Type: VIEW; Schema: public; Owner: mfvl
 --
 
 CREATE VIEW giro_maand AS
-    SELECT (giro.datum / 100) AS maand, giro.categorie, sum(giro.bedrag) AS sum FROM giro WHERE (giro.girorekening <> 631934) GROUP BY (giro.datum / 100), giro.categorie ORDER BY (giro.datum / 100);
+    SELECT (giro.datum / 100) AS maand, giro.categorie, sum(giro.bedrag) AS sum FROM giro WHERE (giro.girorekening <> 631934) GROUP BY (giro.datum / 100), giro.categorie ORDER BY (giro.datum / 100), giro.categorie;
 
 
 ALTER TABLE public.giro_maand OWNER TO mfvl;
+
+SET default_with_oids = false;
+
+--
+-- Name: girotmp2; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+CREATE TABLE girotmp2 (
+    datum text,
+    "naam / Omschrijving" text,
+    rekening text,
+    tegenrekening text,
+    code text,
+    "af bij" text,
+    "Bedrag (EUR)" text,
+    mutatiesoort text,
+    mededelingen text
+);
+
+
+ALTER TABLE public.girotmp2 OWNER TO mfvl;
+
+--
+-- Name: giroraw; Type: VIEW; Schema: public; Owner: mfvl
+--
+
+CREATE VIEW giroraw AS
+    SELECT (girotmp2.rekening)::bigint AS girorekening, (girotmp2.datum)::integer AS datum, girotmp2.code AS type, 0 AS volgnr, (NULLIF(girotmp2.tegenrekening, ''::text))::bigint AS rekening, girotmp2."naam / Omschrijving" AS naam, ((replace(replace(girotmp2."af bij", 'Af'::text, '-'::text), 'Bij'::text, '+'::text) || replace(girotmp2."Bedrag (EUR)", ','::text, '.'::text)))::double precision AS bedrag, girotmp2.mededelingen AS omschrijving FROM girotmp2;
+
+
+ALTER TABLE public.giroraw OWNER TO mfvl;
+
+SET default_with_oids = true;
 
 --
 -- Name: girotmp; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
@@ -717,7 +798,7 @@ CREATE TABLE girotmp (
     girorekening integer,
     datum integer,
     naam character varying,
-    "type" character(2),
+    type character(2),
     rekening integer,
     bedrag double precision
 );
@@ -732,7 +813,7 @@ ALTER TABLE public.girotmp OWNER TO mfvl;
 CREATE TABLE girotmp1 (
     girorekening integer,
     datum integer,
-    "type" character(2),
+    type character(2),
     volgnr integer,
     rekening integer,
     naam character varying,
@@ -742,6 +823,26 @@ CREATE TABLE girotmp1 (
 
 
 ALTER TABLE public.girotmp1 OWNER TO mfvl;
+
+--
+-- Name: maandoverz; Type: VIEW; Schema: public; Owner: mfvl
+--
+
+CREATE VIEW maandoverz AS
+    SELECT (giro.datum / 10000) AS jaar, ((giro.datum - (10000 * (giro.datum / 10000))) / 100) AS maand, giro.categorie, giro.bedrag FROM giro WHERE ((giro.girorekening <> 631934) AND (NOT ((giro.categorie)::text = ANY (ARRAY[('HEENENWEER'::character varying)::text, ('SPAREN'::character varying)::text])))) ORDER BY giro.datum;
+
+
+ALTER TABLE public.maandoverz OWNER TO mfvl;
+
+--
+-- Name: maandoverzicht-2008; Type: VIEW; Schema: public; Owner: mfvl
+--
+
+CREATE VIEW "maandoverzicht-2008" AS
+    SELECT (giro.datum / 10000) AS jaar, ((giro.datum - (10000 * (giro.datum / 10000))) / 100) AS maand, giro.categorie, giro.bedrag FROM giro WHERE (((giro.datum / 10000) = 2008) AND ((giro.girorekening <> 631934) AND (NOT ((giro.categorie)::text = ANY (ARRAY[('HEENENWEER'::character varying)::text, ('SPAREN'::character varying)::text]))))) ORDER BY giro.datum;
+
+
+ALTER TABLE public."maandoverzicht-2008" OWNER TO mfvl;
 
 --
 -- Name: marianne; Type: VIEW; Schema: public; Owner: mfvl
@@ -754,11 +855,21 @@ CREATE VIEW marianne AS
 ALTER TABLE public.marianne OWNER TO mfvl;
 
 --
+-- Name: nieuwegiro; Type: VIEW; Schema: public; Owner: mfvl
+--
+
+CREATE VIEW nieuwegiro AS
+    SELECT a.girorekening, a.datum, a.type, a.volgnr, a.rekening, a.naam, a.bedrag, a.omschrijving FROM giroraw a, (SELECT giro.girorekening, max(giro.datum) AS datum FROM giro WHERE (giro.girorekening IN (SELECT giroraw.girorekening FROM giroraw)) GROUP BY giro.girorekening) t WHERE ((a.girorekening = t.girorekening) AND (a.datum > t.datum));
+
+
+ALTER TABLE public.nieuwegiro OWNER TO mfvl;
+
+--
 -- Name: ntb; Type: VIEW; Schema: public; Owner: mfvl
 --
 
 CREATE VIEW ntb AS
-    SELECT giro.oid, giro.girorekening, giro.datum, giro."type", giro.volgnr, giro.rekening, giro.naam, giro.bedrag, giro.omschrijving, giro.categorie FROM giro WHERE (((giro.categorie)::text = 'NTB'::text) AND (giro.girorekening = ANY (ARRAY[(3808539)::bigint, (5282350)::bigint]))) ORDER BY giro.datum DESC;
+    SELECT giro.oid, giro.girorekening, giro.datum, giro.type, giro.volgnr, giro.rekening, giro.naam, giro.bedrag, giro.omschrijving, giro.categorie FROM giro WHERE (((giro.categorie)::text = 'NTB'::text) AND (giro.girorekening = ANY (ARRAY[(3808539)::bigint, (5282350)::bigint, (364756)::bigint, (2806736)::bigint]))) ORDER BY giro.datum DESC;
 
 
 ALTER TABLE public.ntb OWNER TO mfvl;
@@ -778,16 +889,26 @@ CREATE TABLE saldo (
 ALTER TABLE public.saldo OWNER TO root;
 
 --
+-- Name: test; Type: VIEW; Schema: public; Owner: mfvl
+--
+
+CREATE VIEW test AS
+    SELECT giro.girorekening, max(giro.datum) AS datum FROM giro WHERE (giro.girorekening IN (SELECT giroraw.girorekening FROM giroraw)) GROUP BY giro.girorekening;
+
+
+ALTER TABLE public.test OWNER TO mfvl;
+
+--
 -- Name: type; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
 --
 
-CREATE TABLE "type" (
+CREATE TABLE type (
     id integer,
-    "type" character varying
+    type character varying
 );
 
 
-ALTER TABLE public."type" OWNER TO mfvl;
+ALTER TABLE public.type OWNER TO mfvl;
 
 --
 -- Name: id; Type: DEFAULT; Schema: public; Owner: mfvl
@@ -818,11 +939,10 @@ ALTER TABLE fotos ALTER COLUMN id SET DEFAULT nextval('fotos_id_seq'::regclass);
 
 
 --
--- Name: ac_001; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+-- Name: id; Type: DEFAULT; Schema: public; Owner: mfvl
 --
 
-ALTER TABLE ONLY autocat
-    ADD CONSTRAINT ac_001 UNIQUE (girorekening, rekening);
+ALTER TABLE giro ALTER COLUMN id SET DEFAULT nextval('giro_id_seq'::regclass);
 
 
 --
@@ -858,6 +978,14 @@ ALTER TABLE ONLY albumfoto
 
 
 --
+-- Name: autocat_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY autocat
+    ADD CONSTRAINT autocat_pkey PRIMARY KEY (girorekening, rekening);
+
+
+--
 -- Name: email001; Type: CONSTRAINT; Schema: public; Owner: httpd; Tablespace: 
 --
 
@@ -882,14 +1010,6 @@ ALTER TABLE ONLY fietslinks
 
 
 --
--- Name: filetemp_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
---
-
-ALTER TABLE ONLY filetemp
-    ADD CONSTRAINT filetemp_pkey PRIMARY KEY (filename);
-
-
---
 -- Name: fotos_filename_key; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
 --
 
@@ -903,6 +1023,14 @@ ALTER TABLE ONLY fotos
 
 ALTER TABLE ONLY fotos
     ADD CONSTRAINT fotos_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: giro_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY giro
+    ADD CONSTRAINT giro_pkey PRIMARY KEY (id);
 
 
 --
@@ -958,14 +1086,14 @@ CREATE INDEX fotos_datum ON fotos USING btree (datum);
 
 
 --
--- Name: giro_idx01; Type: INDEX; Schema: public; Owner: root; Tablespace: 
+-- Name: giro_idx01; Type: INDEX; Schema: public; Owner: mfvl; Tablespace: 
 --
 
 CREATE INDEX giro_idx01 ON giro USING btree (girorekening, datum);
 
 
 --
--- Name: giro_idx02; Type: INDEX; Schema: public; Owner: root; Tablespace: 
+-- Name: giro_idx02; Type: INDEX; Schema: public; Owner: mfvl; Tablespace: 
 --
 
 CREATE INDEX giro_idx02 ON giro USING btree (datum);
@@ -975,14 +1103,14 @@ CREATE INDEX giro_idx02 ON giro USING btree (datum);
 -- Name: type_idx01; Type: INDEX; Schema: public; Owner: mfvl; Tablespace: 
 --
 
-CREATE INDEX type_idx01 ON "type" USING btree (id);
+CREATE INDEX type_idx01 ON type USING btree (id);
 
 
 --
 -- Name: type_idx02; Type: INDEX; Schema: public; Owner: mfvl; Tablespace: 
 --
 
-CREATE INDEX type_idx02 ON "type" USING btree ("type");
+CREATE INDEX type_idx02 ON type USING btree (type);
 
 
 --
@@ -996,7 +1124,7 @@ CREATE UNIQUE INDEX us001 ON foto_users USING btree (email);
 -- Name: bijfin_ins; Type: RULE; Schema: public; Owner: mfvl
 --
 
-CREATE RULE bijfin_ins AS ON INSERT TO "BIJFINkaart" DO INSTEAD INSERT INTO giro (girorekening, datum, "type", volgnr, rekening, naam, bedrag, omschrijving, categorie) VALUES (27280350011::bigint, new.datum, 'CR'::bpchar, new.volgnr, NULL::bigint, new.naam, new.bedrag, NULL::character varying, new.categorie);
+CREATE RULE bijfin_ins AS ON INSERT TO "BIJFINkaart" DO INSTEAD INSERT INTO giro (girorekening, datum, type, volgnr, rekening, naam, bedrag, omschrijving, categorie) VALUES (27280350011::bigint, new.datum, 'CR'::bpchar, new.volgnr, NULL::bigint, new.naam, new.bedrag, NULL::character varying, new.categorie);
 
 
 --
@@ -1017,11 +1145,25 @@ CREATE RULE ntb_cat_dum AS ON UPDATE TO ntb DO INSTEAD NOTHING;
 -- Name: visa_ins; Type: RULE; Schema: public; Owner: mfvl
 --
 
-CREATE RULE visa_ins AS ON INSERT TO "VISAkaart" DO INSTEAD INSERT INTO giro (girorekening, datum, "type", volgnr, rekening, naam, bedrag, omschrijving, categorie) VALUES (4175250010::bigint, new.datum, 'CR'::bpchar, new.volgnr, NULL::bigint, new.naam, new.bedrag, NULL::character varying, new.categorie);
+CREATE RULE visa_ins AS ON INSERT TO "VISAkaart" DO INSTEAD INSERT INTO giro (girorekening, datum, type, volgnr, rekening, naam, bedrag, omschrijving, categorie) VALUES (4175250010::bigint, new.datum, 'CR'::bpchar, new.volgnr, NULL::bigint, new.naam, new.bedrag, NULL::character varying, new.categorie);
 
 
 --
--- Name: add_categorie; Type: TRIGGER; Schema: public; Owner: root
+-- Name: visaup1; Type: RULE; Schema: public; Owner: mfvl
+--
+
+CREATE RULE visaup1 AS ON UPDATE TO "VISAkaart" DO INSTEAD NOTHING;
+
+
+--
+-- Name: visaup2; Type: RULE; Schema: public; Owner: mfvl
+--
+
+CREATE RULE visaup2 AS ON UPDATE TO "VISAkaart" WHERE ((((old.datum IS NULL) AND (old.volgnr IS NULL)) AND (old.naam IS NULL)) AND (old.bedrag IS NULL)) DO INSTEAD INSERT INTO "VISAkaart" (datum, volgnr, naam, bedrag) VALUES (new.datum, new.volgnr, new.naam, new.bedrag);
+
+
+--
+-- Name: add_categorie; Type: TRIGGER; Schema: public; Owner: mfvl
 --
 
 CREATE TRIGGER add_categorie
@@ -1098,7 +1240,7 @@ ALTER TABLE ONLY albumfoto
 -- Name: typeid; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
 --
 
-ALTER TABLE ONLY "type"
+ALTER TABLE ONLY type
     ADD CONSTRAINT typeid FOREIGN KEY (id) REFERENCES fietsers(id);
 
 
@@ -1121,12 +1263,11 @@ GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
 --
--- Name: giro; Type: ACL; Schema: public; Owner: root
+-- Name: giro; Type: ACL; Schema: public; Owner: mfvl
 --
 
 REVOKE ALL ON TABLE giro FROM PUBLIC;
-REVOKE ALL ON TABLE giro FROM root;
-GRANT ALL ON TABLE giro TO root;
+REVOKE ALL ON TABLE giro FROM mfvl;
 GRANT ALL ON TABLE giro TO mfvl;
 
 
@@ -1176,7 +1317,7 @@ GRANT ALL ON TABLE albumfoto TO httpd;
 
 REVOKE ALL ON TABLE autocat FROM PUBLIC;
 REVOKE ALL ON TABLE autocat FROM mfvl;
-GRANT ALL ON TABLE autocat TO mfvl;
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,UPDATE ON TABLE autocat TO mfvl;
 
 
 --
@@ -1317,10 +1458,10 @@ GRANT ALL ON TABLE saldo TO mfvl;
 -- Name: type; Type: ACL; Schema: public; Owner: mfvl
 --
 
-REVOKE ALL ON TABLE "type" FROM PUBLIC;
-REVOKE ALL ON TABLE "type" FROM mfvl;
-GRANT ALL ON TABLE "type" TO mfvl;
-GRANT ALL ON TABLE "type" TO httpd;
+REVOKE ALL ON TABLE type FROM PUBLIC;
+REVOKE ALL ON TABLE type FROM mfvl;
+GRANT ALL ON TABLE type TO mfvl;
+GRANT ALL ON TABLE type TO httpd;
 
 
 --

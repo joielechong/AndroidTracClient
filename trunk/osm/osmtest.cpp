@@ -109,6 +109,8 @@ int main(int argc, char *argv[]) {
 
     //    map.Astar(46071276,295961436,string("car"),route);
     map.Astar(start,eind,vehicle,route,ignoreExtra);
+
+    cout << "Astar is klaar" << endl;
     
     double dist = 0;
     long prevnode = 0;
