@@ -424,7 +424,7 @@ int store_entry(int odbc_ptr,struct upnp_entry_t *entry,int parent_id)
   SQLINTEGER null = SQL_NULL_DATA;
   SQLHSTMT stmt;
  
-  log_info("\nstore_entry, id=%d\n",entry->id)
+  log_info("\nstore_entry, id=%d, path=%s\n",entry->id,entry->fullpath)
   if (odbc_ptr < 0)
     return 0;
 
