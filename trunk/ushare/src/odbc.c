@@ -213,6 +213,7 @@ static long get_child_count(int odbc_ptr,long id) {
   if (odbc_ptr < 0)
     return -1;
   
+
   SQLFreeStmt(uo.count_stmt,SQL_CLOSE);
   lastcall = "SQLBindParameter";
   if (SQL_SUCCEEDED(ret = SQLBindParameter(uo.count_stmt, 1, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, sizeof(id), 0, &id, sizeof(id), NULL))) {
@@ -423,6 +424,7 @@ int store_entry(int odbc_ptr,struct upnp_entry_t *entry,int parent_id)
   SQLINTEGER null = SQL_NULL_DATA;
   SQLHSTMT stmt;
  
+  log_info("\nstore_entry, id=%d\n",entry->id)
   if (odbc_ptr < 0)
     return 0;
 
