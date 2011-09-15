@@ -77,7 +77,7 @@ my $dvdnr = shift;
 
 die "Aanroep maak_dvd.pl <dvdnr>" unless defined($dvdnr);
 
-my $prefix_in = "/data/JVC-20060819/SD_VIDEO/";
+my $prefix_in = "/data/HomeVideos/JVC-20060819/SD_VIDEO/";
 my $prefix_in1 = "/data/pictures/photos/Divers/Konica/";
 my $workdir = "/mnt/sdb1/";
 my $prefix_pict_in = $workdir;

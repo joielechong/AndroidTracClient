@@ -2,6 +2,7 @@
 -- PostgreSQL database dump
 --
 
+SET statement_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = off;
 SET check_function_bodies = false;
@@ -16,18 +17,13 @@ COMMENT ON DATABASE template1 IS 'Default template database';
 
 
 --
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
---
-
-COMMENT ON SCHEMA public IS 'Standard public schema';
-
-
---
 -- Name: plperl; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: postgres
 --
 
 CREATE PROCEDURAL LANGUAGE plperl;
 
+
+ALTER PROCEDURAL LANGUAGE plperl OWNER TO postgres;
 
 --
 -- Name: plpgsql; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: postgres
@@ -35,6 +31,8 @@ CREATE PROCEDURAL LANGUAGE plperl;
 
 CREATE PROCEDURAL LANGUAGE plpgsql;
 
+
+ALTER PROCEDURAL LANGUAGE plpgsql OWNER TO postgres;
 
 SET search_path = public, pg_catalog;
 
@@ -85,8 +83,8 @@ ALTER TYPE public.tablefunc_crosstab_4 OWNER TO postgres;
 --
 
 CREATE FUNCTION connectby(text, text, text, text, integer, text) RETURNS SETOF record
-    AS '$libdir/tablefunc', 'connectby_text'
-    LANGUAGE c STABLE STRICT;
+    LANGUAGE c STABLE STRICT
+    AS '$libdir/tablefunc', 'connectby_text';
 
 
 ALTER FUNCTION public.connectby(text, text, text, text, integer, text) OWNER TO postgres;
@@ -96,8 +94,8 @@ ALTER FUNCTION public.connectby(text, text, text, text, integer, text) OWNER TO 
 --
 
 CREATE FUNCTION connectby(text, text, text, text, integer) RETURNS SETOF record
-    AS '$libdir/tablefunc', 'connectby_text'
-    LANGUAGE c STABLE STRICT;
+    LANGUAGE c STABLE STRICT
+    AS '$libdir/tablefunc', 'connectby_text';
 
 
 ALTER FUNCTION public.connectby(text, text, text, text, integer) OWNER TO postgres;
@@ -107,8 +105,8 @@ ALTER FUNCTION public.connectby(text, text, text, text, integer) OWNER TO postgr
 --
 
 CREATE FUNCTION connectby(text, text, text, text, text, integer, text) RETURNS SETOF record
-    AS '$libdir/tablefunc', 'connectby_text_serial'
-    LANGUAGE c STABLE STRICT;
+    LANGUAGE c STABLE STRICT
+    AS '$libdir/tablefunc', 'connectby_text_serial';
 
 
 ALTER FUNCTION public.connectby(text, text, text, text, text, integer, text) OWNER TO postgres;
@@ -118,8 +116,8 @@ ALTER FUNCTION public.connectby(text, text, text, text, text, integer, text) OWN
 --
 
 CREATE FUNCTION connectby(text, text, text, text, text, integer) RETURNS SETOF record
-    AS '$libdir/tablefunc', 'connectby_text_serial'
-    LANGUAGE c STABLE STRICT;
+    LANGUAGE c STABLE STRICT
+    AS '$libdir/tablefunc', 'connectby_text_serial';
 
 
 ALTER FUNCTION public.connectby(text, text, text, text, text, integer) OWNER TO postgres;
@@ -129,8 +127,8 @@ ALTER FUNCTION public.connectby(text, text, text, text, text, integer) OWNER TO 
 --
 
 CREATE FUNCTION crosstab(text) RETURNS SETOF record
-    AS '$libdir/tablefunc', 'crosstab'
-    LANGUAGE c STABLE STRICT;
+    LANGUAGE c STABLE STRICT
+    AS '$libdir/tablefunc', 'crosstab';
 
 
 ALTER FUNCTION public.crosstab(text) OWNER TO postgres;
@@ -140,8 +138,8 @@ ALTER FUNCTION public.crosstab(text) OWNER TO postgres;
 --
 
 CREATE FUNCTION crosstab(text, integer) RETURNS SETOF record
-    AS '$libdir/tablefunc', 'crosstab'
-    LANGUAGE c STABLE STRICT;
+    LANGUAGE c STABLE STRICT
+    AS '$libdir/tablefunc', 'crosstab';
 
 
 ALTER FUNCTION public.crosstab(text, integer) OWNER TO postgres;
@@ -151,8 +149,8 @@ ALTER FUNCTION public.crosstab(text, integer) OWNER TO postgres;
 --
 
 CREATE FUNCTION crosstab(text, text) RETURNS SETOF record
-    AS '$libdir/tablefunc', 'crosstab_hash'
-    LANGUAGE c STABLE STRICT;
+    LANGUAGE c STABLE STRICT
+    AS '$libdir/tablefunc', 'crosstab_hash';
 
 
 ALTER FUNCTION public.crosstab(text, text) OWNER TO postgres;
@@ -162,8 +160,8 @@ ALTER FUNCTION public.crosstab(text, text) OWNER TO postgres;
 --
 
 CREATE FUNCTION crosstab2(text) RETURNS SETOF tablefunc_crosstab_2
-    AS '$libdir/tablefunc', 'crosstab'
-    LANGUAGE c STABLE STRICT;
+    LANGUAGE c STABLE STRICT
+    AS '$libdir/tablefunc', 'crosstab';
 
 
 ALTER FUNCTION public.crosstab2(text) OWNER TO postgres;
@@ -173,8 +171,8 @@ ALTER FUNCTION public.crosstab2(text) OWNER TO postgres;
 --
 
 CREATE FUNCTION crosstab3(text) RETURNS SETOF tablefunc_crosstab_3
-    AS '$libdir/tablefunc', 'crosstab'
-    LANGUAGE c STABLE STRICT;
+    LANGUAGE c STABLE STRICT
+    AS '$libdir/tablefunc', 'crosstab';
 
 
 ALTER FUNCTION public.crosstab3(text) OWNER TO postgres;
@@ -184,8 +182,8 @@ ALTER FUNCTION public.crosstab3(text) OWNER TO postgres;
 --
 
 CREATE FUNCTION crosstab4(text) RETURNS SETOF tablefunc_crosstab_4
-    AS '$libdir/tablefunc', 'crosstab'
-    LANGUAGE c STABLE STRICT;
+    LANGUAGE c STABLE STRICT
+    AS '$libdir/tablefunc', 'crosstab';
 
 
 ALTER FUNCTION public.crosstab4(text) OWNER TO postgres;
@@ -195,13 +193,13 @@ ALTER FUNCTION public.crosstab4(text) OWNER TO postgres;
 --
 
 CREATE FUNCTION nonull_append_strings(text, text) RETURNS text
+    LANGUAGE sql IMMUTABLE
     AS $_$SELECT CASE 
 WHEN $1 IS NULL THEN $2 
 WHEN $2 IS NULL THEN $1
 ELSE $1 || ' ' || $2
 END
-$_$
-    LANGUAGE sql IMMUTABLE;
+$_$;
 
 
 ALTER FUNCTION public.nonull_append_strings(text, text) OWNER TO mfvl;
@@ -211,8 +209,8 @@ ALTER FUNCTION public.nonull_append_strings(text, text) OWNER TO mfvl;
 --
 
 CREATE FUNCTION normal_rand(integer, double precision, double precision) RETURNS SETOF double precision
-    AS '$libdir/tablefunc', 'normal_rand'
-    LANGUAGE c STRICT;
+    LANGUAGE c STRICT
+    AS '$libdir/tablefunc', 'normal_rand';
 
 
 ALTER FUNCTION public.normal_rand(integer, double precision, double precision) OWNER TO postgres;
@@ -222,8 +220,8 @@ ALTER FUNCTION public.normal_rand(integer, double precision, double precision) O
 --
 
 CREATE FUNCTION plpgsql_call_handler() RETURNS language_handler
-    AS '$libdir/plpgsql', 'plpgsql_call_handler'
-    LANGUAGE c;
+    LANGUAGE c
+    AS '$libdir/plpgsql', 'plpgsql_call_handler';
 
 
 ALTER FUNCTION public.plpgsql_call_handler() OWNER TO mfvl;

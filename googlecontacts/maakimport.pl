@@ -218,10 +218,10 @@ foreach my $id (keys %$contacten) {
 	$rec->setPhone($row);
     }
 
-#    $rc = $sthFax->execute($record->{id});
-#    while (my $row = $sthFax->fetchrow_hashref) {
-#	$rec->setFax($row);
-#    }
+    $rc = $sthFax->execute($record->{id});
+    while (my $row = $sthFax->fetchrow_hashref) {
+	$rec->setFax($row);
+    }
 
 #    print Dumper($rec);
     $contacts{$id} = $rec if $rec->shouldSave;

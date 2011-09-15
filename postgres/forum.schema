@@ -2,18 +2,12 @@
 -- PostgreSQL database dump
 --
 
+SET statement_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = off;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 SET escape_string_warning = off;
-
---
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
---
-
-COMMENT ON SCHEMA public IS 'Standard public schema';
-
 
 --
 -- Name: plpgsql; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: postgres
@@ -22,6 +16,8 @@ COMMENT ON SCHEMA public IS 'Standard public schema';
 CREATE PROCEDURAL LANGUAGE plpgsql;
 
 
+ALTER PROCEDURAL LANGUAGE plpgsql OWNER TO postgres;
+
 SET search_path = public, pg_catalog;
 
 --
@@ -29,8 +25,8 @@ SET search_path = public, pg_catalog;
 --
 
 CREATE FUNCTION plpgsql_call_handler() RETURNS language_handler
-    AS '$libdir/plpgsql', 'plpgsql_call_handler'
-    LANGUAGE c;
+    LANGUAGE c
+    AS '$libdir/plpgsql', 'plpgsql_call_handler';
 
 
 ALTER FUNCTION public.plpgsql_call_handler() OWNER TO mfvl;
@@ -43,13 +39,13 @@ SET default_with_oids = true;
 -- Name: access; Type: TABLE; Schema: public; Owner: mfvl; Tablespace: 
 --
 
-CREATE TABLE "access" (
+CREATE TABLE access (
     access_id integer NOT NULL,
     access_title character varying
 );
 
 
-ALTER TABLE public."access" OWNER TO mfvl;
+ALTER TABLE public.access OWNER TO mfvl;
 
 --
 -- Name: access_access_id_seq; Type: SEQUENCE; Schema: public; Owner: mfvl
@@ -69,7 +65,7 @@ ALTER TABLE public.access_access_id_seq OWNER TO mfvl;
 -- Name: access_access_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mfvl
 --
 
-ALTER SEQUENCE access_access_id_seq OWNED BY "access".access_id;
+ALTER SEQUENCE access_access_id_seq OWNED BY access.access_id;
 
 
 --
@@ -93,6 +89,7 @@ ALTER TABLE public.banlist OWNER TO mfvl;
 --
 
 CREATE SEQUENCE banlist_ban_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -126,6 +123,7 @@ ALTER TABLE public.catagories OWNER TO mfvl;
 --
 
 CREATE SEQUENCE catagories_cat_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -172,6 +170,7 @@ ALTER TABLE public.config OWNER TO mfvl;
 --
 
 CREATE SEQUENCE config_config_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -204,6 +203,7 @@ ALTER TABLE public.disallow OWNER TO mfvl;
 --
 
 CREATE SEQUENCE disallow_disallow_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -269,6 +269,7 @@ ALTER TABLE public.forums OWNER TO mfvl;
 --
 
 CREATE SEQUENCE forums_forum_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -320,7 +321,7 @@ ALTER TABLE public."goed te keuren" OWNER TO mfvl;
 --
 
 CREATE TABLE headermetafooter (
-    "header" text,
+    header text,
     meta text,
     footer text
 );
@@ -339,7 +340,7 @@ CREATE TABLE logging (
     forum_id integer,
     topic_id integer,
     post_id integer,
-    "action" character varying,
+    action character varying,
     ip inet
 );
 
@@ -351,6 +352,7 @@ ALTER TABLE public.logging OWNER TO mfvl;
 --
 
 CREATE SEQUENCE logging_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -388,6 +390,7 @@ ALTER TABLE public.posts OWNER TO mfvl;
 --
 
 CREATE SEQUENCE posts_post_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -437,6 +440,7 @@ ALTER TABLE public.priv_msgs OWNER TO mfvl;
 --
 
 CREATE SEQUENCE priv_msgs_msg_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -596,6 +600,7 @@ ALTER SEQUENCE themes_theme_id_seq OWNED BY themes.theme_id;
 --
 
 CREATE SEQUENCE topics_topic_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -652,6 +657,7 @@ ALTER TABLE public.users OWNER TO mfvl;
 --
 
 CREATE SEQUENCE users_user_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -689,6 +695,7 @@ ALTER TABLE public.whosonline OWNER TO mfvl;
 --
 
 CREATE SEQUENCE whosonline_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -722,6 +729,7 @@ ALTER TABLE public.words OWNER TO mfvl;
 --
 
 CREATE SEQUENCE words_word_id_seq
+    START WITH 1
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -741,7 +749,7 @@ ALTER SEQUENCE words_word_id_seq OWNED BY words.word_id;
 -- Name: access_id; Type: DEFAULT; Schema: public; Owner: mfvl
 --
 
-ALTER TABLE "access" ALTER COLUMN access_id SET DEFAULT nextval('access_access_id_seq'::regclass);
+ALTER TABLE access ALTER COLUMN access_id SET DEFAULT nextval('access_access_id_seq'::regclass);
 
 
 --
@@ -853,8 +861,24 @@ ALTER TABLE words ALTER COLUMN word_id SET DEFAULT nextval('words_word_id_seq'::
 -- Name: access_pkey; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
 --
 
-ALTER TABLE ONLY "access"
+ALTER TABLE ONLY access
     ADD CONSTRAINT access_pkey PRIMARY KEY (access_id);
+
+
+--
+-- Name: banlist_ban_ip_key; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY banlist
+    ADD CONSTRAINT banlist_ban_ip_key UNIQUE (ban_ip);
+
+
+--
+-- Name: banlist_ban_userid_key; Type: CONSTRAINT; Schema: public; Owner: mfvl; Tablespace: 
+--
+
+ALTER TABLE ONLY banlist
+    ADD CONSTRAINT banlist_ban_userid_key UNIQUE (ban_userid);
 
 
 --
@@ -1111,10 +1135,32 @@ CREATE RULE allow_nothing AS ON UPDATE TO "goed te keuren" DO INSTEAD NOTHING;
 
 
 --
+-- Name: allow_nothing_ins; Type: RULE; Schema: public; Owner: mfvl
+--
+
+CREATE RULE allow_nothing_ins AS ON INSERT TO "goed te keuren" DO INSTEAD NOTHING;
+
+
+--
 -- Name: allow_topic; Type: RULE; Schema: public; Owner: mfvl
 --
 
 CREATE RULE allow_topic AS ON UPDATE TO "goed te keuren" WHERE (old.topic_allowed <> new.topic_allowed) DO INSTEAD UPDATE topics SET topic_allowed = new.topic_allowed WHERE (topics.topic_id = old.topic_id);
+
+
+--
+-- Name: remove_topic; Type: RULE; Schema: public; Owner: mfvl
+--
+
+CREATE RULE remove_topic AS ON DELETE TO "goed te keuren" DO INSTEAD DELETE FROM topics WHERE (topics.topic_id = old.topic_id);
+
+
+--
+-- Name: banlist_ban_userid; Type: FK CONSTRAINT; Schema: public; Owner: mfvl
+--
+
+ALTER TABLE ONLY banlist
+    ADD CONSTRAINT banlist_ban_userid FOREIGN KEY (ban_userid) REFERENCES users(user_id);
 
 
 --
@@ -1210,7 +1256,7 @@ ALTER TABLE ONLY priv_msgs
 --
 
 ALTER TABLE ONLY sessions
-    ADD CONSTRAINT sessions_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(user_id);
+    ADD CONSTRAINT sessions_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE;
 
 
 --
@@ -1251,10 +1297,10 @@ GRANT ALL ON SCHEMA public TO PUBLIC;
 -- Name: access; Type: ACL; Schema: public; Owner: mfvl
 --
 
-REVOKE ALL ON TABLE "access" FROM PUBLIC;
-REVOKE ALL ON TABLE "access" FROM mfvl;
-GRANT ALL ON TABLE "access" TO mfvl;
-GRANT ALL ON TABLE "access" TO httpd;
+REVOKE ALL ON TABLE access FROM PUBLIC;
+REVOKE ALL ON TABLE access FROM mfvl;
+GRANT ALL ON TABLE access TO mfvl;
+GRANT ALL ON TABLE access TO httpd;
 
 
 --

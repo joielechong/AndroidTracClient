@@ -11,6 +11,7 @@ use XML::Simple;
 use Data::Dumper;
 use Net::SSL;
 
+$ENV{'PERL_LWP_SSL_VERIFY_HOSTNAME'} = 0;
 my $home=$ENV{'HOME'};
 $home = "" unless defined $home;
 my $dllist = XMLin("$home/etc/dl.xml");

@@ -221,7 +221,7 @@ namespace osm {
     double dist = distance(n1,n2);
     if (_vehicle == "") return dist;
 
-    return dist *3.6 / _profiles[_vehicle].avgspeed();
+    return dist * 1.75 * 3.6 / _profiles[_vehicle].avgspeed();
   }
 
   long bestpoints[3];
@@ -245,7 +245,8 @@ namespace osm {
     
     bestpoints[set] = xs;
     double newdistance = distance(bestpoints[1],bestpoints[2]);
-    maxperc = max(maxperc,100.0*(initialdistance - newdistance)/initialdistance);
+    double curperc = 100.0*(initialdistance - newdistance)/initialdistance;
+      maxperc = max(maxperc,curperc);
 
     k = closedset.find(xs);
     if (k != closedset.end() && k->second != set) {
@@ -283,7 +284,7 @@ namespace osm {
         if (g.find(y) != g.end()) {
           if (tentative_g_score < g[y] || g[y] == 0) {
             tentative_is_better = true;
-	    cout << "verbetering van " << y << endl << "oud = " << g[y] << " nieuw = " << tentative_g_score << endl;
+	        cout << "verbetering van " << y << endl << "oud = " << g[y] << " nieuw = " << tentative_g_score << endl;
 //
 // alle nodes die vanaf y bereikbaar zijn moeten opnieuw worden berekend (behalve xs1)
 // dus als ze al in closedset staan daar weer uit verwijderen
@@ -297,7 +298,7 @@ namespace osm {
                 if (k != closedset.end()) {
                   if (k->second == set) {
                     cout << "   opnieuw open " << y1 << endl;
-                    closedset.erase(y1);
+//                    closedset.erase(y1);
                   }
                 }
               }
@@ -328,7 +329,7 @@ namespace osm {
 	  osm::Way &ww = ways(w);
 	  try { name = ww["name"];} catch (range_error &ex) {name="";}
 	  try { ref = ww["ref"];} catch (range_error &ex) {ref="";}
-	  cout << set << " " << maxperc;
+	  cout << set << " " << maxperc << " " <<  curperc ;
 	  if (set == 1) 
 	    cout << " " << xs << " " << y << " " << f[xs] << " " << g[y] << " " << h[y] << " " << f[y] << " "+name+" "+ref <<endl;
 	  else
@@ -367,7 +368,7 @@ namespace osm {
 
     route.clear();
     if (xs == 0)
-        throw range_error("Niet mogelijk om een royute te berekenen");
+        throw range_error("Niet mogelijk om een route te berekenen");
     route.push_back(xs);
     route_type::iterator rp;
 
