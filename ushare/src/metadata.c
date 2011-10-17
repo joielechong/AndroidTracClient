@@ -56,9 +56,7 @@ typedef struct meta_thread_data_t {
 
 static meta_thread_data mtd;
 
-static char *
-getExtension (const char *filename)
-{
+static char *getExtension (const char *filename) {
   char *str = NULL;
   
   str = strrchr (filename, '.');
@@ -68,9 +66,7 @@ getExtension (const char *filename)
   return str;
 }
 
-static struct mime_type_t *
-getMimeType (const char *extension)
-{
+static struct mime_type_t *getMimeType (const char *extension) {
   extern struct mime_type_t MIME_Type_List[];
   struct mime_type_t *list;
   
@@ -78,19 +74,16 @@ getMimeType (const char *extension)
     return NULL;
   
   list = MIME_Type_List;
-  while (list->extension)
-    {
-      if (!strcasecmp (list->extension, extension))
-	return list;
-      list++;
-    }
+  while (list->extension) {
+    if (!strcasecmp (list->extension, extension))
+      return list;
+    list++;
+  }
   
   return NULL;
 }
 
-static bool
-is_valid_extension (const char *extension)
-{
+static bool is_valid_extension (const char *extension) {
   if (!extension)
     return false;
   
@@ -104,9 +97,7 @@ is_valid_extension (const char *extension)
  * the parents child list within the freeing of the first child, as
  * the only entry which is not part of a childs list is the root entry
  */
-static void
-_upnp_entry_free (struct upnp_entry_t *entry)
-{
+static void _upnp_entry_free (struct upnp_entry_t *entry) {
   //  struct upnp_entry_t **childs;
   
   if (!entry)
@@ -138,9 +129,7 @@ _upnp_entry_free (struct upnp_entry_t *entry)
   //  free (entry->childs);
 }
 
-void
-upnp_entry_free (struct ushare_t *ut, struct upnp_entry_t *entry)
-{
+void upnp_entry_free (struct ushare_t *ut, struct upnp_entry_t *entry) {
   if (!ut || !entry)
     return;
   
@@ -162,21 +151,16 @@ static xml_convert_t xml_convert[] = {
   {0, NULL},
 };
 
-static char *
-get_xmlconvert (int c)
-{
+static char *get_xmlconvert (int c) {
   int j;
-  for (j = 0; xml_convert[j].xml; j++)
-    {
-      if (c == xml_convert[j].charac)
-	return xml_convert[j].xml;
-    }
+  for (j = 0; xml_convert[j].xml; j++) {
+    if (c == xml_convert[j].charac)
+      return xml_convert[j].xml;
+  }
   return NULL;
 }
 
-static char *
-convert_xml (const char *title)
-{
+static char *convert_xml (const char *title) {
   char *newtitle, *s, *t, *xml;
   int nbconvert = 0;
   
@@ -193,11 +177,10 @@ convert_xml (const char *title)
   
   for (t = (char*) title; *t; t++) {
     xml = get_xmlconvert (*t);
-    if (xml)
-      {
-	strcpy (s, xml);
-	s += strlen (xml);
-      }
+    if (xml) {
+      strcpy (s, xml);
+      s += strlen (xml);
+    }
     else
       *s++ = *t;
   }
@@ -360,52 +343,48 @@ static void fill_container(struct ushare_t *ut,char * path,int parent_id) {
   int n,i;
   
   n = scandir (path, &namelist, 0, alphasort);
-  if (n < 0)
-    {
-      perror ("scandir");
-      return;
-    }
+  if (n < 0) {
+    perror ("scandir");
+    return;
+  }
   
-  for (i = 0; i < n; i++)
-    {
-      struct stat st;
-      char *fullpath = NULL;
-      
-      if (namelist[i]->d_name[0] == '.')
-	{
-	  free (namelist[i]);
-	  continue;
-	}
-      
-      fullpath = (char *)malloc (strlen (path) + strlen (namelist[i]->d_name) + 2);
-      sprintf (fullpath, "%s/%s", path, namelist[i]->d_name);
-      
-      log_verbose ("%s\n", fullpath);
-      
-      if (stat (fullpath, &st) < 0)
-	{
-	  free (namelist[i]);
-	  free (fullpath);
-	  continue;
-	}
-      
-      if (S_ISDIR (st.st_mode)) {
-	fill_container(ut,fullpath,newparent);
-      } else {
-	if (ut->dlna_enabled || is_valid_extension (getExtension (fullpath))) {
-    pthread_mutex_lock (&mtd.db_mutex);
-	  if (entry_stored(ut->odbc_ptr,fullpath) == -1 ) {
-	    struct upnp_entry_t *child = NULL;
-	    child = upnp_entry_new (ut, namelist[i]->d_name, fullpath, NULL, st.st_size, false);
-	    if (child) 
-	      store_entry(ut->odbc_ptr,child,newparent);
-	  }
-    pthread_mutex_unlock (&mtd.db_mutex);
-	}
-      }
+  for (i = 0; i < n; i++) {
+    struct stat st;
+    char *fullpath = NULL;
+    
+    if (namelist[i]->d_name[0] == '.') {
+      free (namelist[i]);
+      continue;
+    }
+    
+    fullpath = (char *)malloc (strlen (path) + strlen (namelist[i]->d_name) + 2);
+    sprintf (fullpath, "%s/%s", path, namelist[i]->d_name);
+    
+    log_verbose ("%s\n", fullpath);
+    
+    if (stat (fullpath, &st) < 0) {
       free (namelist[i]);
       free (fullpath);
+      continue;
     }
+    
+    if (S_ISDIR (st.st_mode)) {
+      fill_container(ut,fullpath,newparent);
+    } else {
+      if (ut->dlna_enabled || is_valid_extension (getExtension (fullpath))) {
+	pthread_mutex_lock (&mtd.db_mutex);
+	if (entry_stored(ut->odbc_ptr,fullpath) == -1 ) {
+	  struct upnp_entry_t *child = NULL;
+	  child = upnp_entry_new (ut, namelist[i]->d_name, fullpath, NULL, st.st_size, false);
+	  if (child) 
+	    store_entry(ut->odbc_ptr,child,newparent);
+	}
+	pthread_mutex_unlock (&mtd.db_mutex);
+      }
+    }
+    free (namelist[i]);
+    free (fullpath);
+  }
   free (namelist);
 }
 
