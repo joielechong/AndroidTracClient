@@ -24,21 +24,16 @@
 
 #include "content.h"
 
-content_list *
-content_add(content_list *list, const char *item)
-{
-  if (!list)
-  {
+content_list *content_add(content_list *list, const char *item) {
+  if (!list) {
     list = (content_list*) malloc (sizeof(content_list));
     list->content = NULL;
     list->count = 0;
   }
-  if (item)
-  {
+  if (item) {
     list->count++;
     list->content = (char**) realloc (list->content, list->count * sizeof(char*));
-    if (!list->content)
-    {
+    if (!list->content) {
       perror ("error realloc");
       exit (2);
     }
@@ -50,9 +45,7 @@ content_add(content_list *list, const char *item)
 /*
  * Remove the n'th content (start from 0)
  */
-content_list *
-content_del(content_list *list, int n)
-{
+content_list *content_del(content_list *list, int n) {
   int i;
 
   if (!list || n >= list->count)
@@ -61,8 +54,7 @@ content_del(content_list *list, int n)
   if (n >= list->count)
     return list;
 
-  if (list->content[n])
-  {
+  if (list->content[n]) {
     free (list->content[n]);
     for (i = n ; i < list->count - 1 ; i++)
       list->content[i] = list->content[i+1];
@@ -73,17 +65,13 @@ content_del(content_list *list, int n)
   return list;
 }
 
-void
-content_free(content_list *list)
-{
+void content_free(content_list *list) {
   int i;
   if (!list)
     return;
 
-  if (list->content)
-  {
-    for (i=0 ; i < list->count ; i++)
-    {
+  if (list->content) {
+    for (i=0 ; i < list->count ; i++) {
       if (list->content[i])
         free (list->content[i]);
     }

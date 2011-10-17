@@ -388,9 +388,7 @@ static void fill_container(struct ushare_t *ut,char * path,int parent_id) {
   free (namelist);
 }
 
-static 
-void *newfilesthread(void *a __attribute__ ((unused)))
-{
+static void *newfilesthread(void *a __attribute__ ((unused))) {
   struct ushare_t *ut=mtd.ut;
   int i;
   
@@ -408,8 +406,7 @@ void *newfilesthread(void *a __attribute__ ((unused)))
   return NULL;
 }
 
-static void *verifythread(void *a __attribute__ ((unused)))
-{
+static void *verifythread(void *a __attribute__ ((unused))) {
   long last_id = 0, new_id, size;
   char *filename;
   int odbc_ptr = mtd.ut->odbc_ptr;
@@ -441,8 +438,7 @@ static void *verifythread(void *a __attribute__ ((unused)))
 }
 
 struct upnp_entry_t *
-upnp_get_entry (struct ushare_t *ut, int id)
-{
+upnp_get_entry (struct ushare_t *ut, int id) {
   struct upnp_entry_t *entry;
   
   log_verbose ("Looking for entry id %d\n", id);
