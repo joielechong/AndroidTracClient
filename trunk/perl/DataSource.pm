@@ -96,7 +96,8 @@
     }	
     
     sub userAgent {
-	return "Mozilla/4.04 [en] (MFvL;I)";
+	return "Mozilla/5.0 (Windows NT 5.1; rv:8.0) Gecko/20100101 Firefox/8.0";
+# Mozilla/4.04 [en] (MFvL;I)
     }
     
     sub fetchURL {
@@ -118,6 +119,7 @@
         } else {
           print STDERR "Fout na request: $url\n";
           print STDERR "  Status : ",$res->status_line,"\n";
+#	  print STDERR Dumper($res);
           $self->{'content'} = "";
         }
     }
