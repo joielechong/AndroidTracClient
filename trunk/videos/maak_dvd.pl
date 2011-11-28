@@ -79,6 +79,7 @@ die "Aanroep maak_dvd.pl <dvdnr>" unless defined($dvdnr);
 
 my $prefix_in = "/data/HomeVideos/JVC-20060819/SD_VIDEO/";
 my $prefix_in1 = "/data/pictures/photos/Divers/Konica/";
+my $prefix_in2 = "/data/HomeVideos/OudeJVC/";
 my $workdir = "/mnt/sdb1/";
 my $prefix_pict_in = $workdir;
 my $prefix_out= $workdir."dvd".$dvdnr."_files/";
@@ -262,7 +263,21 @@ print BATCH "spumux -s0 $prefix_out/\$1.id.xml | ";
 print BATCH "spumux -s1 $prefix_out/\$1.tc.xml > $prefix_out/\$1.mpg\n";
 print BATCH "}\n\n";
 
+print BATCH "function call_ffmpeg1()\n";
+print BATCH "{\n";
+print BATCH "	ffmpeg -v 0 -i $prefix_in1/\$2/\$1  -target pal-dvd -aspect 4:3 -flags ilme -vb 9000k -ab 384k -ac 2 - | ";
+print BATCH "spumux -s0 $prefix_out/\$1.id.xml | ";
+print BATCH "spumux -s1 $prefix_out/\$1.tc.xml > $prefix_out/\$1.mpg\n";
+print BATCH "}\n\n";
+
 print BATCH "function call_ffmpeg2()\n";
+print BATCH "{\n";
+print BATCH "	ffmpeg -v 0 -i $prefix_in2/\$2/\$1  -target pal-dvd -aspect 4:3 -flags ilme -vb 9000k -ab 384k -ac 2 - | ";
+print BATCH "spumux -s0 $prefix_out/\$1.id.xml | ";
+print BATCH "spumux -s1 $prefix_out/\$1.tc.xml > $prefix_out/\$1.mpg\n";
+print BATCH "}\n\n";
+
+print BATCH "function call_ffmpeg3()\n";
 print BATCH "{\n";
 print BATCH "	ffmpeg -v 0 -i \$2/\$1  -target pal-dvd -aspect 4:3 -flags ilme -vb 9000k -ab 384k -ac 2 - | ";
 print BATCH "spumux -s0 $prefix_out/\$2.id.xml | ";
@@ -363,8 +378,10 @@ while (my ($onderwerp,$firstdate) = $sth2->fetchrow_array()) {
 	    mk_tc_sub($naam,$tijdstip,$duur);
 	    if ($directory =~ /^PRG/) {
 		print BATCH "call_ffmpeg $naam $directory\n";
+	    } elsif ($naam =~ m/.dv$/) {
+		print BATCH "call ffmpeg $naam $directory\n";
 	    } elsif ($directory =~ m:^/:) {
-		print BATCH "call ffmpeg2 $naam $directory\n";
+		print BATCH "call ffmpeg3 $naam $directory\n";
 	    } else {
 		print BATCH "call_ffmpeg1 $naam $directory\n";
 	    }
