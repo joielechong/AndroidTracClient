@@ -203,25 +203,15 @@ namespace osm {
       
     try { 
       extracost += _profiles[_vehicle].traffic_calming(nodey["traffic_calming"]);
-    } catch (range_error &ex) {
-      try { 
-	extracost += _profiles[_vehicle].traffic_calming("*");
-      } catch (range_error &ex1) {};
-    };
+    } catch (range_error &ex) {};
+    
     try { 
       extracost += _profiles[_vehicle].barrier(nodey["barrier"]);
-    } catch (range_error &ex) {
-      try { 
-	extracost += _profiles[_vehicle].barrier("*");
-      } catch (range_error &ex1) {};
-    };
+    } catch (range_error &ex) { };
+
     try { 
-      extracost += _profiles[_vehicle].barrier(nodey["highway"]);
-    } catch (range_error &ex) {
-      try { 
-	extracost += _profiles[_vehicle].highway("*");
-      } catch (range_error &ex1) {};
-    };
+      extracost += _profiles[_vehicle].highway(nodey["highway"]);
+    } catch (range_error &ex) { };
     
     if (extracost >= INFINITY)
       return INFINITY;

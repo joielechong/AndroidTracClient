@@ -33,23 +33,32 @@ namespace osm {
   }
  
    unsigned int Profile::traffic_calming(const string t) {
-     if (_traffic_calming.find(t) == _traffic_calming.end())
-       return 0;
-     else
+     if (_traffic_calming.find(t) == _traffic_calming.end()) {
+       if (_traffic_calming.find("*") == _traffic_calming.end())
+         return 0;
+       else
+         return _traffic_calming["*"];       
+      } else
        return _traffic_calming[t];
   }
   
   unsigned int Profile::barrier(const string b) {
-    if (_barrier.find(b) == _barrier.end())
-      return  0;
-    else
+    if (_barrier.find(b) == _barrier.end()) {
+       if (_barrier.find("*") == _barrier.end())
+         return 0;
+       else
+         return _barrier["*"];       
+    } else
      return _barrier[b];
   }
   
   unsigned int Profile::highway(const string h) {
-    if (_highway.find(h) == _highway.end())
-      return  0;
-    else
+    if (_highway.find(h) == _highway.end()) {
+       if (_highway.find("*") == _highway.end())
+         return 0;
+       else
+         return _highway["*"];       
+    } else
      return _highway[h];
   }
   
