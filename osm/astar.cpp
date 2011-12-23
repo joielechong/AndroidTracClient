@@ -111,13 +111,24 @@ namespace osm {
 
     string access;
     string oneway;
-    try { access = ww["access"];} catch (range_error &ex) {access="yes";}
-    try { oneway = ww["oneway"];} catch (range_error &ex) {oneway="";}
+    
+    try { 
+      access = ww["access"];
+    } catch (range_error &ex) {
+      access="yes";
+    }
+    try { 
+      oneway = ww["oneway"];
+    } catch (range_error &ex) {
+      oneway="";
+    }
     try {
       if (ww["junction"] == "roundabout" && oneway == "")
 	oneway = "yes";
-    } catch (range_error &ex) {}
-
+    } catch (range_error &ex) {
+      // no action
+    }
+    
     extracost += _highways[hw].extracost()*dist/EXTRACOST_FACTOR;   // extracost gaat per kilometer als ze op een weg slaan    
     Node &nodey = nodes(y);                               // node waar we naar toe gaan
 
