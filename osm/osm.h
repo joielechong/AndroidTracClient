@@ -301,6 +301,7 @@ namespace osm {
     inline long getConnectingWay(const long n1,const long n2) {return _con->getConnectingWay(n1,n2);}
     double direction(const long n1,const long n2);
     inline void getWays(long id,vector<long> &ways) {_con->getWays(id,ways);}
+    double cost(const long n1,const long n2,const long prevnode,const bool ignoreExtra);
 
   private:
     void load_conf();
@@ -308,7 +309,6 @@ namespace osm {
     void process_profiles(const xmlpp::Node* node);
     void process_highways(const xmlpp::Node* node);
     long AstarHelper(int set,long goal,set_type &openset,set_type &closedset,score_type &f,score_type &g,score_type &h,score_type &d,route_type &to,const bool ignoreExtra);
-    double cost(const long n1,const long n2,const long prevnode,const bool ignoreExtra);
     double calc_h_score(const long n1,const long n2);
     bool wrong_direction(Node &nodex,Node &nodey, Way &ww,string onew) const;
     long curvecost(const long x,const long y,const long p);
