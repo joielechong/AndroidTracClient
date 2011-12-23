@@ -114,7 +114,9 @@ int main(int argc, char *argv[]) {
     
     double dist = 0;
     long prevnode = 0;
+    long ppnode = 0;
     long prevway = 0;
+    double kost = 0.0;
     
     ofstream gpx("route.gpx");
     gpx << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" << endl;
@@ -159,6 +161,9 @@ int main(int argc, char *argv[]) {
         dist += d;
         double direction= map.direction(prevnode,*rp);
         cout << " distance: " << d << " (" << dist << ") direction: " << direction;
+	double c = map.cost(prevnode,*rp,ppnode,ignoreExtra);
+	kost += c;
+	cout << " cost: " << c << " (" << kost << ")";
       }
       
       vector<long> adminlist;
@@ -168,6 +173,7 @@ int main(int argc, char *argv[]) {
         cout << " " << r["name"] << "(" << r["admin_level"] << ")";
       }
       cout << endl;
+      ppnode = prevnode;
       prevnode = *rp;
       prevway = w;
     }

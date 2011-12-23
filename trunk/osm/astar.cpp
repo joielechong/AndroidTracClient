@@ -246,7 +246,7 @@ namespace osm {
     bestpoints[set] = xs;
     double newdistance = distance(bestpoints[1],bestpoints[2]);
     double curperc = 100.0*(initialdistance - newdistance)/initialdistance;
-      maxperc = max(maxperc,curperc);
+    maxperc = max(maxperc,curperc);
 
     k = closedset.find(xs);
     if (k != closedset.end() && k->second != set) {
