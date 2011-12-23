@@ -69,7 +69,7 @@ namespace osm {
     string hw;
     
     long cnt = ww.getNodesCount() - 1;
-    if (cnt < 1) cnt = 1;
+    if (cnt < 1) throw range_error("Weg met minder dan 2 nodes");
     
 // type weg
 
