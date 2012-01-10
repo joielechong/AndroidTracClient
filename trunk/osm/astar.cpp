@@ -188,7 +188,7 @@ namespace osm {
       }
       if (cycleway == "opposite")
         oneway = "no";
-     }
+     
       try {extracost += _highways[nodey["highway"]].extracost();} catch (range_error &ex) {};
     } else if (_vehicle == "car") {
       string ma;
