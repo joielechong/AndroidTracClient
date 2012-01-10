@@ -186,7 +186,7 @@ namespace osm {
         if ((ca == "no") || (access == "no" && ca != "yes"))
 	  return INFINITY;
       }
-      if (cycleway == "opposite")
+      if (cw == "opposite")
         oneway = "no";
      
       try {extracost += _highways[nodey["highway"]].extracost();} catch (range_error &ex) {};
