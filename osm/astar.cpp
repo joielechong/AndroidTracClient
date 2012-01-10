@@ -321,7 +321,7 @@ namespace osm {
                 if (k != closedset.end()) {
                   if (k->second == set) {
                     cout << "   opnieuw open " << y1 << endl;
-                    openset[yl] = set;
+                    openset[y1] = set;
 //                    closedset.erase(y1);
                   }
                 }
