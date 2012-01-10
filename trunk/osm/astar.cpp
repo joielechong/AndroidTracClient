@@ -21,7 +21,7 @@ namespace osm {
     if (dir == 0)
       throw runtime_error("geen directe verbinding tussen nodes");
 
-    if (onew=="rev")
+    if (onew=="-1")
       return (dir == -1);
     else
       return (dir == 1);
@@ -120,10 +120,17 @@ namespace osm {
     try { 
       oneway = ww["oneway"];
     } catch (range_error &ex) {
-      oneway="";
+      oneway="no";
     }
     try {
-      if (ww["junction"] == "roundabout" && oneway == "")
+      if (ww["junction"] == "roundabout" && oneway == "no")
+	oneway = "yes";
+    } catch (range_error &ex) {
+      // no action
+    }
+    
+    try {
+      if (ww["highway"] == "motorway" && oneway == "no")
 	oneway = "yes";
     } catch (range_error &ex) {
       // no action
@@ -146,11 +153,15 @@ namespace osm {
 	return INFINITY;
       try { extracost += _profiles[_vehicle].allowed(hw)*dist/EXTRACOST_FACTOR;} catch (range_error &ex) {return INFINITY;}
       try { extracost += _highways[nodey["highway"]].extracost();} catch (range_error &ex) {};
+      try { oneway = ww["oneway:foot"];} catch (range_error &ex) {oneway="no";}
     } else if (_vehicle == "bicycle") {
       string cw;
       try { cw = ww["cycleway"];} catch (range_error &ex) {cw="";}
       if (cw == "opposite_lane" || cw == "opposite_track" || cw == "both")
 	cw = "opposite";
+      try { oneway = ww["oneway:bicycle"];} catch (range_error &ex) { 
+        // no action
+      }
       string ca;
       try { ca = ww["bicycle"];} catch (range_error &ex) {ca="";}
       if (ca == "") {
@@ -175,9 +186,8 @@ namespace osm {
         if ((ca == "no") || (access == "no" && ca != "yes"))
 	  return INFINITY;
       }
-      if (oneway != "" && cw != "opposite") {
-	if (wrong_direction(nodes(x),nodey,ww,oneway))
-	  return INFINITY;
+      if (cycleway == "opposite")
+        oneway = "no";
      }
       try {extracost += _highways[nodey["highway"]].extracost();} catch (range_error &ex) {};
     } else if (_vehicle == "car") {
@@ -186,11 +196,17 @@ namespace osm {
       if ((ma == "no") || (access == "no" && ma != "yes"))
 	return INFINITY;
       try { extracost += _profiles[_vehicle].allowed(hw)*dist/EXTRACOST_FACTOR;} catch (range_error &ex) {return INFINITY;}
-      if (oneway != "") {
-	if (wrong_direction(nodes(x),nodey,ww,oneway))
-	  return INFINITY;
-      }
       try { extracost += _highways[nodey["highway"]].extracost();} catch (range_error &ex) {};
+      try { oneway = ww["oneway:motor_vehicle"];} catch (range_error &ex) { 
+        // no action
+      }
+      try { oneway = ww["oneway:motorcar"];} catch (range_error &ex) { 
+        // no action
+      }
+    }
+    if (oneway != "no") {
+      if (wrong_direction(nodes(x),nodey,ww,oneway))
+	return INFINITY;
     }
     
 //  als nog steeds access = no dan mag het echt niet

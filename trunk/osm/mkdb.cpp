@@ -60,10 +60,59 @@ string postprocesses[] = {
   "update node set donotdelete='true' where id in (select ref from member where type='node') and donotdelete != 'true'",
   "delete from node where donotdelete='false'",
 
-  "UPDATE tag SET v='yes' WHERE k IN ('bridge','oneway','tunnel','motorroad','bicycle','foot') AND v IN ('1','YES','true','Yes')",
-  "UPDATE tag set v='opposite' WHERE k='cycleway' and v in ('opposite_lane','opposite_track')",
+  "DELETE FROM tag where k='bicycle:oneway' and  type='way' and id in (select id from waytag where k='oneway:bicycle')",
+  "DELETE FROM tag where k='cycleway:oneway' and  type='way' and id in (select id from waytag where k='oneway:bicycle')",
+  "DELETE FROM tag where k='access:bicycle:oneway' and  type='way' and id in (select id from waytag where k='oneway:bicycle')",
+  "UPDATE tag set k='oneway:bicycle' WHERE k IN ('bicycle:oneway','access:bicycle:oneway','cycleway:oneway')",
+
+  "DELETE FROM tag where k='moped:oneway' and  type='way' and id in (select id from waytag where k='oneway:moped')",
+  "DELETE FROM tag where k='access:moped:oneway' and  type='way' and id in (select id from waytag where k='oneway:moped')",
+  "UPDATE tag set k='oneway:moped' WHERE k IN ('moped:oneway','access:moped:oneway')",
+
+  "DELETE FROM tag where k='moped_A:oneway' and  type='way' and id in (select id from waytag where k='oneway:moped_A')",
+  "DELETE FROM tag where k='access:moped_A:oneway' and  type='way' and id in (select id from waytag where k='oneway:moped_A')",
+  "UPDATE tag set k='oneway:moped_A' WHERE k IN ('moped_A:oneway','access:moped_A:oneway')",
+
+  "DELETE FROM tag where k='foot:oneway' and  type='way' and id in (select id from waytag where k='oneway:foot')",
+  "DELETE FROM tag where k='access:foot:oneway' and  type='way' and id in (select id from waytag where k='oneway:foot')",
+  "UPDATE tag set k='oneway:foot' WHERE k IN ('foot:oneway','access:foot:oneway')",
+
+  "DELETE FROM tag where k='motor_vehicle:oneway' and  type='way' and id in (select id from waytag where k='oneway:motor_vehicle')",
+  "DELETE FROM tag where k='access:motor_vehicle:oneway' and  type='way' and id in (select id from waytag where k='oneway:motor_vehicle')",
+  "UPDATE tag set k='oneway:motor_vehicle' WHERE k IN ('motor_vehicle:oneway','access:motor_vehicle:oneway')",
+
+  "DELETE FROM tag where k='motorcar:oneway' and  type='way' and id in (select id from waytag where k='oneway:motorcar')",
+  "DELETE FROM tag where k='access:motorcar:oneway' and  type='way' and id in (select id from waytag where k='oneway:motorcar')",
+  "UPDATE tag set k='oneway:motorcar' WHERE k IN ('motorcar:oneway','access:motorcar:oneway')",
+
+  "DELETE FROM tag where k='motorcylce:oneway' and  type='way' and id in (select id from waytag where k='oneway:motorcycle')",
+  "DELETE FROM tag where k='access:motorcycle:oneway' and  type='way' and id in (select id from waytag where k='oneway:motorcycle')",
+  "UPDATE tag set k='oneway:motorcycle' WHERE k IN ('motorcycle:oneway','access:motorcycle:oneway')",
+
+  "DELETE FROM tag where k='emergency:oneway' and  type='way' and id in (select id from waytag where k='oneway:emergency')",
+  "DELETE FROM tag where k='access:emergency:oneway' and  type='way' and id in (select id from waytag where k='oneway:emergency')",
+  "UPDATE tag set k='oneway:emergency' WHERE k IN ('emergency:oneway','access:emergency:oneway')",
+
+  "DELETE FROM tag where k='bus:oneway' and  type='way' and id in (select id from waytag where k='oneway:bus')",
+  "DELETE FROM tag where k='access:bus:oneway' and  type='way' and id in (select id from waytag where k='oneway:bus')",
+  "UPDATE tag set k='oneway:bus' WHERE k IN ('bus:oneway','access:bus:oneway')",
+
+  "DELETE FROM tag where k='psv:oneway' and  type='way' and id in (select id from waytag where k='oneway:psv')",
+  "DELETE FROM tag where k='access:psv:oneway' and  type='way' and id in (select id from waytag where k='oneway:psv')",
+  "UPDATE tag set k='oneway:psv' WHERE k IN ('psv:oneway','access:psv:oneway')",
+
+  "DELETE FROM tag where k='taxi:oneway' and  type='way' and id in (select id from waytag where k='oneway:taxi')",
+  "DELETE FROM tag where k='access:taxi:oneway' and  type='way' and id in (select id from waytag where k='oneway:taxi')",
+  "UPDATE tag set k='oneway:taxi' WHERE k IN ('taxi:oneway','access:taxi:oneway')",
+
+  "UPDATE tag SET v='yes' WHERE (k IN ('bridge','tunnel','motorroad','bicycle','foot') OR k like 'oneway%') AND v IN ('1','YES','true','Yes')",
+  "UPDATE tag SET v='-1' WHERE k LIKE 'oneway%' AND v = 'reverse'",
   "DELETE FROM tag WHERE k IN ('bridge','oneway','tunnel','motorroad') AND v IN ('NO','FALSE','No','False','no','ny','false')",
+  "UPDATE tag SET v='no' WHERE k LIKE 'oneway:%' AND v IN ('0','NO','False','No','FALSE','false')",
+  "UPDATE tag set v='opposite' WHERE k='cycleway' and v like 'opposite_%'",
+
   "UPDATE node SET x=osmcalc_x(lon),y=osmcalc_y(lat) WHERE x is null and id in (SELECT ref FROM usable_way as u,nd WHERE u.id=nd.id)",
+
   "INSERT OR REPLACE INTO admin (id,name,level,minlat,maxlat,minlon,maxlon) SELECT id,name,level,minlat,maxlat,minlon,maxlon FROM admintmp",
   "INSERT OR REPLACE INTO adressen (id,type,country,city,street,housenumber,postcode,intpolway,assocway) SELECT id,'node' AS type,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:country') AS country,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:city') AS city,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:street') AS street,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:housenumber') AS housenumber,(SELECT v FROM nodetag WHERE id=node.id AND k='addr:postcode') AS postcode, (SELECT wt.id FROM nd,waytag as wt WHERE nd.ref=node.id and nd.id=wt.id and wt.k='addr:interpolation') as intpolway,(select m1.ref from tag, member as m,relationtag as rt,member as m1 where tag.id=node.id and tag.type='node' and tag.k like 'addr:%' and m.type=tag.type and m.ref=tag.id and m.id=rt.id and rt.k='type' and rt.v='associatedStreet' and m1.id=rt.id and m1.role='street') as assocway FROM node WHERE NOT coalesce(country,city,street,housenumber,postcode) IS NULL",
 
