@@ -334,15 +334,17 @@ namespace osm {
 	  try { ref = ww["ref"];} catch (range_error &ex) {ref="";}
 	  cout << set << " " << maxperc << " " <<  curperc ;
 	  if (set == 1) 
-	    cout << " " << xs << " " << y << " " << f[xs] << " " << g[y] << " " << h[y] << " " << f[y] << " "+name+" "+ref <<endl;
+	    cout << " " << xs << " " << y;
 	  else
-	    cout << " " << y << " " << xs << " " << f[xs] << " " << g[y] << " " << h[y] << " " << f[y] << " "+name+" "+ref <<endl;
+	    cout << " " << y << " " << xs;
+          cout << " " << f[xs] << " " << g[y] << " " << h[y] << " " << f[y] << " "+name+" "+ref <<" " openset.size() << " " << closedset.size() <<endl;
 	} else {
 	  cout << set << " XXXXXX";
 	  if (set == 1) 
-	    cout << " " << xs << " " << y << " " << f[xs] << " " << g[y] << "/" << tentative_g_score << " " << h[y] << " " << f[y] << " "+name+" "+ref <<endl;
+	    cout << " " << xs << " " << y;
 	  else
-	    cout << " " << y << " " << xs << " " << f[xs] << " " << g[y] << "/" << tentative_g_score << " " << h[y] << " " << f[y] << " "+name+" "+ref <<endl;
+	    cout << " " << y << " " << xs;
+          cout << " " << f[xs] << " " << g[y] << "/" << tentative_g_score << " " << h[y] << " " << f[y] << " "+name+" "+ref<<" " openset.size() << " " << closedset.size() <<endl;
         }
       }
     }
