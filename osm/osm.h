@@ -308,6 +308,7 @@ namespace osm {
     void process_conf(const xmlpp::Node* node);
     void process_profiles(const xmlpp::Node* node);
     void process_highways(const xmlpp::Node* node);
+    void process_params(const xmlpp::Node* node);
     long AstarHelper(int set,long goal,set_type &openset,set_type &closedset,score_type &f,score_type &g,score_type &h,score_type &d,route_type &to,const bool ignoreExtra);
     double calc_h_score(const long n1,const long n2);
     bool wrong_direction(Node &nodex,Node &nodey, Way &ww,string onew) const;
@@ -324,6 +325,8 @@ namespace osm {
 
     highway_type _highways;
     profile_type _profiles;
+    
+    double _correctionfactor;
     
     long _costcounter;
   };
