@@ -44,6 +44,7 @@ int locptr;
 %%
 
 route		: vehicle '(' start ',' stop ')'
+                | '(' start ',' stop ')' {inforoute.vehicle = "";}
 		;
 
 vehicle		: STRING {inforoute.vehicle = $1;}
