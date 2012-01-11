@@ -73,7 +73,7 @@
 			<allowed highway="secondary_link" extracost="5" />
 			<allowed highway="tertiary" extracost="5" />
 			<allowed highway="turning_circle" extracost="0" />
-			<traffic_calming type="*" extracost="1" />
+			<traffic_calming type="*" extracost="0" />
 			<barrier type="gate" extracost="100" />
 			<barrier type="bollard" extracost="0" />
 			<barrier type="block" extracost="10" />

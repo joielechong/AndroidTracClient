@@ -11,16 +11,15 @@ namespace osm {
   
   void Map::initRoute(const string &vehicle) {
     if (vehicle != "" && _profiles.find(vehicle) == _profiles.end())
-        throw domain_error("Onbekend voertuig : "+vehicle);
+      throw domain_error("Onbekend voertuig : "+vehicle);
     _vehicle = vehicle;
   }
-
+  
   bool Map::wrong_direction(Node &nodex,Node &nodey,Way &ww,string onew) const {
-
     int dir = _con->getDirection(nodex.id(),nodey.id(),ww.id());
     if (dir == 0)
       throw runtime_error("geen directe verbinding tussen nodes");
-
+    
     if (onew=="-1")
       return (dir == -1);
     else
@@ -44,14 +43,14 @@ namespace osm {
     double dh = fabs(h2-h1);
     if (dh > 180) 
       dh = 360 - dh;
-
+    
     if (dh < 90)
       return 3 * (dh/90);
     else if (dh < 120) 
       return 3 + 4*(dh-90)/30;
     else if (dh < 150)
       return 5 + 5*(dh-120)/30;
-
+    
     return 10 + 10 * (dh-150)/30;
   }
   
@@ -59,7 +58,7 @@ namespace osm {
     _costcounter++;
     double dist = distance(x,y);
     if (_vehicle == "") return dist;
-
+    
     long extracost = 0; 
     double speed = _profiles[_vehicle].maxspeed();
     long w = getConnectingWay(x,y);
@@ -71,8 +70,8 @@ namespace osm {
     long cnt = ww.getNodesCount() - 1;
     if (cnt < 1) throw range_error("Weg met minder dan 2 nodes");
     
-// type weg
-
+    // type weg
+    
     try {
       hw = ww["highway"];
     } catch (range_error &ex) {
@@ -86,9 +85,9 @@ namespace osm {
 	return INFINITY;
       }
     }
-
-// bepaal maximum snelheid
-// eerst uit de weg halen anders de standaard snelheid voor zo'n weg
+    
+    // bepaal maximum snelheid
+    // eerst uit de weg halen anders de standaard snelheid voor zo'n weg
     
     try {
       double maxspeed = atol(ww["maxspeed"].c_str());
@@ -99,23 +98,23 @@ namespace osm {
       if (defspeed < speed)
 	speed = defspeed;
     }
-
+    
     if (speed == 0)
       return INFINITY;
-
-// basis kost is de tijd die je er op nominale snelheid over doet
-
+    
+    // basis kost is de tijd die je er op nominale snelheid over doet
+    
     double kost = dist *3.6 / speed;
-
-// beperkingen aflopen
-
+    
+    // beperkingen aflopen
+    
     string access;
     string oneway;
     
     try { 
       access = ww["access"];
     } catch (range_error &ex) {
-      access="yes";
+      access="default";
     }
     try { 
       oneway = ww["oneway"];
@@ -125,98 +124,78 @@ namespace osm {
     try {
       if (ww["junction"] == "roundabout" && oneway == "no")
 	oneway = "yes";
-    } catch (range_error &ex) {
-      // no action
-    }
+    } catch (range_error &ex) { }
     
     try {
       if (ww["highway"] == "motorway" && oneway == "no")
 	oneway = "yes";
-    } catch (range_error &ex) {
-      // no action
-    }
+    } catch (range_error &ex) { }
     
     extracost += _highways[hw].extracost()*dist/EXTRACOST_FACTOR;   // extracost gaat per kilometer als ze op een weg slaan    
     Node &nodey = nodes(y);                               // node waar we naar toe gaan
-
+    
     if (_vehicle == "foot") {
-      string fa;
-      try { fa = ww["foot"];} catch (range_error &ex) {fa="";}
-      if (fa == "") {
-	try {
-	  if (ww["motorroad"] == "yes") {
-	    fa="no";
-	  }
-	} catch (range_error &ex) {}	
+      try { extracost += _profiles[_vehicle].allowed(hw)*dist/EXTRACOST_FACTOR;} catch (range_error &ex) {access="no";}
+      try {
+	if (ww["motorroad"] == "yes") {
+	  access="no";
+	}
+      } catch (range_error &ex) {}	
+      try { access = ww["foot"];} catch (range_error &ex) {  }
+      try { access = ww["access:foot"];} catch (range_error &ex) { }
+      if (access != "no") {
+        try { extracost += _highways[nodey["highway"]].extracost();} catch (range_error &ex) {};
+        try { oneway = ww["oneway:foot"];} catch (range_error &ex) { oneway="no"; }
       }
-      if ((fa == "no") || (access == "no" && fa != "yes"))
-	return INFINITY;
-      try { extracost += _profiles[_vehicle].allowed(hw)*dist/EXTRACOST_FACTOR;} catch (range_error &ex) {return INFINITY;}
-      try { extracost += _highways[nodey["highway"]].extracost();} catch (range_error &ex) {};
-      try { oneway = ww["oneway:foot"];} catch (range_error &ex) {oneway="no";}
     } else if (_vehicle == "bicycle") {
+      try {extracost += _profiles[_vehicle].allowed(hw)*dist/EXTRACOST_FACTOR;} catch (range_error &ex) {access="no";}
+      try {
+	if (ww["motorroad"] == "yes") {
+	  access="no";
+	}
+      } catch (range_error &ex) {}	
+      
+      try { access = ww["bicycle"];} catch (range_error &ex) { }
+      try { access = ww["access:bicycle"];} catch (range_error &ex) { }
+      
+      try { oneway = ww["oneway:bicycle"];} catch (range_error &ex) { }
+
       string cw;
       try { cw = ww["cycleway"];} catch (range_error &ex) {cw="";}
-      if (cw == "opposite_lane" || cw == "opposite_track" || cw == "both")
-	cw = "opposite";
-      try { oneway = ww["oneway:bicycle"];} catch (range_error &ex) { 
-        // no action
-      }
-      string ca;
-      try { ca = ww["bicycle"];} catch (range_error &ex) {ca="";}
-      if (ca == "") {
-	try {
-	  if (ww["motorroad"] == "yes") {
-	    ca="no";
-	  }
-	} catch (range_error &ex) {}	
-      }
-
-      if (ca != "yes") {  // als expliciet toegestaan dan geen extracost meenemen (dus extracost voor dit type weg is dan 0 ongeacht profiel waarde)
-	try { 
-	  extracost += _profiles[_vehicle].allowed(hw)*dist/EXTRACOST_FACTOR;
-	} catch (range_error &ex) {
-	  if (cw == "") 
-	    return INFINITY;
-	}
-      }
-      if (cw != "")
-	extracost = 0; // prefer cycle track or lane
-      else {
-        if ((ca == "no") || (access == "no" && ca != "yes"))
-	  return INFINITY;
-      }
-      if (cw == "opposite")
+      if (cw == "opposite_lane" || cw == "opposite_track" || cw == "both" || cw == "opposite")
         oneway = "no";
-     
+      if (cw != "" && cw != "no") {
+        access = "yes";
+	extracost = 0; // prefer cycle track or lane
+      }
+      
       try {extracost += _highways[nodey["highway"]].extracost();} catch (range_error &ex) {};
     } else if (_vehicle == "car") {
+      try { extracost += _profiles[_vehicle].allowed(hw)*dist/EXTRACOST_FACTOR;} catch (range_error &ex) {access="no";}
       string ma;
-      try { ma = ww["motorcar"];} catch (range_error &ex) {ma="";}
-      if ((ma == "no") || (access == "no" && ma != "yes"))
-	return INFINITY;
-      try { extracost += _profiles[_vehicle].allowed(hw)*dist/EXTRACOST_FACTOR;} catch (range_error &ex) {return INFINITY;}
-      try { extracost += _highways[nodey["highway"]].extracost();} catch (range_error &ex) {};
-      try { oneway = ww["oneway:motor_vehicle"];} catch (range_error &ex) { 
-        // no action
-      }
-      try { oneway = ww["oneway:motorcar"];} catch (range_error &ex) { 
-        // no action
+      try { access = ww["access:motor_vehicle"];} catch (range_error &ex) {}
+      try { access = ww["motorcar"];} catch (range_error &ex) {}
+      try { access = ww["access:motorcar"];} catch (range_error &ex) {}
+      if (access != "no") {
+        try { extracost += _highways[nodey["highway"]].extracost();} catch (range_error &ex) {};
+        try { oneway = ww["oneway:motor_vehicle"];} catch (range_error &ex) { }
+        try { oneway = ww["oneway:motorcar"];} catch (range_error &ex) { }
       }
     }
+
+    //  als nog steeds access = no dan mag het echt niet
+    
+    if (access == "no")
+      return INFINITY;
+    
     if (oneway != "no") {
       if (wrong_direction(nodes(x),nodey,ww,oneway))
 	return INFINITY;
     }
     
-//  als nog steeds access = no dan mag het echt niet
-
-    if (access == "no")
-      return INFINITY;
-
     extracost += curvecost(x,y,prevnode) * _profiles[_vehicle].curvefactor();
-// nog wat beperkingen  (als waarde * dan voor alle niet expliciet gespecificeerde in profiel)
-      
+    // nog wat beperkingen  (als waarde * dan voor alle niet expliciet gespecificeerde in profiel)
+    
     try { 
       extracost += _profiles[_vehicle].traffic_calming(nodey["traffic_calming"]);
     } catch (range_error &ex) {};
@@ -224,14 +203,14 @@ namespace osm {
     try { 
       extracost += _profiles[_vehicle].barrier(nodey["barrier"]);
     } catch (range_error &ex) { };
-
+    
     try { 
       extracost += _profiles[_vehicle].highway(nodey["highway"]);
     } catch (range_error &ex) { };
     
     if (extracost >= INFINITY)
       return INFINITY;
-
+    
     if (!ignoreExtra)
       kost += extracost;
     if (kost > INFINITY)
@@ -243,10 +222,10 @@ namespace osm {
   double Map::calc_h_score(const long n1,const long n2) {
     double dist = distance(n1,n2);
     if (_vehicle == "") return dist;
-
+    
     return dist * 1.75 * 3.6 / _profiles[_vehicle].avgspeed();
   }
-
+  
   long bestpoints[3];
   double initialdistance;
   double maxperc = 0;
@@ -263,14 +242,14 @@ namespace osm {
     }
     if (xs == 0)  // no more nodes to process should not happen in our situation 
       throw runtime_error("xs = 0");
-      
-//    cerr << "xs = " << xs << endl;
+    
+    //    cerr << "xs = " << xs << endl;
     
     bestpoints[set] = xs;
     double newdistance = distance(bestpoints[1],bestpoints[2]);
     double curperc = 100.0*(initialdistance - newdistance)/initialdistance;
     maxperc = max(maxperc,curperc);
-
+    
     k = closedset.find(xs);
     if (k != closedset.end() && k->second != set) {
       cout << "S set = " << set << " xs match = " << xs << endl;
@@ -278,28 +257,28 @@ namespace osm {
     }
     openset.erase(xs);
     closedset[xs]=set;
-
+    
     long prevnode = 0;
     route_type::iterator pn;
     pn = to.find(xs);
     if (pn != to.end())
       prevnode = pn->second;
-
+    
     vector<long> neighbours;
     getNeighbours(xs,neighbours);
-
+    
     for (vector<long>::iterator yi=neighbours.begin();yi != neighbours.end();yi++) {
       long y = *yi;
       
 //      cerr << "y = " << y << endl;
-
+      
       if (closedset.find(y) == closedset.end()) { // && g[xs] != INFINITY) {
 //        cerr << "not closed"<<endl;
 	double tentative_g_score = g[xs] + (set==1?cost(xs,y,prevnode,ignoreExtra):cost(y,xs,prevnode,ignoreExtra));
 	if (tentative_g_score >INFINITY)
 	  tentative_g_score = INFINITY;
 	bool tentative_is_better = false;
-
+	
 	if (openset.find(y) == openset.end()) {
 	  openset[y] = 1;
 //          cerr << "added to openset" << endl;
@@ -307,7 +286,7 @@ namespace osm {
         if (g.find(y) != g.end()) {
           if (tentative_g_score < g[y] || g[y] == 0) {
             tentative_is_better = true;
-	        cout << "verbetering van " << y << endl << "oud = " << g[y] << " nieuw = " << tentative_g_score << endl;
+	    cout << "verbetering van " << y << endl << "oud = " << g[y] << " nieuw = " << tentative_g_score << endl;
 //
 // alle nodes die vanaf y bereikbaar zijn moeten opnieuw worden berekend (behalve xs1)
 // dus als ze al in closedset staan daar weer uit verwijderen
@@ -322,7 +301,7 @@ namespace osm {
                   if (k->second == set) {
                     cout << "   opnieuw open " << y1 << endl;
                     openset[y1] = set;
-//                    closedset.erase(y1);
+                    closedset.erase(y1);
                   }
                 }
               }
@@ -330,15 +309,14 @@ namespace osm {
           }
         } else { 
           tentative_is_better = true;
-//          cerr << "bestond nog niet" << endl;
 	}
         
-	  string name;
-	  string ref;
-	  long w = getConnectingWay(xs,y);
-	  osm::Way &ww = ways(w);
-	  try { name = ww["name"];} catch (range_error &ex) {name="";}
-	  try { ref = ww["ref"];} catch (range_error &ex) {ref="";}
+	string name;
+	string ref;
+	long w = getConnectingWay(xs,y);
+	osm::Way &ww = ways(w);
+	try { name = ww["name"];} catch (range_error &ex) {name="";}
+	try { ref = ww["ref"];} catch (range_error &ex) {ref="";}
 	if (tentative_is_better) {
 	  to[y] = xs;
 	  g[y] = tentative_g_score;
@@ -375,7 +353,7 @@ namespace osm {
     score_type gs_score,hs_score,fs_score,ds_score, gg_score,hg_score,fg_score,dg_score;
     route_type came_from,goes_to;
     long xs = 0;
-
+    
     initRoute(vehicle);
     startset[n1] = 1;
     goalset[n2] = 1;
@@ -389,13 +367,13 @@ namespace osm {
       if (xs == 0)
         xs = AstarHelper(2,n1,goalset,closedset,fg_score,gg_score,hg_score,dg_score,goes_to,ignoreExtra);
     }
-
+    
     route.clear();
     if (xs == 0)
-        throw range_error("Niet mogelijk om een route te berekenen");
+      throw range_error("Niet mogelijk om een route te berekenen");
     route.push_back(xs);
     route_type::iterator rp;
-
+    
     long x = xs;
     while ((rp = came_from.find(x)) != came_from.end()) {
       x = rp->second;
@@ -406,7 +384,7 @@ namespace osm {
       x = rp->second;
       route.push_back(x);
     }
-
+    
     return 0;
   }
   
