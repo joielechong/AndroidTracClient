@@ -224,7 +224,7 @@ namespace osm {
     double dist = distance(n1,n2);
     if (_vehicle == "") return dist;
     
-    return dist * 1.75 * 3.6 / _profiles[_vehicle].avgspeed();
+    return dist * 1.25 * 3.6 / _profiles[_vehicle].avgspeed();
   }
   
   long bestpoints[3];
