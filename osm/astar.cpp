@@ -337,14 +337,14 @@ namespace osm {
 	    cout << " " << xs << " " << y;
 	  else
 	    cout << " " << y << " " << xs;
-          cout << " " << f[xs] << " " << g[y] << " " << h[y] << " " << f[y] << " "+name+" "+ref <<" " openset.size() << " " << closedset.size() <<endl;
+          cout << " " << f[xs] << " " << g[y] << " " << h[y] << " " << f[y] << " "+name+" "+ref <<" " << openset.size() << " " << closedset.size() <<endl;
 	} else {
 	  cout << set << " XXXXXX";
 	  if (set == 1) 
 	    cout << " " << xs << " " << y;
 	  else
 	    cout << " " << y << " " << xs;
-          cout << " " << f[xs] << " " << g[y] << "/" << tentative_g_score << " " << h[y] << " " << f[y] << " "+name+" "+ref<<" " openset.size() << " " << closedset.size() <<endl;
+          cout << " " << f[xs] << " " << g[y] << "/" << tentative_g_score << " " << h[y] << " " << f[y] << " "+name+" "+ref<<" " << openset.size() << " " << closedset.size() <<endl;
         }
       }
     }
