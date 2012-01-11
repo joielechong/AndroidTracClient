@@ -4,8 +4,6 @@
 #include <stdbool.h>
 #include "grootcirkel.h"
 
-#define EXTRACOST_FACTOR (100.0)
-
 namespace osm {
   using namespace std;
   
@@ -132,11 +130,11 @@ namespace osm {
         oneway="no";
     } catch  (range_error &ex) { }
     
-    extracost += _highways[hw].extracost()*dist/EXTRACOST_FACTOR;   // extracost gaat per kilometer als ze op een weg slaan    
+    extracost += _highways[hw].extracost()*dist/_extracostfactor;   // extracost gaat per kilometer als ze op een weg slaan    
     Node &nodey = nodes(y);                               // node waar we naar toe gaan
     
+    try { extracost += _profiles[_vehicle].allowed(hw)*dist/_extracostfactor;} catch (range_error &ex) {access="no";}
     if (_vehicle == "foot") {
-      try { extracost += _profiles[_vehicle].allowed(hw)*dist/EXTRACOST_FACTOR;} catch (range_error &ex) {access="no";}
       try {
 	if (ww["motorroad"] == "yes") {
 	  access="no";
@@ -149,7 +147,6 @@ namespace osm {
         try { oneway = ww["oneway:foot"];} catch (range_error &ex) { }
       }
     } else if (_vehicle == "bicycle") {
-      try {extracost += _profiles[_vehicle].allowed(hw)*dist/EXTRACOST_FACTOR;} catch (range_error &ex) {access="no";}
       try {
 	if (ww["motorroad"] == "yes") {
 	  access="no";
@@ -158,7 +155,6 @@ namespace osm {
       
       try { access = ww["bicycle"];} catch (range_error &ex) { }
       try { access = ww["access:bicycle"];} catch (range_error &ex) { }
-      
       try { oneway = ww["oneway:bicycle"];} catch (range_error &ex) { }
 
       string cw;
@@ -172,7 +168,6 @@ namespace osm {
       
       try {extracost += _highways[nodey["highway"]].extracost();} catch (range_error &ex) {};
     } else if (_vehicle == "car") {
-      try { extracost += _profiles[_vehicle].allowed(hw)*dist/EXTRACOST_FACTOR;} catch (range_error &ex) {access="no";}
       string ma;
       try { access = ww["access:motor_vehicle"];} catch (range_error &ex) {}
       try { access = ww["motorcar"];} catch (range_error &ex) {}
@@ -224,7 +219,7 @@ namespace osm {
     double dist = distance(n1,n2);
     if (_vehicle == "") return dist;
     
-    return dist * 1.25 * 3.6 / _profiles[_vehicle].avgspeed();
+    return dist * _correctionfactor * 3.6 / _profiles[_vehicle].avgspeed();
   }
   
   long bestpoints[3];

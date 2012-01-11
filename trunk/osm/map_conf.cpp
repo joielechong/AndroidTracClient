@@ -221,6 +221,25 @@ namespace osm {
     }
   }
   
+  void Map::process_params(const xmlpp::Node* node) {
+   xmlpp::Node::NodeList list = node->get_children();
+    for(xmlpp::Node::NodeList::iterator iter = list.begin(); iter != list.end(); ++iter) {
+      const xmlpp::TextNode* nodeText = dynamic_cast<const xmlpp::TextNode*>(*iter);
+      const xmlpp::CommentNode* nodeComment = dynamic_cast<const xmlpp::CommentNode*>(*iter);
+      
+      if(!(nodeText && nodeText->is_white_space())) { //Let's ignore the indenting - you don't always want to do this.    
+	if(!nodeText && !nodeComment) { //Let's not say "name: text".
+	  const xmlpp::Element* nodeElement = dynamic_cast<const xmlpp::Element*>(*iter);
+	  Glib::ustring name,value;
+          getAttribute(nodeElement,"name",name);
+          getAttribute(nodeElement,"value",value);
+
+	  _params[name] = value;
+	}
+      }
+    }
+  }
+  
   void Map::process_conf(const xmlpp::Node* node) {
     Glib::ustring nodename = node->get_name();
     if (nodename != "astar")
@@ -238,14 +257,16 @@ namespace osm {
 	    process_highways(*iter);
 	  else if (nodename == "profiles") 
 	    process_profiles(*iter);
+	  else if (nodename == "params") 
+	    process_params(*iter);
 	  else
 	    throw domain_error("Foutiefconfiguratiefile: highways of profiles verwacht. Naam = "+nodename);
 	}
       }
     }      
-  }
-  
-  void Map::process_params(const xmlpp::Node* node) {
+    // verwerk globale parameters
+    try {_correctionfactor = 1.0 + atol(_params["correctionfactor"])/100.0;} catch (range_error &ex) {_correctionfactor = 1.75;}
+    try {_extracostfactor = atod(_params["extracostfactor"]);} catch (range_error &ex) {_extracostfactor = 100.0;}
   }
   
   void Map::load_conf() {

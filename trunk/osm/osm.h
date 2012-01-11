@@ -259,6 +259,7 @@ namespace osm {
 
   typedef map<string,Highway> highway_type;
   typedef map<string,Profile> profile_type;
+  typedef map<string,string> params_type;
   typedef map<long,int> set_type;
   typedef map<long,double> score_type;
   typedef map<long,long> route_type; 
@@ -325,8 +326,9 @@ namespace osm {
 
     highway_type _highways;
     profile_type _profiles;
-    
+    params_type _params;
     double _correctionfactor;
+    double _extracostfactor;
     
     long _costcounter;
   };
