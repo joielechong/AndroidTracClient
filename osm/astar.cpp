@@ -116,11 +116,7 @@ namespace osm {
     } catch (range_error &ex) {
       access="default";
     }
-    try { 
-      oneway = ww["oneway"];
-    } catch (range_error &ex) {
-      oneway="no";
-    }
+    try { oneway = ww["oneway"];} catch (range_error &ex) {oneway="no";}
     try {
       if (ww["junction"] == "roundabout" && oneway == "no")
 	oneway = "yes";
@@ -130,6 +126,11 @@ namespace osm {
       if (ww["highway"] == "motorway" && oneway == "no")
 	oneway = "yes";
     } catch (range_error &ex) { }
+    
+    try {
+      if (_profiles[_vehicle].ignore_oneway() == 1)
+        oneway="no";
+    } catch  (range_error &ex) { }
     
     extracost += _highways[hw].extracost()*dist/EXTRACOST_FACTOR;   // extracost gaat per kilometer als ze op een weg slaan    
     Node &nodey = nodes(y);                               // node waar we naar toe gaan
@@ -145,7 +146,7 @@ namespace osm {
       try { access = ww["access:foot"];} catch (range_error &ex) { }
       if (access != "no") {
         try { extracost += _highways[nodey["highway"]].extracost();} catch (range_error &ex) {};
-        try { oneway = ww["oneway:foot"];} catch (range_error &ex) { oneway="no"; }
+        try { oneway = ww["oneway:foot"];} catch (range_error &ex) { }
       }
     } else if (_vehicle == "bicycle") {
       try {extracost += _profiles[_vehicle].allowed(hw)*dist/EXTRACOST_FACTOR;} catch (range_error &ex) {access="no";}
