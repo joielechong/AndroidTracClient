@@ -289,18 +289,22 @@ namespace osm {
 //	  
             vector<long> ynb;
             getNeighbours(y,ynb);
-            for (vector<long>::iterator y1i=ynb.begin();y1i != ynb.end();y1i++) {
+	    for (vector<long>::iterator y1i=ynb.begin();y1i != ynb.end();y1i++) {
               long y1=*y1i;
+	      cout << "y1 = " << y1 << " xs = " << xs;
               if (y1 != xs) {
+		cout << " niet xs";
                 k = closedset.find(y1);
                 if (k != closedset.end()) {
+		  cout << " in closed";
                   if (k->second == set) {
-                    cout << "   opnieuw open " << y1 << endl;
+                    cout << "   opnieuw open " << y1;
                     openset[y1] = set;
                     closedset.erase(y1);
-                  }
-                }
-              }
+		  }
+		}
+	      }
+	      cout << endl;
             }
           }
         } else { 
