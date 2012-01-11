@@ -245,6 +245,9 @@ namespace osm {
     }      
   }
   
+  void Map::process_param,s(const xmlpp::Node* node) {
+  }
+  
   void Map::load_conf() {
 	
     xmlpp::DomParser parser;
