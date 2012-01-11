@@ -266,7 +266,7 @@ namespace osm {
     }      
     // verwerk globale parameters
     try {_correctionfactor = 1.0 + atol(_params["correctionfactor"])/100.0;} catch (range_error &ex) {_correctionfactor = 1.75;}
-    try {_extracostfactor = atod(_params["extracostfactor"]);} catch (range_error &ex) {_extracostfactor = 100.0;}
+    try {_extracostfactor = atof(_params["extracostfactor"]);} catch (range_error &ex) {_extracostfactor = 100.0;}
   }
   
   void Map::load_conf() {
