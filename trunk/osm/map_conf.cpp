@@ -264,6 +264,7 @@ namespace osm {
 	}
       }
     }      
+    
     // verwerk globale parameters
     try {_correctionfactor = 1.0 + atol(_params["correctionfactor"].c_str())/100.0;} catch (range_error &ex) {_correctionfactor = 1.75;}
     try {_extracostfactor = atof(_params["extracostfactor"].c_str());} catch (range_error &ex) {_extracostfactor = 100.0;}
