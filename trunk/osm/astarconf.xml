@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <astar>
         <params>
-                <param name="correctionfactor" value="75" />   <!-- correctie in % voor de omweg die je maakt ten opzichte van de rechte lijn -->
-                <param name="extracostfactor" value="100" />   <!-- correctie in % voor de omweg die je maakt ten opzichte van de rechte lijn -->
+                <param name="correctionfactor" value="55" />   <!-- correctie in % voor de omweg die je maakt ten opzichte van de rechte lijn -->
+                <param name="extracostfactor" value="100" />   <!-- afstand in meters waarover de extracost voor een weg telt -->
         </params>
 	<highways>
 		<highway name="bus_stop"/>

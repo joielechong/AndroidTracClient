@@ -346,6 +346,8 @@ namespace osm {
     route_type came_from,goes_to;
     long xs = 0;
     
+    cout << "Correctionfactor = " << _correctionfactor << endl;
+    cout << "Extracostfactor = " << _extracostfactor << endl;
     initRoute(vehicle);
     startset[n1] = 1;
     goalset[n2] = 1;
