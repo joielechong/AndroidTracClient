@@ -172,11 +172,9 @@ namespace osm {
       try { access = ww["access:motor_vehicle"];} catch (range_error &ex) {}
       try { access = ww["motorcar"];} catch (range_error &ex) {}
       try { access = ww["access:motorcar"];} catch (range_error &ex) {}
-      if (access != "no") {
-        try { extracost += _highways[nodey["highway"]].extracost();} catch (range_error &ex) {};
-        try { oneway = ww["oneway:motor_vehicle"];} catch (range_error &ex) { }
-        try { oneway = ww["oneway:motorcar"];} catch (range_error &ex) { }
-      }
+      try { extracost += _highways[nodey["highway"]].extracost();} catch (range_error &ex) {};
+      try { oneway = ww["oneway:motor_vehicle"];} catch (range_error &ex) { }
+      try { oneway = ww["oneway:motorcar"];} catch (range_error &ex) { }
     }
 
     //  als nog steeds access = no dan mag het echt niet
@@ -190,19 +188,11 @@ namespace osm {
     }
     
     extracost += curvecost(x,y,prevnode) * _profiles[_vehicle].curvefactor();
-    // nog wat beperkingen  (als waarde * dan voor alle niet expliciet gespecificeerde in profiel)
-    
-    try { 
-      extracost += _profiles[_vehicle].traffic_calming(nodey["traffic_calming"]);
-    } catch (range_error &ex) {};
-    
-    try { 
-      extracost += _profiles[_vehicle].barrier(nodey["barrier"]);
-    } catch (range_error &ex) { };
-    
-    try { 
-      extracost += _profiles[_vehicle].highway(nodey["highway"]);
-    } catch (range_error &ex) { };
+
+    // nog wat beperkingen  (als waarde * dan voor alle niet expliciet gespecificeerde in profiel)    
+    try { extracost += _profiles[_vehicle].traffic_calming(nodey["traffic_calming"]);} catch (range_error &ex) {};
+    try { extracost += _profiles[_vehicle].barrier(nodey["barrier"]);} catch (range_error &ex) { };
+    try { extracost += _profiles[_vehicle].highway(nodey["highway"]);} catch (range_error &ex) { };
     
     if (extracost >= INFINITY)
       return INFINITY;
