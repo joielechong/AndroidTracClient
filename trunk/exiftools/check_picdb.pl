@@ -4,6 +4,7 @@ use strict;
 
 use Image::ExifTool qw(:Public);
 use DBI;
+use Digest::MD5;
 use Data::Dumper;
 
 chdir("/data");
@@ -16,20 +17,24 @@ print "Check of alle foto's nog bestaan\n";
 
 $dbh->do("create temporary table filetemp (filename varchar)");
 
-open PIJP,"find pictures/photos -type f| /usr/local/bin/iconv -t utf-8 -f iso-8859-1 |" or die "Kan filenamen lijst niet openen\n";
+my $iconv = "iconv";
+$iconv = "/usr/local/bin/iconv" if ( -x "/usr/local/bin/iconv" );
+
+open PIJP,"find pictures/photos -type f| $iconv -t utf-8 -f iso-8859-1 |" or die "Kan filenamen lijst niet openen\n";
 
 $dbh->do("copy filetemp from stdin;");
 
 while (<PIJP>) {
-    next if /Thumbs\.db/;
-    next if /-thumb\.jpg/;
-    next if /-thump\.jpg/;
-    next if /\.shtml/;
-    next if /\.[aA][vV][iI]/;
-    next if /\.[mM][pP][gG]/;
-    next if /\..[Gg][pP]/;
-    next if /\.[mM][oO][vV]/;
-    next if /\.[wW][aA][vV]/;
+    next if /Thumbs\.db$/;
+    next if /-thumb\.jpg$/;
+    next if /-thump\.jpg$/;
+    next if /\.shtml$/;
+    next if /\.[aA][vV][iI]$/;
+    next if /\.[mM][pP][gG]$/;
+    next if /\..[Gg][pP]$/;
+    next if /\.[mM][oO][vV]$/;
+    next if /\.[wW][aA][vV]$/;
+    next if /_original$/;
 #    s/'/''/g;
     $dbh->pg_putline($_);
 }
@@ -55,19 +60,21 @@ if ($#delfiles >= 0) {
 #    my $cmd="delete from albumfoto where fotoid in (select id from fotos where filename in ('".join("','",@delfiles)."'));";
 #    $dbh->do($cmd);
     
-    my $cmd="delete from fotos where filename in ('".join("','",@delfiles)."');";
+    my $cmd="update fotos set deleted=true where filename in ('".join("','",@delfiles)."');";
     $dbh->do($cmd);
 }
 
-if ($#oids >= 0) {
-    for my $oid (@oids) {
-	if (defined($oid)) {
-            my $ret=$dbh->func($oid,'lo_unlink');
-            print "Unlink of $oid returned $ret\n";
-	}
-    }
-}
+##if ($#oids >= 0) {
+##    for my $oid (@oids) {
+##	if (defined($oid)) {
+##            my $ret=$dbh->func($oid,'lo_unlink');
+##            print "Unlink of $oid returned $ret\n";
+##	}
+##    }
+##}
 $dbh->commit();
+
+system("/usr/local/pgsql/bin/vacuumlo -v httpd");
 
 print "Voeg nieuwe foto's toe aan database\n";
 my $exiftool = new Image::ExifTool;
@@ -106,66 +113,46 @@ foreach my $row (@$rows) {
 	$sth_fotonr->execute($file);
 #    $dbh->do("insert into fotos values ('$filedb');");
 #    $dbh->do("update fotos set fotonr=id where filename='$filedb'");
-    my @changes=();
     my $nr;
     my $filmnr;
     
     if ($file =~ m:.*/PIC[T_](\d+)\.[Jj][Pp][Gg]:) {
 	$nr=$1;
-	push @changes,"fotonr=$nr" if $nr;
     }
     if ($file =~ m:.*/P(\d\d\d)0(\d+)\.[Jj][Pp][Gg]:) {
 	$nr=$2;
 	$filmnr=$1;
-	push @changes,"fotonr=$nr" if $nr;
-	push @changes,"filmnr=$filmnr" if $filmnr;
     }
     if ($file =~ m:.*/D[SV]C[NF]?(\d+)\.[Jj][Pp][Gg]:) {
 	$nr=$1;
-	push @changes,"fotonr=$nr" if $nr;
     }
     if ($file =~ m:.*/(\d+)[_]+(\d+)A?\.[Jj][Pp][Gg]:) {
 	$nr=$2;
 	$filmnr=$1;
-	push @changes,"filmnr=$filmnr" if $filmnr;
-	push @changes,"fotonr=$nr" if $nr;
     }
     if ($file =~ m:.*/IMG_(\d+)\.[Jj][Pp][Gg]:) {
 	$nr=$1;
-	push @changes,"fotonr=$nr" if $nr;
     }
     if ($file =~ m:.*/ST[ABCD]_(\d+)\.[Jj][Pp][Gg]:) {
 	$nr=$1;
-	push @changes,"fotonr=$nr" if $nr;
     }
     if ($file =~ m:.*/(\d+)-(\d+)_IMG\.[Jj][Pp][Gg]:) {
 	$nr=$2;
 	$filmnr=$1;
-	push @changes,"filmnr=$filmnr" if $filmnr;
-	push @changes,"fotonr=$nr" if $nr;
     }
     if ($file =~ m:.*/[Ii]mage(\d+)\.[Jj][Pp][Gg]:) {
 	$nr=$1;
-	push @changes,"fotonr=$nr" if $nr;
     }
     if ($model) {
 	$model = undef if ($model eq "Photonet Central Lab Scanner 4B150-35A");
-	push @changes,"camera='$model'" if $model;
-    }
-    if ($artist) {
-	push @changes,"auteur='$artist'";
-    }
-    if ($description) {
-	push @changes,"omschrijving='$description'";
     }
     if ($datum) {
 	$datum =~ s/:/-/g;
 	$datum =~ s/ .*//;
-	$datum = undef if $datum eq '0000-00-00';
-	push @changes,"datum='$datum'" if $datum;
+	$datum = undef if $datum eq '0000-00-00' or $datum eq "";
     }
     $sth_fillinfo->execute($nr,$model,$artist,$description,$datum,$insidethumb,$filmnr,$file);
-	$dbh->commit();
+    $dbh->commit();
 }
 
 print "Maak thumbnails\n";
@@ -182,30 +169,49 @@ while (@row=$sth5->fetchrow_array()) {
     my $file = $filedb;
     $file =~ s/''/'/g;
     my $info = ImageInfo($file);
-    unless ($$info{ThumbnailImage}) {
-	if ($row[0] =~ /\.[jJ][pP][eE]?[gG]$/) {
-	    my $tempname="/tmp/thumb_$$-$cnt.jpg";
-	    print $row[0],"\n";
+    if ($$info{ThumbnailImage}) {
+	$sth4->execute($file);    } elsif ($row[0] =~ /\.[jJ][pP][eE]?[gG]$/) {
+	my $tempname="/tmp/thumb_$$-$cnt.jpg";
+	print $row[0],"\n";
 	    
-	    my $cmd="djpeg \"$file\" | /usr/local/bin/pnmscale -xy 120 100 | cjpeg -progressive -optimize -outfile $tempname";
-	    print "$cmd\n";
-	    system($cmd);
-	    $sth_loimport->execute($tempname);
-	    my @row1 = $sth_loimport->fetchrow_array();
-	    my $oid = $row1[0];
-	    print Dumper($oid);
-	    $sth2->execute($oid,$file) if defined($oid);
-#	    $dbh->do("update fotos set thumbnail=$oid where filename='$filedb';") if (defined ($oid);
-	    unlink($tempname);
-	    $cnt++;
-	}
-    } else {
-#	print "Thumbnail inside file $file\n";
-	$sth4->execute($file);
+	my $cmd="djpeg \"$file\" | /usr/bin/pnmscale -xy 120 100 | cjpeg -progressive -optimize -outfile $tempname";
+	print "$cmd\n";
+	system($cmd);
+	$sth_loimport->execute($tempname);
+	my @row1 = $sth_loimport->fetchrow_array();
+	my $oid = $row1[0];
+	print "oid = $oid\n" if defined $oid;
+	$sth2->execute($oid,$file) if defined $oid;
+	unlink($tempname);
+	$cnt++;
     }
 }
 
 $sth5->finish();
+
+sub filemd5 {
+    my $file = shift;
+
+    open my $MD5, "<$file" or die "Kan $file niet openen voor MD5\n";
+    binmode($MD5);
+    my $ctx = Digest::MD5->new;
+    $ctx->addfile($MD5);
+    return $ctx->hexdigest;
+}
+
+print "MD5 digests\n";
+my $sth6=$dbh->prepare("select filename from fotos where md5sum is null;");
+my $sth7=$dbh->prepare("update fotos set md5sum=? where filename=?");
+$sth6->execute();
+while (@row=$sth6->fetchrow_array()) {
+    my $filedb = $row[0];
+    my $file = $filedb;
+    $file =~ s/''/'/g;
+    my $md5sum = filemd5($file);
+    print "$filedb $file $md5sum\n";
+    $sth7->execute($md5sum,$filedb);
+}
+
 $dbh->commit();
 
 print "En de jaar en maand albums vullen\n";
