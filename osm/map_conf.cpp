@@ -227,7 +227,7 @@ namespace osm {
       const xmlpp::TextNode* nodeText = dynamic_cast<const xmlpp::TextNode*>(*iter);
       const xmlpp::CommentNode* nodeComment = dynamic_cast<const xmlpp::CommentNode*>(*iter);
       
-      if(!(nodeText && nodeText->is_white_space())) { /   
+      if(!(nodeText && nodeText->is_white_space())) {    
 	if(!nodeText && !nodeComment) { 
 	  const xmlpp::Element* nodeElement = dynamic_cast<const xmlpp::Element*>(*iter);
 	  Glib::ustring name,value;
