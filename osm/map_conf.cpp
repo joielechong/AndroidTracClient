@@ -95,8 +95,8 @@ namespace osm {
     const xmlpp::TextNode* nodeText = dynamic_cast<const xmlpp::TextNode*>(node);
     const xmlpp::CommentNode* nodeComment = dynamic_cast<const xmlpp::CommentNode*>(node);
     
-    if(!(nodeText && nodeText->is_white_space())) { //Let's ignore the indenting - you don't always want to do this.    
-      if(!nodeText && !nodeComment) { //Let's not say "name: text".
+    if(!(nodeText && nodeText->is_white_space())) { 
+      if(!nodeText && !nodeComment) { 
         const xmlpp::Element* nodeElement = dynamic_cast<const xmlpp::Element*>(node);
 	Glib::ustring name,extracost;
         
@@ -111,8 +111,8 @@ namespace osm {
     const xmlpp::TextNode* nodeText = dynamic_cast<const xmlpp::TextNode*>(node);
     const xmlpp::CommentNode* nodeComment = dynamic_cast<const xmlpp::CommentNode*>(node);
     
-    if(!(nodeText && nodeText->is_white_space())) { //Let's ignore the indenting - you don't always want to do this.    
-      if(!nodeText && !nodeComment) { //Let's not say "name: text".
+    if(!(nodeText && nodeText->is_white_space())) {
+      if(!nodeText && !nodeComment) {
         const xmlpp::Element* nodeElement = dynamic_cast<const xmlpp::Element*>(node);
 	Glib::ustring name,extracost;
         
@@ -127,8 +127,8 @@ namespace osm {
     const xmlpp::TextNode* nodeText = dynamic_cast<const xmlpp::TextNode*>(node);
     const xmlpp::CommentNode* nodeComment = dynamic_cast<const xmlpp::CommentNode*>(node);
     
-    if(!(nodeText && nodeText->is_white_space())) { //Let's ignore the indenting - you don't always want to do this.    
-      if(!nodeText && !nodeComment) { //Let's not say "name: text".
+    if(!(nodeText && nodeText->is_white_space())) { 
+      if(!nodeText && !nodeComment) {
         const xmlpp::Element* nodeElement = dynamic_cast<const xmlpp::Element*>(node);
 	Glib::ustring name,extracost;
         
@@ -145,8 +145,8 @@ namespace osm {
       const xmlpp::TextNode* nodeText = dynamic_cast<const xmlpp::TextNode*>(*iter);
       const xmlpp::CommentNode* nodeComment = dynamic_cast<const xmlpp::CommentNode*>(*iter);
       
-      if(!(nodeText && nodeText->is_white_space())) { //Let's ignore the indenting - you don't always want to do this.    
-	if(!nodeText && !nodeComment) { //Let's not say "name: text".
+      if(!(nodeText && nodeText->is_white_space())) {     
+	if(!nodeText && !nodeComment) { 
 	  const xmlpp::Element* nodeElement = dynamic_cast<const xmlpp::Element*>(*iter);
 	  Glib::ustring name,maxspeed,avgspeed,ignore_oneway,curvefactor;
           
@@ -172,9 +172,9 @@ namespace osm {
 	    const xmlpp::CommentNode* nodeComment = dynamic_cast<const xmlpp::CommentNode*>(*iterp);
 	    Glib::ustring nodename = (*iterp)->get_name();
 	    
-	    if(!(nodeText && nodeText->is_white_space())) {//Let's ignore the indenting - you don't always want to do this.    
+	    if(!(nodeText && nodeText->is_white_space())) {
 	      nodename = (*iterp)->get_name();
-	      if(!nodeText && !nodeComment && !nodename.empty()) { //Let's not say "name: text".
+	      if(!nodeText && !nodeComment && !nodename.empty()) { 
 		if (nodename == "allowed") 
 		  process_allowed(*iterp,_profiles[name]);
 		else if (nodename == "barrier")
@@ -199,8 +199,8 @@ namespace osm {
       const xmlpp::TextNode* nodeText = dynamic_cast<const xmlpp::TextNode*>(*iter);
       const xmlpp::CommentNode* nodeComment = dynamic_cast<const xmlpp::CommentNode*>(*iter);
       
-      if(!(nodeText && nodeText->is_white_space())) { //Let's ignore the indenting - you don't always want to do this.    
-	if(!nodeText && !nodeComment) { //Let's not say "name: text".
+      if(!(nodeText && nodeText->is_white_space())) { 
+	if(!nodeText && !nodeComment) { 
 	  const xmlpp::Element* nodeElement = dynamic_cast<const xmlpp::Element*>(*iter);
 	  Glib::ustring name,speed,extracost;
           getAttribute(nodeElement,"name",name);
@@ -227,8 +227,8 @@ namespace osm {
       const xmlpp::TextNode* nodeText = dynamic_cast<const xmlpp::TextNode*>(*iter);
       const xmlpp::CommentNode* nodeComment = dynamic_cast<const xmlpp::CommentNode*>(*iter);
       
-      if(!(nodeText && nodeText->is_white_space())) { //Let's ignore the indenting - you don't always want to do this.    
-	if(!nodeText && !nodeComment) { //Let's not say "name: text".
+      if(!(nodeText && nodeText->is_white_space())) { /   
+	if(!nodeText && !nodeComment) { 
 	  const xmlpp::Element* nodeElement = dynamic_cast<const xmlpp::Element*>(*iter);
 	  Glib::ustring name,value;
           getAttribute(nodeElement,"name",name);
@@ -250,9 +250,9 @@ namespace osm {
       const xmlpp::TextNode* nodeText = dynamic_cast<const xmlpp::TextNode*>(*iter);
       const xmlpp::CommentNode* nodeComment = dynamic_cast<const xmlpp::CommentNode*>(*iter);
       
-      if(!(nodeText && nodeText->is_white_space())) {//Let's ignore the indenting - you don't always want to do this.    
+      if(!(nodeText && nodeText->is_white_space())) {    
 	nodename = (*iter)->get_name();
-	if(!nodeText && !nodeComment && !nodename.empty()) { //Let's not say "name: text".
+	if(!nodeText && !nodeComment && !nodename.empty()) {
 	  if (nodename == "highways") 
 	    process_highways(*iter);
 	  else if (nodename == "profiles") 
@@ -274,11 +274,11 @@ namespace osm {
 	
     xmlpp::DomParser parser;
     //parser.set_validate();
-    parser.set_substitute_entities(); //We just want the text to be resolved/unescaped automatically.
+    parser.set_substitute_entities(); 
     parser.parse_file(_conffile);
     if(parser) {
       //Walk the tree:
-      const xmlpp::Node* pNode = parser.get_document()->get_root_node(); //deleted by DomParser.
+      const xmlpp::Node* pNode = parser.get_document()->get_root_node(); 
       process_conf(pNode);
 
     } else
