@@ -187,7 +187,7 @@ sub toontabel_alles {
 
     
 my @sql = (qq< select distinct eis from unieke_eisen where eis ilike ? order by 1>,
-	   qq< select distinct eis from eis_di where di ilike ? order by eis>,
+	   qq< select distinct eis from eis_di where di = ? order by eis>,
            qq< select distinct eis from unieke_eisen where eistekst ilike ? order by eis>,
 	   qq< select distinct eis from vmx_fasering_alles  where faseid = ? order by eis>,
            qq< select distinct eis from locatie_protocol as l join protocol_eis as p on (l.protocol_doc_id=p.protocol_doc_id) where locnaam=? order by eis>
