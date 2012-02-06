@@ -229,7 +229,7 @@ sub exported_fx1 {
 }
 
 sub exported_fx2 {
-     exported_fx(1,0,@_);
+     exported_fx(1,1,@_);
 }
 
 sub exported_fx3 {
