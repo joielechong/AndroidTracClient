@@ -283,10 +283,10 @@ namespace osm {
               long y1=*y1i;
 	      cout << "y1 = " << y1 << " xs = " << xs;
               if (y1 != xs) {
-		cout << " niet xs";
+//		cout << " niet xs";
                 k = closedset.find(y1);
                 if (k != closedset.end()) {
-		  cout << " in closed";
+//		  cout << " in closed";
                   if (k->second == set) {
                     cout << "   opnieuw open " << y1;
                     openset[y1] = set;
