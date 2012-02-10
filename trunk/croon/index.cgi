@@ -422,7 +422,7 @@ sub do_altvmx {
     my $field="vmx$fase";
     $field="bp$fase" if length($fase) > 2;   #hek hek hek
     
-    my $sql1 = qq!update eis_di set $field=NOT $field where eis=? and di=?!;
+    my $sql1 = qq!update eis_di set $field=NOT $field,ovch=false where eis=? and di=?!;
 #    $html .= "<pre>$sql1</pre>\n";
     my $dbh = dbi_connect();	
     my $sth1 = $dbh->prepare($sql1);
