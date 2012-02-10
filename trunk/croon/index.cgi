@@ -323,7 +323,7 @@ sub vmxdetails {
 sub vmxdi {
 #    vmx_tabel(2,$_[0],0);
     my $di = shift;
-    my $sql = q!select e.eis,eistekst,d.status,vmxov as "Ontwerp Verificatie",vmxke as "Keuring",vmxbp as "Beproeving",vmxin as "Inspectie",vmxlc as "Lock",ovuo,ovdo,ovsd,(select count(usecase)>0 as ovuc from features join feat_uc on (feature=feat and features.eis=e.eis and d.di='86'))::boolean as ovuc,bpfat,bpifat,bpsat,bpisat,bpsit from eis_di as d join unieke_eisen as e on (e.eis=d.eis) where d.di=? order by d.eis!;
+    my $sql = q!select e.eis,eistekst,d.status,vmxov as "Ontwerp Verificatie",vmxke as "Keuring",vmxbp as "Beproeving",vmxin as "Inspectie",vmxlc as "Lock",ovuo,ovdo,ovsd,(select count(usecase)>0 as ovuc from features join feat_uc on (feature=feat and features.eis=e.eis and d.di='86'))::boolean as ovuc,bpfat,bpifat,bpsat,bpisat,bpsit,ovch from eis_di as d join unieke_eisen as e on (e.eis=d.eis) where d.di=? order by d.eis!;
     my $sqldi = q!select objname from objecten where objid=?!;
     my $dbh = dbi_connect();	
     my $sth = $dbh->prepare( $sql );
@@ -353,13 +353,16 @@ sub vmxdi {
         my $bepr = $$row[5];
         my $insp = $$row[6];
         my $lock = $$row[7];
+        my $ovch = $$row[17];
         $html .= qq!<tr valign="top"!.(($rownr & 1)==1 ? qq! class="alt" ! : "").qq!>!;
 
 	$eistekst =~ s/[\xE2][\x84][\xA6]/&#x2126/g;
         $eistekst =~ s/([\xC2\xC3])([\x80-\xBF])/chr(ord($1)<<6&0xC0|ord($2)&0x3F)/eg;
         $eistekst =~ s/\n/<br>/g;
         $html .= qq!<td>$eis</td><td>$eistekst</td><td class='$status'>$status</td>!;
-        $html .= qq!<td><div!.($lock==1 ? qq! class='locked'!:' ').qq!id='d_${eis}_${di}_ov'><input type=checkbox name='${eis}_ov_chk' onclick="altvmx('$eis','$di','ov')"!.($ov==1?' CHECKED':'').qq!>!;
+        $html .= qq!<td!;
+        $html .= qq! class='ovch'! if ($ovch == 1);
+        $html .= qq!><div!.($lock==1 ? qq! class='locked'!:' ').qq!id='d_${eis}_${di}_ov'><input type=checkbox name='${eis}_ov_chk' onclick="altvmx('$eis','$di','ov')"!.($ov==1?' CHECKED':'').qq!>!;
         if ($ov == 1 or $$row[11]==1) {
             $html .= do_vmxov($eis,$di,$$row[8],$$row[9],$$row[10],$$row[11]);
         }
