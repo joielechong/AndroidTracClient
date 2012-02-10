@@ -271,7 +271,7 @@ sub vmxfasering {
 
 sub vmxdetails {
     my $eis = shift;
-    my $sql = q!select d.di as "DI",d.status,vmxov as "Ontwerp Verificatie",vmxke as "Keuring",vmxbp as "Beproeving",vmxin as "Inspectie",vmxlc as "Lock",ovuo,ovdo,ovsd,(select count(usecase)>0 as ovuc from features join feat_uc on (feature=feat and features.eis=e.eis and d.di='86'))::boolean as ovuc,bpfat,bpifat,bpsat,bpisat,bpsit from eis_di as d join unieke_eisen as e on (e.eis=d.eis) where e.eis=? order by d.di!;
+    my $sql = q!select d.di as "DI",d.status,vmxov as "Ontwerp Verificatie",vmxke as "Keuring",vmxbp as "Beproeving",vmxin as "Inspectie",vmxlc as "Lock",ovuo,ovdo,ovsd,(select count(usecase)>0 as ovuc from features join feat_uc on (feature=feat and features.eis=e.eis and d.di='86'))::boolean as ovuc,bpfat,bpifat,bpsat,bpisat,bpsit,ovch from eis_di as d join unieke_eisen as e on (e.eis=d.eis) where e.eis=? order by d.di!;
     my $dbh = dbi_connect();	
     my $sth = $dbh->prepare( $sql );
     $sth->execute( $eis );
@@ -293,10 +293,13 @@ sub vmxdetails {
         my $bepr = $$row[4];
         my $insp = $$row[5];
         my $lock = $$row[6];
+        my $ovch = $$row[16];
         $html .= qq!<tr valign="top"!.(($rownr & 1)==1 ? qq! class="alt" ! : "").qq!>!;
 
         $html .= qq!<td>$di</td><td class='$status'>$status</td>!;
-        $html .= qq!<td><div!.($lock==1 ? qq! class='locked'!:' ').qq!id='d_${eis}_${di}_ov'><input type=checkbox name='${eis}_ov_chk' onclick="altvmx('$eis','$di','ov')"!.($ov==1?' CHECKED':'').qq!>!;
+        $html .= qq!<td!;
+        $html .= qq! class='ovch'! if ($ovch == 1);
+        $html .= qq!><div!.($lock==1 ? qq! class='locked'!:' ').qq!id='d_${eis}_${di}_ov'><input type=checkbox name='${eis}_ov_chk' onclick="altvmx('$eis','$di','ov')"!.($ov==1?' CHECKED':'').qq!>!;
         if ($ov == 1 or $$row[10]==1) {
             $html .= do_vmxov($eis,$di,$$row[7],$$row[8],$$row[9],$$row[10]);
         }
