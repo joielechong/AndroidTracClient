@@ -37,6 +37,23 @@ function wisvelden(velden) {
     }
 }
 
+function d_inpeis_fun(obj,data) {
+  var dt=obj.target;
+  if (dt.constructor != Array) { dt=[dt]; }
+  for ( var i=1; i<dt.length; i++ ) {
+    var div = document.getElementById(dt[i]);
+    if (div != null) {
+      if (div.type =='text' || div.type=='textarea' || div.type=='hidden' ) {
+        div.value=data[i-1];
+      } else if (div.type =='checkbox') {
+        div.checked=data[i-1];
+      } else {
+        div.innerHTML = data[i-1];
+      }
+    }
+  }
+}
+
 function eisen_zoek_eiscode() {
     "use strict";
     wisdivs(['d_eisvmx','d_eisdet','d_eisprop','d_vmx']);

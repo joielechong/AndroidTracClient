@@ -224,12 +224,6 @@ sub exported_fx {
 	
     # close off the select and return
     $html .= qq!</select>\n!;
-    if (defined($default)) {
-        $html .= qq!<script type="text/javascript">\n!;
-        $html .= qq!document.getElementById(eisselect).value='$default';\n!;
-        $html .= qq!eisen_detail();return true;\n!;
-        $html .= qq!</script>\n!;
-    }
     return($html);
 }
 
