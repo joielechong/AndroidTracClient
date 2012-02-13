@@ -202,11 +202,14 @@ sub exported_fx {
     
     my $dbh = dbi_connect();	
     my $sth = $dbh->prepare( $sql );
+    my $default;
+    
     if ($exact == 1) {
         $sth->execute( $searchterm );
     } else {
         $sth->execute( '%'.$searchterm . '%');
     }
+    
     
     # start off the div contents with select init
     $html .= qq!<select id="eisselect" name="eisselect" SIZE=36 style="width:270px;" onclick="eisen_detail();return true;">\n!;
@@ -215,12 +218,18 @@ sub exported_fx {
     while ( my $row = $sth->fetch() ) {
         my $f = $$row[0];
         $f = (defined($f)&&$f ne ''?$f:"&nbsp;");
+        $default = $f unless defined ($default);
         $html .= qq!<option>! . $f . qq!</option>\n!;
     }
 	
     # close off the select and return
     $html .= qq!</select>\n!;
-    
+    if (defined($default)) {
+        $html .= qq!<script type="text/javascript">\n!;
+        $html .= qq!document.getElementById(eisselect).value='$default';\n!;
+        $html .= qq!eisen_detail();return true;\n!;
+        $html .= qq!</script>\n!;
+    }
     return($html);
 }
 
