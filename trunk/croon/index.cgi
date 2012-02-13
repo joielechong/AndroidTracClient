@@ -232,7 +232,7 @@ sub exported_fx2 {
      exported_fx(1,1,@_);
 }
 
-sub exported_fx3 {
+sub searchtekst {
      exported_fx(2,0,@_);
 }
 
@@ -1845,7 +1845,7 @@ my $cmd = $q->param('cmd');
 my $pjx = CGI::Ajax->new(
         searchcode  => \&exported_fx1,
         searchdi  => \&exported_fx2,
-        searchtekst  => \&exported_fx3,
+        searchtekst  => \&searchtekst,
         searchfasering  => \&exported_fx4,
         searchlokatie  => \&exported_fx5,
         vmxlokatie => \&vmxlokatie,
