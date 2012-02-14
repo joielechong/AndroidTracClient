@@ -68,14 +68,14 @@ function eisen_zoek_eiscode() {
     "use strict";
     wisdivs(['d_eisvmx','d_eisdet','d_eisprop','d_vmx']);
     wisvelden(['searchtermdi', 'searchtermtekst', 'searchtermlokatie', 'searchtermfasering']);
-    searchcode(['searchterm'], ['d_inpeis'], 'POST');
+    searchcode(['searchterm'], [div_en_func,'d_inpeis',eisen_detail_ind], 'POST');
     return true;
 }
 function eisen_zoek_di() {
     "use strict";
     wisdivs(['d_eisvmx','d_eisdet','d_eisprop','d_vmx']);
     wisvelden(['searchterm', 'searchtermtekst', 'searchtermlokatie', 'searchtermfasering']);
-    searchdi(['searchtermdi'], ['d_inpeis'], 'POST');
+    searchdi(['searchtermdi'], [div_en_func,'d_inpeis',eisen_detail_ind], 'POST');
     return true;
 }
 function eisen_vmx_di() {
@@ -96,7 +96,7 @@ function eisen_zoek_fase() {
     "use strict";
     wisdivs(['d_eisvmx','d_eisdet','d_eisprop','d_vmx']);
     wisvelden(['searchtermdi', 'searchterm', 'searchtermlokatie', 'searchtermtekst']);
-    searchfasering(['searchtermfasering'], ['d_inpeis'], 'POST');
+    searchfasering(['searchtermfasering'], [div_en_func,'d_inpeis',eisen_detail_ind], 'POST');
     return true;
 }
 function eisen_vmx_fase() {
@@ -109,7 +109,7 @@ function eisen_zoek_lokatie() {
     "use strict";
     wisdivs(['d_eisvmx','d_eisdet','d_eisprop','d_vmx']);
     wisvelden(['searchtermdi', 'searchterm', 'searchtermtekst', 'searchtermfasering']);
-    searchlokatie(['searchtermlokatie'], ['d_inpeis'], 'POST');
+    searchlokatie(['searchtermlokatie'], [div_en_func,'d_inpeis',eisen_detail_ind], 'POST');
     return true;
 }
 function eisen_vmx_lokatie() {
