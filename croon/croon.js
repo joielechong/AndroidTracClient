@@ -79,7 +79,7 @@ function eisen_zoek_eistekst() {
     "use strict";
     wisdivs(['d_eisvmx','d_eisdet','d_eisprop','d_vmx']);
     wisvelden(['searchtermdi', 'searchterm', 'searchtermlokatie', 'searchtermfasering']);
-    searchtekst(['searchtermtekst'], ['div_en_func','d_inp_eis','eisen_details'], 'POST');
+    searchtekst(['searchtermtekst'], [div_en_func,'d_inp_eis',eisen_details], 'POST');
     return true;
 }
 function eisen_zoek_fase() {
