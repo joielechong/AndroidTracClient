@@ -57,11 +57,11 @@ function div_en_func(data) {
 }
 
 function eisen_detail_ind() {
-    var sel = document.getElementById('eisselect');
-    if (sel.options.length > 0) {
-      sel.value = sel.options[0].value;
-    }
-    eisen_detail();
+   var sel = document.getElementById('eisselect');
+   if (sel.options.length > 0) {
+     sel.value = sel.options[0].value;
+     eisen_detail();
+   }
 }
 
 function eisen_zoek_eiscode() {
