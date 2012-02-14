@@ -37,20 +37,23 @@ function wisvelden(velden) {
     }
 }
 
-function div_en_func(obj,data) {
-  var dt=obj.target;
+function div_en_func(data) {
+  var dt=this.target;
   if (dt.constructor != Array) { dt=[dt]; }
-  for ( var i=1; i<dt.length; i++ ) {
-    var div = document.getElementById(dt[i]);
-    if (div != null) {
-      if (div.type =='text' || div.type=='textarea' || div.type=='hidden' ) {
-        div.value=data[i-1];
-      } else if (div.type =='checkbox') {
-        div.checked=data[i-1];
-      } else {
-        div.innerHTML = data[i-1];
-      }
+  var div = document.getElementById(dt[1]);
+  var func = dt[2];
+  if (div != null) {
+    if (div.type =='text' || div.type=='textarea' || div.type=='hidden' ) {
+      div.value=data[0];
+    } else if (div.type =='checkbox') {
+      div.checked=data[0];
+    } else {
+      div.innerHTML = data[0];
     }
+  }
+  if (func != null) {
+    document.getElementById('eisselect').vaule='test';
+    func.apply();
   }
 }
 
