@@ -44,17 +44,24 @@ function div_en_func(data) {
   var func = dt[2];
   if (div != null) {
     if (div.type =='text' || div.type=='textarea' || div.type=='hidden' ) {
-      div.value=data[0];
+      div.value=data;
     } else if (div.type =='checkbox') {
-      div.checked=data[0];
+      div.checked=data;
     } else {
-      div.innerHTML = data[0];
+      div.innerHTML = data;
     }
   }
   if (func != null) {
-    document.getElementById('eisselect').vaule='test';
     func.apply();
   }
+}
+
+function eisen_detail_ind() {
+    var sel = document.getElementById('eisselect');
+    if (sel.options.length > 0) {
+      sel.value = sel.options[0].value;
+    }
+    eisen_detail();
 }
 
 function eisen_zoek_eiscode() {
@@ -82,7 +89,7 @@ function eisen_zoek_eistekst() {
     "use strict";
     wisdivs(['d_eisvmx','d_eisdet','d_eisprop','d_vmx']);
     wisvelden(['searchtermdi', 'searchterm', 'searchtermlokatie', 'searchtermfasering']);
-    searchtekst(['searchtermtekst'], [div_en_func,'d_inpeis',eisen_detail], 'POST');
+    searchtekst(['searchtermtekst'], [div_en_func,'d_inpeis',eisen_detail_ind], 'POST');
     return true;
 }
 function eisen_zoek_fase() {
