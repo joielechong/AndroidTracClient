@@ -60,15 +60,15 @@ body {
     display: none;
 }
 #header div.leftButton {
-    position: absolute;1
+    position: absolute;
     top: 7px;
     left: 6px;
-    height: 30px;2
-    font-weight: bold;3
+    height: 30px;
+    font-weight: bold;
     text-align: center;
     color: white;
-    text-shadow: rgba4(0,0,0,0.6) 0px -1px 1px;
-    line-height: 28px;5
-    border-width: 0 8px 0 8px;6
-    -webkit-border-image: url(images/button.png) 0 8 0 8;7
+    text-shadow: rgba(0,0,0,0.6) 0px -1px 1px;
+    line-height: 28px;
+    border-width: 0 8px 0 8px;
+    -webkit-border-image: url(images/button.png) 0 8 0 8;
 }
