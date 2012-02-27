@@ -392,7 +392,7 @@ EOT
 sub do_altvmxbp {
     my ($eis,$di,$fat,$ifat,$sat,$isat,$sit,$lock) = @_;
     my $html = '';
-    $html .= q!<table border='0'><tr><td>FAT</td><td>IFAT</td><td>SAT</td><td>ISAT</td><td>SIT</td></tr><tr>!;
+    $html .= q!<table border='0' class="nozebra"><tr><td>FAT</td><td>IFAT</td><td>SAT</td><td>ISAT</td><td>SIT</td></tr><tr>!;
     $html .= qq!<td><div!.($lock==1 ? qq! class='locked'!:' ').qq!id='d_${eis}_${di}_fat'><input type=checkbox name='${eis}_fat_chk' onclick="altvmx('$eis','$di','fat')"!.($fat==1?' CHECKED':'').qq!></div></td>!;
     $html .= qq!<td><div!.($lock==1 ? qq! class='locked'!:' ').qq!id='d_${eis}_${di}_ifat'><input type=checkbox name='${eis}_ifat_chk' onclick="altvmx('$eis','$di','ifat')"!.($ifat==1?' CHECKED':'').qq!></div></td>!;
     $html .= qq!<td><div!.($lock==1 ? qq! class='locked'!:' ').qq!id='d_${eis}_${di}_sat'><input type=checkbox name='${eis}_sat_chk' onclick="altvmx('$eis','$di','sat')"!.($sat==1?' CHECKED':'').qq!></div></td>!;
@@ -405,7 +405,7 @@ sub do_altvmxbp {
 sub do_vmxov {
     my ($eis,$di,$uo,$do,$sd,$uc) = @_;
     my $html = '';
-    $html .= q!<table border='0'><tr><td>UO</td><td>DO</td><td>SD</td><td>UC</td></tr><tr>!;
+    $html .= q!<table border='0' class="nozebra"><tr><td>UO</td><td>DO</td><td>SD</td><td>UC</td></tr><tr>!;
     $html .= qq!<td>!.($uo==1?'X':'').qq!</td>!;
     $html .= qq!<td>!.($do==1?'X':'').qq!</td>!;
     $html .= qq!<td>!.($sd==1?'X':'').qq!</td>!;

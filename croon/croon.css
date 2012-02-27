@@ -73,14 +73,14 @@ table td,table th {
         padding:3px 7px 2px 7px;
 }
 
-table.zebra th.veldnaam   {
+table.zebra tr th.veldnaam   {
         text-align:left; 
         padding-top:5px; 
         padding-bottom:4px; 
         background-color:#009300; 
         color:#ffffff;
 }
-table.zebra th.titel { 
+table.zebra tr th.titel { 
         font-weight: bold; 
         background-color:#009300; 
         color:#ffffff;
