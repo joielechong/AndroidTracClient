@@ -128,12 +128,12 @@ sub toontabel_alles {
     my $numfields = $sth->{NUM_OF_FIELDS};
     my $html = '';
 #    $html .= "\n<!-- ".Dumper($contextmenu)." -->\n\n";
-    $html .= "<table border=1>\n";
+    $html .= qq!<table border=1 class="zebra">\n!;
     $html .= qq!<tr><th class="titel" colspan=$numfields>$titel</th></tr>\n! if defined($titel);
     $html .= tabel_header(@names);
     my $rownr = 0;
     while (my $row=$sth->fetchrow_arrayref()) {
-	$html .= qq!<tr valign="top"!.(($rownr & 1)==1 ? qq! class="alt" ! : "").qq!>!;
+	$html .= qq!<tr valign="top">!;
 	my $i=0;
         my $url;
         my $typedoc;
@@ -284,7 +284,7 @@ sub vmxdetails {
         $names[$i] = undef;
     }
     my $html = '';
-    $html .= "<table border=1>\n";
+    $html .= qq!<table border=1 class="zebra">\n!;
     $html .= qq!<tr><th class="titel" colspan=7>Verificatieoverzicht voor eis $eis</th></tr>\n!;
     $html .= tabel_header(@names);
 	my $rownr = 0;
@@ -297,7 +297,7 @@ sub vmxdetails {
         my $insp = $$row[5];
         my $lock = $$row[6];
         my $ovch = $$row[16];
-        $html .= qq!<tr valign="top"!.(($rownr & 1)==1 ? qq! class="alt" ! : "").qq!>!;
+        $html .= qq!<tr valign="top">!;
 
         $html .= qq!<td>$di</td><td class='$status'>$status</td>!;
         $html .= qq!<td!;
@@ -343,7 +343,7 @@ sub vmxdi {
         $names[$i] = undef;
     }
     my $html = '';
-    $html .= "<table border=1>\n";
+    $html .= qq!<table border=1 class="zebra">\n!;
     $html .= qq!<tr><th class="titel" colspan=8>Verificatieoverzicht voor Deelinstallatie $di!.($diname ne '' ? " ($diname)":"").qq!</th></tr>\n!;
     $html .= tabel_header(@names);
 	my $rownr = 0;
@@ -357,7 +357,7 @@ sub vmxdi {
         my $insp = $$row[6];
         my $lock = $$row[7];
         my $ovch = $$row[17];
-        $html .= qq!<tr valign="top"!.(($rownr & 1)==1 ? qq! class="alt" ! : "").qq!>!;
+        $html .= qq!<tr valign="top">!;
 
 	$eistekst =~ s/[\xE2][\x84][\xA6]/&#x2126/g;
         $eistekst =~ s/([\xC2\xC3])([\x80-\xBF])/chr(ord($1)<<6&0xC0|ord($2)&0x3F)/eg;
