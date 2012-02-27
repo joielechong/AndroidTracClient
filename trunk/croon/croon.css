@@ -1,122 +1,105 @@
 div.zebra > div:nth-child(even) {
-background-color: #ffffff;
+        background-color: #ffffff;
 }
+
 div.zebra a {
-color: #24588b;
+        color: #24588b;
 }
-table.zebra, table.zebra_reverse {
-border-collapse: collapse;
-font-size: 12px;
-width: 100%;
-margin: 15px 0;
-}
-table.zebra_reverse {
-margin:0px;
-border:none;
-}
+
 table.zebra tr:nth-child(odd) th,
 table.zebra tr:nth-child(odd) td {
-background-color: #EAF2D3;
+        background-color: #EAF2D3;
 }
+
 table.zebra tr:nth-child(even) th,
 table.zebra tr:nth-child(even) td {
-background-color: #ffffff;
+        background-color: #ffffff;
 }
-table.zebra_reverse th,
-table.zebra th,
-table.zebra_reverse td,
-table.zebra td {
-padding: 2px 4px;
-}
+
 table.zebra_reverse tr:nth-child(odd) th,
 table.zebra_reverse tr:nth-child(odd) td {
-background-color: #ffffff;
+        background-color: #ffffff;
 }
 
 table.zebra_reverse tr:nth-child(even) th,
 table.zebra_reverse tr:nth-child(even) td {
-background-color: #EAF2D3;
+        background-color: #EAF2D3;
 }
-/* Classen für die Trs für IEs, die
-nth-child(odd) noch nicht können */
+
 table.zebra tr.zebraOdd th,
 table.zebra tr.zebraOdd td {
-background-color: #EAF2D3;
+        background-color: #EAF2D3;
 }
+
 table.zebra tr.zebraEven th,
 table.zebra tr.zebraEven td {
-background-color: #ffffff;
+        background-color: #ffffff;
 }
+
 table.zebra_reverse tr.zebraOdd th,
 table.zebra_reverse tr.zebraOdd td {
-background-color: #ffffff;
+        background-color: #ffffff;
 }
+
 table.zebra_reverse tr.zebraEven th,
 table.zebra_reverse tr.zebraEven td {
-background-color: #EAF2D3;
+        background-color: #EAF2D3;
 }
-/*Zum Setzen bestimmter Zeilen auf Weiss*/
+
 table.zebra tr:nth-child(odd) td.reverse,
 table.zebra tr.zebraOdd td.reverse {
-background-color: #ffffff;
+        background-color: #ffffff;
 }
 table.zebra tr:nth-child(even) td.reverse,
 table.zebra tr.zebraEven td.reverse {
-background-color: #EAF2D3;
+        background-color: #EAF2D3;
 }
 
-td.select:hover { 
-    font-weight: bold; 
-    color: #FF0000 
+table td.select:hover { 
+        font-weight: bold; 
+        color: #FF0000 
 }
 a.select:hover { 
-    font-weight: bold; 
+        font-weight: bold; 
         color: #FF0000 
 }
 a.select { 
-    color: #0000FF;
+        color: #0000FF;
 } 
-td.select { 
-    color: #0000FF;
+table td.select { 
+        color: #0000FF;
 } 
-td, th {
-    padding:3px 7px 2px 7px;
+table td,table th {
+        padding:3px 7px 2px 7px;
 }
 
-th.veldnaam   {
-    text-align:left; 
-    padding-top:5px; 
-    padding-bottom:4px; 
-    background-color:#009300; 
-    color:#ffffff;
+table.zebra th.veldnaam   {
+        text-align:left; 
+        padding-top:5px; 
+        padding-bottom:4px; 
+        background-color:#009300; 
+        color:#ffffff;
 }
-th.titel { 
-    font-weight: bold; 
-    background-color:#009300; 
-    color:#ffffff;
+table.zebra th.titel { 
+        font-weight: bold; 
+        background-color:#009300; 
+        color:#ffffff;
 }
-tr td div.locked {
-    background-color:#FF0000;
+table.zebra tr td div.locked {
+        background-color:#FF0000;
 }
-tr td.vervallen{
-    background-color:#FF0000;
-}
-tr td.trans110804{
-    background-color:#440000;
-}
-tr td.niet_in_pkm{
-    background-color:#660000;
-    color:#ffffff;
+table.zebra tr td.vervallen{
+        background-color:#FF0000;
 }
 
-tr td.temptesten{
-    background-color:#660000;
-    color:#ffffff;
-}
-tr td.pkmlevel0{
-    background-color:#EEEEEE;
+table.zebra tr td.pkmlevel0,
+table.zebra tr td.trans110804, 
+table.zebra tr td.niet_in_pkm, 
+table.zebra tr td.temptesten{
+        background-color:#660000;
+        color:#ffffff;
 }
 
-tr td.ovch{
-    background-color:#EEEEEE;
+table.zebra tr td.ovch{
+        background-color:#EEEEEE;
 }
