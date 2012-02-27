@@ -103,3 +103,7 @@ table.zebra tr td.temptesten{
 table.zebra tr td.ovch{
         background-color:#EEEEEE;
 }
+
+table.zebra table.nozebra tr td {
+        background-color: transparent;
+} 
