@@ -71,3 +71,75 @@ tr td.pkim110802{
 tr td.ovch{
     background-color:#EEEEEE;
 }
+
+
+div.zebra > div:nth-child(even) {
+background-color: #ffffff;
+}
+div.zebra a {
+color: #24588b;
+}
+table.zebra, table.zebra_reverse {
+border-collapse: collapse;
+font-size: 12px;
+width: 100%;
+margin: 15px 0;
+}
+table.zebra_reverse {
+margin:0px;
+border:none;
+}
+table.zebra tr:nth-child(odd) th,
+table.zebra tr:nth-child(odd) td {
+background-color: #eeeeee;
+}
+table.zebra tr:nth-child(even) th,
+table.zebra tr:nth-child(even) td {
+background-color: #ffffff;
+}
+table.zebra_reverse th,
+table.zebra th,
+table.zebra_reverse td,
+table.zebra td {
+padding: 2px 4px;
+}
+table.zebra_reverse tr:nth-child(odd) th,
+table.zebra_reverse tr:nth-child(odd) td {
+background-color: #ffffff;
+}
+table.zebra_reverse tr:nth-child(even) th,
+table.zebra_reverse tr:nth-child(even) td {
+background-color: #eeeeee;
+}
+/* Classen für die Trs für IEs, die
+nth-child(odd) noch nicht können */
+table.zebra tr.zebraOdd th,
+table.zebra tr.zebraOdd td {
+background-color: #eeeeee;
+}
+table.zebra tr.zebraEven th,
+table.zebra tr.zebraEven td {
+background-color: #ffffff;
+}
+table.zebra_reverse tr.zebraOdd th,
+table.zebra_reverse tr.zebraOdd td {
+background-color: #ffffff;
+}
+table.zebra_reverse tr.zebraEven th,
+table.zebra_reverse tr.zebraEven td {
+background-color: #eeeeee;
+}
+/*Zum Setzen bestimmter Zeilen auf Weiss*/
+table.zebra tr:nth-child(odd) td.reverse,
+table.zebra tr.zebraOdd td.reverse {
+background-color: #ffffff;
+}
+table.zebra tr:nth-child(even) td.reverse,
+table.zebra tr.zebraEven td.reverse {
+background-color: #eeeeee;
+}
+
+table.zebra {
+width: 80%;
+margin: auto;
+}
