@@ -15,63 +15,6 @@ td.select {
 td, th {
     padding:3px 7px 2px 7px;
 }
-th.veldnaam   {
-    text-align:left; 
-    padding-top:5px; 
-    padding-bottom:4px; 
-    background-color:#009300; 
-    color:#ffffff;
-}
-th.titel { 
-    font-weight: bold; 
-    background-color:#009300; 
-    color:#ffffff;
-}
-tr.alt td {
-    background-color:#EAF2D3;
-}
-tr td div.locked {
-    background-color:#FF0000;
-}
-tr td.vervallen{
-    background-color:#FF0000;
-}
-tr td.trans110804{
-    background-color:#440000;
-}
-tr td.niet_in_pkm{
-    background-color:#660000;
-    color:#ffffff;
-}
-tr td.pkmcte110819{
-}
-tr td.temptesten{
-    background-color:#660000;
-    color:#ffffff;
-}
-tr td.pkmlevel0{
-    background-color:#EEEEEE;
-}
-tr td.msimp110901{
-}
-tr td.trans110804{
-    background-color:#EEEEEE;
-}
-tr td.pkmim110618{
-    background-color:#666600;
-}
-tr td.pkmim110713{
-}
-tr td.wo_ccy_027{
-    background-color:#EEEEEE;
-}
-tr td.pkim110802{
-    background-color:#cccccc;
-}
-tr td.ovch{
-    background-color:#EEEEEE;
-}
-
 
 div.zebra > div:nth-child(even) {
 background-color: #ffffff;
@@ -142,4 +85,46 @@ background-color: #eeeeee;
 table.zebra {
 width: 80%;
 margin: auto;
+}
+
+
+th.veldnaam   {
+    text-align:left; 
+    padding-top:5px; 
+    padding-bottom:4px; 
+    background-color:#009300; 
+    color:#ffffff;
+}
+th.titel { 
+    font-weight: bold; 
+    background-color:#009300; 
+    color:#ffffff;
+}
+tr.alt td {
+    background-color:#EAF2D3;
+}
+tr td div.locked {
+    background-color:#FF0000;
+}
+tr td.vervallen{
+    background-color:#FF0000;
+}
+tr td.trans110804{
+    background-color:#440000;
+}
+tr td.niet_in_pkm{
+    background-color:#660000;
+    color:#ffffff;
+}
+
+tr td.temptesten{
+    background-color:#660000;
+    color:#ffffff;
+}
+tr td.pkmlevel0{
+    background-color:#EEEEEE;
+}
+
+tr td.ovch{
+    background-color:#EEEEEE;
 }
