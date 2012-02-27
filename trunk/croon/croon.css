@@ -1,21 +1,3 @@
-td.select:hover { 
-    font-weight: bold; 
-    color: #FF0000 
-}
-a.select:hover { 
-    font-weight: bold; 
-        color: #FF0000 
-}
-a.select { 
-    color: #0000FF;
-} 
-td.select { 
-    color: #0000FF;
-} 
-td, th {
-    padding:3px 7px 2px 7px;
-}
-
 div.zebra > div:nth-child(even) {
 background-color: #ffffff;
 }
@@ -34,7 +16,7 @@ border:none;
 }
 table.zebra tr:nth-child(odd) th,
 table.zebra tr:nth-child(odd) td {
-background-color: #eeeeee;
+background-color: #EAF2D3;
 }
 table.zebra tr:nth-child(even) th,
 table.zebra tr:nth-child(even) td {
@@ -50,15 +32,16 @@ table.zebra_reverse tr:nth-child(odd) th,
 table.zebra_reverse tr:nth-child(odd) td {
 background-color: #ffffff;
 }
+
 table.zebra_reverse tr:nth-child(even) th,
 table.zebra_reverse tr:nth-child(even) td {
-background-color: #eeeeee;
+background-color: #EAF2D3;
 }
 /* Classen für die Trs für IEs, die
 nth-child(odd) noch nicht können */
 table.zebra tr.zebraOdd th,
 table.zebra tr.zebraOdd td {
-background-color: #eeeeee;
+background-color: #EAF2D3;
 }
 table.zebra tr.zebraEven th,
 table.zebra tr.zebraEven td {
@@ -70,7 +53,7 @@ background-color: #ffffff;
 }
 table.zebra_reverse tr.zebraEven th,
 table.zebra_reverse tr.zebraEven td {
-background-color: #eeeeee;
+background-color: #EAF2D3;
 }
 /*Zum Setzen bestimmter Zeilen auf Weiss*/
 table.zebra tr:nth-child(odd) td.reverse,
@@ -79,14 +62,26 @@ background-color: #ffffff;
 }
 table.zebra tr:nth-child(even) td.reverse,
 table.zebra tr.zebraEven td.reverse {
-background-color: #eeeeee;
+background-color: #EAF2D3;
 }
 
-table.zebra {
-width: 80%;
-margin: auto;
+td.select:hover { 
+    font-weight: bold; 
+    color: #FF0000 
 }
-
+a.select:hover { 
+    font-weight: bold; 
+        color: #FF0000 
+}
+a.select { 
+    color: #0000FF;
+} 
+td.select { 
+    color: #0000FF;
+} 
+td, th {
+    padding:3px 7px 2px 7px;
+}
 
 th.veldnaam   {
     text-align:left; 
@@ -99,9 +94,6 @@ th.titel {
     font-weight: bold; 
     background-color:#009300; 
     color:#ffffff;
-}
-tr.alt td {
-    background-color:#EAF2D3;
 }
 tr td div.locked {
     background-color:#FF0000;
