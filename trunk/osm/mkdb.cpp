@@ -1,4 +1,4 @@
-#include "osm_db.h"
+#include "osm_sql3db.h"
 #include <cstring>
 #include <cstdio>
 #include <vector>
@@ -338,7 +338,7 @@ int main(int argc, char* argv[])
   }
   
   try {
-    database sql(dbname);
+    sql3database sql(dbname);
     
     if (nieuw) 
       sql.setupSchemas(schema);

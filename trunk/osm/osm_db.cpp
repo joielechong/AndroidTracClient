@@ -1,5 +1,4 @@
 #include "osm_db.h"
-#include <sqlite3x.hpp>
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -11,9 +10,9 @@
 
 namespace osm_db {  
   using namespace std;
-  using namespace sqlite3x;
   
-#include "myfuncs.h"
+  /*
+  using namespace sqlite3x;
 
   database::database(string naam) {
     _sql = new sqlite3_connection(naam);
@@ -60,7 +59,7 @@ namespace osm_db {
     _tempways = 0;
     _temprelations = 0;
   }
-
+  
   void database::initTemp() {
     sqlite3_command *s = new sqlite3_command(*_sql,"SELECT (SELECT min(id) FROM node) AS node, (SELECT min(id) FROM way) AS way,(SELECT min(id) FROM relation) AS relation");
     sqlite3_cursor cur(s->executecursor());
@@ -70,7 +69,7 @@ namespace osm_db {
       _temprelations = min(0L,(long)cur.getint64(2));
     }
   }
-  
+    
   database::~database() {
     if (_in_transaction == 1) 
       _trans->commit();
@@ -140,7 +139,7 @@ namespace osm_db {
     delete _sql;
     _sql = NULL;
   }
-  
+
   void database::executenonquery(std::string query,bool repcount) {
     try {
       std::cout << "DB: " << query << std::endl;
@@ -152,4 +151,5 @@ namespace osm_db {
       std::cerr << "Exception  = " << ex.what() << std::endl;
     } 
   }
+  */
 }

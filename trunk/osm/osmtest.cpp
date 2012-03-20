@@ -1,5 +1,5 @@
 #include "osm.h"
-#include "osm_db.h"
+#include "osm_sql3db.h"
 #include <cstdlib>
 #include <string>
 #include <iostream>
@@ -20,6 +20,7 @@ using namespace std;
 routeinfo inforoute;
 
 int main(int argc, char *argv[]) {
+  cout << "Start van osmtest" << endl;
   Argument::StringArgument dbArg("-db","value","SQLite database name",string("osm.sqlite"));
   Argument::DoubleArgument cacheArg("-cs","positive-integer","Cache size",10000L,false);
   Argument::BooleanArgument helpArg("-help","Help on usage");
@@ -55,7 +56,7 @@ int main(int argc, char *argv[]) {
     return 0;
   }
 
-  osm_db::database sql(dbname);
+  osm_db::sql3database sql(dbname);
   sql.initializeFill();
   sql.initTemp();
   osm::Map map(&sql,cachesize);
