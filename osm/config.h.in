@@ -73,9 +73,6 @@
 /* Define to 1 if you have the <map> header file. */
 #undef HAVE_MAP
 
-/* Define to 1 if you have the <math.h> header file. */
-#undef HAVE_MATH_H
-
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
 
@@ -84,72 +81,6 @@
 
 /* Define to 1 if you have the `pow' function. */
 #undef HAVE_POW
-
-/* Define to 1 if acosl is declared even after undefining macros. */
-#undef HAVE_RAW_DECL_ACOSL
-
-/* Define to 1 if asinl is declared even after undefining macros. */
-#undef HAVE_RAW_DECL_ASINL
-
-/* Define to 1 if atanl is declared even after undefining macros. */
-#undef HAVE_RAW_DECL_ATANL
-
-/* Define to 1 if ceilf is declared even after undefining macros. */
-#undef HAVE_RAW_DECL_CEILF
-
-/* Define to 1 if ceill is declared even after undefining macros. */
-#undef HAVE_RAW_DECL_CEILL
-
-/* Define to 1 if cosl is declared even after undefining macros. */
-#undef HAVE_RAW_DECL_COSL
-
-/* Define to 1 if expl is declared even after undefining macros. */
-#undef HAVE_RAW_DECL_EXPL
-
-/* Define to 1 if floorf is declared even after undefining macros. */
-#undef HAVE_RAW_DECL_FLOORF
-
-/* Define to 1 if floorl is declared even after undefining macros. */
-#undef HAVE_RAW_DECL_FLOORL
-
-/* Define to 1 if frexpl is declared even after undefining macros. */
-#undef HAVE_RAW_DECL_FREXPL
-
-/* Define to 1 if ldexpl is declared even after undefining macros. */
-#undef HAVE_RAW_DECL_LDEXPL
-
-/* Define to 1 if logb is declared even after undefining macros. */
-#undef HAVE_RAW_DECL_LOGB
-
-/* Define to 1 if logl is declared even after undefining macros. */
-#undef HAVE_RAW_DECL_LOGL
-
-/* Define to 1 if round is declared even after undefining macros. */
-#undef HAVE_RAW_DECL_ROUND
-
-/* Define to 1 if roundf is declared even after undefining macros. */
-#undef HAVE_RAW_DECL_ROUNDF
-
-/* Define to 1 if roundl is declared even after undefining macros. */
-#undef HAVE_RAW_DECL_ROUNDL
-
-/* Define to 1 if sinl is declared even after undefining macros. */
-#undef HAVE_RAW_DECL_SINL
-
-/* Define to 1 if sqrtl is declared even after undefining macros. */
-#undef HAVE_RAW_DECL_SQRTL
-
-/* Define to 1 if tanl is declared even after undefining macros. */
-#undef HAVE_RAW_DECL_TANL
-
-/* Define to 1 if trunc is declared even after undefining macros. */
-#undef HAVE_RAW_DECL_TRUNC
-
-/* Define to 1 if truncf is declared even after undefining macros. */
-#undef HAVE_RAW_DECL_TRUNCF
-
-/* Define to 1 if truncl is declared even after undefining macros. */
-#undef HAVE_RAW_DECL_TRUNCL
 
 /* Define to 1 if your system has a GNU libc compatible `realloc' function,
    and to 0 otherwise. */
@@ -299,16 +230,6 @@
    a type exists and the standard includes do not define it. */
 #undef int8_t
 
-/* Work around a bug in Apple GCC 4.0.1 build 5465: In C99 mode, it supports
-   the ISO C 99 semantics of 'extern inline' (unlike the GNU C semantics of
-   earlier versions), but does not display it by setting __GNUC_STDC_INLINE__.
-   __APPLE__ && __MACH__ test for MacOS X.
-   __APPLE_CC__ tests for the Apple compiler and its version.
-   __STDC_VERSION__ tests for the C99 mode.  */
-#if defined __APPLE__ && defined __MACH__ && __APPLE_CC__ >= 5465 && !defined __cplusplus && __STDC_VERSION__ >= 199901L && !defined __GNUC_STDC_INLINE__
-# define __GNUC_STDC_INLINE__ 1
-#endif
-
 /* Define to rpl_malloc if the replacement function should be used. */
 #undef malloc
 
@@ -329,16 +250,3 @@
 /* Define to the type of an unsigned integer type of width exactly 8 bits if
    such a type exists and the standard includes do not define it. */
 #undef uint8_t
-
-/* Define as a marker that can be attached to declarations that might not
-    be used.  This helps to reduce warnings, such as from
-    GCC -Wunused-parameter.  */
-#if __GNUC__ >= 3 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 7)
-# define _GL_UNUSED __attribute__ ((__unused__))
-#else
-# define _GL_UNUSED
-#endif
-/* The name _UNUSED_PARAMETER_ is an earlier spelling, although the name
-   is a misnomer outside of parameter lists.  */
-#define _UNUSED_PARAMETER_ _GL_UNUSED
-
