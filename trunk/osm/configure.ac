@@ -2,8 +2,8 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.63)
-AC_INIT([osm],[0.1])
-AM_INIT_AUTOMAKE(osm,0.1)
+AC_INIT([osm],[0.2])
+AM_INIT_AUTOMAKE(osm,0.2)
 AC_CONFIG_SRCDIR([mkdb.cpp])
 AC_CONFIG_HEADERS([config.h])
 AC_LANG([C++])
@@ -24,6 +24,9 @@ AC_PROG_YACC
 AC_PROG_LEX
 
 gl_INIT
+
+AX_BOOST_BASE([1.49])
+AX_BOOST_PROGRAM_OPTIONS
 
 # Checks for libraries.
 PKG_CHECK_MODULES(XML, libxml++-2.6 >= 2.10.0 glibmm-2.4 >= 2.23.3)
