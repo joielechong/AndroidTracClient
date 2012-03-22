@@ -27,6 +27,12 @@
 /* define if the Boost library is available */
 #undef HAVE_BOOST
 
+/* define if the Boost::ASIO library is available */
+#undef HAVE_BOOST_ASIO
+
+/* define if the Boost::IOStreams library is available */
+#undef HAVE_BOOST_IOSTREAMS
+
 /* define if the Boost::PROGRAM_OPTIONS library is available */
 #undef HAVE_BOOST_PROGRAM_OPTIONS
 
@@ -65,6 +71,9 @@
 
 /* Define to 1 if you have the `m' library (-lm). */
 #undef HAVE_LIBM
+
+/* Define to 1 if you have the `z' library (-lz). */
+#undef HAVE_LIBZ
 
 /* Define to 1 if you have the <list> header file. */
 #undef HAVE_LIST
