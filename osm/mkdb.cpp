@@ -274,6 +274,8 @@ static void do_fixup(osmparser::OSMParser &osmparser,database &sql,bool xapi) {
 
 int main(int argc, char* argv[])
 {
+  po::options_description visible("Aanroep mkdb [opties] file(s)");
+
   try {
     po::options_description desc("Geldige opties");
     desc.add_options()
@@ -399,9 +401,11 @@ int main(int argc, char* argv[])
     return 1;
   } catch (exception& e) {
     cerr << "error: " << e.what() << endl;
+    cerr << visible << endl <<endl;
     return 1;
   } catch(...) {
     cerr << "Exception of unknown type!" << endl;
+    cerr << visible << endl <<endl;
     return 1;
   }
   return 0;
