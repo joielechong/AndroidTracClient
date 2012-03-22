@@ -168,7 +168,7 @@ static string apiRequest(string apistr,bool xapi,std::string host = "") {
   return buf;
 }
 
-static void splitRequest(database &sql,osmparser::OSMParser &p,string elemType,string apistr,bool xapi) {
+static void splitRequest(database &sql,osmparser::OSMParser &p,string elemType,string apistr, bool xapi) {
   unsigned int start = apistr.find("=")+1;
   while (start < apistr.length()) {
     unsigned int komma = apistr.find(",",start);
@@ -289,7 +289,7 @@ int main(int argc, char* argv[])
 
     po::options_description hidden("Hidden options");
     hidden.add_options()
-      ("input-file", po::value< list<string> >(), "input file");
+      ("input-file", po::value< vector<string> >(), "input file");
     
     po::positional_options_description p;
     p.add("input-file", -1);
@@ -317,9 +317,9 @@ int main(int argc, char* argv[])
     string dbname = vm["db"].as<string>();
     string schema = vm["schema"].as<string>();
     string apistr = vm["api"].as<string>();
-    list<string>extra = vm["input-file"].as< list<string> >();
+    vector<string>extra = vm["input-file"].as< vector<string> >();
     
-    list<string>::iterator it;
+    vector<string>::iterator it;
     
     if ((nieuw == update)) {
       cerr << "Either -new or -update must be provided" << endl;
