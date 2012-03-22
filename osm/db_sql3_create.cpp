@@ -1,4 +1,4 @@
-#include "osm_db.h"
+#include "osm_sql3db.h"
 #include <sqlite3x.hpp>
 #include <string>
 #include <iostream>
@@ -12,7 +12,7 @@ namespace osm_db {
   using namespace std;
   using namespace sqlite3x;
   
-  void database::setupSchemas(const char *filename) {
+  void sql3database::setupSchemas(const char *filename) {
     ifstream schema;
     char regel[2048];
     schema.open(filename);
@@ -34,7 +34,7 @@ namespace osm_db {
     schema.close();  
   }
   
-  void database::initializeFill() {
+  void sql3database::initializeFill() {
     if (_update) {
       _createNode = new sqlite3_command(*_sql,"INSERT OR REPLACE INTO node (id,version,lat,lon) VALUES (?,?,?,?)");
       _createWay = new sqlite3_command(*_sql,"INSERT OR REPLACE INTO way (id,version) VALUES (?,?)");
@@ -52,7 +52,7 @@ namespace osm_db {
     _createMember = new sqlite3_command(*_sql,"INSERT INTO member (id,seq,ref,type,role) VALUES(?,?,?,?,?)");
   }
   
-  void database::createNode(long id,int version,double lat,double lon) {
+  void sql3database::createNode(long id,int version,double lat,double lon) {
     if (_update) {
       _delTags->bind(1,(sqlite3x::int64_t)id);
       _delTags->bind(2,"node");
@@ -72,7 +72,7 @@ namespace osm_db {
     }
   }
   
-  void database::createWay(long id,int version) {
+  void sql3database::createWay(long id,int version) {
     if (_update) {
       _delTags->bind(1,(sqlite3x::int64_t)id);
       _delTags->bind(2,"way");
@@ -92,7 +92,7 @@ namespace osm_db {
     }
   }
   
-  void database::createRelation(long id,int version) {
+  void sql3database::createRelation(long id,int version) {
     if (_update) {
       _delTags->bind(1,(sqlite3x::int64_t)id);
       _delTags->bind(2,"relation");
@@ -112,7 +112,7 @@ namespace osm_db {
     }
   }
   
-  void database::createTag(long id,string type,string k,string v) {
+  void sql3database::createTag(long id,string type,string k,string v) {
     try {
       _createTag->bind(1,(sqlite3x::int64_t)id);
       _createTag->bind(2,type);
@@ -126,7 +126,7 @@ namespace osm_db {
     }
   }
   
-  void database::createNd(long id,int seq,long ref) {
+  void sql3database::createNd(long id,int seq,long ref) {
     try {
       _createNd->bind(1,(sqlite3x::int64_t)id);
       _createNd->bind(2,seq);
@@ -139,7 +139,7 @@ namespace osm_db {
     }
   }
   
-  void database::createMember(long id,int seq,long ref,string type,string role) {
+  void sql3database::createMember(long id,int seq,long ref,string type,string role) {
     try {
       _createMember->bind(1,(sqlite3x::int64_t)id);
       _createMember->bind(2,seq);
@@ -154,7 +154,7 @@ namespace osm_db {
     }
   }
 
-  void database::createAdres(long id,string type,string country,string city,string street, string housenumber,string postcode) {
+  void sql3database::createAdres(long id,string type,string country,string city,string street, string housenumber,string postcode) {
     if (_createAdres == NULL)
       _createAdres = new sqlite3_command(*_sql,"INSERT INTO adressen (id,type,country,city,street,housenumber,postcode) VALUES (?,?,?,?,?,?,?)");
     
@@ -168,7 +168,7 @@ namespace osm_db {
     _createAdres->executenonquery();
   }
 
-  void database::setBoundaries() {
+  void sql3database::setBoundaries() {
     executenonquery("DELETE FROM bound");
     executenonquery("INSERT INTO bound (minlat,maxlat,minlon,maxlon) SELECT min(lat),max(lat),min(lon),max(lon) FROM node");
   }
@@ -190,7 +190,7 @@ namespace osm_db {
       }
   }
   
-  void database::delElem(string apistring) {
+  void sql3database::delElem(string apistring) {
     vector<string> words;
     
     StringSplit(apistring,"/",words);
