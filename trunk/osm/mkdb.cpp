@@ -276,7 +276,7 @@ int main(int argc, char* argv[])
   try {
     po::options_description desc("Geldige opties");
     desc.add_options()
-      ("db", po::value<string>(&dbname)->default_value("newosm.sqlite"), "SQLite database name")
+      ("db", po::value<string>()->default_value("newosm.sqlite"), "SQLite database name")
       ("schema", po::value<string>()->default_value(string(DATADIR)+string("/schema.sqlite.txt")), "schema definition file")
       ("new","Create new database")
       ("update","Update database")
@@ -364,9 +364,15 @@ int main(int argc, char* argv[])
     unlink(dbname.c_str());
     if (extra.size() == 0)
       extra.push_back("-");
-    if (remaining.size() == 0)
+/*
+      if (remaining.size() == 0)
       remaining.push_back("-");
+*/
   }
+  
+  cout << extra << endl;
+  
+  return 0;
   
   try {
     sql3database sql(dbname);
@@ -431,6 +437,6 @@ int main(int argc, char* argv[])
   } catch (const std::exception &ex) {
     cerr << "Exception in program: " << ex.what() <<endl;
   }
-  
+  }
   return 0;
 }
