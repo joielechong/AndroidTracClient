@@ -300,7 +300,7 @@ int main(int argc, char* argv[])
     cmdline_options.add(desc).add(hidden);
     
     po::options_description visible("Aanroep mkdb [opties] file(s)");
-    cmdline_options.add(desc);
+    visible.add(desc);
     
     po::variables_map vm;
     po::store(po::command_line_parser(argc, argv).options(cmdline_options).positional(p).run(), vm);
