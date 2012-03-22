@@ -7,18 +7,16 @@
 #include <sstream>
 #include <iostream>
 #include <stdexcept>
-#include <ArgumentParser.h>
-#include <ArgumentGroup.h>
-#include <StringArgument.h>
-#include <BooleanArgument.h>
-#include <ListArgument.h>
 #include <SocketHandler.h>
 #include <StdoutLog.h>
+#include <boost/program_options.hpp>
 #include "gzstream.h"
 #include "osmparser.h"
 #include "osmapi.h"
 
 #define MAXELEM 75
+
+namespace po = boost::program_options;
 
 using namespace std;
 using namespace osm_db;
@@ -275,6 +273,42 @@ static void do_fixup(osmparser::OSMParser &osmparser,database &sql,bool xapi) {
 
 int main(int argc, char* argv[])
 {
+  try {
+    po::options_description desc("Geldige opties");
+    desc.add_options()
+      ("db", po::value<string>(&dbname)->default_value("newosm.sqlite"), "SQLite database name")
+      ("schema", po::value<string>()->default_value(string(DATADIR)+string("/schema.sqlite.txt")), "schema definition file")
+      ("new","Create new database")
+      ("update","Update database")
+      ("fix","Completes incomplete relations and ways")
+      ("post","Perform postprocessing on the database")
+      ("api",po::value<string>(),"Online API request e.g. node/nodeid")
+      ("xapi","Use the XAPI interface")
+      ("help","Help om usage");
+
+    po::options_description hidden("Hidden options");
+    hidden.add_options()
+      ("input-file", po::value< list<string> >(), "input file");
+      
+    po::positional_options_description p;
+    p.add("input-file", -1);
+
+    po::options_description cmdline_options;
+    cmdline_options.add(desc).add(hidden);
+
+    po::options_description visible("Aanroep mkdb [opties] file(s)");
+    cmdline_options.add(desc);
+    
+    po::variables_map vm;
+    po::store(po::command_line_parser(argc, argv).
+	  options(cmdline_options).positional(p).run(), vm);
+    po::notify(vm);
+    
+    if (vm.count("help")) {
+      cout << visible << endl <<endl;
+      return 0;
+    }
+/*
   Argument::StringArgument dbArg("-db","value","\tSQLite database name",string("newosm.sqlite"),false);
   Argument::StringArgument schemaArg("-schema","value","schema definition file",string(DATADIR)+string("/schema.sqlite.txt"),false);
   Argument::BooleanArgument updArg("-update","\tUpdate the database");
@@ -306,23 +340,20 @@ int main(int argc, char* argv[])
     return 1;
   }
   
-  string dbname = dbArg.getValue();
-  string schema = schemaArg.getValue();
-  bool nieuw = newArg.getValue();
-  bool update = updArg.getValue();
-  bool fixup = fixArg.getValue();
-  bool post = postArg.getValue();
-  bool helponly = helpArg.getValue();
-  string apistr = apiArg.getValue();
-  bool xapi = xapiArg.getValue();
   list<string>extra = extraArg.getValue();
+*/
 
+  bool nieuw = (vm.count("new") > 0);
+  bool update = (vm.count("update") > 0);
+  bool fixup = (vm.count("fix") > 0);
+  bool post = (vm.count("post") > 0);
+  bool xapi = (vm.count("xapi") > 0);
+  string dbname = vm["db"].as<string>();
+  string schema = vm["schema"].as<string>();
+  string apistr = vm["api"].as<string>();
+  list<string>extra = vm["input-file"].as< list<string> >();
+  
   list<string>::iterator it;
-
-  if (helponly) {
-    argparser.printUsage(cout);
-    return 0;
-  }
 
   if ((nieuw == update)) {
     cerr << "Either -new or -update must be provided" << endl;
