@@ -1,4 +1,5 @@
 #include "osm_sql3db.h"
+#include <boost/program_options.hpp>
 #include <cstring>
 #include <cstdio>
 #include <vector>
@@ -9,7 +10,6 @@
 #include <stdexcept>
 #include <SocketHandler.h>
 #include <StdoutLog.h>
-#include <boost/program_options.hpp>
 #include "gzstream.h"
 #include "osmparser.h"
 #include "osmapi.h"
