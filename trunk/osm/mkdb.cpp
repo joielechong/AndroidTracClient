@@ -275,6 +275,7 @@ static void do_fixup(osmparser::OSMParser &osmparser,database &sql,bool xapi) {
 int main(int argc, char* argv[])
 {
   po::options_description visible("Aanroep mkdb [opties] file(s)");
+  po::options_description desc("Geldige opties");
 
   try {
     po::options_description desc("Geldige opties");
