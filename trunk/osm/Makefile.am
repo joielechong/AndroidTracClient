@@ -21,7 +21,7 @@ mkdb_SOURCES= grootcirkel.h gzstream.cpp gzstream.h mkdb.cpp myfuncs.h osmparser
 osmdatadir=$(datadir)/osm
 dist_osmdata_DATA=schema.sqlite.txt
 
-mkdb_LDADD=$(XML_LIBS) $(Z_LIBS) -losm $(SQL_LIBS) $(ARG_LIBS) $(SOCK_LIBS) $(ACOS_LIBM) $(ASIN_LIBM) $(COS_LIBM) $(SIN_LIBM) $(SQRT_LIBM) $(POW_LIBM) $(BOOST_LDFLAGS) $(BOOST_PROGRAM_OPTIONS_LIB) -ll
+mkdb_LDADD=$(XML_LIBS) $(Z_LIBS) -losm $(SQL_LIBS) $(SOCK_LIBS) $(ACOS_LIBM) $(ASIN_LIBM) $(COS_LIBM) $(SIN_LIBM) $(SQRT_LIBM) $(POW_LIBM) $(BOOST_LDFLAGS) $(BOOST_PROGRAM_OPTIONS_LIB) -ll
 mkdb_CPPFLAGS=$(Z_CFLAGS) $(SQL_CFLAGS) $(ARG_CFLAGS) $(XML_CFLAGS) $(SOCK_CFLAGS) $(BOOST_CPPFLAGS) -DDATADIR=\"$(datadir)/osm\"
 
 osmtest_LDADD=-losm $(SQL_LIBS) $(XML_LIBS) $(BOOST_LDFLAGS) $(BOOST_PROGRAM_OPTIONS_LIB)
