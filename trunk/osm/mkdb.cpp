@@ -301,8 +301,7 @@ int main(int argc, char* argv[])
     cmdline_options.add(desc);
     
     po::variables_map vm;
-    po::store(po::command_line_parser(argc, argv).
-	      options(cmdline_options).positional(p).run(), vm);
+    po::store(po::command_line_parser(argc, argv).options(cmdline_options).positional(p).run(), vm);
     po::notify(vm);
     
     if (vm.count("help")) {
@@ -336,74 +335,68 @@ int main(int argc, char* argv[])
 	remaining.push_back("-");
       */
     }
-    
-    
-    
-    return 0;
-    
-    try {
-      sql3database sql(dbname);
+/*    
+    sql3database sql(dbname);
       
-      if (nieuw) 
-	sql.setupSchemas(schema);
+    if (nieuw) 
+      sql.setupSchemas(schema);
       
-      if (update) 
-	sql.update(true);
+    if (update) 
+      sql.update(true);
       
-      sql.initializeFill();
-      sql.initTemp();
+    sql.initializeFill();
+    sql.initTemp();
       
-      // Parse the entire document in one go:
-      osmparser::OSMParser osmparser;
-      osmparser.setDBconn(&sql);
-      //    osmparser.set_substitute_entities(true);
+    // Parse the entire document in one go:
+    osmparser::OSMParser osmparser;
+    osmparser.setDBconn(&sql);
+    //    osmparser.set_substitute_entities(true);
       
-      if (apistr != "") {
-	try {
-	  string buf = apiRequest(apistr,xapi);
-	  osmparser.parse_memory(buf);
-	} catch (const out_of_range &ex) {
-	  cerr << ex.what() << endl;
-	}
-      } else {
-	for (it=extra.begin();it!=extra.end();it++) {
-	  string filepath = *it;
-	  if (filepath == "-") {
-	    osmparser.parse_stream(cin);
-	  } else {
-	    if (filepath.find(".gz") == filepath.length()-2) {
-	      igzstream input(filepath.c_str());
-	      osmparser.parse_stream(input);
-	    } else 
-	      osmparser.parse_file(filepath);
-	  }
+    if (apistr != "") {
+      try {
+	string buf = apiRequest(apistr,xapi);
+	osmparser.parse_memory(buf);
+      } catch (const out_of_range &ex) {
+        cerr << ex.what() << endl;
+      }
+    } else {
+      for (it=extra.begin();it!=extra.end();it++) {
+	string filepath = *it;
+	if (filepath == "-") {
+	  osmparser.parse_stream(cin);
+	} else {
+	  if (filepath.find(".gz") == filepath.length()-2) {
+	    igzstream input(filepath.c_str());
+	    osmparser.parse_stream(input);
+	  } else 
+	    osmparser.parse_file(filepath);
 	}
       }
-      
-      if (nieuw)
-	sql.setBoundaries();
-      
-      if (fixup)
-	do_fixup(osmparser,sql,xapi);
-      
-      if (post) {
-	cout << "Starting postprocessing" << endl;
-	postprocess(sql);
-      }
-    } catch(const xmlpp::exception& ex) {
-      cerr << "libxml++ exception: " << ex.what() << endl;
-      return 1;
-    } catch (const sqlite3x::database_error& ex) {
-      cerr << "Exception in sqlite: " << ex.what() <<endl;
-      return 1;
-    } catch (const osm_db_error& ex) {
-      cerr << "Exception in osm_db: " << ex.what() <<endl;
-      return 1;
-    } catch (const Glib::ustring &ex) {
-      cerr << "Exception in parser: " << ex <<endl;
-    } catch (const std::exception &ex) {
-      cerr << "Exception in program: " << ex.what() <<endl;
     }
+      
+    if (nieuw)
+      sql.setBoundaries();
+      
+    if (fixup)
+      do_fixup(osmparser,sql,xapi);
+      
+    if (post) {
+      cout << "Starting postprocessing" << endl;
+      postprocess(sql);
+    }
+    */
+  } catch(const xmlpp::exception& ex) {
+    cerr << "libxml++ exception: " << ex.what() << endl;
+    return 1;
+  } catch (const sqlite3x::database_error& ex) {
+    cerr << "Exception in sqlite: " << ex.what() <<endl;
+    return 1;
+  } catch (const osm_db_error& ex) {
+    cerr << "Exception in osm_db: " << ex.what() <<endl;
+    return 1;
+  } catch (const Glib::ustring &ex) {
+    cerr << "Exception in parser: " << ex <<endl;
+    return 1;
   } catch (exception& e) {
     cerr << "error: " << e.what() << endl;
     return 1;
