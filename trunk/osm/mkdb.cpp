@@ -1,4 +1,4 @@
-#include <boost/program_options.hpp>
+#include "osm.h"
 #include "osm_sql3db.h"
 #include <cstring>
 #include <cstdio>
@@ -8,6 +8,7 @@
 #include <sstream>
 #include <iostream>
 #include <stdexcept>
+#include <boost/program_options.hpp>
 #include <SocketHandler.h>
 #include <StdoutLog.h>
 #include "gzstream.h"
@@ -289,159 +290,126 @@ int main(int argc, char* argv[])
     po::options_description hidden("Hidden options");
     hidden.add_options()
       ("input-file", po::value< list<string> >(), "input file");
-      
+    
     po::positional_options_description p;
     p.add("input-file", -1);
-
+    
     po::options_description cmdline_options;
     cmdline_options.add(desc).add(hidden);
-
+    
     po::options_description visible("Aanroep mkdb [opties] file(s)");
     cmdline_options.add(desc);
     
     po::variables_map vm;
     po::store(po::command_line_parser(argc, argv).
-	  options(cmdline_options).positional(p).run(), vm);
+	      options(cmdline_options).positional(p).run(), vm);
     po::notify(vm);
     
     if (vm.count("help")) {
       cout << visible << endl <<endl;
       return 0;
     }
-/*
-  Argument::StringArgument dbArg("-db","value","\tSQLite database name",string("newosm.sqlite"),false);
-  Argument::StringArgument schemaArg("-schema","value","schema definition file",string(DATADIR)+string("/schema.sqlite.txt"),false);
-  Argument::BooleanArgument updArg("-update","\tUpdate the database");
-  Argument::StringArgument apiArg("-api","value","\tOnline API request e.g. node/nodeid",false);
-  Argument::BooleanArgument xapiArg("-xapi","\tUse XAPI requests");
-  Argument::BooleanArgument fixArg("-fix","\t\tcompletes incomplete relations and ways");
-  Argument::BooleanArgument postArg("-post","\t\tPerform postprocessing on the database");
-  Argument::BooleanArgument helpArg("-help","\t\tHelp on usage");
-  Argument::BooleanArgument newArg("-new","\t\tCreate new database");
-  Argument::ListArgument extraArg("file","\tFilename[s] to process (none or - implies stdin)",false);
-
-
-  Argument::ArgumentParser argparser;
-
-  argparser.addArgument(helpArg);
-  argparser.addArgument(newArg);
-  argparser.addArgument(updArg);
-  argparser.addArgument(dbArg);
-  argparser.addArgument(schemaArg);
-  argparser.addArgument(fixArg);  
-  argparser.addArgument(postArg);  
-  argparser.addArgument(apiArg);  
-  argparser.addArgument(xapiArg);  
-  argparser.addArgument(extraArg);  
-
-  list<string> remaining = argparser.parse(argc,argv);
-  if (!argparser.isValid()) {
-    argparser.printErrors(cout);
-    return 1;
-  }
-  
-  list<string>extra = extraArg.getValue();
-*/
-
-  bool nieuw = (vm.count("new") > 0);
-  bool update = (vm.count("update") > 0);
-  bool fixup = (vm.count("fix") > 0);
-  bool post = (vm.count("post") > 0);
-  bool xapi = (vm.count("xapi") > 0);
-  string dbname = vm["db"].as<string>();
-  string schema = vm["schema"].as<string>();
-  string apistr = vm["api"].as<string>();
-  list<string>extra = vm["input-file"].as< list<string> >();
-  
-  list<string>::iterator it;
-
-  if ((nieuw == update)) {
-    cerr << "Either -new or -update must be provided" << endl;
-    return 1;
-  }
-  
-  if (nieuw) {
-    unlink(dbname.c_str());
-    if (extra.size() == 0)
-      extra.push_back("-");
-/*
-      if (remaining.size() == 0)
-      remaining.push_back("-");
-*/
-  }
-   
-  
-  
-  return 0;
-  
-  try {
-    sql3database sql(dbname);
     
-    if (nieuw) 
-      sql.setupSchemas(schema);
-
-    if (update) 
-      sql.update(true);
+    bool nieuw = (vm.count("new") > 0);
+    bool update = (vm.count("update") > 0);
+    bool fixup = (vm.count("fix") > 0);
+    bool post = (vm.count("post") > 0);
+    bool xapi = (vm.count("xapi") > 0);
+    string dbname = vm["db"].as<string>();
+    string schema = vm["schema"].as<string>();
+    string apistr = vm["api"].as<string>();
+    list<string>extra = vm["input-file"].as< list<string> >();
     
-    sql.initializeFill();
-    sql.initTemp();
+    list<string>::iterator it;
     
-    // Parse the entire document in one go:
-    osmparser::OSMParser osmparser;
-    osmparser.setDBconn(&sql);
-    //    osmparser.set_substitute_entities(true);
+    if ((nieuw == update)) {
+      cerr << "Either -new or -update must be provided" << endl;
+      return 1;
+    }
     
-    if (apistr != "") {
-      try {
-	string buf = apiRequest(apistr,xapi);
-	osmparser.parse_memory(buf);
-      } catch (const out_of_range &ex) {
-	cerr << ex.what() << endl;
-      }
-    } else {
-      for (it=extra.begin();it!=extra.end();it++) {
-	string filepath = *it;
-	if (filepath == "-") {
-	  osmparser.parse_stream(cin);
-	} else {
-	  if (filepath.find(".gz") == filepath.length()-2) {
-	    igzstream input(filepath.c_str());
-	    osmparser.parse_stream(input);
-	  } else 
-	    osmparser.parse_file(filepath);
+    if (nieuw) {
+      unlink(dbname.c_str());
+      if (extra.size() == 0)
+	extra.push_back("-");
+      /*
+	if (remaining.size() == 0)
+	remaining.push_back("-");
+      */
+    }
+    
+    
+    
+    return 0;
+    
+    try {
+      sql3database sql(dbname);
+      
+      if (nieuw) 
+	sql.setupSchemas(schema);
+      
+      if (update) 
+	sql.update(true);
+      
+      sql.initializeFill();
+      sql.initTemp();
+      
+      // Parse the entire document in one go:
+      osmparser::OSMParser osmparser;
+      osmparser.setDBconn(&sql);
+      //    osmparser.set_substitute_entities(true);
+      
+      if (apistr != "") {
+	try {
+	  string buf = apiRequest(apistr,xapi);
+	  osmparser.parse_memory(buf);
+	} catch (const out_of_range &ex) {
+	  cerr << ex.what() << endl;
+	}
+      } else {
+	for (it=extra.begin();it!=extra.end();it++) {
+	  string filepath = *it;
+	  if (filepath == "-") {
+	    osmparser.parse_stream(cin);
+	  } else {
+	    if (filepath.find(".gz") == filepath.length()-2) {
+	      igzstream input(filepath.c_str());
+	      osmparser.parse_stream(input);
+	    } else 
+	      osmparser.parse_file(filepath);
+	  }
 	}
       }
+      
+      if (nieuw)
+	sql.setBoundaries();
+      
+      if (fixup)
+	do_fixup(osmparser,sql,xapi);
+      
+      if (post) {
+	cout << "Starting postprocessing" << endl;
+	postprocess(sql);
+      }
+    } catch(const xmlpp::exception& ex) {
+      cerr << "libxml++ exception: " << ex.what() << endl;
+      return 1;
+    } catch (const sqlite3x::database_error& ex) {
+      cerr << "Exception in sqlite: " << ex.what() <<endl;
+      return 1;
+    } catch (const osm_db_error& ex) {
+      cerr << "Exception in osm_db: " << ex.what() <<endl;
+      return 1;
+    } catch (const Glib::ustring &ex) {
+      cerr << "Exception in parser: " << ex <<endl;
+    } catch (const std::exception &ex) {
+      cerr << "Exception in program: " << ex.what() <<endl;
     }
-
-    if (nieuw)
-      sql.setBoundaries();
-    
-    if (fixup)
-      do_fixup(osmparser,sql,xapi);
-    
-    if (post) {
-      cout << "Starting postprocessing" << endl;
-      postprocess(sql);
-    }
-  } catch(const xmlpp::exception& ex) {
-    cerr << "libxml++ exception: " << ex.what() << endl;
-    return 1;
-  } catch (const sqlite3x::database_error& ex) {
-    cerr << "Exception in sqlite: " << ex.what() <<endl;
-    return 1;
-  } catch (const osm_db_error& ex) {
-    cerr << "Exception in osm_db: " << ex.what() <<endl;
-    return 1;
-  } catch (const Glib::ustring &ex) {
-    cerr << "Exception in parser: " << ex <<endl;
-  } catch (const std::exception &ex) {
-    cerr << "Exception in program: " << ex.what() <<endl;
-  }
   } catch (exception& e) {
     cerr << "error: " << e.what() << endl;
     return 1;
   } catch(...) {
     cerr << "Exception of unknown type!" << endl;
+    return 1;
   }
   return 0;
 }
