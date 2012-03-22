@@ -9,9 +9,10 @@
 #include <iostream>
 #include <stdexcept>
 #include <boost/program_options.hpp>
+#include <boost/iostreams/filtering_streambuf.hpp>
+#include <boost/iostreams/filter/gzip.hpp>
 #include <SocketHandler.h>
 #include <StdoutLog.h>
-#include "gzstream.h"
 #include "osmparser.h"
 #include "osmapi.h"
 
@@ -21,7 +22,7 @@ namespace po = boost::program_options;
 
 using namespace std;
 using namespace osm_db;
-using namespace GZSTREAM_NAMESPACE;
+using namespace boost::iostreams;
 
 class sql_commands {
 public:
@@ -338,10 +339,6 @@ int main(int argc, char* argv[])
       unlink(dbname.c_str());
       if (extra.size() == 0)
 	extra.push_back("-");
-      /*
-	if (remaining.size() == 0)
-	remaining.push_back("-");
-      */
     }
    
     sql3database sql(dbname);
@@ -361,12 +358,8 @@ int main(int argc, char* argv[])
     //    osmparser.set_substitute_entities(true);
       
     if (apistr != "") {
-      try {
-	string buf = apiRequest(apistr,xapi);
-	osmparser.parse_memory(buf);
-      } catch (const out_of_range &ex) {
-        cerr << ex.what() << endl;
-      }
+      string buf = apiRequest(apistr,xapi);
+      osmparser.parse_memory(buf);
     } else {
       for (it=extra.begin();it!=extra.end();it++) {
 	string filepath = *it;
@@ -374,8 +367,11 @@ int main(int argc, char* argv[])
 	  osmparser.parse_stream(cin);
 	} else {
 	  if (filepath.find(".gz") == filepath.length()-2) {
-	    igzstream input(filepath.c_str());
-	    osmparser.parse_stream(input);
+	    ifstream file(filepath.c_str(), ios_base::in|ios_base::binary);
+	    filtering_streambuf<input> in;
+	    in.push(gzip_decompressor());
+	    in.push(file);
+	    osmparser.parse_stream(file);
 	  } else 
 	    osmparser.parse_file(filepath);
 	}
@@ -393,6 +389,9 @@ int main(int argc, char* argv[])
       postprocess(sql);
     }
 
+  } catch (const out_of_range &ex) {
+    cerr << ex.what() << endl;
+    return 1;
   } catch(const xmlpp::exception& ex) {
     cerr << "libxml++ exception: " << ex.what() << endl;
     return 1;
