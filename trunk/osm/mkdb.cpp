@@ -292,7 +292,7 @@ int main(int argc, char* argv[])
 
     po::options_description hidden("Hidden options");
     hidden.add_options()
-      ("input-file", po::value< vector<string> >(), "input file");
+      ("input-file", po::value< vector<string> >().default_value("-"), "input file");
     
     po::positional_options_description p;
     p.add("input-file", -1);
