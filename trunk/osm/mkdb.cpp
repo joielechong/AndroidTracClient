@@ -286,7 +286,7 @@ int main(int argc, char* argv[])
       ("update","Update database")
       ("fix","Completes incomplete relations and ways")
       ("post","Perform postprocessing on the database")
-      ("api",po::value<string>(),"Online API request e.g. node/nodeid")
+      ("api",po::value<string>()->default_value(""),"Online API request e.g. node/nodeid")
       ("xapi","Use the XAPI interface")
       ("help","Help om usage");
 
@@ -320,7 +320,7 @@ int main(int argc, char* argv[])
     string dbname = vm["db"].as<string>();
     string schema = vm["schema"].as<string>();
     string apistr = vm["api"].as<string>();
-    vector<string>extra = vm["input-file"].as< vector<string> >();
+    vector<string> extra = vm["input-file"].as< vector<string> >();
     
     vector<string>::iterator it;
     
