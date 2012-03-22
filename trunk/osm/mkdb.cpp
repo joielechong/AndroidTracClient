@@ -292,7 +292,7 @@ int main(int argc, char* argv[])
 
     po::options_description hidden("Hidden options");
     hidden.add_options()
-      ("input-file", po::value< vector<string> >().default_value("-"), "input file");
+      ("input-file", po::value< vector<string> >(), "input file");
     
     po::positional_options_description p;
     p.add("input-file", -1);
@@ -320,7 +320,12 @@ int main(int argc, char* argv[])
     string dbname = vm["db"].as<string>();
     string schema = vm["schema"].as<string>();
     string apistr = vm["api"].as<string>();
-    vector<string> extra = vm["input-file"].as< vector<string> >();
+    vector<string> extra;
+    if (vm.count("input-file")) {
+      extra = vm["input-file"].as< vector<string> >();
+    } else {
+      extra.push_back("-");
+    }
     
     vector<string>::iterator it;
     
