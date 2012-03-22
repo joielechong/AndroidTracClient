@@ -370,12 +370,6 @@ int main(int argc, char* argv[])
 */
   }
    
-  } catch (exception& e) {
-    cerr << "error: " << e.what() << endl;
-    return 1;
-  } catch(...) {
-    cerr << "Exception of unknown type!" << endl;
-  }
   
   
   return 0;
@@ -443,6 +437,11 @@ int main(int argc, char* argv[])
   } catch (const std::exception &ex) {
     cerr << "Exception in program: " << ex.what() <<endl;
   }
+  } catch (exception& e) {
+    cerr << "error: " << e.what() << endl;
+    return 1;
+  } catch(...) {
+    cerr << "Exception of unknown type!" << endl;
   }
   return 0;
 }
