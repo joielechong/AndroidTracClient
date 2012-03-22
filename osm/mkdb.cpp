@@ -369,8 +369,14 @@ int main(int argc, char* argv[])
       remaining.push_back("-");
 */
   }
+   
+  } catch (exception& e) {
+    cerr << "error: " << e.what() << endl;
+    return 1;
+  } catch(...) {
+    cerr << "Exception of unknown type!" << endl;
+  }
   
-  cout << extra << endl;
   
   return 0;
   
