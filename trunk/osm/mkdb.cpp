@@ -343,7 +343,7 @@ int main(int argc, char* argv[])
 	remaining.push_back("-");
       */
     }
-/*    
+   
     sql3database sql(dbname);
       
     if (nieuw) 
@@ -392,7 +392,7 @@ int main(int argc, char* argv[])
       cout << "Starting postprocessing" << endl;
       postprocess(sql);
     }
-    */
+
   } catch(const xmlpp::exception& ex) {
     cerr << "libxml++ exception: " << ex.what() << endl;
     return 1;
