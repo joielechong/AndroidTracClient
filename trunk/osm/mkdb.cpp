@@ -324,8 +324,6 @@ int main(int argc, char* argv[])
     vector<string> extra;
     if (vm.count("input-file")) {
       extra = vm["input-file"].as< vector<string> >();
-    } else {
-      extra.push_back("-");
     }
     
     vector<string>::iterator it;
