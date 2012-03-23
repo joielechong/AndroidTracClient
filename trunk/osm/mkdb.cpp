@@ -277,9 +277,11 @@ int main(int argc, char* argv[])
 {
   po::options_description visible("Aanroep mkdb [opties] file(s)");
   po::options_description desc("Geldige opties");
+    po::options_description hidden("Hidden options");
+    po::options_description cmdline_options;
+    po::positional_options_description p;
 
   try {
-    po::options_description desc("Geldige opties");
     desc.add_options()
       ("db", po::value<string>()->default_value("newosm.sqlite"), "SQLite database name")
       ("schema", po::value<string>()->default_value(string(DATADIR)+string("/schema.sqlite.txt")), "schema definition file")
@@ -291,17 +293,13 @@ int main(int argc, char* argv[])
       ("xapi","Use the XAPI interface")
       ("help","Help om usage");
 
-    po::options_description hidden("Hidden options");
     hidden.add_options()
       ("input-file", po::value< vector<string> >(), "input file");
     
-    po::positional_options_description p;
     p.add("input-file", -1);
     
-    po::options_description cmdline_options;
     cmdline_options.add(desc).add(hidden);
     
-    po::options_description visible("Aanroep mkdb [opties] file(s)");
     visible.add(desc);
     
     po::variables_map vm;
@@ -329,8 +327,7 @@ int main(int argc, char* argv[])
     vector<string>::iterator it;
     
     if ((nieuw == update)) {
-      cerr << "Either -new or -update must be provided" << endl;
-      return 1;
+      throw range_error("Either -new or -update must be provided");
     }
     
     if (nieuw) {
@@ -343,8 +340,7 @@ int main(int argc, char* argv[])
       
     if (nieuw) 
       sql.setupSchemas(schema);
-      
-    if (update) 
+    else // if (update) 
       sql.update(true);
       
     sql.initializeFill();
