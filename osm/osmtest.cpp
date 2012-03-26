@@ -29,6 +29,7 @@ int main(int argc, char *argv[]) {
       ("cost", po::value<string>(&cost), "Bereken kost")
       ("cs",po::value<long>(&cachesize)->default_value(10000L),"Cache size")
       ("adres",po::value<string>(&query),"SQLite where clause")
+      ("block",po::value< vector<string> >(),"Block list")
       ("ignoreextra","Extracost altijd op 0")
       ("help","Help om usage");
 
@@ -41,7 +42,7 @@ int main(int argc, char *argv[]) {
       cout << desc << endl <<endl;
       return 0;
     }
-    bool ignoreExtra = (vm.count("ignoreextra")?true:false);
+    bool ignoreExtra = (vm.count("ignoreextra")>0);
 
     osm_db::sql3database sql(dbname);
 
@@ -62,6 +63,12 @@ int main(int argc, char *argv[]) {
       list<long> route;
       
       cout << "cost = " << cost<< endl;
+      vector<string> blocklist;
+      if (vm.count("block")) {
+        blocklist = vm["block"].as< vector<string> >();
+      }
+      vector<string>::iterator it;
+
       routelex_init(cost.c_str());
       if (yyparse() != 0) 
 	throw runtime_error("routestring niet juist: "+cost);
