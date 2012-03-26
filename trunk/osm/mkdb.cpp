@@ -277,10 +277,10 @@ int main(int argc, char* argv[])
 {
   po::options_description visible("Aanroep mkdb [opties] file(s)");
   po::options_description desc("Geldige opties");
-    po::options_description hidden("Hidden options");
-    po::options_description cmdline_options;
-    po::positional_options_description p;
-
+  po::options_description hidden("Hidden options");
+  po::options_description cmdline_options;
+  po::positional_options_description p;
+  
   try {
     desc.add_options()
       ("db", po::value<string>()->default_value("newosm.sqlite"), "SQLite database name")
@@ -327,7 +327,7 @@ int main(int argc, char* argv[])
     vector<string>::iterator it;
     
     if ((nieuw == update)) {
-      throw range_error("Either -new or -update must be provided");
+      throw range_error("Either -new or -update must be provided, but not both at the same time");
     }
     
     if (nieuw) {
@@ -386,6 +386,9 @@ int main(int argc, char* argv[])
   } catch (const out_of_range &ex) {
     cerr << ex.what() << endl;
     return 1;
+  } catch (const range_error &ex) {
+    cerr << ex.what() << endl;
+    return 1;
   } catch(const xmlpp::exception& ex) {
     cerr << "libxml++ exception: " << ex.what() << endl;
     return 1;
@@ -398,7 +401,7 @@ int main(int argc, char* argv[])
   } catch (const Glib::ustring &ex) {
     cerr << "Exception in parser: " << ex <<endl;
     return 1;
-  } catch (exception& e) {
+  } catch (const exception& e) {
     cerr << "error: " << e.what() << endl;
     cerr << visible << endl <<endl;
     return 1;
