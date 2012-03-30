@@ -1,6 +1,5 @@
 #include "osm_sql3db.h"
 #include "myparser.h"
-#include "osmapi.h"
 #include <sqlite3x.hpp>
 #include <vector>
 
