@@ -323,10 +323,13 @@ sub vmxdetails {
     return $html;
 }
 
+sub vmxeistekst {
+}
+
 sub vmxdi {
 #    vmx_tabel(2,$_[0],0);
     my $di = shift;
-    my $sql = q!select e.eis,eistekst,d.status,vmxov as "Ontwerp Verificatie",vmxke as "Keuring",vmxbp as "Beproeving",vmxin as "Inspectie",vmxlc as "Lock",ovuo,ovdo,ovsd,(select count(usecase)>0 as ovuc from features join feat_uc on (feature=feat and features.eis=e.eis and d.di='86'))::boolean as ovuc,bpfat,bpifat,bpsat,bpisat,bpsit,ovch from eis_di as d join unieke_eisen as e on (e.eis=d.eis) where d.di=? order by d.eis!;
+    my $sql = q!select e.eis,eistekst,d.status,vmxov as "Ontwerp Verificatie",vmxke as "Keuring",vmxbp as "Beproeving",vmxin as "Inspectie",vmxlc as "Lock",ovuo,ovdo,ovsd,(select count(usecase)>0 as ovuc,di from features join feat_uc on (feature=feat and features.eis=e.eis and d.di='86'))::boolean as ovuc,bpfat,bpifat,bpsat,bpisat,bpsit,ovch from eis_di as d join unieke_eisen as e on (e.eis=d.eis) where d.di=? order by d.eis!;
     my $sqldi = q!select objname from objecten where objid=?!;
     my $dbh = dbi_connect();	
     my $sth = $dbh->prepare( $sql );
@@ -1670,6 +1673,7 @@ EOT
             <a onclick="return eisen_vmx_di();" style="color: #0000FF" class="select"> VMX </a>
             Eistekst: <input type="text" name="searchtermtekst" id="searchtermtekst" size="16">
             <a onclick="return eisen_zoek_eistekst();" style="color: #0000FF" class="select"> Zoek </a>
+            <a onclick="return eisen_vmx_eistekst();" style="color: #0000FF" class="select"> VMX </a>
             Fasering: <select id="searchtermfasering" name="searchtermfasering" SIZE=1 style="width:200px;">
             <option>Loading....</option>
             </select>
@@ -1855,6 +1859,7 @@ my $pjx = CGI::Ajax->new(
         vmxlokatie => \&vmxlokatie,
         vmxfasering => \&vmxfasering,
         vmxdi => \&vmxdi,
+        vmxeistekst => \&vmxeistekst,
         details => \&details,
         didetails => \&didetails,
         vmxdetails => \&vmxdetails,
