@@ -74,7 +74,7 @@ my %htsql = (
     "info_fases" => qq!/htsql/fase_loc{faseid,locatie,locaties.beschrijving,opmerkingen}.sort(locatie)?faseid='%arg1%'!,
     "info_fases_locs" => qq!/htsql/locatie_protocol{fase,locnaam,protocol_doc_id,documents.ImandraID,documents.di,documents.testfase,documents.document_titel,documents.docstatus}.sort(protocol_doc_id)?fase='%arg1%'&locnaam='%arg2%'!,
     "info_fases_locs_reps" => qq!/htsql/locatie_report{faseid,locnaam,report_doc_id,documents.ImandraID,documents.di,documents.testfase,documents.document_titel,documents.docstatus}.sort(report_doc_id)?faseid='%arg1%'&locnaam='%arg2%'!,
-    "vmx_di" => qq!https://van-loon.xs4all.nl/htsql/eis_di{di,eis,unieke_eisen.eistekst,status,vmxov,ovsd,ovdo,ovuo,vmxke,vmxbp,bpfat,bpifat,bpsat,bpisat,bpsit,vmxin}.sort(di,eis)?di='%arg1%'!
+    "vmx_di" => qq!https://van-loon.xs4all.nl/htsql/eis_di{di,eis,unieke_eisen.eistekst,unieke_eisen.soort,vmxov,ovsd,ovdo,ovuo,vmxke,vmxbp,bpfat,bpifat,bpsat,bpisat,bpsit,vmxin}.sort(di,eis)?di='%arg1%'!
     );
 
 sub printbaar {
@@ -1759,6 +1759,7 @@ EOT
     <li><a href="/htsql/vmx_fasering_alles.sort(eis,di,faseid)?verificatie_akkoord='n'" target=rapporten>verificatie niet akkoord</a></li>
     <li><a href="/htsql/eis_di{di,eis,unieke_eisen.eistekst,vmxbp,bpfat,bpifat,bpsat,bpisat,bpsit}.sort(di,eis)?vmxbp" target=rapporten>Beproevingen VMX</a></li>
     <li><a href="/htsql/eis_di{di,eis,unieke_eisen.eistekst,vmxke}.sort(di,eis)?vmxke" target=rapporten>Keuringen VMX</a></li>
+    <li><a href="/htsql/eis_di{di,eis,unieke_eisen.eistekst}.sort(di,eis)?ovch" target=rapporten>Gewijzigde eisen en toewijzingen</a></li>
     </ul>
 	</div>
     </div>
