@@ -287,7 +287,6 @@ sub vmxdetails {
     $html .= qq!<table border=1 class="zebra">\n!;
     $html .= qq!<tr><th class="titel" colspan=7>Verificatieoverzicht voor eis $eis</th></tr>\n!;
     $html .= tabel_header(@names);
-	my $rownr = 0;
     while (my $row=$sth->fetchrow_arrayref()) {
         my $di = $$row[0];
         my $status = $$row[1];
@@ -317,19 +316,33 @@ sub vmxdetails {
         $html .= qq!<td><div id='d_${eis}_${di}_lc'><input type=checkbox name='${eis}_lc_chk' onclick="altvmxlc('$eis','$di','$lock')"!.($lock==1?' CHECKED':'').qq!></div></td>!;
 
 		$html .= "</tr>\n";
-		$rownr++;
     }
     $html .= q!</table>!;
     return $html;
 }
 
 sub vmxeistekst {
+    my $eistekst = shift;
+    my $sql = q!select e.eis,eistekst,d.status,vmxov as "Ontwerp Verificatie",vmxke as "Keuring",vmxbp as "Beproeving",vmxin as "Inspectie",vmxlc as "Lock",ovuo,ovdo,ovsd,(select count(usecase)>0 as ovuc from features join feat_uc on (feature=feat and features.eis=e.eis and d.di='86'))::boolean as ovuc,bpfat,bpifat,bpsat,bpisat,bpsit,ovch,di from eis_di as d join unieke_eisen as e on (e.eis=d.eis) where e.eistekst ilike '%?%' order by d.eis, d.di!;
+    my $dbh = dbi_connect();	
+    my $sth = $dbh->prepare( $sql );
+        
+    $sth->execute( $eistekst );
+    my @names = @{ $sth->{NAME} };
+    my $numfields = $sth->{NUM_OF_FIELDS};
+    for (my $i=8;$i<$numfields;$i++) {
+        $names[$i] = undef;
+    }
+    my $html = '';
+    $html .= qq!<table border=1 class="zebra">\n!;
+    $html .= qq!<tr><th class="titel" colspan=8>Verificatieoverzicht voor met "$eistekst" in de omschrijving</th></tr>\n!;
+    $html .= tabel_header(@names);
 }
 
 sub vmxdi {
 #    vmx_tabel(2,$_[0],0);
     my $di = shift;
-    my $sql = q!select e.eis,eistekst,d.status,vmxov as "Ontwerp Verificatie",vmxke as "Keuring",vmxbp as "Beproeving",vmxin as "Inspectie",vmxlc as "Lock",ovuo,ovdo,ovsd,(select count(usecase)>0 as ovuc,di from features join feat_uc on (feature=feat and features.eis=e.eis and d.di='86'))::boolean as ovuc,bpfat,bpifat,bpsat,bpisat,bpsit,ovch from eis_di as d join unieke_eisen as e on (e.eis=d.eis) where d.di=? order by d.eis!;
+    my $sql = q!select e.eis,eistekst,d.status,vmxov as "Ontwerp Verificatie",vmxke as "Keuring",vmxbp as "Beproeving",vmxin as "Inspectie",vmxlc as "Lock",ovuo,ovdo,ovsd,(select count(usecase)>0 as ovuc from features join feat_uc on (feature=feat and features.eis=e.eis and d.di='86'))::boolean as ovuc,bpfat,bpifat,bpsat,bpisat,bpsit,ovch,di from eis_di as d join unieke_eisen as e on (e.eis=d.eis) where d.di=? order by d.eis!;
     my $sqldi = q!select objname from objecten where objid=?!;
     my $dbh = dbi_connect();	
     my $sth = $dbh->prepare( $sql );
@@ -349,7 +362,6 @@ sub vmxdi {
     $html .= qq!<table border=1 class="zebra">\n!;
     $html .= qq!<tr><th class="titel" colspan=8>Verificatieoverzicht voor Deelinstallatie $di!.($diname ne '' ? " ($diname)":"").qq!</th></tr>\n!;
     $html .= tabel_header(@names);
-	my $rownr = 0;
     while ($row=$sth->fetchrow_arrayref()) {
         my $eis = $$row[0];
         my $eistekst = $$row[1];
@@ -383,8 +395,7 @@ sub vmxdi {
         $html .= qq!<td><div id='d_${eis}_${di}_lc'><input type=checkbox name='${eis}_lc_chk' onclick="altvmxlc('$eis','$di',$lock)"!.($lock==1?' CHECKED':'').qq!></div></td>!;
 
 		$html .= "</tr>\n";
-		$rownr++;
-    }
+   }
     $html .= <<EOT;
 </table>
 EOT
