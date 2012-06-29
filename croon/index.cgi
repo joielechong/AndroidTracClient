@@ -1832,8 +1832,8 @@ EOT
     
     $html .= <<EOT;
 <form>
-<table border=1><tr><th class=veldnaam>Veld</th><th colspan=2 class=veldnaam>Waarde</th></tr>
-<tr><td>Eis</td><td>$eis</td><td>$$row[0]</td></tr>
+<table border=1>
+<tr><td>Eis</td><td>$eis</td><td size==36>$$row[0]</td></tr>
 <tr><td>DI</td><td>$di</td><td>$$row[1]</td></tr>
 <tr><td>Protocol</td><td colspan=2><select size=36 id=veisdiprot name=veisdiprot>;
 EOT
