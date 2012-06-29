@@ -453,6 +453,10 @@ void build_metadata_db(struct ushare_t *ut) {
   
   log_info (_("Building Metadata List ...\n"));
   ut->odbc_ptr = init_odbc(ut->dsn);
+  if (ut->odbc_ptr == -1) {
+    log_error("Cannot access database");
+    exit(2);
+  }
   if (entry_stored(ut->odbc_ptr,"") != 0) {
     root_entry = upnp_entry_new (ut, "root", "", NULL, -1, true);
     store_entry(ut->odbc_ptr,root_entry,-1);

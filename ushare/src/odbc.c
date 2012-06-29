@@ -99,6 +99,7 @@ int init_odbc(const char *dsn) {
     }
     return 1;
   } else {
+    extract_error("init_odbc","SQLDriverConnect",uo.dbc,SQL_HANDLE_DBC);
     SQLFreeHandle(SQL_HANDLE_DBC,uo.dbc);
     SQLFreeHandle(SQL_HANDLE_ENV,uo.env);
     return -1;
