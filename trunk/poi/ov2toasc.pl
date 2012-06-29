@@ -35,6 +35,7 @@ sub lees_ov2 {
 	print $fhUIT $lon/100000.0,", ",$lat/100000.0,", \"$string\"\n";
     } else {
 	print "Record type $record_type niet ondersteund\n";
+	return 1;  # 1 byte gelezen anders blijven we hangen
     }
     return $length;
 }
