@@ -330,12 +330,12 @@ sub vmxeistekst {
     $sth->execute( '%'.$eistekst.'%' );
     my @names = @{ $sth->{NAME} };
     my $numfields = $sth->{NUM_OF_FIELDS};
-    for (my $i=10;$i<$numfields;$i++) {
+    for (my $i=9;$i<$numfields;$i++) {
         $names[$i] = undef;
     }
     my $html = '';
     $html .= qq!<table border=1 class="zebra">\n!;
-    $html .= qq!<tr><th class="titel" colspan=8>Verificatieoverzicht voor met "$eistekst" in de omschrijving</th></tr>\n!;
+    $html .= qq!<tr><th class="titel" colspan=9>Verificatieoverzicht voor met "$eistekst" in de omschrijving</th></tr>\n!;
     $html .= tabel_header(@names);
 
     while (my $row=$sth->fetchrow_arrayref()) {
