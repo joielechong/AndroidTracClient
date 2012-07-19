@@ -340,6 +340,7 @@ sub vmxeistekst {
 
     while (my $row=$sth->fetchrow_arrayref()) {
         my $di = $$row[0];
+        my $diname = "***";
         my $eis = $$row[1];
         my $eistekst = $$row[2];
         my $status = $$row[3];
@@ -363,7 +364,8 @@ sub vmxeistekst {
         }
         $html .= qq!</div></td>!;
         $html .= qq!<td><div!.($lock==1 ? qq! class='locked'!:' ').qq!id='d_${eis}_${di}_ke'><input type=checkbox name='${eis}_ke_chk' onclick="altvmx('$eis','$di','ke')"!.($keur==1?' CHECKED':'').qq!></div></td>!;
-        $html .= qq!<td><div!.($lock==1 ? qq! class='locked'!:' ').qq!id='d_${eis}_${di}_bp'><input type=checkbox name='${eis}_bp_chk' onclick="altvmx('$eis','$di','bp')"!.($bepr==1?' CHECKED':'').qq!>!;
+        $html .= qq!<td oncontextmenu="return voerprotoin(event,'$eis',5,['$di','$diname']);"!;
+        $html .= qq!<div!.($lock==1 ? qq! class='locked'!:' ').qq!id='d_${eis}_${di}_bp'><input type=checkbox name='${eis}_bp_chk' onclick="altvmx('$eis','$di','bp')"!.($bepr==1?' CHECKED':'').qq!>!;
         if ($bepr == 1) {
             $html .= do_altvmxbp($eis,$di,$$row[11],$$row[12],$$row[13],$$row[14],$$row[15],$lock);
         }
