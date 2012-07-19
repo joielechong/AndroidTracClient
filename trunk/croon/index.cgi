@@ -323,7 +323,7 @@ sub vmxdetails {
 
 sub vmxeistekst {
     my $eistekst = shift;
-    my $sql = qq!select e.eis,eistekst,d.status,vmxov as "Ontwerp Verificatie",vmxke as "Keuring",vmxbp as "Beproeving",vmxin as "Inspectie",vmxlc as "Lock",di,ovch,ovuo,ovdo,ovsd,(select count(usecase)>0 as ovuc from features join feat_uc on (feature=feat and features.eis=e.eis and d.di='86'))::boolean as ovuc,bpfat,bpifat,bpsat,bpisat,bpsit from eis_di as d join unieke_eisen as e on (e.eis=d.eis) where e.eistekst ilike ? order by d.eis, d.di!;
+    my $sql = qq!select di,e.eis,eistekst,d.status,vmxov as "Ontwerp Verificatie",vmxke as "Keuring",vmxbp as "Beproeving",vmxin as "Inspectie",vmxlc as "Lock",ovch,ovuo,ovdo,ovsd,(select count(usecase)>0 as ovuc from features join feat_uc on (feature=feat and features.eis=e.eis and d.di='86'))::boolean as ovuc,bpfat,bpifat,bpsat,bpisat,bpsit from eis_di as d join unieke_eisen as e on (e.eis=d.eis) where e.eistekst ilike ? order by d.eis, d.di!;
     my $dbh = dbi_connect();	
     my $sth = $dbh->prepare( $sql );
         
@@ -339,19 +339,19 @@ sub vmxeistekst {
     $html .= tabel_header(@names);
 
     while (my $row=$sth->fetchrow_arrayref()) {
-        my $eis = $$row[0];
-        my $eistekst = $$row[1];
-        my $status = $$row[2];
-        my $ov = $$row[3];
-        my $keur = $$row[4];
-        my $bepr = $$row[5];
-        my $insp = $$row[6];
-        my $lock = $$row[7];
-        my $di = $$row[8];
+        my $di = $$row[0];
+        my $eis = $$row[1];
+        my $eistekst = $$row[2];
+        my $status = $$row[3];
+        my $ov = $$row[4];
+        my $keur = $$row[5];
+        my $bepr = $$row[6];
+        my $insp = $$row[7];
+        my $lock = $$row[8];
         my $ovch = $$row[9];
         $html .= qq!<tr valign="top">!;
 
-        $html .= qq!<td>$di</td><td class='$status'>$status</td>!;
+        $html .= qq!<td>$di</td><td>$eis</td><td><$eistekst><td class='$status'>$status</td>!;
         $html .= qq!<td!;
         $html .= qq! class='ovch'! if ($ovch == 1);
         $html .= qq!><div!.($lock==1 ? qq! class='locked'!:' ').qq!id='d_${eis}_${di}_ov'><input type=checkbox name='${eis}_ov_chk' onclick="altvmx('$eis','$di','ov')"!.($ov==1?' CHECKED':'').qq!>!;
@@ -368,7 +368,7 @@ sub vmxeistekst {
         $html .= qq!<td><div!.($lock==1 ? qq! class='locked'!:' ').qq!id='d_${eis}_${di}_in'><input type=checkbox name='${eis}_in_chk' onclick="altvmx('$eis','$di','in')"!.($insp==1?' CHECKED':'').qq!></div></td>!;
         $html .= qq!<td><div id='d_${eis}_${di}_lc'><input type=checkbox name='${eis}_lc_chk' onclick="altvmxlc('$eis','$di','$lock')"!.($lock==1?' CHECKED':'').qq!></div></td>!;
 
-		$html .= "</tr>\n";
+	$html .= "</tr>\n";
     }
     $html .= q!</table>!;
     return $html;
