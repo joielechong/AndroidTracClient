@@ -96,7 +96,7 @@ function eisen_vmx_eistekst() {
     "use strict";
     wisdivs(['d_eisdet','d_eisprop','d_vmx']);
     loaddiv('d_eisvmx');
-    vmxeistekst(['searchtermdi'], ['d_eisvmx'], 'POST');
+    vmxeistekst(['searchtermtekst'], ['d_eisvmx'], 'POST');
     return true;
 }
 function eisen_zoek_fase() {
