@@ -351,7 +351,10 @@ sub vmxeistekst {
         my $ovch = $$row[9];
         $html .= qq!<tr valign="top">!;
 
-        $html .= qq!<td>$di</td><td>$eis</td><td>$eistekst</td><td class='$status'>$status</td>!;
+ 	$eistekst =~ s/[\xE2][\x84][\xA6]/&#x2126/g;
+        $eistekst =~ s/([\xC2\xC3])([\x80-\xBF])/chr(ord($1)<<6&0xC0|ord($2)&0x3F)/eg;
+        $eistekst =~ s/\n/<br>/g;
+       $html .= qq!<td>$di</td><td>$eis</td><td>$eistekst</td><td class='$status'>$status</td>!;
         $html .= qq!<td!;
         $html .= qq! class='ovch'! if ($ovch == 1);
         $html .= qq!><div!.($lock==1 ? qq! class='locked'!:' ').qq!id='d_${eis}_${di}_ov'><input type=checkbox name='${eis}_ov_chk' onclick="altvmx('$eis','$di','ov')"!.($ov==1?' CHECKED':'').qq!>!;
