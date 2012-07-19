@@ -323,7 +323,7 @@ sub vmxdetails {
 
 sub vmxeistekst {
     my $eistekst = shift;
-    my $sql = q!select e.eis,eistekst,d.status,vmxov as "Ontwerp Verificatie",vmxke as "Keuring",vmxbp as "Beproeving",vmxin as "Inspectie",vmxlc as "Lock",ovuo,ovdo,ovsd,(select count(usecase)>0 as ovuc from features join feat_uc on (feature=feat and features.eis=e.eis and d.di='86'))::boolean as ovuc,bpfat,bpifat,bpsat,bpisat,bpsit,ovch,di from eis_di as d join unieke_eisen as e on (e.eis=d.eis) where e.eistekst ilike '%?%' order by d.eis, d.di!;
+    my $sql = qq!select e.eis,eistekst,d.status,vmxov as "Ontwerp Verificatie",vmxke as "Keuring",vmxbp as "Beproeving",vmxin as "Inspectie",vmxlc as "Lock",ovuo,ovdo,ovsd,(select count(usecase)>0 as ovuc from features join feat_uc on (feature=feat and features.eis=e.eis and d.di='86'))::boolean as ovuc,bpfat,bpifat,bpsat,bpisat,bpsit,ovch,di from eis_di as d join unieke_eisen as e on (e.eis=d.eis) where e.eistekst ilike '%?%' order by d.eis, d.di!;
     my $dbh = dbi_connect();	
     my $sth = $dbh->prepare( $sql );
         
@@ -334,6 +334,7 @@ sub vmxeistekst {
         $names[$i] = undef;
     }
     my $html = '';
+    $html .= qq!<!-- $sql -->\n!;
     $html .= qq!<table border=1 class="zebra">\n!;
     $html .= qq!<tr><th class="titel" colspan=8>Verificatieoverzicht voor met "$eistekst" in de omschrijving</th></tr>\n!;
     $html .= tabel_header(@names);
