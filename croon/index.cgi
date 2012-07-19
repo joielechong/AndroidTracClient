@@ -323,22 +323,57 @@ sub vmxdetails {
 
 sub vmxeistekst {
     my $eistekst = shift;
-    my $sql = qq!select e.eis,eistekst,d.status,vmxov as "Ontwerp Verificatie",vmxke as "Keuring",vmxbp as "Beproeving",vmxin as "Inspectie",vmxlc as "Lock",ovuo,ovdo,ovsd,(select count(usecase)>0 as ovuc from features join feat_uc on (feature=feat and features.eis=e.eis and d.di='86'))::boolean as ovuc,bpfat,bpifat,bpsat,bpisat,bpsit,ovch,di from eis_di as d join unieke_eisen as e on (e.eis=d.eis) where e.eistekst ilike ? order by d.eis, d.di!;
+    my $sql = qq!select e.eis,eistekst,d.status,vmxov as "Ontwerp Verificatie",vmxke as "Keuring",vmxbp as "Beproeving",vmxin as "Inspectie",vmxlc as "Lock",di,ovch,ovuo,ovdo,ovsd,(select count(usecase)>0 as ovuc from features join feat_uc on (feature=feat and features.eis=e.eis and d.di='86'))::boolean as ovuc,bpfat,bpifat,bpsat,bpisat,bpsit from eis_di as d join unieke_eisen as e on (e.eis=d.eis) where e.eistekst ilike ? order by d.eis, d.di!;
     my $dbh = dbi_connect();	
     my $sth = $dbh->prepare( $sql );
         
     $sth->execute( '%'.$eistekst.'%' );
     my @names = @{ $sth->{NAME} };
-#    my $numfields = $sth->{NUM_OF_FIELDS};
-#    for (my $i=8;$i<$numfields;$i++) {
-#        $names[$i] = undef;
-#    }
+    my $numfields = $sth->{NUM_OF_FIELDS};
+    for (my $i=10;$i<$numfields;$i++) {
+        $names[$i] = undef;
+    }
     my $html = '';
-#    $html .= "<!-- $sql -->\n";
     $html .= qq!<table border=1 class="zebra">\n!;
     $html .= qq!<tr><th class="titel" colspan=8>Verificatieoverzicht voor met "$eistekst" in de omschrijving</th></tr>\n!;
     $html .= tabel_header(@names);
-}
+
+    while (my $row=$sth->fetchrow_arrayref()) {
+        my $eis = $$row[0];
+        my $eistekst = $$row[1];
+        my $status = $$row[2];
+        my $ov = $$row[3];
+        my $keur = $$row[4];
+        my $bepr = $$row[5];
+        my $insp = $$row[6];
+        my $lock = $$row[7];
+        my $di = $$row[8];
+        my $ovch = $$row[9];
+        $html .= qq!<tr valign="top">!;
+
+        $html .= qq!<td>$di</td><td class='$status'>$status</td>!;
+        $html .= qq!<td!;
+        $html .= qq! class='ovch'! if ($ovch == 1);
+        $html .= qq!><div!.($lock==1 ? qq! class='locked'!:' ').qq!id='d_${eis}_${di}_ov'><input type=checkbox name='${eis}_ov_chk' onclick="altvmx('$eis','$di','ov')"!.($ov==1?' CHECKED':'').qq!>!;
+        if ($ov == 1 or $$row[10]==1) {
+            $html .= do_vmxov($eis,$di,$$row[7],$$row[8],$$row[9],$$row[10]);
+        }
+        $html .= qq!</div></td>!;
+        $html .= qq!<td><div!.($lock==1 ? qq! class='locked'!:' ').qq!id='d_${eis}_${di}_ke'><input type=checkbox name='${eis}_ke_chk' onclick="altvmx('$eis','$di','ke')"!.($keur==1?' CHECKED':'').qq!></div></td>!;
+        $html .= qq!<td><div!.($lock==1 ? qq! class='locked'!:' ').qq!id='d_${eis}_${di}_bp'><input type=checkbox name='${eis}_bp_chk' onclick="altvmx('$eis','$di','bp')"!.($bepr==1?' CHECKED':'').qq!>!;
+        if ($bepr == 1) {
+            $html .= do_altvmxbp($eis,$di,$$row[11],$$row[12],$$row[13],$$row[14],$$row[15],$lock);
+        }
+        $html .= q!</div></td>!;
+        $html .= qq!<td><div!.($lock==1 ? qq! class='locked'!:' ').qq!id='d_${eis}_${di}_in'><input type=checkbox name='${eis}_in_chk' onclick="altvmx('$eis','$di','in')"!.($insp==1?' CHECKED':'').qq!></div></td>!;
+        $html .= qq!<td><div id='d_${eis}_${di}_lc'><input type=checkbox name='${eis}_lc_chk' onclick="altvmxlc('$eis','$di','$lock')"!.($lock==1?' CHECKED':'').qq!></div></td>!;
+
+		$html .= "</tr>\n";
+    }
+    $html .= q!</table>!;
+    return $html;
+
+    }
 
 sub vmxdi {
 #    vmx_tabel(2,$_[0],0);
