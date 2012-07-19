@@ -351,7 +351,7 @@ sub vmxeistekst {
         my $ovch = $$row[9];
         $html .= qq!<tr valign="top">!;
 
-        $html .= qq!<td>$di</td><td>$eis</td><td><$eistekst><td class='$status'>$status</td>!;
+        $html .= qq!<td>$di</td><td>$eis</td><td>$eistekst</td><td class='$status'>$status</td>!;
         $html .= qq!<td!;
         $html .= qq! class='ovch'! if ($ovch == 1);
         $html .= qq!><div!.($lock==1 ? qq! class='locked'!:' ').qq!id='d_${eis}_${di}_ov'><input type=checkbox name='${eis}_ov_chk' onclick="altvmx('$eis','$di','ov')"!.($ov==1?' CHECKED':'').qq!>!;
