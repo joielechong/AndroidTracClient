@@ -334,7 +334,7 @@ sub vmxeistekst {
         $names[$i] = undef;
     }
     my $html = '';
-    $html .= qq!<!-- $sql -->\n!;
+    $html .= "-- $sql -->\n";
     $html .= qq!<table border=1 class="zebra">\n!;
     $html .= qq!<tr><th class="titel" colspan=8>Verificatieoverzicht voor met "$eistekst" in de omschrijving</th></tr>\n!;
     $html .= tabel_header(@names);
