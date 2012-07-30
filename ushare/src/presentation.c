@@ -35,15 +35,12 @@
 #define CGI_ACTION "action="
 #define CGI_ACTION_ADD "add"
 #define CGI_ACTION_DEL "del"
-#define CGI_ACTION_REFRESH "refresh"
 #define CGI_PATH "path"
 #define CGI_SHARE "share"
 
-int
-process_cgi (struct ushare_t *ut, char *cgiargs)
+int process_cgi (struct ushare_t *ut, char *cgiargs)
 {
   char *action = NULL;
-  int refresh = 0;
 
   if (!ut || !cgiargs)
     return -1;
@@ -53,32 +50,24 @@ process_cgi (struct ushare_t *ut, char *cgiargs)
 
   action = cgiargs + strlen (CGI_ACTION);
 
-  if (!strncmp (action, CGI_ACTION_ADD, strlen (CGI_ACTION_ADD)))
-  {
+  if (!strncmp (action, CGI_ACTION_ADD, strlen (CGI_ACTION_ADD))) {
     char *path = NULL;
     path = action + strlen (CGI_ACTION_ADD) + 1;
 
-    if (path && !strncmp (path, CGI_PATH"=", strlen (CGI_PATH) + 1))
-    {
-      ut->contentlist = content_add (ut->contentlist,
-                                     path + strlen (CGI_PATH) + 1);
-      refresh = 0;
+    if (path && !strncmp (path, CGI_PATH"=", strlen (CGI_PATH) + 1)) {
+      ut->contentlist = content_add (ut->contentlist,path + strlen (CGI_PATH) + 1);
     }
   }
-  else if (!strncmp (action, CGI_ACTION_DEL, strlen (CGI_ACTION_DEL)))
-  {
+  else if (!strncmp (action, CGI_ACTION_DEL, strlen (CGI_ACTION_DEL))) {
     char *shares,*share;
     char *m_buffer = NULL, *buffer;
     int num, shift=0;
 
     shares = strdup (action + strlen (CGI_ACTION_DEL) + 1);
     m_buffer = (char*) malloc (strlen (shares) * sizeof (char));
-    if (m_buffer)
-    {
+    if (m_buffer) {
       buffer = m_buffer;
-      for (share = strtok_r (shares, "&", &buffer) ; share ;
-           share = strtok_r (NULL, "&", &buffer))
-      {
+      for (share = strtok_r (shares, "&", &buffer) ; share ; share = strtok_r (NULL, "&", &buffer)) {
         if (sscanf (share, CGI_SHARE"[%d]=on", &num) < 0)
           continue;
         ut->contentlist = content_del (ut->contentlist, num - shift++);
@@ -86,18 +75,9 @@ process_cgi (struct ushare_t *ut, char *cgiargs)
       free (m_buffer);
     }
 
-    refresh = 0;
     free (shares);
   }
-  else if (!strncmp (action, CGI_ACTION_REFRESH, strlen (CGI_ACTION_REFRESH)))
-    refresh = 1;
-#if 0
-  if (refresh && ut->contentlist)
-  {
-    free_metadata_list (ut);
-    build_metadata_list (ut);
-  }
-#endif
+
   if (ut->presentation)
     buffer_free (ut->presentation);
   ut->presentation = buffer_new ();
@@ -118,8 +98,7 @@ process_cgi (struct ushare_t *ut, char *cgiargs)
   return 0;
 }
 
-int
-build_presentation_page (struct ushare_t *ut)
+int build_presentation_page (struct ushare_t *ut)
 {
   int i;
   char *mycodeset = NULL;
@@ -173,8 +152,7 @@ build_presentation_page (struct ushare_t *ut)
   buffer_appendf (ut->presentation,
                   "<input type=\"hidden\" name=\"action\" value=\"%s\"/>",
                   CGI_ACTION_DEL);
-  for (i = 0 ; i < ut->contentlist->count ; i++)
-  {
+  for (i = 0 ; i < ut->contentlist->count ; i++) {
     buffer_appendf (ut->presentation, "<b>%s #%d :</b>", _("Share"), i + 1);
     buffer_appendf (ut->presentation,
                     "<input type=\"checkbox\" name=\""CGI_SHARE"[%d]\"/>", i);
@@ -195,18 +173,6 @@ build_presentation_page (struct ushare_t *ut)
   buffer_appendf (ut->presentation,
                   "<input type=\"submit\" value=\"%s\"/>", _("Share!"));
   buffer_append (ut->presentation, "</form>");
-
-  buffer_append (ut->presentation, "<br/>");
-
-  buffer_appendf (ut->presentation,
-                  "<form method=\"get\" action=\"%s\">", USHARE_CGI);
-  buffer_appendf (ut->presentation,
-                  "<input type=\"hidden\" name=\"action\" value=\"%s\"/>",
-                  CGI_ACTION_REFRESH);
-  buffer_appendf (ut->presentation, "<input type=\"submit\" value=\"%s\"/>",
-                  _("Refresh Shares ..."));
-  buffer_append (ut->presentation, "</form>");
-  buffer_append (ut->presentation, "</center>");
 
   buffer_append (ut->presentation, "</body>");
   buffer_append (ut->presentation, "</html>");

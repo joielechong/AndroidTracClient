@@ -85,8 +85,7 @@ struct ushare_t *ut = NULL;
 static struct ushare_t * ushare_new (void)
     __attribute__ ((malloc));
 
-static struct ushare_t *
-ushare_new (void)
+static struct ushare_t *ushare_new (void)
 {
   struct ushare_t *ut = (struct ushare_t *) malloc (sizeof (struct ushare_t));
   if (!ut)
@@ -129,8 +128,7 @@ ushare_new (void)
   return ut;
 }
 
-static void
-ushare_free (struct ushare_t *ut)
+static void ushare_free (struct ushare_t *ut)
 {
   if (!ut)
     return;
@@ -170,16 +168,14 @@ ushare_free (struct ushare_t *ut)
   free (ut);
 }
 
-static void
-ushare_signal_exit (void)
+static void ushare_signal_exit (void)
 {
   pthread_mutex_lock (&ut->termination_mutex);
   pthread_cond_signal (&ut->termination_cond);
   pthread_mutex_unlock (&ut->termination_mutex);
 }
 
-static void
-handle_action_request (struct Upnp_Action_Request *request)
+static void handle_action_request (struct Upnp_Action_Request *request)
 {
   struct service_t *service;
   struct service_action_t *action;
@@ -245,9 +241,7 @@ handle_action_request (struct Upnp_Action_Request *request)
   request->ErrCode = UPNP_SOAP_E_INVALID_ACTION;
 }
 
-static int
-device_callback_event_handler (Upnp_EventType type, void *event,
-                               void *cookie __attribute__((unused)))
+static int device_callback_event_handler (Upnp_EventType type, void *event, void *cookie __attribute__((unused)))
 {
   switch (type)
     {
@@ -265,8 +259,7 @@ device_callback_event_handler (Upnp_EventType type, void *event,
   return 0;
 }
 
-static int
-finish_upnp (struct ushare_t *ut)
+static int finish_upnp (struct ushare_t *ut)
 {
   if (!ut)
     return -1;
@@ -278,8 +271,7 @@ finish_upnp (struct ushare_t *ut)
   return UPNP_E_SUCCESS;
 }
 
-static int
-init_upnp (struct ushare_t *ut)
+static int init_upnp (struct ushare_t *ut)
 {
   char *description = NULL;
   int res;
@@ -415,8 +407,7 @@ init_upnp (struct ushare_t *ut)
   return 0;
 }
 
-static bool
-has_iface (char *interface)
+static bool has_iface (char *interface)
 {
 #ifdef HAVE_IFADDRS_H
   struct ifaddrs *itflist, *itf;
@@ -512,8 +503,7 @@ has_iface (char *interface)
   return false;
 }
 
-static char *
-create_udn (char *interface)
+static char *create_udn (char *interface)
 {
   int sock = -1;
   char *buf;
@@ -594,8 +584,7 @@ create_udn (char *interface)
   return buf;
 }
 
-static char *
-get_iface_address (char *interface)
+static char *get_iface_address (char *interface)
 {
   int sock;
   uint32_t ip;
@@ -634,8 +623,7 @@ get_iface_address (char *interface)
   return val;
 }
 
-static int
-restart_upnp (struct ushare_t *ut)
+static int restart_upnp (struct ushare_t *ut)
 {
   finish_upnp (ut);
 
@@ -654,14 +642,12 @@ restart_upnp (struct ushare_t *ut)
   return (init_upnp (ut));
 }
 
-static void
-UPnPBreak (int s __attribute__ ((unused)))
+static void UPnPBreak (int s __attribute__ ((unused)))
 {
   ushare_signal_exit ();
 }
 
-static void
-reload_config (int s __attribute__ ((unused)))
+static void reload_config (int s __attribute__ ((unused)))
 {
   struct ushare_t *ut2;
   bool reload = false;
@@ -734,8 +720,7 @@ reload_config (int s __attribute__ ((unused)))
 #endif
 }
 
-inline void
-display_headers (void)
+inline void display_headers (void)
 {
   printf (_("%s (version %s), a lightweight UPnP A/V and DLNA Media Server.\n"),
           PACKAGE_NAME, VERSION);
@@ -759,8 +744,7 @@ setup_i18n(void)
 
 #define SHUTDOWN_MSG _("Server is shutting down: other clients will be notified soon, Bye bye ...\n")
 
-static void
-ushare_kill (ctrl_telnet_client *client,
+static void ushare_kill (ctrl_telnet_client *client,
              int argc __attribute__((unused)),
              char **argv __attribute__((unused)))
 {
@@ -772,8 +756,7 @@ ushare_kill (ctrl_telnet_client *client,
   ushare_signal_exit ();
 }
 
-int
-main (int argc, char **argv)
+int main (int argc, char **argv)
 {
   ut = ushare_new ();
   if (!ut)
@@ -809,53 +792,44 @@ main (int argc, char **argv)
     ut->starting_id = STARTING_ENTRY_ID_XBOX360;
   }
 
-  if (ut->daemon)
-  {
+  if (ut->daemon) {
     /* starting syslog feature as soon as possible */
     start_log ();
   }
 
-  if (!ut->contentlist)
-  {
+  if (!ut->contentlist) {
     log_error (_("Error: no content directory to be shared.\n"));
     ushare_free (ut);
     return EXIT_FAILURE;
   }
 
-  if (!has_iface (ut->interface))
-  {
+  if (!has_iface (ut->interface)) {
     ushare_free (ut);
     return EXIT_FAILURE;
   }
 
   ut->udn = create_udn (ut->interface);
-  if (!ut->udn)
-  {
+  if (!ut->udn) {
     ushare_free (ut);
     return EXIT_FAILURE;
   }
 
   ut->ip = get_iface_address (ut->interface);
-  if (!ut->ip)
-  {
+  if (!ut->ip) {
     ushare_free (ut);
     return EXIT_FAILURE;
   }
 
-  if (ut->daemon)
-  {
+  if (ut->daemon) {
     int err;
     err = daemon (0, 0);
-    if (err == -1)
-    {
+    if (err == -1) {
       log_error (_("Error: failed to daemonize program : %s\n"),
                  strerror (err));
       ushare_free (ut);
       return EXIT_FAILURE;
     }
-  }
-  else
-  {
+  } else {
     display_headers ();
   }
 
@@ -863,10 +837,8 @@ main (int argc, char **argv)
   signal (SIGHUP, reload_config);
   signal (SIGCHLD,SIG_IGN);   /* prevent childs to become zombies */
   
-  if (ut->use_telnet)
-  {
-    if (ctrl_telnet_start (ut->telnet_port) < 0)
-    {
+  if (ut->use_telnet) {
+    if (ctrl_telnet_start (ut->telnet_port) < 0) {
       ushare_free (ut);
       return EXIT_FAILURE;
     }

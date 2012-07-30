@@ -67,8 +67,7 @@ struct web_file_t {
 };
 
 
-static inline void
-set_info_file (struct File_Info *info, const size_t length,
+static inline void set_info_file (struct File_Info *info, const size_t length,
                const char *content_type)
 {
   info->file_length = length;

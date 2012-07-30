@@ -48,8 +48,7 @@
 /* Represent the MSR Registered/Activated ID value. */
 #define SERVICE_MSR_STATUS_OK "1"
 
-static bool
-msr_is_authorized (struct action_event_t *event)
+static bool msr_is_authorized (struct action_event_t *event)
 {
   if (!event)
     return false;
@@ -60,8 +59,7 @@ msr_is_authorized (struct action_event_t *event)
   return event->status;
 }
 
-static bool
-msr_register_device (struct action_event_t *event)
+static bool msr_register_device (struct action_event_t *event)
 {
   if (!event)
     return false;
@@ -71,8 +69,7 @@ msr_register_device (struct action_event_t *event)
   return event->status;
 }
 
-static bool
-msr_is_validated (struct action_event_t *event)
+static bool msr_is_validated (struct action_event_t *event)
 {
   if (!event)
     return false;
