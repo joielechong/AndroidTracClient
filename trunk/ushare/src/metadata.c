@@ -389,6 +389,7 @@ static void *newfilesthread(void *a __attribute__ ((unused))) {
   return NULL;
 }
 
+#if 0
 static void *verifythread(void *a __attribute__ ((unused))) {
   long last_id = 0, new_id, size;
   char *filename;
@@ -419,6 +420,7 @@ static void *verifythread(void *a __attribute__ ((unused))) {
     sleep(mtd.verify_wait);
   }
 }
+#endif 
 
 struct upnp_entry_t *upnp_get_entry (struct ushare_t *ut, int id) {
   struct upnp_entry_t *entry;
