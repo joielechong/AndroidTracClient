@@ -215,7 +215,7 @@ static struct upnp_entry_t *upnp_entry_new (struct ushare_t *ut, const char *nam
     }
     entry->dlna_profile = p;
     log_info("%s: id=%s, mime=%s, label=%s,class=%d\n",fullpath,p->id,p->mime,p->label,p->class);
-    //      log_verbose("%s: id=%s, mime=%s, label=%s,class=%d\n",fullpath,p->id,p->mime,p->label,p->class);
+//      log_verbose("%s: id=%s, mime=%s, label=%s,class=%d\n",fullpath,p->id,p->mime,p->label,p->class);
   }
 #endif /* HAVE_DLNA */
   
@@ -236,9 +236,11 @@ static struct upnp_entry_t *upnp_entry_new (struct ushare_t *ut, const char *nam
   *(entry->childs) = NULL;
   
   if (!dir) {/* item */
+#ifdef HAVE_DLNA
     if (ut->dlna_enabled)
       entry->mime_type = NULL;
     else {
+#endif
       struct mime_type_t *mime = getMimeType (getExtension (name));
       if (!mime) {
 	--ut->nr_entries; 
@@ -247,10 +249,14 @@ static struct upnp_entry_t *upnp_entry_new (struct ushare_t *ut, const char *nam
 	return NULL;
       }
       entry->mime_type = mime;
+#ifdef HAVE_DLNA
     }
-  } else  /* container */
+#endif
+  } else  /* container */ {
+#ifdef HAVE_DLNA
     entry->mime_type = &Container_MIME_Type;
-  
+#endif
+  }
   
   /* Try Iconv'ing the name but if it fails the end device
      may still be able to handle it */
