@@ -30,8 +30,7 @@
 #include "osdep.h"
 
 #if (defined(BSD) || defined(__FreeBSD__) || defined(__APPLE__))
-char *
-strndup (const char *s, size_t n)
+char *strndup (const char *s, size_t n)
 {
   size_t len;
   char *sdup = NULL;
@@ -52,8 +51,7 @@ strndup (const char *s, size_t n)
   return sdup;
 }
 
-ssize_t
-getline (char **lineptr, size_t *n, FILE *stream)
+ssize_t getline (char **lineptr, size_t *n, FILE *stream)
 {
   static char line[256];
   char *ptr;

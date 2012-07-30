@@ -217,7 +217,7 @@ upnp_entry_new (struct ushare_t *ut, const char *name, const char *fullpath,
 	  return NULL;
 	}
       entry->dlna_profile = p;
-      log_verbose("%s: id=%s, mime=%s, label=%s,class=%d\n",fullpath,p->id,p->mime,p->label,p->class);
+      log_info("%s: id=%s, mime=%s, label=%s,class=%d\n",fullpath,p->id,p->mime,p->label,p->class);
     }
 #endif /* HAVE_DLNA */
   
