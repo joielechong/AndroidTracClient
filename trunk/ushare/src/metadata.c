@@ -192,9 +192,7 @@ static char *convert_xml (const char *title) {
 static struct mime_type_t Container_MIME_Type =
   { NULL, "object.container.storageFolder", NULL};
 
-static struct upnp_entry_t *
-upnp_entry_new (struct ushare_t *ut, const char *name, const char *fullpath,
-                struct upnp_entry_t *parent, off_t size, int dir)
+static struct upnp_entry_t *upnp_entry_new (struct ushare_t *ut, const char *name, const char *fullpath, struct upnp_entry_t *parent, off_t size, int dir)
 {
   struct upnp_entry_t *entry = NULL;
   char *title = NULL, *x = NULL;
@@ -207,28 +205,25 @@ upnp_entry_new (struct ushare_t *ut, const char *name, const char *fullpath,
   
 #ifdef HAVE_DLNA
   entry->dlna_profile = NULL;
-  if (ut->dlna_enabled && fullpath && !dir)
-    {
+  if (ut->dlna_enabled && fullpath && !dir) {
       dlna_profile_t *p = dlna_guess_media_profile (ut->dlna, fullpath);
-      if (!p)
-	{
-	  free (entry);
-	  log_verbose("Cannot determine file type for  %s\n",fullpath);
-	  return NULL;
-	}
+      if (!p) {
+	free (entry);
+	log_verbose("Cannot determine file type for  %s\n",fullpath);
+	return NULL;
+      }
       entry->dlna_profile = p;
       log_info("%s: id=%s, mime=%s, label=%s,class=%d\n",fullpath,p->id,p->mime,p->label,p->class);
-    }
+//      log_verbose("%s: id=%s, mime=%s, label=%s,class=%d\n",fullpath,p->id,p->mime,p->label,p->class);
+  }
 #endif /* HAVE_DLNA */
   
-  if (ut->xbox360)
-    {
+  if (ut->xbox360) {
       if (ut->root_entry)
 	entry->id = ut->starting_id + ut->nr_entries++;
       else
 	entry->id = 0; /* Creating the root node so don't use the usual IDs */
-    }
-  else
+  } else
     entry->id = ut->starting_id + ut->nr_entries++;
   
   entry->fullpath = fullpath ? strdup (fullpath) : NULL;
@@ -240,68 +235,54 @@ upnp_entry_new (struct ushare_t *ut, const char *name, const char *fullpath,
   *(entry->childs) = NULL;
   
   if (!dir) {/* item */
-#ifdef HAVE_DLNA
     if (ut->dlna_enabled)
       entry->mime_type = NULL;
     else {
-#endif /* HAVE_DLNA */
       struct mime_type_t *mime = getMimeType (getExtension (name));
-      if (!mime)
-	{
-	  --ut->nr_entries; 
-	  upnp_entry_free (ut, entry);
-	  log_error ("Invalid Mime type for %s, entry ignored", name);
-	  return NULL;
-	}
+      if (!mime) {
+	--ut->nr_entries; 
+	upnp_entry_free (ut, entry);
+	log_error ("Invalid Mime type for %s, entry ignored", name);
+	return NULL;
+      }
       entry->mime_type = mime;
-#ifdef HAVE_DLNA
     }
-#endif /* HAVE_DLNA */
-  }
-  else /* container */
-    {
+  } else  /* container */
       entry->mime_type = &Container_MIME_Type;
-    }
+
   
   /* Try Iconv'ing the name but if it fails the end device
      may still be able to handle it */
   title = iconv_convert_to_utf8 (name);
   if (title)
     title_or_name = title;
-  else
-    {
-      if (ut->override_iconv_err)
-	{
-	  title_or_name = strdup (name);
-	  log_error ("Entry invalid name id=%d [%s]\n", entry->id, name);
-	}
-      else
-	{
-	  upnp_entry_free (ut, entry);
-	  log_error ("Freeing entry invalid name id=%d [%s]\n", entry->id, name);
-	  return NULL;
-	}
+  else {
+    if (ut->override_iconv_err) {
+      title_or_name = strdup (name);
+      log_error ("Entry invalid name id=%d [%s]\n", entry->id, name);
+    } else {
+      upnp_entry_free (ut, entry);
+      log_error ("Freeing entry invalid name id=%d [%s]\n", entry->id, name);
+      return NULL;
     }
+  }
   
-  if (!dir)
-    {
+  if (!dir) {
       x = strrchr (title_or_name, '.');
       if (x)  /* avoid displaying file extension */
 	*x = '\0';
-    }
+  }
   x = convert_xml (title_or_name);
-  if (x)
-    {
+  if (x) {
       free (title_or_name);
       title_or_name = x;
-    }
+  }
   entry->title = title_or_name;
   
-  if (!strcmp (title_or_name, "")) /* DIDL dc:title can't be empty */
-    {
+  if (!strcmp (title_or_name, "")) { /* DIDL dc:title can't be empty */ 
       free (title_or_name);
       entry->title = strdup (TITLE_UNKNOWN);
-    }
+  }
   
   entry->size = size;
   
@@ -365,6 +346,7 @@ static void fill_container(struct ushare_t *ut,char * path,int parent_id) {
     if (stat (fullpath, &st) < 0) {
       free (namelist[i]);
       free (fullpath);
+      log_info("(%s niet gevonden ondanks scandir\n",fullpath);
       continue;
     }
     
