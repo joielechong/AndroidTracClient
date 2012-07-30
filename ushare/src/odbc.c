@@ -113,7 +113,7 @@ void odbc_finish(int odbc_ptr) {
     SQLFreeHandle(SQL_HANDLE_ENV,uo.env);
   }
 }
-
+#if 0
 char *get_next(int odbc_ptr,long from_id,long *new_id, long *size) {
   SQLRETURN ret;
   SQLINTEGER indicator[4];
@@ -154,6 +154,7 @@ void del_entry(int odbc_ptr,char *filename) {
   ret = SQLExecute(uo.del_stmt);
   return;
 }
+#endif
 
 void upd_size(int odbc_ptr,char *filename,long size) {
   SQLRETURN ret;
