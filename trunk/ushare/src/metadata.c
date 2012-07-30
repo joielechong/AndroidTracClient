@@ -1,5 +1,5 @@
 /*
- * metadata.c : GeeXboX uShare CDS Metadata DB.
+[B * metadata.c : GeeXboX uShare CDS Metadata DB.
  * Originally developped for the GeeXboX project.
  * Copyright (C) 2005-2007 Benjamin Zores <ben@geexbox.org>
  *
@@ -98,7 +98,7 @@ static bool is_valid_extension (const char *extension) {
  * the only entry which is not part of a childs list is the root entry
  */
 static void _upnp_entry_free (struct upnp_entry_t *entry) {
-  //  struct upnp_entry_t **childs;
+//  struct upnp_entry_t **childs;
   
   if (!entry)
     return;
@@ -206,23 +206,23 @@ static struct upnp_entry_t *upnp_entry_new (struct ushare_t *ut, const char *nam
 #ifdef HAVE_DLNA
   entry->dlna_profile = NULL;
   if (ut->dlna_enabled && fullpath && !dir) {
-      dlna_profile_t *p = dlna_guess_media_profile (ut->dlna, fullpath);
-      if (!p) {
-	free (entry);
-	log_verbose("Cannot determine file type for  %s\n",fullpath);
-	return NULL;
-      }
-      entry->dlna_profile = p;
-      log_info("%s: id=%s, mime=%s, label=%s,class=%d\n",fullpath,p->id,p->mime,p->label,p->class);
-//      log_verbose("%s: id=%s, mime=%s, label=%s,class=%d\n",fullpath,p->id,p->mime,p->label,p->class);
+    dlna_profile_t *p = dlna_guess_media_profile (ut->dlna, fullpath);
+    if (!p) {
+      free (entry);
+      log_verbose("Cannot determine file type for  %s\n",fullpath);
+      return NULL;
+    }
+    entry->dlna_profile = p;
+    log_info("%s: id=%s, mime=%s, label=%s,class=%d\n",fullpath,p->id,p->mime,p->label,p->class);
+    //      log_verbose("%s: id=%s, mime=%s, label=%s,class=%d\n",fullpath,p->id,p->mime,p->label,p->class);
   }
 #endif /* HAVE_DLNA */
   
   if (ut->xbox360) {
-      if (ut->root_entry)
-	entry->id = ut->starting_id + ut->nr_entries++;
-      else
-	entry->id = 0; /* Creating the root node so don't use the usual IDs */
+    if (ut->root_entry)
+      entry->id = ut->starting_id + ut->nr_entries++;
+    else
+      entry->id = 0; /* Creating the root node so don't use the usual IDs */
   } else
     entry->id = ut->starting_id + ut->nr_entries++;
   
@@ -248,8 +248,8 @@ static struct upnp_entry_t *upnp_entry_new (struct ushare_t *ut, const char *nam
       entry->mime_type = mime;
     }
   } else  /* container */
-      entry->mime_type = &Container_MIME_Type;
-
+    entry->mime_type = &Container_MIME_Type;
+  
   
   /* Try Iconv'ing the name but if it fails the end device
      may still be able to handle it */
@@ -268,20 +268,20 @@ static struct upnp_entry_t *upnp_entry_new (struct ushare_t *ut, const char *nam
   }
   
   if (!dir) {
-      x = strrchr (title_or_name, '.');
-      if (x)  /* avoid displaying file extension */
-	*x = '\0';
+    x = strrchr (title_or_name, '.');
+    if (x)  /* avoid displaying file extension */
+      *x = '\0';
   }
   x = convert_xml (title_or_name);
   if (x) {
-      free (title_or_name);
-      title_or_name = x;
+    free (title_or_name);
+    title_or_name = x;
   }
   entry->title = title_or_name;
   
   if (!strcmp (title_or_name, "")) { /* DIDL dc:title can't be empty */ 
-      free (title_or_name);
-      entry->title = strdup (TITLE_UNKNOWN);
+    free (title_or_name);
+    entry->title = strdup (TITLE_UNKNOWN);
   }
   
   entry->size = size;
@@ -398,19 +398,19 @@ static void *verifythread(void *a __attribute__ ((unused))) {
   pthread_mutex_lock (&mtd.db_mutex);
   last_id = get_last_entry(odbc_ptr);
   pthread_mutex_unlock (&mtd.db_mutex);
-
+  
   last_id = rand()*((double)last_id)/((double)RAND_MAX);
   log_info("Verification starting at %ld\n",last_id);
-
+  
   while(1) {
     pthread_mutex_lock (&mtd.db_mutex);
     filename = get_next(odbc_ptr,last_id,&new_id,&size);
     if ((filename != NULL) && ((res=stat(filename,&buf)) == -1)) {
-	del_entry(odbc_ptr,filename);
-        log_info("removed: last_id=%ld new_id=%ld path=%s\n",last_id,new_id,filename);
+      del_entry(odbc_ptr,filename);
+      log_info("removed: last_id=%ld new_id=%ld path=%s\n",last_id,new_id,filename);
     }
     if (filename && !res && size && size != buf.st_size)
-	upd_size(odbc_ptr,filename,size);
+      upd_size(odbc_ptr,filename,size);
     pthread_mutex_unlock (&mtd.db_mutex);
     if (filename)
       free(filename);
@@ -419,8 +419,7 @@ static void *verifythread(void *a __attribute__ ((unused))) {
   }
 }
 
-struct upnp_entry_t *
-upnp_get_entry (struct ushare_t *ut, int id) {
+struct upnp_entry_t *upnp_get_entry (struct ushare_t *ut, int id) {
   struct upnp_entry_t *entry;
   
   log_verbose ("Looking for entry id %d\n", id);
@@ -454,7 +453,7 @@ void build_metadata_db(struct ushare_t *ut) {
   mtd.verify_wait=1;
   
   pthread_mutex_init (&mtd.db_mutex, NULL);
-
+  
   log_verbose(_("Starting newfilesdata thread...\n"));
   if (pthread_create(&mtd.threadid1,NULL,newfilesthread,NULL))
     log_info(_("New files thread failed to start, no dynamic updates\n"));
