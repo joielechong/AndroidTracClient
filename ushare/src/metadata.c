@@ -298,7 +298,7 @@ static void fill_container(struct ushare_t *ut,char * path,int parent_id) {
   int size = 0;
   int newparent;
   
-  log_verbose (_("Looking for files in content directory : %s\n"),path);
+  log_verbose ("Looking for files in content directory : %s\n",path);
   
   size = strlen (path);
   if (path[size - 1] == '/')

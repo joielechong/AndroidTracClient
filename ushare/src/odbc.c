@@ -172,7 +172,7 @@ long entry_stored(int odbc_ptr,char *path)
 {
   SQLRETURN ret;
   SQLINTEGER rows;
-  long retval = -1;
+  long retval;
   SQLINTEGER indicator;
   char *lastcall = NULL;
   
@@ -190,10 +190,12 @@ long entry_stored(int odbc_ptr,char *path)
 	if (rows == 1) {
 	  lastcall = "SQLFetch";
 	  if (SQL_SUCCEEDED(ret=SQLFetch(uo.es_stmt))) {
-	    if (indicator != SQL_NULL_DATA) lastcall=NULL;
+	    if (indicator != SQL_NULL_DATA) 
+              lastcall=NULL;
 	  }
 	} else {
 	  lastcall = NULL;
+          retval = -1;
 	}
       }
     }
