@@ -7,6 +7,7 @@
 #include "odbc.h"
 #include "mime.h"
 #include "trace.h"
+#include "util_iconv.h"
 
 static void extract_error (char *caller,char *fn, SQLHANDLE handle, SQLSMALLINT type) {
   SQLINTEGER i=0;
@@ -143,7 +144,7 @@ char *get_next(int odbc_ptr,long from_id,long *new_id, long *size) {
   return indicator[1] == SQL_NULL_DATA ? NULL : strdup(filename);
 }
 
-void del_entry(int odbc_ptr,char *filename) {
+void del_entry_u8(int odbc_ptr,char *filename) {
   SQLRETURN ret;
   
   if (odbc_ptr < 0)
@@ -154,9 +155,17 @@ void del_entry(int odbc_ptr,char *filename) {
   ret = SQLExecute(uo.del_stmt);
   return;
 }
+
+void del_entry(int odbc_ptr,char *filename) {
+  char *filu8;
+
+  filu8=iconv_convert_to_utf8(filename);
+  del_entry_u8(odbc_ptr,filu8);
+  free(filu8);
+}
 #endif
 
-void upd_size(int odbc_ptr,char *filename,long size) {
+void upd_size_u8(int odbc_ptr,char *filename,long size) {
   SQLRETURN ret;
   
   if (odbc_ptr < 0)
@@ -169,7 +178,15 @@ void upd_size(int odbc_ptr,char *filename,long size) {
   return;
 }
 
-long entry_stored(int odbc_ptr,char *path)
+void upd_size(int odbc_ptr,char *filename,long size) {
+  char *filu8;
+
+  filu8=iconv_convert_to_utf8(filename);
+  upd_size_u8(odbc_ptr,filu8,size);
+  free(filu8);
+}
+
+long entry_stored_u8(int odbc_ptr,char *path)
 {
   SQLRETURN ret;
   SQLINTEGER rows;
@@ -205,6 +222,17 @@ long entry_stored(int odbc_ptr,char *path)
     extract_error("entry_stored",lastcall,uo.dbc,SQL_HANDLE_DBC);
     log_info("   path = %s\n",path);
   }
+  return retval;
+}
+
+long entry_stored(int odbc_ptr,char *path)
+{
+  char *filu8;
+  long retval;
+
+  filu8=iconv_convert_to_utf8(path);
+  retval = entry_stored_u8(odbc_ptr,filu8);
+  free(filu8);
   return retval;
 }
 

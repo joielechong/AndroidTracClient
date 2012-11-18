@@ -274,7 +274,7 @@ sub vmxfasering {
 
 sub vmxdetails {
     my $eis = shift;
-    my $sql = q!select d.di as "DI",d.status,vmxov as "Ontwerp Verificatie",vmxke as "Keuring",vmxbp as "Beproeving",vmxin as "Inspectie",vmxlc as "Lock",ovuo,ovdo,ovsd,(select count(usecase)>0 as ovuc from features join feat_uc on (feature=feat and features.eis=e.eis and d.di='86'))::boolean as ovuc,bpfat,bpifat,bpsat,bpisat,bpsit,ovch from eis_di as d join unieke_eisen as e on (e.eis=d.eis) where e.eis=? order by d.di!;
+    my $sql = q!select d.di as "DI",d.status,vmxov as "Ontwerp Verificatie",vmxke as "Keuring",vmxbp as "Beproeving",vmxin as "Inspectie",vmxlc as "Lock",ovuo,ovdo,ovsd,(select count(usecase)>0 as ovuc from features join feat_uc on (feature=feat and features.eis=e.eis and d.di='86'))::boolean as ovuc,bpfat,bpifat,bpsat,bpisat,bpsit,ovch,bpibs from eis_di as d join unieke_eisen as e on (e.eis=d.eis) where e.eis=? order by d.di!;
     my $dbh = dbi_connect();	
     my $sth = $dbh->prepare( $sql );
     $sth->execute( $eis );
@@ -309,7 +309,7 @@ sub vmxdetails {
         $html .= qq!<td><div!.($lock==1 ? qq! class='locked'!:' ').qq!id='d_${eis}_${di}_ke'><input type=checkbox name='${eis}_ke_chk' onclick="altvmx('$eis','$di','ke')"!.($keur==1?' CHECKED':'').qq!></div></td>!;
         $html .= qq!<td><div!.($lock==1 ? qq! class='locked'!:' ').qq!id='d_${eis}_${di}_bp'><input type=checkbox name='${eis}_bp_chk' onclick="altvmx('$eis','$di','bp')"!.($bepr==1?' CHECKED':'').qq!>!;
         if ($bepr == 1) {
-            $html .= do_altvmxbp($eis,$di,$$row[11],$$row[12],$$row[13],$$row[14],$$row[15],$lock);
+            $html .= do_altvmxbp($eis,$di,$$row[11],$$row[12],$$row[13],$$row[14],$$row[15],$$row[17],$lock);
         }
         $html .= q!</div></td>!;
         $html .= qq!<td><div!.($lock==1 ? qq! class='locked'!:' ').qq!id='d_${eis}_${di}_in'><input type=checkbox name='${eis}_in_chk' onclick="altvmx('$eis','$di','in')"!.($insp==1?' CHECKED':'').qq!></div></td>!;
@@ -323,7 +323,7 @@ sub vmxdetails {
 
 sub vmxeistekst {
     my $eistekst = shift;
-    my $sql = qq!select di,e.eis,eistekst,d.status,vmxov as "Ontwerp Verificatie",vmxke as "Keuring",vmxbp as "Beproeving",vmxin as "Inspectie",vmxlc as "Lock",ovch,ovuo,ovdo,ovsd,(select count(usecase)>0 as ovuc from features join feat_uc on (feature=feat and features.eis=e.eis and d.di='86'))::boolean as ovuc,bpfat,bpifat,bpsat,bpisat,bpsit from eis_di as d join unieke_eisen as e on (e.eis=d.eis) where e.eistekst ilike ? order by d.eis, d.di!;
+    my $sql = qq!select di,e.eis,eistekst,d.status,vmxov as "Ontwerp Verificatie",vmxke as "Keuring",vmxbp as "Beproeving",vmxin as "Inspectie",vmxlc as "Lock",ovch,ovuo,ovdo,ovsd,(select count(usecase)>0 as ovuc from features join feat_uc on (feature=feat and features.eis=e.eis and d.di='86'))::boolean as ovuc,bpfat,bpifat,bpsat,bpisat,bpsit,bpibs from eis_di as d join unieke_eisen as e on (e.eis=d.eis) where e.eistekst ilike ? order by d.eis, d.di!;
     my $dbh = dbi_connect();	
     my $sth = $dbh->prepare( $sql );
         
@@ -367,7 +367,7 @@ sub vmxeistekst {
         $html .= qq!<td oncontextmenu="return voerprotoin(event,'$eis',5,['$di','$diname']);"!;
         $html .= qq!<div!.($lock==1 ? qq! class='locked'!:' ').qq!id='d_${eis}_${di}_bp'><input type=checkbox name='${eis}_bp_chk' onclick="altvmx('$eis','$di','bp')"!.($bepr==1?' CHECKED':'').qq!>!;
         if ($bepr == 1) {
-            $html .= do_altvmxbp($eis,$di,$$row[11],$$row[12],$$row[13],$$row[14],$$row[15],$lock);
+            $html .= do_altvmxbp($eis,$di,$$row[11],$$row[12],$$row[13],$$row[14],$$row[15],$$row[17],$lock);
         }
         $html .= q!</div></td>!;
         $html .= qq!<td><div!.($lock==1 ? qq! class='locked'!:' ').qq!id='d_${eis}_${di}_in'><input type=checkbox name='${eis}_in_chk' onclick="altvmx('$eis','$di','in')"!.($insp==1?' CHECKED':'').qq!></div></td>!;
@@ -383,7 +383,7 @@ sub vmxeistekst {
 sub vmxdi {
 #    vmx_tabel(2,$_[0],0);
     my $di = shift;
-    my $sql = q!select e.eis,eistekst,d.status,vmxov as "Ontwerp Verificatie",vmxke as "Keuring",vmxbp as "Beproeving",vmxin as "Inspectie",vmxlc as "Lock",ovuo,ovdo,ovsd,(select count(usecase)>0 as ovuc from features join feat_uc on (feature=feat and features.eis=e.eis and d.di='86'))::boolean as ovuc,bpfat,bpifat,bpsat,bpisat,bpsit,ovch,di from eis_di as d join unieke_eisen as e on (e.eis=d.eis) where d.di=? order by d.eis!;
+    my $sql = q!select e.eis,eistekst,d.status,vmxov as "Ontwerp Verificatie",vmxke as "Keuring",vmxbp as "Beproeving",vmxin as "Inspectie",vmxlc as "Lock",ovuo,ovdo,ovsd,(select count(usecase)>0 as ovuc from features join feat_uc on (feature=feat and features.eis=e.eis and d.di='86'))::boolean as ovuc,bpfat,bpifat,bpsat,bpisat,bpsit,ovch,di,bpibs from eis_di as d join unieke_eisen as e on (e.eis=d.eis) where d.di=? order by d.eis!;
     my $sqldi = q!select objname from objecten where objid=?!;
     my $dbh = dbi_connect();	
     my $sth = $dbh->prepare( $sql );
@@ -430,7 +430,7 @@ sub vmxdi {
         $html .= qq!<td oncontextmenu="return voerprotoin(event,'$eis',5,['$di','$diname']);">!;
         $html .= qq!<div!.($lock==1 ? qq! class='locked'!:' ').qq!id='d_${eis}_${di}_bp'><input type=checkbox name='${eis}_bp_chk' onclick="altvmx('$eis','$di','bp')"!.($bepr==1?' CHECKED':'').qq!>!;
         if ($bepr == 1) {
-            $html .= do_altvmxbp($eis,$di,$$row[12],$$row[13],$$row[14],$$row[15],$$row[16],$lock);
+            $html .= do_altvmxbp($eis,$di,$$row[12],$$row[13],$$row[14],$$row[15],$$row[16],$$row[19],$lock);
         }
         $html .= q!</div></td>!;
         $html .= qq!<td><div!.($lock==1 ? qq! class='locked'!:' ').qq!id='d_${eis}_${di}_in'><input type=checkbox name='${eis}_in_chk' onclick="altvmx('$eis','$di','in')"!.($insp==1?' CHECKED':'').qq!></div></td>!;
@@ -446,11 +446,12 @@ EOT
 }
 
 sub do_altvmxbp {
-    my ($eis,$di,$fat,$ifat,$sat,$isat,$sit,$lock) = @_;
+    my ($eis,$di,$fat,$ifat,$sat,$isat,$sit,$ibs,$lock) = @_;
     my $html = '';
-    $html .= q!<table border='0' class="nozebra"><tr><td>FAT</td><td>IFAT</td><td>SAT</td><td>ISAT</td><td>SIT</td></tr><tr>!;
+    $html .= q!<table border='0' class="nozebra"><tr><td>FAT</td><td>IFAT</td><td>IBS</td><td>SAT</td><td>ISAT</td><td>SIT</td></tr><tr>!;
     $html .= qq!<td><div!.($lock==1 ? qq! class='locked'!:' ').qq!id='d_${eis}_${di}_fat'><input type=checkbox name='${eis}_fat_chk' onclick="altvmx('$eis','$di','fat')"!.($fat==1?' CHECKED':'').qq!></div></td>!;
     $html .= qq!<td><div!.($lock==1 ? qq! class='locked'!:' ').qq!id='d_${eis}_${di}_ifat'><input type=checkbox name='${eis}_ifat_chk' onclick="altvmx('$eis','$di','ifat')"!.($ifat==1?' CHECKED':'').qq!></div></td>!;
+    $html .= qq!<td><div!.($lock==1 ? qq! class='locked'!:' ').qq!id='d_${eis}_${di}_ibs'><input type=checkbox name='${eis}_ibs_chk' onclick="altvmx('$eis','$di','ibs')"!.($ibs==1?' CHECKED':'').qq!></div></td>!;
     $html .= qq!<td><div!.($lock==1 ? qq! class='locked'!:' ').qq!id='d_${eis}_${di}_sat'><input type=checkbox name='${eis}_sat_chk' onclick="altvmx('$eis','$di','sat')"!.($sat==1?' CHECKED':'').qq!></div></td>!;
     $html .= qq!<td><div!.($lock==1 ? qq! class='locked'!:' ').qq!id='d_${eis}_${di}_isat'><input type=checkbox name='${eis}_isat_chk' onclick="altvmx('$eis','$di','isat')"!.($isat==1?' CHECKED':'').qq!></div></td>!;
     $html .= qq!<td><div!.($lock==1 ? qq! class='locked'!:' ').qq!id='d_${eis}_${di}_sit'><input type=checkbox name='${eis}_sit_chk' onclick="altvmx('$eis','$di','sit')"!.($sit==1?' CHECKED':'').qq!></div></td>!;
@@ -501,12 +502,12 @@ sub do_altvmx {
     }
     $sth2->finish();
     if ($fase eq "bp" && $val == 1) {
-        my $sql3 = qq!select bpfat,bpifat,bpsat,bpisat,bpsit,vmxlc from eis_di where eis=? and di=?!;
+        my $sql3 = qq!select bpfat,bpifat,bpsat,bpisat,bpsit,bpibs,vmxlc from eis_di where eis=? and di=?!;
 #        $html .= "<pre>$sql3</pre>\n";
         my $sth3=$dbh->prepare($sql3);
         $sth3->execute($eis,$di);
         $row=$sth3->fetch();
-        $html .= do_altvmxbp($eis,$di,$$row[0],$$row[1],$$row[2],$$row[3],$$row[4],$$row[5]);  # let $$row[5] is het lock veld
+        $html .= do_altvmxbp($eis,$di,$$row[0],$$row[1],$$row[2],$$row[3],$$row[4],$$row[5],$$row[6]);  # let $$row[5] is het lock veld
         $sth3->finish();
     }
     return $html;

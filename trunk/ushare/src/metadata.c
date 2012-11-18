@@ -209,8 +209,8 @@ static struct upnp_entry_t *upnp_entry_new (struct ushare_t *ut, const char *nam
     dlna_profile_t *p = dlna_guess_media_profile (ut->dlna, fullpath);
     if (!p) {
       free (entry);
-      log_info("Cannot determine file type for  %s\n",fullpath);
-//      log_verbose("Cannot determine file type for  %s\n",fullpath);
+//      log_info("Cannot determine file type for  %s\n",fullpath);
+      log_verbose("Cannot determine file type for  %s\n",fullpath);
       return NULL;
     }
     entry->dlna_profile = p;
