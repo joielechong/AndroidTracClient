@@ -32,7 +32,7 @@ my $sthbi=$dbh->prepare("INSERT INTO bronnen (filename) values (?)") or die $dbh
 my $sthbs=$dbh->prepare("SELECT id,filename,type FROM bronnen WHERE filename=?") or die $dbh->errstr;
 my $sthiu=$dbh->prepare("UPDATE individuals set updated=false where bron=?") or die $dbh->errstr;
 my $sthii=$dbh->prepare("INSERT INTO individuals (bron,xref,name,sex,birthdate,birthplace,chrdate,chrplace,deathdate,deathplace,burialdate,burialplace) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)") or die $dbh->errstr;
-my $sthis=$dbh->prepare("SELECT xref,id,name,sex,birthdate,birthplace,chrdate,chrplace,deathdate,deathplace,burialdate,burialplace FROM individuals WHERE bron=?") or die $dbh->errstr;
+my $sthis=$dbh->prepare("SELECT xref,id,name,sex,birthdate,birthplace,chrdate,chrplace,deathdate,deathplace,burialdate,burialplace FROM individuals WHERE bron=? ORDER BY xref") or die $dbh->errstr;
 
 my $filename=shift;
 $sthbs->execute($filename);
@@ -80,7 +80,7 @@ for my $i (@inda) {
     } else {
 	$cstr .= ",,";
     }
-    $bstr =",," if $bsrt eq $cstr;
+    $bstr =",," if lc($bstr) eq lc($cstr);
     print $bstr;
     print $cstr;
     
