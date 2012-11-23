@@ -56,24 +56,34 @@ my @inda = $geda->individuals();
 for my $i (@inda) {
     my $name=printnaam($i->name);
     print "\"$name\",";
+    
+    my $bstr = "";
     my @b=$i->birth;
     if ($#b >= 0) {
-	print printveld($b[0],"date"),",";
+	$bstr .= printveld($b[0],"date");
+        $bstr .= ",";
 	my $p=printveld($b[0],"place");
-	print "\"$p\"" if $p ne "";
-	print ",";
+	$bstr .= "\"$p\"" if $p ne "";
+	$bstr .=  ",";
     } else {
-	print ",,";
+	$bstr .= ",,";
     }
+    
+    my $cstr = "";
     my @c=$i->chr;
     if ($#c >= 0) {
-	print printveld($c[0],"date"),",";
+	$cstr .= printveld($c[0],"date");
+        $cstr .= ",";
 	my $p=printveld($c[0],"place");
-	print "\"$p\"" if $p ne "";
-	print ",";
+	$cstr .= "\"$p\"" if $p ne "";
+	$cstr .= ",";
     } else {
-	print ",,";
+	$cstr .= ",,";
     }
+    $bstr =",," if $bsrt eq $cstr;
+    print $bstr;
+    print $cstr;
+    
     my @d=$i->death;
     if ($#d >= 0) {
 	print printveld($d[0],"date"),",";
