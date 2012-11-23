@@ -14,6 +14,8 @@ sub printveld {
 	my $v = $r->get_value($x);
 	$s .=$v if defined($v);
     }
+    my $null = shift;
+    return NULL unless defined($null)l
     return $s;
 }
 
@@ -31,8 +33,6 @@ my $sthbs=$dbh->prepare("SELECT id,filename,type FROM bronnen WHERE filename=?")
 my $sthiu=$dbh->prepare("UPDATE individuals set updated=false where bron=?") or die $dbh->errstr;
 my $sthii=$dbh->prepare("INSERT INTO individuals (bron,xref,name,sex,birthdate,birthplace,chrdate,chrplace,deathdate,deathplace,burialdate,burialplace) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)") or die $dbh->errstr;
 my $sthis=$dbh->prepare("SELECT xref,id,name,sex,birthdate,birthplace,chrdate,chrplace,deathdate,deathplace,burialdate,burialplace FROM individuals WHERE bron=?") or die $dbh->errstr;
-
-# $sthii->execute($bronid,$i->xref,$i->name,$i->sex,$i->
 
 my $filename=shift;
 $sthbs->execute($filename);
@@ -98,6 +98,8 @@ for my $i (@inda) {
     my $m=$i->mother;
     print "\"",printnaam($m->name),"\"" if defined($m);
     print ","; #,$i->xref;
+    $sthii->execute($bronid,$i->xref,$i->name,$i->sex,printveld($b[0],"date",1),printveld($b[0],"place",1),printveld($c[0],"date",1),printveld($c[0],"place",1),printveld($d[0],"date",1),printveld($d[0],"place",1),printveld($u[0],"date",1),printveld($u[0],"place",1));
+
 
     print"\n";
 }
