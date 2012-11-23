@@ -84,24 +84,33 @@ for my $i (@inda) {
     print $bstr;
     print $cstr;
     
+    my $dstr = "";
     my @d=$i->death;
     if ($#d >= 0) {
-	print printveld($d[0],"date"),",";
+	$dstr .= printveld($d[0],"date");
+        $dstr .= ",";
 	my $p=printveld($d[0],"place");
-	print "\"$p\"" if $p ne "";
-	print ",";
+	$dstr .= "\"$p\"" if $p ne "";
+	$dstr .= ",";
     } else {
-	print ",,";
+	$dstr .= ",,";
     }
+    
+    my $ustr = "";
     my @u=$i->burial;
     if ($#u >= 0) {
-	print printveld($u[0],"date"),",";
+	$ustr .= printveld($u[0],"date");
+        $ustr .= ",";
 	my $p=printveld($u[0],"place");
-	print "\"$p\"" if $p ne "";
-	print ",";
+	$ustr .= "\"$p\"" if $p ne "";
+	$ustr .= ",";
     } else {
-	print ",,";
+	$ustr .= ",,";
     }
+    $dstr =",," if lc($dstr) eq lc($ustr);
+    print $dstr;
+    print $ustr;
+
     my $f=$i->father;
     print "\"",printnaam($f->name),"\"" if defined($f);
     print ",";
