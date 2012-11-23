@@ -15,7 +15,7 @@ sub printveld {
 	$s .=$v if defined($v);
     }
     my $null = shift;
-    return undef unless defined($null);
+    return undef if defined($null) and ($s eq "");
     return $s;
 }
 
