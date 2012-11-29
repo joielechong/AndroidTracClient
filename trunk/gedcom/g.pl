@@ -56,7 +56,7 @@ my @fama = $geda->families();
 
 for my $i (@inda) {
     my $name=printnaam($i->name);
-    print "I: \"$name\",";
+    print "I: \"$name\",",(defined($i->sex)?$i->sex:""),",";
     
     my $bstr = "";
     my @b=$i->birth;
@@ -131,7 +131,8 @@ for my $f (@fama) {
     $wife=printnaam($f->wife->name) if defined $f->wife;
     my $marr = $f->marr;
     my $marl = $f->marl;
-    my $rstr = ",,";
+#    my $rstr = ",,";
+    my $rstr = ",";
     my $lstr = ",";
 #    $rstr = (defined($marr->type)?$marr->type:"").",".(defined($marr->date)?$marr->date:"").",".(defined($marr->plac)?$marr->plac:"") if (defined($marr) and ref($marr) eq "Gedcom::Event");
     $rstr = (defined($marr->date)?$marr->date:"").",".(defined($marr->plac)?$marr->plac:"") if (defined($marr) and ref($marr) eq "Gedcom::Event");
