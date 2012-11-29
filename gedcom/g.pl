@@ -131,9 +131,9 @@ for my $f (@fama) {
     $wife=printnaam($f->wife->name) if defined $f->wife;
     my $marr = $f->marr;
     my $marl = $f->marl;
-    my $rstr = "";
-    my $lstr = "";
-    $rstr = $marr->type.",".$marr->date.",".$marr->plac if (defined($marr) and ref($marr) eq "Gedcom::Event");
-    $lstr = $marl->date.",".$marl->plac if (defined($marl) and ref($marl) eq "Gedcom::Event");
+    my $rstr = ",,";
+    my $lstr = ",";
+    $rstr = (defined $marr->type?$marr->type,"").",".(defined $marr->date?$marr->date,"").",".(defined $marr->plac?$marr->plac,"") if (defined($marr) and ref($marr) eq "Gedcom::Event");
+    $lstr = (defined $marl->date?$marl->date,"").",".(defined $marl->plac?$marl->plac,"") if (defined($marl) and ref($marl) eq "Gedcom::Event");
     print "R: $husb,$wife,$rstr,$lstr,\n";
 }
