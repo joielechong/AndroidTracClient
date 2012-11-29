@@ -125,8 +125,10 @@ for my $i (@inda) {
 }
 
 for my $f (@fama) {
-    my $husb=printnaam($f->husband->name);
-    my $wife=printnaam($f->wife->name);
+    my $husb = "";
+    my $wife = "";
+    $husb=printnaam($f->husband->name) if defined $f->husb;
+    $wife=printnaam($f->wife->name) if defined $f->wife;
     my $xref = $f->xref;
     print "$xref: $husb, $wife\n";
 }
