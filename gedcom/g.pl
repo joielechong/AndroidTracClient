@@ -135,5 +135,6 @@ for my $f (@fama) {
     my $lstr = ",";
     $rstr = (defined($marr->type)?$marr->type:"").",".(defined($marr->date)?$marr->date:"").",".(defined($marr->plac)?$marr->plac:"") if (defined($marr) and ref($marr) eq "Gedcom::Event");
     $lstr = (defined($marl->date)?$marl->date:"").",".(defined($marl->plac)?$marl->plac:"") if (defined($marl) and ref($marl) eq "Gedcom::Event");
-    print "R: $husb,$wife,$rstr,$lstr,\n";
+    my $cnt = $f->number_of_children;
+    print "R: $husb,$wife,$rstr,$lstr,$cnt\n";
 }
