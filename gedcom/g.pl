@@ -133,7 +133,7 @@ for my $f (@fama) {
     my $marl = $f->marl;
     my $rstr = "";
     my $lstr = "";
-    $rstr = $marr->type.",".$marr->date,",".$marr->plac if (ref $marr eq "HASH");
-    $lstr = $marl->date,",".$marl->plac if (ref $marl eq "HASH");
-    print "R: $husb, $wife, $rstr, $lstr,\n";
+    $rstr = $marr->type.",".$marr->date.",".$marr->plac if (ref($marr) eq "HASH");
+    $lstr = $marl->date.bb",".$marl->plac if (ref($marl) eq "HASH");
+    print "R: $husb,$wife,$rstr,$lstr,\n";
 }
