@@ -42,7 +42,7 @@
 2 DATE 560
 1 DEAT 
 2 DATE 611
-1 FAMS @F770@
+1 FAMS @F771@
 0 @P5@ INDI 
 1 NAME Oda /D'Heristal/
 1 SEX F
@@ -53,7 +53,7 @@
 2 DATE 612
 2 PLAC Trier
 1 FAMS @F453@
-1 FAMC @F770@
+1 FAMC @F771@
 0 @P6@ INDI 
 1 NAME Bart
 1 SEX M
@@ -244,7 +244,7 @@
 1 SEX F
 1 DEAT 
 1 FAMS @F432@
-1 FAMC @F771@
+1 FAMC @F772@
 0 @P30@ INDI 
 1 NAME Theodrada
 1 SEX F
@@ -255,7 +255,7 @@
 1 NAME Adelbert /van Alemanië/
 1 SEX M
 1 DEAT 
-1 FAMS @F771@
+1 FAMS @F772@
 0 @P32@ INDI 
 1 NAME Bernard /Martel/
 1 SEX M
@@ -499,13 +499,13 @@
 1 DEAT 
 2 DATE 6 OCT 931
 1 FAMC @F4@
-1 FAMS @F815@
+1 FAMS @F816@
 0 @P69@ INDI 
 1 NAME N. Dirksr. /van Rijnland/
 1 SEX F
 1 DEAT 
 1 FAMS @F4@
-1 FAMC @F772@
+1 FAMC @F773@
 0 @P70@ INDI 
 1 SEX M
 1 NAME Remigius
@@ -531,7 +531,7 @@
 1 DEAT 
 2 DATE 853
 1 FAMC @F198@
-1 FAMS @F812@
+1 FAMS @F813@
 0 @P73@ INDI 
 1 NAME Geurtje /Aarjens/
 1 SEX F
@@ -693,7 +693,7 @@
 1 NAME Adriaan /Adriaansdr/
 1 SEX M
 1 DEAT 
-1 FAMS @F773@
+1 FAMS @F774@
 0 @P93@ INDI 
 1 SEX F
 1 NAME Maritgen /Adriaensdr/
@@ -703,7 +703,7 @@
 1 DEAT 
 2 DATE 1604
 1 FAMS @F756@
-1 FAMC @F773@
+1 FAMC @F774@
 0 @P94@ INDI 
 1 NAME Maertgen /Adriaansdr/
 1 SEX F
@@ -793,8 +793,8 @@
 2 DATE 1525
 1 DEAT 
 2 DATE AFT 3 SEP 1566
-1 FAMC @F774@
-1 FAMS @F775@
+1 FAMC @F775@
+1 FAMS @F776@
 0 @P103@ INDI 
 1 NAME Cornelis Adriaens /Leeuwenburg/
 1 SEX M
@@ -805,15 +805,15 @@
 2 DATE AFT 4 JAN 1593
 2 PLAC Ridderkerk
 1 FAMS @F368@
-1 FAMC @F775@
+1 FAMC @F776@
 0 @P104@ INDI 
 1 NAME Adriaen Monnesz /de Oude/
 1 SEX M
 1 BIRT 
 2 DATE 1489
 1 DEAT 
-1 FAMS @F774@
-1 FAMC @F776@
+1 FAMS @F775@
+1 FAMC @F777@
 0 @P105@ INDI 
 1 NAME Willemtje /Aerds/
 1 SEX F
@@ -1169,7 +1169,7 @@
 1 DEAT 
 2 DATE 1120
 1 FAMS @F74@
-1 FAMC @F777@
+1 FAMC @F778@
 0 @P146@ INDI 
 1 NAME Daniel I /van der Merwede/
 1 SEX M
@@ -1542,14 +1542,16 @@
 0 @P188@ INDI 
 1 NAME Arie Goose /de Vries/
 1 SEX M
-1 CHR 
-2 DATE 23 SEP 1718
-2 PLAC Delfshaven
 1 DEAT 
-2 DATE 27 FEB 1801
+2 DATE 27 Feb 1801
 1 BURI 
 2 DATE 2 MAR 1801
 2 PLAC Rotterdam
+1 CHR 
+2 DATE 23 SEP 1718
+2 PLAC Delfshaven
+1 BIRT 
+2 DATE 1730
 1 FAMS @F727@
 1 FAMS @F728@
 1 FAMS @F729@
@@ -1613,7 +1615,7 @@
 1 DEAT 
 2 DATE 1725
 1 FAMS @F689@
-1 FAMC @F778@
+1 FAMC @F779@
 0 @P196@ INDI 
 1 NAME Klaasje /Ariens/
 1 SEX F
@@ -2163,7 +2165,7 @@
 1 BIRT 
 2 DATE 1525
 1 DEAT 
-1 FAMS @F779@
+1 FAMS @F780@
 0 @P257@ INDI 
 1 NAME Willem Hertgensz /van Barnevelt/
 1 SEX M
@@ -2172,7 +2174,7 @@
 1 DEAT 
 2 DATE 1596
 1 FAMS @F28@
-1 FAMC @F779@
+1 FAMC @F780@
 0 @P258@ INDI 
 1 NAME Lyske Willemsdr /van Barnevelt/
 1 SEX F
@@ -2550,7 +2552,7 @@
 1 DEAT 
 2 DATE AFT 1508
 1 FAMC @F34@
-1 FAMS @F803@
+1 FAMS @F804@
 0 @P302@ INDI 
 1 NAME Elisabeth (Haeskin) /Hogendijk/
 1 SEX F
@@ -2664,7 +2666,7 @@
 2 DATE 1600
 1 DEAT 
 1 FAMS @F159@
-1 FAMC @F780@
+1 FAMC @F781@
 0 @P316@ INDI 
 1 NAME Neeltie Jacobsdr /Berckel/
 1 SEX F
@@ -2756,7 +2758,7 @@
 1 SEX F
 1 DEAT 
 1 FAMC @F389@
-1 FAMS @F832@
+1 FAMS @F833@
 0 @P327@ INDI 
 1 NAME Cornelis /den Besten/
 1 SEX M
@@ -2826,7 +2828,7 @@
 2 PLAC Groote Lindt
 1 DEAT 
 1 FAMS @F331@
-1 FAMC @F781@
+1 FAMC @F782@
 0 @P335@ INDI 
 1 NAME Pieter Jillisz /de Klerk/
 1 SEX M
@@ -2851,13 +2853,13 @@
 1 NAME Jacob /van Beugen/
 1 SEX M
 1 DEAT 
-1 FAMS @F782@
+1 FAMS @F783@
 0 @P338@ INDI 
 1 NAME Simon Jacobsz /van Beugen/
 1 SEX M
 1 DEAT 
 1 FAMS @F38@
-1 FAMC @F782@
+1 FAMC @F783@
 0 @P339@ INDI 
 1 NAME Cornelia /de Haen/
 1 SEX F
@@ -2869,7 +2871,7 @@
 1 BIRT 
 2 DATE ABT 1625
 1 DEAT 
-1 FAMS @F783@
+1 FAMS @F784@
 0 @P341@ INDI 
 1 NAME Willem Arijsz /Beukelaar/
 1 SEX M
@@ -2877,7 +2879,7 @@
 2 DATE ABT 1650
 1 DEAT 
 1 FAMS @F39@
-1 FAMC @F783@
+1 FAMC @F784@
 0 @P342@ INDI 
 1 NAME Maria /Beukelaar/
 1 SEX F
@@ -2912,7 +2914,7 @@
 2 DATE ABT 1652
 1 DEAT 
 1 FAMS @F39@
-1 FAMC @F784@
+1 FAMC @F785@
 0 @P346@ INDI 
 1 NAME Bastiaen Batstiaense /Biesheuvel/
 1 SEX M
@@ -3070,13 +3072,13 @@
 1 DEAT 
 2 DATE 1410
 1 FAMS @F130@
-1 FAMC @F785@
+1 FAMC @F786@
 0 @P368@ INDI 
 1 NAME Jan /die Blonde/
 1 SEX M
 1 DEAT 
 2 DATE 1366
-1 FAMS @F785@
+1 FAMS @F786@
 0 @P369@ INDI 
 1 NAME Laurens Florisz Heer /van Dalem/
 1 SEX M
@@ -3413,7 +3415,7 @@
 1 DEAT 
 2 DATE 1154
 1 FAMS @F699@
-1 FAMC @F786@
+1 FAMC @F787@
 0 @P407@ INDI 
 1 NAME Steppo /van Viggezele/
 1 SEX M
@@ -4119,8 +4121,8 @@
 1 BIRT 
 2 DATE 1040
 1 DEAT 
-1 FAMS @F777@
-1 FAMC @F787@
+1 FAMS @F778@
+1 FAMC @F788@
 0 @P487@ INDI 
 1 NAME Simon /van der Merwede/
 1 SEX M
@@ -4128,7 +4130,7 @@
 2 DATE 1006
 1 DEAT 
 1 FAMC @F240@
-1 FAMS @F787@
+1 FAMS @F788@
 0 @P488@ INDI 
 1 NAME Jannetje /Breemen/
 1 SEX F
@@ -5006,7 +5008,7 @@
 2 DATE 19 FEB 1564
 2 PLAC Groote Lindt
 1 FAMS @F707@
-1 FAMC @F788@
+1 FAMC @F789@
 0 @P591@ INDI 
 1 NAME Jan Jans /Vinck/
 1 SEX M
@@ -5166,7 +5168,7 @@
 2 DATE 1515
 2 PLAC Hoornaar
 1 DEAT 
-1 FAMS @F789@
+1 FAMS @F790@
 0 @P611@ INDI 
 1 NAME Adriaen Adriaanse /Corevaer/
 1 SEX M
@@ -5175,7 +5177,7 @@
 2 PLAC Hoornaar
 1 DEAT 
 1 FAMS @F102@
-1 FAMC @F789@
+1 FAMC @F790@
 0 @P612@ INDI 
 1 NAME Dirck /Coosen/
 1 SEX M
@@ -5436,7 +5438,7 @@
 1 DEAT 
 2 DATE AFT 5 APR 1569
 1 FAMS @F169@
-1 FAMC @F790@
+1 FAMC @F791@
 0 @P643@ INDI 
 1 NAME Gillis Baerntsz /van Gameren/
 1 SEX M
@@ -5559,7 +5561,7 @@
 2 DATE 1525
 1 DEAT 
 1 FAMC @F337@
-1 FAMS @F828@
+1 FAMS @F829@
 0 @P658@ INDI 
 1 NAME Pieterken /Cornelisdr/
 1 SEX F
@@ -5662,7 +5664,7 @@
 1 NAME Balthasar /Cornelisse/
 1 SEX M
 1 DEAT 
-1 FAMS @F791@
+1 FAMS @F792@
 0 @P670@ INDI 
 1 NAME Engeltje Buttens /Cornelisse/
 1 SEX F
@@ -5671,7 +5673,7 @@
 2 PLAC Made
 1 DEAT 
 1 FAMS @F664@
-1 FAMC @F791@
+1 FAMC @F792@
 0 @P671@ INDI 
 1 NAME Hendrick /van Turenhout/
 1 SEX M
@@ -5680,7 +5682,7 @@
 2 PLAC Den Hout
 1 DEAT 
 1 FAMS @F664@
-1 FAMC @F792@
+1 FAMC @F793@
 0 @P672@ INDI 
 1 NAME Wouter Hendricks /van Turenhout/
 1 SEX M
@@ -5819,7 +5821,7 @@
 2 DATE 23 SEP 1397
 2 PLAC Pernis
 1 FAMS @F569@
-1 FAMC @F793@
+1 FAMC @F794@
 0 @P688@ INDI 
 1 NAME Gherijt Cozen Aerntsz /van Riede/
 1 SEX M
@@ -5837,7 +5839,7 @@
 1 BIRT 
 2 DATE 1532
 1 DEAT 
-1 FAMS @F794@
+1 FAMS @F795@
 0 @P690@ INDI 
 1 NAME Pieter Jansz /Cramer/
 1 SEX M
@@ -5848,7 +5850,7 @@
 2 DATE BEF 1618
 2 PLAC Ridderkerk
 1 FAMS @F112@
-1 FAMC @F794@
+1 FAMC @F795@
 0 @P691@ INDI 
 1 NAME Janneke Pieters /Cramer/
 1 SEX F
@@ -5903,7 +5905,7 @@
 2 DATE 8 DEC 1388
 2 PLAC Maarheeze
 1 FAMC @F113@
-1 FAMS @F799@
+1 FAMS @F800@
 0 @P696@ INDI 
 1 NAME Willem II /van Cranendonck/
 1 SEX M
@@ -5942,7 +5944,7 @@
 2 DATE 30 APR 1575
 2 PLAC IJsselmonde
 1 FAMS @F114@
-1 FAMC @F795@
+1 FAMC @F796@
 0 @P700@ INDI 
 1 NAME Hendrick Gerrtitsz /Cranendonck/
 1 SEX M
@@ -5965,7 +5967,7 @@
 2 DATE AFT 2 JUN 1557
 2 PLAC IJsselmonde
 1 FAMC @F122@
-1 FAMS @F795@
+1 FAMS @F796@
 0 @P702@ INDI 
 1 NAME Marijchen /NN/
 1 SEX F
@@ -5997,7 +5999,7 @@
 2 DATE 1482
 2 PLAC Ridderkerk
 1 FAMS @F121@
-1 FAMC @F796@
+1 FAMC @F797@
 0 @P705@ INDI 
 1 NAME Willem Gerritsz /Cranendonck/
 1 SEX M
@@ -6018,7 +6020,7 @@
 1 DEAT 
 2 DATE 28 DEC 1478
 1 FAMS @F121@
-1 FAMC @F797@
+1 FAMC @F798@
 0 @P707@ INDI 
 1 NAME Beatrijs /NN/
 1 SEX F
@@ -6070,7 +6072,7 @@
 2 DATE 28 AUG 1615
 2 PLAC IJsselmonde
 1 FAMS @F118@
-1 FAMC @F795@
+1 FAMC @F796@
 0 @P712@ INDI 
 1 NAME Niesje Huijgen /Cranendonck/
 1 SEX F
@@ -6101,7 +6103,7 @@
 2 DATE 18 JUL 1626
 2 PLAC IJsselmonde
 1 FAMS @F118@
-1 FAMC @F798@
+1 FAMC @F799@
 0 @P715@ INDI 
 1 NAME Jan Roelofsz /Cranendonck/
 1 SEX M
@@ -6110,8 +6112,8 @@
 1 DEAT 
 2 DATE AFT 1454
 2 PLAC Ridderkerk
-1 FAMS @F796@
-1 FAMC @F799@
+1 FAMS @F797@
+1 FAMC @F800@
 0 @P716@ INDI 
 1 NAME Leenart Bastiaansz /Slorp/
 1 SEX M
@@ -6181,7 +6183,7 @@
 2 DATE 1 FEB 1618
 2 PLAC IJsselmonde
 1 FAMS @F673@
-1 FAMC @F795@
+1 FAMC @F796@
 0 @P723@ INDI 
 1 NAME Jan Jansz /in 't Veld de Oude/
 1 SEX M
@@ -6212,7 +6214,7 @@
 2 DATE 24 APR 1600
 2 PLAC IJsselmonde
 1 FAMS @F120@
-1 FAMC @F795@
+1 FAMC @F796@
 0 @P726@ INDI 
 1 NAME Adriaentje /Gerritsdr/
 1 SEX F
@@ -6521,7 +6523,7 @@
 2 DATE 1624
 2 PLAC IJsselmonde
 1 FAMS @F267@
-1 FAMC @F800@
+1 FAMC @F801@
 0 @P760@ INDI 
 1 NAME Cornelis Ariens /Huijser/
 1 SEX M
@@ -6639,7 +6641,7 @@
 2 DATE 1390
 1 DEAT 
 1 FAMC @F188@
-1 FAMS @F797@
+1 FAMS @F798@
 0 @P774@ INDI 
 1 NAME Mariecke /Damasdr/
 1 SEX F
@@ -6684,7 +6686,7 @@
 2 DATE 1557
 2 PLAC West-Barendrecht
 1 FAMC @F186@
-1 FAMS @F798@
+1 FAMS @F799@
 0 @P779@ INDI 
 1 NAME Willem Hendrik /Damburen/
 1 SEX M
@@ -7002,7 +7004,7 @@
 1 BIRT 
 2 DATE 1505
 1 DEAT 
-1 FAMS @F801@
+1 FAMS @F802@
 0 @P818@ INDI 
 1 NAME Maritje Adriaens /op den Dijck/
 1 SEX F
@@ -7012,7 +7014,7 @@
 1 DEAT 
 2 DATE 1604
 1 FAMS @F757@
-1 FAMC @F801@
+1 FAMC @F802@
 0 @P819@ INDI 
 1 NAME Dirck Hermansz /van Dijck/
 1 SEX M
@@ -7033,12 +7035,12 @@
 2 DATE 1574
 2 PLAC Ridderkerk
 1 FAMS @F757@
-1 FAMC @F802@
+1 FAMC @F803@
 0 @P821@ INDI 
 1 NAME Pieter /op den Dijck/
 1 SEX M
 1 DEAT 
-1 FAMS @F802@
+1 FAMS @F803@
 0 @P822@ INDI 
 1 NAME Hendrick Willemsz /Dijckgraef/
 1 SEX M
@@ -7103,26 +7105,36 @@
 1 FAMS @F290@
 1 FAMC @F346@
 0 @P829@ INDI 
-1 NAME Maria Johanna /van Dilbeek/
 1 SEX F
+1 NAME Maria Johanna /van Dilbeek/
 1 DEAT 
+2 DATE 14 Feb 1817
+2 PLAC Rotterdam
+1 BIRT 
+2 DATE 1 Mar 1742
+2 PLAC Rotterdam
 1 FAMS @F489@
 1 FAMC @F760@
 0 @P830@ INDI 
 1 NAME Johannes /van Netten/
 1 SEX M
-1 BIRT 
-2 DATE 19 SEP 1776
 1 DEAT 
-2 DATE 27 JUL 1849
+2 DATE 27 Jul 1849
 2 PLAC Rotterdam
 2 SOUR @S-1293228323@
+1 BIRT 
+2 DATE 19 Sep 1776
+2 PLAC Rotterdam
 1 FAMS @F487@
 1 FAMC @F489@
 0 @P831@ INDI 
-1 NAME Pieter /van Netten/
 1 SEX M
+1 NAME Pieter /van Netten/
 1 DEAT 
+2 DATE 6 Feb 1795
+2 PLAC Rotterdam
+1 BIRT 
+2 PLAC Delfzijl
 1 FAMS @F489@
 0 @P832@ INDI 
 1 SEX M
@@ -7313,7 +7325,7 @@
 2 PLAC Poortugaal
 1 DEAT 
 1 FAMS @F564@
-1 FAMC @F803@
+1 FAMC @F804@
 0 @P855@ INDI 
 1 NAME Trijntje Jansdr /Doncker/
 1 SEX F
@@ -7370,7 +7382,7 @@
 2 DATE BEF 1493
 2 PLAC IJsselmonde
 1 FAMS @F155@
-1 FAMC @F804@
+1 FAMC @F805@
 0 @P861@ INDI 
 1 NAME Dirck Jansz /van Driel/
 1 SEX M
@@ -7379,7 +7391,7 @@
 1 DEAT 
 2 DATE AFT 1428
 1 FAMC @F157@
-1 FAMS @F804@
+1 FAMS @F805@
 0 @P862@ INDI 
 1 NAME Niesje /NN/
 1 SEX F
@@ -7397,7 +7409,7 @@
 1 DEAT 
 2 DATE 1421
 1 FAMS @F157@
-1 FAMC @F805@
+1 FAMC @F806@
 0 @P864@ INDI 
 1 NAME Adriana /NN/
 1 SEX F
@@ -7411,7 +7423,7 @@
 1 BIRT 
 2 DATE 1325
 1 DEAT 
-1 FAMS @F805@
+1 FAMS @F806@
 0 @P866@ INDI 
 1 NAME Applonius Dircksz /Verschoor/
 1 SEX M
@@ -7453,7 +7465,7 @@
 2 DATE 1561
 2 PLAC Rhoon
 1 FAMS @F564@
-1 FAMC @F806@
+1 FAMC @F807@
 0 @P870@ INDI 
 1 NAME Neeltje Adriaans /Drogendijk/
 1 SEX F
@@ -7494,7 +7506,7 @@
 1 DEAT 
 2 DATE 1 AUG 1680
 1 FAMS @F246@
-1 FAMC @F807@
+1 FAMC @F808@
 0 @P874@ INDI 
 1 NAME Wilhelmus /Holterman/
 1 SEX M
@@ -7512,7 +7524,7 @@
 1 BIRT 
 2 DATE 1560
 1 DEAT 
-1 FAMS @F780@
+1 FAMS @F781@
 0 @P876@ INDI 
 1 NAME Lies /Duindam/
 1 SEX F
@@ -7621,7 +7633,7 @@
 1 NAME Willem /Elizen/
 1 SEX M
 1 DEAT 
-1 FAMS @F808@
+1 FAMS @F809@
 0 @P890@ INDI 
 1 NAME Cornelis Willemsz /Voogt/
 1 SEX M
@@ -7630,7 +7642,7 @@
 1 DEAT 
 2 DATE AFT DEC 1562
 1 FAMS @F725@
-1 FAMC @F808@
+1 FAMC @F809@
 0 @P891@ INDI 
 1 SEX M
 1 NAME Vinck /Janssen/
@@ -7959,15 +7971,15 @@
 1 BIRT 
 2 DATE ABT 1470
 1 DEAT 
-1 FAMS @F790@
-1 FAMC @F809@
+1 FAMS @F791@
+1 FAMC @F810@
 0 @P931@ INDI 
 1 NAME Berend /van Gameren/
 1 SEX M
 1 BIRT 
 2 DATE 1440
 1 DEAT 
-1 FAMS @F809@
+1 FAMS @F810@
 0 @P932@ INDI 
 1 NAME Brechtgen Gillisdr /van Gameren/
 1 SEX F
@@ -8280,7 +8292,7 @@
 1 DEAT 
 2 DATE 1122
 1 FAMC @F179@
-1 FAMS @F786@
+1 FAMS @F787@
 0 @P968@ INDI 
 1 NAME Wenemar /van Gent/
 1 SEX M
@@ -8372,7 +8384,7 @@
 1 NAME Seger /van Gherminis/
 1 SEX M
 1 DEAT 
-1 FAMS @F810@
+1 FAMS @F811@
 0 @P979@ INDI 
 1 NAME Suzanna /van Gherminis/
 1 SEX F
@@ -8380,7 +8392,7 @@
 2 DATE 1015
 1 DEAT 
 1 FAMS @F216@
-1 FAMC @F810@
+1 FAMC @F811@
 0 @P980@ INDI 
 1 NAME Boudewijn /de Guïnes/
 1 SEX M
@@ -8426,12 +8438,12 @@
 1 SEX M
 1 DEAT 
 1 FAMS @F189@
-1 FAMC @F811@
+1 FAMC @F812@
 0 @P985@ INDI 
 1 NAME Symon /van de Giessen/
 1 SEX M
 1 DEAT 
-1 FAMS @F811@
+1 FAMS @F812@
 0 @P986@ INDI 
 1 NAME Ariaantje Pieters /Visser/
 1 SEX F
@@ -8605,8 +8617,8 @@
 2 DATE 825
 1 DEAT 
 2 DATE 880
-1 FAMS @F772@
-1 FAMC @F812@
+1 FAMS @F773@
+1 FAMC @F813@
 0 @P1008@ INDI 
 1 NAME Herman Leendertsz /Grauwert/
 1 SEX M
@@ -8681,18 +8693,18 @@
 1 SEX M
 1 DEAT 
 1 FAMS @F205@
-1 FAMC @F813@
+1 FAMC @F814@
 0 @P1017@ INDI 
 1 NAME Aryaan /Groenendijk/
 1 SEX M
 1 DEAT 
-1 FAMS @F813@
+1 FAMS @F814@
 0 @P1018@ INDI 
 1 NAME Marie Willems /Pasman/
 1 SEX F
 1 DEAT 
 1 FAMS @F205@
-1 FAMC @F814@
+1 FAMC @F815@
 0 @P1019@ INDI 
 1 NAME Barbera Pietersdr /de Klerk/
 1 SEX F
@@ -8727,7 +8739,7 @@
 1 NAME Cornelis /van der Ploeg/
 1 SEX M
 1 FAMC @F547@
-1 FAMS @F846@
+1 FAMS @F847@
 0 @P1023@ INDI 
 1 NAME Hendrik Jan /van der Ploeg/
 1 SEX M
@@ -8818,14 +8830,14 @@
 0 @P1034@ INDI 
 1 NAME Petronella Johanna /Gronemeijer/
 1 SEX F
+1 DEAT 
+2 DATE 18 Mar 1850
+2 PLAC Rotterdam
 1 BIRT 
-2 DATE 18 JUN 1792
+2 DATE 18 Jun 1792
 2 PLAC Rotterdam
 1 CHR 
 2 DATE 24 JUN 1792
-2 PLAC Rotterdam
-1 DEAT 
-2 DATE 18 MAR 1850
 2 PLAC Rotterdam
 1 FAMC @F211@
 1 FAMS @F575@
@@ -8888,11 +8900,17 @@
 0 @P1041@ INDI 
 1 NAME Maria /Rijks/
 1 SEX F
+1 DEAT 
+2 DATE 24 Dec 1879
+2 PLAC Rotterdam
 1 CHR 
 2 DATE 24 MAR 1813
 2 PLAC Rotterdam
-1 DEAT 
+1 BIRT 
+2 DATE 24 Mar 1813
+2 PLAC Rotterdam
 1 FAMC @F575@
+1 FAMS @F770@
 0 @P1042@ INDI 
 1 NAME Petronella /Rijks/
 1 SEX F
@@ -9037,7 +9055,7 @@
 1 DEAT 
 2 DATE 1290
 1 FAMC @F445@
-1 FAMS @F847@
+1 FAMS @F848@
 0 @P1059@ INDI 
 1 NAME Mathilde /van Gulik/
 1 SEX F
@@ -9192,7 +9210,7 @@
 2 DATE 939
 2 PLAC Andenach am Rhein
 1 FAMS @F235@
-1 FAMC @F815@
+1 FAMC @F816@
 0 @P1080@ INDI 
 1 NAME Dirk II /van Holland/
 1 SEX M
@@ -9289,7 +9307,7 @@
 2 DATE 1625
 1 DEAT 
 1 FAMS @F690@
-1 FAMC @F816@
+1 FAMC @F817@
 0 @P1091@ INDI 
 1 NAME Arij Jans /Verschoor/
 1 SEX M
@@ -9316,7 +9334,7 @@
 1 NAME Rodolf /van Haspinga/
 1 SEX M
 1 DEAT 
-1 FAMS @F817@
+1 FAMS @F818@
 0 @P1094@ INDI 
 1 NAME Giselbert /van Loon/
 1 SEX M
@@ -9325,12 +9343,12 @@
 1 DEAT 
 2 DATE 1050
 1 FAMS @F388@
-1 FAMC @F817@
+1 FAMC @F818@
 0 @P1095@ INDI 
 1 NAME Boudewijn /van Heerwijk/
 1 SEX M
 1 DEAT 
-1 FAMS @F818@
+1 FAMS @F819@
 0 @P1096@ INDI 
 1 NAME Heer Heerwijcksdr /van Heerwijk/
 1 SEX F
@@ -9338,7 +9356,7 @@
 2 DATE 1184
 1 DEAT 
 1 FAMS @F444@
-1 FAMC @F818@
+1 FAMC @F819@
 0 @P1097@ INDI 
 1 NAME Daniel III Danielsz /van der Merwede/
 1 SEX M
@@ -9507,7 +9525,7 @@
 1 NAME Jan /van Heusen/
 1 SEX M
 1 DEAT 
-1 FAMS @F819@
+1 FAMS @F820@
 0 @P1118@ INDI 
 1 NAME Machtild /van Heusen/
 1 SEX F
@@ -9516,7 +9534,7 @@
 1 DEAT 
 2 DATE 1362
 1 FAMS @F572@
-1 FAMC @F819@
+1 FAMC @F820@
 0 @P1119@ INDI 
 1 NAME Aernt /van Riede/
 1 SEX M
@@ -9526,7 +9544,7 @@
 1 DEAT 
 2 DATE 1384
 1 FAMC @F572@
-1 FAMS @F793@
+1 FAMS @F794@
 0 @P1120@ INDI 
 1 NAME Herbaren /van Riede/
 1 SEX M
@@ -9536,7 +9554,7 @@
 2 DATE 1354
 2 PLAC Rotterdam
 1 FAMS @F572@
-1 FAMC @F820@
+1 FAMC @F821@
 0 @P1121@ INDI 
 1 NAME Ariaantje Timonsdr /van der Hidde/
 1 SEX F
@@ -9640,7 +9658,7 @@
 2 DATE 1521
 2 PLAC Etten
 1 FAMS @F459@
-1 FAMC @F821@
+1 FAMC @F822@
 0 @P1133@ INDI 
 1 NAME Aeltie Pieters /Hoepsnijder/
 1 SEX F
@@ -9812,7 +9830,7 @@
 1 DEAT 
 2 DATE 977
 1 FAMS @F236@
-1 FAMC @F822@
+1 FAMC @F823@
 0 @P1152@ INDI 
 1 NAME Dirk IV /van Holland/
 1 SEX M
@@ -9894,7 +9912,7 @@
 1 BIRT 
 2 DATE 1580
 1 DEAT 
-1 FAMS @F807@
+1 FAMS @F808@
 0 @P1162@ INDI 
 1 NAME Anthonius Wilhelmus Joseph /Holterman/
 1 SEX M
@@ -10271,7 +10289,7 @@
 1 DEAT 
 2 DATE 1166
 1 FAMS @F262@
-1 FAMC @F823@
+1 FAMC @F824@
 0 @P1205@ INDI 
 1 NAME Engelbertus III /van Horne/
 1 SEX M
@@ -10287,8 +10305,8 @@
 2 DATE 1080
 1 DEAT 
 2 DATE 1140
-1 FAMS @F823@
-1 FAMC @F824@
+1 FAMS @F824@
+1 FAMC @F825@
 0 @P1207@ INDI 
 1 NAME NN /van Kessel/
 1 SEX F
@@ -10310,7 +10328,7 @@
 2 DATE 1040
 1 DEAT 
 2 DATE 1102
-1 FAMS @F824@
+1 FAMS @F825@
 0 @P1210@ INDI 
 1 NAME Edwige /van Wickenrode/
 1 SEX F
@@ -10356,7 +10374,7 @@
 1 DEAT 
 2 DATE 1597
 1 FAMS @F329@
-1 FAMC @F825@
+1 FAMC @F826@
 0 @P1215@ INDI 
 1 NAME Adriaantje Hughe /Huijser/
 1 SEX F
@@ -10392,7 +10410,7 @@
 1 BIRT 
 2 DATE 1520
 1 DEAT 
-1 FAMS @F800@
+1 FAMS @F801@
 0 @P1219@ INDI 
 1 NAME Anna /Huijser/
 1 SEX F
@@ -10756,13 +10774,13 @@
 1 NAME Albert /Jans/
 1 SEX M
 1 DEAT 
-1 FAMS @F826@
+1 FAMS @F827@
 0 @P1260@ INDI 
 1 NAME Albertus /Jansen/
 1 SEX M
 1 DEAT 
 1 FAMS @F298@
-1 FAMC @F826@
+1 FAMC @F827@
 0 @P1261@ INDI 
 1 NAME Annigje /Jans/
 1 SEX F
@@ -11438,12 +11456,12 @@
 1 SEX M
 1 DEAT 
 1 FAMS @F348@
-1 FAMC @F827@
+1 FAMC @F828@
 0 @P1346@ INDI 
 1 NAME Bastiaan Leendertsz /Ketting/
 1 SEX M
 1 DEAT 
-1 FAMS @F825@
+1 FAMS @F826@
 0 @P1347@ INDI 
 1 NAME Willemken Ariensd /den Ouden/
 1 SEX F
@@ -11500,7 +11518,7 @@
 1 NAME Pieter /de Klerk/
 1 SEX M
 1 DEAT 
-1 FAMS @F781@
+1 FAMS @F782@
 0 @P1353@ INDI 
 1 NAME Willem /Klerkx/
 1 SEX M
@@ -11539,7 +11557,7 @@
 2 DATE 19 DEC 1648
 2 PLAC IJsselmonde
 1 FAMS @F338@
-1 FAMC @F828@
+1 FAMC @F829@
 0 @P1357@ INDI 
 1 NAME Ariaentgen /Pietersdr/
 1 SEX F
@@ -11615,7 +11633,7 @@
 1 NAME Leendert /de Koome/
 1 SEX M
 1 DEAT 
-1 FAMS @F827@
+1 FAMS @F828@
 0 @P1366@ INDI 
 1 NAME Erzsebet Jennifer /Kovacs/
 1 SEX F
@@ -11702,7 +11720,6 @@
 1 CHR 
 2 DATE 4 MAR 1722
 2 PLAC Delfshaven
-1 DEAT 
 1 BURI 
 2 DATE 26 NOV 1754
 2 PLAC Delfshaven
@@ -11919,13 +11936,13 @@
 2 PLAC Ridderkerk
 1 DEAT 
 1 FAMS @F370@
-1 FAMC @F829@
+1 FAMC @F830@
 0 @P1405@ INDI 
 1 NAME Willem Cornelisz /Leeuwenburg/
 1 SEX M
 1 DEAT 
-1 FAMS @F829@
-1 FAMC @F830@
+1 FAMS @F830@
+1 FAMC @F831@
 0 @P1406@ INDI 
 1 NAME Pleuntje /Pietersdr/
 1 SEX F
@@ -11938,7 +11955,7 @@
 1 NAME Cornelis Aertsz /Leeuwenburg de Oude/
 1 SEX M
 1 DEAT 
-1 FAMS @F830@
+1 FAMS @F831@
 0 @P1408@ INDI 
 1 NAME Adriana /de Leur/
 1 SEX F
@@ -12017,7 +12034,7 @@
 2 DATE 19 JUN 1677
 2 PLAC Almkerk-Emmikhoven
 1 FAMS @F611@
-1 FAMC @F831@
+1 FAMC @F832@
 0 @P1418@ INDI 
 1 NAME Marcus /Lievaart/
 1 SEX M
@@ -12025,7 +12042,7 @@
 2 DATE 1583
 2 PLAC Almkerk
 1 DEAT 
-1 FAMS @F831@
+1 FAMS @F832@
 0 @P1419@ INDI 
 1 NAME Annigje /Lievaart/
 1 SEX F
@@ -12747,7 +12764,7 @@
 1 BIRT 
 2 DATE 22 MAR 1981
 2 PLAC Kaapstad
-1 FAMC @F832@
+1 FAMC @F833@
 0 @P1523@ INDI 
 1 SEX F
 1 NAME Elizabeth
@@ -12755,7 +12772,7 @@
 2 DATE 1984
 1 BIRT 
 2 DATE 4 Jan 1901
-2 PLAC Zwijndrecht,
+2 PLAC Zwijndrecht
 1 FAMS @F417@
 0 @P1524@ INDI 
 1 NAME Bianca /Valckhoff/
@@ -12830,14 +12847,14 @@
 1 SEX M
 1 DEAT 
 2 DATE 902
-1 FAMS @F833@
+1 FAMS @F834@
 0 @P1533@ INDI 
 1 NAME Widricus /in Lotharingen/
 1 SEX M
 1 DEAT 
 2 DATE 919
 1 FAMS @F424@
-1 FAMC @F833@
+1 FAMC @F834@
 0 @P1534@ INDI 
 1 NAME Siegfried /van Luxemburg/
 1 SEX M
@@ -13024,7 +13041,7 @@
 1 DEAT 
 2 DATE 589
 1 FAMS @F765@
-1 FAMC @F834@
+1 FAMC @F835@
 0 @P1558@ INDI 
 1 NAME Chrodoare /van Amay/
 1 SEX F
@@ -13040,7 +13057,7 @@
 2 DATE 1439
 2 PLAC Etten
 1 DEAT 
-1 FAMS @F821@
+1 FAMS @F822@
 0 @P1560@ INDI 
 1 NAME Maria /Moeshaak/
 1 SEX F
@@ -13128,7 +13145,7 @@
 2 DATE 1470
 1 DEAT 
 1 FAMC @F620@
-1 FAMS @F776@
+1 FAMS @F777@
 0 @P1570@ INDI 
 1 NAME Grietgen /NN/
 1 SEX F
@@ -13148,14 +13165,14 @@
 1 SEX M
 1 DEAT 
 1 FAMS @F474@
-1 FAMC @F835@
+1 FAMC @F836@
 0 @P1573@ INDI 
 1 NAME Monne /NN/
 1 SEX M
 1 BIRT 
 2 DATE BEF 23 JUN 1373
 1 DEAT 
-1 FAMS @F835@
+1 FAMS @F836@
 0 @P1574@ INDI 
 1 NAME NN /NN/
 1 SEX F
@@ -13169,13 +13186,13 @@
 1 CHR 
 2 DATE 864
 1 DEAT 
-1 FAMC @F836@
-1 FAMS @F837@
+1 FAMC @F837@
+1 FAMS @F838@
 0 @P1576@ INDI 
 1 NAME Waltbert /van Steenland/
 1 SEX M
 1 DEAT 
-1 FAMS @F836@
+1 FAMS @F837@
 0 @P1577@ INDI 
 1 NAME Boudewijn I /van Vlaanderen/
 1 SEX M
@@ -13185,7 +13202,7 @@
 2 DATE 2 JAN 879
 2 PLAC Arras
 1 FAMS @F714@
-1 FAMC @F837@
+1 FAMC @F838@
 0 @P1578@ INDI 
 1 NAME Adriaentjes Nijsdr /van Muijlwijck/
 1 SEX F
@@ -13382,7 +13399,7 @@
 2 DATE 560
 1 DEAT 
 2 DATE 636
-1 FAMS @F838@
+1 FAMS @F839@
 0 @P1600@ INDI 
 1 NAME Chrodebert I /van Neustrië/
 1 SEX M
@@ -13390,8 +13407,8 @@
 2 DATE 580
 1 DEAT 
 2 DATE 630
-1 FAMC @F838@
-1 FAMS @F839@
+1 FAMC @F839@
+1 FAMS @F840@
 0 @P1601@ INDI 
 1 NAME Lambert I /van Neustrië/
 1 SEX M
@@ -13399,8 +13416,8 @@
 2 DATE 600
 1 DEAT 
 2 DATE 650
-1 FAMC @F839@
-1 FAMS @F840@
+1 FAMC @F840@
+1 FAMS @F841@
 0 @P1602@ INDI 
 1 SEX M
 1 NAME Chrodebert II /van Neustrië/
@@ -13409,7 +13426,7 @@
 1 BIRT 
 2 DATE 625
 1 FAMS @F490@
-1 FAMC @F840@
+1 FAMC @F841@
 0 @P1603@ INDI 
 1 NAME Doda /NN/
 1 SEX F
@@ -13440,7 +13457,7 @@
 2 PLAC Zwijndrecht
 1 DEAT 
 1 FAMS @F640@
-1 FAMC @F841@
+1 FAMC @F842@
 0 @P1607@ INDI 
 1 NAME Antje /NN/
 1 SEX F
@@ -13476,7 +13493,7 @@
 1 DEAT 
 2 DATE 9 MAY 1667
 1 FAMS @F618@
-1 FAMC @F842@
+1 FAMC @F843@
 0 @P1612@ INDI 
 1 NAME Hildegont /NN/
 1 SEX F
@@ -13489,7 +13506,7 @@
 1 NAME Jop /NN/
 1 SEX M
 1 DEAT 
-1 FAMS @F843@
+1 FAMS @F844@
 0 @P1614@ INDI 
 1 NAME Marchje Joppen /NN/
 1 SEX F
@@ -13497,7 +13514,7 @@
 2 DATE 1655
 1 DEAT 
 1 FAMS @F595@
-1 FAMC @F843@
+1 FAMC @F844@
 0 @P1615@ INDI 
 1 NAME Claes Aryens /de Ruyter/
 1 SEX M
@@ -13505,7 +13522,7 @@
 2 DATE 1654
 1 DEAT 
 1 FAMS @F595@
-1 FAMC @F844@
+1 FAMC @F845@
 0 @P1616@ INDI 
 1 NAME Neeltje Claes /de Ruyter/
 1 SEX F
@@ -14023,7 +14040,7 @@
 1 NAME Willem /Pasman/
 1 SEX M
 1 DEAT 
-1 FAMS @F814@
+1 FAMS @F815@
 0 @P1685@ INDI 
 1 NAME Theodorus /Pastoor/
 1 SEX M
@@ -14052,7 +14069,7 @@
 1 SEX F
 1 DEAT 
 1 FAMS @F533@
-1 FAMC @F845@
+1 FAMC @F846@
 0 @P1689@ INDI 
 1 NAME Hendrik Wouters /van Turenhout/
 1 SEX M
@@ -14151,13 +14168,13 @@
 1 SEX M
 1 BIRT 
 2 DATE 22 OCT 1974
-1 FAMC @F846@
+1 FAMC @F847@
 0 @P1702@ INDI 
 1 NAME Crista /Vermunt/
 1 SEX F
 1 BIRT 
 2 DATE 1 AUG 1987
-1 FAMC @F846@
+1 FAMC @F847@
 0 @P1703@ INDI 
 1 NAME Freeke /van der Ploeg/
 1 SEX F
@@ -14403,7 +14420,7 @@
 1 BIRT 
 2 DATE 1475
 1 DEAT 
-1 FAMS @F806@
+1 FAMS @F807@
 0 @P1732@ INDI 
 1 NAME Elisabeth Woutersdr /Verduijn/
 1 SEX F
@@ -14434,8 +14451,8 @@
 1 BIRT 
 2 DATE 1260
 1 DEAT 
-1 FAMS @F820@
-1 FAMC @F847@
+1 FAMS @F821@
+1 FAMC @F848@
 0 @P1736@ INDI 
 1 NAME Pieter Cornelis /Teengs/
 1 SEX M
@@ -14464,12 +14481,13 @@
 1 FAMS @F576@
 1 FAMC @F578@
 0 @P1739@ INDI 
-1 NAME Arij /Rijks/
 1 SEX M
+1 NAME Arij /Rijks/
 1 CHR 
 2 DATE 18 NOV 1781
 2 PLAC Rotterdam
-1 DEAT 
+1 BIRT 
+2 DATE 1781
 1 FAMC @F576@
 0 @P1740@ INDI 
 1 NAME Bernardus /Rijks/
@@ -14485,50 +14503,48 @@
 1 FAMC @F576@
 1 FAMS @F577@
 0 @P1741@ INDI 
-1 NAME Bernardus /Rijks/
 1 SEX M
-1 CHR 
-2 DATE 4 OCT 1787
-2 PLAC Rotterdam
-1 DEAT 
-1 FAMC @F576@
-0 @P1742@ INDI 
 1 NAME Jan /Rijks/
-1 SEX M
 1 CHR 
 2 DATE 6 APR 1780
 2 PLAC Rotterdam
-1 DEAT 
+1 BIRT 
+2 DATE 1780
 1 FAMC @F576@
-0 @P1743@ INDI 
-1 NAME Johannes /Rijks/
+0 @P1742@ INDI 
 1 SEX M
+1 NAME Johannes /Rijks/
 1 CHR 
 2 DATE 27 MAY 1790
 2 PLAC Rotterdam
-1 DEAT 
+1 BIRT 
+2 DATE 1790
 1 FAMC @F576@
-0 @P1744@ INDI 
-1 NAME Johannis Cornelis /Rijks/
+0 @P1743@ INDI 
 1 SEX M
+1 NAME Johannis Cornelis /Rijks/
 1 CHR 
 2 DATE 22 SEP 1785
 2 PLAC Rotterdam
-1 DEAT 
+1 BIRT 
+2 DATE 1785
 1 FAMC @F576@
-0 @P1745@ INDI 
+0 @P1744@ INDI 
 1 NAME Willem /Rijks/
 1 SEX M
+1 DEAT 
+2 DATE 1790
 1 CHR 
 2 DATE 27 MAY 1790
 2 PLAC Rotterdam
-1 DEAT 
+1 BIRT 
+2 DATE 1790
 1 FAMC @F576@
-0 @P1746@ INDI 
+0 @P1745@ INDI 
 1 NAME Grietje Jan /Willems/
 1 SEX F
 1 FAMS @F578@
-0 @P1747@ INDI 
+0 @P1746@ INDI 
 1 NAME Geertruij /van der Vegt/
 1 SEX F
 1 BIRT 
@@ -14538,11 +14554,21 @@
 2 DATE 15 JUN 1870
 2 PLAC Rotterdam
 1 FAMS @F577@
+0 @P1747@ INDI 
+1 SEX M
+1 NAME PETRUS /BENDELER/
+1 DEAT 
+2 DATE 6 May 1873
+2 PLAC ROTTERDAM
+1 BIRT 
+2 DATE 11 Mar 1816
+2 PLAC BREDA
+1 FAMS @F770@
 0 @P1748@ INDI 
 1 NAME Floris /de Ruijter/
 1 SEX M
 1 DEAT 
-1 FAMS @F848@
+1 FAMS @F849@
 0 @P1749@ INDI 
 1 NAME Pietertje Floor /de Ruijter/
 1 SEX F
@@ -14550,7 +14576,7 @@
 2 DATE 1701
 1 DEAT 
 1 FAMS @F687@
-1 FAMC @F848@
+1 FAMC @F849@
 0 @P1750@ INDI 
 1 NAME Maaijke Florisdr /de Ruijter/
 1 SEX F
@@ -14595,7 +14621,7 @@
 1 NAME Aryen /de Ruyter/
 1 SEX M
 1 DEAT 
-1 FAMS @F844@
+1 FAMS @F845@
 0 @P1755@ INDI 
 1 NAME Dirkske Hendrikse /Sagt/
 1 SEX F
@@ -14645,7 +14671,7 @@
 1 BIRT 
 2 DATE ABT 1625
 1 DEAT 
-1 FAMS @F784@
+1 FAMS @F785@
 0 @P1761@ INDI 
 1 NAME Cornelia Meeuwisdr /Schouten/
 1 SEX F
@@ -14666,7 +14692,7 @@
 1 DEAT 
 2 DATE 1612
 2 PLAC Annen
-1 FAMS @F849@
+1 FAMS @F850@
 0 @P1763@ INDI 
 1 NAME Jan Jans /Schuiling/
 1 SEX M
@@ -14675,8 +14701,8 @@
 2 PLAC Zoetermeer
 1 DEAT 
 2 DATE 27 MAR 1655
-1 FAMS @F842@
-1 FAMC @F849@
+1 FAMS @F843@
+1 FAMC @F850@
 0 @P1764@ INDI 
 1 NAME Sijbolt Hindriks /Schuitema/
 1 SEX M
@@ -14786,7 +14812,7 @@
 1 NAME Gerrit /Stam/
 1 SEX M
 1 DEAT 
-1 FAMS @F841@
+1 FAMS @F842@
 0 @P1778@ INDI 
 1 NAME Neeltje Leenders /van der Steen/
 1 SEX F
@@ -14806,7 +14832,7 @@
 1 DEAT 
 2 DATE 1323
 1 FAMS @F648@
-1 FAMC @F850@
+1 FAMC @F851@
 0 @P1780@ INDI 
 1 NAME Arnold I /van Steyn/
 1 SEX M
@@ -14814,7 +14840,7 @@
 2 DATE 1180
 1 DEAT 
 2 DATE 1240
-1 FAMS @F851@
+1 FAMS @F852@
 0 @P1781@ INDI 
 1 NAME Arnold II /van Steyn/
 1 SEX M
@@ -14822,8 +14848,8 @@
 2 DATE 1215
 1 DEAT 
 2 DATE 1274
-1 FAMS @F850@
-1 FAMC @F851@
+1 FAMS @F851@
+1 FAMC @F852@
 0 @P1782@ INDI 
 1 NAME Nicolaas Servaasz /Stoop/
 1 SEX M
@@ -14892,12 +14918,12 @@
 1 SEX M
 1 BIRT 
 2 DATE 1609
-1 FAMS @F792@
+1 FAMS @F793@
 0 @P1789@ INDI 
 1 NAME Willem /Uitenhooch/
 1 SEX M
 1 DEAT 
-1 FAMS @F845@
+1 FAMS @F846@
 0 @P1790@ INDI 
 1 NAME Maaike /Valk/
 1 SEX F
@@ -14918,7 +14944,7 @@
 1 BIRT 
 2 DATE 1623
 1 DEAT 
-1 FAMS @F778@
+1 FAMS @F779@
 0 @P1793@ INDI 
 1 NAME Kornelis /Vernel/
 1 SEX M
@@ -14926,12 +14952,12 @@
 2 DATE 1599
 2 PLAC Blankenburg-Rozenburg
 1 DEAT 
-1 FAMS @F816@
+1 FAMS @F817@
 0 @P1794@ INDI 
 1 NAME Adriaen /Vinck/
 1 SEX M
 1 DEAT 
-1 FAMS @F788@
+1 FAMS @F789@
 0 @P1795@ INDI 
 1 SEX F
 1 NAME Heijltje Pleunen /Vinck/
@@ -14951,7 +14977,7 @@
 1 DEAT 
 2 DATE 965
 1 FAMC @F715@
-1 FAMS @F822@
+1 FAMS @F823@
 0 @P1797@ INDI 
 1 NAME Boudewijn II /van Vlaanderen/
 1 SEX M
@@ -14965,7 +14991,7 @@
 1 NAME Jan /Vliegenthart/
 1 SEX M
 1 DEAT 
-1 FAMS @F852@
+1 FAMS @F853@
 0 @P1799@ INDI 
 1 NAME Metje Jans /Vliegenthart/
 1 SEX F
@@ -14974,7 +15000,7 @@
 2 PLAC Hendrik-Ido-Ambacht
 1 DEAT 
 1 FAMS @F736@
-1 FAMC @F852@
+1 FAMC @F853@
 0 @P1800@ INDI 
 1 NAME Willem Janse /van Weena/
 1 SEX M
@@ -14983,7 +15009,7 @@
 2 PLAC Hendrik-Ido-Ambacht
 1 DEAT 
 1 FAMS @F736@
-1 FAMC @F853@
+1 FAMC @F854@
 0 @P1801@ INDI 
 1 SEX F
 1 NAME Caertie Bastiaensd /de Vlieger/
@@ -15000,7 +15026,7 @@
 1 NAME Jan /van Weena/
 1 SEX M
 1 DEAT 
-1 FAMS @F853@
+1 FAMS @F854@
 0 @P1804@ INDI 
 1 NAME Arie /van der Weijde/
 1 SEX M
@@ -15057,13 +15083,13 @@
 1 BIRT 
 2 DATE 1572
 1 FAMS @F764@
-1 FAMC @F854@
+1 FAMC @F855@
 0 @P1812@ INDI 
 1 SEX M
 1 NAME Pieter Hermonts /Swael/
 1 BIRT 
 2 DATE 1540
-1 FAMS @F854@
+1 FAMS @F855@
 0 @P1813@ INDI 
 1 NAME Mummolin /van Franken/
 1 SEX M
@@ -15071,8 +15097,8 @@
 2 DATE 565
 1 BIRT 
 2 DATE 525
-1 FAMS @F834@
-1 FAMC @F855@
+1 FAMS @F835@
+1 FAMC @F856@
 0 @P1814@ INDI 
 1 NAME Munderich /van Franken/
 1 SEX M
@@ -15080,8 +15106,8 @@
 2 DATE 532
 1 BIRT 
 2 DATE 500
-1 FAMS @F855@
-1 FAMC @F856@
+1 FAMS @F856@
+1 FAMC @F857@
 0 @P1815@ INDI 
 1 SEX M
 1 NAME Chloderich /van Franken/
@@ -15089,8 +15115,8 @@
 2 DATE 509
 1 BIRT 
 2 DATE 480
-1 FAMS @F856@
-1 FAMC @F857@
+1 FAMS @F857@
+1 FAMC @F858@
 0 @P1816@ INDI 
 1 SEX M
 1 NAME Sichibert /van Franken de hinkelde/
@@ -15098,15 +15124,15 @@
 2 DATE 508
 1 BIRT 
 2 DATE 460
-1 FAMS @F857@
-1 FAMC @F858@
+1 FAMS @F858@
+1 FAMC @F859@
 0 @P1817@ INDI 
 1 SEX M
 1 NAME Chlodwig /van Franken/
 1 BIRT 
 2 DATE 415
-1 FAMS @F858@
-1 FAMC @F859@
+1 FAMS @F859@
+1 FAMC @F860@
 0 @P1818@ INDI 
 1 SEX M
 1 NAME Chlodion Merowech  met de lange haren /van Franken/
@@ -15116,7 +15142,7 @@
 1 BIRT 
 2 DATE 395
 1 FAMC @F766@
-1 FAMS @F859@
+1 FAMS @F860@
 0 @P1819@ INDI 
 1 SEX F
 1 NAME Blesinde
@@ -15169,7 +15195,7 @@
 1 BIRT 
 2 DATE 300
 1 FAMS @F769@
-1 FAMC @F860@
+1 FAMC @F861@
 0 @P1826@ INDI 
 1 NAME Guindomar /van Allemanien/
 1 SEX M
@@ -15185,8 +15211,8 @@
 2 DATE 270
 1 DEAT 
 2 DATE 307
-1 FAMS @F860@
-1 FAMC @F861@
+1 FAMS @F861@
+1 FAMC @F862@
 0 @P1828@ INDI 
 1 SEX M
 1 NAME Gundobaud /van Toxandrien/
@@ -15194,8 +15220,8 @@
 2 DATE 289
 1 BIRT 
 2 DATE 245
-1 FAMS @F861@
-1 FAMC @F862@
+1 FAMS @F862@
+1 FAMC @F863@
 0 @P1829@ INDI 
 1 SEX M
 1 NAME Marcomir /van Toxandrien/
@@ -15203,7 +15229,7 @@
 2 DATE 281
 1 BIRT 
 2 DATE 220
-1 FAMS @F862@
+1 FAMS @F863@
 0 @F1@ FAM 
 1 HUSB @P6@
 1 WIFE @P7@
@@ -20439,25 +20465,22 @@
 1 CHIL @P1588@
 2 _FREL Natural
 2 _MREL Natural
-1 CHIL @P1739@
-2 _FREL Natural
-2 _MREL Natural
-1 CHIL @P1740@
-2 _FREL Natural
-2 _MREL Natural
 1 CHIL @P1741@
 2 _FREL Natural
 2 _MREL Natural
-1 CHIL @P1742@
+1 CHIL @P1739@
 2 _FREL Natural
 2 _MREL Natural
 1 CHIL @P1743@
 2 _FREL Natural
 2 _MREL Natural
+1 CHIL @P1742@
+2 _FREL Natural
+2 _MREL Natural
 1 CHIL @P1744@
 2 _FREL Natural
 2 _MREL Natural
-1 CHIL @P1745@
+1 CHIL @P1740@
 2 _FREL Natural
 2 _MREL Natural
 1 MARR 
@@ -20465,11 +20488,11 @@
 2 PLAC Delfshaven
 0 @F577@ FAM 
 1 HUSB @P1740@
-1 WIFE @P1747@
+1 WIFE @P1746@
 1 MARR 
 0 @F578@ FAM 
 1 HUSB @P1609@
-1 WIFE @P1746@
+1 WIFE @P1745@
 1 CHIL @P1738@
 2 _FREL Natural
 2 _MREL Natural
@@ -21739,15 +21762,9 @@
 1 MARL 
 2 DATE 13 NOV 1756
 2 PLAC Delfshaven
-1 MARR 
-2 DATE 28 NOV 1756
-2 PLAC Delfshaven
 0 @F728@ FAM 
 1 HUSB @P188@
 1 WIFE @P323@
-1 MARR 
-2 DATE 17 NOV 1765
-2 PLAC Delfshaven
 1 MARL 
 2 DATE 1 NOV 1765
 2 PLAC Delfshaven
@@ -22099,106 +22116,109 @@
 2 _FREL Natural
 2 _MREL Natural
 0 @F770@ FAM 
+1 HUSB @P1747@
+1 WIFE @P1041@
+0 @F771@ FAM 
 1 WIFE @P4@
 1 CHIL @P5@
 2 _MREL Natural
-0 @F771@ FAM 
+0 @F772@ FAM 
 1 HUSB @P31@
 1 CHIL @P29@
 2 _FREL Natural
-0 @F772@ FAM 
+0 @F773@ FAM 
 1 HUSB @P1007@
 1 CHIL @P69@
 2 _FREL Natural
-0 @F773@ FAM 
+0 @F774@ FAM 
 1 HUSB @P92@
 1 CHIL @P93@
 2 _FREL Natural
-0 @F774@ FAM 
+0 @F775@ FAM 
 1 HUSB @P104@
 1 CHIL @P102@
 2 _FREL Natural
-0 @F775@ FAM 
+0 @F776@ FAM 
 1 HUSB @P102@
 1 CHIL @P103@
 2 _FREL Natural
-0 @F776@ FAM 
+0 @F777@ FAM 
 1 HUSB @P1569@
 1 CHIL @P104@
 2 _FREL Natural
-0 @F777@ FAM 
+0 @F778@ FAM 
 1 HUSB @P486@
 1 CHIL @P145@
 2 _FREL Natural
-0 @F778@ FAM 
+0 @F779@ FAM 
 1 HUSB @P1792@
 1 CHIL @P195@
 2 _FREL Natural
-0 @F779@ FAM 
+0 @F780@ FAM 
 1 HUSB @P256@
 1 CHIL @P257@
 2 _FREL Natural
-0 @F780@ FAM 
+0 @F781@ FAM 
 1 HUSB @P875@
 1 CHIL @P315@
 2 _FREL Natural
-0 @F781@ FAM 
+0 @F782@ FAM 
 1 HUSB @P1352@
 1 CHIL @P334@
 2 _FREL Natural
-0 @F782@ FAM 
+0 @F783@ FAM 
 1 HUSB @P337@
 1 CHIL @P338@
 2 _FREL Natural
-0 @F783@ FAM 
+0 @F784@ FAM 
 1 HUSB @P340@
 1 CHIL @P341@
 2 _FREL Natural
-0 @F784@ FAM 
+0 @F785@ FAM 
 1 HUSB @P1760@
 1 CHIL @P345@
 2 _FREL Natural
-0 @F785@ FAM 
+0 @F786@ FAM 
 1 HUSB @P368@
 1 CHIL @P367@
 2 _FREL Natural
-0 @F786@ FAM 
+0 @F787@ FAM 
 1 HUSB @P967@
 1 CHIL @P406@
 2 _FREL Natural
-0 @F787@ FAM 
+0 @F788@ FAM 
 1 HUSB @P487@
 1 CHIL @P486@
 2 _FREL Natural
-0 @F788@ FAM 
+0 @F789@ FAM 
 1 HUSB @P1794@
 1 CHIL @P590@
 2 _FREL Natural
-0 @F789@ FAM 
+0 @F790@ FAM 
 1 HUSB @P610@
 1 CHIL @P611@
 2 _FREL Natural
-0 @F790@ FAM 
+0 @F791@ FAM 
 1 HUSB @P930@
 1 CHIL @P642@
 2 _FREL Natural
-0 @F791@ FAM 
+0 @F792@ FAM 
 1 HUSB @P669@
 1 CHIL @P670@
 2 _FREL Natural
-0 @F792@ FAM 
+0 @F793@ FAM 
 1 HUSB @P1788@
 1 CHIL @P671@
 2 _FREL Natural
-0 @F793@ FAM 
+0 @F794@ FAM 
 1 HUSB @P1119@
 1 CHIL @P687@
 2 _FREL Natural
-0 @F794@ FAM 
+0 @F795@ FAM 
 1 HUSB @P689@
 1 CHIL @P690@
 2 _FREL Natural
-0 @F795@ FAM 
+0 @F796@ FAM 
 1 HUSB @P701@
 1 CHIL @P699@
 2 _FREL Natural
@@ -22208,273 +22228,273 @@
 2 _FREL Natural
 1 CHIL @P725@
 2 _FREL Natural
-0 @F796@ FAM 
+0 @F797@ FAM 
 1 HUSB @P715@
 1 CHIL @P704@
 2 _FREL Natural
-0 @F797@ FAM 
+0 @F798@ FAM 
 1 HUSB @P773@
 1 CHIL @P706@
 2 _FREL Natural
-0 @F798@ FAM 
+0 @F799@ FAM 
 1 HUSB @P778@
 1 CHIL @P714@
 2 _FREL Natural
-0 @F799@ FAM 
+0 @F800@ FAM 
 1 HUSB @P695@
 1 CHIL @P715@
 2 _FREL Natural
-0 @F800@ FAM 
+0 @F801@ FAM 
 1 HUSB @P1218@
 1 CHIL @P759@
 2 _FREL Natural
-0 @F801@ FAM 
+0 @F802@ FAM 
 1 HUSB @P817@
 1 CHIL @P818@
 2 _FREL Natural
-0 @F802@ FAM 
+0 @F803@ FAM 
 1 HUSB @P821@
 1 CHIL @P820@
 2 _FREL Natural
-0 @F803@ FAM 
+0 @F804@ FAM 
 1 HUSB @P301@
 1 CHIL @P854@
 2 _FREL Natural
-0 @F804@ FAM 
+0 @F805@ FAM 
 1 HUSB @P861@
 1 CHIL @P860@
 2 _FREL Natural
-0 @F805@ FAM 
+0 @F806@ FAM 
 1 HUSB @P865@
 1 CHIL @P863@
 2 _FREL Natural
-0 @F806@ FAM 
+0 @F807@ FAM 
 1 HUSB @P1731@
 1 CHIL @P869@
 2 _FREL Natural
-0 @F807@ FAM 
+0 @F808@ FAM 
 1 HUSB @P1161@
 1 CHIL @P873@
 2 _FREL Natural
-0 @F808@ FAM 
+0 @F809@ FAM 
 1 HUSB @P889@
 1 CHIL @P890@
 2 _FREL Natural
-0 @F809@ FAM 
+0 @F810@ FAM 
 1 HUSB @P931@
 1 CHIL @P930@
 2 _FREL Natural
-0 @F810@ FAM 
+0 @F811@ FAM 
 1 HUSB @P978@
 1 CHIL @P979@
 2 _FREL Natural
-0 @F811@ FAM 
+0 @F812@ FAM 
 1 HUSB @P985@
 1 CHIL @P984@
 2 _FREL Natural
-0 @F812@ FAM 
+0 @F813@ FAM 
 1 HUSB @P72@
 1 CHIL @P1007@
 2 _FREL Natural
-0 @F813@ FAM 
+0 @F814@ FAM 
 1 HUSB @P1017@
 1 CHIL @P1016@
 2 _FREL Natural
-0 @F814@ FAM 
+0 @F815@ FAM 
 1 HUSB @P1684@
 1 CHIL @P1018@
 2 _FREL Natural
-0 @F815@ FAM 
+0 @F816@ FAM 
 1 HUSB @P68@
 1 CHIL @P1079@
 2 _FREL Natural
-0 @F816@ FAM 
+0 @F817@ FAM 
 1 HUSB @P1793@
 1 CHIL @P1090@
 2 _FREL Natural
-0 @F817@ FAM 
+0 @F818@ FAM 
 1 HUSB @P1093@
 1 CHIL @P1094@
 2 _FREL Natural
-0 @F818@ FAM 
+0 @F819@ FAM 
 1 HUSB @P1095@
 1 CHIL @P1096@
 2 _FREL Natural
-0 @F819@ FAM 
+0 @F820@ FAM 
 1 HUSB @P1117@
 1 CHIL @P1118@
 2 _FREL Natural
-0 @F820@ FAM 
+0 @F821@ FAM 
 1 HUSB @P1735@
 1 CHIL @P1120@
 2 _FREL Natural
-0 @F821@ FAM 
+0 @F822@ FAM 
 1 HUSB @P1559@
 1 CHIL @P1132@
 2 _FREL Natural
-0 @F822@ FAM 
+0 @F823@ FAM 
 1 HUSB @P1796@
 1 CHIL @P1151@
 2 _FREL Natural
-0 @F823@ FAM 
+0 @F824@ FAM 
 1 HUSB @P1206@
 1 CHIL @P1204@
 2 _FREL Natural
-0 @F824@ FAM 
+0 @F825@ FAM 
 1 HUSB @P1209@
 1 CHIL @P1206@
 2 _FREL Natural
-0 @F825@ FAM 
+0 @F826@ FAM 
 1 HUSB @P1346@
 1 CHIL @P1214@
 2 _FREL Natural
-0 @F826@ FAM 
+0 @F827@ FAM 
 1 HUSB @P1259@
 1 CHIL @P1260@
 2 _FREL Natural
-0 @F827@ FAM 
+0 @F828@ FAM 
 1 HUSB @P1365@
 1 CHIL @P1345@
 2 _FREL Natural
-0 @F828@ FAM 
+0 @F829@ FAM 
 1 HUSB @P657@
 1 CHIL @P1356@
 2 _FREL Natural
-0 @F829@ FAM 
+0 @F830@ FAM 
 1 HUSB @P1405@
 1 CHIL @P1404@
 2 _FREL Natural
-0 @F830@ FAM 
+0 @F831@ FAM 
 1 HUSB @P1407@
 1 CHIL @P1405@
 2 _FREL Natural
-0 @F831@ FAM 
+0 @F832@ FAM 
 1 HUSB @P1418@
 1 CHIL @P1417@
 2 _FREL Natural
-0 @F832@ FAM 
+0 @F833@ FAM 
 1 WIFE @P326@
 1 CHIL @P1522@
 2 _MREL Natural
-0 @F833@ FAM 
+0 @F834@ FAM 
 1 HUSB @P1532@
 1 CHIL @P1533@
 2 _FREL Natural
-0 @F834@ FAM 
+0 @F835@ FAM 
 1 HUSB @P1813@
 1 CHIL @P1557@
 2 _FREL Natural
-0 @F835@ FAM 
+0 @F836@ FAM 
 1 HUSB @P1573@
 1 CHIL @P1572@
 2 _FREL Natural
-0 @F836@ FAM 
+0 @F837@ FAM 
 1 HUSB @P1576@
 1 CHIL @P1575@
 2 _FREL Natural
-0 @F837@ FAM 
+0 @F838@ FAM 
 1 HUSB @P1575@
 1 CHIL @P1577@
 2 _FREL Natural
-0 @F838@ FAM 
+0 @F839@ FAM 
 1 HUSB @P1599@
 1 CHIL @P1600@
 2 _FREL Natural
-0 @F839@ FAM 
+0 @F840@ FAM 
 1 HUSB @P1600@
 1 CHIL @P1601@
 2 _FREL Natural
-0 @F840@ FAM 
+0 @F841@ FAM 
 1 HUSB @P1601@
 1 CHIL @P1602@
 2 _FREL Natural
-0 @F841@ FAM 
+0 @F842@ FAM 
 1 HUSB @P1777@
 1 CHIL @P1606@
 2 _FREL Natural
-0 @F842@ FAM 
+0 @F843@ FAM 
 1 HUSB @P1763@
 1 CHIL @P1611@
 2 _FREL Natural
-0 @F843@ FAM 
+0 @F844@ FAM 
 1 HUSB @P1613@
 1 CHIL @P1614@
 2 _FREL Natural
-0 @F844@ FAM 
+0 @F845@ FAM 
 1 HUSB @P1754@
 1 CHIL @P1615@
 2 _FREL Natural
-0 @F845@ FAM 
+0 @F846@ FAM 
 1 HUSB @P1789@
 1 CHIL @P1688@
 2 _FREL Natural
-0 @F846@ FAM 
+0 @F847@ FAM 
 1 HUSB @P1022@
 1 CHIL @P1701@
 2 _FREL Natural
 1 CHIL @P1702@
 2 _FREL Natural
-0 @F847@ FAM 
+0 @F848@ FAM 
 1 HUSB @P1058@
 1 CHIL @P1735@
 2 _FREL Natural
-0 @F848@ FAM 
+0 @F849@ FAM 
 1 HUSB @P1748@
 1 CHIL @P1749@
 2 _FREL Natural
-0 @F849@ FAM 
+0 @F850@ FAM 
 1 HUSB @P1762@
 1 CHIL @P1763@
 2 _FREL Natural
-0 @F850@ FAM 
+0 @F851@ FAM 
 1 HUSB @P1781@
 1 CHIL @P1779@
 2 _FREL Natural
-0 @F851@ FAM 
+0 @F852@ FAM 
 1 HUSB @P1780@
 1 CHIL @P1781@
 2 _FREL Natural
-0 @F852@ FAM 
+0 @F853@ FAM 
 1 HUSB @P1798@
 1 CHIL @P1799@
 2 _FREL Natural
-0 @F853@ FAM 
+0 @F854@ FAM 
 1 HUSB @P1803@
 1 CHIL @P1800@
 2 _FREL Natural
-0 @F854@ FAM 
+0 @F855@ FAM 
 1 HUSB @P1812@
 1 CHIL @P1811@
 2 _FREL Natural
-0 @F855@ FAM 
+0 @F856@ FAM 
 1 HUSB @P1814@
 1 CHIL @P1813@
 2 _FREL Natural
-0 @F856@ FAM 
+0 @F857@ FAM 
 1 HUSB @P1815@
 1 CHIL @P1814@
 2 _FREL Natural
-0 @F857@ FAM 
+0 @F858@ FAM 
 1 HUSB @P1816@
 1 CHIL @P1815@
 2 _FREL Natural
-0 @F858@ FAM 
+0 @F859@ FAM 
 1 HUSB @P1817@
 1 CHIL @P1816@
 2 _FREL Natural
-0 @F859@ FAM 
+0 @F860@ FAM 
 1 HUSB @P1818@
 1 CHIL @P1817@
 2 _FREL Natural
-0 @F860@ FAM 
+0 @F861@ FAM 
 1 HUSB @P1827@
 1 CHIL @P1825@
 2 _FREL Natural
-0 @F861@ FAM 
+0 @F862@ FAM 
 1 HUSB @P1828@
 1 CHIL @P1827@
 2 _FREL Natural
-0 @F862@ FAM 
+0 @F863@ FAM 
 1 HUSB @P1829@
 1 CHIL @P1828@
 2 _FREL Natural
