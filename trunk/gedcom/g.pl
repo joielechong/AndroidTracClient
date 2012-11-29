@@ -52,6 +52,7 @@ $sthis->execute($bronid);
 my $geda=Gedcom->new($filename);
 
 my @inda = $geda->individuals();
+my @fama = $geda->families();
 
 for my $i (@inda) {
     my $name=printnaam($i->name);
@@ -117,8 +118,12 @@ for my $i (@inda) {
     my $m=$i->mother;
     print "\"",printnaam($m->name),"\"" if defined($m);
     print ","; #,$i->xref;
-    $sthii->execute($bronid,$i->xref,$i->name,$i->sex,printveld($b[0],"date",1),printveld($b[0],"place",1),printveld($c[0],"date",1),printveld($c[0],"place",1),printveld($d[0],"date",1),printveld($d[0],"place",1),printveld($u[0],"date",1),printveld($u[0],"place",1));
+#    $sthii->execute($bronid,$i->xref,$i->name,$i->sex,printveld($b[0],"date",1),printveld($b[0],"place",1),printveld($c[0],"date",1),printveld($c[0],"place",1),printveld($d[0],"date",1),printveld($d[0],"place",1),printveld($u[0],"date",1),printveld($u[0],"place",1));
 
 
     print"\n";
+}
+
+for my $f (@fama) {
+    
 }
