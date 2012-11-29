@@ -133,7 +133,7 @@ for my $f (@fama) {
     my $marl = $f->marl;
     my $rstr = "";
     my $lstr = "";
-    $rstr = $marr->type.",".$marr->date.",".$marr->plac if (defined $marr and ref($marr) eq "Gedcom::Event);
-    $lstr = $marl->date.",".$marl->plac if (defined $marl and ref($marl) eq "Gedcom::Event");
+    $rstr = $marr->type.",".$marr->date.",".$marr->plac if (defined($marr) and ref($marr) eq "Gedcom::Event");
+    $lstr = $marl->date.",".$marl->plac if (defined($marl) and ref($marl) eq "Gedcom::Event");
     print "R: $husb,$wife,$rstr,$lstr,\n";
 }
