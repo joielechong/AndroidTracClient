@@ -129,8 +129,11 @@ for my $f (@fama) {
     my $wife = "";
     $husb=printnaam($f->husband->name) if defined $f->husb;
     $wife=printnaam($f->wife->name) if defined $f->wife;
-    my @w=$f->civil;
-    
-    my $xref = $f->xref;
-    print "R: $xref: $husb, $wife, \n";
+    my $marr = $f->marr;
+    my $marl = $f->marl;
+    my $str = "";
+    my $lstr = "";
+    $rstr = $marr->type.",".$marr->date,",".$marr->plac if (ref $marr eq "HASH");
+    $lstr = $marl->date,",".$marl->plac if (ref $marl eq "HASH");
+    print "R: $husb, $wife, $rstr, $lstr,\n";
 }
