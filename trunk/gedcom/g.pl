@@ -134,6 +134,6 @@ for my $f (@fama) {
     my $rstr = "";
     my $lstr = "";
     $rstr = $marr->type.",".$marr->date.",".$marr->plac if (ref($marr) eq "HASH");
-    $lstr = $marl->date.bb",".$marl->plac if (ref($marl) eq "HASH");
+    $lstr = $marl->date.",".$marl->plac if (ref($marl) eq "HASH");
     print "R: $husb,$wife,$rstr,$lstr,\n";
 }
