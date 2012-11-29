@@ -123,7 +123,10 @@ for my $i (@inda) {
 
     print"\n";
 }
-
-for my $f (@fama) {
-    
-}
+my @fama = $geda->families();
+for my $f (@inda) {
+    my $husb=printnaam($f->husband);
+    my $wife=printnaam($f->wife);
+    my $xref = $f->xref;
+    print "\"$xref: $husb, $wife\",";
+ 
