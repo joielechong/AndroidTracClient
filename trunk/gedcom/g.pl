@@ -126,7 +126,7 @@ for my $i (@inda) {
 
 for my $f (@fama) {
     my $husb=printnaam($f->husband->name);
-    my $wife=printnaam($f->wife->namen);
+    my $wife=printnaam($f->wife->name);
     my $xref = $f->xref;
     print "$xref: $husb, $wife\n";
 }
