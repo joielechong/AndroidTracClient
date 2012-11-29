@@ -131,7 +131,7 @@ for my $f (@fama) {
     $wife=printnaam($f->wife->name) if defined $f->wife;
     my $marr = $f->marr;
     my $marl = $f->marl;
-    my $str = "";
+    my $rstr = "";
     my $lstr = "";
     $rstr = $marr->type.",".$marr->date,",".$marr->plac if (ref $marr eq "HASH");
     $lstr = $marl->date,",".$marl->plac if (ref $marl eq "HASH");
