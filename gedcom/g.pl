@@ -56,7 +56,7 @@ my @fama = $geda->families();
 
 for my $i (@inda) {
     my $name=printnaam($i->name);
-    print "\"$name\",";
+    print "I: \"$name\",";
     
     my $bstr = "";
     my @b=$i->birth;
@@ -129,6 +129,8 @@ for my $f (@fama) {
     my $wife = "";
     $husb=printnaam($f->husband->name) if defined $f->husb;
     $wife=printnaam($f->wife->name) if defined $f->wife;
+    my @w=$f->civil;
+    
     my $xref = $f->xref;
-    print "$xref: $husb, $wife\n";
+    print "R: $xref: $husb, $wife, \n";
 }
