@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources>
+    <!-- Default versie - engels -->
+    <string name="app_name" translatable="false">Trac Client</string>
+    <string name="about_button">About Trac Client</string>
+    <string name="Back">Back</string>
+    <string name="tracLogin">Log in to TRAC server</string>
+    <string name="tracUrl" translatable="false">TRAC url</string>
+    <string name="tracUrlHint" translatable="false">http://host/trac/login/rpc</string>
+    <string name="tracUser">Username</string>
+    <string name="tracUserHint">Username</string>
+    <string name="tracPw">Password</string>
+    <string name="tracPwHint">Password</string>
+    <string name="bewaren">Store credentials</string>
+    <string name="vertext">Verify</string>
+    <string name="invalidCred">Credentials not valid</string>
+    <string name="validCred">Credentials valid</string>
+    <string name="detail_heading">Ticket Details</string>
+    <string name="list_heading">Ticket Listing</string>
+    <string name="ophalen">Loading data</string>
+    <string name="tlrefresh">Refresh list</string>
+    <string name="dfrefresh">Refresh ticket</string>
+    <string name="filter">Filter options</string>
+    <string name="sort">Sort</string>
+    <string name="changehost">Select another Trac host</string>
+    <string name="updateticket">Modify ticket</string>
+    <string name="warning" translatable="false">!</string>
+    <string name="nieuw">New ticket</string>
+    <string name="nodata">No data</string>
+    <string name="nodatadesc">Data of this ticket is not yet loaded</string>
+    <string name="connerr">Connection error</string>
+    <string name="newtick">Make new ticket</string>
+    <string name="store">Store ticket</string>
+    <string name="storerr">Error during create ticket</string>
+    <string name="oktext" translatable="false">OK</string>
+    <string name="storerrdesc">Cannot store ticket</string>
+    <string name="storok">Ticket created</string>
+    <string name="storokdesc">Ticket created, id =</string>
+    <string name="config">Configure fields</string>
+    <string name="comment">Add comment</string>
+    <string name="state">Change status</string>
+    <string name="attach">Add attachment</string>
+    <string name="choose_file">Select a file</string>
+    <string name="chooser_title">Ticket attachment</string>
+    <string name="tlshare">Share list</string>
+    <string name="dfshare">Share ticket</string>
+    <string name="updtick">Modify ticket</string>
+    <string name="perfact">Perform action</string>
+    <string name="storeupd">Store changes</string>
+    <string name="cancel">Cancel</string>
+    <string name="invalidJson">Invalid JSON message received</string>
+    <string name="noticketUnk">No ticket created: unknown reason</string>
+    <string name="nolist">Cannot create list</string>
+    <string name="noadapter">Cannot create adapter</string>
+    <string name="invtick">Invalid ticketnumber</string>
+    <string name="noaction">No action supplied</string>
+    <string name="zoekfilter">Enter search string</string>
+    <string name="zoek">Search</string>
+    <string name="title_text" translatable="false">TRAC\nCLIENT</string>
+    <string name="version_text" translatable="false">V.unknown</string>
+    <string name="storefilter">Save filter</string>
+    <string name="storesort">Save sort order</string>
+    <string name="filterdef">Specify filter</string>
+    <string name="sortdef">Specify sort order</string>
+    <string name="moveup">move up</string>
+    <string name="movedown">move down</string>
+    <string name="direction">set direction</string>
+    <string name="sortdel">remove sort</string>
+    <string name="help">Help</string>
+    <string name="Add">Add</string>
+    <string name="auteur" translatable="false">Michiel van Loon</string>
+    <string name="sslHack">Accept Self Signed Certificates</string>
+    <string-array name="filter1_choice" translatable="false">
+        <item>"="</item>
+        <item>"!="</item>
+    </string-array>
+    <string-array name="filter2_choice" translatable="false">
+        <item>"="</item>
+        <item>"!="</item>
+        <item>"~="</item>
+        <item>"!~="</item>
+        <item>"^="</item>
+        <item>"!^="</item>
+        <item>"$="</item>
+        <item>"!$="</item>
+    </string-array>
+    <string-array name="filter3_choice">
+        <item>is equal to</item>
+        <item>is not equal to</item>
+        <item>contains</item>
+        <item>does not contain</item>
+        <item>starts with</item>
+        <item>does not start with</item>
+        <item>ends on</item>
+        <item>does not end on</item>
+    </string-array>
+    <string-array name="filter0_choice">
+        <item>is equal to</item>
+        <item>is not equal to</item>
+    </string-array>
+    <string name="storage_removed">Storage was removed or unmounted.</string>
+    <string name="error_selecting_file">Error selecting File</string>
+    <string name="empty_directory">Empty Directory</string>
+	<string name="selectticket">Select</string>
+</resources>

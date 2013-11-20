@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources>
+    <!-- NL versie -->
+    <string name="about_button">Over Trac Client</string>
+    <string name="Back">Terug</string>
+    <string name="tracLogin">Inloggen TRAC</string>
+    <string name="tracUser">Gebruikersnaam</string>
+    <string name="tracUserHint">Gebruikersnaam</string>
+    <string name="tracPw">Wachtwoord</string>
+    <string name="tracPwHint">Wachtwoord</string>
+    <string name="bewaren">Gegevens opslaan</string>
+    <string name="vertext">Verifieer</string>
+    <string name="invalidCred">Gegevens niet geldig</string>
+    <string name="validCred">Gegevens geldig</string>
+    <string name="detail_heading">Ticket Details</string>
+    <string name="list_heading">Ticket Overzicht</string>
+    <string name="ophalen">Ophalen gegevens</string>
+    <string name="tlrefresh">Verversen lijst</string>
+    <string name="dfrefresh">Verversen detail</string>
+    <string name="filter">Filter opties</string>
+    <string name="sort">Sorteren</string>
+    <string name="changehost">Kies andere Trac host</string>
+    <string name="updateticket">Wijzig</string>
+    <string name="nieuw">Nieuw ticket</string>
+    <string name="nodata">Geen gegevens</string>
+    <string name="nodatadesc">Gegevens van dit ticket zijn nog niet geladen</string>
+    <string name="connerr">Verbindingsfout</string>
+    <string name="newtick">Maak nieuw ticket aan</string>
+    <string name="store">Sla ticket op</string>
+    <string name="storerr">Fout tijdens creeeren van ticket</string>
+    <string name="storerrdesc">Kan ticket niet opslaan</string>
+    <string name="storok">Ticket aangemaakt</string>
+    <string name="storokdesc">Ticket aangemaakt, id =</string>
+    <string name="config">Configureer velden</string>
+    <string name="comment">Voeg commentaar toe</string>
+    <string name="state">Wijzig status</string>
+    <string name="attach">Voeg bijlage toe</string>
+    <string name="choose_file">Selecteer een bestand</string>
+    <string name="chooser_title">Ticket bijlage</string>
+    <string name="tlshare">Delen lijst</string>
+    <string name="dfshare">Delen detail</string>
+    <string name="updtick">Wijzig ticket</string>
+    <string name="perfact">Voer actie uit</string>
+    <string name="storeupd">Sla wijzigingen op</string>
+    <string name="cancel">Afbreken</string>
+    <string name="invalidJson">Ongeldig JSON bericht ontvangen</string>
+    <string name="noticketUnk">Geen ticket aangemaakt: onbekende reden</string>
+    <string name="nolist">Kan lijst niet aanmaken</string>
+    <string name="noadapter">Kan adapter niet aanmaken</string>
+    <string name="invtick">Ongeldig ticketnummer</string>
+    <string name="noaction">Geen actie gegeven</string>
+    <string name="zoekfilter">Geef zoekstring</string>
+    <string name="zoek">Zoek</string>
+    <string name="storefilter">Sla filter op</string>
+    <string name="storesort">Sla sortering op</string>
+    <string name="filterdef">Definieer filter</string>
+    <string name="sortdef">Definieer sortering</string>
+    <string name="moveup">omhoog</string>
+    <string name="movedown">omlaag</string>
+    <string name="direction">zet richting</string>
+    <string name="sortdel">verwijder</string>
+    <string name="help">Help</string>
+    <string name="Add">Voeg toe</string>
+    <string name="sslHack">Accepteer Self Signed Certificaten</string>
+    <string-array name="filter3_choice">
+        <item>is gelijk aan</item>
+        <item>is niet gelijk aan</item>
+        <item>bevat</item>
+        <item>bevat niet</item>
+        <item>begint met</item>
+        <item>begint niet met</item>
+        <item>eindigt op</item>
+        <item>eindigt niet op</item>
+    </string-array>
+    <string-array name="filter0_choice">
+        <item>is gelijk aan</item>
+        <item>is niet gelijk aan</item>
+    </string-array>
+    <string name="storage_removed">Opslag werd verwijderd</string>
+    <string name="error_selecting_file">Fout bij het selecteren van bestand</string>
+    <string name="empty_directory">Lege folder</string>
+	<string name="selectticket">Selecteer</string>
+</resources>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/select"
+        android:title="@string/selectticket"
+        android:titleCondensed="@string/selectticket"/>
+    <item
+        android:id="@+id/dfupdate"
+        android:title="@string/updateticket"
+        android:titleCondensed="@string/updateticket"/>
+    <item
+        android:id="@+id/dfshare"
+        android:title="@string/dfshare"
+        android:titleCondensed="@string/dfshare"/>
+</menu>
+

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources>
+    <string name="empty_directory">Leerer Ordner</string>
+    <string name="storage_removed">Speicher wurde entferntet.</string>
+    <string name="choose_file">Wähle eine Datei</string>
+    <string name="error_selecting_file">Fehler beim Öffnen der Datei</string>
+    <string name="Back">Zuruck</string>
+    <string name="ophalen">Abrufen Daten</string>
+    <string name="sort">Sortieren</string>
+    <string name="store">Speichern Ticket</string>
+    <string name="storeupd">Änderungen speichern</string>
+    <string name="storok">Ticket erstellt</string>
+    <string name="tracPwHint">Kennwort</string>
+    <string name="tracPw">Kennwort</string>
+    <string name="cancel">Annullieren</string>
+    <string name="zoek">Suche</string>
+    <string name="tracUser">Benutzername</string>
+    <string name="help">Hilfe</string>
+    <string name="about_button">Über Trac Client</string>
+    <string name="tracUserHint">Benutzername</string>
+    <string name="moveup">oben</string>
+    <string name="nieuw">Neues Ticket</string>
+    <string name="movedown">unten</string>
+</resources>

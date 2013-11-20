@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/tlnieuw"
+        android:menuCategory="container"
+        android:title="@string/nieuw"
+        android:titleCondensed="@string/nieuw"/>
+    <item
+        android:id="@+id/tlrefresh"
+        android:menuCategory="container"
+        android:title="@string/tlrefresh"
+        android:titleCondensed="@string/tlrefresh"/>
+    <item
+        android:id="@+id/tlchangehost"
+        android:menuCategory="container"
+        android:title="@string/changehost"
+        android:titleCondensed="@string/changehost"/>
+    <item
+        android:id="@+id/tlzoek"
+        android:menuCategory="container"
+        android:title="@string/zoek"
+        android:titleCondensed="@string/zoek"
+        android:visibility="gone"/>
+    <item
+        android:id="@+id/tlfilter"
+        android:menuCategory="container"
+        android:title="@string/filter"
+        android:titleCondensed="@string/filter"/>
+    <item
+        android:id="@+id/tlsort"
+        android:menuCategory="container"
+        android:title="@string/sort"
+        android:titleCondensed="@string/sort"/>
+    <item
+        android:id="@+id/tlshare"
+        android:menuCategory="container"
+        android:title="@string/tlshare"
+        android:titleCondensed="@string/tlshare"/>
+    <item
+        android:id="@+id/help"
+        android:menuCategory="container"
+        android:title="@string/help"
+        android:titleCondensed="@string/help"/>
+    <item
+        android:id="@+id/over"
+        android:menuCategory="container"
+        android:title="@string/about_button"
+        android:titleCondensed="@string/about_button"/>
+
+</menu>

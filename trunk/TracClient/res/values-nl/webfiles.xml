@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources>
+
+    <!-- NL versie -->
+    <string name="whatsnewhelpfile">whatsnew-nl</string>
+    <string name="helpdetailfile">detailhelp-nl</string>
+    <string name="helplistfile">listhelp-nl</string>
+    <string name="filterhelpfile">filterhelp-nl</string>
+    <string name="sorthelpfile">sorthelp-nl</string>
+    <string name="updatehelpfile">updatehelp-nl</string>
+    <string name="loginhelpfile">loginhelp-nl</string>
+    <string name="newhelpfile">newhelp-nl</string>
+
+</resources>
