@@ -1,1 +1,0 @@
-psql koersdata -c "select distinct naam from koersen order by naam;"

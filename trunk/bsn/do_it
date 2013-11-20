@@ -1,3 +1,0 @@
-#! /bin/sh
-
-psql koersdata -qtc "select naam,max(rekening.id),count(open),max(slot),min(slot),min(koersid.datum),max(koersid.datum) from rekening,koersid where naam='$1' and rekening.id=koersid.id group by naam;"  | awk 'BEGIN {FS="|";} {printf "%-25s %5d %5d %9.2f %9.2f %s %s\n",$1,$2,$3,$4,$5,$6,$7;}'

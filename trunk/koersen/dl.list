@@ -1,9 +1,0 @@
-EuronextFunds.csv=http://www.euronext.com/search/download/pricesearchdownloadpopup.jcsv?pricesearchresults=actif&equitiesChoice=3&lan=EN&mep=8626&resultsTitle=null&cha=1847&instrumentType=7&fundType=710&format=xls&formatDecimal=.&formatDate=dd/MM/yy
-EuronextStocks.csv=http://www.euronext.com/search/download/trapridownloadpopup.jcsv?pricesearchresults=actif&filter=1&belongsToList=market_EURLS&mep=8626&lan=EN&resultsTitle=Amsterdam+-+Euronext&cha=1800&format=xls&formatDecimal=.&formatDate=dd/MM/yy
-EuronextIndex1.csv=http://www.euronext.com/search/download/trapiindicedownloadpopup.jcsv?pricesearchresults=actif&display=GLOBAL&lan=EN&cha=22167&selectedMepId=8650&format=xls&formatDecimal=.&formatDate=dd/MM/yy
-EuronextIndex2.csv=http://www.euronext.com/search/download/trapiindicedownloadpopup.jcsv?pricesearchresults=actif&display=NATIONALINDICES&lan=EN&cha=22167&selectedMepId=8746&format=xls&formatDecimal=.&formatDate=dd/MM/yy
-EuronextIndex3.csv=http://www.euronext.com/search/download/trapiindicedownloadpopup.jcsv?pricesearchresults=actif&display=NATIONALINDICES&lan=EN&cha=22168&selectedMepId=8649&format=xls&formatDecimal=.&formatDate=dd/MM/yy
-EuronextIndex4.csv=http://www.euronext.com/search/download/trapiindicedownloadpopup.jcsv?pricesearchresults=actif&display=GLOBAL&lan=EN&cha=1864&format=xls&formatDecimal=.&formatDate=dd/MM/yy
-YahooIndices.csv=http://download.finance.yahoo.com/d/quotes.csv?s=^DJI&s=^AEX&e=.csv&f=sl1t1d1pohgv
-YahooAEXStocks.csv=http://uk.old.finance.yahoo.com/d/quotes.csv?s=@^AEX&e=.csv&f=sl1t1d1pohgv
-YahooAEXOther.csv=http://uk.old.finance.yahoo.com/d/quotes?s=ICT.AS,INGGF.AS,INGGG.AS,INGEM.AS,INGGR.AS&e=.csv&f=sl1t1d1pohgv
