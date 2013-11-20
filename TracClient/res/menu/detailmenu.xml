@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/dfrefresh"
+        android:menuCategory="container"
+        android:title="@string/dfrefresh"
+        android:titleCondensed="@string/dfrefresh"/>
+    <item
+        android:id="@+id/dfupdate"
+        android:menuCategory="container"
+        android:title="@string/updateticket"
+        android:titleCondensed="@string/updateticket"/>
+    <item
+        android:id="@+id/dfattach"
+        android:menuCategory="container"
+        android:title="@string/attach"
+        android:titleCondensed="@string/attach"/>
+    <item
+        android:id="@+id/dfshare"
+        android:menuCategory="container"
+        android:title="@string/dfshare"
+        android:titleCondensed="@string/dfshare"/>
+    <item
+        android:id="@+id/help"
+        android:menuCategory="container"
+        android:title="@string/help"
+        android:titleCondensed="@string/help"/>
+    <item
+        android:id="@+id/over"
+        android:menuCategory="container"
+        android:title="@string/about_button"
+        android:titleCondensed="@string/about_button"/>
+
+</menu>
+

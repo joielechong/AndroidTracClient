@@ -1,7 +1,0 @@
-drop trigger tp_fietsers_del on fietsers;
-
-create or replace function tp_fietsers_del() returns trigger as 
-'begin delete from type where id=old.id; return old; end;' language 'plpgsql';
-
-create trigger tp_fietsers_del before delete
-    on fietsers for each row execute procedure tp_fietsers_del();

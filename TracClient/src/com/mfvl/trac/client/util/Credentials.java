@@ -1,0 +1,201 @@
+package com.mfvl.trac.client.util;
+
+import java.io.ByteArrayInputStream;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+
+import javax.security.auth.x500.X500Principal;
+
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.Signature;
+import android.os.Build;
+import android.util.Log;
+
+public class Credentials {
+	public static final String PREFS_NAME = "Trac";
+	private static String _url = "";
+	private static String _username = "";
+	private static String _password = "";
+	private static boolean _sslHack = false;
+	private static SharedPreferences settings = null;
+
+	public static void setCredentials(final String url, final String username, final String password) {
+		Log.i("Credentials", "setCredentials");
+		_url = url;
+		_username = username;
+		_password = password;
+	}
+
+	public static void loadCredentials(Context context) {
+		Log.i("Credentials", "loadCredentials");
+		if (settings == null) {
+			settings = context.getSharedPreferences(PREFS_NAME, 0);
+		}
+		_url = settings.getString("tracUrl", "");
+		_username = settings.getString("tracUsername", "");
+		_password = settings.getString("tracPassword", "");
+		_sslHack = settings.getBoolean("sslHack", false);
+	}
+
+	public static void storeCredentials(Context context) {
+		Log.i("Credentials", "storeCredentials");
+		if (settings == null) {
+			settings = context.getSharedPreferences(PREFS_NAME, 0);
+		}
+		final SharedPreferences.Editor editor = settings.edit();
+		editor.putString("tracUrl", _url);
+		editor.putString("tracUsername", _username);
+		editor.putString("tracPassword", _password);
+		editor.putBoolean("sslHack", _sslHack);
+
+		// Commit the edits!
+		editor.commit();
+	}
+
+	public static String getUrl() {
+		return _url;
+	}
+
+	public static String getUsername() {
+		return _username;
+	}
+
+	public static String getPassword() {
+		return _password;
+	}
+
+	public static void setSslHack(boolean sslHack) {
+		_sslHack = sslHack;
+	}
+
+	public static boolean getSslHack() {
+		return _sslHack;
+	}
+
+	public static boolean getFirstRun(Context context) {
+		Log.i("Credentials", "getFirstRun");
+		if (settings == null) {
+			settings = context.getSharedPreferences(PREFS_NAME, 0);
+		}
+		final String thisRun = buildVersion(context, false);
+		final String lastRun = settings.getString("firstRun", "");
+		final SharedPreferences.Editor editor = settings.edit();
+		editor.putString("firstRun", thisRun);
+		editor.commit();
+
+		return !lastRun.equals(thisRun);
+	}
+
+	public static void storeFilterString(Context context, final String filterString) {
+		Log.i("Credentials", "storeFilterString");
+		if (settings == null) {
+			settings = context.getSharedPreferences(PREFS_NAME, 0);
+		}
+		final SharedPreferences.Editor editor = settings.edit();
+		editor.putString("filterString", filterString);
+		editor.commit();
+	}
+
+	public static String getFilterString(Context context) {
+		Log.i("Credentials", "getFilterString");
+		if (settings == null) {
+			settings = context.getSharedPreferences(PREFS_NAME, 0);
+		}
+		final String filterString = settings.getString("filterString", "max=500&status!=closed");
+		return filterString;
+	}
+
+	public static void removeFilterString(Context context) {
+		Log.i("Credentials", "removeFilterString");
+		if (settings == null) {
+			settings = context.getSharedPreferences(PREFS_NAME, 0);
+		}
+		final SharedPreferences.Editor editor = settings.edit();
+		editor.putString("filterString", "max=500&status!=closed");
+		editor.commit();
+	}
+
+	public static void storeSortString(Context context, final String sortString) {
+		Log.i("Credentials", "storeSortString");
+		if (settings == null) {
+			settings = context.getSharedPreferences(PREFS_NAME, 0);
+		}
+		final SharedPreferences.Editor editor = settings.edit();
+		editor.putString("sortString", sortString);
+		editor.commit();
+	}
+
+	public static String getSortString(Context context) {
+		Log.i("Credentials", "getSortString");
+		if (settings == null) {
+			settings = context.getSharedPreferences(PREFS_NAME, 0);
+		}
+		final String sortString = settings.getString("sortString", "order=priority&order=modified&desc=1");
+		return sortString;
+	}
+
+	public static void removeSortString(Context context) {
+		Log.i("Credentials", "removeSortString");
+		if (settings == null) {
+			settings = context.getSharedPreferences(PREFS_NAME, 0);
+		}
+		final SharedPreferences.Editor editor = settings.edit();
+		editor.putString("sortString", "order=priority&order=modified&desc=1");
+		editor.commit();
+	}
+
+	private static final X500Principal DEBUG_DN = new X500Principal("CN=Android Debug,O=Android,C=US");
+
+	public static boolean isDebuggable(Context ctx) {
+		boolean debuggable = false;
+
+		try {
+			final PackageInfo pinfo = ctx.getPackageManager().getPackageInfo(ctx.getPackageName(), PackageManager.GET_SIGNATURES);
+			final Signature signatures[] = pinfo.signatures;
+
+			final CertificateFactory cf = CertificateFactory.getInstance("X.509");
+
+			for (final Signature signature : signatures) {
+				final ByteArrayInputStream stream = new ByteArrayInputStream(signature.toByteArray());
+				final X509Certificate cert = (X509Certificate) cf.generateCertificate(stream);
+				debuggable = cert.getSubjectX500Principal().equals(DEBUG_DN);
+				if (debuggable) {
+					break;
+				}
+			}
+		} catch (final NameNotFoundException e) {
+		} catch (final CertificateException e) {
+		}
+		return debuggable;
+	}
+
+	@TargetApi(Build.VERSION_CODES.GINGERBREAD)
+	public static String buildVersion(Context context, boolean extra) {
+		String versie = null;
+		final PackageManager manager = context.getPackageManager();
+		PackageInfo info;
+		try {
+			info = manager.getPackageInfo(context.getPackageName(), 0);
+			versie = "V" + info.versionName;
+			final int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+			Log.d(context.getClass().getName(), "buildVersion versie = " + versie + " api = " + currentapiVersion);
+			if (isDebuggable(context) && currentapiVersion >= android.os.Build.VERSION_CODES.GINGERBREAD) {
+				versie += "/" + info.lastUpdateTime / (1000 * 60);
+			}
+		} catch (final NameNotFoundException e) {
+			e.printStackTrace();
+			if (versie == null) {
+				versie = "V0.2";
+			}
+		}
+		Log.d(context.getClass().getName(), "buildVersion versie = " + versie);
+		return versie;
+	}
+
+}

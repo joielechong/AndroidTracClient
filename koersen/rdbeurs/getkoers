@@ -1,7 +1,0 @@
-#! /bin/sh
-
-wget -q -O /tmp/$$ -i - <<EOF
-http://www.aex.nl/scripts/finance/PortF.asp?dest=vk&action=&PortNr=1&ID=48997&PWD=mikel02&chkDoCookie=-1
-EOF
-rdbeurs </tmp/$$
-rm /tmp/$$
