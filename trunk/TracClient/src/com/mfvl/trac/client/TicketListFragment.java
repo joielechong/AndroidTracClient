@@ -385,7 +385,7 @@ public class TicketListFragment extends TracClientFragment {
 								if (reqString.length() > 0) {
 									reqString += "&";
 								}
-								reqString += fs;
+								reqString += fs.toString();
 							}
 						}
 						for (final SortSpec s : sortList) {
@@ -393,13 +393,17 @@ public class TicketListFragment extends TracClientFragment {
 								if (reqString.length() > 0) {
 									reqString += "&";
 								}
-								reqString += s;
+								reqString += s.toString();
 							}
 						}
 						Log.i(this.getClass().getName(), "reqString = " + reqString);
 						final JSONRPCHttpClient req = new JSONRPCHttpClient(_url, _sslHack);
 						req.setCredentials(_username, _password);
+						final String rs = reqString;
 						try {
+							if (reqString.length() == 0) {
+								reqString = "max=0";
+							}
 							final JSONArray ticketlist = req.callJSONArray("ticket.query", reqString);
 							Log.i(this.getClass().getName(), ticketlist.toString());
 							try {
@@ -419,7 +423,7 @@ public class TicketListFragment extends TracClientFragment {
 								public void run() {
 									final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
 									alertDialogBuilder.setTitle(R.string.connerr);
-									alertDialogBuilder.setMessage(e.getMessage()).setCancelable(false)
+									alertDialogBuilder.setMessage("regString = " + rs+"\n"+e.getMessage()).setCancelable(false)
 										.setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
 											@Override
 											public void onClick(DialogInterface dialog, int id) {
@@ -428,7 +432,7 @@ public class TicketListFragment extends TracClientFragment {
 										});
 									final AlertDialog alertDialog = alertDialogBuilder.create();
 									if (!context.isFinishing()) {
-										alertDialog.show(); // ticket 8
+										alertDialog.show(); 
 									}
 								}
 							});
