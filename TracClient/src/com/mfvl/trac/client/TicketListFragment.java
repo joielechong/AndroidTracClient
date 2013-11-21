@@ -224,9 +224,13 @@ public class TicketListFragment extends TracClientFragment {
 		Log.i(this.getClass().getName(), "onResume");
 		super.onResume();
 		if (refreshOnRestart) {
+			scrollPosition = 0;
 			tickets = null;
 			ticketList.clear();
 			refreshOnRestart = false;
+			if (listView != null) {
+				listView.setAdapter(null);
+			}
 		}
 		if (!loading && ticketList.size() == 0) {
 			if (tickets == null) {
@@ -353,7 +357,18 @@ public class TicketListFragment extends TracClientFragment {
 		}
 		savedState.putInt(SCROLLPOSITIONNAME, scrollPosition);
 	}
-
+	
+	@Override
+	public void setHost(final String url, final String username, final String password, boolean sslHack) {
+		Log.i(this.getClass().getName(), "setHost");
+		super.setHost(url,username,password,sslHack);
+		if (listView != null) {
+			listView.setAdapter(null);
+		}
+		tickets = null;
+		ticketList.clear();
+	}
+	
 	private void loadTicketList() {
 		Log.i(this.getClass().getName(), "loadTicketList");
 		ticketList.clear();
@@ -363,59 +378,63 @@ public class TicketListFragment extends TracClientFragment {
 			networkThread = new Thread() {
 				@Override
 				public void run() {
-					String reqString = "";
-					for (final FilterSpec fs : filterList) {
-						if (fs != null) {
-							if (reqString.length() > 0) {
-								reqString += "&";
-							}
-							reqString += fs;
-						}
-					}
-					for (final SortSpec s : sortList) {
-						if (s != null) {
-							if (reqString.length() > 0) {
-								reqString += "&";
-							}
-							reqString += s;
-						}
-					}
-					Log.i(this.getClass().getName(), "reqString = " + reqString);
-					final JSONRPCHttpClient req = new JSONRPCHttpClient(_url, _sslHack);
-					req.setCredentials(_username, _password);
 					try {
-						final JSONArray ticketlist = req.callJSONArray("ticket.query", reqString);
-						Log.i(this.getClass().getName(), ticketlist.toString());
-						try {
-							final int count = ticketlist.length();
-							tickets = new int[count];
-							for (int i = 0; i < count; i++) {
-								tickets[i] = ticketlist.getInt(i);
+						String reqString = "";
+						for (final FilterSpec fs : filterList) {
+							if (fs != null) {
+								if (reqString.length() > 0) {
+									reqString += "&";
+								}
+								reqString += fs;
 							}
-							loadTickets();
-						} catch (final Exception e) {
-							e.printStackTrace();
 						}
-					} catch (final JSONRPCException e) {
-						Log.i(this.getClass().getName(), e.toString());
-						context.runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-								alertDialogBuilder.setTitle(R.string.connerr);
-								alertDialogBuilder.setMessage(e.getMessage()).setCancelable(false)
+						for (final SortSpec s : sortList) {
+							if (s != null) {
+								if (reqString.length() > 0) {
+									reqString += "&";
+								}
+								reqString += s;
+							}
+						}
+						Log.i(this.getClass().getName(), "reqString = " + reqString);
+						final JSONRPCHttpClient req = new JSONRPCHttpClient(_url, _sslHack);
+						req.setCredentials(_username, _password);
+						try {
+							final JSONArray ticketlist = req.callJSONArray("ticket.query", reqString);
+							Log.i(this.getClass().getName(), ticketlist.toString());
+							try {
+								final int count = ticketlist.length();
+								tickets = new int[count];
+								for (int i = 0; i < count; i++) {
+									tickets[i] = ticketlist.getInt(i);
+								}	
+								loadTickets();
+							} catch (final Exception e) {
+								e.printStackTrace();
+							}
+						} catch (final JSONRPCException e) {
+							Log.i(this.getClass().getName(), e.toString());
+							context.runOnUiThread(new Runnable() {
+								@Override
+								public void run() {
+									final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+									alertDialogBuilder.setTitle(R.string.connerr);
+									alertDialogBuilder.setMessage(e.getMessage()).setCancelable(false)
 										.setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
 											@Override
 											public void onClick(DialogInterface dialog, int id) {
 												listener.onChangeHost();
 											}
 										});
-								final AlertDialog alertDialog = alertDialogBuilder.create();
-								if (!context.isFinishing()) {
-									alertDialog.show(); // ticket 8
+									final AlertDialog alertDialog = alertDialogBuilder.create();
+									if (!context.isFinishing()) {
+										alertDialog.show(); // ticket 8
+									}
 								}
-							}
-						});
+							});
+						}
+					} catch (Exception e) {
+					
 					} finally {
 						loading = false;
 					}
@@ -550,16 +569,20 @@ public class TicketListFragment extends TracClientFragment {
 	private void doRefresh() {
 		if (networkThread != null) {
 			networkThread.interrupt();
+			loading = false;
 		}
 		hs.setText(null);
+		scrollPosition = 0;
 		loadTicketList();
 	}
 	
 	public void forceRefresh() {
 		if (networkThread != null) {
 			networkThread.interrupt();
+			loading=false;
 		}
 		refreshOnRestart = true;
+		scrollPosition = 0;
 	}
 	
 	private void shareList() {
