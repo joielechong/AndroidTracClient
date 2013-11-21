@@ -36,7 +36,7 @@ interface InterFragmentListener {
 	void onUpdateTicket(Ticket ticket);
 
 	TicketModel getTicketModel();
-	
+
 	void refreshOverview();
 
 	void setFilter(ArrayList<FilterSpec> filter);
@@ -97,7 +97,7 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 		if (ticketListFragment == null) {
 			ticketListFragment = new TicketListFragment();
 		}
-		
+
 		fm = getSupportFragmentManager();
 
 		if (savedInstanceState == null) {
@@ -121,11 +121,10 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 		 * fm.popBackStack();
 		 * 
 		 * detailFragment = (DetailFragment)
-		 * fmfindFragmentById(R.id.displayDetail); if
-		 * (detailFragment == null) { final FragmentTransaction ft =
-		 * fm.beginTransaction(); detailFragment = new
-		 * DetailFragment(); ft.replace(R.id.displayDetail, detailFragment,
-		 * "Detail_Fragment1");
+		 * fmfindFragmentById(R.id.displayDetail); if (detailFragment == null) {
+		 * final FragmentTransaction ft = fm.beginTransaction(); detailFragment
+		 * = new DetailFragment(); ft.replace(R.id.displayDetail,
+		 * detailFragment, "Detail_Fragment1");
 		 * ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 		 * ft.commit(); } detailFragment.setHost(url, username, password,
 		 * sslHack); }
@@ -138,8 +137,8 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 
 		/*
 		 * if (detailPage) { detailFragment = (DetailFragment)
-		 * fm.findFragmentById(R.id.displayDetail);
-		 * detailFragment.setHost(url, username, password, sslHack);
+		 * fm.findFragmentById(R.id.displayDetail); detailFragment.setHost(url,
+		 * username, password, sslHack);
 		 * detailFragment.updateTicketContent(ticket); } else {
 		 */
 		final DetailFragment detailFragment = new DetailFragment();
@@ -164,8 +163,8 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 		Log.i(this.getClass().getName(), "detailFragment =" + newtickFragment.toString());
 		/*
 		 * if (detailPage) { final FragmentTransaction ft =
-		 * fm.beginTransaction();
-		 * ft.replace(R.id.displayDetail, newtickFragment, "New_Fragment1");
+		 * fm.beginTransaction(); ft.replace(R.id.displayDetail,
+		 * newtickFragment, "New_Fragment1");
 		 * ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 		 * ft.addToBackStack(null); ft.commit(); newtickFragment.setHost(url,
 		 * username, password, sslHack); } else {
@@ -188,8 +187,8 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 		Log.i(this.getClass().getName(), "detailFragment = " + updtickFragment.toString());
 		/*
 		 * if (detailPage) { final FragmentTransaction ft =
-		 * fm.beginTransaction();
-		 * ft.replace(R.id.displayExtra, updtickFragment, "Modify_Fragment1");
+		 * fm.beginTransaction(); ft.replace(R.id.displayExtra, updtickFragment,
+		 * "Modify_Fragment1");
 		 * ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 		 * ft.addToBackStack(null); ft.commit(); updtickFragment.setHost(url,
 		 * username, password, sslHack); updtickFragment.loadTicket(ticket); }
@@ -215,19 +214,22 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 		username = newUser;
 		password = newPass;
 		sslHack = newHack;
-		if (ticketListFragment!=null) {
+		if (ticketListFragment != null) {
 			// ticketList already started
 			ticketListFragment.setHost(url, username, password, sslHack);
+			setFilter(Credentials.getFilterString(this));
+			setSort(Credentials.getSortString(this));
 		}
-		if ( ! fm.popBackStackImmediate()) {
+		if (!fm.popBackStackImmediate()) {
 			ticketListFragment = new TicketListFragment();
 			final FragmentTransaction ft = fm.beginTransaction();
 			ticketListFragment.setHost(url, username, password, sslHack);
+			setFilter(Credentials.getFilterString(this));
+			setSort(Credentials.getSortString(this));
 			ft.replace(R.id.displayList, ticketListFragment, "List_Fragment");
 			ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			ft.commit();
 		}
-		setFilter(Credentials.getFilterString(this));
 		refreshOverview();
 	}
 
@@ -237,28 +239,31 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 		if (ticketListFragment != null) {
 			ticketListFragment.setFilter(filter);
 		}
-		String filterString = null;
-		for (final FilterSpec fs : filter) {
-			if (filterString == null) {
-				filterString = fs.toString();
-			} else {
-				filterString += "&" + fs;
+		String filterString = "";
+		if (filter != null) {
+			for (final FilterSpec fs : filter) {
+				if (filterString.length() > 0) {
+					filterString += "&";
+				}
+				filterString += fs.toString();
 			}
 		}
-		Credentials.storeFilterString(this, (filterString == null?"":filterString));
+		Credentials.storeFilterString(this, filterString);
 	}
 
 	public void setFilter(String filterString) {
 		final ArrayList<FilterSpec> filter = new ArrayList<FilterSpec>();
-		String[] fs;
-		try {
-			fs = filterString.split("\\&");
-		} catch (final IllegalArgumentException e) {
-			fs = new String[1];
-			fs[0] = filterString;
-		}
-		for (final String f : fs) {
-			filter.add(new FilterSpec(f, this.getApplicationContext()));
+		if (filterString.length() > 0) {
+			String[] fs;
+			try {
+				fs = filterString.split("\\&");
+			} catch (final IllegalArgumentException e) {
+				fs = new String[1];
+				fs[0] = filterString;
+			}
+			for (final String f : fs) {
+				filter.add(new FilterSpec(f, this.getApplicationContext()));
+			}
 		}
 		ticketListFragment.setFilter(filter);
 	}
@@ -269,40 +274,43 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 		if (ticketListFragment != null) {
 			ticketListFragment.setSort(sort);
 		}
-		String sortString = null;
-		for (final SortSpec fs : sort) {
-			if (sortString == null) {
-				sortString = fs.toString();
-			} else {
-				sortString += "&" + fs;
+		String sortString = "";
+		if (sort != null) {
+			for (final SortSpec s : sort) {
+				if (sortString.length() > 0) {
+					sortString += "&";
+				}
+				sortString += s.toString();
 			}
 		}
-		Credentials.storeSortString(this, (sortString==null?"":sortString));
+		Credentials.storeSortString(this, sortString);
 	}
 
 	public void setSort(String sortString) {
 		final ArrayList<SortSpec> sl = new ArrayList<SortSpec>();
-		String[] sort;
-		try {
-			sort = sortString.split("\\&");
-		} catch (final IllegalArgumentException e) {
-			sort = new String[1];
-			sort[0] = sortString;
-		}
-		for (int i = 0; i < sort.length; i++) {
-			final String s = sort[i];
-			if (s.startsWith("order=")) {
-				final String veld = s.substring(6);
-				boolean richting = true;
+		if (sortString.length() > 0) {
+			String[] sort;
+			try {
+				sort = sortString.split("\\&");
+			} catch (final IllegalArgumentException e) {
+				sort = new String[1];
+				sort[0] = sortString;
+			}
+			for (int i = 0; i < sort.length; i++) {
+				final String s = sort[i];
+				if (s.startsWith("order=")) {
+					final String veld = s.substring(6);
+					boolean richting = true;
 
-				if (i + 1 < sort.length) {
-					final String s1 = sort[i + 1];
-					if (s1.equalsIgnoreCase("desc=1")) {
-						richting = false;
-						i++;
+					if (i + 1 < sort.length) {
+						final String s1 = sort[i + 1];
+						if (s1.equalsIgnoreCase("desc=1")) {
+							richting = false;
+							i++;
+						}
 					}
+					sl.add(new SortSpec(veld, richting));
 				}
-				sl.add(new SortSpec(veld, richting));
 			}
 		}
 		ticketListFragment.setSort(sl);

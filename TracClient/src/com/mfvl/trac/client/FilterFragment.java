@@ -249,7 +249,8 @@ public class FilterFragment extends TracClientFragment {
 		backButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				getFragmentManager().popBackStackImmediate();
+//				getFragmentManager().popBackStackImmediate();
+				getFragmentManager().popBackStack();
 			}
 		});
 
@@ -262,11 +263,13 @@ public class FilterFragment extends TracClientFragment {
 					if (items.get(i).operator() == null || items.get(i).operator().equals("") || items.get(i).waarde() == null
 							|| items.get(i).waarde().equals("")) {
 						items.remove(i);
+					} else {
+						items.get(i).setEdit(false);
 					}
-					items.get(i).setEdit(false);
 				}
 				listener.setFilter(items);
-				getFragmentManager().popBackStackImmediate();
+//				getFragmentManager().popBackStackImmediate();
+				getFragmentManager().popBackStack();
 			}
 		});
 

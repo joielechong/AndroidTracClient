@@ -93,12 +93,12 @@ public class Credentials {
 	}
 
 	public static void storeFilterString(Context context, final String filterString) {
-		Log.i("Credentials", "storeFilterString");
+		Log.i("Credentials", "storeFilterString: "+filterString);
 		if (settings == null) {
 			settings = context.getSharedPreferences(PREFS_NAME, 0);
 		}
 		final SharedPreferences.Editor editor = settings.edit();
-		editor.putString("filterString", filterString);
+		editor.putString("filterString", (filterString==null?"":filterString));
 		editor.commit();
 	}
 
@@ -108,6 +108,7 @@ public class Credentials {
 			settings = context.getSharedPreferences(PREFS_NAME, 0);
 		}
 		final String filterString = settings.getString("filterString", "max=500&status!=closed");
+		Log.i("Credentials", "getFilterString filterString = "+filterString);
 		return filterString;
 	}
 
@@ -122,12 +123,12 @@ public class Credentials {
 	}
 
 	public static void storeSortString(Context context, final String sortString) {
-		Log.i("Credentials", "storeSortString");
+		Log.i("Credentials", "storeSortString: "+sortString);
 		if (settings == null) {
 			settings = context.getSharedPreferences(PREFS_NAME, 0);
 		}
 		final SharedPreferences.Editor editor = settings.edit();
-		editor.putString("sortString", sortString);
+		editor.putString("sortString", (sortString==null?"":sortString));
 		editor.commit();
 	}
 
@@ -137,6 +138,7 @@ public class Credentials {
 			settings = context.getSharedPreferences(PREFS_NAME, 0);
 		}
 		final String sortString = settings.getString("sortString", "order=priority&order=modified&desc=1");
+		Log.i("Credentials", "getSortString sortString = "+sortString);
 		return sortString;
 	}
 
