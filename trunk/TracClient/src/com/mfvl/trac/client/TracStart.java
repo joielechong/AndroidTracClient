@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 
@@ -62,6 +63,7 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 	private onFileSelectedListener _oc = null;
 	private boolean dispAds;
 	private TicketListFragment ticketListFragment = null;
+	private FragmentManager fm = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -95,9 +97,11 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 		if (ticketListFragment == null) {
 			ticketListFragment = new TicketListFragment();
 		}
+		
+		fm = getSupportFragmentManager();
 
 		if (savedInstanceState == null) {
-			final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+			final FragmentTransaction ft = fm.beginTransaction();
 			if (url.length() > 0) {
 				ticketListFragment.setHost(url, username, password, sslHack);
 				ft.add(R.id.displayList, ticketListFragment, "List_Fragment");
@@ -114,12 +118,12 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 		 * this is extra code when using a split screen on e.g. a tablet
 		 * 
 		 * if (findViewById(R.id.displayDetail) != null) { detailPage = true;
-		 * getSupportFragmentManager().popBackStack();
+		 * fm.popBackStack();
 		 * 
 		 * detailFragment = (DetailFragment)
-		 * getSupportFragmentManager().findFragmentById(R.id.displayDetail); if
+		 * fmfindFragmentById(R.id.displayDetail); if
 		 * (detailFragment == null) { final FragmentTransaction ft =
-		 * getSupportFragmentManager().beginTransaction(); detailFragment = new
+		 * fm.beginTransaction(); detailFragment = new
 		 * DetailFragment(); ft.replace(R.id.displayDetail, detailFragment,
 		 * "Detail_Fragment1");
 		 * ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -134,13 +138,13 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 
 		/*
 		 * if (detailPage) { detailFragment = (DetailFragment)
-		 * getSupportFragmentManager().findFragmentById(R.id.displayDetail);
+		 * fm.findFragmentById(R.id.displayDetail);
 		 * detailFragment.setHost(url, username, password, sslHack);
 		 * detailFragment.updateTicketContent(ticket); } else {
 		 */
 		final DetailFragment detailFragment = new DetailFragment();
 		Log.i(this.getClass().getName(), "detailFragment =" + detailFragment.toString());
-		final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+		final FragmentTransaction ft = fm.beginTransaction();
 		ft.replace(R.id.displayList, detailFragment, "Detail_Fragment2");
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 		ft.addToBackStack(null);
@@ -160,13 +164,13 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 		Log.i(this.getClass().getName(), "detailFragment =" + newtickFragment.toString());
 		/*
 		 * if (detailPage) { final FragmentTransaction ft =
-		 * getSupportFragmentManager().beginTransaction();
+		 * fm.beginTransaction();
 		 * ft.replace(R.id.displayDetail, newtickFragment, "New_Fragment1");
 		 * ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 		 * ft.addToBackStack(null); ft.commit(); newtickFragment.setHost(url,
 		 * username, password, sslHack); } else {
 		 */
-		final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+		final FragmentTransaction ft = fm.beginTransaction();
 		ft.replace(R.id.displayList, newtickFragment, "New_Fragment2");
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 		ft.addToBackStack(null);
@@ -184,14 +188,14 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 		Log.i(this.getClass().getName(), "detailFragment = " + updtickFragment.toString());
 		/*
 		 * if (detailPage) { final FragmentTransaction ft =
-		 * getSupportFragmentManager().beginTransaction();
+		 * fm.beginTransaction();
 		 * ft.replace(R.id.displayExtra, updtickFragment, "Modify_Fragment1");
 		 * ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 		 * ft.addToBackStack(null); ft.commit(); updtickFragment.setHost(url,
 		 * username, password, sslHack); updtickFragment.loadTicket(ticket); }
 		 * else {
 		 */
-		final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+		final FragmentTransaction ft = fm.beginTransaction();
 		ft.replace(R.id.displayList, updtickFragment, "Modify_Fragment2");
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 		ft.addToBackStack(null);
@@ -206,16 +210,25 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 	@Override
 	public void onLogin(String newUrl, String newUser, String newPass, boolean newHack) {
 		Log.i(this.getClass().getName(), "onLogin");
+		tm = null;
 		url = newUrl;
 		username = newUser;
 		password = newPass;
 		sslHack = newHack;
-		final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-		ticketListFragment.setHost(url, username, password, sslHack);
-		ft.replace(R.id.displayList, ticketListFragment, "List_Fragment");
-		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-		ft.commit();
+		if (ticketListFragment!=null) {
+			// ticketList already started
+			ticketListFragment.setHost(url, username, password, sslHack);
+		}
+		if ( ! fm.popBackStackImmediate()) {
+			ticketListFragment = new TicketListFragment();
+			final FragmentTransaction ft = fm.beginTransaction();
+			ticketListFragment.setHost(url, username, password, sslHack);
+			ft.replace(R.id.displayList, ticketListFragment, "List_Fragment");
+			ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			ft.commit();
+		}
 		setFilter(Credentials.getFilterString(this));
+		refreshOverview();
 	}
 
 	@Override
@@ -232,7 +245,7 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 				filterString += "&" + fs;
 			}
 		}
-		Credentials.storeFilterString(this, filterString);
+		Credentials.storeFilterString(this, (filterString == null?"":filterString));
 	}
 
 	public void setFilter(String filterString) {
@@ -264,7 +277,7 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 				sortString += "&" + fs;
 			}
 		}
-		Credentials.storeSortString(this, sortString);
+		Credentials.storeSortString(this, (sortString==null?"":sortString));
 	}
 
 	public void setSort(String sortString) {
@@ -298,7 +311,7 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 	@Override
 	public void onChangeHost() {
 		Log.i(this.getClass().getName(), "onChangeHost");
-		final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+		final FragmentTransaction ft = fm.beginTransaction();
 		final TracLoginFragment tracLoginFragment = new TracLoginFragment();
 		ft.replace(R.id.displayList, tracLoginFragment, "Login_Fragment");
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -309,7 +322,7 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 	@Override
 	public void onFilterSelected(ArrayList<FilterSpec> filterList) {
 		Log.i(this.getClass().getName(), "onFilterSelected");
-		final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+		final FragmentTransaction ft = fm.beginTransaction();
 		final FilterFragment filterFragment = new FilterFragment();
 		ft.replace(R.id.displayList, filterFragment, "Filter_Fragment");
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -321,7 +334,7 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 	@Override
 	public void onSortSelected(ArrayList<SortSpec> sortList) {
 		Log.i(this.getClass().getName(), "onSortSelected");
-		final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+		final FragmentTransaction ft = fm.beginTransaction();
 		final SortFragment sortFragment = new SortFragment();
 		ft.replace(R.id.displayList, sortFragment, "Sort_Fragment");
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
