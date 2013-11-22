@@ -79,5 +79,6 @@
     <string name="storage_removed">Opslag werd verwijderd</string>
     <string name="error_selecting_file">Fout bij het selecteren van bestand</string>
     <string name="empty_directory">Lege folder</string>
-	<string name="selectticket">Selecteer</string>
+    <string name="selectticket">Selecteer</string>
+    <string name="getlist">Haal ticketlijst op</string>
 </resources>

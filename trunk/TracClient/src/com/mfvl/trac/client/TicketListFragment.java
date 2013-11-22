@@ -375,6 +375,7 @@ public class TicketListFragment extends TracClientFragment {
 		callBack.onComplete();
 		if (_url != null) {
 			loading = true;
+			hs.setText(R.string.getlist);
 			networkThread = new Thread() {
 				@Override
 				public void run() {
@@ -504,7 +505,7 @@ public class TicketListFragment extends TracClientFragment {
 							ticketList.add(t);
 							ticketMap.put(tickets[i], t);
 						}
-						hs.setText(context.getString(R.string.ophalen));
+						hs.setText(R.string.ophalen);
 					}
 				});
 				callBack.onComplete();
