@@ -21,4 +21,10 @@
     <string name="moveup">oben</string>
     <string name="nieuw">Neues Ticket</string>
     <string name="movedown">unten</string>
+    <string name="storesort">Speicher Sortierung</string>
+    <string name="storefilter">Speicher Filter</string>
+    <string-array name="filter3_choice">
+        <item/>
+        <item/>
+    </string-array>
 </resources>
