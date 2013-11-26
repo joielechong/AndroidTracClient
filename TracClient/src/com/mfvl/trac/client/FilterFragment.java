@@ -48,8 +48,7 @@ public class FilterFragment extends TracClientFragment {
 
 		@Override
 		public View getView(final int position, View convertView, final ViewGroup parent) {
-			// Log.i(this.getClass().getName(), "getView pos=" + position + " "
-			// + convertView + " " + parent);
+			Log.i(this.getClass().getName(), "getView pos=" + position + " " + convertView + " " + parent);
 
 			final Resources res = context.getResources();
 			final ArrayList<String> operators = new ArrayList<String>(Arrays.asList(res.getStringArray(R.array.filter2_choice)));
@@ -57,6 +56,13 @@ public class FilterFragment extends TracClientFragment {
 			final ListView listView = (ListView) parent;
 
 			View v = convertView;
+			if (v != null) {	
+				LinearLayout lv = (LinearLayout)v;
+				Log.i(this.getClass().getName(), "getView convertView.childCount=" + lv.getChildCount());
+				for (int i=0;i<((LinearLayout)v).getChildCount();i++){
+					Log.i(this.getClass().getName(), "getView convertView.child("+i+") "+lv.getChildAt(i));
+				}
+			}
 			int p;
 			if (position >= items.size() || position < 0) {
 				p = 0;
@@ -67,19 +73,24 @@ public class FilterFragment extends TracClientFragment {
 			final FilterSpec o = items.get(p);
 			final TicketModelVeld tmv = tm.getVeld(o.veld());
 
-			// Log.i(this.getClass().getName(), "getView pos=" + position + " "
-			// + o + " " + tmv);
+			Log.i(this.getClass().getName(), "getView pos=" + position + " " + o + " " + tmv);
 
 			final int resid = o.isEdit() ? (tmv.options() == null ? R.layout.filter_spec2 : R.layout.filter_spec3)
 					: R.layout.filter_spec1;
 			final int curid = convertView == null ? -1 : convertView.getId();
-			// Log.i(this.getClass().getName(),"getView pos = " + position +
-			// " curid = " + curid + " resid=" + resid + " veld = " + o.veld());
+			Log.i(this.getClass().getName(),"getView pos = " + position + " curid = " + curid + " resid=" + resid + " veld = " + o.veld());
 			if (curid != resid) {
 				final LayoutInflater vi = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				v = vi.inflate(resid, null);
 				v.setId(resid); // hack hack
-				listView.requestLayout();
+//				listView.requestLayout();
+			}
+			if (v != null) {	
+				LinearLayout lv = (LinearLayout)v;
+				Log.i(this.getClass().getName(), "getView convertedView.childCount=" + lv.getChildCount());
+				for (int i=0;i<((LinearLayout)v).getChildCount();i++){
+					Log.i(this.getClass().getName(), "getView convertedView.child("+i+") "+lv.getChildAt(i));
+				}
 			}
 
 			listView.invalidate();
@@ -139,7 +150,7 @@ public class FilterFragment extends TracClientFragment {
 				});
 			}
 
-			if (ll != null) {
+			if (ll != null && ll.getChildCount() == 0) {
 				ll.addView(makeCheckBoxes(o));
 			}
 
@@ -149,7 +160,6 @@ public class FilterFragment extends TracClientFragment {
 					public void onClick(View v1) {
 						Log.i(this.getClass().getName(), "edit onClick " + o.veld() + " parent=" + parent);
 						o.setEdit(true);
-						((LinearLayout) v1.getParent()).invalidate();
 						listView.invalidateViews();
 					}
 				});
@@ -249,7 +259,6 @@ public class FilterFragment extends TracClientFragment {
 		backButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-//				getFragmentManager().popBackStackImmediate();
 				getFragmentManager().popBackStack();
 			}
 		});
@@ -268,7 +277,6 @@ public class FilterFragment extends TracClientFragment {
 					}
 				}
 				listener.setFilter(items);
-//				getFragmentManager().popBackStackImmediate();
 				getFragmentManager().popBackStack();
 			}
 		});
@@ -340,6 +348,7 @@ public class FilterFragment extends TracClientFragment {
 			ws[0] = w;
 		}
 		Log.i(this.getClass().getName(), "makeCheckBoxes " + ws);
+		Log.i(this.getClass().getName(), "makeCheckBoxes " + waardes);
 
 		for (int i = 0; i < waardes.size(); i++) {
 			final CheckBox rb = new CheckBox(context);
