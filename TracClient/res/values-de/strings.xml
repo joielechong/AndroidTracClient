@@ -27,4 +27,5 @@
         <item/>
         <item/>
     </string-array>
+    <string name="notfound">Nicht gefunden</string>
 </resources>

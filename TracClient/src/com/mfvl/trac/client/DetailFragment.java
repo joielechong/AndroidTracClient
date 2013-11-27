@@ -1,6 +1,7 @@
 package com.mfvl.trac.client;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -12,6 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -35,7 +37,7 @@ public class DetailFragment extends TracClientFragment {
 
 	private boolean activityCreated = false;
 	private boolean loading = false;
-	private final File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+	private File path = null;
 	private int ticknr = -1;
 
 	final public static String mimeUnknown = "application/unknown";
@@ -289,7 +291,10 @@ public class DetailFragment extends TracClientFragment {
 								public void onComplete(final byte[] filedata) {
 									Log.i(this.getClass().getName(), "onComplete filedata = " + filedata.length);
 									try {
-										path.mkdirs();
+										if (path == null) {
+											path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+											path.mkdirs();
+										}
 										final File file = new File(path, filename);
 										final OutputStream os = new FileOutputStream(file);
 										file.deleteOnExit();
@@ -306,6 +311,18 @@ public class DetailFragment extends TracClientFragment {
 													.createChooser(viewIntent, "Choose an application to open with:");
 											startActivity(j);
 										}
+									} catch (final FileNotFoundException e) {
+										context.runOnUiThread(new Runnable() {
+											@Override
+											public void run() {
+												final AlertDialog.Builder alert = new AlertDialog.Builder(context);
+
+												alert.setTitle(R.string.notfound);
+												alert.setMessage(R.string.sdcardmissing);
+												alert.setPositiveButton(R.string.oktext, null);
+												alert.show();
+											}
+										});
 									} catch (final IOException e) {
 										// Unable to create file, likely
 										// because
@@ -313,8 +330,6 @@ public class DetailFragment extends TracClientFragment {
 										// not currently mounted.
 										Log.w(this.getClass().getName(), "ExternalStorage - Error writing " + filename, e);
 									} catch (final Exception e) {
-										// TODO Auto-generated catch
-										// block
 										e.printStackTrace();
 									}
 								};
