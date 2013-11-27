@@ -103,4 +103,6 @@
     <string name="empty_directory">Empty Directory</string>
     <string name="selectticket">Select</string>
     <string name="getlist">Fetch Ticketlist</string>
+    <string name="notfound">Not found</string>
+    <string name="sdcardmissing">SDcard is missing. Cannot store attachment</string>
 </resources>
