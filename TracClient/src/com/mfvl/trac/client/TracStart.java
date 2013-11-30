@@ -7,9 +7,9 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
 import com.google.analytics.tracking.android.EasyTracker;
@@ -63,16 +63,20 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 	private onFileSelectedListener _oc = null;
 	private boolean dispAds;
 	private TicketListFragment ticketListFragment = null;
+	private TracLoginFragment tracLoginFragment = null;
 	private FragmentManager fm = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.i(this.getClass().getName(), "onCreate");
-		Log.i(this.getClass().getName(), "savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		Log.d(this.getClass().getName(), "onCreate savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 
 		setContentView(R.layout.tracstart);
 		Credentials.loadCredentials(this);
+//		ActionBar ab = getSupportActionBar();
+//		if (ab != null) {
+//			ab.show();
+//		}
 
 		try {
 			final Intent i = getIntent();
@@ -108,7 +112,7 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 				setFilter(Credentials.getFilterString(this));
 				setSort(Credentials.getSortString(this));
 			} else {
-				final TracLoginFragment tracLoginFragment = new TracLoginFragment();
+				tracLoginFragment = new TracLoginFragment();
 				ft.add(R.id.displayList, tracLoginFragment, "Login_Fragment");
 			}
 			ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -133,7 +137,7 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 
 	@Override
 	public void onTicketSelected(Ticket ticket) {
-		Log.i(this.getClass().getName(), "onTicketSelected Ticket: " + ticket.getTicketnr());
+		Log.d(this.getClass().getName(), "onTicketSelected Ticket: " + ticket.getTicketnr());
 
 		/*
 		 * if (detailPage) { detailFragment = (DetailFragment)
@@ -142,7 +146,7 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 		 * detailFragment.updateTicketContent(ticket); } else {
 		 */
 		final DetailFragment detailFragment = new DetailFragment();
-		Log.i(this.getClass().getName(), "detailFragment =" + detailFragment.toString());
+		Log.d(this.getClass().getName(), "detailFragment =" + detailFragment.toString());
 		final FragmentTransaction ft = fm.beginTransaction();
 		ft.replace(R.id.displayList, detailFragment, "Detail_Fragment2");
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -157,10 +161,10 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 
 	@Override
 	public void onNewTicket() {
-		Log.i(this.getClass().getName(), "onNewTicket ");
+		Log.d(this.getClass().getName(), "onNewTicket ");
 
 		final NewTicketFragment newtickFragment = new NewTicketFragment();
-		Log.i(this.getClass().getName(), "detailFragment =" + newtickFragment.toString());
+		Log.d(this.getClass().getName(), "detailFragment =" + newtickFragment.toString());
 		/*
 		 * if (detailPage) { final FragmentTransaction ft =
 		 * fm.beginTransaction(); ft.replace(R.id.displayDetail,
@@ -181,10 +185,10 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 
 	@Override
 	public void onUpdateTicket(Ticket ticket) {
-		Log.i(this.getClass().getName(), "onUpdateTicket ticket = " + ticket);
+		Log.d(this.getClass().getName(), "onUpdateTicket ticket = " + ticket);
 
 		final UpdateTicketFragment updtickFragment = new UpdateTicketFragment();
-		Log.i(this.getClass().getName(), "detailFragment = " + updtickFragment.toString());
+		Log.d(this.getClass().getName(), "detailFragment = " + updtickFragment.toString());
 		/*
 		 * if (detailPage) { final FragmentTransaction ft =
 		 * fm.beginTransaction(); ft.replace(R.id.displayExtra, updtickFragment,
@@ -208,7 +212,7 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 
 	@Override
 	public void onLogin(String newUrl, String newUser, String newPass, boolean newHack) {
-		Log.i(this.getClass().getName(), "onLogin");
+		Log.d(this.getClass().getName(), "onLogin");
 		tm = null;
 		url = newUrl;
 		username = newUser;
@@ -235,10 +239,10 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 
 	@Override
 	public void setFilter(ArrayList<FilterSpec> filter) {
-		Log.i(this.getClass().getName(), "setFilter " + filter);
-		if (ticketListFragment != null) {
-			ticketListFragment.setFilter(filter);
-		}
+		Log.d(this.getClass().getName(), "setFilter " + filter);
+		// if (ticketListFragment != null) {
+		ticketListFragment.setFilter(filter);
+		// }
 		String filterString = "";
 		if (filter != null) {
 			for (final FilterSpec fs : filter) {
@@ -270,7 +274,7 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 
 	@Override
 	public void setSort(ArrayList<SortSpec> sort) {
-		Log.i(this.getClass().getName(), "setSort " + sort);
+		Log.d(this.getClass().getName(), "setSort " + sort);
 		if (ticketListFragment != null) {
 			ticketListFragment.setSort(sort);
 		}
@@ -318,9 +322,9 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 
 	@Override
 	public void onChangeHost() {
-		Log.i(this.getClass().getName(), "onChangeHost");
+		Log.d(this.getClass().getName(), "onChangeHost");
 		final FragmentTransaction ft = fm.beginTransaction();
-		final TracLoginFragment tracLoginFragment = new TracLoginFragment();
+		tracLoginFragment = new TracLoginFragment();
 		ft.replace(R.id.displayList, tracLoginFragment, "Login_Fragment");
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 		ft.addToBackStack(null);
@@ -329,7 +333,7 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 
 	@Override
 	public void onFilterSelected(ArrayList<FilterSpec> filterList) {
-		Log.i(this.getClass().getName(), "onFilterSelected");
+		Log.d(this.getClass().getName(), "onFilterSelected");
 		final FragmentTransaction ft = fm.beginTransaction();
 		final FilterFragment filterFragment = new FilterFragment();
 		ft.replace(R.id.displayList, filterFragment, "Filter_Fragment");
@@ -341,7 +345,7 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 
 	@Override
 	public void onSortSelected(ArrayList<SortSpec> sortList) {
-		Log.i(this.getClass().getName(), "onSortSelected");
+		Log.d(this.getClass().getName(), "onSortSelected");
 		final FragmentTransaction ft = fm.beginTransaction();
 		final SortFragment sortFragment = new SortFragment();
 		ft.replace(R.id.displayList, sortFragment, "Sort_Fragment");
@@ -353,7 +357,7 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 
 	@Override
 	public void onChooserSelected(onFileSelectedListener oc) {
-		Log.i(this.getClass().getName(), "onChooserSelected");
+		Log.d(this.getClass().getName(), "onChooserSelected");
 		// save callback
 		_oc = oc;
 		// Use the GET_CONTENT intent from the utility class
@@ -369,7 +373,7 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Log.i(this.getClass().getName(), "onActivityResult requestcode = " + requestCode);
+		Log.d(this.getClass().getName(), "onActivityResult requestcode = " + requestCode);
 		switch (requestCode) {
 		case REQUEST_CODE:
 			// If the file selection was successful
@@ -397,7 +401,7 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 
 	@Override
 	public TicketModel getTicketModel() {
-		Log.i(this.getClass().getName(), "getTicketModel");
+		Log.d(this.getClass().getName(), "getTicketModel");
 		if (tm == null) {
 			tm = new TicketModel();
 		}
@@ -406,45 +410,45 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 
 	@Override
 	public void onStart() {
-		Log.i(this.getClass().getName(), "onStart");
+		Log.d(this.getClass().getName(), "onStart");
 		super.onStart();
 		EasyTracker.getInstance(this).activityStart(this);
 	}
 
 	@Override
 	public void onPause() {
-		Log.i(this.getClass().getName(), "onPause");
+		Log.d(this.getClass().getName(), "onPause");
 		super.onPause();
 	}
 
 	@Override
 	public void onResume() {
-		Log.i(this.getClass().getName(), "onResume");
+		Log.d(this.getClass().getName(), "onResume");
 		super.onResume();
 	}
 
 	@Override
 	public void onResumeFragments() {
-		Log.i(this.getClass().getName(), "onResumeFragments");
+		Log.d(this.getClass().getName(), "onResumeFragments");
 		super.onResumeFragments();
 	}
 
 	@Override
 	public void onRestart() {
-		Log.i(this.getClass().getName(), "onRestart");
+		Log.d(this.getClass().getName(), "onRestart");
 		super.onRestart();
 	}
 
 	@Override
 	public void onStop() {
-		Log.i(this.getClass().getName(), "onStop");
+		Log.d(this.getClass().getName(), "onStop");
 		super.onStop();
 		EasyTracker.getInstance(this).activityStop(this);
 	}
 
 	@Override
 	public void onDestroy() {
-		Log.i(this.getClass().getName(), "onDestroy");
+		Log.d(this.getClass().getName(), "onDestroy");
 		super.onDestroy();
 	}
 
@@ -454,7 +458,7 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 	}
 
 	public String getUrl() {
-		Log.i(this.getClass().getName(), "getUrl url = " + url);
+		Log.d(this.getClass().getName(), "getUrl url = " + url);
 		return url;
 	}
 

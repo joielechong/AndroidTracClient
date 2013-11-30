@@ -79,8 +79,17 @@
     <string name="storage_removed">Opslag werd verwijderd</string>
     <string name="error_selecting_file">Fout bij het selecteren van bestand</string>
     <string name="empty_directory">Lege folder</string>
-    <string name="selectticket">Selecteer</string>
+    <string name="select">Selecteer</string>
+    <string name="delete">Verwijder</string>
     <string name="getlist">Haal ticketlijst op</string>
+    <string name="storeprofile">Bewaar profiel</string>
+    <string name="profiletext">Voer een naam in voor het op te slaan profiel</string>
+    <string name="loadprofile">Laad login profiel</string>
+    <string name="areyousure">Weet je het zeker?</string>
+    <string name="delprofiletext">Verwijder profiel</string>
+    <string name="loadprofiletext">Profiel kan niet geladen worden</string>
     <string name="notfound">Niet gevonden</string>
     <string name="sdcardmissing">Geen SDkaart. Kan bijlage niet opslaan.</string>
+	<string name="ioerror">ExternalStorage - Fout bij schrijven van"</string>
+	<string name="chooseapp">Kies applicatie om mee te openen:</string>
 </resources>

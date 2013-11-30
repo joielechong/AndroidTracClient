@@ -1,9 +1,7 @@
 package com.mfvl.trac.client;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -307,11 +305,11 @@ public class DetailFragment extends TracClientFragment {
 											startActivity(viewIntent);
 										} else {
 											viewIntent.setData(Uri.parse(file.toString()));
-											final Intent j = Intent
-													.createChooser(viewIntent, "Choose an application to open with:");
+											final Intent j = Intent.createChooser(viewIntent, context.getString(R.string.chooseapp));
 											startActivity(j);
 										}
-									} catch (final FileNotFoundException e) {
+									} catch (final Exception e) {
+										Log.w(this.getClass().getName(), context.getString(R.string.ioerror) + ": " + filename, e);
 										context.runOnUiThread(new Runnable() {
 											@Override
 											public void run() {
@@ -323,14 +321,6 @@ public class DetailFragment extends TracClientFragment {
 												alert.show();
 											}
 										});
-									} catch (final IOException e) {
-										// Unable to create file, likely
-										// because
-										// external storage is
-										// not currently mounted.
-										Log.w(this.getClass().getName(), "ExternalStorage - Error writing " + filename, e);
-									} catch (final Exception e) {
-										e.printStackTrace();
 									}
 								};
 							});

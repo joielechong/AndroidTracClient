@@ -3,8 +3,8 @@
 
     <item
         android:id="@+id/select"
-        android:title="@string/selectticket"
-        android:titleCondensed="@string/selectticket"/>
+        android:title="@string/select"
+        android:titleCondensed="@string/select"/>
     <item
         android:id="@+id/dfupdate"
         android:title="@string/updateticket"

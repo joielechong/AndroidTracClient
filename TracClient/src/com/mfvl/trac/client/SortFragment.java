@@ -185,7 +185,7 @@ public class SortFragment extends TracClientFragment {
 		backButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-//				getFragmentManager().popBackStackImmediate();
+				// getFragmentManager().popBackStackImmediate();
 				getFragmentManager().popBackStack();
 			}
 		});
@@ -202,7 +202,7 @@ public class SortFragment extends TracClientFragment {
 				}
 				Log.i(this.getClass().getName(), "Store is clicked! " + outputSpec);
 				listener.setSort(outputSpec);
-//				getFragmentManager().popBackStackImmediate();
+				// getFragmentManager().popBackStackImmediate();
 				getFragmentManager().popBackStack();
 			}
 		});
