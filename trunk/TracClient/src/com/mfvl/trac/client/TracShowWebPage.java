@@ -15,13 +15,13 @@ public class TracShowWebPage extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		Log.i(this.getClass().getName(), "onCreate savedInstanceState = " + savedInstanceState);
+		Log.d(this.getClass().getName(), "onCreate savedInstanceState = " + savedInstanceState);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.trac_about);
 		final Intent i = this.getIntent();
 		final boolean toonVersie = i.getBooleanExtra("version", true);
 		final String filename = "file:///android_asset/" + i.getStringExtra("file") + ".html";
-		Log.i(this.getClass().getName(), filename + " " + toonVersie);
+		Log.d(this.getClass().getName(), filename + " " + toonVersie);
 		final TextView tv = (TextView) findViewById(R.id.about_version_text);
 		final TextView tv1 = (TextView) findViewById(R.id.v1);
 		final TextView tv2 = (TextView) findViewById(R.id.v2);
@@ -39,14 +39,14 @@ public class TracShowWebPage extends Activity {
 
 	@Override
 	public void onStart() {
-		Log.i(this.getClass().getName(), "onStart");
+		Log.d(this.getClass().getName(), "onStart");
 		super.onStart();
 		EasyTracker.getInstance(this).activityStart(this);
 	}
 
 	@Override
 	public void onStop() {
-		Log.i(this.getClass().getName(), "onStop");
+		Log.d(this.getClass().getName(), "onStop");
 		super.onStop();
 		EasyTracker.getInstance(this).activityStop(this);
 	}

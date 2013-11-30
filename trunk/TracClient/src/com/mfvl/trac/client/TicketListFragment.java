@@ -68,8 +68,7 @@ public class TicketListFragment extends TracClientFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.i(this.getClass().getName(), "onCreate");
-		Log.i(this.getClass().getName(), "savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		Log.d(this.getClass().getName(), "onCreate savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 		ticketList.clear();
 		setHasOptionsMenu(true);
 		if (savedInstanceState != null) {
@@ -94,8 +93,7 @@ public class TicketListFragment extends TracClientFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		Log.i(this.getClass().getName(), "onCreateView");
-		Log.i(this.getClass().getName(), "savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		Log.d(this.getClass().getName(), "onCreateView savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 		final View view = inflater.inflate(R.layout.list_view, container, false);
 		listView = (ListView) view.findViewById(R.id.listofTickets);
 		registerForContextMenu(listView);
@@ -181,15 +179,14 @@ public class TicketListFragment extends TracClientFragment {
 	}
 
 	public void setScroll() {
-		Log.i(this.getClass().getName(), "setScroll " + Build.VERSION.SDK_INT);
-		listView.setSelection((scrollPosition==0?0:scrollPosition+1));
+		Log.d(this.getClass().getName(), "setScroll " + Build.VERSION.SDK_INT);
+		listView.setSelection((scrollPosition == 0 ? 0 : scrollPosition + 1));
 	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		Log.i(this.getClass().getName(), "onActivityCreated");
-		Log.i(this.getClass().getName(), "savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		Log.d(this.getClass().getName(), "onActivityCreated savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 		if (savedInstanceState != null) {
 			zoeken = savedInstanceState.getBoolean(ZOEKENNAME);
 			filterText.setText(zoektext);
@@ -207,21 +204,21 @@ public class TicketListFragment extends TracClientFragment {
 
 	@Override
 	public void onStart() {
-		Log.i(this.getClass().getName(), "onStart");
+		Log.d(this.getClass().getName(), "onStart");
 		super.onStart();
 	}
 
 	@Override
 	public void onPause() {
-		Log.i(this.getClass().getName(), "onPause");
+		Log.d(this.getClass().getName(), "onPause");
 		super.onPause();
 		scrollPosition = listView.getFirstVisiblePosition();
-		Log.i(this.getClass().getName(), "onPause Scroll " + scrollPosition);
+		Log.d(this.getClass().getName(), "onPause Scroll " + scrollPosition);
 	}
 
 	@Override
 	public void onResume() {
-		Log.i(this.getClass().getName(), "onResume");
+		Log.d(this.getClass().getName(), "onResume");
 		super.onResume();
 		if (refreshOnRestart) {
 			scrollPosition = 0;
@@ -261,13 +258,13 @@ public class TicketListFragment extends TracClientFragment {
 
 	@Override
 	public void onStop() {
-		Log.i(this.getClass().getName(), "onStop");
+		Log.d(this.getClass().getName(), "onStop");
 		super.onStop();
 	}
 
 	@Override
 	public void onDestroyView() {
-		Log.i(this.getClass().getName(), "onDestroyView");
+		Log.d(this.getClass().getName(), "onDestroyView");
 		if (filterText != null) {
 			filterText.removeTextChangedListener(filterTextWatcher);
 		}
@@ -280,26 +277,26 @@ public class TicketListFragment extends TracClientFragment {
 
 	@Override
 	public void onDestroy() {
-		Log.i(this.getClass().getName(), "onDestroy");
+		Log.d(this.getClass().getName(), "onDestroy");
 		super.onDestroy();
 	}
 
 	@Override
 	public void onDetach() {
-		Log.i(this.getClass().getName(), "onDetach");
+		Log.d(this.getClass().getName(), "onDetach");
 		super.onDetach();
 	}
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		Log.i(this.getClass().getName(), "onCreateOptionsMenu");
+		Log.d(this.getClass().getName(), "onCreateOptionsMenu");
 		inflater.inflate(R.menu.ticketlistmenu, menu);
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Log.i(this.getClass().getName(), "onOptionsItemSelected item=" + item);
+		Log.d(this.getClass().getName(), "onOptionsItemSelected item=" + item);
 		final int itemId = item.getItemId();
 		if (itemId == R.id.tlnieuw) {
 			listener.onNewTicket();
@@ -315,11 +312,11 @@ public class TicketListFragment extends TracClientFragment {
 			startActivity(launchTrac);
 			return true;
 		} else if (itemId == R.id.tlfilter) {
-			Log.i(this.getClass().getName(), "tlfilter filterList = " + filterList);
+			Log.d(this.getClass().getName(), "tlfilter filterList = " + filterList);
 			listener.onFilterSelected(filterList);
 			return true;
 		} else if (itemId == R.id.tlsort) {
-			Log.i(this.getClass().getName(), "tlsort sortList = " + sortList);
+			Log.d(this.getClass().getName(), "tlsort sortList = " + sortList);
 			listener.onSortSelected(sortList);
 			return true;
 		} else if (itemId == R.id.tlchangehost) {
@@ -344,9 +341,9 @@ public class TicketListFragment extends TracClientFragment {
 	@Override
 	public void onSaveInstanceState(Bundle savedState) {
 		super.onSaveInstanceState(savedState);
-		Log.i(this.getClass().getName(), "onSaveInstanceState");
-//		final int count = tickets.length;
-//		Log.i(this.getClass().getName(), "count = " + count);
+		Log.d(this.getClass().getName(), "onSaveInstanceState");
+		// final int count = tickets.length;
+		// Log.d(this.getClass().getName(), "count = " + count);
 		savedState.putIntArray(TICKETLISTNAME, tickets);
 		savedState.putSerializable(SORTLISTNAME, sortList);
 		savedState.putSerializable(FILTERLISTNAME, filterList);
@@ -357,20 +354,20 @@ public class TicketListFragment extends TracClientFragment {
 		}
 		savedState.putInt(SCROLLPOSITIONNAME, scrollPosition);
 	}
-	
+
 	@Override
 	public void setHost(final String url, final String username, final String password, boolean sslHack) {
-		Log.i(this.getClass().getName(), "setHost");
-		super.setHost(url,username,password,sslHack);
+		Log.d(this.getClass().getName(), "setHost");
+		super.setHost(url, username, password, sslHack);
 		if (listView != null) {
 			listView.setAdapter(null);
 		}
 		tickets = null;
 		ticketList.clear();
 	}
-	
+
 	private void loadTicketList() {
-		Log.i(this.getClass().getName(), "loadTicketList");
+		Log.d(this.getClass().getName(), "loadTicketList");
 		ticketList.clear();
 		callBack.onComplete();
 		if (_url != null) {
@@ -397,7 +394,7 @@ public class TicketListFragment extends TracClientFragment {
 								reqString += s.toString();
 							}
 						}
-						Log.i(this.getClass().getName(), "reqString = " + reqString);
+						Log.d(this.getClass().getName(), "reqString = " + reqString);
 						final JSONRPCHttpClient req = new JSONRPCHttpClient(_url, _sslHack);
 						req.setCredentials(_username, _password);
 						final String rs = reqString;
@@ -406,14 +403,15 @@ public class TicketListFragment extends TracClientFragment {
 								reqString = "max=0";
 							}
 							final JSONArray ticketlist = req.callJSONArray("ticket.query", reqString);
-							Log.i(this.getClass().getName(), ticketlist.toString());
+							Log.d(this.getClass().getName(), ticketlist.toString());
 							try {
 								final int count = ticketlist.length();
 								tickets = new int[count];
 								for (int i = 0; i < count; i++) {
 									tickets[i] = ticketlist.getInt(i);
-								}	
+								}
 								loadTickets();
+								listener.getTicketModel();
 							} catch (final Exception e) {
 								e.printStackTrace();
 							}
@@ -424,22 +422,22 @@ public class TicketListFragment extends TracClientFragment {
 								public void run() {
 									final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
 									alertDialogBuilder.setTitle(R.string.connerr);
-									alertDialogBuilder.setMessage("regString = " + rs+"\n"+e.getMessage()).setCancelable(false)
-										.setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
-											@Override
-											public void onClick(DialogInterface dialog, int id) {
-												listener.onChangeHost();
-											}
-										});
+									alertDialogBuilder.setMessage("regString = " + rs + "\n" + e.getMessage()).setCancelable(false)
+											.setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
+												@Override
+												public void onClick(DialogInterface dialog, int id) {
+													listener.onChangeHost();
+												}
+											});
 									final AlertDialog alertDialog = alertDialogBuilder.create();
 									if (!context.isFinishing()) {
-										alertDialog.show(); 
+										alertDialog.show();
 									}
 								}
 							});
 						}
-					} catch (Exception e) {
-					
+					} catch (final Exception e) {
+						Log.i(this.getClass().getName(), e.toString());
 					} finally {
 						loading = false;
 					}
@@ -488,7 +486,7 @@ public class TicketListFragment extends TracClientFragment {
 	}
 
 	private void loadTickets() {
-		Log.i(this.getClass().getName(), "loadTicket " + tickets.length);
+		Log.d(this.getClass().getName(), "loadTicket " + tickets.length);
 		final Thread networkThread = new Thread() {
 			@Override
 			public void run() {
@@ -510,7 +508,7 @@ public class TicketListFragment extends TracClientFragment {
 				});
 				callBack.onComplete();
 
-				Log.i(this.getClass().getName(), "loadTicket JSONRPCHttpClient " + _url + " " + _sslHack);
+				Log.d(this.getClass().getName(), "loadTicket JSONRPCHttpClient " + _url + " " + _sslHack);
 				final JSONRPCHttpClient req = new JSONRPCHttpClient(_url, _sslHack);
 				req.setCredentials(_username, _password);
 				for (int j = 0; j < count; j += ticketGroupCount) {
@@ -522,8 +520,7 @@ public class TicketListFragment extends TracClientFragment {
 							e.printStackTrace();
 						}
 					}
-					// Log.i(this.getClass().getName(), "loadTickets mc = " +
-					// mc);
+					// Log.d(this.getClass().getName(), "loadTickets mc = " + mc);
 					try {
 						final JSONArray mcresult = req.callJSONArray("system.multicall", mc);
 						context.runOnUiThread(new Runnable() {
@@ -580,16 +577,16 @@ public class TicketListFragment extends TracClientFragment {
 		scrollPosition = 0;
 		loadTicketList();
 	}
-	
+
 	public void forceRefresh() {
 		if (networkThread != null) {
 			networkThread.interrupt();
-			loading=false;
+			loading = false;
 		}
 		refreshOnRestart = true;
 		scrollPosition = 0;
 	}
-	
+
 	private void shareList() {
 		String lijst = "";
 
@@ -609,14 +606,14 @@ public class TicketListFragment extends TracClientFragment {
 	}
 
 	public void setFilter(ArrayList<FilterSpec> filter) {
-		Log.i(this.getClass().getName(), "setFilter " + filter);
+		Log.d(this.getClass().getName(), "setFilter " + filter);
 		filterList = filter;
 		tickets = null;
 		ticketList.clear();
 	}
 
 	public void setSort(ArrayList<SortSpec> sort) {
-		Log.i(this.getClass().getName(), "setSort " + sort);
+		Log.d(this.getClass().getName(), "setSort " + sort);
 		sortList = sort;
 		tickets = null;
 		ticketList.clear();

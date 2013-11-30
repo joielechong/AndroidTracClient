@@ -4,13 +4,12 @@
     <item
         android:id="@+id/help"
         android:menuCategory="container"
-        android:title="@string/help"
-        android:titleCondensed="@string/help"/>
+        android:title="@string/help"/>
     <item
         android:id="@+id/over"
+        android:icon="@drawable/action_about"
         android:menuCategory="container"
         android:title="@string/about_button"
-        android:titleCondensed="@string/about_button"
         android:visible="true"/>
 
 </menu>

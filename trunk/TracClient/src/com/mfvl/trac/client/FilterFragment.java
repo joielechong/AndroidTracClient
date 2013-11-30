@@ -56,13 +56,6 @@ public class FilterFragment extends TracClientFragment {
 			final ListView listView = (ListView) parent;
 
 			View v = convertView;
-			if (v != null) {	
-				LinearLayout lv = (LinearLayout)v;
-				Log.i(this.getClass().getName(), "getView convertView.childCount=" + lv.getChildCount());
-				for (int i=0;i<((LinearLayout)v).getChildCount();i++){
-					Log.i(this.getClass().getName(), "getView convertView.child("+i+") "+lv.getChildAt(i));
-				}
-			}
 			int p;
 			if (position >= items.size() || position < 0) {
 				p = 0;
@@ -78,19 +71,13 @@ public class FilterFragment extends TracClientFragment {
 			final int resid = o.isEdit() ? (tmv.options() == null ? R.layout.filter_spec2 : R.layout.filter_spec3)
 					: R.layout.filter_spec1;
 			final int curid = convertView == null ? -1 : convertView.getId();
-			Log.i(this.getClass().getName(),"getView pos = " + position + " curid = " + curid + " resid=" + resid + " veld = " + o.veld());
+			Log.i(this.getClass().getName(),
+					"getView pos = " + position + " curid = " + curid + " resid=" + resid + " veld = " + o.veld());
 			if (curid != resid) {
 				final LayoutInflater vi = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				v = vi.inflate(resid, null);
 				v.setId(resid); // hack hack
-//				listView.requestLayout();
-			}
-			if (v != null) {	
-				LinearLayout lv = (LinearLayout)v;
-				Log.i(this.getClass().getName(), "getView convertedView.childCount=" + lv.getChildCount());
-				for (int i=0;i<((LinearLayout)v).getChildCount();i++){
-					Log.i(this.getClass().getName(), "getView convertedView.child("+i+") "+lv.getChildAt(i));
-				}
+				listView.requestLayout();
 			}
 
 			listView.invalidate();
