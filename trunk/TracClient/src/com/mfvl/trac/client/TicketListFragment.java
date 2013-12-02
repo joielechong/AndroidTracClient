@@ -14,7 +14,6 @@ import org.json.JSONObject;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -178,15 +177,15 @@ public class TicketListFragment extends TracClientFragment {
 		}
 	}
 
-	public void setScroll() {
-		Log.d(this.getClass().getName(), "setScroll " + Build.VERSION.SDK_INT);
+	private void setScroll() {
 		listView.setSelection((scrollPosition == 0 ? 0 : scrollPosition + 1));
 	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		Log.d(this.getClass().getName(), "onActivityCreated savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		Log.d(this.getClass().getName(), "onActivityCreated savedInstanceState = "
+				+ (savedInstanceState == null ? "null" : "not null"));
 		if (savedInstanceState != null) {
 			zoeken = savedInstanceState.getBoolean(ZOEKENNAME);
 			filterText.setText(zoektext);
@@ -213,7 +212,6 @@ public class TicketListFragment extends TracClientFragment {
 		Log.d(this.getClass().getName(), "onPause");
 		super.onPause();
 		scrollPosition = listView.getFirstVisiblePosition();
-		Log.d(this.getClass().getName(), "onPause Scroll " + scrollPosition);
 	}
 
 	@Override
@@ -520,7 +518,8 @@ public class TicketListFragment extends TracClientFragment {
 							e.printStackTrace();
 						}
 					}
-					// Log.d(this.getClass().getName(), "loadTickets mc = " + mc);
+					// Log.d(this.getClass().getName(), "loadTickets mc = " +
+					// mc);
 					try {
 						final JSONArray mcresult = req.callJSONArray("system.multicall", mc);
 						context.runOnUiThread(new Runnable() {
