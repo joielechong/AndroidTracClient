@@ -1,6 +1,7 @@
 package com.mfvl.trac.client.util;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -15,6 +16,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
 import android.os.Build;
+import android.os.Environment;
 import android.util.Log;
 
 public class Credentials {
@@ -193,11 +195,30 @@ public class Credentials {
 		} catch (final NameNotFoundException e) {
 			e.printStackTrace();
 			if (versie == null) {
-				versie = "V0.2";
+				versie = "V0.3x";
 			}
 		}
 		Log.d(context.getClass().getName(), "buildVersion versie = " + versie);
 		return versie;
+	}
+
+	public static String makeDbPath(Context context, String dbname) {
+		final File extpath = Environment.getExternalStorageDirectory();
+
+		String dbpath = dbname;
+
+		if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+			final String p1 = extpath.toString() + "/TracClient/" + dbname;
+			if (!isDebuggable(context)) {
+				if (new File(p1).exists()) {
+					dbpath = p1;
+				}
+			} else {
+				dbpath = p1;
+			}
+		}
+		Log.d(context.getClass().getName(), "makeDbPath dbpath = " + dbpath);
+		return dbpath;
 	}
 
 }

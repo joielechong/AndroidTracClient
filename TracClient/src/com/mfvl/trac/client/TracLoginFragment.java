@@ -127,7 +127,7 @@ public class TracLoginFragment extends TracClientFragment {
 			Log.d(this.getClass().getName(), "onViewCreated use current values");
 		}
 
-		pdb = new ProfileDatabaseHelper(context, true);
+		pdb = new ProfileDatabaseHelper(context);
 		pdb.open();
 		c = pdb.getProfiles();
 		if (c.getCount() < 2) {

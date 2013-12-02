@@ -7,9 +7,9 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
 import com.google.analytics.tracking.android.EasyTracker;
@@ -73,10 +73,10 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 
 		setContentView(R.layout.tracstart);
 		Credentials.loadCredentials(this);
-//		ActionBar ab = getSupportActionBar();
-//		if (ab != null) {
-//			ab.show();
-//		}
+		// ActionBar ab = getSupportActionBar();
+		// if (ab != null) {
+		// ab.show();
+		// }
 
 		try {
 			final Intent i = getIntent();

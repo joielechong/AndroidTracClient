@@ -1,13 +1,10 @@
 package com.mfvl.trac.client.util;
 
-import java.io.File;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Environment;
 
 public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 	private static final String DATABASE_NAME = "profile.db";
@@ -20,11 +17,8 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 	private static final String SSLHACK_ID = "sslhack";
 	private SQLiteDatabase db = null;
 
-	private static File path = Environment.getExternalStorageDirectory();
-
-	public ProfileDatabaseHelper(Context context, boolean publ) {
-		super(context, publ && Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) ? path.toString()
-				+ "/TracClient/" + DATABASE_NAME : DATABASE_NAME, null, DATABASE_VERSION);
+	public ProfileDatabaseHelper(Context context) {
+		super(context, Credentials.makeDbPath(context, DATABASE_NAME), null, DATABASE_VERSION);
 		// super(context, DATABASE_NAME, null, DATABASE_VERSION);
 	}
 
