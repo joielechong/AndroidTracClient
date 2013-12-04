@@ -112,6 +112,7 @@
     <string name="loadprofiletext">Profile cannot be loaded</string>
     <string name="notfound">Not found</string>
     <string name="sdcardmissing">SDcard is missing. Cannot store attachment</string>
-	<string name="ioerror">ExternalStorage - Error writing</string>
-	<string name="chooseapp">Choose an application to open with:</string>
+    <string name="ioerror">ExternalStorage - Error writing</string>
+    <string name="chooseapp">Choose an application to open with:</string>
+    <string name="notify">Notify</string>
 </resources>

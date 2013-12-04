@@ -90,6 +90,7 @@
     <string name="loadprofiletext">Profiel kan niet geladen worden</string>
     <string name="notfound">Niet gevonden</string>
     <string name="sdcardmissing">Geen SDkaart. Kan bijlage niet opslaan.</string>
-	<string name="ioerror">ExternalStorage - Fout bij schrijven van"</string>
-	<string name="chooseapp">Kies applicatie om mee te openen:</string>
+    <string name="ioerror">ExternalStorage - Fout bij schrijven van"</string>
+    <string name="chooseapp">Kies applicatie om mee te openen:</string>
+    <string name="notify">Zend notificatie</string>
 </resources>
