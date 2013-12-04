@@ -139,13 +139,6 @@ public class SortFragment extends TracClientFragment {
 	}
 
 	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		Log.i(this.getClass().getName(), "onCreateOptionsMenu");
-		inflater.inflate(R.menu.sortmenu, menu);
-		super.onCreateOptionsMenu(menu, inflater);
-	}
-
-	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		Log.i(this.getClass().getName(), "onCreateView");
 		Log.i(this.getClass().getName(), "savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));

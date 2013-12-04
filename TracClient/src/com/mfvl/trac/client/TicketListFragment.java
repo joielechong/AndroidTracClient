@@ -298,25 +298,20 @@ public class TicketListFragment extends TracClientFragment {
 		final int itemId = item.getItemId();
 		if (itemId == R.id.tlnieuw) {
 			listener.onNewTicket();
-			return true;
 		} else if (itemId == R.id.tlrefresh) {
 			doRefresh();
-			return true;
 		} else if (itemId == R.id.help || itemId == R.id.over) {
 			final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
-			final String filename = context.getString((itemId == R.id.over ? R.string.whatsnewhelpfile : R.string.helplistfile));
+			final String filename = context.getString(R.string.helplistfile);
 			launchTrac.putExtra("file", filename);
-			launchTrac.putExtra("version", itemId == R.id.over);
+			launchTrac.putExtra("version", false);
 			startActivity(launchTrac);
-			return true;
 		} else if (itemId == R.id.tlfilter) {
 			Log.d(this.getClass().getName(), "tlfilter filterList = " + filterList);
 			listener.onFilterSelected(filterList);
-			return true;
 		} else if (itemId == R.id.tlsort) {
 			Log.d(this.getClass().getName(), "tlsort sortList = " + sortList);
 			listener.onSortSelected(sortList);
-			return true;
 		} else if (itemId == R.id.tlchangehost) {
 			if (networkThread != null) {
 				networkThread.interrupt();
@@ -325,15 +320,14 @@ public class TicketListFragment extends TracClientFragment {
 			return true;
 		} else if (itemId == R.id.tlshare) {
 			shareList();
-			return true;
 		} else if (itemId == R.id.tlzoek) {
 			zoeken = !zoeken;
 			filterText.setText("");
 			zetZoeken();
-			return true;
 		} else {
 			return super.onOptionsItemSelected(item);
 		}
+		return true;
 	}
 
 	@Override
@@ -607,15 +601,27 @@ public class TicketListFragment extends TracClientFragment {
 	public void setFilter(ArrayList<FilterSpec> filter) {
 		Log.d(this.getClass().getName(), "setFilter " + filter);
 		filterList = filter;
+		if (networkThread != null) {
+			networkThread.interrupt();
+			loading = false;
+		}
 		tickets = null;
 		ticketList.clear();
+		refreshOnRestart = true;
+		scrollPosition = 0;
 	}
 
 	public void setSort(ArrayList<SortSpec> sort) {
 		Log.d(this.getClass().getName(), "setSort " + sort);
 		sortList = sort;
+		if (networkThread != null) {
+			networkThread.interrupt();
+			loading = false;
+		}
 		tickets = null;
 		ticketList.clear();
+		refreshOnRestart = true;
+		scrollPosition = 0;
 	}
 
 	private final TextWatcher filterTextWatcher = new TextWatcher() {
