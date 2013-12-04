@@ -198,13 +198,6 @@ public class FilterFragment extends TracClientFragment {
 	}
 
 	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		Log.i(this.getClass().getName(), "onCreateOptionsMenu");
-		inflater.inflate(R.menu.filtermenu, menu);
-		super.onCreateOptionsMenu(menu, inflater);
-	}
-
-	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		Log.i(this.getClass().getName(), "onCreateView");
 		Log.i(this.getClass().getName(), "savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
@@ -300,16 +293,16 @@ public class FilterFragment extends TracClientFragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Log.i(this.getClass().getName(), "onOptionsItemSelected item=" + item);
 		final int itemId = item.getItemId();
-		if (itemId == R.id.help || itemId == R.id.over) {
+		if (itemId == R.id.help) {
 			final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
-			final String filename = context.getString((itemId == R.id.over ? R.string.whatsnewhelpfile : R.string.filterhelpfile));
+			final String filename = context.getString(R.string.filterhelpfile);
 			launchTrac.putExtra("file", filename);
-			launchTrac.putExtra("version", itemId == R.id.over);
+			launchTrac.putExtra("version", false);
 			startActivity(launchTrac);
-			return true;
 		} else {
 			return super.onOptionsItemSelected(item);
 		}
+		return true;
 	}
 
 	public void setList(ArrayList<FilterSpec> l) {

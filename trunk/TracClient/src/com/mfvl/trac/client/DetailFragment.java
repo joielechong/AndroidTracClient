@@ -133,13 +133,6 @@ public class DetailFragment extends TracClientFragment {
 			launchTrac.putExtra("version", false);
 			startActivity(launchTrac);
 			return true;
-		} else if (item.getItemId() == R.id.over) {
-			final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
-			final String filename = context.getString(R.string.whatsnewhelpfile);
-			launchTrac.putExtra("file", filename);
-			launchTrac.putExtra("version", true);
-			startActivity(launchTrac);
-			return true;
 		} else if (item.getItemId() == R.id.dfattach) {
 			if (_ticket != null) {
 				listener.onChooserSelected(new onFileSelectedListener() {
