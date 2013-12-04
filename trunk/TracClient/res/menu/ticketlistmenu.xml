@@ -1,51 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:myapp="http://schemas.android.com/apk/res-auto" >
 
     <item
         android:id="@+id/tlnieuw"
+        android:icon="@drawable/content_new"
         android:menuCategory="container"
-        android:title="@string/nieuw"
-        android:titleCondensed="@string/nieuw"/>
+        android:title="@string/nieuw"/>
     <item
         android:id="@+id/tlrefresh"
+        android:icon="@drawable/navigation_refresh"
         android:menuCategory="container"
-        android:title="@string/tlrefresh"
-        android:titleCondensed="@string/tlrefresh"/>
+        android:title="@string/tlrefresh"/>
     <item
         android:id="@+id/tlchangehost"
         android:menuCategory="container"
-        android:title="@string/changehost"
-        android:titleCondensed="@string/changehost"/>
+        android:title="@string/changehost"/>
     <item
         android:id="@+id/tlzoek"
+        android:icon="@drawable/action_search"
         android:menuCategory="container"
         android:title="@string/zoek"
-        android:titleCondensed="@string/zoek"
         android:visibility="gone"/>
     <item
         android:id="@+id/tlfilter"
         android:menuCategory="container"
-        android:title="@string/filter"
-        android:titleCondensed="@string/filter"/>
+        android:title="@string/filter"/>
     <item
         android:id="@+id/tlsort"
         android:menuCategory="container"
-        android:title="@string/sort"
-        android:titleCondensed="@string/sort"/>
+        android:title="@string/sort"/>
     <item
         android:id="@+id/tlshare"
+        android:icon="@android:drawable/ic_menu_share"
         android:menuCategory="container"
-        android:title="@string/tlshare"
-        android:titleCondensed="@string/tlshare"/>
-    <item
-        android:id="@+id/help"
-        android:menuCategory="container"
-        android:title="@string/help"
-        android:titleCondensed="@string/help"/>
-    <item
-        android:id="@+id/over"
-        android:menuCategory="container"
-        android:title="@string/about_button"
-        android:titleCondensed="@string/about_button"/>
+        android:title="@string/tlshare"/>
 
 </menu>

@@ -3,34 +3,23 @@
 
     <item
         android:id="@+id/dfrefresh"
+        android:icon="@drawable/navigation_refresh"
         android:menuCategory="container"
-        android:title="@string/dfrefresh"
-        android:titleCondensed="@string/dfrefresh"/>
+        android:title="@string/dfrefresh"/>
     <item
         android:id="@+id/dfupdate"
+        android:icon="@drawable/content_edit"
         android:menuCategory="container"
-        android:title="@string/updateticket"
-        android:titleCondensed="@string/updateticket"/>
+        android:title="@string/updateticket"/>
     <item
         android:id="@+id/dfattach"
+        android:icon="@drawable/content_new_attachment"
         android:menuCategory="container"
-        android:title="@string/attach"
-        android:titleCondensed="@string/attach"/>
+        android:title="@string/attach"/>
     <item
         android:id="@+id/dfshare"
+        android:icon="@android:drawable/ic_menu_share"
         android:menuCategory="container"
-        android:title="@string/dfshare"
-        android:titleCondensed="@string/dfshare"/>
-    <item
-        android:id="@+id/help"
-        android:menuCategory="container"
-        android:title="@string/help"
-        android:titleCondensed="@string/help"/>
-    <item
-        android:id="@+id/over"
-        android:menuCategory="container"
-        android:title="@string/about_button"
-        android:titleCondensed="@string/about_button"/>
+        android:title="@string/dfshare"/>
 
 </menu>
-
