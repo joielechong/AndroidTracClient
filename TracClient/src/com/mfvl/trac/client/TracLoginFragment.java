@@ -73,7 +73,7 @@ public class TracLoginFragment extends TracClientFragment {
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		Log.d(this.getClass().getName(), "onCreateOptionsMenu");
-		inflater.inflate(R.menu.loginmenu, menu);
+//		inflater.inflate(R.menu.loginmenu, menu);
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
@@ -351,16 +351,16 @@ public class TracLoginFragment extends TracClientFragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Log.d(this.getClass().getName(), "onOptionsItemSelected item=" + item);
 		final int itemId = item.getItemId();
-		if (itemId == R.id.help || itemId == R.id.over) {
+		if (itemId == R.id.help ) {
 			final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
-			final String filename = context.getString((itemId == R.id.over ? R.string.whatsnewhelpfile : R.string.loginhelpfile));
+			final String filename = context.getString( R.string.loginhelpfile);
 			launchTrac.putExtra("file", filename);
-			launchTrac.putExtra("version", itemId == R.id.over);
+			launchTrac.putExtra("version", false);
 			startActivity(launchTrac);
-			return true;
 		} else {
 			return super.onOptionsItemSelected(item);
 		}
+		return true;
 	}
 
 	@Override

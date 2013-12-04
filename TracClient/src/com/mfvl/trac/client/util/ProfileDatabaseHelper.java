@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 	private static final String DATABASE_NAME = "profile.db";
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2;
 	private static final String TABLE_NAME = "profiles";
 	private static final String NAME_ID = "name";
 	private static final String URL_ID = "url";
@@ -16,6 +16,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 	private static final String PASSWORD_ID = "password";
 	private static final String SSLHACK_ID = "sslhack";
 	private SQLiteDatabase db = null;
+	private boolean upgrade = false;
 
 	public ProfileDatabaseHelper(Context context) {
 		super(context, Credentials.makeDbPath(context, DATABASE_NAME), null, DATABASE_VERSION);
@@ -28,16 +29,28 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 				+ USERNAME_ID + " TEXT," + PASSWORD_ID + " TEXT," + SSLHACK_ID + " BOOLEAN" + ")";
 		db.execSQL(CREATE_PROFILE_TABLE);
 		db.execSQL("insert into " + TABLE_NAME + "(" + NAME_ID + ") VALUES ('')");
+		upgrade = true;
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
-		onCreate(db);
+		if (oldVersion == 1 && newVersion == 2) {
+		} else {
+			db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+			onCreate(db);
+		}
+		upgrade = true;
 	}
-
+	
 	public void open() {
+		upgrade = false;
 		db = this.getWritableDatabase();
+		if (upgrade) {
+			LoginProfile ex1 = new LoginProfile("http://van-loon.xs4all.nl/TracClient/rpc", "", "", false);
+			LoginProfile ex2 = new LoginProfile("https://van-loon.xs4all.nl/TracClient/login/rpc", "demo", "demo", true);
+			addProfile("TracClient-RO", ex1);
+			addProfile("TracClient-login", ex2);			
+		}
 	}
 
 	@Override
