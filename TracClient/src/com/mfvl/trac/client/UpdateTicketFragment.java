@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -34,127 +35,50 @@ public class UpdateTicketFragment extends TracClientFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.i(this.getClass().getName(), "onCreate");
-		Log.i(this.getClass().getName(), "savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		Log.i(this.getClass().getName(), "onCreate savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 		setHasOptionsMenu(true);
-	}
-
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		Log.i(this.getClass().getName(), "onCreateOptionsMenu");
-		inflater.inflate(R.menu.modmenu, menu);
-		super.onCreateOptionsMenu(menu, inflater);
-	}
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		Log.i(this.getClass().getName(), "onCreateView");
-		Log.i(this.getClass().getName(), "savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
-		final View view = inflater.inflate(R.layout.update_view, container, false);
-		return view;
-	}
-
-	@Override
-	public void onSaveInstanceState(Bundle savedState) {
-		super.onSaveInstanceState(savedState);
-		Log.i(this.getClass().getName(), "onSaveInstanceState");
-		if (_ticket != null) {
-			savedState.putInt("currentTicket", _ticket.getTicketnr());
-		}
-	}
-
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-		Log.i(this.getClass().getName(), "onActivityCreated");
-		Log.i(this.getClass().getName(), "savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 		if (savedInstanceState != null) {
 			if (savedInstanceState.containsKey("currentTicket")) {
 				final int currentTicket = savedInstanceState.getInt("currentTicket");
 				_ticket = new Ticket(currentTicket, context, null);
 			}
 		}
-		final View v = getView();
-		final TextView tv = (TextView) v.findViewById(R.id.titel);
-		if (_ticket != null) {
-			final String text = context.getString(R.string.updtick) + " " + _ticket;
-			tv.setText(text);
+	}
+
+//	@Override
+//	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//		Log.i(this.getClass().getName(), "onCreateOptionsMenu");
+//		inflater.inflate(R.menu.modmenu, menu);
+//		super.onCreateOptionsMenu(menu, inflater);
+//	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		Log.i(this.getClass().getName(), "onCreateView savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		final View view = inflater.inflate(R.layout.update_view, container, false);
+		if (savedInstanceState != null) {
+			if (savedInstanceState.containsKey("currentTicket")) {
+				final int currentTicket = savedInstanceState.getInt("currentTicket");
+				if (_ticket == null || _ticket.getTicketnr() != currentTicket) {
+					_ticket = new Ticket(currentTicket, context, null);
+				}
+			}
 		}
-		final Button backButton = (Button) v.findViewById(R.id.canbutton);
-		final Button storButton = (Button) v.findViewById(R.id.storebutton);
-
-		backButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				getFragmentManager().popBackStackImmediate();
-			}
-		});
-
-		storButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v1) {
-				String action = null;
-				String comment = null;
-				String waarde = null;
-				final RadioGroup rg = (RadioGroup) v.findViewById(R.id.actionblock);
-				final int sel = rg.getCheckedRadioButtonId();
-				final RadioButton rb = (RadioButton) rg.findViewById(sel);
-				final EditText et = (EditText) v.findViewById(R.id.comment);
-				action = (String) rb.getText();
-				comment = et.getText().toString();
-				// Log.i(this.getClass().getName(), "storButton onClick sel = "
-				// + action + " comment = " + comment);
-				final Spinner optiesSpin = (Spinner) v.findViewById(R.id.opties);
-				final EditText optieVal = (EditText) v.findViewById(R.id.optieval);
-				if (currentActionName != null) {
-					if (optieVal.getText() != null && !optieVal.getText().equals("")) {
-						waarde = optieVal.getText().toString();
-						// Log.i(this.getClass().getName(), "optieVal = " +
-						// optieVal.getText());
-					}
-					if (optiesSpin.getAdapter() != null) {
-						waarde = (String) optiesSpin.getSelectedItem();
-						// Log.i(this.getClass().getName(), "optiesSpin = " +
-						// optiesSpin.getSelectedItem());
-					}
-				}
-				try {
-					_ticket.update(action, comment, currentActionName, waarde, context);
-					listener.refreshOverview();
-					getFragmentManager().popBackStackImmediate();
-				} catch (final Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-					alertDialogBuilder.setTitle(R.string.storerr);
-					final String message = e.getMessage();
-					if (message == null || message.equals("")) {
-						alertDialogBuilder.setMessage(R.string.storerrdesc);
-					} else {
-						alertDialogBuilder.setMessage(message);
-					}
-					alertDialogBuilder.setCancelable(false).setPositiveButton(R.string.oktext, null);
-					final AlertDialog alertDialog = alertDialogBuilder.create();
-					alertDialog.show();
-				}
-			}
-		});
-
 		if (_ticket != null) {
 			_actions = _ticket.getActions();
 			Log.i(this.getClass().getName(), "actions = " + _actions);
-			final RadioGroup rg = (RadioGroup) v.findViewById(R.id.actionblock);
+			final RadioGroup rg = (RadioGroup) view.findViewById(R.id.actionblock);
 			try {
 				for (int i = 0; i < _actions.length(); i++) {
 					final JSONArray actie = _actions.getJSONArray(i);
 					final LinearLayout ll = new LinearLayout(context);
 					ll.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 					ll.setOrientation(LinearLayout.VERTICAL);
-					final TextView explain = (TextView) v.findViewById(R.id.explaintxt);
+					final TextView explain = (TextView) view.findViewById(R.id.explaintxt);
 					final RadioButton rb = new RadioButton(context);
 					final String hintText = actie.getString(2);
-					final Spinner optiesSpin = (Spinner) v.findViewById(R.id.opties);
-					final EditText optieval = (EditText) v.findViewById(R.id.optieval);
+					final Spinner optiesSpin = (Spinner) view.findViewById(R.id.opties);
+					final EditText optieval = (EditText) view.findViewById(R.id.optieval);
 					final JSONArray inputfields = actie.getJSONArray(3);
 					// Log.i(this.getClass().getName(), "inputfields = " +
 					// inputfields);
@@ -218,7 +142,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 									e.printStackTrace();
 								}
 							}
-							v.postInvalidate();
+							view.postInvalidate();
 						}
 					});
 					rg.addView(rb);
@@ -226,9 +150,99 @@ public class UpdateTicketFragment extends TracClientFragment {
 			} catch (final Exception e) {
 				e.printStackTrace();
 			}
-
-			v.invalidate();
 		}
+		return view;
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle savedState) {
+		super.onSaveInstanceState(savedState);
+		Log.i(this.getClass().getName(), "onSaveInstanceState");
+		if (_ticket != null) {
+			savedState.putInt("currentTicket", _ticket.getTicketnr());
+		}
+	}
+
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		Log.i(this.getClass().getName(), "onActivityCreated savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		if (savedInstanceState != null) {
+			if (savedInstanceState.containsKey("currentTicket")) {
+				final int currentTicket = savedInstanceState.getInt("currentTicket");
+				if (_ticket == null || _ticket.getTicketnr() != currentTicket) {
+					_ticket = new Ticket(currentTicket, context, null);
+				}
+			}
+		}
+		final View view = getView();
+		final TextView tv = (TextView) view.findViewById(R.id.titel);
+		if (_ticket != null) {
+			final String text = context.getString(R.string.updtick) + " " + _ticket;
+			tv.setText(text);
+		}
+		final Button backButton = (Button) view.findViewById(R.id.canbutton);
+		final Button storButton = (Button) view.findViewById(R.id.storebutton);
+
+		backButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				getFragmentManager().popBackStackImmediate();
+			}
+		});
+
+		storButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				String action = null;
+				String comment = null;
+				String waarde = null;
+				final RadioGroup rg = (RadioGroup) v.findViewById(R.id.actionblock);
+				final int sel = rg.getCheckedRadioButtonId();
+				final RadioButton rb = (RadioButton) rg.findViewById(sel);
+				final EditText et = (EditText) v.findViewById(R.id.comment);
+				final CheckBox updNotify = (CheckBox) v.findViewById(R.id.updNotify);
+
+				action = (String) rb.getText();
+				comment = et.getText().toString();
+				// Log.i(this.getClass().getName(), "storButton onClick sel = "
+				// + action + " comment = " + comment);
+				final Spinner optiesSpin = (Spinner) v.findViewById(R.id.opties);
+				final EditText optieVal = (EditText) v.findViewById(R.id.optieval);
+				if (currentActionName != null) {
+					if (optieVal.getText() != null && !optieVal.getText().equals("")) {
+						waarde = optieVal.getText().toString();
+						// Log.i(this.getClass().getName(), "optieVal = " +
+						// optieVal.getText());
+					}
+					if (optiesSpin.getAdapter() != null) {
+						waarde = (String) optiesSpin.getSelectedItem();
+						// Log.i(this.getClass().getName(), "optiesSpin = " +
+						// optiesSpin.getSelectedItem());
+					}
+				}
+				final boolean notify = (updNotify == null? false : updNotify.isChecked());
+				try {
+					_ticket.update(action, comment, currentActionName, waarde, notify, context);
+					listener.refreshOverview();
+					getFragmentManager().popBackStackImmediate();
+				} catch (final Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+					alertDialogBuilder.setTitle(R.string.storerr);
+					final String message = e.getMessage();
+					if (message == null || message.equals("")) {
+						alertDialogBuilder.setMessage(R.string.storerrdesc);
+					} else {
+						alertDialogBuilder.setMessage(message);
+					}
+					alertDialogBuilder.setCancelable(false).setPositiveButton(R.string.oktext, null);
+					final AlertDialog alertDialog = alertDialogBuilder.create();
+					alertDialog.show();
+				}
+			}
+		});
 	}
 
 	@Override

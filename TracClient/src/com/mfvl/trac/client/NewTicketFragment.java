@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TableLayout;
@@ -31,12 +32,12 @@ public class NewTicketFragment extends TracClientFragment {
 		setHasOptionsMenu(true);
 	}
 
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		Log.i(this.getClass().getName(), "onCreateOptionsMenu");
-		inflater.inflate(R.menu.newtickmenu, menu);
-		super.onCreateOptionsMenu(menu, inflater);
-	}
+//	@Override
+//	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//		Log.i(this.getClass().getName(), "onCreateOptionsMenu");
+//		inflater.inflate(R.menu.newtickmenu, menu);
+//		super.onCreateOptionsMenu(menu, inflater);
+//	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -68,16 +69,16 @@ public class NewTicketFragment extends TracClientFragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Log.i(this.getClass().getName(), "onOptionsItemSelected item=" + item);
 		final int itemId = item.getItemId();
-		if (itemId == R.id.help || itemId == R.id.over) {
+		if (itemId == R.id.help ) {
 			final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
-			final String filename = context.getString((itemId == R.id.over ? R.string.whatsnewhelpfile : R.string.newhelpfile));
+			final String filename = context.getString(R.string.newhelpfile);
 			launchTrac.putExtra("file", filename);
-			launchTrac.putExtra("version", itemId == R.id.over);
+			launchTrac.putExtra("version", false);
 			startActivity(launchTrac);
-			return true;
 		} else {
 			return super.onOptionsItemSelected(item);
 		}
+		return true;
 	}
 
 	@Override
@@ -135,9 +136,11 @@ public class NewTicketFragment extends TracClientFragment {
 					}
 					velden.put("status", "new");
 					velden.put("reporter", _username);
-
+					final CheckBox updNotify = (CheckBox) view.findViewById(R.id.updNotify);
+					final boolean notify = (updNotify == null? false : updNotify.isChecked());
+					
 					final Ticket t = new Ticket(velden);
-					final int newtick = t.create(context);
+					final int newtick = t.create(context,notify);
 					if (newtick < 0) {
 						throw new RuntimeException("Ticket == -1 ontvangen");
 					}

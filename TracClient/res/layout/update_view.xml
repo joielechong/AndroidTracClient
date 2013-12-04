@@ -109,6 +109,13 @@
                     android:textAppearance="?android:attr/textAppearanceMedium" />
             </LinearLayout>
 
+            <CheckBox
+                android:id="@+id/updNotify"
+                android:layout_width="match_parent"                                                                                                                                 
+                android:layout_height="wrap_content"                                                                                                                                
+                android:checked="false"
+                android:text="@string/notify" />
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
