@@ -33,57 +33,70 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingBottom="75px" >
+            android:paddingBottom="75dp" >
 
-            <TableLayout
-                android:id="@+id/newTickTable"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:stretchColumns="1" >
+                android:orientation="vertical" >
 
-                <TableRow
+                <TableLayout
+                    android:id="@+id/newTickTable"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" >
+                    android:layout_height="wrap_content"
+                    android:stretchColumns="1" >
 
-                    <TextView
-                        android:id="@+id/titel"
-                        android:layout_width="0dip"
-                        android:layout_margin="4dip"
-                        android:layout_weight="1"
-                        android:padding="5dip"
-                        android:text="@string/newtick"
-                        android:textAppearance="?android:attr/textAppearanceLarge" />
-                </TableRow>
-                <!-- just draw a red line -->
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" >
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="2dip"
-                    android:background="#FF0000" />
+                        <TextView
+                            android:id="@+id/titel"
+                            android:layout_width="0dip"
+                            android:layout_margin="4dip"
+                            android:layout_weight="1"
+                            android:padding="5dip"
+                            android:text="@string/newtick"
+                            android:textAppearance="?android:attr/textAppearanceLarge" />
+                    </TableRow>
+                    <!-- just draw a red line -->
 
-                <TableRow>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="2dip"
+                        android:background="#FF0000" />
 
-                    <TextView
-                        android:id="@+id/veld"
-                        android:layout_width="0dip"
-                        android:layout_margin="4dip"
-                        android:layout_weight="1"
-                        android:padding="5dip"
-                        android:textAppearance="?android:attr/textAppearanceMedium" />
-                </TableRow>
+                    <TableRow>
 
-                <TableRow>
+                        <TextView
+                            android:id="@+id/veld"
+                            android:layout_width="0dip"
+                            android:layout_margin="4dip"
+                            android:layout_weight="1"
+                            android:padding="5dip"
+                            android:textAppearance="?android:attr/textAppearanceMedium" />
+                    </TableRow>
 
-                    <EditText
-                        android:id="@+id/waarde"
-                        android:layout_width="0dip"
-                        android:layout_margin="4dip"
-                        android:layout_weight="1"
-                        android:inputType="text"
-                        android:padding="10dip"
-                        android:textAppearance="?android:attr/textAppearanceMedium" />
-                </TableRow>
-            </TableLayout>
+                    <TableRow>
+
+                        <EditText
+                            android:id="@+id/waarde"
+                            android:layout_width="0dip"
+                            android:layout_margin="4dip"
+                            android:layout_weight="1"
+                            android:inputType="text"
+                            android:padding="10dip"
+                            android:textAppearance="?android:attr/textAppearanceMedium" />
+                    </TableRow>
+                </TableLayout>
+
+                <CheckBox
+                    android:id="@+id/updNotify"
+                    android:checked="false"
+                    android:layout_width="match_parent"                                                                                                                                 
+                    android:layout_height="wrap_content"                                                                                                                                
+                    android:text="@string/notify" />
+            </LinearLayout>
         </ScrollView>
     </LinearLayout>
 
