@@ -2,6 +2,7 @@ package com.mfvl.trac.client.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -219,6 +220,17 @@ public class Credentials {
 		}
 		Log.d(context.getClass().getName(), "makeDbPath dbpath = " + dbpath);
 		return dbpath;
+	}
+
+	public static String makeExtFilePath(String filename) throws FileNotFoundException {
+		final File extpath = Environment.getExternalStorageDirectory();
+
+		final String filePath = extpath.toString() + "/TracClient/" + filename;
+
+		if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+			throw new FileNotFoundException(filePath);
+		}
+		return filePath;
 	}
 
 }

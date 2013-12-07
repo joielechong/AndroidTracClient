@@ -7,10 +7,15 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.ipaulpro.afilechooser.utils.FileUtils;
@@ -50,20 +55,20 @@ interface InterFragmentListener {
 	void onSortSelected(ArrayList<SortSpec> sortList);
 
 	void shareTicket(Ticket t);
+
+	void initializeList();
 }
 
-public class TracStart extends FragmentActivity implements InterFragmentListener {
+public class TracStart extends ActionBarActivity implements InterFragmentListener {
 	private String url;
 	private String username;
 	private String password;
 	private boolean sslHack;
 	private TicketModel tm = null;
-	private static final int REQUEST_CODE = 6384; // onActivityResult request
-													// code
+	// onActivityResult requestcode for filechooser
+	private static final int REQUEST_CODE = 6384;
 	private onFileSelectedListener _oc = null;
 	private boolean dispAds;
-	private TicketListFragment ticketListFragment = null;
-	private TracLoginFragment tracLoginFragment = null;
 	private FragmentManager fm = null;
 
 	@Override
@@ -73,16 +78,18 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 
 		setContentView(R.layout.tracstart);
 		Credentials.loadCredentials(this);
-		// ActionBar ab = getSupportActionBar();
-		// if (ab != null) {
-		// ab.show();
-		// }
 
 		try {
 			final Intent i = getIntent();
 			dispAds = i.getBooleanExtra("AdMob", true);
 		} catch (final Exception e) {
 			dispAds = true;
+		}
+
+		final ActionBar ab = getSupportActionBar();
+		if (ab != null) {
+			// ab.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+			ab.show();
 		}
 
 		url = Credentials.getUrl();
@@ -98,21 +105,14 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 			startActivity(launchTrac);
 		}
 
-		if (ticketListFragment == null) {
-			ticketListFragment = new TicketListFragment();
-		}
-
 		fm = getSupportFragmentManager();
-
 		if (savedInstanceState == null) {
 			final FragmentTransaction ft = fm.beginTransaction();
 			if (url.length() > 0) {
-				ticketListFragment.setHost(url, username, password, sslHack);
+				final TicketListFragment ticketListFragment = new TicketListFragment();
 				ft.add(R.id.displayList, ticketListFragment, "List_Fragment");
-				setFilter(Credentials.getFilterString(this));
-				setSort(Credentials.getSortString(this));
 			} else {
-				tracLoginFragment = new TracLoginFragment();
+				final TracLoginFragment tracLoginFragment = new TracLoginFragment();
 				ft.add(R.id.displayList, tracLoginFragment, "Login_Fragment");
 			}
 			ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -133,6 +133,39 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 		 * ft.commit(); } detailFragment.setHost(url, username, password,
 		 * sslHack); }
 		 */
+	}
+
+	@Override
+	public void initializeList() {
+		final TicketListFragment ticketListFragment = (TicketListFragment) fm.findFragmentByTag("List_Fragment");
+		Log.d(this.getClass().getName(), "initializeList ticketListFragment = " + ticketListFragment);
+		ticketListFragment.setHost(url, username, password, sslHack);
+		setFilter(Credentials.getFilterString(this));
+		setSort(Credentials.getSortString(this));
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		Log.d(this.getClass().getName(), "onCreateOptionsMenu");
+		final MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.tracstartmenu, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		Log.d(this.getClass().getName(), "onOptionsItemSelected item=" + item);
+		final int itemId = item.getItemId();
+		if (itemId == R.id.over) {
+			final Intent launchTrac = new Intent(getApplicationContext(), TracShowWebPage.class);
+			final String filename = getString(R.string.whatsnewhelpfile);
+			launchTrac.putExtra("file", filename);
+			launchTrac.putExtra("version", true);
+			startActivity(launchTrac);
+		} else {
+			return super.onOptionsItemSelected(item);
+		}
+		return true;
 	}
 
 	@Override
@@ -218,18 +251,15 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 		username = newUser;
 		password = newPass;
 		sslHack = newHack;
+		TicketListFragment ticketListFragment = (TicketListFragment) fm.findFragmentByTag("List_Fragment");
 		if (ticketListFragment != null) {
-			// ticketList already started
-			ticketListFragment.setHost(url, username, password, sslHack);
-			setFilter(Credentials.getFilterString(this));
-			setSort(Credentials.getSortString(this));
+			initializeList();
 		}
+
 		if (!fm.popBackStackImmediate()) {
+			Log.d(this.getClass().getName(), "onLogin popBackStackImmediate=false");
 			ticketListFragment = new TicketListFragment();
 			final FragmentTransaction ft = fm.beginTransaction();
-			ticketListFragment.setHost(url, username, password, sslHack);
-			setFilter(Credentials.getFilterString(this));
-			setSort(Credentials.getSortString(this));
 			ft.replace(R.id.displayList, ticketListFragment, "List_Fragment");
 			ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			ft.commit();
@@ -239,20 +269,23 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 
 	@Override
 	public void setFilter(ArrayList<FilterSpec> filter) {
+		final TicketListFragment tlf = (TicketListFragment) fm.findFragmentByTag("List_Fragment");
 		Log.d(this.getClass().getName(), "setFilter " + filter);
-		// if (ticketListFragment != null) {
-		ticketListFragment.setFilter(filter);
-		// }
-		String filterString = "";
-		if (filter != null) {
-			for (final FilterSpec fs : filter) {
-				if (filterString.length() > 0) {
-					filterString += "&";
+		if (tlf != null) {
+			tlf.setFilter(filter);
+			String filterString = "";
+			if (filter != null) {
+				for (final FilterSpec fs : filter) {
+					if (filterString.length() > 0) {
+						filterString += "&";
+					}
+					filterString += fs.toString();
 				}
-				filterString += fs.toString();
 			}
+			Credentials.storeFilterString(this, filterString);
+		} else {
+			Toast.makeText(this, "setFilter tlf is null", Toast.LENGTH_SHORT).show();
 		}
-		Credentials.storeFilterString(this, filterString);
 	}
 
 	public void setFilter(String filterString) {
@@ -269,15 +302,14 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 				filter.add(new FilterSpec(f, this.getApplicationContext()));
 			}
 		}
-		ticketListFragment.setFilter(filter);
+		setFilter(filter);
 	}
 
 	@Override
 	public void setSort(ArrayList<SortSpec> sort) {
+		final TicketListFragment tlf = (TicketListFragment) fm.findFragmentByTag("List_Fragment");
 		Log.d(this.getClass().getName(), "setSort " + sort);
-		if (ticketListFragment != null) {
-			ticketListFragment.setSort(sort);
-		}
+		tlf.setSort(sort);
 		String sortString = "";
 		if (sort != null) {
 			for (final SortSpec s : sort) {
@@ -317,14 +349,17 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 				}
 			}
 		}
-		ticketListFragment.setSort(sl);
+		this.setSort(sl);
 	}
 
 	@Override
 	public void onChangeHost() {
 		Log.d(this.getClass().getName(), "onChangeHost");
 		final FragmentTransaction ft = fm.beginTransaction();
-		tracLoginFragment = new TracLoginFragment();
+		TracLoginFragment tracLoginFragment = (TracLoginFragment) fm.findFragmentByTag("Login_Fragment");
+		if (tracLoginFragment == null) {
+			tracLoginFragment = new TracLoginFragment();
+		}
 		ft.replace(R.id.displayList, tracLoginFragment, "Login_Fragment");
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 		ft.addToBackStack(null);
@@ -487,6 +522,10 @@ public class TracStart extends FragmentActivity implements InterFragmentListener
 
 	@Override
 	public void refreshOverview() {
-		ticketListFragment.forceRefresh();
+		final TicketListFragment ticketListFragment = (TicketListFragment) fm.findFragmentByTag("List_Fragment");
+		Log.d(this.getClass().getName(), "initializeList ticketListFragment = " + ticketListFragment);
+		if (ticketListFragment != null) {
+			ticketListFragment.forceRefresh();
+		}
 	}
 }

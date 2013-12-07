@@ -6,18 +6,19 @@
 </head>
 <body>
 <h1>Specificeer TRAC server</h1>
+<p>
 Met dit scherm kan worden opgegeven welke TRAC server gebruikt dient te worden.
 <br>
 Je kunt de informatie op het apparaat opslaan. Wees ervan bewust dat wachtwoorden worden als platte tekst opgelsagen
 maar op niet gerootte apparaten is die normaliter niet beschikbaar zijn voor andere apps.
 <br>
 Als opgeslagen informatie beschikbaar is dan wordt een dropdown box getoond om een van de opgeslagen profielen te selecteren.
-<p>
+</p><p>
 Als je de fout <u>No peer certificate</u> krijgt, selecteer dan <u>Accepteer Self Signed certificaten</u>.
 Indien login informatie vereist is dan kan deze ook ingevoerd worden.
 Gebruik de <b>Verifieer</b> knop om te controleren of de app verbinding kan maken met de server.
 Met <b>OK</b> wordt de server informatie opgeslagen.
-<p>
+</p><p>
 Een paar voorbeeld URLs:
 <ul>
 <li>TracClient RO: http://van-loon.xs4all.nl/TracClient/rpc
@@ -25,8 +26,10 @@ Een paar voorbeeld URLs:
 <li>TracClient RW: https://van-loon.xs4all.nl/TracClient/login/rpc
 <br> Een geldige gebruikersnaam en wachtwoord zijn nodig ook moet voor deze site het certificaat vinkje gezet worden.
 </ul>
-<p>
+<p>Via het menu kunnen de opgeslagen profielen worden gexporteerd naar de SD-kaart. Dan wordt het file TracClient.XML geschreven in de TracClient folder. Met de importeer functie kan dit file weer worden ingelezen, de oude informatie wordt overschreven. Let op ook de wachtwoorden worden geexporteerd.
+</p><p>
 De sorteervolgorde word op <code>priority&modified&desc=1</code> gezet.
 <br>
 Het filter word op <code>max=500&status!=closed</code> gezet.
+</p>
 </html> 

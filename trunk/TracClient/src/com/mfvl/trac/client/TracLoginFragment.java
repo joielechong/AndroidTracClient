@@ -73,7 +73,7 @@ public class TracLoginFragment extends TracClientFragment {
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		Log.d(this.getClass().getName(), "onCreateOptionsMenu");
-//		inflater.inflate(R.menu.loginmenu, menu);
+		inflater.inflate(R.menu.tracloginmenu, menu);
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
@@ -339,6 +339,9 @@ public class TracLoginFragment extends TracClientFragment {
 					public void onClick(DialogInterface dialog, int whichButton) {
 						final String profileName = input.getText().toString();
 						pdb.addProfile(profileName, prof);
+						final SimpleCursorAdapter a = (SimpleCursorAdapter) loginSpinner.getAdapter();
+						a.swapCursor(pdb.getProfiles());
+						loginSpinner.postInvalidate();
 					}
 				});
 				alert.setNegativeButton(R.string.cancel, null);
@@ -351,12 +354,47 @@ public class TracLoginFragment extends TracClientFragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Log.d(this.getClass().getName(), "onOptionsItemSelected item=" + item);
 		final int itemId = item.getItemId();
-		if (itemId == R.id.help ) {
+		if (itemId == R.id.help) {
 			final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
-			final String filename = context.getString( R.string.loginhelpfile);
+			final String filename = context.getString(R.string.loginhelpfile);
 			launchTrac.putExtra("file", filename);
 			launchTrac.putExtra("version", false);
 			startActivity(launchTrac);
+		} else if (itemId == R.id.exportprofiles) {
+			try {
+				pdb.open();
+				pdb.writeXML(context.getString(R.string.app_name));
+				final AlertDialog.Builder alert = new AlertDialog.Builder(context);
+				alert.setTitle(R.string.completed);
+				alert.setMessage(context.getString(R.string.xmlwritecompleted));
+				alert.setPositiveButton(R.string.oktext, null);
+				alert.show();
+				final SimpleCursorAdapter a = (SimpleCursorAdapter) loginSpinner.getAdapter();
+				a.swapCursor(pdb.getProfiles());
+				loginSpinner.postInvalidate();
+			} catch (final Exception e) {
+				final AlertDialog.Builder alert = new AlertDialog.Builder(context);
+				alert.setTitle(R.string.failed);
+				alert.setMessage(e.getMessage());
+				alert.setPositiveButton(R.string.oktext, null);
+				alert.show();
+			}
+		} else if (itemId == R.id.importprofiles) {
+			try {
+				pdb.open();
+				pdb.readXML(context.getString(R.string.app_name));
+				final AlertDialog.Builder alert = new AlertDialog.Builder(context);
+				alert.setTitle(R.string.completed);
+				alert.setMessage(context.getString(R.string.xmlreadcompleted));
+				alert.setPositiveButton(R.string.oktext, null);
+				alert.show();
+			} catch (final Exception e) {
+				final AlertDialog.Builder alert = new AlertDialog.Builder(context);
+				alert.setTitle(R.string.failed);
+				alert.setMessage(e.getMessage());
+				alert.setPositiveButton(R.string.oktext, null);
+				alert.show();
+			}
 		} else {
 			return super.onOptionsItemSelected(item);
 		}

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -30,12 +31,14 @@ public class TracClientFragment extends Fragment {
 	public TracStart context;
 	private AdView adView = null;
 	public InterFragmentListener listener = null;
+	public ProgressDialog progressBar = null;
 
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		Log.d(this.getClass().getName() + ".super", "onAttach ");
 		context = (TracStart) activity;
+		listener = context;
 	}
 
 	@Override
@@ -56,7 +59,6 @@ public class TracClientFragment extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 		Log.d(this.getClass().getName() + ".super", "onActivityCreated");
 		Log.d(this.getClass().getName() + ".super", "savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
-		listener = context;
 		if (listener != null && listener.dispAds()) {
 			final LinearLayout ll = (LinearLayout) getView().findViewById(R.id.adBlock);
 			if (ll != null) {
@@ -165,6 +167,18 @@ public class TracClientFragment extends Fragment {
 		tv2.setId(id + 300);
 		tr2.addView(tv2);
 		tl.addView(tr2);
+	}
+
+	public void showProgressBar(int resid) {
+		progressBar = new ProgressDialog(context);
+		progressBar.setCancelable(true);
+		progressBar.setMessage(context.getString(resid));
+		progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		progressBar.show();
+	}
+
+	public void removeProgressBar() {
+		progressBar.dismiss();
 	}
 
 }

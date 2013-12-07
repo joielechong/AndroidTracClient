@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:myapp="http://schemas.android.com/apk/res-auto" >
 
     <item
         android:id="@+id/dfrefresh"
         android:icon="@drawable/navigation_refresh"
         android:menuCategory="container"
-        android:title="@string/dfrefresh"/>
+        android:title="@string/dfrefresh"
+        myapp:showAsAction="ifRoom"/>
     <item
         android:id="@+id/dfupdate"
         android:icon="@drawable/content_edit"
@@ -20,6 +22,7 @@
         android:id="@+id/dfshare"
         android:icon="@android:drawable/ic_menu_share"
         android:menuCategory="container"
-        android:title="@string/dfshare"/>
+        android:title="@string/dfshare"
+        myapp:showAsAction="ifRoom"/>
 
 </menu>

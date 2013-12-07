@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
     <!-- Default versie - engels -->
-    <string name="app_name" translatable="false">Trac Client</string>
+    <string name="app_name" translatable="false">TracClient</string>
     <string name="about_button">About Trac Client</string>
     <string name="Back">Back</string>
     <string name="tracLogin">Log in to TRAC server</string>
@@ -40,7 +40,6 @@
     <string name="comment">Add comment</string>
     <string name="state">Change status</string>
     <string name="attach">Add attachment</string>
-    <string name="choose_file">Select a file</string>
     <string name="chooser_title">Ticket attachment</string>
     <string name="tlshare">Share list</string>
     <string name="dfshare">Share ticket</string>
@@ -98,9 +97,6 @@
         <item>is equal to</item>
         <item>is not equal to</item>
     </string-array>
-    <string name="storage_removed">Storage was removed or unmounted.</string>
-    <string name="error_selecting_file">Error selecting File</string>
-    <string name="empty_directory">Empty Directory</string>
     <string name="select">Select</string>
     <string name="delete">Delete</string>
     <string name="getlist">Fetch Ticketlist</string>
@@ -115,4 +111,14 @@
     <string name="ioerror">ExternalStorage - Error writing</string>
     <string name="chooseapp">Choose an application to open with:</string>
     <string name="notify">Notify</string>
+    <string name="exportprofiles">Export profiles</string>
+    <string name="importprofiles">Import profiles</string>
+    <string name="completed">Completed</string>
+    <string name="failed">Failed</string>
+    <string name="xmlwritecompleted">Export to XML succeeded</string>
+    <string name="xmlreadcompleted">Import from XML succeeded</string>
+    <string name="downloading">Downloading</string>
+    <string name="uploading">Uploading</string>
+    <string name="saveupdate">Saving update on server</string>
+    <string name="saveticket">Saving ticket</string>
 </resources>

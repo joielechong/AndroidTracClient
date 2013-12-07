@@ -13,8 +13,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -89,11 +87,32 @@ public class FilterFragment extends TracClientFragment {
 			final EditText et = (EditText) v.findViewById(R.id.filtervaltext);
 			final LinearLayout ll = (LinearLayout) v.findViewById(R.id.filtercheck);
 
+			final View.OnClickListener startEdit = new View.OnClickListener() {
+				@Override
+				public void onClick(View v1) {
+					o.setEdit(true);
+					listView.invalidateViews();
+				}
+			};
+
+			final View.OnClickListener stopEdit = new View.OnClickListener() {
+				@Override
+				public void onClick(View v1) {
+					o.setEdit(false);
+					if (spin != null) {
+						o.setOperator(operators.get(spin.getSelectedItemPosition()));
+					}
+					listView.invalidateViews();
+				}
+			};
+
 			if (o != null) {
 				if (o.isEdit()) {
 					tt.setText(o.veld());
+					tt.setOnClickListener(stopEdit);
 				} else {
 					tt.setText(o.toString());
+					tt.setOnClickListener(startEdit);
 				}
 			}
 
@@ -105,7 +124,6 @@ public class FilterFragment extends TracClientFragment {
 				spin.setOnItemSelectedListener(new OnItemSelectedListener() {
 					@Override
 					public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-						Log.i(this.getClass().getName(), "onItemSelected " + parent + " " + view + " " + position + " " + id);
 						o.setOperator(operators.get(position));
 					}
 
@@ -130,7 +148,6 @@ public class FilterFragment extends TracClientFragment {
 
 					@Override
 					public void onTextChanged(CharSequence s, int start, int before, int count) {
-						Log.i(this.getClass().getName(), "onTextChanged s = " + s);
 						o.setWaarde(s.toString());
 					}
 
@@ -142,34 +159,11 @@ public class FilterFragment extends TracClientFragment {
 			}
 
 			if (filterEdit != null) {
-				filterEdit.setOnClickListener(new ImageButton.OnClickListener() {
-					@Override
-					public void onClick(View v1) {
-						Log.i(this.getClass().getName(), "edit onClick " + o.veld() + " parent=" + parent);
-						o.setEdit(true);
-						listView.invalidateViews();
-					}
-				});
+				filterEdit.setOnClickListener(startEdit);
 			}
 
 			if (filterSave != null) {
-				filterSave.setOnClickListener(new ImageButton.OnClickListener() {
-					@Override
-					public void onClick(View v1) {
-						Log.i(this.getClass().getName(), "save onClick " + o.veld() + " parent=" + parent);
-						o.setEdit(false);
-						if (et != null) {
-							Log.i(this.getClass().getName(), "value = " + et.getText());
-						}
-						if (ll != null) {
-							Log.i(this.getClass().getName(), "value = " + o.waarde());
-						}
-						if (spin != null) {
-							o.setOperator(operators.get(spin.getSelectedItemPosition()));
-						}
-						listView.invalidateViews();
-					}
-				});
+				filterSave.setOnClickListener(stopEdit);
 			}
 
 			if (filterDel != null) {
@@ -192,15 +186,13 @@ public class FilterFragment extends TracClientFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.i(this.getClass().getName(), "onCreate");
-		Log.i(this.getClass().getName(), "savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		Log.i(this.getClass().getName(), "onCreate savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 		setHasOptionsMenu(true);
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		Log.i(this.getClass().getName(), "onCreateView");
-		Log.i(this.getClass().getName(), "savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		Log.i(this.getClass().getName(), "onCreateView savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 		final View view = inflater.inflate(R.layout.filter_view, container, false);
 		return view;
 	}
@@ -214,9 +206,11 @@ public class FilterFragment extends TracClientFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		Log.i(this.getClass().getName(), "onActivityCreated");
-		Log.i(this.getClass().getName(), "savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		Log.i(this.getClass().getName(), "onActivityCreated savedInstanceState = "
+				+ (savedInstanceState == null ? "null" : "not null"));
+		showProgressBar(R.string.downloading);
 		tm = listener.getTicketModel();
+		removeProgressBar();
 		final View view = getView();
 		final ListView lv = (ListView) view.findViewById(R.id.filterlist);
 		final ArrayList<FilterSpec> outputSpec = new ArrayList<FilterSpec>();
@@ -247,7 +241,6 @@ public class FilterFragment extends TracClientFragment {
 			@Override
 			public void onClick(View v1) {
 				final ArrayList<FilterSpec> items = filterAdapter.items;
-				Log.i(this.getClass().getName(), "stor onButton items=" + items);
 				for (int i = items.size() - 1; i >= 0; i--) {
 					if (items.get(i).operator() == null || items.get(i).operator().equals("") || items.get(i).waarde() == null
 							|| items.get(i).waarde().equals("")) {
@@ -262,18 +255,14 @@ public class FilterFragment extends TracClientFragment {
 		});
 
 		if (addButton != null) {
-			Log.i(this.getClass().getName(), "addButton ");
 			final ArrayList<String> velden = tm.velden();
 			Collections.sort(velden);
 			final ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, velden);
-			Log.i(this.getClass().getName(), "addButton " + spinAdapter);
 			addSpinner.setAdapter(spinAdapter);
-			Log.i(this.getClass().getName(), "addButton " + addSpinner);
 			addButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v1) {
 					final String veld = velden.get((int) addSpinner.getSelectedItemId());
-					Log.i(this.getClass().getName(), "addButton " + veld);
 					final FilterSpec o = new FilterSpec(veld, "=", "");
 					filterAdapter.add(o);
 					filterAdapter.notifyDataSetChanged();
@@ -327,8 +316,6 @@ public class FilterFragment extends TracClientFragment {
 			ws = new String[1];
 			ws[0] = w;
 		}
-		Log.i(this.getClass().getName(), "makeCheckBoxes " + ws);
-		Log.i(this.getClass().getName(), "makeCheckBoxes " + waardes);
 
 		for (int i = 0; i < waardes.size(); i++) {
 			final CheckBox rb = new CheckBox(context);
@@ -345,7 +332,6 @@ public class FilterFragment extends TracClientFragment {
 			rb.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 				@Override
 				public void onCheckedChanged(CompoundButton cb0, boolean isChecked) {
-					Log.i(this.getClass().getName(), "onCheckedChanged " + cb0.getText() + " " + isChecked);
 					String temp = null;
 					for (int j = 0; j < waardes.size(); j++) {
 						final CheckBox cb = (CheckBox) valCheckBoxes.findViewById(j);

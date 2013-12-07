@@ -11,8 +11,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -45,12 +43,12 @@ public class UpdateTicketFragment extends TracClientFragment {
 		}
 	}
 
-//	@Override
-//	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//		Log.i(this.getClass().getName(), "onCreateOptionsMenu");
-//		inflater.inflate(R.menu.modmenu, menu);
-//		super.onCreateOptionsMenu(menu, inflater);
-//	}
+	// @Override
+	// public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+	// Log.i(this.getClass().getName(), "onCreateOptionsMenu");
+	// inflater.inflate(R.menu.modmenu, menu);
+	// super.onCreateOptionsMenu(menu, inflater);
+	// }
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -166,7 +164,8 @@ public class UpdateTicketFragment extends TracClientFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		Log.i(this.getClass().getName(), "onActivityCreated savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		Log.i(this.getClass().getName(), "onActivityCreated savedInstanceState = "
+				+ (savedInstanceState == null ? "null" : "not null"));
 		if (savedInstanceState != null) {
 			if (savedInstanceState.containsKey("currentTicket")) {
 				final int currentTicket = savedInstanceState.getInt("currentTicket");
@@ -186,61 +185,72 @@ public class UpdateTicketFragment extends TracClientFragment {
 
 		backButton.setOnClickListener(new View.OnClickListener() {
 			@Override
-			public void onClick(View v) {
+			public void onClick(View v1) {
 				getFragmentManager().popBackStackImmediate();
 			}
 		});
 
 		storButton.setOnClickListener(new View.OnClickListener() {
 			@Override
-			public void onClick(View v) {
-				String action = null;
-				String comment = null;
-				String waarde = null;
-				final RadioGroup rg = (RadioGroup) v.findViewById(R.id.actionblock);
+			public void onClick(View v1) {
+				String w = null;
+				final RadioGroup rg = (RadioGroup) view.findViewById(R.id.actionblock);
 				final int sel = rg.getCheckedRadioButtonId();
 				final RadioButton rb = (RadioButton) rg.findViewById(sel);
-				final EditText et = (EditText) v.findViewById(R.id.comment);
-				final CheckBox updNotify = (CheckBox) v.findViewById(R.id.updNotify);
+				final EditText et = (EditText) view.findViewById(R.id.comment);
+				final CheckBox updNotify = (CheckBox) view.findViewById(R.id.updNotify);
 
-				action = (String) rb.getText();
-				comment = et.getText().toString();
-				// Log.i(this.getClass().getName(), "storButton onClick sel = "
-				// + action + " comment = " + comment);
-				final Spinner optiesSpin = (Spinner) v.findViewById(R.id.opties);
-				final EditText optieVal = (EditText) v.findViewById(R.id.optieval);
+				final String action = (String) rb.getText();
+				final String comment = et.getText().toString();
+				final Spinner optiesSpin = (Spinner) view.findViewById(R.id.opties);
+				final EditText optieVal = (EditText) view.findViewById(R.id.optieval);
 				if (currentActionName != null) {
 					if (optieVal.getText() != null && !optieVal.getText().equals("")) {
-						waarde = optieVal.getText().toString();
-						// Log.i(this.getClass().getName(), "optieVal = " +
-						// optieVal.getText());
+						w = optieVal.getText().toString();
 					}
 					if (optiesSpin.getAdapter() != null) {
-						waarde = (String) optiesSpin.getSelectedItem();
-						// Log.i(this.getClass().getName(), "optiesSpin = " +
-						// optiesSpin.getSelectedItem());
+						w = (String) optiesSpin.getSelectedItem();
 					}
 				}
-				final boolean notify = (updNotify == null? false : updNotify.isChecked());
-				try {
-					_ticket.update(action, comment, currentActionName, waarde, notify, context);
-					listener.refreshOverview();
-					getFragmentManager().popBackStackImmediate();
-				} catch (final Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-					alertDialogBuilder.setTitle(R.string.storerr);
-					final String message = e.getMessage();
-					if (message == null || message.equals("")) {
-						alertDialogBuilder.setMessage(R.string.storerrdesc);
-					} else {
-						alertDialogBuilder.setMessage(message);
+				final String waarde = w;
+				showProgressBar(R.string.saveupdate);
+				new Thread() {
+					@Override
+					public void run() {
+						try {
+							final boolean notify = updNotify == null ? false : updNotify.isChecked();
+							_ticket.update(action, comment, currentActionName, waarde, notify, context);
+							listener.refreshOverview();
+							context.runOnUiThread(new Runnable() {
+								@Override
+								public void run() {
+									getFragmentManager().popBackStackImmediate();
+								}
+							});
+						} catch (final Exception e) {
+							e.printStackTrace();
+							context.runOnUiThread(new Runnable() {
+								@Override
+								public void run() {
+									final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+									alertDialogBuilder.setTitle(R.string.storerr);
+									final String message = e.getMessage();
+									if (message == null || message.equals("")) {
+										alertDialogBuilder.setMessage(context.getString(R.string.storerrdesc) + ": " + e);
+									} else {
+										alertDialogBuilder.setMessage(message);
+									}
+									alertDialogBuilder.setCancelable(false).setPositiveButton(R.string.oktext, null);
+									final AlertDialog alertDialog = alertDialogBuilder.create();
+									alertDialog.show();
+								}
+							});
+						} finally {
+							removeProgressBar();
+						}
+
 					}
-					alertDialogBuilder.setCancelable(false).setPositiveButton(R.string.oktext, null);
-					final AlertDialog alertDialog = alertDialogBuilder.create();
-					alertDialog.show();
-				}
+				}.start();
 			}
 		});
 	}

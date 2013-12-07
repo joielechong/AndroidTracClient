@@ -328,7 +328,7 @@ public class Ticket {
 		return _isloading;
 	}
 
-	public int create(final TracStart context,final boolean notify) throws Exception {
+	public int create(final TracStart context, final boolean notify) throws Exception {
 		if (_ticknr != -1) {
 			throw new RuntimeException("Aanroep met niet -1");
 		}
@@ -383,7 +383,8 @@ public class Ticket {
 		return _ticknr;
 	}
 
-	public void update(String action, String comment, String veld, String waarde, final boolean notify, final TracStart context) throws Exception {
+	public void update(String action, String comment, String veld, String waarde, final boolean notify, final TracStart context)
+			throws Exception {
 		Log.i(this.getClass().getName(), "update: " + action + " '" + comment + "' '" + veld + "' '" + waarde + "'");
 		if (_ticknr == -1) {
 			throw new Exception(context.getString(R.string.invtick) + " " + _ticknr);
@@ -413,7 +414,7 @@ public class Ticket {
 							req = new JSONRPCHttpClient(_url, _sslHack);
 							req.setCredentials(_username, _password);
 						}
-						req.callJSONArray("ticket.update", _ticknr, cmt, _velden,notify);
+						req.callJSONArray("ticket.update", _ticknr, cmt, _velden, notify);
 						actionLock.release();
 						loadTicketData(context, null);
 					}

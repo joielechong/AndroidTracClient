@@ -19,20 +19,19 @@ package com.ipaulpro.afilechooser;
 import java.io.File;
 
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentManager.BackStackEntry;
 import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -47,12 +46,14 @@ import com.mfvl.trac.client.R;
  * @author paulburke (ipaulpro)
  * 
  */
-public class FileChooserActivity extends FragmentActivity implements OnBackStackChangedListener {
+public class FileChooserActivity extends ActionBarActivity implements OnBackStackChangedListener {
 
 	public static final String PATH = "path";
 	public static final String EXTERNAL_BASE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath();
 
-	private static final boolean HAS_ACTIONBAR = Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
+	// private static final boolean HAS_ACTIONBAR = Build.VERSION.SDK_INT >=
+	// Build.VERSION_CODES.HONEYCOMB;
+	private static final boolean HAS_ACTIONBAR = true;
 
 	private FragmentManager mFragmentManager;
 	private final BroadcastReceiver mStorageListener = new BroadcastReceiver() {
@@ -129,7 +130,7 @@ public class FileChooserActivity extends FragmentActivity implements OnBackStack
 		if (HAS_ACTIONBAR) {
 			final boolean hasBackStack = mFragmentManager.getBackStackEntryCount() > 0;
 
-			final ActionBar actionBar = getActionBar();
+			final ActionBar actionBar = getSupportActionBar();
 			actionBar.setDisplayHomeAsUpEnabled(hasBackStack);
 			// actionBar.setHomeButtonEnabled(hasBackStack);
 		}
