@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -62,6 +63,12 @@ public class TicketListFragment extends TracClientFragment {
 	ArrayList<FilterSpec> filterList = null;
 	int scrollPosition = 0;
 	boolean refreshOnRestart = false;
+
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		listener.initializeList();
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -141,6 +148,7 @@ public class TicketListFragment extends TracClientFragment {
 
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+		Log.d(this.getClass().getName(), "onCreateContextMenu");
 		super.onCreateContextMenu(menu, v, menuInfo);
 		if (v.getId() == R.id.listofTickets) {
 			final MenuInflater inflater = context.getMenuInflater();
@@ -150,6 +158,7 @@ public class TicketListFragment extends TracClientFragment {
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
+		Log.d(this.getClass().getName(), "onContextItemSelected");
 		final AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 		final Ticket t = (Ticket) listView.getItemAtPosition(info.position);
 		switch (item.getItemId()) {
@@ -237,11 +246,13 @@ public class TicketListFragment extends TracClientFragment {
 			throw new RuntimeException(context.getString(R.string.noadapter));
 		}
 		listView.setAdapter(dataAdapter);
+		Log.d(this.getClass().getName(), "onResume adapter set");
 		zetZoeken();
 		setScroll();
 	}
 
 	private void zetZoeken() {
+		Log.d(this.getClass().getName(), "zetZoeken");
 		final EditText filterText = (EditText) getView().findViewById(R.id.search_box);
 		if (filterText != null) {
 			if (zoeken) {
@@ -300,7 +311,7 @@ public class TicketListFragment extends TracClientFragment {
 			listener.onNewTicket();
 		} else if (itemId == R.id.tlrefresh) {
 			doRefresh();
-		} else if (itemId == R.id.help || itemId == R.id.over) {
+		} else if (itemId == R.id.help) {
 			final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
 			final String filename = context.getString(R.string.helplistfile);
 			launchTrac.putExtra("file", filename);
@@ -315,6 +326,7 @@ public class TicketListFragment extends TracClientFragment {
 		} else if (itemId == R.id.tlchangehost) {
 			if (networkThread != null) {
 				networkThread.interrupt();
+				loading = false;
 			}
 			listener.onChangeHost();
 			return true;
@@ -334,8 +346,6 @@ public class TicketListFragment extends TracClientFragment {
 	public void onSaveInstanceState(Bundle savedState) {
 		super.onSaveInstanceState(savedState);
 		Log.d(this.getClass().getName(), "onSaveInstanceState");
-		// final int count = tickets.length;
-		// Log.d(this.getClass().getName(), "count = " + count);
 		savedState.putIntArray(TICKETLISTNAME, tickets);
 		savedState.putSerializable(SORTLISTNAME, sortList);
 		savedState.putSerializable(FILTERLISTNAME, filterList);
@@ -353,18 +363,20 @@ public class TicketListFragment extends TracClientFragment {
 		super.setHost(url, username, password, sslHack);
 		if (listView != null) {
 			listView.setAdapter(null);
+			listView.postInvalidate();
 		}
 		tickets = null;
 		ticketList.clear();
 	}
 
 	private void loadTicketList() {
-		Log.d(this.getClass().getName(), "loadTicketList");
+		Log.d(this.getClass().getName(), "loadTicketList url=" + _url);
 		ticketList.clear();
 		callBack.onComplete();
 		if (_url != null) {
 			loading = true;
 			hs.setText(R.string.getlist);
+			showProgressBar(R.string.getlist);
 			networkThread = new Thread() {
 				@Override
 				public void run() {
@@ -431,7 +443,7 @@ public class TicketListFragment extends TracClientFragment {
 					} catch (final Exception e) {
 						Log.i(this.getClass().getName(), e.toString());
 					} finally {
-						loading = false;
+						removeProgressBar();
 					}
 				}
 			};
@@ -442,6 +454,7 @@ public class TicketListFragment extends TracClientFragment {
 	private final onTicketCompleteListener callBack = new onTicketCompleteListener() {
 		@Override
 		public void onComplete() {
+			Log.d(this.getClass().getName(), "onTicketCompleteListener.onComplete");
 			if (filterText.getVisibility() == View.VISIBLE) {
 				dataAdapter.getFilter().filter(filterText.getText());
 			}
@@ -556,12 +569,14 @@ public class TicketListFragment extends TracClientFragment {
 					}
 					callBack.onComplete();
 				}
+				loading = false;
 			}
 		};
 		networkThread.start();
 	}
 
 	private void doRefresh() {
+		Log.d(this.getClass().getName(), "doRefresh");
 		if (networkThread != null) {
 			networkThread.interrupt();
 			loading = false;
@@ -572,6 +587,7 @@ public class TicketListFragment extends TracClientFragment {
 	}
 
 	public void forceRefresh() {
+		Log.d(this.getClass().getName(), "forceRefresh");
 		if (networkThread != null) {
 			networkThread.interrupt();
 			loading = false;

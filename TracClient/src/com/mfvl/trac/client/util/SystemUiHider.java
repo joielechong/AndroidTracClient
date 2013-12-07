@@ -2,6 +2,7 @@ package com.mfvl.trac.client.util;
 
 import android.app.Activity;
 import android.os.Build;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 
 /**
@@ -56,7 +57,7 @@ public abstract class SystemUiHider {
 	/**
 	 * The activity associated with this UI hider object.
 	 */
-	protected Activity mActivity;
+	protected ActionBarActivity mActivity;
 
 	/**
 	 * The view on which {@link View#setSystemUiVisibility(int)} will be called.
@@ -94,7 +95,7 @@ public abstract class SystemUiHider {
 	 *            {@link #FLAG_HIDE_NAVIGATION}, and
 	 *            {@link #FLAG_LAYOUT_IN_SCREEN_OLDER_DEVICES}.
 	 */
-	public static SystemUiHider getInstance(Activity activity, View anchorView, int flags) {
+	public static SystemUiHider getInstance(ActionBarActivity activity, View anchorView, int flags) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			return new SystemUiHiderHoneycomb(activity, anchorView, flags);
 		} else {
@@ -102,7 +103,7 @@ public abstract class SystemUiHider {
 		}
 	}
 
-	protected SystemUiHider(Activity activity, View anchorView, int flags) {
+	protected SystemUiHider(ActionBarActivity activity, View anchorView, int flags) {
 		mActivity = activity;
 		mAnchorView = anchorView;
 		mFlags = flags;

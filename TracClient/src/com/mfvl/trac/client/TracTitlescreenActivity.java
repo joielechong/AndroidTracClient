@@ -4,15 +4,16 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.mfvl.trac.client.util.Credentials;
@@ -24,7 +25,7 @@ import com.mfvl.trac.client.util.SystemUiHider;
  * 
  * @see SystemUiHider
  */
-public class TracTitlescreenActivity extends Activity {
+public class TracTitlescreenActivity extends ActionBarActivity {
 	private boolean exitaftercall = false;
 	/**
 	 * Whether or not the system UI should be auto-hidden after
@@ -56,77 +57,82 @@ public class TracTitlescreenActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		Log.i(this.getClass().getName(), "onCreate savedInstanceState = " + savedInstanceState);
-		super.onCreate(savedInstanceState);
+		try {
+			Log.i(this.getClass().getName(), "onCreate savedInstanceState = " + savedInstanceState);
+			super.onCreate(savedInstanceState);
 
-		if (savedInstanceState != null) {
-			exitaftercall = savedInstanceState.getBoolean("exitflag", false);
-		}
-		if (exitaftercall) {
-			finish();
-		}
-		setContentView(R.layout.activity_titlescreen);
-
-		final View controlsView = findViewById(R.id.fullscreen_content_controls);
-		final View contentView = findViewById(R.id.fullscreen_content);
-
-		// Set up an instance of SystemUiHider to control the system UI for
-		// this activity.
-		mSystemUiHider = SystemUiHider.getInstance(this, contentView, HIDER_FLAGS);
-		mSystemUiHider.setup();
-		mSystemUiHider.setOnVisibilityChangeListener(new SystemUiHider.OnVisibilityChangeListener() {
-			// Cached values.
-			int mControlsHeight;
-			int mShortAnimTime;
-
-			@Override
-			@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-			public void onVisibilityChange(boolean visible) {
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-					// If the ViewPropertyAnimator API is available
-					// (Honeycomb MR2 and later), use it to animate the
-					// in-layout UI controls at the bottom of the
-					// screen.
-					if (mControlsHeight == 0) {
-						mControlsHeight = controlsView.getHeight();
-					}
-					if (mShortAnimTime == 0) {
-						mShortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-					}
-					controlsView.animate().translationY(visible ? 0 : mControlsHeight).setDuration(mShortAnimTime);
-				} else {
-					// If the ViewPropertyAnimator APIs aren't
-					// available, simply show or hide the in-layout UI
-					// controls.
-					controlsView.setVisibility(visible ? View.VISIBLE : View.GONE);
-				}
-
-				if (visible && AUTO_HIDE) {
-					// Schedule a hide().
-					delayedHide(AUTO_HIDE_DELAY_MILLIS);
-				}
+			if (savedInstanceState != null) {
+				exitaftercall = savedInstanceState.getBoolean("exitflag", false);
 			}
-		});
-
-		// Set up the user interaction to manually show or hide the system UI.
-		contentView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				if (TOGGLE_ON_CLICK) {
-					mSystemUiHider.toggle();
-				} else {
-					mSystemUiHider.show();
-				}
+			if (exitaftercall) {
+				finish();
 			}
-		});
+			setContentView(R.layout.activity_titlescreen);
 
-		final String versie = Credentials.buildVersion(this, true);
-		final TextView tv = (TextView) findViewById(R.id.version_content);
-		tv.setText(versie);
+			final View controlsView = findViewById(R.id.fullscreen_content_controls);
+			final View contentView = findViewById(R.id.fullscreen_content);
 
-		// Upon interacting with UI controls, delay any scheduled hide()
-		// operations to prevent the jarring behavior of controls going away
-		// while interacting with the UI.
+			// Set up an instance of SystemUiHider to control the system UI for
+			// this activity.
+			mSystemUiHider = SystemUiHider.getInstance(this, contentView, HIDER_FLAGS);
+			mSystemUiHider.setup();
+			mSystemUiHider.setOnVisibilityChangeListener(new SystemUiHider.OnVisibilityChangeListener() {
+				// Cached values.
+				int mControlsHeight;
+				int mShortAnimTime;
+
+				@Override
+				@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+				public void onVisibilityChange(boolean visible) {
+					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+						// If the ViewPropertyAnimator API is available
+						// (Honeycomb MR2 and later), use it to animate the
+						// in-layout UI controls at the bottom of the
+						// screen.
+						if (mControlsHeight == 0) {
+							mControlsHeight = controlsView.getHeight();
+						}
+						if (mShortAnimTime == 0) {
+							mShortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+						}
+						controlsView.animate().translationY(visible ? 0 : mControlsHeight).setDuration(mShortAnimTime);
+					} else {
+						// If the ViewPropertyAnimator APIs aren't
+						// available, simply show or hide the in-layout UI
+						// controls.
+						controlsView.setVisibility(visible ? View.VISIBLE : View.GONE);
+					}
+
+					if (visible && AUTO_HIDE) {
+						// Schedule a hide().
+						delayedHide(AUTO_HIDE_DELAY_MILLIS);
+					}
+				}
+			});
+
+			// Set up the user interaction to manually show or hide the system
+			// UI.
+			contentView.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View view) {
+					if (TOGGLE_ON_CLICK) {
+						mSystemUiHider.toggle();
+					} else {
+						mSystemUiHider.show();
+					}
+				}
+			});
+
+			final String versie = Credentials.buildVersion(this, true);
+			final TextView tv = (TextView) findViewById(R.id.version_content);
+			tv.setText(versie);
+
+			// Upon interacting with UI controls, delay any scheduled hide()
+			// operations to prevent the jarring behavior of controls going away
+			// while interacting with the UI.
+		} catch (final Exception e) {
+			Toast.makeText(this, "crash: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	@Override

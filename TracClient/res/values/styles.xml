@@ -25,7 +25,7 @@
         Base application theme, dependent on API level. This theme is replaced
         by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
     -->
-    <style name="AppBaseTheme" parent="android:Theme.Light">
+    <style name="AppBaseTheme" parent="@style/Theme.AppCompat">
         <!--
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
@@ -33,7 +33,7 @@
         -->
     </style>
 
-    <style name="FullscreenTheme" parent="android:Theme.NoTitleBar">
+    <style name="FullscreenTheme" parent="@style/Theme.AppCompat">
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowBackground">@null</item>
         <item name="buttonBarStyle">@style/ButtonBar</item>
@@ -49,17 +49,5 @@
     </style>
 
     <style name="ButtonBarButton" />
-
-    <style name="fileChooserName">
-        <item name="android:layout_marginLeft">@dimen/list_item_padding</item>
-        <item name="android:layout_marginRight">@dimen/list_item_padding</item>
-        <item name="android:maxLines">2</item>
-        <item name="android:ellipsize">end</item>
-        <item name="android:textSize">18sp</item>
-    </style>
-
-    <style name="fileChooserIcon">
-        <item name="android:layout_marginLeft">@dimen/list_item_padding</item>
-    </style>
 
 </resources>

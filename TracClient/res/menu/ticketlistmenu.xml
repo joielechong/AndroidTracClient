@@ -4,21 +4,23 @@
 
     <item
         android:id="@+id/tlnieuw"
-        android:icon="@drawable/content_new"
+        android:icon="@android:drawable/ic_menu_add"
         android:menuCategory="container"
-        android:title="@string/nieuw"/>
+        android:title="@string/nieuw"
+        myapp:showAsAction="ifRoom"/>
     <item
         android:id="@+id/tlrefresh"
-        android:icon="@drawable/navigation_refresh"
+        android:icon="@android:drawable/ic_popup_sync"
         android:menuCategory="container"
-        android:title="@string/tlrefresh"/>
+        android:title="@string/tlrefresh"
+        myapp:showAsAction="ifRoom"/>
     <item
         android:id="@+id/tlchangehost"
         android:menuCategory="container"
         android:title="@string/changehost"/>
     <item
         android:id="@+id/tlzoek"
-        android:icon="@drawable/action_search"
+        android:icon="@android:drawable/ic_menu_search"
         android:menuCategory="container"
         android:title="@string/zoek"
         android:visibility="gone"/>
@@ -34,6 +36,7 @@
         android:id="@+id/tlshare"
         android:icon="@android:drawable/ic_menu_share"
         android:menuCategory="container"
-        android:title="@string/tlshare"/>
+        android:title="@string/tlshare"
+        myapp:showAsAction="ifRoom"/>
 
 </menu>

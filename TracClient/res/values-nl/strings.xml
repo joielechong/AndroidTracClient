@@ -35,7 +35,6 @@
     <string name="comment">Voeg commentaar toe</string>
     <string name="state">Wijzig status</string>
     <string name="attach">Voeg bijlage toe</string>
-    <string name="choose_file">Selecteer een bestand</string>
     <string name="chooser_title">Ticket bijlage</string>
     <string name="tlshare">Delen lijst</string>
     <string name="dfshare">Delen detail</string>
@@ -76,9 +75,6 @@
         <item>is gelijk aan</item>
         <item>is niet gelijk aan</item>
     </string-array>
-    <string name="storage_removed">Opslag werd verwijderd</string>
-    <string name="error_selecting_file">Fout bij het selecteren van bestand</string>
-    <string name="empty_directory">Lege folder</string>
     <string name="select">Selecteer</string>
     <string name="delete">Verwijder</string>
     <string name="getlist">Haal ticketlijst op</string>
@@ -93,4 +89,14 @@
     <string name="ioerror">ExternalStorage - Fout bij schrijven van"</string>
     <string name="chooseapp">Kies applicatie om mee te openen:</string>
     <string name="notify">Zend notificatie</string>
+    <string name="exportprofiles">Exporteer profielen</string>
+    <string name="importprofiles">Importeer profielen</string>
+    <string name="completed">Gereed</string>
+    <string name="failed">Gefaald</string>
+    <string name="xmlwritecompleted">Export naar XML gelukt</string>
+    <string name="xmlreadcompleted">Import van XML gelukt</string>
+    <string name="downloading">Downloading</string>
+    <string name="uploading">Uploading</string>
+    <string name="saveupdate">Wijziging opslaan op server</string>
+    <string name="saveticket">Ticket opslaan</string>
 </resources>

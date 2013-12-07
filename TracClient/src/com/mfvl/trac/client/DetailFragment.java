@@ -139,12 +139,20 @@ public class DetailFragment extends TracClientFragment {
 					@Override
 					public void onSelected(final String filename) {
 						Log.i(this.getClass().getName(), "onChooserSelected ticket = " + _ticket + " filename = " + filename);
-						_ticket.addAttachment(filename, context, new onTicketCompleteListener() {
+						showProgressBar(R.string.uploading);
+						new Thread() {
 							@Override
-							public void onComplete() {
-								refresh_ticket();
+							public void run() {
+								_ticket.addAttachment(filename, context, new onTicketCompleteListener() {
+									@Override
+									public void onComplete() {
+										refresh_ticket();
+										removeProgressBar();
+									}
+								});
+
 							}
-						});
+						}.start();
 					}
 				});
 				return true;
@@ -270,58 +278,71 @@ public class DetailFragment extends TracClientFragment {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 					final String t = (String) ((ListView) parent).getItemAtPosition(position);
-					Log.i(this.getClass().getName() + ".onClick", t);
+					Log.i(this.getClass().getName() + ".onItemClick", t);
 					if ("bijlage ".equals(t.substring(0, 8))) {
-						final int d = t.indexOf(":");
-						final int bijlagenr = Integer.parseInt(t.substring(8, d));
-						try {
-							final String filename = ticket.getAttachmentFile(bijlagenr - 1);
-							final String mimeType = getMimeType(filename);
-							_ticket.getAttachment(filename, context, new onAttachmentCompleteListener() {
-								@Override
-								public void onComplete(final byte[] filedata) {
-									Log.i(this.getClass().getName(), "onComplete filedata = " + filedata.length);
-									try {
-										if (path == null) {
-											path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-											path.mkdirs();
-										}
-										final File file = new File(path, filename);
-										final OutputStream os = new FileOutputStream(file);
-										file.deleteOnExit();
-										os.write(filedata);
-										os.close();
-										final Intent viewIntent = new Intent(Intent.ACTION_VIEW);
-										Log.i(this.getClass().getName(), "file = " + file.toString() + " mimeType = " + mimeType);
-										if (mimeType != null) {
-											viewIntent.setDataAndType(Uri.fromFile(new File(path, filename)), mimeType);
-											startActivity(viewIntent);
-										} else {
-											viewIntent.setData(Uri.parse(file.toString()));
-											final Intent j = Intent.createChooser(viewIntent, context.getString(R.string.chooseapp));
-											startActivity(j);
-										}
-									} catch (final Exception e) {
-										Log.w(this.getClass().getName(), context.getString(R.string.ioerror) + ": " + filename, e);
-										context.runOnUiThread(new Runnable() {
-											@Override
-											public void run() {
-												final AlertDialog.Builder alert = new AlertDialog.Builder(context);
+						showProgressBar(R.string.downloading);
+						new Thread() {
+							@Override
+							public void run() {
+								final int d = t.indexOf(":");
+								final int bijlagenr = Integer.parseInt(t.substring(8, d));
+								try {
+									final String filename = ticket.getAttachmentFile(bijlagenr - 1);
+									final String mimeType = getMimeType(filename);
+									_ticket.getAttachment(filename, context, new onAttachmentCompleteListener() {
+										@Override
+										public void onComplete(final byte[] filedata) {
+											Log.i(this.getClass().getName(), "onComplete filedata = " + filedata.length);
+											try {
+												if (path == null) {
+													path = Environment
+															.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+													path.mkdirs();
+												}
+												final File file = new File(path, filename);
+												final OutputStream os = new FileOutputStream(file);
+												file.deleteOnExit();
+												os.write(filedata);
+												os.close();
+												final Intent viewIntent = new Intent(Intent.ACTION_VIEW);
+												Log.i(this.getClass().getName(), "file = " + file.toString() + " mimeType = "
+														+ mimeType);
+												if (mimeType != null) {
+													viewIntent.setDataAndType(Uri.fromFile(new File(path, filename)), mimeType);
+													startActivity(viewIntent);
+												} else {
+													viewIntent.setData(Uri.parse(file.toString()));
+													final Intent j = Intent.createChooser(viewIntent,
+															context.getString(R.string.chooseapp));
+													startActivity(j);
+												}
+											} catch (final Exception e) {
+												Log.w(this.getClass().getName(), context.getString(R.string.ioerror) + ": "
+														+ filename, e);
+												context.runOnUiThread(new Runnable() {
+													@Override
+													public void run() {
+														final AlertDialog.Builder alert = new AlertDialog.Builder(context);
 
-												alert.setTitle(R.string.notfound);
-												alert.setMessage(R.string.sdcardmissing);
-												alert.setPositiveButton(R.string.oktext, null);
-												alert.show();
+														alert.setTitle(R.string.notfound);
+														alert.setMessage(R.string.sdcardmissing);
+														alert.setPositiveButton(R.string.oktext, null);
+														alert.show();
+													}
+												});
+											} finally {
+												removeProgressBar();
 											}
-										});
-									}
-								};
-							});
+										};
+									});
 
-						} catch (final JSONException e) {
-							Log.i(this.getClass().getName(), e.toString());
-							// TODO hier een alert
-						}
+								} catch (final JSONException e) {
+									Log.i(this.getClass().getName(), e.toString());
+									// TODO hier een alert
+								}
+							}
+						}.start();
+
 					}
 				}
 			});

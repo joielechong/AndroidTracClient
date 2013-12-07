@@ -8,8 +8,6 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,22 +25,13 @@ public class NewTicketFragment extends TracClientFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.i(this.getClass().getName(), "onCreate");
-		Log.i(this.getClass().getName(), "savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		Log.i(this.getClass().getName(), "onCreate savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 		setHasOptionsMenu(true);
 	}
 
-//	@Override
-//	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//		Log.i(this.getClass().getName(), "onCreateOptionsMenu");
-//		inflater.inflate(R.menu.newtickmenu, menu);
-//		super.onCreateOptionsMenu(menu, inflater);
-//	}
-
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		Log.i(this.getClass().getName(), "onCreateView");
-		Log.i(this.getClass().getName(), "savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		Log.i(this.getClass().getName(), "onCreateView savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 		if (container == null) {
 			return null;
 		}
@@ -53,8 +42,8 @@ public class NewTicketFragment extends TracClientFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		Log.i(this.getClass().getName(), "onActivityCreated");
-		Log.i(this.getClass().getName(), "savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		Log.i(this.getClass().getName(), "onActivityCreated savedInstanceState = "
+				+ (savedInstanceState == null ? "null" : "not null"));
 	}
 
 	@Override
@@ -69,7 +58,7 @@ public class NewTicketFragment extends TracClientFragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Log.i(this.getClass().getName(), "onOptionsItemSelected item=" + item);
 		final int itemId = item.getItemId();
-		if (itemId == R.id.help ) {
+		if (itemId == R.id.help) {
 			final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
 			final String filename = context.getString(R.string.newhelpfile);
 			launchTrac.putExtra("file", filename);
@@ -110,62 +99,80 @@ public class NewTicketFragment extends TracClientFragment {
 			@Override
 			public void onClick(View v) {
 				final JSONObject velden = new JSONObject();
-				try {
-					final int count = tm.count();
-					for (int i = 0; i < count; i++) {
-						final TicketModelVeld veld = tm.getVeld(i);
-						final String veldnaam = veld.name();
-						View w = tl.findViewById(i + 300);
-						if (w == null) {
-							w = tl.findViewById(i + 300 + EXTRA);
-							if (w != null) {
-								final String s = ((EditText) w).getText().toString();
-								if (s != null && !s.equals("")) {
-									velden.put(veldnaam, s);
+				showProgressBar(R.string.saveticket);
+				new Thread() {
+					@Override
+					public void run() {
+						try {
+							final int count = tm.count();
+							for (int i = 0; i < count; i++) {
+								final TicketModelVeld veld = tm.getVeld(i);
+								final String veldnaam = veld.name();
+								View w = tl.findViewById(i + 300);
+								if (w == null) {
+									w = tl.findViewById(i + 300 + EXTRA);
+									if (w != null) {
+										final String s = ((EditText) w).getText().toString();
+										if (s != null && !s.equals("")) {
+											velden.put(veldnaam, s);
+										}
+									}
+								} else {
+									try {
+										final String val = (String) ((Spinner) w).getSelectedItem();
+										if (val != null && !val.startsWith(" - ")) {
+											velden.put(veldnaam, val);
+										}
+									} catch (final Exception e) {
+									}
 								}
 							}
-						} else {
-							try {
-								final String val = (String) ((Spinner) w).getSelectedItem();
-								if (val != null && !val.startsWith(" - ")) {
-									velden.put(veldnaam, val);
-								}
-							} catch (final Exception e) {
+							velden.put("status", "new");
+							velden.put("reporter", _username);
+							final CheckBox updNotify = (CheckBox) view.findViewById(R.id.updNotify);
+							final boolean notify = updNotify == null ? false : updNotify.isChecked();
+
+							final Ticket t = new Ticket(velden);
+							final int newtick = t.create(context, notify);
+							if (newtick < 0) {
+								throw new RuntimeException("Ticket == -1 ontvangen");
 							}
+							listener.refreshOverview();
+							context.runOnUiThread(new Runnable() {
+								@Override
+								public void run() {
+									final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+									alertDialogBuilder.setTitle(R.string.storok);
+									alertDialogBuilder.setMessage(context.getString(R.string.storokdesc) + newtick).setCancelable(false)
+											.setPositiveButton(R.string.oktext, null);
+									final AlertDialog alertDialog = alertDialogBuilder.create();
+									alertDialog.show();
+									getFragmentManager().popBackStackImmediate();
+								}
+							});
+
+						} catch (final Exception e) {
+							e.printStackTrace();
+							context.runOnUiThread(new Runnable() {
+								@Override
+								public void run() {
+									final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+									alertDialogBuilder.setTitle(R.string.storerr);
+									final String message = e.getMessage();
+									if (message == null || message.equals("")) {
+										alertDialogBuilder.setMessage(R.string.storerrdesc);
+									} else {
+										alertDialogBuilder.setMessage(message);
+									}
+									alertDialogBuilder.setCancelable(false).setPositiveButton(R.string.oktext, null);
+									final AlertDialog alertDialog = alertDialogBuilder.create();
+									alertDialog.show();
+								}
+							});
 						}
 					}
-					velden.put("status", "new");
-					velden.put("reporter", _username);
-					final CheckBox updNotify = (CheckBox) view.findViewById(R.id.updNotify);
-					final boolean notify = (updNotify == null? false : updNotify.isChecked());
-					
-					final Ticket t = new Ticket(velden);
-					final int newtick = t.create(context,notify);
-					if (newtick < 0) {
-						throw new RuntimeException("Ticket == -1 ontvangen");
-					}
-					final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-					alertDialogBuilder.setTitle(R.string.storok);
-					alertDialogBuilder.setMessage(context.getString(R.string.storokdesc) + newtick).setCancelable(false)
-							.setPositiveButton(R.string.oktext, null);
-					final AlertDialog alertDialog = alertDialogBuilder.create();
-					alertDialog.show();
-					listener.refreshOverview();
-					getFragmentManager().popBackStackImmediate();
-				} catch (final Exception e) {
-					e.printStackTrace();
-					final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-					alertDialogBuilder.setTitle(R.string.storerr);
-					final String message = e.getMessage();
-					if (message == null || message.equals("")) {
-						alertDialogBuilder.setMessage(R.string.storerrdesc);
-					} else {
-						alertDialogBuilder.setMessage(message);
-					}
-					alertDialogBuilder.setCancelable(false).setPositiveButton(R.string.oktext, null);
-					final AlertDialog alertDialog = alertDialogBuilder.create();
-					alertDialog.show();
-				}
+				}.start();
+
 			}
 		});
 
