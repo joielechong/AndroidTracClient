@@ -67,7 +67,7 @@ public class TicketListFragment extends TracClientFragment {
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		listener.initializeList();
+		Log.d(this.getClass().getName(), "onAttach ");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -147,6 +147,70 @@ public class TicketListFragment extends TracClientFragment {
 	}
 
 	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		Log.d(this.getClass().getName(), "onActivityCreated savedInstanceState = "
+				+ (savedInstanceState == null ? "null" : "not null"));
+		listener.initializeList();
+		if (savedInstanceState != null) {
+			zoeken = savedInstanceState.getBoolean(ZOEKENNAME);
+			zoektext = savedInstanceState.getString(ZOEKTEXTNAME);
+			filterText.setText(zoektext);
+			scrollPosition = savedInstanceState.getInt(SCROLLPOSITIONNAME);
+			if (tickets == null || tickets.length == 0) {
+				loadTicketList();
+			} else {
+				loadTickets();
+			}
+		} else if (ticketList.size() == 0) {
+			loadTicketList();
+		}
+	}
+
+	@Override
+	public void onStart() {
+		Log.d(this.getClass().getName(), "onStart");
+		super.onStart();
+	}
+
+	@Override
+	public void onResume() {
+		Log.d(this.getClass().getName(), "onResume");
+		super.onResume();
+		if (refreshOnRestart) {
+			scrollPosition = 0;
+			tickets = null;
+			ticketList.clear();
+			refreshOnRestart = false;
+			if (listView != null) {
+				listView.setAdapter(null);
+			}
+		}
+		if (!loading && ticketList.size() == 0) {
+			if (tickets == null) {
+				loadTicketList();
+			}
+		}
+		dataAdapter = new ColoredArrayAdapter<Ticket>(context, R.layout.ticket_list, ticketList);
+		if (dataAdapter == null) {
+			throw new RuntimeException(context.getString(R.string.noadapter));
+		}
+		listView.setAdapter(dataAdapter);
+		Log.d(this.getClass().getName(), "onResume adapter set");
+		if (!loading) {
+			zetZoeken();
+			setScroll();
+		}
+	}
+
+	@Override
+	public void onPause() {
+		Log.d(this.getClass().getName(), "onPause");
+		super.onPause();
+		scrollPosition = listView.getFirstVisiblePosition();
+	}
+
+	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		Log.d(this.getClass().getName(), "onCreateContextMenu");
 		super.onCreateContextMenu(menu, v, menuInfo);
@@ -188,67 +252,6 @@ public class TicketListFragment extends TracClientFragment {
 
 	private void setScroll() {
 		listView.setSelection((scrollPosition == 0 ? 0 : scrollPosition + 1));
-	}
-
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-		Log.d(this.getClass().getName(), "onActivityCreated savedInstanceState = "
-				+ (savedInstanceState == null ? "null" : "not null"));
-		if (savedInstanceState != null) {
-			zoeken = savedInstanceState.getBoolean(ZOEKENNAME);
-			filterText.setText(zoektext);
-			scrollPosition = savedInstanceState.getInt(SCROLLPOSITIONNAME);
-			if (tickets == null || tickets.length == 0) {
-				loadTicketList();
-			} else {
-				loadTickets();
-			}
-		} else if (ticketList.size() == 0) {
-			loadTicketList();
-		}
-		setScroll();
-	}
-
-	@Override
-	public void onStart() {
-		Log.d(this.getClass().getName(), "onStart");
-		super.onStart();
-	}
-
-	@Override
-	public void onPause() {
-		Log.d(this.getClass().getName(), "onPause");
-		super.onPause();
-		scrollPosition = listView.getFirstVisiblePosition();
-	}
-
-	@Override
-	public void onResume() {
-		Log.d(this.getClass().getName(), "onResume");
-		super.onResume();
-		if (refreshOnRestart) {
-			scrollPosition = 0;
-			tickets = null;
-			ticketList.clear();
-			refreshOnRestart = false;
-			if (listView != null) {
-				listView.setAdapter(null);
-			}
-		}
-		if (!loading && ticketList.size() == 0) {
-			if (tickets == null) {
-				loadTicketList();
-			}
-		}
-		dataAdapter = new ColoredArrayAdapter<Ticket>(context, R.layout.ticket_list, ticketList);
-		if (dataAdapter == null) {
-			throw new RuntimeException(context.getString(R.string.noadapter));
-		}
-		listView.setAdapter(dataAdapter);
-		Log.d(this.getClass().getName(), "onResume adapter set");
-		zetZoeken();
-		setScroll();
 	}
 
 	private void zetZoeken() {
@@ -334,8 +337,19 @@ public class TicketListFragment extends TracClientFragment {
 			shareList();
 		} else if (itemId == R.id.tlzoek) {
 			zoeken = !zoeken;
+			if (zoeken) {
+				filterText.setVisibility(View.VISIBLE);
+			} else {
+				filterText.setVisibility(View.GONE);
+				if (filterText.isFocused()) {
+					filterText.clearFocus();
+				}
+				zoektext = "";
+			}
 			filterText.setText("");
-			zetZoeken();
+			if (!loading) {
+				zetZoeken();
+			}
 		} else {
 			return super.onOptionsItemSelected(item);
 		}
@@ -455,20 +469,20 @@ public class TicketListFragment extends TracClientFragment {
 		@Override
 		public void onComplete() {
 			Log.d(this.getClass().getName(), "onTicketCompleteListener.onComplete");
-			if (filterText.getVisibility() == View.VISIBLE) {
-				dataAdapter.getFilter().filter(filterText.getText());
-			}
-			if (viewActive && listView != null) {
-				context.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
+			context.runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					if (filterText.getVisibility() == View.VISIBLE) {
+						dataAdapter.getFilter().filter(filterText.getText());
+					}
+					if (viewActive && listView != null) {
 						if (listView != null) {
 							dataAdapter.notifyDataSetChanged();
 						}
 					}
-				});
-			}
-		};
+				}
+			});
+		}
 	};
 
 	private JSONObject makeComplexCall(String id, String method, Object... params) throws JSONException {
@@ -570,6 +584,13 @@ public class TicketListFragment extends TracClientFragment {
 					callBack.onComplete();
 				}
 				loading = false;
+				context.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						setScroll();
+						zetZoeken();
+					}
+				});
 			}
 		};
 		networkThread.start();

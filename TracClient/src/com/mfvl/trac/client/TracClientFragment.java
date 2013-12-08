@@ -44,8 +44,7 @@ public class TracClientFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.d(this.getClass().getName() + ".super", "onCreate");
-		Log.d(this.getClass().getName() + ".super", "savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		Log.d(this.getClass().getName() + ".super", "onCreate savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 		if (savedInstanceState != null) {
 			_url = savedInstanceState.getString("currentURL");
 			_username = savedInstanceState.getString("currentUsername");
@@ -57,8 +56,7 @@ public class TracClientFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		Log.d(this.getClass().getName() + ".super", "onActivityCreated");
-		Log.d(this.getClass().getName() + ".super", "savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		Log.d(this.getClass().getName() + ".super", "onActivityCreated savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 		if (listener != null && listener.dispAds()) {
 			final LinearLayout ll = (LinearLayout) getView().findViewById(R.id.adBlock);
 			if (ll != null) {

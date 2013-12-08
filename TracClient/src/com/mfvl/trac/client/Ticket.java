@@ -114,10 +114,12 @@ public class Ticket {
 		Log.i(this.getClass().getName(), "loadTicketData ticketnr = " + _ticknr);
 		actionLock.acquireUninterruptibly();
 		_isloading = true;
-		_url = context.getUrl();
-		_username = context.getUsername();
-		_password = context.getPassword();
-		_sslHack = context.getSslHack();
+		if (_url == null) {
+			_url = context.getUrl();
+			_username = context.getUsername();
+			_password = context.getPassword();
+			_sslHack = context.getSslHack();
+		}
 		final Thread networkThread = new Thread() {
 			@Override
 			public void run() {
