@@ -38,17 +38,10 @@ public class UpdateTicketFragment extends TracClientFragment {
 		if (savedInstanceState != null) {
 			if (savedInstanceState.containsKey("currentTicket")) {
 				final int currentTicket = savedInstanceState.getInt("currentTicket");
-				_ticket = new Ticket(currentTicket, context, null);
+				_ticket = null;
 			}
 		}
 	}
-
-	// @Override
-	// public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-	// Log.i(this.getClass().getName(), "onCreateOptionsMenu");
-	// inflater.inflate(R.menu.modmenu, menu);
-	// super.onCreateOptionsMenu(menu, inflater);
-	// }
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -150,15 +143,6 @@ public class UpdateTicketFragment extends TracClientFragment {
 			}
 		}
 		return view;
-	}
-
-	@Override
-	public void onSaveInstanceState(Bundle savedState) {
-		super.onSaveInstanceState(savedState);
-		Log.i(this.getClass().getName(), "onSaveInstanceState");
-		if (_ticket != null) {
-			savedState.putInt("currentTicket", _ticket.getTicketnr());
-		}
 	}
 
 	@Override
@@ -274,6 +258,15 @@ public class UpdateTicketFragment extends TracClientFragment {
 			return true;
 		} else {
 			return super.onOptionsItemSelected(item);
+		}
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle savedState) {
+		super.onSaveInstanceState(savedState);
+		Log.i(this.getClass().getName(), "onSaveInstanceState");
+		if (_ticket != null) {
+			savedState.putInt("currentTicket", _ticket.getTicketnr());
 		}
 	}
 

@@ -145,26 +145,28 @@ public class TracLoginFragment extends TracClientFragment {
 
 				@Override
 				public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-					SelectedProfile = ((CheckedTextView) arg1).getText().toString();
-					if (arg2 > 0) { // pos 0 is empty
-						final LoginProfile prof = pdb.getProfile(SelectedProfile);
-						if (prof != null) {
-							url = prof.getUrl();
-							urlView.setText(url);
-							sslHack = prof.getSslHack();
-							sslHackBox.setChecked(sslHack);
-							username = prof.getUsername();
-							userView.setText(username);
-							password = prof.getPassword();
-							pwView.setText(password);
-							checkHackBox(url);
-						} else {
-							final AlertDialog.Builder alert = new AlertDialog.Builder(context);
+					if (arg1 != null && ((CheckedTextView) arg1).getText().toString() != null) {
+						SelectedProfile = ((CheckedTextView) arg1).getText().toString();
+						if (arg2 > 0) { // pos 0 is empty
+							final LoginProfile prof = pdb.getProfile(SelectedProfile);
+							if (prof != null) {
+								url = prof.getUrl();
+								urlView.setText(url);
+								sslHack = prof.getSslHack();
+								sslHackBox.setChecked(sslHack);
+								username = prof.getUsername();
+								userView.setText(username);
+								password = prof.getPassword();
+								pwView.setText(password);
+								checkHackBox(url);
+							} else {
+								final AlertDialog.Builder alert = new AlertDialog.Builder(context);
 
-							alert.setTitle(R.string.notfound);
-							alert.setMessage(context.getString(R.string.loadprofiletext) + ": " + SelectedProfile);
-							alert.setPositiveButton(R.string.oktext, null);
-							alert.show();
+								alert.setTitle(R.string.notfound);
+								alert.setMessage(context.getString(R.string.loadprofiletext) + ": " + SelectedProfile);
+								alert.setPositiveButton(R.string.oktext, null);
+								alert.show();
+							}
 						}
 					}
 				}
