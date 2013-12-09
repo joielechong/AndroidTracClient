@@ -1,11 +1,9 @@
-package com.mfvl.trac.client.saxparser;
+package com.mfvl.trac.client.util;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.mfvl.trac.client.util.LoginProfile;
-import com.mfvl.trac.client.util.ProfileDatabaseHelper;
 
 public class XMLHandler extends DefaultHandler {
 
