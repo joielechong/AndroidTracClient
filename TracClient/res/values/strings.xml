@@ -29,7 +29,7 @@
     <string name="nodata">No data</string>
     <string name="nodatadesc">Data of this ticket is not yet loaded</string>
     <string name="connerr">Connection error</string>
-    <string name="newtick">Make new ticket</string>
+    <string name="newtick">Create new ticket</string>
     <string name="store">Store ticket</string>
     <string name="storerr">Error during create ticket</string>
     <string name="oktext" translatable="false">OK</string>
