@@ -1,8 +1,13 @@
 package com.mfvl.trac.client;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.json.JSONObject;
 
+import android.widget.ArrayAdapter;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
@@ -17,6 +22,8 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 
 public class NewTicketFragment extends TracClientFragment {
 	private final static int EXTRA = 1000;
@@ -36,6 +43,10 @@ public class NewTicketFragment extends TracClientFragment {
 			return null;
 		}
 		final View view = inflater.inflate(R.layout.newtick_view, container, false);
+		final ProgressDialog pb = startProgressBar(R.string.downloading);
+		tm = listener.getTicketModel();
+		pb.dismiss();
+		createTicket(view);
 		return view;
 	}
 
@@ -44,14 +55,6 @@ public class NewTicketFragment extends TracClientFragment {
 		super.onActivityCreated(savedInstanceState);
 		Log.i(this.getClass().getName(), "onActivityCreated savedInstanceState = "
 				+ (savedInstanceState == null ? "null" : "not null"));
-	}
-
-	@Override
-	public void onStart() {
-		super.onStart();
-		Log.i(this.getClass().getName(), "onStart context = " + context);
-		tm = context.getTicketModel();
-		createTicket();
 	}
 
 	@Override
@@ -77,17 +80,96 @@ public class NewTicketFragment extends TracClientFragment {
 			_url = url;
 			_sslHack = sslHack;
 			_username = username;
-			// _password = password;
+			_password = password;
 		}
 	}
 
-	public void createTicket() {
+	private Spinner makeComboSpin(final String veldnaam, List<Object> waardes, boolean optional, Object w) {
+		final List<Object> spinValues = new ArrayList<Object>();
+
+		if (optional) {
+			spinValues.add("");
+		}
+
+		for (int i = 0; i < waardes.size(); i++) {
+			spinValues.add(waardes.get(i));
+		}
+
+		final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<Object>(context, android.R.layout.simple_spinner_item, spinValues);
+		spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		final Spinner valSpinner = new Spinner(context);
+		valSpinner.setAdapter(spinAdapter);
+		if (w != null && !w.equals("")) {
+			valSpinner.setSelection(waardes.indexOf(w), true);
+		}
+		return valSpinner;
+	}
+
+	private void makeRow(TableLayout tl, final String veldnaam, View tv2, final int id) {
+		if (veldnaam != null) {
+			final TableRow tr1 = new TableRow(context);
+			tr1.setId(id + 100);
+			final TextView tv1 = new TextView(context, null, android.R.attr.textAppearanceMedium);
+			tv1.setId(id + 200);
+			tr1.addView(tv1);
+			tv1.setText(veldnaam);
+			tl.addView(tr1);
+		}
+		final TableRow tr2 = new TableRow(context);
+
+		tv2.setId(id + 300);
+		tr2.addView(tv2);
+		tl.addView(tr2);
+	}
+	
+	public void createTicket(final View view) {
 		Log.i(this.getClass().getName(), "createTicket");
-		final View view = getView();
 		final Button backButton = (Button) view.findViewById(R.id.backbutton);
 		final Button storButton = (Button) view.findViewById(R.id.storebutton);
 		final TableLayout tl = (TableLayout) view.findViewById(R.id.newTickTable);
 
+		try {
+			final int count = tm.count();
+			View e = view.findViewById(R.id.waarde);
+			final LayoutParams lp = e.getLayoutParams();
+			for (int i = 0; i < count; i++) {
+				View v = null;
+				final TicketModelVeld veld = tm.getVeld(i);
+				final String veldnaam = veld.label();
+				int extra = 0;
+				if (veldnaam.equals("Resolution") || veldnaam.equals("Status") || veldnaam.equals("Reporter")
+						|| veldnaam.equals("Owner") || veldnaam.equals("Created") || veldnaam.equals("Modified")) {
+					// ignore these fields so v stays null
+				} else if (veld.options() != null) {
+					v = makeComboSpin(veldnaam, veld.options(), veld.optional(), veld.value());
+				} else {
+					v = new EditText(context);
+					((EditText) v).setTextAppearance(context, android.R.attr.textAppearanceMedium);
+					((EditText) v).setMinLines(1);
+					if (veldnaam.equals("Description")) {
+						((EditText) v).setMaxLines(10);
+						((EditText) v).setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+								| InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+					} else {
+						((EditText) v).setMaxLines(1);
+						((EditText) v).setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+					}
+					((EditText) v).setEms(10);
+					extra = EXTRA;
+				}
+				if (v != null) {
+					v.setLayoutParams(lp);
+					makeRow(tl, veldnaam, v, i + extra);
+				}
+			}
+			e.setVisibility(View.GONE);
+			e = view.findViewById(R.id.veld);
+			e.setVisibility(View.GONE);
+		} catch (final Exception e) {
+		} finally {
+			view.invalidate();
+		}
+		
 		backButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -99,7 +181,7 @@ public class NewTicketFragment extends TracClientFragment {
 			@Override
 			public void onClick(View v) {
 				final JSONObject velden = new JSONObject();
-				showProgressBar(R.string.saveticket);
+				final ProgressDialog pb = startProgressBar(R.string.saveticket);
 				new Thread() {
 					@Override
 					public void run() {
@@ -143,8 +225,9 @@ public class NewTicketFragment extends TracClientFragment {
 								public void run() {
 									final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
 									alertDialogBuilder.setTitle(R.string.storok);
-									alertDialogBuilder.setMessage(context.getString(R.string.storokdesc) + newtick).setCancelable(false)
-											.setPositiveButton(R.string.oktext, null);
+									alertDialogBuilder.setMessage(context.getString(R.string.storokdesc) + newtick);
+									alertDialogBuilder.setCancelable(false);
+									alertDialogBuilder.setPositiveButton(R.string.oktext, null);
 									final AlertDialog alertDialog = alertDialogBuilder.create();
 									alertDialog.show();
 									getFragmentManager().popBackStackImmediate();
@@ -169,6 +252,8 @@ public class NewTicketFragment extends TracClientFragment {
 									alertDialog.show();
 								}
 							});
+						} finally {
+							pb.dismiss();
 						}
 					}
 				}.start();
@@ -176,46 +261,6 @@ public class NewTicketFragment extends TracClientFragment {
 			}
 		});
 
-		try {
-			final int count = tm.count();
-			View e = view.findViewById(R.id.waarde);
-			final LayoutParams lp = e.getLayoutParams();
-			for (int i = 0; i < count; i++) {
-				View v = null;
-				final TicketModelVeld veld = tm.getVeld(i);
-				final String veldnaam = veld.label();
-				int extra = 0;
-				if (veldnaam.equals("Resolution") || veldnaam.equals("Status") || veldnaam.equals("Reporter")
-						|| veldnaam.equals("Owner") || veldnaam.equals("Created") || veldnaam.equals("Modified")) {
-					// ignore these fields so v stays null
-				} else if (veld.options() != null) {
-					v = makeComboSpin(veldnaam, veld.options(), veld.optional(), veld.value());
-				} else {
-					v = new EditText(context);
-					((EditText) v).setTextAppearance(context, android.R.attr.textAppearanceMedium);
-					((EditText) v).setMinLines(1);
-					if (veldnaam.equals("Description")) {
-						((EditText) v).setMaxLines(10);
-						((EditText) v).setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
-								| InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-					} else {
-						((EditText) v).setMaxLines(1);
-						((EditText) v).setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
-					}
-					((EditText) v).setEms(10);
-					extra = EXTRA;
-				}
-				if (v != null) {
-					v.setLayoutParams(lp);
-					makeRow(tl, veldnaam, v, i + extra);
-				}
-			}
-			e.setVisibility(View.GONE);
-			e = view.findViewById(R.id.veld);
-			e.setVisibility(View.GONE);
-		} catch (final Exception e) {
-		}
-		view.invalidate();
 	}
 
 }

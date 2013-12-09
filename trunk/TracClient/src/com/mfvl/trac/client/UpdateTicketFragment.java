@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -124,8 +125,8 @@ public class UpdateTicketFragment extends TracClientFragment {
 												android.R.layout.simple_spinner_item, opties);
 										spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 										optiesSpin.setAdapter(spinAdapter);
-										if (ifValue != null && !ifValue.equals("")) {
-											optiesSpin.setSelection(findValueInArray(opties, ifValue), true);
+										if (ifValue != null && !ifValue.equals("") && opties.contains(ifValue)) {
+											optiesSpin.setSelection(opties.indexOf(ifValue), true);
 										}
 
 									}
@@ -197,7 +198,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 					}
 				}
 				final String waarde = w;
-				showProgressBar(R.string.saveupdate);
+				final ProgressDialog pb = startProgressBar(R.string.saveupdate);
 				new Thread() {
 					@Override
 					public void run() {
@@ -230,7 +231,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 								}
 							});
 						} finally {
-							removeProgressBar();
+							pb.dismiss();
 						}
 
 					}

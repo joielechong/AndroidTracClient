@@ -206,15 +206,13 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		 * ft.addToBackStack(null); ft.commit(); newtickFragment.setHost(url,
 		 * username, password, sslHack); } else {
 		 */
+		newtickFragment.setHost(url, username, password, sslHack);
 		final FragmentTransaction ft = fm.beginTransaction();
 		ft.replace(R.id.displayList, newtickFragment, "New_Fragment2");
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 		ft.addToBackStack(null);
 		ft.commit();
-		newtickFragment.setHost(url, username, password, sslHack);
-		/*
-		 * }
-		 */}
+	}
 
 	@Override
 	public void onUpdateTicket(Ticket ticket) {

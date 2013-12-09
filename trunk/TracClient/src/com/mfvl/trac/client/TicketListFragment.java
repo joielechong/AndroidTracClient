@@ -13,6 +13,7 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -251,19 +252,24 @@ public class TicketListFragment extends TracClientFragment {
 	}
 
 	private void setScroll() {
-		listView.setSelection((scrollPosition == 0 ? 0 : scrollPosition + 1));
+		if (listView != null) {
+			listView.setSelection((scrollPosition == 0 ? 0 : scrollPosition + 1));
+		}
 	}
 
 	private void zetZoeken() {
 		Log.d(this.getClass().getName(), "zetZoeken");
-		final EditText filterText = (EditText) getView().findViewById(R.id.search_box);
-		if (filterText != null) {
-			if (zoeken) {
-				((ColoredArrayAdapter<?>) listView.getAdapter()).getFilter().filter(filterText.getText());
-				filterText.setVisibility(View.VISIBLE);
-				filterText.requestFocus();
-			} else {
-				filterText.setVisibility(View.GONE);
+		View v = getView();
+		if (v != null) {
+			final EditText filterText = (EditText) v.findViewById(R.id.search_box);
+			if (filterText != null && listView != null) {
+				if (zoeken) {
+					((ColoredArrayAdapter<?>) listView.getAdapter()).getFilter().filter(filterText.getText());
+					filterText.setVisibility(View.VISIBLE);
+					filterText.requestFocus();
+				} else {
+					filterText.setVisibility(View.GONE);
+				}
 			}
 		}
 	}
@@ -390,7 +396,7 @@ public class TicketListFragment extends TracClientFragment {
 		if (_url != null) {
 			loading = true;
 			hs.setText(R.string.getlist);
-			showProgressBar(R.string.getlist);
+			final ProgressDialog pb = startProgressBar(R.string.getlist);
 			networkThread = new Thread() {
 				@Override
 				public void run() {
@@ -457,7 +463,7 @@ public class TicketListFragment extends TracClientFragment {
 					} catch (final Exception e) {
 						Log.i(this.getClass().getName(), e.toString());
 					} finally {
-						removeProgressBar();
+						pb.dismiss();
 					}
 				}
 			};
