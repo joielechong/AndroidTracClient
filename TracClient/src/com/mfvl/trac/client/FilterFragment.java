@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -208,9 +209,9 @@ public class FilterFragment extends TracClientFragment {
 		super.onActivityCreated(savedInstanceState);
 		Log.i(this.getClass().getName(), "onActivityCreated savedInstanceState = "
 				+ (savedInstanceState == null ? "null" : "not null"));
-		showProgressBar(R.string.downloading);
+		final ProgressDialog pb = startProgressBar(R.string.downloading);
 		tm = listener.getTicketModel();
-		removeProgressBar();
+		pb.dismiss();
 		final View view = getView();
 		final ListView lv = (ListView) view.findViewById(R.id.filterlist);
 		final ArrayList<FilterSpec> outputSpec = new ArrayList<FilterSpec>();

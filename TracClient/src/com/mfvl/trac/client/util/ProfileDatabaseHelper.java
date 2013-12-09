@@ -37,7 +37,6 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 
 	public ProfileDatabaseHelper(Context context) {
 		super(context, Credentials.makeDbPath(context, DATABASE_NAME), null, DATABASE_VERSION);
-		// super(context, DATABASE_NAME, null, DATABASE_VERSION);
 	}
 
 	@Override

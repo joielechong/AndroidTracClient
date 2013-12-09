@@ -2,6 +2,7 @@ package com.mfvl.trac.client;
 
 import java.util.ArrayList;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -197,9 +198,9 @@ public class SortFragment extends TracClientFragment {
 			}
 		});
 
-		showProgressBar(R.string.downloading);
+		final ProgressDialog pb = startProgressBar(R.string.downloading);
 		tm = listener.getTicketModel();
-		removeProgressBar();
+		pb.dismiss();
 
 		if (addButton != null) {
 			Log.i(this.getClass().getName(), "addButton ");

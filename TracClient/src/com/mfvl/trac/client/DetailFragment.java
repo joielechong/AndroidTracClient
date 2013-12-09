@@ -12,6 +12,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -139,7 +140,7 @@ public class DetailFragment extends TracClientFragment {
 					@Override
 					public void onSelected(final String filename) {
 						Log.i(this.getClass().getName(), "onChooserSelected ticket = " + _ticket + " filename = " + filename);
-						showProgressBar(R.string.uploading);
+						final ProgressDialog pb = startProgressBar(R.string.uploading);
 						new Thread() {
 							@Override
 							public void run() {
@@ -147,7 +148,7 @@ public class DetailFragment extends TracClientFragment {
 									@Override
 									public void onComplete() {
 										refresh_ticket();
-										removeProgressBar();
+										pb.dismiss();
 									}
 								});
 
@@ -280,7 +281,7 @@ public class DetailFragment extends TracClientFragment {
 					final String t = (String) ((ListView) parent).getItemAtPosition(position);
 					Log.i(this.getClass().getName() + ".onItemClick", t);
 					if ("bijlage ".equals(t.substring(0, 8))) {
-						showProgressBar(R.string.downloading);
+						final ProgressDialog pb = startProgressBar(R.string.downloading);
 						new Thread() {
 							@Override
 							public void run() {
@@ -331,7 +332,7 @@ public class DetailFragment extends TracClientFragment {
 													}
 												});
 											} finally {
-												removeProgressBar();
+												pb.dismiss();
 											}
 										};
 									});
