@@ -121,4 +121,8 @@
     <string name="uploading">Uploading</string>
     <string name="saveupdate">Saving update on server</string>
     <string name="saveticket">Saving ticket</string>
+    <string name="selectticket">Select individual ticket</string>
+    <string name="ticketnotfound">Ticket not found</string>
+    <string name="chooseticknr">Enter ticketnumber</string>
+    <string name="chooseticket">Choose ticket</string>
 </resources>

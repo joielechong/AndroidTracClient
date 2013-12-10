@@ -4,13 +4,13 @@
 
     <item
         android:id="@+id/dfrefresh"
-        android:icon="@drawable/navigation_refresh"
+        android:icon="@android:drawable/ic_popup_sync"
         android:menuCategory="container"
         android:title="@string/dfrefresh"
         myapp:showAsAction="ifRoom"/>
     <item
         android:id="@+id/dfupdate"
-        android:icon="@drawable/content_edit"
+        android:icon="@android:drawable/ic_menu_edit"
         android:menuCategory="container"
         android:title="@string/updateticket"/>
     <item

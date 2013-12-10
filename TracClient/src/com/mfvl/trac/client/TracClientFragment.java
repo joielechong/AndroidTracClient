@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.View;
 import android.widget.LinearLayout;
 
 import com.google.ads.AdRequest;
@@ -24,7 +23,6 @@ public class TracClientFragment extends Fragment {
 	private AdView adView = null;
 	public InterFragmentListener listener = null;
 
-
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
@@ -36,7 +34,8 @@ public class TracClientFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.d(this.getClass().getName() + ".super", "onCreate savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		Log.d(this.getClass().getName() + ".super", "onCreate savedInstanceState = "
+				+ (savedInstanceState == null ? "null" : "not null"));
 		if (savedInstanceState != null) {
 			_url = savedInstanceState.getString("currentURL");
 			_username = savedInstanceState.getString("currentUsername");
@@ -48,7 +47,8 @@ public class TracClientFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		Log.d(this.getClass().getName() + ".super", "onActivityCreated savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		Log.d(this.getClass().getName() + ".super", "onActivityCreated savedInstanceState = "
+				+ (savedInstanceState == null ? "null" : "not null"));
 		if (listener != null && listener.dispAds()) {
 			final LinearLayout ll = (LinearLayout) getView().findViewById(R.id.adBlock);
 			if (ll != null) {

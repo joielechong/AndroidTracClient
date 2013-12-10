@@ -17,7 +17,7 @@ import android.util.Log;
 import com.mfvl.trac.client.util.ISO8601;
 
 interface onTicketCompleteListener {
-	void onComplete();
+	void onComplete(Ticket t);
 }
 
 interface onAttachmentCompleteListener {
@@ -162,11 +162,11 @@ public class Ticket {
 							e1.printStackTrace();
 						}
 					}
-					_hasdata = true;
+					_hasdata = (_velden != null) && (_history != null) && (_actions != null);
 					_isloading = false;
 					if (oc != null) {
 						available.release();
-						oc.onComplete();
+						oc.onComplete(Ticket.this);
 					}
 				} catch (final JSONRPCException e) {
 					Log.i(this.getClass().getName() + "loadTicketData", e.toString());
@@ -255,7 +255,7 @@ public class Ticket {
 					actionLock.release();
 					loadTicketData(context, null);
 					if (oc != null) {
-						oc.onComplete();
+						oc.onComplete(Ticket.this);
 					}
 				} catch (final Exception e) {
 					Log.i(this.getClass().getName() + "addAttachment", e.toString());

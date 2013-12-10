@@ -93,7 +93,7 @@ public class DetailFragment extends TracClientFragment {
 				if (ticknr != -1) {
 					_ticket = new Ticket(ticknr, context, new onTicketCompleteListener() {
 						@Override
-						public void onComplete() {
+						public void onComplete(Ticket t2) {
 							context.runOnUiThread(new Runnable() {
 								@Override
 								public void run() {
@@ -146,7 +146,7 @@ public class DetailFragment extends TracClientFragment {
 							public void run() {
 								_ticket.addAttachment(filename, context, new onTicketCompleteListener() {
 									@Override
-									public void onComplete() {
+									public void onComplete(Ticket t2) {
 										refresh_ticket();
 										pb.dismiss();
 									}
@@ -175,7 +175,7 @@ public class DetailFragment extends TracClientFragment {
 	public void refresh_ticket() {
 		_ticket.refresh(context, new onTicketCompleteListener() {
 			@Override
-			public void onComplete() {
+			public void onComplete(Ticket t2) {
 				context.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {

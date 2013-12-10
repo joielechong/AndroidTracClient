@@ -38,7 +38,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 		setHasOptionsMenu(true);
 		if (savedInstanceState != null) {
 			if (savedInstanceState.containsKey("currentTicket")) {
-				final int currentTicket = savedInstanceState.getInt("currentTicket");
+				savedInstanceState.getInt("currentTicket");
 				_ticket = null;
 			}
 		}
