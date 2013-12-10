@@ -99,4 +99,8 @@
     <string name="uploading">Uploading</string>
     <string name="saveupdate">Wijziging opslaan op server</string>
     <string name="saveticket">Ticket opslaan</string>
+    <string name="selectticket">Selecteer een enkel ticket</string>
+    <string name="ticketnotfound">Ticket niet gevonden</string>
+    <string name="chooseticknr">Voer ticketnummer in</string>
+    <string name="chooseticket">Kies ticket</string>
 </resources>

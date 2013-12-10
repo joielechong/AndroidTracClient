@@ -18,6 +18,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -259,7 +260,7 @@ public class TicketListFragment extends TracClientFragment {
 
 	private void zetZoeken() {
 		Log.d(this.getClass().getName(), "zetZoeken");
-		View v = getView();
+		final View v = getView();
 		if (v != null) {
 			final EditText filterText = (EditText) v.findViewById(R.id.search_box);
 			if (filterText != null && listView != null) {
@@ -326,6 +327,51 @@ public class TicketListFragment extends TracClientFragment {
 			launchTrac.putExtra("file", filename);
 			launchTrac.putExtra("version", false);
 			startActivity(launchTrac);
+		} else if (itemId == R.id.tlselect) {
+			Log.d(this.getClass().getName(), "tlselect");
+			final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+			alertDialogBuilder.setTitle(R.string.chooseticket);
+			alertDialogBuilder.setMessage(R.string.chooseticknr);
+			final EditText input = new EditText(context);
+			input.setInputType(InputType.TYPE_CLASS_NUMBER);
+			alertDialogBuilder.setView(input);
+
+			alertDialogBuilder.setCancelable(false);
+			alertDialogBuilder.setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int id) {
+							int ticknr=Integer.parseInt(input.getText().toString());
+							final ProgressDialog pb = startProgressBar(R.string.downloading);
+							new Ticket(ticknr,context,new onTicketCompleteListener() {
+
+								@Override
+								public void onComplete(Ticket t2) {
+									pb.dismiss();
+									if (t2.hasdata()) {
+										listener.onTicketSelected(t2);
+									} else {
+										context.runOnUiThread(new Runnable() {
+
+											@Override
+											public void run() {
+												final AlertDialog.Builder noTicketDialogBuilder = new AlertDialog.Builder(context);
+												noTicketDialogBuilder.setTitle(R.string.notfound);
+												noTicketDialogBuilder.setMessage(R.string.ticketnotfound);
+												noTicketDialogBuilder.setCancelable(false);
+												noTicketDialogBuilder.setPositiveButton(R.string.oktext,null);
+												final AlertDialog noTicketDialog = noTicketDialogBuilder.create();
+												noTicketDialog.show();
+											}});
+									}
+								}
+								
+							});
+							
+						}
+					});
+			alertDialogBuilder.setNegativeButton(R.string.cancel, null);
+			final AlertDialog alertDialog = alertDialogBuilder.create();
+			alertDialog.show();
 		} else if (itemId == R.id.tlfilter) {
 			Log.d(this.getClass().getName(), "tlfilter filterList = " + filterList);
 			listener.onFilterSelected(filterList);
@@ -392,7 +438,7 @@ public class TicketListFragment extends TracClientFragment {
 	private void loadTicketList() {
 		Log.d(this.getClass().getName(), "loadTicketList url=" + _url);
 		ticketList.clear();
-		callBack.onComplete();
+		callBack.onComplete(null);
 		if (_url != null) {
 			loading = true;
 			hs.setText(R.string.getlist);
@@ -473,7 +519,7 @@ public class TicketListFragment extends TracClientFragment {
 
 	private final onTicketCompleteListener callBack = new onTicketCompleteListener() {
 		@Override
-		public void onComplete() {
+		public void onComplete(Ticket t2) {
 			Log.d(this.getClass().getName(), "onTicketCompleteListener.onComplete");
 			context.runOnUiThread(new Runnable() {
 				@Override
@@ -531,7 +577,7 @@ public class TicketListFragment extends TracClientFragment {
 						hs.setText(R.string.ophalen);
 					}
 				});
-				callBack.onComplete();
+				callBack.onComplete(null);
 
 				Log.d(this.getClass().getName(), "loadTicket JSONRPCHttpClient " + _url + " " + _sslHack);
 				final JSONRPCHttpClient req = new JSONRPCHttpClient(_url, _sslHack);
@@ -581,13 +627,13 @@ public class TicketListFragment extends TracClientFragment {
 									}
 								}
 								hs.setText(progress[0] + "/" + progress[1]);
-								callBack.onComplete();
+								callBack.onComplete(null);
 							}
 						});
 					} catch (final Exception e) {
 						e.printStackTrace();
 					}
-					callBack.onComplete();
+					callBack.onComplete(null);
 				}
 				loading = false;
 				context.runOnUiThread(new Runnable() {

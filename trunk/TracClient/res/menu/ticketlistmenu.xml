@@ -33,6 +33,10 @@
         android:menuCategory="container"
         android:title="@string/sort"/>
     <item
+        android:id="@+id/tlselect"
+        android:menuCategory="container"
+        android:title="@string/selectticket"/>
+    <item
         android:id="@+id/tlshare"
         android:icon="@android:drawable/ic_menu_share"
         android:menuCategory="container"

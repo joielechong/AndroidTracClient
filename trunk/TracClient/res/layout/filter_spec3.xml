@@ -22,14 +22,14 @@
             android:layout_width="0px"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/navigation_collapse" />
+            android:src="@android:drawable/arrow_up_float" />
 
         <ImageButton
             android:id="@+id/delfilter"
             android:layout_width="0px"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/content_remove" />
+            android:src="@android:drawable/ic_menu_delete" />
     </LinearLayout>
 
     <LinearLayout

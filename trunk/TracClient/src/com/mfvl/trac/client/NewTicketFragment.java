@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.json.JSONObject;
 
-import android.widget.ArrayAdapter;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -17,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -121,7 +121,7 @@ public class NewTicketFragment extends TracClientFragment {
 		tr2.addView(tv2);
 		tl.addView(tr2);
 	}
-	
+
 	public void createTicket(final View view) {
 		Log.i(this.getClass().getName(), "createTicket");
 		final Button backButton = (Button) view.findViewById(R.id.backbutton);
@@ -169,7 +169,7 @@ public class NewTicketFragment extends TracClientFragment {
 		} finally {
 			view.invalidate();
 		}
-		
+
 		backButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
