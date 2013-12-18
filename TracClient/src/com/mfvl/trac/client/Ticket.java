@@ -12,9 +12,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.util.Base64;
-import com.mfvl.trac.client.util.tcLog;
 
 import com.mfvl.trac.client.util.ISO8601;
+import com.mfvl.trac.client.util.tcLog;
 
 interface onTicketCompleteListener {
 	void onComplete(Ticket t);

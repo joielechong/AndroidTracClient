@@ -5,14 +5,21 @@
         android:id="@+id/help"
         android:icon="@android:drawable/ic_menu_help"
         android:menuCategory="container"
-        android:orderInCategory="9998"
+        android:orderInCategory="9997"
         android:title="@string/help"/>
     <item
         android:id="@+id/over"
         android:icon="@android:drawable/ic_menu_info_details"
         android:menuCategory="container"
-        android:orderInCategory="9999"
+        android:orderInCategory="9998"
         android:title="@string/about_button"
         android:visible="true"/>
+    <item
+        android:id="@+id/tldebug"
+        android:enabled="false"
+        android:menuCategory="container"
+        android:orderInCategory="9999"
+        android:title="@string/debug"
+        android:visible="false"/>
 
 </menu>

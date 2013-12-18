@@ -10,7 +10,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
-import com.mfvl.trac.client.util.tcLog;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,6 +24,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.mfvl.trac.client.util.tcLog;
+
 public class NewTicketFragment extends TracClientFragment {
 	private final static int EXTRA = 1000;
 	private TicketModel tm;
@@ -38,7 +39,8 @@ public class NewTicketFragment extends TracClientFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		tcLog.d(this.getClass().getName(), "onCreateView savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		tcLog.d(this.getClass().getName(), "onCreateView savedInstanceState = "
+				+ (savedInstanceState == null ? "null" : "not null"));
 		if (container == null) {
 			return null;
 		}

@@ -35,9 +35,9 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Audio;
 import android.provider.MediaStore.Video;
-import com.mfvl.trac.client.util.tcLog;
 
 import com.mfvl.trac.client.R;
+import com.mfvl.trac.client.util.tcLog;
 
 /**
  * @version 2009-07-03

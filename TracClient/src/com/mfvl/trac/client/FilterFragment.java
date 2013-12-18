@@ -12,7 +12,6 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import com.mfvl.trac.client.util.tcLog;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,6 +31,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.mfvl.trac.client.util.FilterSpec;
+import com.mfvl.trac.client.util.tcLog;
 
 public class FilterFragment extends TracClientFragment {
 	private TicketModel tm;
@@ -65,7 +65,8 @@ public class FilterFragment extends TracClientFragment {
 			final FilterSpec o = items.get(p);
 			final TicketModelVeld tmv = tm.getVeld(o.veld());
 
-			// tcLog.d(this.getClass().getName(), "getView pos=" + position + " "
+			// tcLog.d(this.getClass().getName(), "getView pos=" + position +
+			// " "
 			// + o + " " + tmv);
 
 			final int resid = o.isEdit() ? (tmv.options() == null ? R.layout.filter_spec2 : R.layout.filter_spec3)
@@ -194,7 +195,8 @@ public class FilterFragment extends TracClientFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		tcLog.d(this.getClass().getName(), "onCreateView savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		tcLog.d(this.getClass().getName(), "onCreateView savedInstanceState = "
+				+ (savedInstanceState == null ? "null" : "not null"));
 		final View view = inflater.inflate(R.layout.filter_view, container, false);
 		return view;
 	}

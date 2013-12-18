@@ -7,8 +7,8 @@ package com.mfvl.trac.client;
 import org.alexd.jsonrpc.JSONRPCHttpClient;
 import org.json.JSONArray;
 
-import android.widget.CompoundButton;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -17,7 +17,6 @@ import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.Editable;
 import android.text.TextWatcher;
-import com.mfvl.trac.client.util.tcLog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,17 +29,18 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CheckedTextView;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import com.mfvl.trac.client.util.Credentials;
 import com.mfvl.trac.client.util.LoginProfile;
 import com.mfvl.trac.client.util.ProfileDatabaseHelper;
-import android.app.ProgressDialog;
+import com.mfvl.trac.client.util.tcLog;
 
 public class TracLoginFragment extends TracClientFragment {
 	private String url = null;
@@ -83,7 +83,8 @@ public class TracLoginFragment extends TracClientFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		tcLog.d(this.getClass().getName(), "onCreateView savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		tcLog.d(this.getClass().getName(), "onCreateView savedInstanceState = "
+				+ (savedInstanceState == null ? "null" : "not null"));
 		tcLog.d(this.getClass().getName(), "container = " + (container == null ? "null" : "not null"));
 		if (container == null) {
 			return null;
@@ -232,7 +233,7 @@ public class TracLoginFragment extends TracClientFragment {
 		}
 
 		checkHackBox(urlView.getText().toString());
-		
+
 		bewaarBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

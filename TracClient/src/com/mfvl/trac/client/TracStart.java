@@ -3,9 +3,11 @@ package com.mfvl.trac.client;
 import java.io.File;
 import java.util.ArrayList;
 
+import android.annotation.TargetApi;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -57,7 +59,7 @@ interface InterFragmentListener {
 	void shareTicket(Ticket t);
 
 	void initializeList();
-	
+
 	void enableDebug();
 }
 
@@ -71,12 +73,12 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	private static final int REQUEST_CODE = 6384;
 	private onFileSelectedListener _oc = null;
 	private boolean dispAds;
+	private boolean debug = false;
 	private FragmentManager fm = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		tcLog.setContext(this);
 		tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 
 		setContentView(R.layout.tracstart);
@@ -165,6 +167,8 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 			launchTrac.putExtra("file", filename);
 			launchTrac.putExtra("version", true);
 			startActivity(launchTrac);
+		} else if (itemId == R.id.tldebug) {
+			shareDebug();
 		} else {
 			return super.onOptionsItemSelected(item);
 		}
@@ -417,6 +421,15 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	}
 
 	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		tcLog.d(this.getClass().getName(), "onPrepareOptionsMenu");
+		final MenuItem item = menu.findItem(R.id.tldebug);
+		item.setVisible(debug);
+		item.setEnabled(debug);
+		return true;
+	}
+
+	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		tcLog.d(this.getClass().getName(), "onActivityResult requestcode = " + requestCode);
 		switch (requestCode) {
@@ -533,18 +546,28 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	@Override
 	public void refreshOverview() {
 		final TicketListFragment ticketListFragment = (TicketListFragment) fm.findFragmentByTag("List_Fragment");
-		tcLog.d(this.getClass().getName(), "initializeList ticketListFragment = " + ticketListFragment);
+		tcLog.d(this.getClass().getName(), "refreshOverview ticketListFragment = " + ticketListFragment);
 		if (ticketListFragment != null) {
 			ticketListFragment.forceRefresh();
 		}
 	}
-	
+
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@Override
 	public void enableDebug() {
-		final TicketListFragment ticketListFragment = (TicketListFragment) fm.findFragmentByTag("List_Fragment");
-		tcLog.d(this.getClass().getName(), "enableDebug ticketListFragment = " + ticketListFragment);
-		if (ticketListFragment != null) {
-			ticketListFragment.enableDebug();
-		}	
+		tcLog.d(this.getClass().getName(), "enableDebug");
+		debug = true;
+		tcLog.toast("Debug enabled");
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+			this.invalidateOptionsMenu();
+		}
+	}
+
+	private void shareDebug() {
+		final Intent sendIntent = new Intent();
+		sendIntent.setAction(Intent.ACTION_SEND);
+		sendIntent.putExtra(Intent.EXTRA_TEXT, tcLog.getDebug());
+		sendIntent.setType("text/plain");
+		startActivity(sendIntent);
 	}
 }

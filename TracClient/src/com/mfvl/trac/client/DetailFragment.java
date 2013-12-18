@@ -17,7 +17,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import com.mfvl.trac.client.util.tcLog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,6 +30,7 @@ import android.widget.TextView;
 
 import com.mfvl.trac.client.util.ColoredArrayAdapter;
 import com.mfvl.trac.client.util.ISO8601;
+import com.mfvl.trac.client.util.tcLog;
 
 public class DetailFragment extends TracClientFragment {
 
@@ -173,7 +173,7 @@ public class DetailFragment extends TracClientFragment {
 	}
 
 	public void refresh_ticket() {
-		final ProgressDialog pb=startProgressBar(R.string.updating);
+		final ProgressDialog pb = startProgressBar(R.string.updating);
 		_ticket.refresh(context, new onTicketCompleteListener() {
 			@Override
 			public void onComplete(Ticket t2) {

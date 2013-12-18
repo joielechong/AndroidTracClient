@@ -10,7 +10,6 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import com.mfvl.trac.client.util.tcLog;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +25,8 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.mfvl.trac.client.util.tcLog;
 
 public class UpdateTicketFragment extends TracClientFragment {
 	private String currentActionName = null;
@@ -46,7 +47,8 @@ public class UpdateTicketFragment extends TracClientFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		tcLog.d(this.getClass().getName(), "onCreateView savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		tcLog.d(this.getClass().getName(), "onCreateView savedInstanceState = "
+				+ (savedInstanceState == null ? "null" : "not null"));
 		final View view = inflater.inflate(R.layout.update_view, container, false);
 		if (savedInstanceState != null) {
 			if (savedInstanceState.containsKey("currentTicket")) {
