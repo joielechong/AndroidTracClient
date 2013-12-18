@@ -12,7 +12,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
+import com.mfvl.trac.client.util.tcLog;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -47,7 +47,7 @@ public class FilterFragment extends TracClientFragment {
 
 		@Override
 		public View getView(final int position, View convertView, final ViewGroup parent) {
-			Log.i(this.getClass().getName(), "getView pos=" + position + " " + convertView + " " + parent);
+			tcLog.d(this.getClass().getName(), "getView pos=" + position + " " + convertView + " " + parent);
 
 			final Resources res = context.getResources();
 			final ArrayList<String> operators = new ArrayList<String>(Arrays.asList(res.getStringArray(R.array.filter2_choice)));
@@ -65,13 +65,14 @@ public class FilterFragment extends TracClientFragment {
 			final FilterSpec o = items.get(p);
 			final TicketModelVeld tmv = tm.getVeld(o.veld());
 
-			Log.i(this.getClass().getName(), "getView pos=" + position + " " + o + " " + tmv);
+			// tcLog.d(this.getClass().getName(), "getView pos=" + position + " "
+			// + o + " " + tmv);
 
 			final int resid = o.isEdit() ? (tmv.options() == null ? R.layout.filter_spec2 : R.layout.filter_spec3)
 					: R.layout.filter_spec1;
 			final int curid = convertView == null ? -1 : convertView.getId();
-			Log.i(this.getClass().getName(),
-					"getView pos = " + position + " curid = " + curid + " resid=" + resid + " veld = " + o.veld());
+			// tcLog.d(this.getClass().getName(),"getView pos = " + position +
+			// " curid = " + curid + " resid=" + resid + " veld = " + o.veld());
 			if (curid != resid) {
 				final LayoutInflater vi = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				v = vi.inflate(resid, null);
@@ -187,13 +188,13 @@ public class FilterFragment extends TracClientFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.i(this.getClass().getName(), "onCreate savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 		setHasOptionsMenu(true);
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		Log.i(this.getClass().getName(), "onCreateView savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		tcLog.d(this.getClass().getName(), "onCreateView savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 		final View view = inflater.inflate(R.layout.filter_view, container, false);
 		return view;
 	}
@@ -201,13 +202,13 @@ public class FilterFragment extends TracClientFragment {
 	@Override
 	public void onSaveInstanceState(Bundle savedState) {
 		super.onSaveInstanceState(savedState);
-		Log.i(this.getClass().getName(), "onSaveInstanceState");
+		tcLog.d(this.getClass().getName(), "onSaveInstanceState");
 	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		Log.i(this.getClass().getName(), "onActivityCreated savedInstanceState = "
+		tcLog.d(this.getClass().getName(), "onActivityCreated savedInstanceState = "
 				+ (savedInstanceState == null ? "null" : "not null"));
 		final ProgressDialog pb = startProgressBar(R.string.downloading);
 		tm = listener.getTicketModel();
@@ -275,13 +276,13 @@ public class FilterFragment extends TracClientFragment {
 	@Override
 	public void onStart() {
 		super.onStart();
-		Log.i(this.getClass().getName(), "onStart");
+		tcLog.d(this.getClass().getName(), "onStart");
 		tm = listener.getTicketModel();
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Log.i(this.getClass().getName(), "onOptionsItemSelected item=" + item);
+		tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" + item);
 		final int itemId = item.getItemId();
 		if (itemId == R.id.help) {
 			final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
@@ -296,7 +297,7 @@ public class FilterFragment extends TracClientFragment {
 	}
 
 	public void setList(ArrayList<FilterSpec> l) {
-		Log.i(this.getClass().getName(), "setList l = " + l);
+		tcLog.d(this.getClass().getName(), "setList l = " + l);
 		inputSpec = l;
 	}
 
@@ -307,7 +308,7 @@ public class FilterFragment extends TracClientFragment {
 		final String op = o.operator();
 		final boolean omgekeerd = op != null && op.equals("!=");
 
-		Log.i(this.getClass().getName(), "makeCheckBoxes " + veldnaam + " " + w + " " + omgekeerd);
+		tcLog.d(this.getClass().getName(), "makeCheckBoxes " + veldnaam + " " + w + " " + omgekeerd);
 		final LinearLayout valCheckBoxes = new LinearLayout(context);
 		valCheckBoxes.setOrientation(LinearLayout.VERTICAL);
 		String[] ws;

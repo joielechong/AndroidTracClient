@@ -7,7 +7,7 @@
 
     <ImageButton
         android:id="@+id/sortup"
-        android:layout_width="0px"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
@@ -17,7 +17,7 @@
 
     <ImageButton
         android:id="@+id/sortdown"
-        android:layout_width="0px"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
@@ -27,7 +27,7 @@
 
     <TextView
         android:id="@+id/sortfield"
-        android:layout_width="0px"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
@@ -36,7 +36,7 @@
 
     <ImageButton
         android:id="@+id/sortdirec"
-        android:layout_width="0px"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="8dp"
@@ -45,7 +45,7 @@
 
     <ImageButton
         android:id="@+id/sortdel"
-        android:layout_width="0px"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"

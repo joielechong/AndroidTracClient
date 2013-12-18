@@ -22,7 +22,7 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.util.Log;
+import com.mfvl.trac.client.util.tcLog;
 
 /**
  * Implementation of JSON-RPC over HTTP/POST
@@ -77,7 +77,7 @@ public class JSONRPCThreadedHttpClient extends JSONRPCThreadedClient {
 	protected JSONObject doJSONRequest(JSONObject jsonRequest) throws JSONRPCException {
 
 		if (_debug) {
-			Log.d(JSONRPCThreadedHttpClient.class.toString(), "Request: " + jsonRequest.toString());
+			tcLog.d(JSONRPCThreadedHttpClient.class.toString(), "Request: " + jsonRequest.toString());
 		}
 		// Create HTTP/POST request with a JSON entity containing the request
 		final HttpPost request = new HttpPost(serviceUri);
@@ -93,7 +93,7 @@ public class JSONRPCThreadedHttpClient extends JSONRPCThreadedClient {
 				request.addHeader(authenticate);
 			} catch (final AuthenticationException e) {
 				if (_debug) {
-					Log.i(JSONRPCHttpClient.class.toString(), "Cannot authenticate");
+					tcLog.i(JSONRPCHttpClient.class.toString(), "Cannot authenticate");
 				}
 			}
 		}
@@ -114,7 +114,7 @@ public class JSONRPCThreadedHttpClient extends JSONRPCThreadedClient {
 			String responseString = EntityUtils.toString(response.getEntity());
 
 			if (_debug) {
-				Log.d(JSONRPCThreadedHttpClient.class.toString(), "Response: " + responseString);
+				tcLog.d(JSONRPCThreadedHttpClient.class.toString(), "Response: " + responseString);
 			}
 
 			responseString = responseString.trim();

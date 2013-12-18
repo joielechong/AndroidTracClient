@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
         android:orientation="vertical"
-        android:paddingBottom="75dp" >
+        android:paddingBottom="75px" >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -22,7 +22,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|center_horizontal"
-                android:text="@string/tracLogin"
+                android:text="@string/tractcLog.din"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <LinearLayout
@@ -64,7 +64,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="24dp"
-                        android:ems="10"
+                        android:ellipsize="none"
                         android:hint="@string/tracUrlHint"
                         android:inputType="textUri" />
                 </LinearLayout>
@@ -93,7 +93,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="12dp"
-                        android:ems="10"
+                        android:ellipsize="none"
                         android:hint="@string/tracUserHint"
                         android:inputType="text" />
                 </LinearLayout>
@@ -114,8 +114,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="12dp"
-                        android:ellipsize="start"
-                        android:ems="10"
+                        android:ellipsize="none"
                         android:hint="@string/tracPwHint"
                         android:inputType="textPassword" />
                 </LinearLayout>
@@ -143,7 +142,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
+                    android:layout_marginTop="3dp"
                     android:gravity="center_vertical|center_horizontal"
                     android:orientation="horizontal" >
 
@@ -168,7 +167,7 @@
                     android:id="@+id/connWarnSts"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="6dp"
+                    android:layout_margin="3dp"
                     android:gravity="center_horizontal"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:visibility="gone" />
@@ -183,8 +182,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
-                        android:layout_marginBottom="6dp"
-                        android:layout_marginTop="6dp"
+                        android:layout_marginBottom="3dp"
+                        android:layout_marginTop="3dp"
                         android:text="@string/storeprofile" />
 
                     <Button
@@ -192,8 +191,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
-                        android:layout_marginBottom="6dp"
-                        android:layout_marginTop="6dp"
+                        android:layout_marginBottom="3dp"
+                        android:layout_marginTop="3dp"
                         android:text="@string/oktext" />
                 </RelativeLayout>
             </LinearLayout>

@@ -30,7 +30,7 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.util.Log;
+import com.mfvl.trac.client.util.tcLog;
 
 /**
  * Implementation of JSON-RPC over HTTP/POST
@@ -119,13 +119,13 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 				request.addHeader(authenticate);
 			} catch (final AuthenticationException e) {
 				if (_debug) {
-					Log.i(JSONRPCHttpClient.class.toString(), "Cannot authenticate");
+					tcLog.i(JSONRPCHttpClient.class.toString(), "Cannot authenticate");
 				}
 			}
 		}
 
 		if (_debug) {
-			Log.i(JSONRPCHttpClient.class.toString(), "Request: " + jsonRequest.toString());
+			tcLog.i(JSONRPCHttpClient.class.toString(), "Request: " + jsonRequest.toString());
 		}
 		lastJsonRequest = jsonRequest;
 
@@ -154,7 +154,7 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 			responseString = responseString.trim();
 
 			if (_debug) {
-				Log.i(JSONRPCHttpClient.class.toString(), "Response: " + responseString);
+				tcLog.i(JSONRPCHttpClient.class.toString(), "Response: " + responseString);
 			}
 
 			final JSONObject jsonResponse = new JSONObject(responseString);
@@ -177,8 +177,12 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 		} catch (final JSONException e) {
 			final int titelstart = lastResponse.indexOf("<title>");
 			final int titeleind = lastResponse.indexOf("</title>");
+			if (titelstart == -1 || titeleind == -1) {
+				throw new JSONRPCException(lastResponse,e);
+			} else {
 			final String titel = lastResponse.substring(titelstart + 7, titeleind).trim();
 			throw new JSONRPCException("Invalid JSON response: " + titel, e);
+			}
 		}
 	}
 }

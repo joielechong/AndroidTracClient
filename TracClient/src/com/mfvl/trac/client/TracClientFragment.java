@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+import com.mfvl.trac.client.util.tcLog;
 import android.widget.LinearLayout;
 
 import com.google.ads.AdRequest;
@@ -26,7 +26,7 @@ public class TracClientFragment extends Fragment {
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		Log.d(this.getClass().getName() + ".super", "onAttach ");
+		tcLog.d(this.getClass().getName() + ".super", "onAttach ");
 		context = (TracStart) activity;
 		listener = context;
 	}
@@ -34,7 +34,7 @@ public class TracClientFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.d(this.getClass().getName() + ".super", "onCreate savedInstanceState = "
+		tcLog.d(this.getClass().getName() + ".super", "onCreate savedInstanceState = "
 				+ (savedInstanceState == null ? "null" : "not null"));
 		if (savedInstanceState != null) {
 			_url = savedInstanceState.getString("currentURL");
@@ -47,7 +47,7 @@ public class TracClientFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		Log.d(this.getClass().getName() + ".super", "onActivityCreated savedInstanceState = "
+		tcLog.d(this.getClass().getName() + ".super", "onActivityCreated savedInstanceState = "
 				+ (savedInstanceState == null ? "null" : "not null"));
 		if (listener != null && listener.dispAds()) {
 			final LinearLayout ll = (LinearLayout) getView().findViewById(R.id.adBlock);
@@ -69,7 +69,7 @@ public class TracClientFragment extends Fragment {
 	@Override
 	public void onSaveInstanceState(Bundle savedState) {
 		super.onSaveInstanceState(savedState);
-		Log.d(this.getClass().getName() + ".super", "onSaveInstanceState");
+		tcLog.d(this.getClass().getName() + ".super", "onSaveInstanceState");
 		savedState.putString("currentURL", _url);
 		savedState.putString("currentUsername", _username);
 		savedState.putString("currentPassword", _password);
@@ -78,29 +78,35 @@ public class TracClientFragment extends Fragment {
 
 	@Override
 	public void onStart() {
-		Log.d(this.getClass().getName() + ".super", "onStart");
+		tcLog.d(this.getClass().getName() + ".super", "onStart");
 		super.onStart();
 		EasyTracker.getInstance(context).activityStart(context);
 	}
 
 	@Override
 	public void onStop() {
-		Log.d(this.getClass().getName() + ".super", "onStop");
+		tcLog.d(this.getClass().getName() + ".super", "onStop");
 		super.onStop();
 		EasyTracker.getInstance(context).activityStop(context);
 	}
 
 	@Override
 	public void onDestroy() {
-		Log.d(this.getClass().getName() + ".super", "onDestroy");
+		tcLog.d(this.getClass().getName() + ".super", "onDestroy");
 		if (adView != null) {
 			adView.destroy();
 		}
 		super.onDestroy();
 	}
 
+	@Override
+	public void onDetach() {
+		tcLog.d(this.getClass().getName() + ".super", "onDetach");
+		super.onDetach();
+	}
+
 	public void setHost(final String url, final String username, final String password, boolean sslHack) {
-		Log.d(this.getClass().getName() + ".super", "setHost");
+		tcLog.d(this.getClass().getName() + ".super", "setHost");
 		if (_url != url) {
 			_url = url;
 			_username = username;

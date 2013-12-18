@@ -3,7 +3,7 @@
     <!-- NL versie -->
     <string name="about_button">Over Trac Client</string>
     <string name="Back">Terug</string>
-    <string name="tracLogin">Inloggen TRAC</string>
+    <string name="tractcLog.din">Inloggen TRAC</string>
     <string name="tracUser">Gebruikersnaam</string>
     <string name="tracUserHint">Gebruikersnaam</string>
     <string name="tracPw">Wachtwoord</string>
@@ -103,4 +103,7 @@
     <string name="ticketnotfound">Ticket niet gevonden</string>
     <string name="chooseticknr">Voer ticketnummer in</string>
     <string name="chooseticket">Kies ticket</string>
+    <string name="checking">Controleren</string>
+    <string name="updating">Bijwerken</string>
+	<string name="wait">Een moment aub</string>
 </resources>

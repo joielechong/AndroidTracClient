@@ -9,7 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
+import com.mfvl.trac.client.util.tcLog;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
@@ -58,7 +58,7 @@ public class TracTitlescreenActivity extends ActionBarActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		try {
-			Log.i(this.getClass().getName(), "onCreate savedInstanceState = " + savedInstanceState);
+			tcLog.i(this.getClass().getName(), "onCreate savedInstanceState = " + savedInstanceState);
 			super.onCreate(savedInstanceState);
 
 			if (savedInstanceState != null) {
@@ -137,7 +137,7 @@ public class TracTitlescreenActivity extends ActionBarActivity {
 
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
-		Log.i(this.getClass().getName(), "onPostCreate");
+		tcLog.i(this.getClass().getName(), "onPostCreate");
 		super.onPostCreate(savedInstanceState);
 
 		// Trigger the initial hide() shortly after the activity has been
@@ -202,13 +202,13 @@ public class TracTitlescreenActivity extends ActionBarActivity {
 
 	@Override
 	public void onPause() {
-		Log.i(this.getClass().getName(), "onPause");
+		tcLog.i(this.getClass().getName(), "onPause");
 		super.onPause();
 	}
 
 	@Override
 	public void onResume() {
-		Log.i(this.getClass().getName(), "onResume");
+		tcLog.i(this.getClass().getName(), "onResume");
 		super.onResume();
 		if (exitaftercall) {
 			finish();
@@ -217,7 +217,7 @@ public class TracTitlescreenActivity extends ActionBarActivity {
 
 	@Override
 	public void onStart() {
-		Log.i(this.getClass().getName(), "onStart");
+		tcLog.i(this.getClass().getName(), "onStart");
 		super.onStart();
 		EasyTracker.getInstance(this).activityStart(this);
 		if (exitaftercall) {
@@ -227,27 +227,27 @@ public class TracTitlescreenActivity extends ActionBarActivity {
 
 	@Override
 	public void onStop() {
-		Log.i(this.getClass().getName(), "onStop");
+		tcLog.i(this.getClass().getName(), "onStop");
 		super.onStop();
 		EasyTracker.getInstance(this).activityStop(this);
 	}
 
 	@Override
 	public void onDestroy() {
-		Log.i(this.getClass().getName(), "onDestroy");
+		tcLog.i(this.getClass().getName(), "onDestroy");
 		super.onDestroy();
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle savedState) {
 		super.onSaveInstanceState(savedState);
-		Log.i(this.getClass().getName(), "onSaveInstanceState");
+		tcLog.i(this.getClass().getName(), "onSaveInstanceState");
 		savedState.putBoolean("exitflag", exitaftercall);
 	}
 
 	@Override
 	public void onRestoreInstanceState(Bundle savedState) {
-		Log.i(this.getClass().getName(), "onRestoreInstanceState savedState = " + savedState);
+		tcLog.i(this.getClass().getName(), "onRestoreInstanceState savedState = " + savedState);
 		if (savedState != null) {
 			exitaftercall = savedState.getBoolean("exitflag", false);
 		}

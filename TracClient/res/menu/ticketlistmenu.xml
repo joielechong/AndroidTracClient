@@ -20,6 +20,7 @@
         android:title="@string/changehost"/>
     <item
         android:id="@+id/tlzoek"
+		myapp:showAsAction="ifRoom"
         android:icon="@android:drawable/ic_menu_search"
         android:menuCategory="container"
         android:title="@string/zoek"
@@ -42,5 +43,10 @@
         android:menuCategory="container"
         android:title="@string/tlshare"
         myapp:showAsAction="ifRoom"/>
-
+    <item
+        android:id="@+id/tldebug"
+        android:menuCategory="container"
+		android:visible="false"
+		android:enabled="false"
+        android:title="@string/debug"/>
 </menu>

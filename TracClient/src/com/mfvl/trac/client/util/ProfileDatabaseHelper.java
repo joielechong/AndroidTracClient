@@ -19,7 +19,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
+import com.mfvl.trac.client.util.tcLog;
 
 public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 	private static final String DATABASE_NAME = "profile.db";
@@ -73,7 +73,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public void beginTransaction() {
-		Log.d(this.getClass().getName(), "beginTransaction db = " + db);
+		tcLog.d(this.getClass().getName(), "beginTransaction db = " + db);
 		if (db == null) {
 			this.open();
 		}
@@ -81,7 +81,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public void endTransaction() {
-		Log.d(this.getClass().getName(), "endTransaction db = " + db);
+		tcLog.d(this.getClass().getName(), "endTransaction db = " + db);
 		if (db == null) {
 			this.open();
 		}
@@ -90,7 +90,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public void addProfile(String name, LoginProfile profile) throws SQLException {
-		Log.d(this.getClass().getName(), "addProfile name = " + name + " profile = " + profile + " db = " + db);
+		tcLog.d(this.getClass().getName(), "addProfile name = " + name + " profile = " + profile + " db = " + db);
 
 		final ContentValues values = new ContentValues();
 		values.put(NAME_ID, name);
@@ -146,7 +146,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public int delProfiles() {
-		Log.d(this.getClass().getName(), "delProfiles db = " + db);
+		tcLog.d(this.getClass().getName(), "delProfiles db = " + db);
 		if (db == null) {
 			this.open();
 		}
@@ -155,7 +155,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public void readXML(final String appname) throws Exception {
-		Log.d(this.getClass().getName(), "readXML appname = " + appname + " db = " + db);
+		tcLog.d(this.getClass().getName(), "readXML appname = " + appname + " db = " + db);
 		if (db == null) {
 			this.open();
 		}
