@@ -6,14 +6,10 @@ import java.io.FileNotFoundException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 import javax.security.auth.x500.X500Principal;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -22,9 +18,6 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
 import android.os.Build;
 import android.os.Environment;
-import android.os.Looper;
-import android.widget.Toast;
-import com.mfvl.trac.client.util.tcLog;
 
 public class Credentials {
 	public static final String PREFS_NAME = "Trac";
@@ -33,8 +26,6 @@ public class Credentials {
 	private static String _password = "";
 	private static boolean _sslHack = false;
 	private static SharedPreferences settings = null;
-	private static String debugString = "";
-	
 	public static boolean debug = true;
 
 	public static void setCredentials(final String url, final String username, final String password) {

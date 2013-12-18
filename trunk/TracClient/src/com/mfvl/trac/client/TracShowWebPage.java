@@ -3,13 +3,13 @@ package com.mfvl.trac.client;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import com.mfvl.trac.client.util.tcLog;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.TextView;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.mfvl.trac.client.util.Credentials;
+import com.mfvl.trac.client.util.tcLog;
 
 public class TracShowWebPage extends Activity {
 

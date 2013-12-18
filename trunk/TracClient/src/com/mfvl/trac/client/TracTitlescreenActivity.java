@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
-import com.mfvl.trac.client.util.tcLog;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
@@ -18,6 +17,7 @@ import android.widget.Toast;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.mfvl.trac.client.util.Credentials;
 import com.mfvl.trac.client.util.SystemUiHider;
+import com.mfvl.trac.client.util.tcLog;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -58,8 +58,9 @@ public class TracTitlescreenActivity extends ActionBarActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		try {
-			tcLog.i(this.getClass().getName(), "onCreate savedInstanceState = " + savedInstanceState);
 			super.onCreate(savedInstanceState);
+			tcLog.setContext(this);
+			tcLog.i(this.getClass().getName(), "onCreate savedInstanceState = " + savedInstanceState);
 
 			if (savedInstanceState != null) {
 				exitaftercall = savedInstanceState.getBoolean("exitflag", false);

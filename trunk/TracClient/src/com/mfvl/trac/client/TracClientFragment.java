@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import com.mfvl.trac.client.util.tcLog;
 import android.widget.LinearLayout;
 
 import com.google.ads.AdRequest;
@@ -12,6 +11,7 @@ import com.google.ads.AdSize;
 import com.google.ads.AdView;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.mfvl.trac.client.util.Credentials;
+import com.mfvl.trac.client.util.tcLog;
 
 public class TracClientFragment extends Fragment {
 	public Ticket _ticket = null;

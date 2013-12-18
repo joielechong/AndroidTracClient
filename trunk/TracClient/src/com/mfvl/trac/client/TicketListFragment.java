@@ -21,7 +21,6 @@ import android.os.Looper;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import com.mfvl.trac.client.util.tcLog;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -37,24 +36,24 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.mfvl.trac.client.util.Credentials;
 import com.mfvl.trac.client.util.ColoredArrayAdapter;
 import com.mfvl.trac.client.util.FilterSpec;
 import com.mfvl.trac.client.util.SortSpec;
+import com.mfvl.trac.client.util.tcLog;
 
 public class TicketListFragment extends TracClientFragment {
 
 	private interface onLoadListListener {
 		void onComplete();
 	}
-	
+
 	private class TicketLoadException extends Exception {
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 3033107270657734325L;
 
-		public TicketLoadException(String e){
+		public TicketLoadException(String e) {
 			super(e);
 		}
 	}
@@ -80,7 +79,6 @@ public class TicketListFragment extends TracClientFragment {
 	private ArrayList<FilterSpec> filterList = null;
 	private int scrollPosition = 0;
 	private boolean refreshOnRestart = false;
-	private boolean debug = false;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -110,7 +108,8 @@ public class TicketListFragment extends TracClientFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		tcLog.d(this.getClass().getName(), "onCreateView savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		tcLog.d(this.getClass().getName(), "onCreateView savedInstanceState = "
+				+ (savedInstanceState == null ? "null" : "not null"));
 		final View view = inflater.inflate(R.layout.list_view, container, false);
 		listView = (ListView) view.findViewById(R.id.listOfTickets);
 		registerForContextMenu(listView);
@@ -186,7 +185,6 @@ public class TicketListFragment extends TracClientFragment {
 
 		if (loadListThread == null || !loadListThread.isAlive() || loadListThread.isInterrupted()) {
 			if (tickets == null || tickets.length == 0) {
-				tcLog.d(this.getClass().getName(), "onResume tickets = empty");
 				killLoadContentThread();
 				hs.setText("");
 				loadTicketList(new onLoadListListener() {
@@ -197,15 +195,12 @@ public class TicketListFragment extends TracClientFragment {
 				});
 			} else if (dataAdapter.getCount() == 0
 					&& (loadContentThread == null || !loadContentThread.isAlive() || loadContentThread.isInterrupted())) {
-				tcLog.d(this.getClass().getName(), "onResume geen content");
 				loadTicketContent();
 			} else {
 				dataAdapter.notifyDataSetChanged();
 			}
 		}
-		tcLog.d(this.getClass().getName(), "on Resume voor voor zetzoeken");
 		if (loadListThread != null && loadContentThread != null && !loadListThread.isAlive() && !loadContentThread.isAlive()) {
-			tcLog.d(this.getClass().getName(), "on Resume voor zetzoeken");
 			zetZoeken();
 			setScroll();
 		}
@@ -384,8 +379,6 @@ public class TicketListFragment extends TracClientFragment {
 			return true;
 		} else if (itemId == R.id.tlshare) {
 			shareList();
-		} else if (itemId == R.id.tldebug) {
-			shareDebug();
 		} else if (itemId == R.id.tlzoek) {
 			zoeken = !zoeken;
 			if (zoeken) {
@@ -433,11 +426,11 @@ public class TicketListFragment extends TracClientFragment {
 				@Override
 				public void run() {
 					try {
-						tcLog.d(this.getClass().getName(), "loadTicketList in loadListThread");
+						tcLog.d(this.getClass().getName() + this.getId(), "loadTicketList in loadListThread ");
 						context.runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
-								hs.setText(R.string.getlist);								
+								hs.setText(R.string.getlist);
 							}
 						});
 						String reqString = "";
@@ -457,7 +450,7 @@ public class TicketListFragment extends TracClientFragment {
 								reqString += s.toString();
 							}
 						}
-						tcLog.d(this.getClass().getName(), "reqString = " + reqString);
+						tcLog.d(this.getClass().getName() + this.getId(), "reqString = " + reqString);
 						final JSONRPCHttpClient req = new JSONRPCHttpClient(_url, _sslHack);
 						req.setCredentials(_username, _password);
 						final String rs = reqString;
@@ -467,24 +460,24 @@ public class TicketListFragment extends TracClientFragment {
 							}
 							final JSONArray jsonTicketlist = req.callJSONArray("ticket.query", reqString);
 							if (isInterrupted()) {
-								tcLog.d(this.getClass().getName(), "loadTicketList interrupt detected");
-								throw  new TicketLoadException("Interrupted");
+								tcLog.d(this.getClass().getName() + this.getId(), "loadTicketList interrupt detected");
+								throw new TicketLoadException("Interrupted");
 							}
-							tcLog.d(this.getClass().getName(), jsonTicketlist.toString());
+							tcLog.d(this.getClass().getName() + this.getId(), jsonTicketlist.toString());
 							final int count = jsonTicketlist.length();
 							tickets = new int[count];
 							for (int i = 0; i < count; i++) {
 								tickets[i] = jsonTicketlist.getInt(i);
 							}
-							tcLog.d(this.getClass().getName(), "loadTicketList ticketlist loaded");
+							tcLog.d(this.getClass().getName() + this.getId(), "loadTicketList ticketlist loaded");
 							oc.onComplete();
 							listener.getTicketModel();
-						} catch (JSONException e) {
-							tcLog.d(this.getClass().getName(),e.getMessage());
-							tcLog.d(this.getClass().getName(),tcLog.getStackTraceString(e));							
+						} catch (final JSONException e) {
+							tcLog.d(this.getClass().getName() + this.getId(), e.getMessage());
+							tcLog.d(this.getClass().getName() + this.getId(), tcLog.getStackTraceString(e));
 						} catch (final JSONRPCException e) {
-							tcLog.d(this.getClass().getName(), e.toString());
-							tcLog.d(this.getClass().getName(),tcLog.getStackTraceString(e));							
+							tcLog.d(this.getClass().getName() + this.getId(), e.toString());
+							tcLog.d(this.getClass().getName() + this.getId(), tcLog.getStackTraceString(e));
 							context.runOnUiThread(new Runnable() {
 								@Override
 								public void run() {
@@ -504,24 +497,24 @@ public class TicketListFragment extends TracClientFragment {
 								}
 							});
 						}
-					} catch (TicketLoadException e) {
-						tcLog.d(this.getClass().getName(), "loadTicketList interrupted",e);
+					} catch (final TicketLoadException e) {
+						tcLog.d(this.getClass().getName() + this.getId(), "loadTicketList interrupted", e);
 						clearTickets();
 					} finally {
 						pb.dismiss();
-						tcLog.d(this.getClass().getName(), "loadTicketList ended");
+						tcLog.d(this.getClass().getName() + this.getId(), "loadTicketList ended");
 					}
 				}
 			};
 			loadListThread.start();
 		}
 	}
-	
+
 	private void clearTicketsAct() {
 		dataAdapter.clear();
-		tickets=null;
+		tickets = null;
 	}
-	
+
 	private void clearTickets() {
 		if (Looper.getMainLooper().equals(Looper.myLooper())) {
 			clearTicketsAct();
@@ -549,19 +542,19 @@ public class TicketListFragment extends TracClientFragment {
 
 	private void buildCall(JSONArray mc, int ticknr) throws JSONException {
 		mc.put(makeComplexCall(Ticket.TICKET_GET + "_" + ticknr, "ticket.get", ticknr));
-		mc.put(makeComplexCall(Ticket.TICKET_CHANGE + "_" + ticknr, "ticket.changetcLog.d", ticknr));
+		mc.put(makeComplexCall(Ticket.TICKET_CHANGE + "_" + ticknr, "ticket.changeLog", ticknr));
 		mc.put(makeComplexCall(Ticket.TICKET_ATTACH + "_" + ticknr, "ticket.listAttachments", ticknr));
 		mc.put(makeComplexCall(Ticket.TICKET_ACTION + "_" + ticknr, "ticket.getActions", ticknr));
 	}
 
 	private void loadTicketContent() {
 		tcLog.d(this.getClass().getName(), "loadTicketContent " + tickets.length);
-		
+
 		loadContentThread = new Thread() {
 			@Override
 			public void run() {
 				try {
-					tcLog.d(this.getClass().getName(), "loadTicketContent thread = " + this);
+					tcLog.d(this.getClass().getName() + this.getId(), "loadTicketContent thread = " + this);
 					final Map<Integer, Ticket> ticketMap = new TreeMap<Integer, Ticket>();
 					final int count = tickets.length;
 					final int progress[] = new int[2];
@@ -580,12 +573,13 @@ public class TicketListFragment extends TracClientFragment {
 							}
 						}
 					});
-					
+
 					if (isInterrupted()) {
 						throw new TicketLoadException("loadTicketContent interrupt1 detected");
 					}
 
-					tcLog.d(this.getClass().getName(), "loadTicketContent JSONRPCHttpClient " + _url + " " + _sslHack);
+					tcLog.d(this.getClass().getName() + this.getId(), "loadTicketContent JSONRPCHttpClient " + _url + " "
+							+ _sslHack);
 					final JSONRPCHttpClient req = new JSONRPCHttpClient(_url, _sslHack);
 					req.setCredentials(_username, _password);
 					for (int j = 0; j < count; j += ticketGroupCount) {
@@ -594,16 +588,17 @@ public class TicketListFragment extends TracClientFragment {
 							try {
 								buildCall(mc, tickets[i]);
 							} catch (final Exception e) {
-								e.printStackTrace();
+								tcLog.d(this.getClass().getName() + this.getId(), "loadContentThread Exception thrown", e);
 							}
 						}
-						// tcLog.d(this.getClass().getName(), "loadTickets mc = "
+						// tcLog.d(this.getClass().getName(),
+						// "loadTickets mc = "
 						// + mc);
-						
+
 						if (isInterrupted()) {
 							throw new TicketLoadException("loadTicketContent interrupt2 detected");
 						}
-						
+
 						context.runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
@@ -614,6 +609,7 @@ public class TicketListFragment extends TracClientFragment {
 
 						try {
 							final JSONArray mcresult = req.callJSONArray("system.multicall", mc);
+							tcLog.d(this.getClass().getName()+this.getId(),"mcresult = "+mcresult);
 							for (int i = 0; i < mcresult.length(); i++) {
 								try {
 									final JSONObject res = mcresult.getJSONObject(i);
@@ -641,7 +637,8 @@ public class TicketListFragment extends TracClientFragment {
 										}
 									}
 								} catch (final Exception e1) {
-									e1.printStackTrace();
+									tcLog.d(this.getClass().getName() + this.getId(),
+											"loadTicketContent Exception thrown innerloop j="+j+" i="+i, e1);
 								}
 							}
 							context.runOnUiThread(new Runnable() {
@@ -652,14 +649,15 @@ public class TicketListFragment extends TracClientFragment {
 								}
 							});
 						} catch (final Exception e) {
-							e.printStackTrace();
+							tcLog.d(this.getClass().getName() + this.getId(), "loadTicketContent Exception thrown outerloop", e);
 						}
-						tcLog.d(this.getClass().getName(), "loadTicketContent loop "+progress[0]);			
+						tcLog.d(this.getClass().getName() + this.getId(), "loadTicketContent loop " + progress[0]);
 					}
+					final long tid = this.getId();
 					context.runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
-							tcLog.d(this.getClass().getName(), "loadTicketContent invalidate views");
+							tcLog.d(this.getClass().getName() + tid, "loadTicketContent invalidate views");
 							dataAdapter.notifyDataSetChanged();
 							if (listView != null) {
 								listView.invalidateViews();
@@ -669,10 +667,10 @@ public class TicketListFragment extends TracClientFragment {
 						}
 					});
 				} catch (final TicketLoadException e) {
-					tcLog.d(this.getClass().getName(), "loadContentThread interrupted");
+					tcLog.d(this.getClass().getName() + this.getId(), "loadContentThread interrupted", e);
 					clearTickets();
 				} finally {
-					tcLog.d(this.getClass().getName(), "loadTicketContent ended");
+					tcLog.d(this.getClass().getName() + this.getId(), "loadTicketContent ended");
 				}
 			}
 		};
@@ -736,15 +734,6 @@ public class TicketListFragment extends TracClientFragment {
 		sendIntent.setType("text/plain");
 		startActivity(sendIntent);
 	}
-	
-	private void shareDebug() {
-		final Intent sendIntent = new Intent();
-		sendIntent.setAction(Intent.ACTION_SEND);
-		sendIntent.putExtra(Intent.EXTRA_TEXT, tcLog.getDebug());
-		sendIntent.setType("text/plain");
-		startActivity(sendIntent);
-
-	}
 
 	public void setFilter(ArrayList<FilterSpec> filter) {
 		tcLog.d(this.getClass().getName(), "setFilter " + filter);
@@ -754,24 +743,6 @@ public class TicketListFragment extends TracClientFragment {
 	public void setSort(ArrayList<SortSpec> sort) {
 		tcLog.d(this.getClass().getName(), "setSort " + sort);
 		sortList = sort;
-	}
-	
-	@Override
-	public void onPrepareOptionsMenu(Menu menu) {
-		tcLog.d(this.getClass().getName(), "onPrepareOptionsMenu");
-		MenuItem item= menu.findItem(R.id.tldebug);
-		item.setVisible(debug);
-		item.setEnabled(debug);
-		super.onPrepareOptionsMenu(menu);
-	}	
-
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	public void enableDebug() {
-		debug = true;
-		tcLog.toast("Debug enabled");
-		if ( android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
-			context.invalidateOptionsMenu();
-		}
 	}
 
 	@Override

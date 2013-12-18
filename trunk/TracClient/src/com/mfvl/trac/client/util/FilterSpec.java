@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import android.content.Context;
 import android.content.res.Resources;
-import com.mfvl.trac.client.util.tcLog;
 
 import com.mfvl.trac.client.R;
 

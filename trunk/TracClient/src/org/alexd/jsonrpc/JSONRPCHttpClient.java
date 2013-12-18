@@ -119,7 +119,7 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 				request.addHeader(authenticate);
 			} catch (final AuthenticationException e) {
 				if (_debug) {
-					tcLog.i(JSONRPCHttpClient.class.toString(), "Cannot authenticate");
+					tcLog.i(JSONRPCHttpClient.class.toString(), "Cannot authenticate", e);
 				}
 			}
 		}
@@ -171,17 +171,26 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 		}
 		// Underlying errors are wrapped into a JSONRPCException instance
 		catch (final ClientProtocolException e) {
+			if (_debug) {
+				tcLog.i(JSONRPCHttpClient.class.toString(), "ClientProtocol Exception", e);
+			}
 			throw new JSONRPCException("HTTP error: " + e.getMessage(), e);
 		} catch (final IOException e) {
+			if (_debug) {
+				tcLog.i(JSONRPCHttpClient.class.toString(), "IO Exception", e);
+			}
 			throw new JSONRPCException("IO error: " + e.getMessage(), e);
 		} catch (final JSONException e) {
+			if (_debug) {
+				tcLog.i(JSONRPCHttpClient.class.toString(), "JSON Exception", e);
+			}
 			final int titelstart = lastResponse.indexOf("<title>");
 			final int titeleind = lastResponse.indexOf("</title>");
 			if (titelstart == -1 || titeleind == -1) {
-				throw new JSONRPCException(lastResponse,e);
+				throw new JSONRPCException(lastResponse, e);
 			} else {
-			final String titel = lastResponse.substring(titelstart + 7, titeleind).trim();
-			throw new JSONRPCException("Invalid JSON response: " + titel, e);
+				final String titel = lastResponse.substring(titelstart + 7, titeleind).trim();
+				throw new JSONRPCException("Invalid JSON response: " + titel, e);
 			}
 		}
 	}
