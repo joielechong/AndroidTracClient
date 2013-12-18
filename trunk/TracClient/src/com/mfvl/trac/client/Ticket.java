@@ -12,7 +12,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.util.Base64;
-import android.util.Log;
+import com.mfvl.trac.client.util.tcLog;
 
 import com.mfvl.trac.client.util.ISO8601;
 
@@ -70,13 +70,13 @@ public class Ticket {
 	}
 
 	public Ticket(final int ticknr, TracStart context, onTicketCompleteListener oc) {
-		Log.i(this.getClass().getName(), "Ticket(72) ticketnr = " + ticknr);
+		tcLog.i(this.getClass().getName(), "Ticket(72) ticketnr = " + ticknr);
 		_ticknr = ticknr;
 		loadTicketData(context, oc);
 	}
 
 	public void refresh(TracStart context, onTicketCompleteListener oc) {
-		Log.i(this.getClass().getName() + "refresh", "Ticketnr = " + _ticknr);
+		tcLog.i(this.getClass().getName() + "refresh", "Ticketnr = " + _ticknr);
 		actionLock.release();
 		available.release();
 		loadTicketData(context, oc);
@@ -111,7 +111,7 @@ public class Ticket {
 	}
 
 	private void loadTicketData(TracStart context, final onTicketCompleteListener oc) {
-		Log.i(this.getClass().getName(), "loadTicketData ticketnr = " + _ticknr);
+		tcLog.i(this.getClass().getName(), "loadTicketData ticketnr = " + _ticknr);
 		actionLock.acquireUninterruptibly();
 		_isloading = true;
 		if (_url == null) {
@@ -132,7 +132,7 @@ public class Ticket {
 				try {
 					final JSONArray mc = new JSONArray();
 					mc.put(makeComplexCall(TICKET_GET, "ticket.get", _ticknr));
-					mc.put(makeComplexCall(TICKET_CHANGE, "ticket.changeLog", _ticknr));
+					mc.put(makeComplexCall(TICKET_CHANGE, "ticket.changetcLog.d", _ticknr));
 					mc.put(makeComplexCall(TICKET_ATTACH, "ticket.listAttachments", _ticknr));
 					mc.put(makeComplexCall(TICKET_ACTION, "ticket.getActions", _ticknr));
 					final JSONArray mcresult = req.callJSONArray("system.multicall", mc);
@@ -156,22 +156,22 @@ public class Ticket {
 								_actions = result;
 								actionLock.release();
 							} else {
-								Log.i(this.getClass().getName(), "loadTicketData, onverwachte respons = " + result);
+								tcLog.i(this.getClass().getName(), "loadTicketData, onverwachte respons = " + result);
 							}
 						} catch (final Exception e1) {
 							e1.printStackTrace();
 						}
 					}
-					_hasdata = (_velden != null) && (_history != null) && (_actions != null);
+					_hasdata = _velden != null && _history != null && _actions != null;
 					_isloading = false;
 					if (oc != null) {
 						available.release();
 						oc.onComplete(Ticket.this);
 					}
 				} catch (final JSONRPCException e) {
-					Log.i(this.getClass().getName() + "loadTicketData", e.toString());
+					tcLog.i(this.getClass().getName() + "loadTicketData", e.toString());
 				} catch (final JSONException e) {
-					Log.i(this.getClass().getName() + "loadTicketData", e.toString());
+					tcLog.i(this.getClass().getName() + "loadTicketData", e.toString());
 				} catch (final Exception e) {
 					e.printStackTrace();
 				} finally {
@@ -203,7 +203,7 @@ public class Ticket {
 						oc.onComplete(Base64.decode(b64, Base64.DEFAULT));
 					}
 				} catch (final Exception e) {
-					Log.i(this.getClass().getName() + "getAttachment", e.toString());
+					tcLog.i(this.getClass().getName() + "getAttachment", e.toString());
 				} finally {
 					available.release();
 				}
@@ -251,14 +251,14 @@ public class Ticket {
 					ar.put(ob);
 					ar.put(true);
 					final String retfile = req.callString("ticket.putAttachment", ar);
-					Log.i(this.getClass().getName() + "putAttachment", retfile);
+					tcLog.i(this.getClass().getName() + "putAttachment", retfile);
 					actionLock.release();
 					loadTicketData(context, null);
 					if (oc != null) {
 						oc.onComplete(Ticket.this);
 					}
 				} catch (final Exception e) {
-					Log.i(this.getClass().getName() + "addAttachment", e.toString());
+					tcLog.i(this.getClass().getName() + "addAttachment", e.toString());
 				} finally {
 					available.release();
 				}
@@ -334,7 +334,7 @@ public class Ticket {
 		if (_ticknr != -1) {
 			throw new RuntimeException("Aanroep met niet -1");
 		}
-		Log.i(this.getClass().getName(), "create: " + _velden.toString());
+		tcLog.i(this.getClass().getName(), "create: " + _velden.toString());
 		final String s = _velden.getString("summary");
 		final String d = _velden.getString("description");
 		_velden.remove("summary");
@@ -387,7 +387,7 @@ public class Ticket {
 
 	public void update(String action, String comment, String veld, String waarde, final boolean notify, final TracStart context)
 			throws Exception {
-		Log.i(this.getClass().getName(), "update: " + action + " '" + comment + "' '" + veld + "' '" + waarde + "'");
+		tcLog.i(this.getClass().getName(), "update: " + action + " '" + comment + "' '" + veld + "' '" + waarde + "'");
 		if (_ticknr == -1) {
 			throw new Exception(context.getString(R.string.invtick) + " " + _ticknr);
 		}
@@ -449,7 +449,7 @@ public class Ticket {
 		try {
 			return ISO8601.toCalendar(v.getJSONArray("__jsonclass__").getString(1) + "Z").getTime().toString();
 		} catch (final Exception e) {
-			Log.i(this.getClass().getName(), e.toString());
+			tcLog.i(this.getClass().getName(), e.toString());
 			return "";
 		}
 	}

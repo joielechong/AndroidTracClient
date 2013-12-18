@@ -8,7 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.util.Log;
+import com.mfvl.trac.client.util.tcLog;
 
 public abstract class JSONRPCClient {
 
@@ -659,15 +659,15 @@ public abstract class JSONRPCClient {
 			}
 
 			if (_debug) {
-				Log.i(this.getClass().getName(), "callJSONObject response" + response.toString());
-				Log.i(this.getClass().getName(), "callJSONObject response.JSONObject(result)"
+				tcLog.i(this.getClass().getName(), "callJSONObject response" + response.toString());
+				tcLog.i(this.getClass().getName(), "callJSONObject response.JSONObject(result)"
 						+ response.getJSONObject("result").toString());
 			}
 
 			return response.getJSONObject("result");
 		} catch (final JSONException e) {
 			try {
-				Log.i(this.getClass().getName(), "callJSONObject response.String(result)" + response.getString("result"));
+				tcLog.i(this.getClass().getName(), "callJSONObject response.String(result)" + response.getString("result"));
 				return new JSONObject().put("result", response.getString("result"));
 			} catch (final NumberFormatException e1) {
 				throw new JSONRPCException("Cannot convert result to JSONObject", e);

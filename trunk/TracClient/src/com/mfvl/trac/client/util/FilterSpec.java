@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.util.Log;
+import com.mfvl.trac.client.util.tcLog;
 
 import com.mfvl.trac.client.R;
 
@@ -44,7 +44,7 @@ public class FilterSpec extends Object implements Serializable, Cloneable {
 				i = 0;
 			}
 		}
-		Log.i(this.getClass().getName(), "FilterSpec " + _veld + " " + _operator + " " + _waarde);
+		tcLog.d(this.getClass().getName(), "FilterSpec " + _veld + " " + _operator + " " + _waarde);
 	}
 
 	public String veld() {
@@ -60,7 +60,7 @@ public class FilterSpec extends Object implements Serializable, Cloneable {
 	}
 
 	public void setWaarde(String w) {
-		Log.i(this.getClass().getName(), "setWaarde veld = " + _veld + " edited = " + _edited + " w = " + w);
+		tcLog.i(this.getClass().getName(), "setWaarde veld = " + _veld + " edited = " + _edited + " w = " + w);
 		if (_edited) {
 			_newwaarde = w;
 		} else {
@@ -73,7 +73,7 @@ public class FilterSpec extends Object implements Serializable, Cloneable {
 	}
 
 	public void setEdit(boolean edited) {
-		Log.i(this.getClass().getName(), "setEdit veld = " + _veld + " edited = " + edited);
+		tcLog.i(this.getClass().getName(), "setEdit veld = " + _veld + " edited = " + edited);
 		if (edited != _edited) {
 			_edited = edited;
 			if (_edited) {

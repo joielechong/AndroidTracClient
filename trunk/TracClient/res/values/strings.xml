@@ -4,7 +4,7 @@
     <string name="app_name" translatable="false">TracClient</string>
     <string name="about_button">About Trac Client</string>
     <string name="Back">Back</string>
-    <string name="tracLogin">Log in to TRAC server</string>
+    <string name="tractcLog.din">tcLog.d in to TRAC server</string>
     <string name="tracUrl" translatable="false">TRAC url</string>
     <string name="tracUrlHint" translatable="false">http://host/trac/login/rpc</string>
     <string name="tracUser">Username</string>
@@ -125,4 +125,8 @@
     <string name="ticketnotfound">Ticket not found</string>
     <string name="chooseticknr">Enter ticketnumber</string>
     <string name="chooseticket">Choose ticket</string>
+    <string name="checking">Checking</string>
+    <string name="updating">Updating</string>
+	<string name="wait">One moment please</string>
+	<string name="debug" translatable="false">Debug</string>
 </resources>

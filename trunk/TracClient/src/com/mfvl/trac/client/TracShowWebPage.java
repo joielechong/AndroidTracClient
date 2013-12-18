@@ -3,7 +3,7 @@ package com.mfvl.trac.client;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import com.mfvl.trac.client.util.tcLog;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.TextView;
@@ -15,13 +15,13 @@ public class TracShowWebPage extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		Log.d(this.getClass().getName(), "onCreate savedInstanceState = " + savedInstanceState);
+		tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " + savedInstanceState);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.trac_about);
 		final Intent i = this.getIntent();
 		final boolean toonVersie = i.getBooleanExtra("version", true);
 		final String filename = "file:///android_asset/" + i.getStringExtra("file") + ".html";
-		Log.d(this.getClass().getName(), filename + " " + toonVersie);
+		tcLog.d(this.getClass().getName(), filename + " " + toonVersie);
 		final TextView tv = (TextView) findViewById(R.id.about_version_text);
 		final TextView tv1 = (TextView) findViewById(R.id.v1);
 		final TextView tv2 = (TextView) findViewById(R.id.v2);
@@ -39,14 +39,14 @@ public class TracShowWebPage extends Activity {
 
 	@Override
 	public void onStart() {
-		Log.d(this.getClass().getName(), "onStart");
+		tcLog.d(this.getClass().getName(), "onStart");
 		super.onStart();
 		EasyTracker.getInstance(this).activityStart(this);
 	}
 
 	@Override
 	public void onStop() {
-		Log.d(this.getClass().getName(), "onStop");
+		tcLog.d(this.getClass().getName(), "onStop");
 		super.onStop();
 		EasyTracker.getInstance(this).activityStop(this);
 	}

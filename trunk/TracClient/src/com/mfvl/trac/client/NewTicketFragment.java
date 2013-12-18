@@ -10,7 +10,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
-import android.util.Log;
+import com.mfvl.trac.client.util.tcLog;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,13 +32,13 @@ public class NewTicketFragment extends TracClientFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.i(this.getClass().getName(), "onCreate savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 		setHasOptionsMenu(true);
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		Log.i(this.getClass().getName(), "onCreateView savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		tcLog.d(this.getClass().getName(), "onCreateView savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 		if (container == null) {
 			return null;
 		}
@@ -53,13 +53,13 @@ public class NewTicketFragment extends TracClientFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		Log.i(this.getClass().getName(), "onActivityCreated savedInstanceState = "
+		tcLog.d(this.getClass().getName(), "onActivityCreated savedInstanceState = "
 				+ (savedInstanceState == null ? "null" : "not null"));
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Log.i(this.getClass().getName(), "onOptionsItemSelected item=" + item);
+		tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" + item);
 		final int itemId = item.getItemId();
 		if (itemId == R.id.help) {
 			final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
@@ -75,7 +75,7 @@ public class NewTicketFragment extends TracClientFragment {
 
 	@Override
 	public void setHost(final String url, final String username, final String password, boolean sslHack) {
-		Log.i(this.getClass().getName(), "setHost");
+		tcLog.d(this.getClass().getName(), "setHost");
 		if (_url != url) {
 			_url = url;
 			_sslHack = sslHack;
@@ -123,7 +123,7 @@ public class NewTicketFragment extends TracClientFragment {
 	}
 
 	public void createTicket(final View view) {
-		Log.i(this.getClass().getName(), "createTicket");
+		tcLog.d(this.getClass().getName(), "createTicket");
 		final Button backButton = (Button) view.findViewById(R.id.backbutton);
 		final Button storButton = (Button) view.findViewById(R.id.storebutton);
 		final TableLayout tl = (TableLayout) view.findViewById(R.id.newTickTable);

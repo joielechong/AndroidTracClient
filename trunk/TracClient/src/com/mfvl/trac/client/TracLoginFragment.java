@@ -7,6 +7,7 @@ package com.mfvl.trac.client;
 import org.alexd.jsonrpc.JSONRPCHttpClient;
 import org.json.JSONArray;
 
+import android.widget.CompoundButton;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,7 +17,7 @@ import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
+import com.mfvl.trac.client.util.tcLog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -34,10 +35,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import com.mfvl.trac.client.util.Credentials;
 import com.mfvl.trac.client.util.LoginProfile;
 import com.mfvl.trac.client.util.ProfileDatabaseHelper;
+import android.app.ProgressDialog;
 
 public class TracLoginFragment extends TracClientFragment {
 	private String url = null;
@@ -62,25 +65,26 @@ public class TracLoginFragment extends TracClientFragment {
 	private Cursor c = null;
 	private ProfileDatabaseHelper pdb = null;
 	private String SelectedProfile = null;
+	private int debugcounter = 0;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.d(this.getClass().getName(), "onCreate savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 		setHasOptionsMenu(true);
 	}
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		Log.d(this.getClass().getName(), "onCreateOptionsMenu");
+		tcLog.d(this.getClass().getName(), "onCreateOptionsMenu");
 		inflater.inflate(R.menu.tracloginmenu, menu);
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		Log.d(this.getClass().getName(), "onCreateView savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
-		Log.d(this.getClass().getName(), "container = " + container == null ? "null" : "not null");
+		tcLog.d(this.getClass().getName(), "onCreateView savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		tcLog.d(this.getClass().getName(), "container = " + (container == null ? "null" : "not null"));
 		if (container == null) {
 			return null;
 		}
@@ -91,7 +95,7 @@ public class TracLoginFragment extends TracClientFragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		Log.d(this.getClass().getName(), "onViewCreated");
+		tcLog.d(this.getClass().getName(), "onViewCreated");
 		urlView = (EditText) view.findViewById(R.id.trac_URL);
 		userView = (EditText) view.findViewById(R.id.trac_User);
 		pwView = (EditText) view.findViewById(R.id.trac_Pw);
@@ -108,14 +112,14 @@ public class TracLoginFragment extends TracClientFragment {
 
 		if (url == null) {
 			if (savedInstanceState == null) {
-				Log.d(this.getClass().getName(), "onViewCreated use Activity");
+				tcLog.d(this.getClass().getName(), "onViewCreated use Activity");
 				// Credentials.loadCredentials(context);
 				url = context.getUrl();
 				username = context.getUsername();
 				password = context.getPassword();
 				sslHack = context.getSslHack();
 			} else {
-				Log.d(this.getClass().getName(), "onViewCreated use savedInstanceState");
+				tcLog.d(this.getClass().getName(), "onViewCreated use savedInstanceState");
 				url = savedInstanceState.getString("url");
 				username = savedInstanceState.getString("user");
 				password = savedInstanceState.getString("pass");
@@ -124,7 +128,7 @@ public class TracLoginFragment extends TracClientFragment {
 				bewaarBox.setChecked(bewaren);
 			}
 		} else {
-			Log.d(this.getClass().getName(), "onViewCreated use current values");
+			tcLog.d(this.getClass().getName(), "onViewCreated use current values");
 		}
 
 		pdb = new ProfileDatabaseHelper(context);
@@ -185,41 +189,22 @@ public class TracLoginFragment extends TracClientFragment {
 		checkHackBox(url);
 	}
 
-	/*
-	 * @Override public boolean onContextItemSelected(MenuItem item) { if
-	 * (SelectedProfile != null) { if (item.getItemId() == R.id.select) { return
-	 * true; } else if (item.getItemId() == R.id.delete) {
-	 * Toast.makeText(context, "delete: " + SelectedProfile,
-	 * Toast.LENGTH_SHORT).show(); final AlertDialog.Builder alert = new
-	 * AlertDialog.Builder(context);
-	 * 
-	 * alert.setTitle(R.string.areyousure);
-	 * alert.setMessage(context.getString(R.string.delprofiletext) + ": " +
-	 * SelectedProfile); alert.setPositiveButton(R.string.oktext, new
-	 * DialogInterface.OnClickListener() {
-	 * 
-	 * @Override public void onClick(DialogInterface dialog, int whichButton) {
-	 * pdb.delProfile(SelectedProfile); } });
-	 * alert.setNegativeButton(R.string.cancel, null); alert.show(); return
-	 * true; } } return super.onContextItemSelected(item); }
-	 */
-
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		Log.d(this.getClass().getName(), "onActivityCreated savedInstanceState = "
+		tcLog.d(this.getClass().getName(), "onActivityCreated savedInstanceState = "
 				+ (savedInstanceState == null ? "null" : "not null"));
 
 		if (url == null) {
 			if (savedInstanceState == null) {
-				Log.d(this.getClass().getName(), "onViewCreated use Activity");
+				tcLog.d(this.getClass().getName(), "onViewCreated use Activity");
 				// Credentials.loadCredentials(context);
 				url = context.getUrl();
 				username = context.getUsername();
 				password = context.getPassword();
 				sslHack = context.getSslHack();
 			} else {
-				Log.d(this.getClass().getName(), "onActivityCreated use savedInstanceState");
+				tcLog.d(this.getClass().getName(), "onActivityCreated use savedInstanceState");
 				url = savedInstanceState.getString("url");
 				username = savedInstanceState.getString("user");
 				password = savedInstanceState.getString("pass");
@@ -228,7 +213,7 @@ public class TracLoginFragment extends TracClientFragment {
 				bewaarBox.setChecked(bewaren);
 			}
 		} else {
-			Log.d(this.getClass().getName(), "onActivityCreated use current values");
+			tcLog.d(this.getClass().getName(), "onActivityCreated use current values");
 		}
 
 		urlView.setText(url);
@@ -247,6 +232,16 @@ public class TracLoginFragment extends TracClientFragment {
 		}
 
 		checkHackBox(urlView.getText().toString());
+		
+		bewaarBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				debugcounter++;
+				if (debugcounter == 6) {
+					listener.enableDebug();
+				}
+			}
+		});
 
 		okButton.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -274,6 +269,7 @@ public class TracLoginFragment extends TracClientFragment {
 				username = userView.getText().toString();
 				password = pwView.getText().toString();
 				sslHack = sslHackBox.isChecked();
+				final ProgressDialog pb = startProgressBar(R.string.checking);
 				final Thread networkThread = new Thread() {
 
 					@Override
@@ -282,7 +278,7 @@ public class TracLoginFragment extends TracClientFragment {
 						req.setCredentials(username, password);
 						try {
 							final JSONArray retval = req.callJSONArray("system.getAPIVersion");
-							Log.d(this.getClass().getName(), retval.toString());
+							tcLog.d(this.getClass().getName(), retval.toString());
 							context.runOnUiThread(new Runnable() {
 								@Override
 								public void run() {
@@ -295,7 +291,8 @@ public class TracLoginFragment extends TracClientFragment {
 								}
 							});
 						} catch (final Exception e) {
-							Log.d(this.getClass().getName(), e.toString());
+							e.printStackTrace();
+							tcLog.d(this.getClass().getName(), e.toString());
 							context.runOnUiThread(new Runnable() {
 								@Override
 								public void run() {
@@ -308,6 +305,8 @@ public class TracLoginFragment extends TracClientFragment {
 									storButton.setEnabled(false);
 								}
 							});
+						} finally {
+							pb.dismiss();
 						}
 					}
 				};
@@ -354,7 +353,7 @@ public class TracLoginFragment extends TracClientFragment {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Log.d(this.getClass().getName(), "onOptionsItemSelected item=" + item);
+		tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" + item);
 		final int itemId = item.getItemId();
 		if (itemId == R.id.help) {
 			final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
@@ -405,7 +404,7 @@ public class TracLoginFragment extends TracClientFragment {
 
 	@Override
 	public void onStop() {
-		Log.d(this.getClass().getName(), "onStop");
+		tcLog.d(this.getClass().getName(), "onStop");
 		super.onStop();
 		urlView.removeTextChangedListener(checkUrlInput);
 		userView.removeTextChangedListener(checkUserPwInput);
@@ -414,7 +413,7 @@ public class TracLoginFragment extends TracClientFragment {
 
 	@Override
 	public void onDestroyView() {
-		Log.d(this.getClass().getName(), "onDestroyView");
+		tcLog.d(this.getClass().getName(), "onDestroyView");
 		registerForContextMenu(loginSpinner);
 		loginSpinner.setAdapter(null);
 		if (c != null) {
@@ -426,19 +425,19 @@ public class TracLoginFragment extends TracClientFragment {
 
 	@Override
 	public void onDestroy() {
-		Log.d(this.getClass().getName(), "onDestroy");
+		tcLog.d(this.getClass().getName(), "onDestroy");
 		super.onDestroy();
 	}
 
 	@Override
 	public void onPause() {
-		Log.d(this.getClass().getName(), "onPause");
+		tcLog.d(this.getClass().getName(), "onPause");
 		super.onPause();
 	}
 
 	@Override
 	public void onStart() {
-		Log.d(this.getClass().getName(), "onStart");
+		tcLog.d(this.getClass().getName(), "onStart");
 		super.onStart();
 		urlView.addTextChangedListener(checkUrlInput);
 		userView.addTextChangedListener(checkUserPwInput);
@@ -447,7 +446,7 @@ public class TracLoginFragment extends TracClientFragment {
 
 	@Override
 	public void onResume() {
-		Log.d(this.getClass().getName(), "onResume");
+		tcLog.d(this.getClass().getName(), "onResume");
 		super.onResume();
 		checkHackBox(urlView.getText().toString());
 	}
@@ -455,7 +454,7 @@ public class TracLoginFragment extends TracClientFragment {
 	@Override
 	public void onSaveInstanceState(Bundle savedState) {
 		super.onSaveInstanceState(savedState);
-		Log.d(this.getClass().getName(), "onSaveInstanceState");
+		tcLog.d(this.getClass().getName(), "onSaveInstanceState");
 		savedState.putString("url", urlView.getText().toString());
 		savedState.putString("user", userView.getText().toString());
 		savedState.putString("pass", pwView.getText().toString());

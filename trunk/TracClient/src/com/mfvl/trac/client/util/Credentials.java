@@ -6,10 +6,14 @@ import java.io.FileNotFoundException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import javax.security.auth.x500.X500Principal;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -18,7 +22,9 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
 import android.os.Build;
 import android.os.Environment;
-import android.util.Log;
+import android.os.Looper;
+import android.widget.Toast;
+import com.mfvl.trac.client.util.tcLog;
 
 public class Credentials {
 	public static final String PREFS_NAME = "Trac";
@@ -27,16 +33,19 @@ public class Credentials {
 	private static String _password = "";
 	private static boolean _sslHack = false;
 	private static SharedPreferences settings = null;
+	private static String debugString = "";
+	
+	public static boolean debug = true;
 
 	public static void setCredentials(final String url, final String username, final String password) {
-		Log.d("Credentials", "setCredentials");
+		tcLog.d("Credentials", "setCredentials");
 		_url = url;
 		_username = username;
 		_password = password;
 	}
 
 	public static void loadCredentials(Context context) {
-		Log.d("Credentials", "loadCredentials");
+		tcLog.d("Credentials", "loadCredentials");
 		if (settings == null) {
 			settings = context.getSharedPreferences(PREFS_NAME, 0);
 		}
@@ -47,7 +56,7 @@ public class Credentials {
 	}
 
 	public static void storeCredentials(Context context) {
-		Log.d("Credentials", "storeCredentials");
+		tcLog.d("Credentials", "storeCredentials");
 		if (settings == null) {
 			settings = context.getSharedPreferences(PREFS_NAME, 0);
 		}
@@ -82,7 +91,7 @@ public class Credentials {
 	}
 
 	public static boolean getFirstRun(Context context) {
-		Log.d("Credentials", "getFirstRun");
+		tcLog.d("Credentials", "getFirstRun");
 		if (settings == null) {
 			settings = context.getSharedPreferences(PREFS_NAME, 0);
 		}
@@ -96,7 +105,7 @@ public class Credentials {
 	}
 
 	public static void storeFilterString(Context context, final String filterString) {
-		Log.d("Credentials", "storeFilterString: " + filterString);
+		tcLog.d("Credentials", "storeFilterString: " + filterString);
 		if (settings == null) {
 			settings = context.getSharedPreferences(PREFS_NAME, 0);
 		}
@@ -106,17 +115,17 @@ public class Credentials {
 	}
 
 	public static String getFilterString(Context context) {
-		Log.d("Credentials", "getFilterString");
+		tcLog.d("Credentials", "getFilterString");
 		if (settings == null) {
 			settings = context.getSharedPreferences(PREFS_NAME, 0);
 		}
 		final String filterString = settings.getString("filterString", "max=500&status!=closed");
-		Log.d("Credentials", "getFilterString filterString = " + filterString);
+		tcLog.d("Credentials", "getFilterString filterString = " + filterString);
 		return filterString;
 	}
 
 	public static void removeFilterString(Context context) {
-		Log.d("Credentials", "removeFilterString");
+		tcLog.d("Credentials", "removeFilterString");
 		if (settings == null) {
 			settings = context.getSharedPreferences(PREFS_NAME, 0);
 		}
@@ -126,7 +135,7 @@ public class Credentials {
 	}
 
 	public static void storeSortString(Context context, final String sortString) {
-		Log.d("Credentials", "storeSortString: " + sortString);
+		tcLog.d("Credentials", "storeSortString: " + sortString);
 		if (settings == null) {
 			settings = context.getSharedPreferences(PREFS_NAME, 0);
 		}
@@ -136,17 +145,17 @@ public class Credentials {
 	}
 
 	public static String getSortString(Context context) {
-		Log.d("Credentials", "getSortString");
+		tcLog.d("Credentials", "getSortString");
 		if (settings == null) {
 			settings = context.getSharedPreferences(PREFS_NAME, 0);
 		}
 		final String sortString = settings.getString("sortString", "order=priority&order=modified&desc=1");
-		Log.d("Credentials", "getSortString sortString = " + sortString);
+		tcLog.d("Credentials", "getSortString sortString = " + sortString);
 		return sortString;
 	}
 
 	public static void removeSortString(Context context) {
-		Log.d("Credentials", "removeSortString");
+		tcLog.d("Credentials", "removeSortString");
 		if (settings == null) {
 			settings = context.getSharedPreferences(PREFS_NAME, 0);
 		}
@@ -189,7 +198,7 @@ public class Credentials {
 			info = manager.getPackageInfo(context.getPackageName(), 0);
 			versie = "V" + info.versionName;
 			final int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-			Log.d(context.getClass().getName(), "buildVersion versie = " + versie + " api = " + currentapiVersion);
+			tcLog.d(context.getClass().getName(), "buildVersion versie = " + versie + " api = " + currentapiVersion);
 			if (isDebuggable(context) && currentapiVersion >= android.os.Build.VERSION_CODES.GINGERBREAD) {
 				versie += "/" + info.lastUpdateTime / (1000 * 60);
 			}
@@ -199,7 +208,7 @@ public class Credentials {
 				versie = "V0.3x";
 			}
 		}
-		Log.d(context.getClass().getName(), "buildVersion versie = " + versie);
+		tcLog.d(context.getClass().getName(), "buildVersion versie = " + versie);
 		return versie;
 	}
 
@@ -218,7 +227,7 @@ public class Credentials {
 				dbpath = p1;
 			}
 		}
-		Log.d(context.getClass().getName(), "makeDbPath dbpath = " + dbpath);
+		tcLog.d(context.getClass().getName(), "makeDbPath dbpath = " + dbpath);
 		return dbpath;
 	}
 

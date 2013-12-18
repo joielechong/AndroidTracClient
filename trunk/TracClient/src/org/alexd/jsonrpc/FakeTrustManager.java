@@ -8,7 +8,7 @@ import java.security.cert.X509Certificate;
 
 import javax.net.ssl.X509TrustManager;
 
-import android.util.Log;
+import com.mfvl.trac.client.util.tcLog;
 
 public class FakeTrustManager implements X509TrustManager {
 	private String certKey = null;
@@ -43,7 +43,7 @@ public class FakeTrustManager implements X509TrustManager {
 			// Assume self-signed root is okay?
 			final X509Certificate ss_cert = chain[0];
 			final String thumbprint = FakeTrustManager.getThumbPrint(ss_cert);
-			Log.i(LOG_NAME, thumbprint);
+			tcLog.i(LOG_NAME, thumbprint);
 			if (our_key.equalsIgnoreCase(thumbprint)) {
 				return;
 			} else {

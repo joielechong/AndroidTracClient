@@ -17,7 +17,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
+import com.mfvl.trac.client.util.tcLog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -44,8 +44,8 @@ public class DetailFragment extends TracClientFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.i(this.getClass().getName(), "onCreate");
-		Log.i(this.getClass().getName(), "savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		tcLog.d(this.getClass().getName(), "onCreate");
+		tcLog.d(this.getClass().getName(), "savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 		if (savedInstanceState != null) {
 			ticknr = savedInstanceState.getInt("currentTicket", -1);
 		}
@@ -54,15 +54,15 @@ public class DetailFragment extends TracClientFragment {
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		Log.i(this.getClass().getName(), "onCreateOptionsMenu");
+		tcLog.d(this.getClass().getName(), "onCreateOptionsMenu");
 		inflater.inflate(R.menu.detailmenu, menu);
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		Log.i(this.getClass().getName(), "onCreateView");
-		Log.i(this.getClass().getName(), "savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		tcLog.d(this.getClass().getName(), "onCreateView");
+		tcLog.d(this.getClass().getName(), "savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 		final View view = inflater.inflate(R.layout.detail_view, container, false);
 		return view;
 	}
@@ -70,11 +70,11 @@ public class DetailFragment extends TracClientFragment {
 	@Override
 	public void onSaveInstanceState(Bundle savedState) {
 		super.onSaveInstanceState(savedState);
-		Log.i(this.getClass().getName(), "onSaveInstanceState _ticket = " + _ticket);
+		tcLog.d(this.getClass().getName(), "onSaveInstanceState _ticket = " + _ticket);
 		if (_ticket != null) {
 			savedState.putInt("currentTicket", _ticket.getTicketnr());
 		} else if (ticknr != -1) {
-			Log.i(this.getClass().getName(), "onSaveInstanceState ticknr = " + ticknr);
+			tcLog.d(this.getClass().getName(), "onSaveInstanceState ticknr = " + ticknr);
 			savedState.putInt("currentTicket", ticknr);
 		}
 	}
@@ -82,12 +82,12 @@ public class DetailFragment extends TracClientFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		Log.i(this.getClass().getName(), "onActivityCreated");
-		Log.i(this.getClass().getName(), "savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		tcLog.d(this.getClass().getName(), "onActivityCreated");
+		tcLog.d(this.getClass().getName(), "savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 		// tm = context.getTicketModel();
 		if (savedInstanceState != null) {
 			if (savedInstanceState.containsKey("currentTicket")) {
-				Log.i(this.getClass().getName(), "onActivityCreated start Loading");
+				tcLog.d(this.getClass().getName(), "onActivityCreated start Loading");
 				loading = true;
 				ticknr = savedInstanceState.getInt("currentTicket", -1);
 				if (ticknr != -1) {
@@ -97,7 +97,7 @@ public class DetailFragment extends TracClientFragment {
 							context.runOnUiThread(new Runnable() {
 								@Override
 								public void run() {
-									Log.i(this.getClass().getName(), "onActivityCreated onComplete");
+									tcLog.d(this.getClass().getName(), "onActivityCreated onComplete");
 									displayTicket(_ticket);
 									loading = false;
 								}
@@ -113,7 +113,7 @@ public class DetailFragment extends TracClientFragment {
 	@Override
 	public void onStart() {
 		super.onStart();
-		Log.i(this.getClass().getName(), "onStart");
+		tcLog.d(this.getClass().getName(), "onStart");
 		if (!loading) {
 			displayTicket(_ticket);
 		}
@@ -121,7 +121,7 @@ public class DetailFragment extends TracClientFragment {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Log.i(this.getClass().getName(), "onOptionsItemSelected " + item.toString());
+		tcLog.d(this.getClass().getName(), "onOptionsItemSelected " + item.toString());
 		if (item.getItemId() == R.id.dfupdate) {
 			if (_ticket != null) {
 				listener.onUpdateTicket(_ticket);
@@ -139,7 +139,7 @@ public class DetailFragment extends TracClientFragment {
 				listener.onChooserSelected(new onFileSelectedListener() {
 					@Override
 					public void onSelected(final String filename) {
-						Log.i(this.getClass().getName(), "onChooserSelected ticket = " + _ticket + " filename = " + filename);
+						tcLog.d(this.getClass().getName(), "onChooserSelected ticket = " + _ticket + " filename = " + filename);
 						final ProgressDialog pb = startProgressBar(R.string.uploading);
 						new Thread() {
 							@Override
@@ -173,13 +173,14 @@ public class DetailFragment extends TracClientFragment {
 	}
 
 	public void refresh_ticket() {
+		final ProgressDialog pb=startProgressBar(R.string.updating);
 		_ticket.refresh(context, new onTicketCompleteListener() {
 			@Override
 			public void onComplete(Ticket t2) {
 				context.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						Log.i(this.getClass().getName(), "refresh onComplete");
+						tcLog.d(this.getClass().getName(), "refresh onComplete");
 						final View v = getView();
 						if (v != null) {
 							displayTicket(_ticket);
@@ -188,6 +189,7 @@ public class DetailFragment extends TracClientFragment {
 								lv.invalidateViews();
 							}
 						}
+						pb.dismiss();
 					}
 				});
 			};
@@ -197,7 +199,7 @@ public class DetailFragment extends TracClientFragment {
 
 	@Override
 	public void onDestroyView() {
-		Log.i(this.getClass().getName(), "onDestroyView");
+		tcLog.d(this.getClass().getName(), "onDestroyView");
 		activityCreated = false;
 		super.onDestroyView();
 	}
@@ -206,7 +208,7 @@ public class DetailFragment extends TracClientFragment {
 		try {
 			return ISO8601.toCalendar(v.getJSONArray("__jsonclass__").getString(1) + "Z").getTime().toString();
 		} catch (final Exception e) {
-			Log.i(this.getClass().getName(), e.toString());
+			tcLog.d(this.getClass().getName(), e.toString());
 			return "";
 		}
 	}
@@ -279,7 +281,7 @@ public class DetailFragment extends TracClientFragment {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 					final String t = (String) ((ListView) parent).getItemAtPosition(position);
-					Log.i(this.getClass().getName() + ".onItemClick", t);
+					tcLog.d(this.getClass().getName() + ".onItemClick", t);
 					if ("bijlage ".equals(t.substring(0, 8))) {
 						final ProgressDialog pb = startProgressBar(R.string.downloading);
 						new Thread() {
@@ -293,7 +295,7 @@ public class DetailFragment extends TracClientFragment {
 									_ticket.getAttachment(filename, context, new onAttachmentCompleteListener() {
 										@Override
 										public void onComplete(final byte[] filedata) {
-											Log.i(this.getClass().getName(), "onComplete filedata = " + filedata.length);
+											tcLog.d(this.getClass().getName(), "onComplete filedata = " + filedata.length);
 											try {
 												if (path == null) {
 													path = Environment
@@ -306,7 +308,7 @@ public class DetailFragment extends TracClientFragment {
 												os.write(filedata);
 												os.close();
 												final Intent viewIntent = new Intent(Intent.ACTION_VIEW);
-												Log.i(this.getClass().getName(), "file = " + file.toString() + " mimeType = "
+												tcLog.d(this.getClass().getName(), "file = " + file.toString() + " mimeType = "
 														+ mimeType);
 												if (mimeType != null) {
 													viewIntent.setDataAndType(Uri.fromFile(new File(path, filename)), mimeType);
@@ -318,7 +320,7 @@ public class DetailFragment extends TracClientFragment {
 													startActivity(j);
 												}
 											} catch (final Exception e) {
-												Log.w(this.getClass().getName(), context.getString(R.string.ioerror) + ": "
+												tcLog.w(this.getClass().getName(), context.getString(R.string.ioerror) + ": "
 														+ filename, e);
 												context.runOnUiThread(new Runnable() {
 													@Override
@@ -338,7 +340,7 @@ public class DetailFragment extends TracClientFragment {
 									});
 
 								} catch (final JSONException e) {
-									Log.i(this.getClass().getName(), e.toString());
+									tcLog.d(this.getClass().getName(), e.toString());
 									// TODO hier een alert
 								}
 							}
@@ -354,7 +356,7 @@ public class DetailFragment extends TracClientFragment {
 	}
 
 	public void setTicketContent(final Ticket ticket) {
-		Log.i(this.getClass().getName(), "setTicketContent");
+		tcLog.d(this.getClass().getName(), "setTicketContent");
 		if (_ticket != ticket) {
 			_ticket = ticket;
 			if (activityCreated) {
@@ -364,7 +366,7 @@ public class DetailFragment extends TracClientFragment {
 	}
 
 	public void updateTicketContent(final Ticket ticket) {
-		Log.i(this.getClass().getName(), "updateTicketContent");
+		tcLog.d(this.getClass().getName(), "updateTicketContent");
 		if (_ticket != ticket) {
 			_ticket = ticket;
 			if (activityCreated) {
@@ -375,25 +377,25 @@ public class DetailFragment extends TracClientFragment {
 
 	@Override
 	public void onPause() {
-		Log.i(this.getClass().getName(), "onPause");
+		tcLog.d(this.getClass().getName(), "onPause");
 		super.onPause();
 	}
 
 	@Override
 	public void onResume() {
-		Log.i(this.getClass().getName(), "onResume");
+		tcLog.d(this.getClass().getName(), "onResume");
 		super.onResume();
 	}
 
 	@Override
 	public void onStop() {
-		Log.i(this.getClass().getName(), "onStop");
+		tcLog.d(this.getClass().getName(), "onStop");
 		super.onStop();
 	}
 
 	@Override
 	public void onDestroy() {
-		Log.i(this.getClass().getName(), "onDestroy");
+		tcLog.d(this.getClass().getName(), "onDestroy");
 		super.onDestroy();
 	}
 }

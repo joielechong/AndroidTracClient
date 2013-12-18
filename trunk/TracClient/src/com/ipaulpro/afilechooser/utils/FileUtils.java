@@ -35,7 +35,7 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Audio;
 import android.provider.MediaStore.Video;
-import android.util.Log;
+import com.mfvl.trac.client.util.tcLog;
 
 import com.mfvl.trac.client.R;
 
@@ -208,7 +208,7 @@ public class FileUtils {
 	public static String getPath(Context context, Uri uri) throws URISyntaxException {
 
 		if (DEBUG) {
-			Log.d(TAG + " File -",
+			tcLog.d(TAG + " File -",
 					"Authority: " + uri.getAuthority() + ", Fragment: " + uri.getFragment() + ", Port: " + uri.getPort()
 							+ ", Query: " + uri.getQuery() + ", Scheme: " + uri.getScheme() + ", Host: " + uri.getHost()
 							+ ", Segments: " + uri.getPathSegments().toString());
@@ -283,7 +283,7 @@ public class FileUtils {
 			mimeTypes = mtp.fromXmlResource(in);
 		} catch (final Exception e) {
 			if (DEBUG) {
-				Log.e(TAG, "getMimeTypes", e);
+				tcLog.e(TAG, "getMimeTypes", e);
 			}
 		}
 		return mimeTypes;
@@ -349,11 +349,11 @@ public class FileUtils {
 	 */
 	public static Bitmap getThumbnail(Context context, Uri uri, String mimeType) {
 		if (DEBUG) {
-			Log.d(TAG, "Attempting to get thumbnail");
+			tcLog.d(TAG, "Attempting to get thumbnail");
 		}
 
 		if (isMediaUri(uri)) {
-			Log.e(TAG, "You can only retrieve thumbnails for images and videos.");
+			tcLog.e(TAG, "You can only retrieve thumbnails for images and videos.");
 			return null;
 		}
 
@@ -366,7 +366,7 @@ public class FileUtils {
 				if (cursor.moveToFirst()) {
 					final int id = cursor.getInt(0);
 					if (DEBUG) {
-						Log.d(TAG, "Got thumb ID: " + id);
+						tcLog.d(TAG, "Got thumb ID: " + id);
 					}
 
 					if (mimeType.contains("video")) {
@@ -377,7 +377,7 @@ public class FileUtils {
 				}
 			} catch (final Exception e) {
 				if (DEBUG) {
-					Log.e(TAG, "getThumbnail", e);
+					tcLog.e(TAG, "getThumbnail", e);
 				}
 			} finally {
 				if (cursor != null) {

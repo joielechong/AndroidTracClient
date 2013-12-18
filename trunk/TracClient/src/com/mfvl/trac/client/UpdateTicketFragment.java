@@ -10,7 +10,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import com.mfvl.trac.client.util.tcLog;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,7 +34,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.i(this.getClass().getName(), "onCreate savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 		setHasOptionsMenu(true);
 		if (savedInstanceState != null) {
 			if (savedInstanceState.containsKey("currentTicket")) {
@@ -46,7 +46,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		Log.i(this.getClass().getName(), "onCreateView savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		tcLog.d(this.getClass().getName(), "onCreateView savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 		final View view = inflater.inflate(R.layout.update_view, container, false);
 		if (savedInstanceState != null) {
 			if (savedInstanceState.containsKey("currentTicket")) {
@@ -58,7 +58,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 		}
 		if (_ticket != null) {
 			_actions = _ticket.getActions();
-			Log.i(this.getClass().getName(), "actions = " + _actions);
+			tcLog.d(this.getClass().getName(), "actions = " + _actions);
 			final RadioGroup rg = (RadioGroup) view.findViewById(R.id.actionblock);
 			try {
 				for (int i = 0; i < _actions.length(); i++) {
@@ -72,7 +72,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 					final Spinner optiesSpin = (Spinner) view.findViewById(R.id.opties);
 					final EditText optieval = (EditText) view.findViewById(R.id.optieval);
 					final JSONArray inputfields = actie.getJSONArray(3);
-					// Log.i(this.getClass().getName(), "inputfields = " +
+					// tcLog.d(this.getClass().getName(), "inputfields = " +
 					// inputfields);
 					rb.setId(i);
 					if (i == 0) {
@@ -149,7 +149,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		Log.i(this.getClass().getName(), "onActivityCreated savedInstanceState = "
+		tcLog.d(this.getClass().getName(), "onActivityCreated savedInstanceState = "
 				+ (savedInstanceState == null ? "null" : "not null"));
 		if (savedInstanceState != null) {
 			if (savedInstanceState.containsKey("currentTicket")) {
@@ -243,12 +243,12 @@ public class UpdateTicketFragment extends TracClientFragment {
 	@Override
 	public void onStart() {
 		super.onStart();
-		Log.i(this.getClass().getName(), "onStart");
+		tcLog.d(this.getClass().getName(), "onStart");
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Log.i(this.getClass().getName(), "onOptionsItemSelected item=" + item);
+		tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" + item);
 		final int itemId = item.getItemId();
 		if (itemId == R.id.help || itemId == R.id.over) {
 			final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
@@ -265,14 +265,14 @@ public class UpdateTicketFragment extends TracClientFragment {
 	@Override
 	public void onSaveInstanceState(Bundle savedState) {
 		super.onSaveInstanceState(savedState);
-		Log.i(this.getClass().getName(), "onSaveInstanceState");
+		tcLog.d(this.getClass().getName(), "onSaveInstanceState");
 		if (_ticket != null) {
 			savedState.putInt("currentTicket", _ticket.getTicketnr());
 		}
 	}
 
 	public void loadTicket(Ticket ticket) {
-		Log.i(this.getClass().getName(), "loadTicket ticket = " + ticket);
+		tcLog.d(this.getClass().getName(), "loadTicket ticket = " + ticket);
 		_ticket = ticket;
 	}
 
