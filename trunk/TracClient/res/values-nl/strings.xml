@@ -105,5 +105,7 @@
     <string name="chooseticket">Kies ticket</string>
     <string name="checking">Controleren</string>
     <string name="updating">Bijwerken</string>
-	<string name="wait">Een moment aub</string>
+    <string name="wait">Een moment aub</string>
+    <string name="foundnew">Nieuwe tickets gevonden:</string>
+    <string name="notifmod">Gewijzigde tickets gevonden</string>
 </resources>

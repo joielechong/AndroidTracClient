@@ -132,7 +132,7 @@ public class Ticket {
 				try {
 					final JSONArray mc = new JSONArray();
 					mc.put(makeComplexCall(TICKET_GET, "ticket.get", _ticknr));
-					mc.put(makeComplexCall(TICKET_CHANGE, "ticket.changetcLog.d", _ticknr));
+					mc.put(makeComplexCall(TICKET_CHANGE, "ticket.changeLog", _ticknr));
 					mc.put(makeComplexCall(TICKET_ATTACH, "ticket.listAttachments", _ticknr));
 					mc.put(makeComplexCall(TICKET_ACTION, "ticket.getActions", _ticknr));
 					final JSONArray mcresult = req.callJSONArray("system.multicall", mc);
@@ -449,7 +449,7 @@ public class Ticket {
 		try {
 			return ISO8601.toCalendar(v.getJSONArray("__jsonclass__").getString(1) + "Z").getTime().toString();
 		} catch (final Exception e) {
-			tcLog.i(this.getClass().getName(), e.toString());
+			tcLog.e(this.getClass().getName(), e.toString());
 			return "";
 		}
 	}
