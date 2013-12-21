@@ -2,26 +2,36 @@ package com.mfvl.trac.client;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import org.json.JSONException;
 
 import android.annotation.TargetApi;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.ipaulpro.afilechooser.utils.FileUtils;
 import com.mfvl.trac.client.util.Credentials;
 import com.mfvl.trac.client.util.FilterSpec;
+import com.mfvl.trac.client.util.ISO8601;
 import com.mfvl.trac.client.util.SortSpec;
 import com.mfvl.trac.client.util.tcLog;
 
@@ -61,6 +71,8 @@ interface InterFragmentListener {
 	void initializeList();
 
 	void enableDebug();
+	
+	void setReferenceTime();
 }
 
 public class TracStart extends ActionBarActivity implements InterFragmentListener {
@@ -73,14 +85,21 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	private static final int REQUEST_CODE = 6384;
 	private onFileSelectedListener _oc = null;
 	private boolean dispAds;
-	private boolean debug = false;
+	private boolean debug = true; // aanpassen
 	private FragmentManager fm = null;
+	private Timer monitorTimer = null;
+	private static final int timerStart = 1 * 60 * 1000; // aanpassen
+	private static final int timerPeriod = 1 * 60 * 1000; // aanpassen
+	private static final int timerCorr = 60 * 1000*2; //aanpassen
+	private long referenceTime = 0;
+	private static final int notifId = 1234;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 
+		setReferenceTime();
 		setContentView(R.layout.tracstart);
 		Credentials.loadCredentials(this);
 
@@ -118,7 +137,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 				ft.add(R.id.displayList, ticketListFragment, "List_Fragment");
 			} else {
 				final TracLoginFragment tracLoginFragment = new TracLoginFragment();
-				ft.add(R.id.displayList, tracLoginFragment, "tcLog.din_Fragment");
+				ft.add(R.id.displayList, tracLoginFragment, "Login_Fragment");
 			}
 			ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			ft.commit();
@@ -138,6 +157,60 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		 * ft.commit(); } detailFragment.setHost(url, username, password,
 		 * sslHack); }
 		 */
+
+		monitorTimer = new Timer("monitorTickets");
+		monitorTimer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				tcLog.d(this.getClass().getName(), "timertask started");
+				tcLog.d(this.getClass().getName(), "reference = " + referenceTime + " " + ISO8601.fromUnix(referenceTime));
+				final int count = getTicketCount();
+				if (count > 0) {
+					final List<Integer> newTickets = getNewTickets(ISO8601.fromUnix(referenceTime));
+					if (newTickets != null) {
+						if (newTickets.size() > 0) {
+							NotificationCompat.Builder mBuilder =
+						        new NotificationCompat.Builder(TracStart.this)
+						        .setSmallIcon(R.drawable.traclogo)
+						        .setContentTitle(TracStart.this.getString(R.string.notifmod))
+						        .setContentText(TracStart.this.getString(R.string.foundnew)+" " + newTickets);
+						// Creates an explicit intent for an Activity in your app
+/*
+							Intent resultIntent = new Intent(this, ResultActivity.class);
+
+						// The stack builder object will contain an artificial back stack for the
+						// started Activity.
+						// This ensures that navigating backward from the Activity leads out of
+						// your application to the Home screen.
+						TaskStackBuilder stackBuilder = TaskStackBuilder.create(TracStart.this);
+						// Adds the back stack for the Intent (but not the Intent itself)
+						stackBuilder.addParentStack(ResultActivity.class);
+						// Adds the Intent that starts the Activity to the top of the stack
+						stackBuilder.addNextIntent(resultIntent);
+						PendingIntent resultPendingIntent =
+						        stackBuilder.getPendingIntent(
+						            0,
+						            PendingIntent.FLAG_UPDATE_CURRENT
+						        );
+						mBuilder.setContentIntent(resultPendingIntent);
+*/
+						NotificationManager mNotificationManager =
+						    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+						mNotificationManager.notify(notifId, mBuilder.build());
+						}
+					}
+				}
+				List<Ticket> tl = getTickets();
+				for(int i=0;i<tl.size();i++) {
+					try {
+						Ticket t=tl.get(i);
+						tcLog.d(this.getClass().getName(), "ticket " + t.getTicketnr()+" "+t.getString("changetime"));
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}					
+				}
+			}
+		}, timerStart, timerPeriod);
 	}
 
 	@Override
@@ -167,7 +240,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 			launchTrac.putExtra("file", filename);
 			launchTrac.putExtra("version", true);
 			startActivity(launchTrac);
-		} else if (itemId == R.id.tldebug) {
+		} else if (itemId == R.id.debug) {
 			shareDebug();
 		} else {
 			return super.onOptionsItemSelected(item);
@@ -283,7 +356,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 			tlf.setFilter(filter);
 			refreshOverview();
 		} else {
-			Toast.makeText(this, "setFilter fragment is null", Toast.LENGTH_SHORT).show();
+			tcLog.toast("setFilter fragment is null");
 		}
 		String filterString = "";
 		if (filter != null) {
@@ -322,7 +395,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 			tlf.setSort(sort);
 			refreshOverview();
 		} else {
-			Toast.makeText(this, "setSort fragment is null", Toast.LENGTH_SHORT).show();
+			tcLog.toast("setSort fragment is null");
 		}
 		String sortString = "";
 		if (sort != null) {
@@ -423,7 +496,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		tcLog.d(this.getClass().getName(), "onPrepareOptionsMenu");
-		final MenuItem item = menu.findItem(R.id.tldebug);
+		final MenuItem item = menu.findItem(R.id.debug);
 		item.setVisible(debug);
 		item.setEnabled(debug);
 		return true;
@@ -507,6 +580,12 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	@Override
 	public void onDestroy() {
 		tcLog.d(this.getClass().getName(), "onDestroy");
+		if (monitorTimer != null) {
+			monitorTimer.cancel();
+		}
+		NotificationManager mNotificationManager =
+		    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		mNotificationManager.cancel(notifId);
 		super.onDestroy();
 	}
 
@@ -569,5 +648,41 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		sendIntent.putExtra(Intent.EXTRA_TEXT, tcLog.getDebug());
 		sendIntent.setType("text/plain");
 		startActivity(sendIntent);
+	}
+
+	private int getTicketCount() {
+		final TicketListFragment ticketListFragment = (TicketListFragment) fm.findFragmentByTag("List_Fragment");
+		tcLog.d(this.getClass().getName(), "getTicketCount ticketListFragment = " + ticketListFragment);
+		if (ticketListFragment != null) {
+			return ticketListFragment.getTicketCount();
+		}
+		return -1;
+	}
+	
+	private List<Ticket> getTickets() {
+		final TicketListFragment ticketListFragment = (TicketListFragment) fm.findFragmentByTag("List_Fragment");
+		tcLog.d(this.getClass().getName(), "getTickets ticketListFragment = " + ticketListFragment);
+		if (ticketListFragment != null) {
+			return ticketListFragment.getTickets();
+		}
+		return null;
+	}
+
+	private List<Integer> getNewTickets(final String isoTijd) {
+		final TicketListFragment ticketListFragment = (TicketListFragment) fm.findFragmentByTag("List_Fragment");
+		tcLog.d(this.getClass().getName(), "getNewTickets ticketListFragment = " + ticketListFragment);
+		if (ticketListFragment != null) {
+			return ticketListFragment.getNewTickets(isoTijd);
+		}
+		return null;
+	}
+
+	@Override
+	public void setReferenceTime() {
+		tcLog.d(this.getClass().getName(), "setReferenceTime");
+		referenceTime = System.currentTimeMillis() - timerCorr;
+		NotificationManager mNotificationManager =
+		    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		mNotificationManager.cancel(notifId);
 	}
 }

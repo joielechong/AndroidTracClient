@@ -12,10 +12,9 @@
         android:icon="@android:drawable/ic_menu_info_details"
         android:menuCategory="container"
         android:orderInCategory="9998"
-        android:title="@string/about_button"
-        android:visible="true"/>
+        android:title="@string/about_button"/>
     <item
-        android:id="@+id/tldebug"
+        android:id="@+id/debug"
         android:enabled="false"
         android:menuCategory="container"
         android:orderInCategory="9999"

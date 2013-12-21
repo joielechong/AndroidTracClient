@@ -12,7 +12,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.mfvl.trac.client.util.Credentials;
@@ -132,7 +131,7 @@ public class TracTitlescreenActivity extends ActionBarActivity {
 			// operations to prevent the jarring behavior of controls going away
 			// while interacting with the UI.
 		} catch (final Exception e) {
-			Toast.makeText(this, "crash: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+			tcLog.toast("crash: " + e.getMessage());
 		}
 	}
 
