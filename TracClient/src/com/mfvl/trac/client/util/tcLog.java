@@ -2,8 +2,8 @@ package com.mfvl.trac.client.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Looper;
 import android.util.Log;
@@ -14,7 +14,8 @@ public class tcLog {
 	private static boolean doToast = false;
 	private static boolean doBuffer = true;
 	private static String debugString = "";
-	private static SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+	@SuppressLint("SimpleDateFormat")
+	private static SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	public static void setContext(Activity c) {
 		_c = c;

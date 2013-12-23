@@ -129,6 +129,6 @@
     <string name="updating">Updating</string>
     <string name="wait">One moment please</string>
     <string name="debug" translatable="false">Debug</string>
-    <string name="foundnew">New tickets found:</string>
+    <string name="foundnew">Modified or new tickets found:</string>
     <string name="notifmod">Modified tickets found</string>
 </resources>
