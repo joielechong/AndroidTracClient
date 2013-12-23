@@ -6,11 +6,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.json.JSONException;
-
 import android.annotation.TargetApi;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -20,7 +17,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -71,7 +67,7 @@ interface InterFragmentListener {
 	void initializeList();
 
 	void enableDebug();
-	
+
 	void setReferenceTime();
 }
 
@@ -85,12 +81,12 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	private static final int REQUEST_CODE = 6384;
 	private onFileSelectedListener _oc = null;
 	private boolean dispAds;
-	private boolean debug = true; // aanpassen
+	private boolean debug = false; // disable menuoption at startup
 	private FragmentManager fm = null;
 	private Timer monitorTimer = null;
-	private static final int timerStart = 1 * 60 * 1000; // aanpassen
-	private static final int timerPeriod = 1 * 60 * 1000; // aanpassen
-	private static final int timerCorr = 60 * 1000*2; //aanpassen
+	private static final int timerStart = 5 * 60 * 1000; // 5 minuten
+	private static final int timerPeriod = 5 * 60 * 1000; // 5 minuten
+	private static final int timerCorr = 60 * 1000 * 2; // 2 minuten
 	private long referenceTime = 0;
 	private static final int notifId = 1234;
 
@@ -163,51 +159,18 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 			@Override
 			public void run() {
 				tcLog.d(this.getClass().getName(), "timertask started");
-				tcLog.d(this.getClass().getName(), "reference = " + referenceTime + " " + ISO8601.fromUnix(referenceTime));
 				final int count = getTicketCount();
 				if (count > 0) {
 					final List<Integer> newTickets = getNewTickets(ISO8601.fromUnix(referenceTime));
 					if (newTickets != null) {
 						if (newTickets.size() > 0) {
-							NotificationCompat.Builder mBuilder =
-						        new NotificationCompat.Builder(TracStart.this)
-						        .setSmallIcon(R.drawable.traclogo)
-						        .setContentTitle(TracStart.this.getString(R.string.notifmod))
-						        .setContentText(TracStart.this.getString(R.string.foundnew)+" " + newTickets);
-						// Creates an explicit intent for an Activity in your app
-/*
-							Intent resultIntent = new Intent(this, ResultActivity.class);
-
-						// The stack builder object will contain an artificial back stack for the
-						// started Activity.
-						// This ensures that navigating backward from the Activity leads out of
-						// your application to the Home screen.
-						TaskStackBuilder stackBuilder = TaskStackBuilder.create(TracStart.this);
-						// Adds the back stack for the Intent (but not the Intent itself)
-						stackBuilder.addParentStack(ResultActivity.class);
-						// Adds the Intent that starts the Activity to the top of the stack
-						stackBuilder.addNextIntent(resultIntent);
-						PendingIntent resultPendingIntent =
-						        stackBuilder.getPendingIntent(
-						            0,
-						            PendingIntent.FLAG_UPDATE_CURRENT
-						        );
-						mBuilder.setContentIntent(resultPendingIntent);
-*/
-						NotificationManager mNotificationManager =
-						    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-						mNotificationManager.notify(notifId, mBuilder.build());
+							final NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(TracStart.this)
+									.setSmallIcon(R.drawable.traclogo).setContentTitle(TracStart.this.getString(R.string.notifmod))
+									.setContentText(TracStart.this.getString(R.string.foundnew) + " " + newTickets);
+							final NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+							mNotificationManager.notify(notifId, mBuilder.build());
 						}
 					}
-				}
-				List<Ticket> tl = getTickets();
-				for(int i=0;i<tl.size();i++) {
-					try {
-						Ticket t=tl.get(i);
-						tcLog.d(this.getClass().getName(), "ticket " + t.getTicketnr()+" "+t.getString("changetime"));
-					} catch (JSONException e) {
-						e.printStackTrace();
-					}					
 				}
 			}
 		}, timerStart, timerPeriod);
@@ -583,8 +546,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		if (monitorTimer != null) {
 			monitorTimer.cancel();
 		}
-		NotificationManager mNotificationManager =
-		    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		final NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		mNotificationManager.cancel(notifId);
 		super.onDestroy();
 	}
@@ -658,15 +620,6 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		}
 		return -1;
 	}
-	
-	private List<Ticket> getTickets() {
-		final TicketListFragment ticketListFragment = (TicketListFragment) fm.findFragmentByTag("List_Fragment");
-		tcLog.d(this.getClass().getName(), "getTickets ticketListFragment = " + ticketListFragment);
-		if (ticketListFragment != null) {
-			return ticketListFragment.getTickets();
-		}
-		return null;
-	}
 
 	private List<Integer> getNewTickets(final String isoTijd) {
 		final TicketListFragment ticketListFragment = (TicketListFragment) fm.findFragmentByTag("List_Fragment");
@@ -681,8 +634,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	public void setReferenceTime() {
 		tcLog.d(this.getClass().getName(), "setReferenceTime");
 		referenceTime = System.currentTimeMillis() - timerCorr;
-		NotificationManager mNotificationManager =
-		    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		final NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		mNotificationManager.cancel(notifId);
 	}
 }

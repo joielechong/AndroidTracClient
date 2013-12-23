@@ -514,19 +514,19 @@ public class TicketListFragment extends TracClientFragment {
 		}
 	}
 
-	private void clearTicketsAct() {
+	private void _clearTickets() {
 		dataAdapter.clear();
 		tickets = null;
 	}
 
 	private void clearTickets() {
 		if (Looper.getMainLooper().equals(Looper.myLooper())) {
-			clearTicketsAct();
+			_clearTickets();
 		} else {
 			context.runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
-					clearTicketsAct();
+					_clearTickets();
 				}
 			});
 		}
@@ -752,16 +752,6 @@ public class TicketListFragment extends TracClientFragment {
 	public int getTicketCount() {
 		tcLog.d(this.getClass().getName(), "getTicketCount");
 		return dataAdapter.getCount();
-	}
-
-	public List<Ticket> getTickets() {
-		List<Ticket> lijst = new ArrayList<Ticket>();
-		if (lijst != null) {
-			for (int i = 0; i < dataAdapter.getCount(); i++) {
-				lijst.add(dataAdapter.getItem(i));
-			}
-		}
-		return lijst;
 	}
 
 	public List<Integer> getNewTickets(final String isoTijd) {
