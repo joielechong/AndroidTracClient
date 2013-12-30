@@ -115,15 +115,18 @@ public class TracClientFragment extends Fragment {
 			_ticket = null;
 		}
 	}
-
-	public ProgressDialog startProgressBar(int resid) {
+	public ProgressDialog startProgressBar(String message) {
 		ProgressDialog progressBar = null;
 		progressBar = new ProgressDialog(context);
 		progressBar.setCancelable(true);
-		progressBar.setMessage(context.getString(resid));
+		progressBar.setMessage(message);
 		progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		progressBar.show();
 		return progressBar;
+	}
+	
+	public ProgressDialog startProgressBar(int resid) {
+		return startProgressBar(context.getString(resid));
 	}
 
 }

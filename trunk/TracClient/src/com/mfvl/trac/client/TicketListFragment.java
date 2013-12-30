@@ -40,7 +40,7 @@ import com.mfvl.trac.client.util.FilterSpec;
 import com.mfvl.trac.client.util.SortSpec;
 import com.mfvl.trac.client.util.tcLog;
 
-public class TicketListFragment extends TracClientFragment {
+public class TicketListFragment extends TracClientFragment implements OnItemClickListener {
 
 	private interface onLoadListListener {
 		void onComplete();
@@ -82,6 +82,7 @@ public class TicketListFragment extends TracClientFragment {
 	private ArrayList<FilterSpec> filterList = null;
 	private int scrollPosition = 0;
 	private boolean refreshOnRestart = false;
+	private String SelectedProfile = null;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -116,27 +117,29 @@ public class TicketListFragment extends TracClientFragment {
 		final View view = inflater.inflate(R.layout.list_view, container, false);
 		listView = (ListView) view.findViewById(R.id.listOfTickets);
 		registerForContextMenu(listView);
-
-		listView.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				final Ticket t = (Ticket) ((ListView) parent).getItemAtPosition(position);
-				if (t.hasdata()) {
-					listener.onTicketSelected(t);
-				} else {
-					final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-					alertDialogBuilder.setTitle(R.string.nodata);
-					alertDialogBuilder.setMessage(R.string.nodatadesc).setCancelable(false)
-							.setPositiveButton(R.string.oktext, null);
-					final AlertDialog alertDialog = alertDialogBuilder.create();
-					alertDialog.show();
-				}
-			}
-		});
+		listView.setOnItemClickListener(this);
 		filterText = (EditText) view.findViewById(R.id.search_box);
 		hs = (TextView) view.findViewById(R.id.listProgress);
 		listView.setAdapter(dataAdapter);
 		return view;
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		switch (parent.getId()) {
+		case R.id.listOfTickets:
+			final Ticket t = (Ticket) ((ListView) parent).getItemAtPosition(position);
+			if (t.hasdata()) {
+				listener.onTicketSelected(t);
+			} else {
+				final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+				alertDialogBuilder.setTitle(R.string.nodata);
+				alertDialogBuilder.setMessage(R.string.nodatadesc).setCancelable(false).setPositiveButton(R.string.oktext, null);
+				final AlertDialog alertDialog = alertDialogBuilder.create();
+				alertDialog.show();
+			}
+			break;
+		}
 	}
 
 	@Override
@@ -147,14 +150,11 @@ public class TicketListFragment extends TracClientFragment {
 		final boolean saveRefreshOnRestart = refreshOnRestart;
 		listener.initializeList();
 		refreshOnRestart = saveRefreshOnRestart;
-		tcLog.d(this.getClass().getName(), "onActivityCreated refreshOnRestart = " + refreshOnRestart);
-		tcLog.d(this.getClass().getName(), "onActivityCreated getCount = " + dataAdapter.getCount());
 		if (savedInstanceState != null) {
 			zoeken = savedInstanceState.getBoolean(ZOEKENNAME);
 			zoektext = savedInstanceState.getString(ZOEKTEXTNAME);
 			scrollPosition = savedInstanceState.getInt(SCROLLPOSITIONNAME);
 		}
-		tcLog.d(this.getClass().getName(), "onActivityCreated zoeken = " + zoeken);
 		if (zoeken) {
 			filterText.setVisibility(View.VISIBLE);
 			filterText.setText(zoektext);
@@ -172,7 +172,6 @@ public class TicketListFragment extends TracClientFragment {
 		super.onResume();
 		tcLog.d(this.getClass().getName(), "onResume");
 		if (refreshOnRestart) {
-			tcLog.d(this.getClass().getName(), "onResume refresh");
 			killThreads();
 			scrollPosition = 0;
 			clearTickets();
@@ -424,7 +423,8 @@ public class TicketListFragment extends TracClientFragment {
 		tcLog.d(this.getClass().getName(), "loadTicketList url=" + _url + " " + dataAdapter.getCount());
 		clearTickets();
 		if (_url != null) {
-			final ProgressDialog pb = startProgressBar(R.string.getlist);
+			final ProgressDialog pb = startProgressBar(context.getString(R.string.getlist)
+					+ (SelectedProfile == null ? "" : "\n" + SelectedProfile));
 			loadListThread = new Thread() {
 				@Override
 				public void run() {
@@ -718,7 +718,6 @@ public class TicketListFragment extends TracClientFragment {
 	public void forceRefresh() {
 		tcLog.d(this.getClass().getName(), "forceRefresh");
 		refreshOnRestart = true;
-		scrollPosition = 0;
 	}
 
 	private void shareList() {
@@ -788,10 +787,10 @@ public class TicketListFragment extends TracClientFragment {
 		}
 	}
 
-	@Override
-	public void setHost(final String url, final String username, final String password, boolean sslHack) {
-		tcLog.d(this.getClass().getName(), "setHost");
+	public void setHost(final String url, final String username, final String password, boolean sslHack, String profile) {
+		tcLog.d(this.getClass().getName(), "setHost " + profile);
 		super.setHost(url, username, password, sslHack);
+		SelectedProfile = profile;
 	}
 
 	private final TextWatcher filterTextWatcher = new TextWatcher() {

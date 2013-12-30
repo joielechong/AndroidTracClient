@@ -243,12 +243,6 @@ public class UpdateTicketFragment extends TracClientFragment {
 	}
 
 	@Override
-	public void onStart() {
-		super.onStart();
-		tcLog.d(this.getClass().getName(), "onStart");
-	}
-
-	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" + item);
 		final int itemId = item.getItemId();

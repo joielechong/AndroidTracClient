@@ -42,7 +42,7 @@ interface InterFragmentListener {
 
 	void onNewTicket();
 
-	void onLogin(String url, String username, String password, boolean sslHack);
+	void onLogin(String url, String username, String password, boolean sslHack, String profile);
 
 	void onChangeHost();
 
@@ -76,6 +76,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	private String username;
 	private String password;
 	private boolean sslHack;
+	private String profile;
 	private TicketModel tm = null;
 	// onActivityResult requestcode for filechooser
 	private static final int REQUEST_CODE = 6384;
@@ -116,6 +117,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		username = Credentials.getUsername();
 		password = Credentials.getPassword();
 		sslHack = Credentials.getSslHack();
+		profile = Credentials.getProfile();
 
 		if (Credentials.getFirstRun(this)) {
 			final Intent launchTrac = new Intent(this, TracShowWebPage.class);
@@ -180,7 +182,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	public void initializeList() {
 		final TicketListFragment ticketListFragment = (TicketListFragment) fm.findFragmentByTag("List_Fragment");
 		tcLog.d(this.getClass().getName(), "initializeList ticketListFragment = " + ticketListFragment);
-		ticketListFragment.setHost(url, username, password, sslHack);
+		ticketListFragment.setHost(url, username, password, sslHack, profile);
 		setFilter(Credentials.getFilterString(this));
 		setSort(Credentials.getSortString(this));
 	}
@@ -288,13 +290,14 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	}
 
 	@Override
-	public void onLogin(String newUrl, String newUser, String newPass, boolean newHack) {
-		tcLog.d(this.getClass().getName(), "onLogin");
+	public void onLogin(String newUrl, String newUser, String newPass, boolean newHack, String newProfile) {
+		tcLog.d(this.getClass().getName(), "onLogin "+newProfile);
 		tm = null;
 		url = newUrl;
 		username = newUser;
 		password = newPass;
 		sslHack = newHack;
+		profile = newProfile;
 		TicketListFragment ticketListFragment = (TicketListFragment) fm.findFragmentByTag("List_Fragment");
 		if (ticketListFragment != null) {
 			initializeList();
@@ -571,6 +574,10 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	public boolean getSslHack() {
 		return sslHack;
+	}
+
+	public String getProfile() {
+		return profile;
 	}
 
 	@Override
