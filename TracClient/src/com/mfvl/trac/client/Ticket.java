@@ -92,7 +92,7 @@ public class Ticket {
 			return _ticknr + "";
 		}
 		try {
-			return _ticknr + " - " + _velden.getString("status") + " - " + _velden.getString("summary");
+			return _ticknr + (_attachments.length()>0?"+":"")+" - " + _velden.getString("status") + " - " + _velden.getString("summary");
 		} catch (final JSONException e) {
 			return _ticknr + "";
 		}
@@ -120,7 +120,7 @@ public class Ticket {
 			_password = context.getPassword();
 			_sslHack = context.getSslHack();
 		}
-		final Thread networkThread = new Thread() {
+		new Thread("loadTicketData") {
 			@Override
 			public void run() {
 				available.acquireUninterruptibly();
@@ -178,8 +178,7 @@ public class Ticket {
 					available.release();
 				}
 			}
-		};
-		networkThread.start();
+		}.start();
 	}
 
 	public void getAttachment(final String filename, TracStart context, final onAttachmentCompleteListener oc) {
@@ -187,7 +186,7 @@ public class Ticket {
 		_username = context.getUsername();
 		_password = context.getPassword();
 		_sslHack = context.getSslHack();
-		final Thread networkThread = new Thread() {
+		final Thread networkThread = new Thread("getAttachment") {
 			@Override
 			public void run() {
 				available.acquireUninterruptibly();
@@ -224,7 +223,7 @@ public class Ticket {
 		_username = context.getUsername();
 		_password = context.getPassword();
 		_sslHack = context.getSslHack();
-		final Thread networkThread = new Thread() {
+		new Thread() {
 			@Override
 			public void run() {
 				available.acquireUninterruptibly();
@@ -263,8 +262,7 @@ public class Ticket {
 					available.release();
 				}
 			}
-		};
-		networkThread.start();
+		}.start();
 	}
 
 	public String getString(final String veld) throws JSONException {
@@ -478,7 +476,6 @@ public class Ticket {
 				}
 			}
 		} catch (final JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		for (int j = 0; j < _history.length(); j++) {

@@ -25,14 +25,16 @@ public class Credentials {
 	private static String _username = "";
 	private static String _password = "";
 	private static boolean _sslHack = false;
+	private static String _profile = null;
 	private static SharedPreferences settings = null;
 	public static boolean debug = true;
 
-	public static void setCredentials(final String url, final String username, final String password) {
+	public static void setCredentials(final String url, final String username, final String password,final String profile) {
 		tcLog.d("Credentials", "setCredentials");
 		_url = url;
 		_username = username;
 		_password = password;
+		_profile = profile;
 	}
 
 	public static void loadCredentials(Context context) {
@@ -44,6 +46,7 @@ public class Credentials {
 		_username = settings.getString("tracUsername", "");
 		_password = settings.getString("tracPassword", "");
 		_sslHack = settings.getBoolean("sslHack", false);
+		_profile = settings.getString("profile", null);
 	}
 
 	public static void storeCredentials(Context context) {
@@ -56,6 +59,7 @@ public class Credentials {
 		editor.putString("tracUsername", _username);
 		editor.putString("tracPassword", _password);
 		editor.putBoolean("sslHack", _sslHack);
+		editor.putString("profile", _profile);
 
 		// Commit the edits!
 		editor.commit();
@@ -79,6 +83,14 @@ public class Credentials {
 
 	public static boolean getSslHack() {
 		return _sslHack;
+	}
+
+	public static void setProfile(String profile) {
+		_profile=profile;
+	}
+
+	public static String getProfile() {
+		return _profile;
 	}
 
 	public static boolean getFirstRun(Context context) {

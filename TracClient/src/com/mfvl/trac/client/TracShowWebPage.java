@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.TextView;
 
@@ -17,9 +19,11 @@ public class TracShowWebPage extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " + savedInstanceState);
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.trac_about);
 		final Intent i = this.getIntent();
 		final boolean toonVersie = i.getBooleanExtra("version", true);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		setContentView(R.layout.trac_about);
 		final String filename = "file:///android_asset/" + i.getStringExtra("file") + ".html";
 		tcLog.d(this.getClass().getName(), filename + " " + toonVersie);
 		final TextView tv = (TextView) findViewById(R.id.about_version_text);

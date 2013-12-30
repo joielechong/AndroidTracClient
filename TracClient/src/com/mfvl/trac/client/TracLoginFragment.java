@@ -72,6 +72,14 @@ public class TracLoginFragment extends TracClientFragment {
 		super.onCreate(savedInstanceState);
 		tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 		setHasOptionsMenu(true);
+		if (savedInstanceState == null) {
+			tcLog.d(this.getClass().getName(), "onViewCreated use Activity");
+			// Credentials.loadCredentials(context);
+			url = context.getUrl();
+			username = context.getUsername();
+			password = context.getPassword();
+			sslHack = context.getSslHack();
+		}
 	}
 
 	@Override
@@ -155,6 +163,10 @@ public class TracLoginFragment extends TracClientFragment {
 						if (arg2 > 0) { // pos 0 is empty
 							final LoginProfile prof = pdb.getProfile(SelectedProfile);
 							if (prof != null) {
+								urlView.removeTextChangedListener(checkUrlInput);
+								userView.removeTextChangedListener(checkUserPwInput);
+								pwView.removeTextChangedListener(checkUserPwInput);
+
 								url = prof.getUrl();
 								urlView.setText(url);
 								sslHack = prof.getSslHack();
@@ -164,6 +176,13 @@ public class TracLoginFragment extends TracClientFragment {
 								password = prof.getPassword();
 								pwView.setText(password);
 								checkHackBox(url);
+
+								urlView.addTextChangedListener(checkUrlInput);
+								userView.addTextChangedListener(checkUserPwInput);
+								pwView.addTextChangedListener(checkUserPwInput);
+								verButton.setEnabled(true);
+								okButton.setEnabled(false);
+								storButton.setEnabled(false);
 							} else {
 								final AlertDialog.Builder alert = new AlertDialog.Builder(context);
 
@@ -188,7 +207,7 @@ public class TracLoginFragment extends TracClientFragment {
 		pwView.setText(password);
 		sslHackBox.setChecked(sslHack);
 		checkHackBox(url);
-	}
+}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -253,13 +272,13 @@ public class TracLoginFragment extends TracClientFragment {
 				bewaren = bewaarBox.isChecked();
 				sslHack = sslHackBox.isChecked();
 				if (bewaren) {
-					Credentials.setCredentials(url, username, password);
+					Credentials.setCredentials(url, username, password,SelectedProfile);
 					Credentials.setSslHack(sslHack);
 					Credentials.storeCredentials(context);
 				}
 				Credentials.removeFilterString(context);
 				Credentials.removeSortString(context);
-				listener.onLogin(url, username, password, sslHack);
+				listener.onLogin(url, username, password, sslHack,SelectedProfile);
 			}
 		});
 
@@ -425,18 +444,6 @@ public class TracLoginFragment extends TracClientFragment {
 	}
 
 	@Override
-	public void onDestroy() {
-		tcLog.d(this.getClass().getName(), "onDestroy");
-		super.onDestroy();
-	}
-
-	@Override
-	public void onPause() {
-		tcLog.d(this.getClass().getName(), "onPause");
-		super.onPause();
-	}
-
-	@Override
 	public void onStart() {
 		tcLog.d(this.getClass().getName(), "onStart");
 		super.onStart();
@@ -494,6 +501,7 @@ public class TracLoginFragment extends TracClientFragment {
 				verButton.setEnabled(true);
 				checkHackBox(s.toString());
 			}
+			SelectedProfile=null;
 		}
 	};
 
@@ -514,6 +522,7 @@ public class TracLoginFragment extends TracClientFragment {
 			verButton.setEnabled(true);
 			okButton.setEnabled(false);
 			storButton.setEnabled(false);
+			SelectedProfile = null;
 		}
 	};
 }

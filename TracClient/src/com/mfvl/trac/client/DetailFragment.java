@@ -33,7 +33,7 @@ import com.mfvl.trac.client.util.ISO8601;
 import com.mfvl.trac.client.util.tcLog;
 
 public class DetailFragment extends TracClientFragment {
-
+	
 	private boolean activityCreated = false;
 	private boolean loading = false;
 	private File path = null;
@@ -65,18 +65,6 @@ public class DetailFragment extends TracClientFragment {
 		tcLog.d(this.getClass().getName(), "savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 		final View view = inflater.inflate(R.layout.detail_view, container, false);
 		return view;
-	}
-
-	@Override
-	public void onSaveInstanceState(Bundle savedState) {
-		super.onSaveInstanceState(savedState);
-		tcLog.d(this.getClass().getName(), "onSaveInstanceState _ticket = " + _ticket);
-		if (_ticket != null) {
-			savedState.putInt("currentTicket", _ticket.getTicketnr());
-		} else if (ticknr != -1) {
-			tcLog.d(this.getClass().getName(), "onSaveInstanceState ticknr = " + ticknr);
-			savedState.putInt("currentTicket", ticknr);
-		}
 	}
 
 	@Override
@@ -198,6 +186,18 @@ public class DetailFragment extends TracClientFragment {
 	}
 
 	@Override
+	public void onSaveInstanceState(Bundle savedState) {
+		super.onSaveInstanceState(savedState);
+		tcLog.d(this.getClass().getName(), "onSaveInstanceState _ticket = " + _ticket);
+		if (_ticket != null) {
+			savedState.putInt("currentTicket", _ticket.getTicketnr());
+		} else if (ticknr != -1) {
+			tcLog.d(this.getClass().getName(), "onSaveInstanceState ticknr = " + ticknr);
+			savedState.putInt("currentTicket", ticknr);
+		}
+	}
+
+	@Override
 	public void onDestroyView() {
 		tcLog.d(this.getClass().getName(), "onDestroyView");
 		activityCreated = false;
@@ -292,7 +292,7 @@ public class DetailFragment extends TracClientFragment {
 								try {
 									final String filename = ticket.getAttachmentFile(bijlagenr - 1);
 									final String mimeType = getMimeType(filename);
-									_ticket.getAttachment(filename, context, new onAttachmentCompleteListener() {
+									ticket.getAttachment(filename, context, new onAttachmentCompleteListener() {
 										@Override
 										public void onComplete(final byte[] filedata) {
 											tcLog.d(this.getClass().getName(), "onComplete filedata = " + filedata.length);
@@ -341,7 +341,6 @@ public class DetailFragment extends TracClientFragment {
 
 								} catch (final JSONException e) {
 									tcLog.d(this.getClass().getName(), e.toString());
-									// TODO hier een alert
 								}
 							}
 						}.start();
@@ -375,27 +374,4 @@ public class DetailFragment extends TracClientFragment {
 		}
 	}
 
-	@Override
-	public void onPause() {
-		tcLog.d(this.getClass().getName(), "onPause");
-		super.onPause();
-	}
-
-	@Override
-	public void onResume() {
-		tcLog.d(this.getClass().getName(), "onResume");
-		super.onResume();
-	}
-
-	@Override
-	public void onStop() {
-		tcLog.d(this.getClass().getName(), "onStop");
-		super.onStop();
-	}
-
-	@Override
-	public void onDestroy() {
-		tcLog.d(this.getClass().getName(), "onDestroy");
-		super.onDestroy();
-	}
 }
