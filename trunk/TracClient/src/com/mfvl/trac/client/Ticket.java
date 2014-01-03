@@ -250,14 +250,14 @@ public class Ticket {
 					ar.put(ob);
 					ar.put(true);
 					final String retfile = req.callString("ticket.putAttachment", ar);
-					tcLog.i(this.getClass().getName() + "putAttachment", retfile);
+					tcLog.i(this.getClass().getName() + ".putAttachment", retfile);
 					actionLock.release();
 					loadTicketData(context, null);
 					if (oc != null) {
 						oc.onComplete(Ticket.this);
 					}
 				} catch (final Exception e) {
-					tcLog.i(this.getClass().getName() + "addAttachment", e.toString());
+					tcLog.i(this.getClass().getName() + ".addAttachment", e.toString());
 				} finally {
 					available.release();
 				}

@@ -5,8 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.alexd.jsonrpc.JSONRPCException;
 import org.alexd.jsonrpc.JSONRPCHttpClient;
 import org.json.JSONArray;
+import org.json.JSONException;
 
 import com.mfvl.trac.client.util.Credentials;
 
@@ -50,7 +52,11 @@ public class TicketModel extends Object {
 					_volgorde.put(_count, "max");
 					_velden.put("page", new TicketModelVeld("page", "page", "0"));
 					_volgorde.put(_count + 1, "page");
-				} catch (final Exception e) {
+				} catch (final JSONRPCException e) {
+					e.printStackTrace();
+				} catch (final JSONException e) {
+					e.printStackTrace();
+				} catch (TicketModelException e) {
 					e.printStackTrace();
 				}
 				loading = false;
@@ -73,11 +79,12 @@ public class TicketModel extends Object {
 		final ArrayList<String> v = new ArrayList<String>();
 
 		wacht();
-		v.add("id");
-		for (int i = 0; i < _count + 2; i++) {
-			v.add(_velden.get(_volgorde.get(i)).name());
+		if (_count > 0) {
+			v.add("id");
+			for (int i = 0; i < _count + 2; i++) {
+				v.add(_velden.get(_volgorde.get(i)).name());
+			}
 		}
-
 		return v;
 	}
 

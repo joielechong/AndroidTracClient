@@ -22,7 +22,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|center_horizontal"
-                android:text="@string/tractcLog.din"
+                android:text="@string/tracLogin"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <LinearLayout

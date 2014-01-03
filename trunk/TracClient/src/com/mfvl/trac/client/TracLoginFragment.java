@@ -43,11 +43,16 @@ import com.mfvl.trac.client.util.ProfileDatabaseHelper;
 import com.mfvl.trac.client.util.tcLog;
 
 public class TracLoginFragment extends TracClientFragment {
+	/** server url */
 	private String url = null;
+	/** username to use on server */
 	private String username;
+	/** password to use on server */
 	private String password;
 
+	/** flag to indicate that SSL sites can have problems like Self signed certificates */
 	private boolean sslHack;
+	/** flag to indicate that the credentials will be stored in the shared preferences */
 	private boolean bewaren = false;
 	private EditText urlView = null;
 	private Button verButton = null;

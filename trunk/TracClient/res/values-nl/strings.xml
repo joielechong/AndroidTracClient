@@ -3,7 +3,6 @@
     <!-- NL versie -->
     <string name="about_button">Over Trac Client</string>
     <string name="Back">Terug</string>
-    <string name="tractcLog.din">Inloggen TRAC</string>
     <string name="tracUser">Gebruikersnaam</string>
     <string name="tracUserHint">Gebruikersnaam</string>
     <string name="tracPw">Wachtwoord</string>
@@ -71,10 +70,6 @@
         <item>eindigt op</item>
         <item>eindigt niet op</item>
     </string-array>
-    <string-array name="filter0_choice">
-        <item>is gelijk aan</item>
-        <item>is niet gelijk aan</item>
-    </string-array>
     <string name="select">Selecteer</string>
     <string name="delete">Verwijder</string>
     <string name="getlist">Haal ticketlijst op</string>
@@ -108,4 +103,7 @@
     <string name="wait">Een moment aub</string>
     <string name="foundnew">Gewijzigde of nieuwe tickets gevonden:</string>
     <string name="notifmod">Gewijzigde tickets gevonden</string>
+    <string name="tracLogin">Inloggen TRAC</string>
+    <string name="nopermission">Geen authorisatie om tickets op te vragen. Is TICKET_VIEW aan voor de geconfigureerde gebruiker?</string>
+    <string name="notickets">Geen tickets gevonden</string>
 </resources>
