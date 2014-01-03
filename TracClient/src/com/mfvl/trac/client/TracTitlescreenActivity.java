@@ -16,21 +16,11 @@ import com.mfvl.trac.client.util.Credentials;
 import com.mfvl.trac.client.util.tcLog;
 
 public class TracTitlescreenActivity extends Activity {
-	private boolean exitaftercall = false;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		try {
 			super.onCreate(savedInstanceState);
 			tcLog.setContext(this);
-			tcLog.i(this.getClass().getName(), "onCreate savedInstanceState = " + savedInstanceState);
-
-			if (savedInstanceState != null) {
-				exitaftercall = savedInstanceState.getBoolean("exitflag", false);
-			}
-			if (exitaftercall) {
-				finish();
-			}
 	        requestWindowFeature(Window.FEATURE_NO_TITLE);
 	        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 	            WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -50,9 +40,6 @@ public class TracTitlescreenActivity extends Activity {
 		tcLog.i(this.getClass().getName(), "onStart");
 		super.onStart();
 		EasyTracker.getInstance(this).activityStart(this);
-		if (exitaftercall) {
-			finish();
-		}
 		final Handler handler = new Handler();
 		final Timer t = new Timer();
 		t.schedule(new TimerTask() {
@@ -61,10 +48,10 @@ public class TracTitlescreenActivity extends Activity {
 				handler.post(new Runnable() {
 					@Override
 					public void run() {
-						exitaftercall = true;
 						final Intent launchTrac = new Intent(getApplicationContext(), TracStart.class);
 						launchTrac.putExtra("AdMob", true);
 						startActivity(launchTrac);
+						finish();
 					}
 				});
 			}
@@ -76,23 +63,5 @@ public class TracTitlescreenActivity extends Activity {
 		tcLog.i(this.getClass().getName(), "onStop");
 		super.onStop();
 		EasyTracker.getInstance(this).activityStop(this);
-	}
-
-	@Override
-	public void onSaveInstanceState(Bundle savedState) {
-		super.onSaveInstanceState(savedState);
-		tcLog.i(this.getClass().getName(), "onSaveInstanceState");
-		savedState.putBoolean("exitflag", exitaftercall);
-	}
-
-	@Override
-	public void onRestoreInstanceState(Bundle savedState) {
-		tcLog.i(this.getClass().getName(), "onRestoreInstanceState savedState = " + savedState);
-		if (savedState != null) {
-			exitaftercall = savedState.getBoolean("exitflag", false);
-		}
-		if (exitaftercall) {
-			finish();
-		}
 	}
 }

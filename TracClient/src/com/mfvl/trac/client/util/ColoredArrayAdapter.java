@@ -32,15 +32,4 @@ public class ColoredArrayAdapter<T> extends ArrayAdapter<T> {
 		view.setBackgroundColor(colors[colorPos]);
 		return view;
 	}
-
-	@Override
-	public Filter getFilter() {
-		return super.getFilter();
-	}
-
-	@Override
-	public void clear() {
-		super.clear();
-	}
-
 }

@@ -129,7 +129,7 @@ public class DetailFragment extends TracClientFragment {
 					public void onSelected(final String filename) {
 						tcLog.d(this.getClass().getName(), "onChooserSelected ticket = " + _ticket + " filename = " + filename);
 						final ProgressDialog pb = startProgressBar(R.string.uploading);
-						new Thread() {
+						new Thread("addAttachment") {
 							@Override
 							public void run() {
 								_ticket.addAttachment(filename, context, new onTicketCompleteListener() {

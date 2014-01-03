@@ -8,6 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class TicketModelVeld {
+	
 	private String _name;
 	private String _label;
 	private String _type;
@@ -26,21 +27,21 @@ public class TicketModelVeld {
 		_options = null;
 	}
 
-	public TicketModelVeld(final JSONObject v) throws Exception {
+	public TicketModelVeld(final JSONObject v) throws TicketModelException {
 		try {
 			_name = v.getString("name");
 		} catch (final JSONException e) {
-			throw new Exception("Geen naam in velddefinitie");
+			throw new TicketModelException("Geen naam in velddefinitie");
 		}
 		try {
 			_label = v.getString("label");
 		} catch (final JSONException e) {
-			throw new Exception("Geen label in velddefinitie");
+			throw new TicketModelException("Geen label in velddefinitie");
 		}
 		try {
 			_type = v.getString("type");
 		} catch (final JSONException e) {
-			throw new Exception("Geen type in velddefinitie");
+			throw new TicketModelException("Geen type in velddefinitie");
 		}
 		try {
 			_custom = v.getString("custom").equals("true");
@@ -70,7 +71,7 @@ public class TicketModelVeld {
 					_options.add(ja.getString(i));
 				}
 			} catch (final JSONException e) {
-				throw new Exception("Geen opties in velddefinitie");
+				throw new TicketModelException("Geen opties in velddefinitie");
 			}
 			try {
 				_value = v.getString("value");

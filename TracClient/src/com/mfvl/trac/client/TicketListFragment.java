@@ -470,13 +470,33 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 							}
 							tcLog.d(this.getClass().getName() + "." + tid, jsonTicketlist.toString());
 							final int count = jsonTicketlist.length();
-							tickets = new int[count];
-							for (int i = 0; i < count; i++) {
-								tickets[i] = jsonTicketlist.getInt(i);
+							final TicketModel tm = listener.getTicketModel();
+							if (count > 0) {
+								tickets = new int[count];
+								for (int i = 0; i < count; i++) {
+									tickets[i] = jsonTicketlist.getInt(i);
+								}
+								tcLog.d(this.getClass().getName() + "." + tid, "loadTicketList ticketlist loaded");
+								oc.onComplete();
+							} else {
+								tcLog.d(this.getClass().getName() + "." + tid, "loadTicketList Ticket Query returned 0 tickets");
+
+								final int titleString = R.string.warning;
+								final int messString = tm.count() > 0 ? R.string.notickets : R.string.nopermission;
+								context.runOnUiThread(new Runnable() {
+									@Override
+									public void run() {
+										final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+										alertDialogBuilder.setTitle(titleString);
+										alertDialogBuilder.setMessage(messString).setCancelable(false)
+												.setPositiveButton(R.string.oktext, null);
+										final AlertDialog alertDialog = alertDialogBuilder.create();
+										if (!context.isFinishing()) {
+											alertDialog.show();
+										}
+									}
+								});
 							}
-							tcLog.d(this.getClass().getName() + "." + tid, "loadTicketList ticketlist loaded");
-							oc.onComplete();
-							listener.getTicketModel();
 						} catch (final JSONException e) {
 							throw new TicketLoadException("loadTicketList JSONException thrown during ticketquery", e);
 						} catch (final JSONRPCException e) {
