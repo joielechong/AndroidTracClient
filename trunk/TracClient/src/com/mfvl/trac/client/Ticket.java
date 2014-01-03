@@ -252,10 +252,14 @@ public class Ticket {
 					final String retfile = req.callString("ticket.putAttachment", ar);
 					tcLog.i(this.getClass().getName() + ".putAttachment", retfile);
 					actionLock.release();
-					loadTicketData(context, null);
-					if (oc != null) {
-						oc.onComplete(Ticket.this);
-					}
+					context.runOnUiThread(new Runnable() {
+						public void run() {
+							loadTicketData(context, null);
+							if (oc != null) {
+								oc.onComplete(Ticket.this);
+							}							
+						}
+					});
 				} catch (final Exception e) {
 					tcLog.i(this.getClass().getName() + ".addAttachment", e.toString());
 				} finally {
