@@ -56,6 +56,19 @@ public class tcLog {
 		}
 	}
 
+	private static void myLog(final String tag, final String message, Throwable tr) {
+		if (doBuffer) {
+			final Date d = new Date();
+			d.setTime(System.currentTimeMillis());
+			final String date = s.format(new Date());
+			debugString += "\n" + date + " " + tag + ": " + message;
+			debugString += "\n    Exception thrown: " + tr.getMessage();
+		}
+		if (doToast) {
+			toast(tag + ": " + message);
+		}
+	}
+
 	public static int d(String tag, String msg) {
 		final int i = Log.d(tag, msg);
 		myLog("D." + tag, msg);
@@ -64,7 +77,7 @@ public class tcLog {
 
 	public static int d(String tag, String msg, Throwable tr) {
 		final int i = Log.d(tag, msg, tr);
-		myLog("D." + tag, msg);
+		myLog("D." + tag, msg,tr);
 		return i;
 	}
 
@@ -76,7 +89,7 @@ public class tcLog {
 
 	public static int e(String tag, String msg, Throwable tr) {
 		final int i = Log.e(tag, msg, tr);
-		myLog("E." + tag, msg);
+		myLog("E." + tag, msg, tr);
 		return i;
 	}
 
@@ -88,7 +101,7 @@ public class tcLog {
 
 	public static int i(String tag, String msg, Throwable tr) {
 		final int i = Log.i(tag, msg, tr);
-		myLog("I." + tag, msg);
+		myLog("I." + tag, msg, tr);
 		return i;
 	}
 
@@ -106,7 +119,7 @@ public class tcLog {
 
 	public static int w(String tag, Throwable tr) {
 		final int i = Log.w(tag, tr);
-		myLog("W." + tag, "");
+		myLog("W." + tag, "", tr);
 		return i;
 	}
 
@@ -118,7 +131,7 @@ public class tcLog {
 
 	public static int w(String tag, String msg, Throwable tr) {
 		final int i = Log.w(tag, msg, tr);
-		myLog("W." + tag, msg);
+		myLog("W." + tag, msg, tr);
 		return i;
 	}
 
@@ -136,7 +149,7 @@ public class tcLog {
 
 	public static int wtf(String tag, String msg, Throwable tr) {
 		final int i = Log.wtf(tag, msg, tr);
-		myLog("WTF." + tag, msg);
+		myLog("WTF." + tag, msg, tr);
 		return i;
 	}
 

@@ -19,7 +19,8 @@
     <string name="filter">Filter opties</string>
     <string name="sort">Sorteren</string>
     <string name="changehost">Kies andere Trac host</string>
-    <string name="updateticket">Wijzig</string>
+    <string name="updateticket">Wijzig status van ticket</string>
+    <string name="updatefield">Wijzig veld van ticket</string>
     <string name="nieuw">Nieuw ticket</string>
     <string name="nodata">Geen gegevens</string>
     <string name="nodatadesc">Gegevens van dit ticket zijn nog niet geladen</string>
