@@ -429,8 +429,9 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 				@Override
 				public void run() {
 					final long tid = this.getId();
+					final String logTag = this.getClass().getName() + "." + tid;
 					try {
-						tcLog.d(this.getClass().getName() + "." + tid, "loadTicketList in loadListThread ");
+						tcLog.d(logTag, "loadTicketList in loadListThread ");
 						listener.setReferenceTime();
 						context.runOnUiThread(new Runnable() {
 							@Override
@@ -455,7 +456,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 								reqString += s.toString();
 							}
 						}
-						tcLog.d(this.getClass().getName() + "." + tid, "reqString = " + reqString);
+						tcLog.d(logTag, "reqString = " + reqString);
 						final JSONRPCHttpClient req = new JSONRPCHttpClient(_url, _sslHack);
 						req.setCredentials(_username, _password);
 						final String rs = reqString;
@@ -465,10 +466,10 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 							}
 							final JSONArray jsonTicketlist = req.callJSONArray("ticket.query", reqString);
 							if (isInterrupted()) {
-								tcLog.d(this.getClass().getName() + "." + tid, "loadTicketList interrupt detected");
+								tcLog.d(logTag, "loadTicketList interrupt detected");
 								throw new TicketLoadException("Interrupted");
 							}
-							tcLog.d(this.getClass().getName() + "." + tid, jsonTicketlist.toString());
+							tcLog.d(logTag, jsonTicketlist.toString());
 							final int count = jsonTicketlist.length();
 							final TicketModel tm = listener.getTicketModel();
 							if (count > 0) {
@@ -476,10 +477,10 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 								for (int i = 0; i < count; i++) {
 									tickets[i] = jsonTicketlist.getInt(i);
 								}
-								tcLog.d(this.getClass().getName() + "." + tid, "loadTicketList ticketlist loaded");
+								tcLog.d(logTag, "loadTicketList ticketlist loaded");
 								oc.onComplete();
 							} else {
-								tcLog.d(this.getClass().getName() + "." + tid, "loadTicketList Ticket Query returned 0 tickets");
+								tcLog.d(logTag, "loadTicketList Ticket Query returned 0 tickets");
 
 								final int titleString = R.string.warning;
 								final int messString = tm.count() > 0 ? R.string.notickets : R.string.nopermission;
@@ -500,7 +501,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 						} catch (final JSONException e) {
 							throw new TicketLoadException("loadTicketList JSONException thrown during ticketquery", e);
 						} catch (final JSONRPCException e) {
-							tcLog.d(this.getClass().getName() + "." + tid,
+							tcLog.d(logTag,
 									"loadTicketList JSONException thrown during ticketquery", e);
 							context.runOnUiThread(new Runnable() {
 								@Override
@@ -522,11 +523,11 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 							});
 						}
 					} catch (final TicketLoadException e) {
-						tcLog.d(this.getClass().getName() + "." + tid, "loadTicketList interrupted", e);
+						tcLog.d(logTag, "loadTicketList interrupted", e);
 						clearTickets();
 					} finally {
 						pb.dismiss();
-						tcLog.d(this.getClass().getName() + "." + tid, "loadTicketList ended");
+						tcLog.d(logTag, "loadTicketList ended");
 					}
 				}
 			};
@@ -572,14 +573,15 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 	}
 
 	private void loadTicketContent() {
-		tcLog.d(this.getClass().getName(), "loadTicketContent " + tickets.length);
+		tcLog.d(this.getClass().getName(), "loadTicketContent started " + tickets.length);
 
 		loadContentThread = new Thread() {
 			@Override
 			public void run() {
 				final long tid = this.getId();
+				final String logTag = this.getClass().getName() + "." + tid;
 				try {
-					tcLog.d(this.getClass().getName() + "." + tid, "loadTicketContent thread = " + this);
+					tcLog.d(logTag, "loadTicketContent thread = " + this);
 					final Map<Integer, Ticket> ticketMap = new TreeMap<Integer, Ticket>();
 					final int count = tickets.length;
 					final int progress[] = new int[2];
@@ -603,7 +605,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 						throw new TicketLoadException("loadTicketContent interrupt1 detected");
 					}
 
-					tcLog.d(this.getClass().getName() + "." + tid, "loadTicketContent JSONRPCHttpClient " + _url + " " + _sslHack);
+					tcLog.d(logTag, "loadTicketContent JSONRPCHttpClient " + _url + " " + _sslHack);
 					final JSONRPCHttpClient req = new JSONRPCHttpClient(_url, _sslHack);
 					req.setCredentials(_username, _password);
 					for (int j = 0; j < count; j += ticketGroupCount) {
@@ -615,9 +617,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 								throw new TicketLoadException("loadTicketContent Exception during buildCall");
 							}
 						}
-						// tcLog.d(this.getClass().getName(),
-						// "loadTickets mc = "
-						// + mc);
+						// tcLog.d(logTag, "loadTickets mc = " + mc);
 
 						if (isInterrupted()) {
 							throw new TicketLoadException("loadTicketContent interrupt2 detected");
@@ -633,8 +633,10 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 
 						try {
 							final JSONArray mcresult = req.callJSONArray("system.multicall", mc);
-							// tcLog.d(this.getClass().getName()+"." + tid,
-							// "mcresult = " + mcresult);
+							if (isInterrupted()) {
+								throw new TicketLoadException("loadTicketContent interrupt3 detected");
+							}
+							// tcLog.d(logTag, "mcresult = " + mcresult);
 							for (int i = 0; i < mcresult.length(); i++) {
 								try {
 									final JSONObject res = mcresult.getJSONObject(i);
@@ -658,7 +660,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 											final JSONArray ac = result;
 											t.setActions(ac);
 										} else {
-											tcLog.d(this.getClass().getName(), "loadTickets, onverwachte respons = " + result);
+											tcLog.d(logTag, "loadTickets, onverwachte respons = " + result);
 										}
 									}
 								} catch (final Exception e1) {
@@ -673,15 +675,17 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 									dataAdapter.notifyDataSetChanged();
 								}
 							});
+						} catch (final TicketLoadException e) {
+							throw new TicketLoadException("loadTicketContent TicketLoadException thrown outerloop j=" + j, e);
 						} catch (final Exception e) {
 							throw new TicketLoadException("loadTicketContent Exception thrown outerloop j=" + j, e);
 						}
-						tcLog.d(this.getClass().getName() + "." + tid, "loadTicketContent loop " + progress[0]);
+						tcLog.d(logTag, "loadTicketContent loop " + progress[0]);
 					}
 					context.runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
-							tcLog.d(this.getClass().getName() + "." + tid, "loadTicketContent invalidate views");
+							tcLog.d(logTag, "loadTicketContent invalidate views");
 							dataAdapter.notifyDataSetChanged();
 							if (listView != null) {
 								listView.invalidateViews();
@@ -691,10 +695,13 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 						}
 					});
 				} catch (final TicketLoadException e) {
-					tcLog.d(this.getClass().getName() + "." + tid, "loadContentThread interrupted", e);
-					clearTickets();
+					tcLog.d(logTag, "loadContentThread interrupted", e);
+					if (loadContentThread.getId() == tid) {
+						tcLog.d(logTag, "loadContentThread tickets cleared");
+						clearTickets();
+					}
 				} finally {
-					tcLog.d(this.getClass().getName() + "." + tid, "loadTicketContent ended");
+					tcLog.d(logTag, "loadTicketContent ended");
 				}
 			}
 		};

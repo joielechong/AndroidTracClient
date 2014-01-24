@@ -22,7 +22,8 @@
     <string name="filter">Filter options</string>
     <string name="sort">Sort</string>
     <string name="changehost">Select another Trac host</string>
-    <string name="updateticket">Modify ticket</string>
+    <string name="updateticket">Modify status of ticket</string>
+    <string name="updatefield">Modify field of ticket</string>
     <string name="warning" translatable="false">!</string>
     <string name="nieuw">New ticket</string>
     <string name="nodata">No data</string>

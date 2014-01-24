@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.TextView;
 
 import com.google.analytics.tracking.android.EasyTracker;
@@ -38,6 +39,7 @@ public class TracShowWebPage extends Activity {
 			tv.setText(versie);
 		}
 		final WebView wv = (WebView) findViewById(R.id.webfile);
+		wv.setWebViewClient(new WebViewClient());
 		wv.loadUrl(filename);
 	}
 
