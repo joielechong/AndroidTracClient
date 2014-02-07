@@ -115,6 +115,11 @@ public class DetailFragment extends TracClientFragment {
 				listener.onUpdateTicket(_ticket);
 				return true;
 			}
+		} else if (item.getItemId() == R.id.dfchange) {
+			if (_ticket != null) {
+				listener.onUpdateField(_ticket);
+				return true;
+			}
 		} else if (item.getItemId() == R.id.help) {
 			final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
 			final String filename = context.getString(R.string.helpdetailfile);

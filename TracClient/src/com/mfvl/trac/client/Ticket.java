@@ -219,6 +219,7 @@ public class Ticket {
 	}
 
 	public void addAttachment(final String filename, final TracStart context, final onTicketCompleteListener oc) {
+		tcLog.i(this.getClass().getName() + ".addAttachment",filename);
 		_url = context.getUrl();
 		_username = context.getUsername();
 		_password = context.getPassword();
@@ -263,6 +264,7 @@ public class Ticket {
 				} catch (final Exception e) {
 					tcLog.i(this.getClass().getName() + ".addAttachment", e.toString());
 				} finally {
+					actionLock.release();
 					available.release();
 				}
 			}
@@ -386,9 +388,10 @@ public class Ticket {
 
 		return _ticknr;
 	}
+	
+	// update is called from within a no UI thread 
 
-	public void update(String action, String comment, String veld, String waarde, final boolean notify, final TracStart context)
-			throws Exception {
+	public void update(String action, String comment, String veld, String waarde, final boolean notify, final TracStart context) throws Exception {
 		tcLog.i(this.getClass().getName(), "update: " + action + " '" + comment + "' '" + veld + "' '" + waarde + "'");
 		if (_ticknr == -1) {
 			throw new Exception(context.getString(R.string.invtick) + " " + _ticknr);
@@ -401,49 +404,39 @@ public class Ticket {
 		_password = context.getPassword();
 		_sslHack = context.getSslHack();
 		_velden.put("action", action);
-		if (waarde != null && veld != null && !veld.equals("") && !waarde.equals("")) {
+		if (waarde != null && veld != null && !"".equals(veld) && !"".equals(waarde)) {
 			_velden.put(veld, waarde);
 		}
 		final String cmt = comment == null ? "" : comment;
 		_velden.remove("changetime");
 		_velden.remove("time");
 
-		final Thread networkThread = new Thread() {
-			@Override
-			public void run() {
-				available.acquireUninterruptibly();
-				try {
-					if (_url != null) {
-						if (req == null) {
-							req = new JSONRPCHttpClient(_url, _sslHack);
-							req.setCredentials(_username, _password);
-						}
-						req.callJSONArray("ticket.update", _ticknr, cmt, _velden, notify);
-						actionLock.release();
-						loadTicketData(context, null);
-					}
-				} catch (final JSONRPCException e) {
-					try {
-						e.printStackTrace();
-						final JSONObject o = new JSONObject(e.getMessage());
-						_rpcerror = o.getString("message");
-					} catch (final JSONException e1) {
-						e1.printStackTrace();
-						_rpcerror = context.getString(R.string.invalidJson);
-					}
-				} finally {
-					available.release();
-				}
-			}
-		};
-		networkThread.start();
+		available.acquireUninterruptibly();
 		try {
-			networkThread.join();
-			if (_rpcerror != null) {
-				throw new RuntimeException(_rpcerror);
+			if (_url != null) {
+				if (req == null) {
+					req = new JSONRPCHttpClient(_url, _sslHack);
+					req.setCredentials(_username, _password);
+				}
+				req.callJSONArray("ticket.update", _ticknr, cmt, _velden, notify);
+				actionLock.release();
+				loadTicketData(context, null);
 			}
-		} catch (final Exception e) {
-			throw e;
+		} catch (final JSONRPCException e) {
+			try {
+				e.printStackTrace();
+				final JSONObject o = new JSONObject(e.getMessage());
+				_rpcerror = o.getString("message");
+			} catch (final JSONException e1) {
+				e1.printStackTrace();
+				_rpcerror = context.getString(R.string.invalidJson);
+			}
+		} finally {
+			available.release();
+		}
+
+		if (_rpcerror != null) {
+			throw new RuntimeException(_rpcerror);
 		}
 	}
 

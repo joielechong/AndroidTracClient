@@ -59,7 +59,6 @@ public class FilterSpec extends Object implements Serializable, Cloneable {
 	}
 
 	public void setWaarde(String w) {
-		tcLog.i(this.getClass().getName(), "setWaarde veld = " + _veld + " edited = " + _edited + " w = " + w);
 		if (_edited) {
 			_newwaarde = w;
 		} else {
