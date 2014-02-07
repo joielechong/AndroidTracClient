@@ -8,6 +8,7 @@
     <string name="filterhelpfile">filterhelp</string>
     <string name="sorthelpfile">sorthelp</string>
     <string name="updatehelpfile">updatehelp</string>
+    <string name="updatefieldhelpfile">updatefieldhelp</string>
     <string name="loginhelpfile">loginhelp</string>
     <string name="newhelpfile">newhelp</string>
 

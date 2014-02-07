@@ -8,6 +8,7 @@ import java.util.TimerTask;
 
 import android.annotation.TargetApi;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -47,6 +48,8 @@ interface InterFragmentListener {
 	void onChangeHost();
 
 	void onUpdateTicket(Ticket ticket);
+
+	void onUpdateField(Ticket ticket);
 
 	TicketModel getTicketModel();
 
@@ -161,18 +164,23 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 			@Override
 			public void run() {
 				tcLog.d(this.getClass().getName(), "timertask started");
-				final int count = getTicketCount();
-				if (count > 0) {
-					final List<Integer> newTickets = getNewTickets(ISO8601.fromUnix(referenceTime));
-					if (newTickets != null) {
-						if (newTickets.size() > 0) {
-							final NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(TracStart.this)
-									.setSmallIcon(R.drawable.traclogo).setContentTitle(TracStart.this.getString(R.string.notifmod))
-									.setContentText(TracStart.this.getString(R.string.foundnew) + " " + newTickets);
-							final NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-							mNotificationManager.notify(notifId, mBuilder.build());
+				try {
+					final int count = getTicketCount();
+					if (count > 0) {
+						final List<Integer> newTickets = getNewTickets(ISO8601.fromUnix(referenceTime));
+						if (newTickets != null) {
+							if (newTickets.size() > 0) {
+								final NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(TracStart.this)
+										.setSmallIcon(R.drawable.traclogo).setContentTitle(TracStart.this.getString(R.string.notifmod))
+										.setContentText(TracStart.this.getString(R.string.foundnew) + " " + newTickets)
+										.setContentIntent(PendingIntent.getActivity(TracStart.this, 0, new Intent(), 0));
+								final NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+								mNotificationManager.notify(notifId, mBuilder.build());
+							}
 						}
 					}
+				} catch (IllegalArgumentException e) {
+					tcLog.i(this.getClass().getName(),"IlleagalArgumentException in notification",e);
 				}
 			}
 		}, timerStart, timerPeriod);
@@ -267,7 +275,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		tcLog.d(this.getClass().getName(), "onUpdateTicket ticket = " + ticket);
 
 		final UpdateTicketFragment updtickFragment = new UpdateTicketFragment();
-		tcLog.d(this.getClass().getName(), "detailFragment = " + updtickFragment.toString());
+		tcLog.d(this.getClass().getName(), "updtickFragment = " + updtickFragment.toString());
 		/*
 		 * if (detailPage) { final FragmentTransaction ft =
 		 * fm.beginTransaction(); ft.replace(R.id.displayExtra, updtickFragment,
@@ -287,6 +295,21 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		/*
 		 * }
 		 */
+	}
+
+	@Override
+	public void onUpdateField(Ticket ticket) {
+		tcLog.d(this.getClass().getName(), "onUpdateField ticket = " + ticket);
+
+		final UpdateFieldFragment updfieldFragment = new UpdateFieldFragment();
+		tcLog.d(this.getClass().getName(), "updfieldFragment = " + updfieldFragment.toString());
+		final FragmentTransaction ft = fm.beginTransaction();
+		ft.replace(R.id.displayList, updfieldFragment, "Modify_Fragment2");
+		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+		ft.addToBackStack(null);
+		ft.commit();
+		updfieldFragment.setHost(url, username, password, sslHack);
+		updfieldFragment.loadTicket(ticket);
 	}
 
 	@Override

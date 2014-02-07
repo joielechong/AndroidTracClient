@@ -222,7 +222,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 									final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
 									alertDialogBuilder.setTitle(R.string.storerr);
 									final String message = e.getMessage();
-									if (message == null || message.equals("")) {
+									if (message == null || "".equals(message)) {
 										alertDialogBuilder.setMessage(context.getString(R.string.storerrdesc) + ": " + e);
 									} else {
 										alertDialogBuilder.setMessage(message);
@@ -246,11 +246,11 @@ public class UpdateTicketFragment extends TracClientFragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" + item);
 		final int itemId = item.getItemId();
-		if (itemId == R.id.help || itemId == R.id.over) {
+		if (itemId == R.id.help) {
 			final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
-			final String filename = context.getString((itemId == R.id.over ? R.string.whatsnewhelpfile : R.string.updatehelpfile));
+			final String filename = context.getString((R.string.updatehelpfile));
 			launchTrac.putExtra("file", filename);
-			launchTrac.putExtra("version", itemId == R.id.over);
+			launchTrac.putExtra("version", false);
 			startActivity(launchTrac);
 			return true;
 		} else {
