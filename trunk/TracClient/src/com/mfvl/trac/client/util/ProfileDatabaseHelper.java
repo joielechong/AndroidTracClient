@@ -101,7 +101,11 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 		if (db == null) {
 			this.open();
 		}
-		db.insertOrThrow(TABLE_NAME, null, values);
+		try {
+			db.insertOrThrow(TABLE_NAME, null, values);
+		} catch (SQLException e) {
+			db.replaceOrThrow(TABLE_NAME, null, values);
+		}
 	}
 
 	public Cursor getProfiles() {
