@@ -15,10 +15,10 @@
         android:title="@string/updateticket"/>
     <item
         android:id="@+id/dfchange"
-        android:enabled="false"
+		android:visible="false"
+		android:enabled="false"
         android:menuCategory="container"
-        android:title="@string/updatefield"
-        android:visible="false"/>
+        android:title="@string/updatefield"/>
     <item
         android:id="@+id/dfattach"
         android:icon="@drawable/content_new_attachment"

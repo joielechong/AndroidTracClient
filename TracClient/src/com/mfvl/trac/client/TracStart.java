@@ -3,21 +3,23 @@ package com.mfvl.trac.client;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import android.annotation.TargetApi;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -87,26 +89,119 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	private boolean dispAds;
 	private boolean debug = false; // disable menuoption at startup
 	private FragmentManager fm = null;
-	private Timer monitorTimer = null;
-	private static final int timerStart = 5 * 60 * 1000; // 5 minuten
-	private static final int timerPeriod = 5 * 60 * 1000; // 5 minuten
-	private static final int timerCorr = 60 * 1000 * 2; // 2 minuten
 	private long referenceTime = 0;
-	private static final int notifId = 1234;
+	private static final int timerCorr = 60 * 1000 * 2; // 2 minuten
+
+	Messenger mService = null;
+	boolean mIsBound = false;
+	final Messenger mMessenger = new Messenger(new IncomingHandler());
+
+	private final ServiceConnection mConnection = new ServiceConnection() {
+		@Override
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			tcLog.d(this.getClass().getName(), "onServiceConnected className = " + className + " service = " + service);
+			mService = new Messenger(service);
+			sendMessageToService(RefreshService.MSG_START_TIMER);
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName className) {
+			tcLog.d(this.getClass().getName(), "onServiceDisconnected className = " + className);
+			mService = null;
+		}
+	};
+
+	class IncomingHandler extends Handler {
+		@Override
+		public void handleMessage(Message msg) {
+			tcLog.d(this.getClass().getName(), "handleMessage msg = " + msg);
+			switch (msg.what) {
+			case RefreshService.MSG_REQUEST_TICKET_COUNT:
+				final int count = getTicketCount();
+				sendMessageToService(RefreshService.MSG_SEND_TICKET_COUNT, count);
+				break;
+			case RefreshService.MSG_REQUEST_NEW_TICKETS:
+				new Thread() {
+					@Override
+					public void run() {
+						final List<Integer> newTickets = getNewTickets(ISO8601.fromUnix(referenceTime));
+						sendMessageToService(RefreshService.MSG_SEND_NEW_TICKETS, newTickets);
+					}
+				}.start();
+				break;
+			case RefreshService.MSG_REQUEST_REFRESH:
+				refreshOverview();
+				break;
+			default:
+				super.handleMessage(msg);
+			}
+		}
+	}
+
+	private void sendMessageToService(int message) {
+		tcLog.d(this.getClass().getName(), "sendMessageToService message = " + message);
+		if (mService != null) {
+			try {
+				final Message msg = Message.obtain();
+				msg.what = message;
+				msg.arg1 = -1;
+				msg.arg2 = -1;
+				msg.replyTo = mMessenger;
+				tcLog.d(this.getClass().getName(), "sendMessageToService msg = " + msg);
+				mService.send(msg);
+			} catch (final RemoteException e) {
+				tcLog.e(this.getClass().getName(), "sendMessageToService failed", e);
+			}
+		}
+	}
+
+	private void sendMessageToService(int message, int value) {
+		tcLog.d(this.getClass().getName(), "sendMessageToService message = " + message);
+		if (mService != null) {
+			try {
+				final Message msg = Message.obtain();
+				msg.what = message;
+				msg.arg1 = value;
+				msg.arg2 = -1;
+				msg.replyTo = mMessenger;
+				tcLog.d(this.getClass().getName(), "sendMessageToService msg = " + msg);
+				mService.send(msg);
+			} catch (final RemoteException e) {
+				tcLog.e(this.getClass().getName(), "sendMessageToService failed", e);
+			}
+		}
+	}
+
+	private void sendMessageToService(int message, Object value) {
+		if (mService != null) {
+			try {
+				final Message msg = Message.obtain();
+				msg.what = message;
+				msg.arg1 = -1;
+				msg.arg2 = -1;
+				msg.replyTo = mMessenger;
+				msg.obj = value;
+				mService.send(msg);
+			} catch (final RemoteException e) {
+				tcLog.e(this.getClass().getName(), "sendMessageToService Object failed", e);
+			}
+		}
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 
-		setReferenceTime();
+		startService(new Intent(this, RefreshService.class));
+
 		setContentView(R.layout.tracstart);
 		Credentials.loadCredentials(this);
 
 		try {
-			final Intent i = getIntent();
-			dispAds = i.getBooleanExtra("AdMob", true);
+			dispAds = getIntent().getBooleanExtra("AdMob", true);
 		} catch (final Exception e) {
+			tcLog.i(this.getClass().getName(), "Problem consuming extra AdMob from intent", e);
 			dispAds = true;
 		}
 
@@ -159,31 +254,9 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		 * sslHack); }
 		 */
 
-		monitorTimer = new Timer("monitorTickets");
-		monitorTimer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				tcLog.d(this.getClass().getName(), "timertask started");
-				try {
-					final int count = getTicketCount();
-					if (count > 0) {
-						final List<Integer> newTickets = getNewTickets(ISO8601.fromUnix(referenceTime));
-						if (newTickets != null) {
-							if (newTickets.size() > 0) {
-								final NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(TracStart.this)
-										.setSmallIcon(R.drawable.traclogo).setContentTitle(TracStart.this.getString(R.string.notifmod))
-										.setContentText(TracStart.this.getString(R.string.foundnew) + " " + newTickets)
-										.setContentIntent(PendingIntent.getActivity(TracStart.this, 0, new Intent(), 0));
-								final NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-								mNotificationManager.notify(notifId, mBuilder.build());
-							}
-						}
-					}
-				} catch (IllegalArgumentException e) {
-					tcLog.i(this.getClass().getName(),"IlleagalArgumentException in notification",e);
-				}
-			}
-		}, timerStart, timerPeriod);
+		bindService(new Intent(this, RefreshService.class), mConnection, Context.BIND_AUTO_CREATE);
+		mIsBound = true;
+		setReferenceTime();
 	}
 
 	@Override
@@ -314,7 +387,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	@Override
 	public void onLogin(String newUrl, String newUser, String newPass, boolean newHack, String newProfile) {
-		tcLog.d(this.getClass().getName(), "onLogin "+newProfile);
+		tcLog.d(this.getClass().getName(), "onLogin " + newProfile);
 		tm = null;
 		url = newUrl;
 		username = newUser;
@@ -432,11 +505,11 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	public void onChangeHost() {
 		tcLog.d(this.getClass().getName(), "onChangeHost");
 		final FragmentTransaction ft = fm.beginTransaction();
-		TracLoginFragment tracLoginFragment = (TracLoginFragment) fm.findFragmentByTag("tcLog.din_Fragment");
+		TracLoginFragment tracLoginFragment = (TracLoginFragment) fm.findFragmentByTag("Login_Fragment");
 		if (tracLoginFragment == null) {
 			tracLoginFragment = new TracLoginFragment();
 		}
-		ft.replace(R.id.displayList, tracLoginFragment, "tcLog.din_Fragment");
+		ft.replace(R.id.displayList, tracLoginFragment, "Login_Fragment");
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 		ft.addToBackStack(null);
 		ft.commit();
@@ -569,11 +642,9 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	@Override
 	public void onDestroy() {
 		tcLog.d(this.getClass().getName(), "onDestroy");
-		if (monitorTimer != null) {
-			monitorTimer.cancel();
-		}
-		final NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		mNotificationManager.cancel(notifId);
+		sendMessageToService(RefreshService.MSG_STOP_TIMER);
+		unbindService(mConnection);
+		stopService(new Intent(this, RefreshService.class));
 		super.onDestroy();
 	}
 
@@ -620,6 +691,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		tcLog.d(this.getClass().getName(), "refreshOverview ticketListFragment = " + ticketListFragment);
 		if (ticketListFragment != null) {
 			ticketListFragment.forceRefresh();
+			setReferenceTime();
 		}
 	}
 
@@ -628,10 +700,10 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	public void enableDebug() {
 		tcLog.d(this.getClass().getName(), "enableDebug");
 		debug = true;
-		tcLog.toast("Debug enabled");
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
 			this.invalidateOptionsMenu();
 		}
+		tcLog.toast("Debug enabled");
 	}
 
 	private void shareDebug() {
@@ -664,7 +736,8 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	public void setReferenceTime() {
 		tcLog.d(this.getClass().getName(), "setReferenceTime");
 		referenceTime = System.currentTimeMillis() - timerCorr;
-		final NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		mNotificationManager.cancel(notifId);
+		sendMessageToService(RefreshService.MSG_REMOVE_NOTIFICATION);
+		sendMessageToService(RefreshService.MSG_STOP_TIMER);
+		sendMessageToService(RefreshService.MSG_START_TIMER);
 	}
 }
