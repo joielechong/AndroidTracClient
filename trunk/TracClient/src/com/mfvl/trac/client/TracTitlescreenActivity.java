@@ -1,10 +1,12 @@
 package com.mfvl.trac.client;
 
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Window;
@@ -21,9 +23,8 @@ public class TracTitlescreenActivity extends Activity {
 		try {
 			super.onCreate(savedInstanceState);
 			tcLog.setContext(this);
-	        requestWindowFeature(Window.FEATURE_NO_TITLE);
-	        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-	            WindowManager.LayoutParams.FLAG_FULLSCREEN);
+			requestWindowFeature(Window.FEATURE_NO_TITLE);
+			getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			setContentView(R.layout.activity_titlescreen);
 
 			final String versie = Credentials.buildVersion(this, true);
@@ -40,6 +41,36 @@ public class TracTitlescreenActivity extends Activity {
 		tcLog.i(this.getClass().getName(), "onStart");
 		super.onStart();
 		EasyTracker.getInstance(this).activityStart(this);
+		final Intent intent = getIntent();
+		String urlstring = null;
+		Integer ticket = -1;
+		if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+			final String contentString = intent.getDataString();
+			tcLog.d(getClass().getName(), "View intent data = " + contentString);
+			if (contentString != null) {
+				final Uri uri = Uri.parse(contentString.replace("trac.client.mfvl.com/", ""));
+				final List<String> segments = uri.getPathSegments();
+				urlstring = uri.getScheme() + "://" + uri.getHost()
+						+ "/".replace("tracclient://", "http://").replace("tracclients://", "https://");
+				final int count = segments.size();
+				final String mustBeTicket = segments.get(count - 2);
+				if ("ticket".equals(mustBeTicket)) {
+					ticket = Integer.parseInt(segments.get(count - 1));
+					for (final String segment : segments.subList(0, count - 2)) {
+						urlstring += segment + "/";
+					}
+				} else {
+					tcLog.w(getClass().getName(), "View intent bad Url");
+					urlstring = null;
+				}
+			}
+		}
+		final Intent launchTrac = new Intent(getApplicationContext(), TracStart.class);
+		launchTrac.putExtra("AdMob", true);
+		if (urlstring != null) {
+			launchTrac.putExtra("url", urlstring);
+			launchTrac.putExtra("ticket", (long) ticket);
+		}
 		final Handler handler = new Handler();
 		final Timer t = new Timer();
 		t.schedule(new TimerTask() {
@@ -48,8 +79,6 @@ public class TracTitlescreenActivity extends Activity {
 				handler.post(new Runnable() {
 					@Override
 					public void run() {
-						final Intent launchTrac = new Intent(getApplicationContext(), TracStart.class);
-						launchTrac.putExtra("AdMob", true);
 						startActivity(launchTrac);
 						finish();
 					}

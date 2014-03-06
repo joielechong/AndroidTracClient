@@ -60,6 +60,8 @@ public class TracClientFragment extends Fragment {
 						adRequest.addTestDevice("9A306D880ED517968FD50C3A2340839E");
 					}
 					adView.loadAd(adRequest);
+					adView.setLayoutParams(ll.getLayoutParams());
+					tcLog.d(getClass().getName(), "adView size = "+adView.getHeight());
 					ll.addView(adView);
 				}
 			}
@@ -115,6 +117,7 @@ public class TracClientFragment extends Fragment {
 			_ticket = null;
 		}
 	}
+
 	public ProgressDialog startProgressBar(String message) {
 		ProgressDialog progressBar = null;
 		progressBar = new ProgressDialog(context);
@@ -124,7 +127,7 @@ public class TracClientFragment extends Fragment {
 		progressBar.show();
 		return progressBar;
 	}
-	
+
 	public ProgressDialog startProgressBar(int resid) {
 		return startProgressBar(context.getString(resid));
 	}

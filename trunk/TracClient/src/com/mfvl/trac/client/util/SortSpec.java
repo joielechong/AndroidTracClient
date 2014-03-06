@@ -49,4 +49,20 @@ public class SortSpec extends Object implements Cloneable, Serializable {
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
+	
+	private int hc(Object o) {
+		return (o == null ? 0 : o.hashCode());
+	}
+	
+	@Override 
+	public int hashCode() {
+     // Start with a non-zero constant.
+		int result = 17;
+
+     // Include a hash for each field.
+		result = 31 * result + hc(_veld);
+		result = 31 * result + hc(_richting);
+		result = 31 * result + hc((Long)serialVersionUID);
+		return result;
+	}
 }

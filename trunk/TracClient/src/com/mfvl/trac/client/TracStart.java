@@ -4,7 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
@@ -31,6 +33,8 @@ import com.ipaulpro.afilechooser.utils.FileUtils;
 import com.mfvl.trac.client.util.Credentials;
 import com.mfvl.trac.client.util.FilterSpec;
 import com.mfvl.trac.client.util.ISO8601;
+import com.mfvl.trac.client.util.LoginProfile;
+import com.mfvl.trac.client.util.ProfileDatabaseHelper;
 import com.mfvl.trac.client.util.SortSpec;
 import com.mfvl.trac.client.util.tcLog;
 
@@ -50,8 +54,6 @@ interface InterFragmentListener {
 	void onChangeHost();
 
 	void onUpdateTicket(Ticket ticket);
-
-	void onUpdateField(Ticket ticket);
 
 	TicketModel getTicketModel();
 
@@ -91,6 +93,8 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	private FragmentManager fm = null;
 	private long referenceTime = 0;
 	private static final int timerCorr = 60 * 1000 * 2; // 2 minuten
+	String urlArg = null;
+	int ticketArg = -1;
 
 	Messenger mService = null;
 	boolean mIsBound = false;
@@ -111,6 +115,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		}
 	};
 
+	@SuppressLint("HandlerLeak")
 	class IncomingHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
@@ -198,12 +203,10 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		setContentView(R.layout.tracstart);
 		Credentials.loadCredentials(this);
 
-		try {
-			dispAds = getIntent().getBooleanExtra("AdMob", true);
-		} catch (final Exception e) {
-			tcLog.i(this.getClass().getName(), "Problem consuming extra AdMob from intent", e);
-			dispAds = true;
-		}
+		dispAds = getIntent().getBooleanExtra("AdMob", true);
+
+		urlArg = getIntent().getStringExtra("url");
+		ticketArg = (int) getIntent().getLongExtra("ticket", -1);
 
 		final ActionBar ab = getSupportActionBar();
 		if (ab != null) {
@@ -225,6 +228,40 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 			startActivity(launchTrac);
 		}
 
+		if (urlArg != null) {
+			final String urlArg1 = urlArg + "rpc";
+			final String urlArg2 = urlArg + "login/rpc";
+			if (!(urlArg.equals(url) || urlArg1.equals(url) || urlArg2.equals(url))) {
+				final ProfileDatabaseHelper pdb = new ProfileDatabaseHelper(this);
+				LoginProfile lp = pdb.findProfile(urlArg2);
+				if (lp == null) {
+					lp = pdb.findProfile(urlArg1);
+				}
+				if (lp == null) {
+					lp = pdb.findProfile(urlArg);
+				}
+				if (lp == null) {
+					final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+					alertDialogBuilder.setTitle(R.string.wrongdb);
+					final String wrongDb = getString(R.string.wrongdbtext1) + url + getString(R.string.wrongdbtext2) + urlArg
+							+ getString(R.string.wrongdbtext3);
+					alertDialogBuilder.setMessage(wrongDb).setCancelable(false);
+					alertDialogBuilder.setPositiveButton(R.string.oktext, null);
+					alertDialogBuilder.setNegativeButton(R.string.cancel, null);
+					final AlertDialog alertDialog = alertDialogBuilder.create();
+					alertDialog.show();
+					urlArg = null;
+					ticketArg = -1;
+				} else {
+					url = lp.getUrl();
+					username = lp.getUsername();
+					password = lp.getPassword();
+					sslHack = lp.getSslHack();
+					profile = null;
+				}
+			}
+		}
+
 		fm = getSupportFragmentManager();
 		if (savedInstanceState == null) {
 			final FragmentTransaction ft = fm.beginTransaction();
@@ -238,6 +275,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 			ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			ft.commit();
 		}
+
 		/*
 		 * this is extra code when using a split screen on e.g. a tablet
 		 * 
@@ -266,6 +304,15 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		ticketListFragment.setHost(url, username, password, sslHack, profile);
 		setFilter(Credentials.getFilterString(this));
 		setSort(Credentials.getSortString(this));
+
+		if (urlArg != null) {
+			tcLog.d(this.getClass().getName(), "select Ticket = " + ticketArg);
+			if (ticketListFragment != null) {
+				ticketListFragment.selectTicket(ticketArg);
+			}
+			urlArg = null;
+			ticketArg = -1;
+		}
 	}
 
 	@Override
@@ -368,21 +415,6 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		/*
 		 * }
 		 */
-	}
-
-	@Override
-	public void onUpdateField(Ticket ticket) {
-		tcLog.d(this.getClass().getName(), "onUpdateField ticket = " + ticket);
-
-		final UpdateFieldFragment updfieldFragment = new UpdateFieldFragment();
-		tcLog.d(this.getClass().getName(), "updfieldFragment = " + updfieldFragment.toString());
-		final FragmentTransaction ft = fm.beginTransaction();
-		ft.replace(R.id.displayList, updfieldFragment, "Modify_Fragment2");
-		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-		ft.addToBackStack(null);
-		ft.commit();
-		updfieldFragment.setHost(url, username, password, sslHack);
-		updfieldFragment.loadTicket(ticket);
 	}
 
 	@Override

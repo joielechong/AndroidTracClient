@@ -42,4 +42,21 @@ public class LoginProfile extends Object implements Serializable, Cloneable {
 	public String toString() {
 		return "url: " + _url + " username: " + _username + " password: " + _password + " sslHack: " + _sslHack;
 	}
+	
+	private int hc(Object o) {
+		return (o == null ? 0 : o.hashCode());
+	}
+	
+	@Override 
+	public int hashCode() {
+     // Start with a non-zero constant.
+		int result = 17;
+
+     // Include a hash for each field.
+		result = 31 * result + (_sslHack ? 1 : 0);
+		result = 31 * result + hc(_url);
+		result = 31 * result + hc(_username);
+		result = 31 * result + hc(_password);
+		return result;
+	}
 }

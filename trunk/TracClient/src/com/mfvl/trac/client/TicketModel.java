@@ -22,6 +22,7 @@ public class TicketModel extends Object {
 	private final Thread networkThread;
 	private int _count = 0;
 	private boolean loading;
+	private String[] cannotChange={"owner","status","timer","changetime","_ts","action","comment"};
 
 	public TicketModel() {
 		_url = Credentials.getUrl();
@@ -56,7 +57,7 @@ public class TicketModel extends Object {
 					e.printStackTrace();
 				} catch (final JSONException e) {
 					e.printStackTrace();
-				} catch (TicketModelException e) {
+				} catch (final TicketModelException e) {
 					e.printStackTrace();
 				}
 				loading = false;
@@ -120,5 +121,25 @@ public class TicketModel extends Object {
 			return null;
 		}
 		return getVeld(_volgorde.get(i));
+	}
+	
+	private int hc(Object o) {
+		return (o == null ? 0 : o.hashCode());
+	}
+	
+	@Override 
+	public int hashCode() {
+     // Start with a non-zero constant.
+		int result = 17;
+
+     // Include a hash for each field.
+		result = 31 * result + (_sslHack ? 1 : 0);
+		result = 31 * result + _count;
+		result = 31 * result + hc(_velden);
+		result = 31 * result + hc(_volgorde);
+		result = 31 * result + hc(_url);
+		result = 31 * result + hc(_username);
+		result = 31 * result + hc(_password);
+		return result;
 	}
 }

@@ -44,7 +44,7 @@
             android:id="@+id/listOfTickets"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingBottom="75px"
+            android:paddingBottom="50dp"
             android:textSize="20sp" />
     </LinearLayout>
 

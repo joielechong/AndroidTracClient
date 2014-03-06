@@ -43,9 +43,35 @@ public class Ticket {
 	private boolean _isloading = false;
 	private static Semaphore available = new Semaphore(1, true);
 	private final Semaphore actionLock = new Semaphore(1, true);
-	private String _rpcerror = null;
+	private String rpcerror = null;
 	/* static */private JSONRPCHttpClient req = null;
+	
+	private int hc(Object o) {
+		return (o == null ? 0 : o.hashCode());
+	}
+	
+	@Override 
+	public int hashCode() {
+     // Start with a non-zero constant.
+		int result = 17;
 
+     // Include a hash for each field.
+		result = 31 * result + hc(_velden);
+		result = 31 * result + hc(_history);
+		result = 31 * result + hc(_attachments);
+		result = 31 * result + hc(_actions);
+		result = 31 * result + _ticknr;
+		result = 31 * result + hc(_url);
+		result = 31 * result + hc(_username);
+		result = 31 * result + hc(_password);
+		result = 31 * result + (_sslHack ? 1 : 0);
+		result = 31 * result + (_isloading ? 1 : 0);
+		result = 31 * result + (_hasdata ? 1 : 0);
+
+		return result;
+	}
+	
+	
 	public Ticket(final JSONObject velden) {
 		_ticknr = -1;
 		_velden = velden;
@@ -92,7 +118,8 @@ public class Ticket {
 			return _ticknr + "";
 		}
 		try {
-			return _ticknr + (_attachments.length()>0?"+":"")+" - " + _velden.getString("status") + " - " + _velden.getString("summary");
+			return _ticknr + (_attachments.length() > 0 ? "+" : "") + " - " + _velden.getString("status") + " - "
+					+ _velden.getString("summary");
 		} catch (final JSONException e) {
 			return _ticknr + "";
 		}
@@ -211,15 +238,15 @@ public class Ticket {
 		networkThread.start();
 		try {
 			networkThread.join();
-			if (_rpcerror != null) {
-				throw new RuntimeException(_rpcerror);
+			if (rpcerror != null) {
+				throw new RuntimeException(rpcerror);
 			}
 		} catch (final Exception e) {
 		}
 	}
 
 	public void addAttachment(final String filename, final TracStart context, final onTicketCompleteListener oc) {
-		tcLog.i(this.getClass().getName() + ".addAttachment",filename);
+		tcLog.i(this.getClass().getName() + ".addAttachment", filename);
 		_url = context.getUrl();
 		_username = context.getUsername();
 		_password = context.getPassword();
@@ -254,11 +281,12 @@ public class Ticket {
 					tcLog.i(this.getClass().getName() + ".putAttachment", retfile);
 					actionLock.release();
 					context.runOnUiThread(new Runnable() {
+						@Override
 						public void run() {
 							loadTicketData(context, null);
 							if (oc != null) {
 								oc.onComplete(Ticket.this);
-							}							
+							}
 						}
 					});
 				} catch (final Exception e) {
@@ -364,10 +392,10 @@ public class Ticket {
 				} catch (final JSONRPCException e) {
 					try {
 						final JSONObject o = new JSONObject(e.getMessage());
-						_rpcerror = o.getString("message");
+						rpcerror = o.getString("message");
 					} catch (final JSONException e1) {
 						e1.printStackTrace();
-						_rpcerror = context.getString(R.string.invalidJson);
+						rpcerror = context.getString(R.string.invalidJson);
 					}
 				}
 				available.release();
@@ -376,8 +404,8 @@ public class Ticket {
 		networkThread.start();
 		try {
 			networkThread.join();
-			if (_rpcerror != null) {
-				throw new RuntimeException(_rpcerror);
+			if (rpcerror != null) {
+				throw new RuntimeException(rpcerror);
 			}
 		} catch (final Exception e) {
 			throw e;
@@ -388,10 +416,11 @@ public class Ticket {
 
 		return _ticknr;
 	}
-	
-	// update is called from within a no UI thread 
 
-	public void update(String action, String comment, String veld, String waarde, final boolean notify, final TracStart context) throws Exception {
+	// update is called from within a no UI thread
+
+	public void update(String action, String comment, String veld, String waarde, final boolean notify, final TracStart context)
+			throws Exception {
 		tcLog.i(this.getClass().getName(), "update: " + action + " '" + comment + "' '" + veld + "' '" + waarde + "'");
 		if (_ticknr == -1) {
 			throw new Exception(context.getString(R.string.invtick) + " " + _ticknr);
@@ -426,17 +455,17 @@ public class Ticket {
 			try {
 				e.printStackTrace();
 				final JSONObject o = new JSONObject(e.getMessage());
-				_rpcerror = o.getString("message");
+				rpcerror = o.getString("message");
 			} catch (final JSONException e1) {
 				e1.printStackTrace();
-				_rpcerror = context.getString(R.string.invalidJson);
+				rpcerror = context.getString(R.string.invalidJson);
 			}
 		} finally {
 			available.release();
 		}
 
-		if (_rpcerror != null) {
-			throw new RuntimeException(_rpcerror);
+		if (rpcerror != null) {
+			throw new RuntimeException(rpcerror);
 		}
 	}
 

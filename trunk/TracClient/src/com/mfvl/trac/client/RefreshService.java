@@ -76,6 +76,7 @@ public class RefreshService extends Service {
 				}
 				break;
 			case MSG_SEND_NEW_TICKETS:
+				@SuppressWarnings("unchecked")
 				final List<Integer> newTickets = (List<Integer>) msg.obj;
 				if (newTickets != null) {
 					if (newTickets.size() > 0) {

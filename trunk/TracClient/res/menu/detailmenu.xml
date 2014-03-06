@@ -9,16 +9,16 @@
         android:title="@string/dfrefresh"
         myapp:showAsAction="ifRoom"/>
     <item
+        android:id="@+id/dfempty"
+        android:enabled="false"
+        android:menuCategory="container"
+        android:title="@string/showempty"
+        android:visible="false"/>
+    <item
         android:id="@+id/dfupdate"
         android:icon="@android:drawable/ic_menu_edit"
         android:menuCategory="container"
         android:title="@string/updateticket"/>
-    <item
-        android:id="@+id/dfchange"
-		android:visible="false"
-		android:enabled="false"
-        android:menuCategory="container"
-        android:title="@string/updatefield"/>
     <item
         android:id="@+id/dfattach"
         android:icon="@drawable/content_new_attachment"

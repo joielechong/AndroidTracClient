@@ -50,9 +50,15 @@ public class TracLoginFragment extends TracClientFragment {
 	/** password to use on server */
 	private String password;
 
-	/** flag to indicate that SSL sites can have problems like Self signed certificates */
+	/**
+	 * flag to indicate that SSL sites can have problems like Self signed
+	 * certificates
+	 */
 	private boolean sslHack;
-	/** flag to indicate that the credentials will be stored in the shared preferences */
+	/**
+	 * flag to indicate that the credentials will be stored in the shared
+	 * preferences
+	 */
 	private boolean bewaren = false;
 	private EditText urlView = null;
 	private Button verButton = null;
@@ -212,7 +218,7 @@ public class TracLoginFragment extends TracClientFragment {
 		pwView.setText(password);
 		sslHackBox.setChecked(sslHack);
 		checkHackBox(url);
-}
+	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -277,13 +283,13 @@ public class TracLoginFragment extends TracClientFragment {
 				bewaren = bewaarBox.isChecked();
 				sslHack = sslHackBox.isChecked();
 				if (bewaren) {
-					Credentials.setCredentials(url, username, password,SelectedProfile);
+					Credentials.setCredentials(url, username, password, SelectedProfile);
 					Credentials.setSslHack(sslHack);
 					Credentials.storeCredentials(context);
 				}
 				Credentials.removeFilterString(context);
 				Credentials.removeSortString(context);
-				listener.onLogin(url, username, password, sslHack,SelectedProfile);
+				listener.onLogin(url, username, password, sslHack, SelectedProfile);
 			}
 		});
 
@@ -506,7 +512,7 @@ public class TracLoginFragment extends TracClientFragment {
 				verButton.setEnabled(true);
 				checkHackBox(s.toString());
 			}
-			SelectedProfile=null;
+			SelectedProfile = null;
 		}
 	};
 
