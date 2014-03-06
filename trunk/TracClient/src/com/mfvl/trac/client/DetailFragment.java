@@ -38,6 +38,7 @@ public class DetailFragment extends TracClientFragment {
 	private boolean loading = false;
 	private File path = null;
 	private int ticknr = -1;
+	private boolean showEmptyFields = false;
 
 	final public static String mimeUnknown = "application/unknown";
 
@@ -156,6 +157,13 @@ public class DetailFragment extends TracClientFragment {
 				listener.shareTicket(_ticket);
 				return true;
 			}
+		} else if (item.getItemId() == R.id.dfempty) {
+			item.setChecked(!item.isChecked());
+			showEmptyFields = item.isChecked();
+			if (_ticket != null) {
+				refresh_ticket();
+				return true;
+			}
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -245,7 +253,7 @@ public class DetailFragment extends TracClientFragment {
 						// skip
 					} else if ("time".equals(veld) || "changetime".equals(veld)) {
 						values.add(veld + ": " + toonTijd(ticket.getJSONObject(veld)));
-					} else if (ticket.getString(veld).length() > 0) {
+					} else if (showEmptyFields ||ticket.getString(veld).length() > 0) {
 						values.add(veld + ": " + ticket.getString(veld));
 					}
 				} catch (final Exception e) {

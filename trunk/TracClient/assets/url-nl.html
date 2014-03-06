@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Aanroepen van TraccClient via een URL</title>
+</head>
+<body bgcolor="#0099cc">
+<font color="#77e5e5"> 
+<h1>Aanroepen van TraccClient via een URL</h1>
+Deze functie is toegevoegd zodat ghet mogelijk is om een ticket direct te openen van uit een notificatie email verzonden door de TRAC server. Dit vereist ook een wijziging van notificatie template op de server (zie hieronder).
+<h2>URI syntax</h2>
+TracClient zal nu ook worden gestart door de volgende URI schema's:
+<ul>
+<li>http(s)://trac.client.mfvl.com/real.track.site.com/path/ticket/nr
+<li>tracclient(s)://real.track.site.com/path/ticket/nr
+</ul>
+De eerste URI is een workaround omdat de default email app in Android het tracclient:// schema niet herkend als URI en dan geen link aanmaakt. The <u>trac.client.mfvl.com</u> hostnaam verwijst naar een niet bestaande host. TracClient zal alleen wanneer een naar deze host wordt gerefereerd worden aangeboden als mogelijke client. Het is dan ook veilig TracClient altijd dit schema te laten afhandelen.
+<p>
+Het in de URI genoemde ticket zal alleen worden getoond als er in de voorgedefinieerde profielen een van de volgende url schema's is:
+<ol>
+<li>http(s)://real.track.site.com/path/login/rpc
+<li>http(s)://real.track.site.com/path/rpc
+<li>http(s)://real.track.site.com/path/
+</ol>
+In dat geval zullen gebruikersnaam en wachtwoord van de eerst gevonden entry in de profiel database worden gebrukikt.
+<p>
+Het is belangrijk zich te realiseren dat een http-url niet gelijk is aan een https-url.
+<p>
+Als TracClient wordt afgesloten zal het vorige profiel weer worden gebruikt bij de volgende keer opstarten.
+<h2>Wijziging van notificatie template</h2
+Aan het notificatie template <u>ticket_notify_email.txt</u> moet een verwijzing naar het URI worden toegevoegd. Het eenvoudigste is om onder aan het template de volgende regel toe te veoegen:
+<p>
+<code>
+${_('TracClient URL: <%(link)s>', link=ticket.link.replace('http://','http://trac.client.mfvl.com/').replace('https://','https://trac.client.mfvl.com/'))}
+</code>
+<p>
+Als een html-template wordt gebruikt of op webpagina's dan is het beter om de tracclient:// variant te gebruiken.
+</body>
+</html> 
