@@ -77,7 +77,7 @@ public class tcLog {
 
 	public static int d(String tag, String msg, Throwable tr) {
 		final int i = Log.d(tag, msg, tr);
-		myLog("D." + tag, msg,tr);
+		myLog("D." + tag, msg, tr);
 		return i;
 	}
 

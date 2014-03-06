@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.mfvl.trac.client"
     android:installLocation="auto"
-    android:versionCode="65"
-    android:versionName="0.3.10" >
+    android:versionCode="66"
+    android:versionName="0.4" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -29,6 +29,28 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- Test for URL scheme -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:host="trac.client.mfvl.com" />
+                <data android:pathPrefix="" />
+                <data android:scheme="https" />
+                <data android:scheme="http" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="tracclients" />
+                <data android:scheme="tracclient" />
+            </intent-filter>
+            <!-- End Test for URL scheme -->
         </activity>
         <activity
             android:name="com.mfvl.trac.client.TracStart"
@@ -36,11 +58,6 @@
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.EDIT" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>

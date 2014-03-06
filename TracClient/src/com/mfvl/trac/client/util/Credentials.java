@@ -27,9 +27,9 @@ public class Credentials {
 	private static boolean _sslHack = false;
 	private static String _profile = null;
 	private static SharedPreferences settings = null;
-	
-/** 	Set login credentials server-url, username, password and profile */
-	public static void setCredentials(final String url, final String username, final String password,final String profile) {
+
+	/** Set login credentials server-url, username, password and profile */
+	public static void setCredentials(final String url, final String username, final String password, final String profile) {
 		tcLog.d("Credentials", "setCredentials");
 		_url = url;
 		_username = username;
@@ -37,7 +37,10 @@ public class Credentials {
 		_profile = profile;
 	}
 
-/** 	Load login credentials from shared preferences: server-url, username, password and profile */
+	/**
+	 * Load login credentials from shared preferences: server-url, username,
+	 * password and profile
+	 */
 	public static void loadCredentials(Context context) {
 		tcLog.d("Credentials", "loadCredentials");
 		if (settings == null) {
@@ -50,7 +53,10 @@ public class Credentials {
 		_profile = settings.getString("profile", null);
 	}
 
-/** 	Store login credentials to shared preferences: server-url, username, password and profile */
+	/**
+	 * Store login credentials to shared preferences: server-url, username,
+	 * password and profile
+	 */
 	public static void storeCredentials(Context context) {
 		tcLog.d("Credentials", "storeCredentials");
 		if (settings == null) {
@@ -88,7 +94,7 @@ public class Credentials {
 	}
 
 	public static void setProfile(String profile) {
-		_profile=profile;
+		_profile = profile;
 	}
 
 	public static String getProfile() {

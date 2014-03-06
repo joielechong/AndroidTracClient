@@ -202,7 +202,7 @@ public class SortFragment extends TracClientFragment {
 		tm = listener.getTicketModel();
 		pb.dismiss();
 
-		if (addButton != null) {
+		if (addButton != null && addSpinner != null) {
 			tcLog.d(this.getClass().getName(), "addButton ");
 			final ArrayList<String> velden = tm.velden();
 			final ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, velden);

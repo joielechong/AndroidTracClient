@@ -88,7 +88,7 @@ public class FilterFragment extends TracClientFragment {
 			final ImageButton filterDel = (ImageButton) v.findViewById(R.id.delfilter);
 			final Spinner spin = (Spinner) v.findViewById(R.id.filter_choice_spin);
 			final EditText et = (EditText) v.findViewById(R.id.filtervaltext);
-			final LinearLayout ll = (LinearLayout) v.findViewById(R.id.filtercheck);
+			final LinearLayout filterCheck = (LinearLayout) v.findViewById(R.id.filtercheck);
 
 			final View.OnClickListener startEdit = new View.OnClickListener() {
 				@Override
@@ -157,8 +157,8 @@ public class FilterFragment extends TracClientFragment {
 				});
 			}
 
-			if (ll != null && ll.getChildCount() == 0) {
-				ll.addView(makeCheckBoxes(o));
+			if (filterCheck != null && filterCheck.getChildCount() == 0) {
+				filterCheck.addView(makeCheckBoxes(o));
 			}
 
 			if (filterEdit != null) {

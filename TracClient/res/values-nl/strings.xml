@@ -107,4 +107,12 @@
     <string name="tracLogin">Inloggen TRAC</string>
     <string name="nopermission">Geen authorisatie om tickets op te vragen. Is TICKET_VIEW aan voor de geconfigureerde gebruiker?</string>
     <string name="notickets">Geen tickets gevonden</string>
+    <string name="nocomment">Kan geen commentaren wijzigen</string>
+    <string name="notpossible">Niet mogelijk</string>
+    <string name="notchange">Dit veld kan niet gewijzigd worden</string>
+    <string name="wrongdb">Verkeerde database</string>
+    <string name="wrongdbtext1">Huidige database = </string>
+    <string name="wrongdbtext3">\nSelecteer de juiste database eerst</string>
+    <string name="wrongdbtext2">\nGevraagde database = </string>
+    <string name="showempty">Toon lege velden</string>
 </resources>

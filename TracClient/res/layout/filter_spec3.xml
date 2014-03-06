@@ -12,21 +12,21 @@
 
         <TextView
             android:id="@+id/filternaam"
-            android:layout_width="0px"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="12"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <ImageButton
             android:id="@+id/savefilter"
-            android:layout_width="0px"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:src="@android:drawable/arrow_up_float" />
 
         <ImageButton
             android:id="@+id/delfilter"
-            android:layout_width="0px"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:src="@android:drawable/ic_menu_delete" />

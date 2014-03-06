@@ -337,33 +337,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 				@Override
 				public void onClick(DialogInterface dialog, int id) {
 					final int ticknr = Integer.parseInt(input.getText().toString());
-					final ProgressDialog pb = startProgressBar(R.string.downloading);
-					new Ticket(ticknr, context, new onTicketCompleteListener() {
-
-						@Override
-						public void onComplete(Ticket t2) {
-							pb.dismiss();
-							if (t2.hasdata()) {
-								listener.onTicketSelected(t2);
-							} else {
-								context.runOnUiThread(new Runnable() {
-
-									@Override
-									public void run() {
-										final AlertDialog.Builder noTicketDialogBuilder = new AlertDialog.Builder(context);
-										noTicketDialogBuilder.setTitle(R.string.notfound);
-										noTicketDialogBuilder.setMessage(R.string.ticketnotfound);
-										noTicketDialogBuilder.setCancelable(false);
-										noTicketDialogBuilder.setPositiveButton(R.string.oktext, null);
-										final AlertDialog noTicketDialog = noTicketDialogBuilder.create();
-										noTicketDialog.show();
-									}
-								});
-							}
-						}
-
-					});
-
+					selectTicket(ticknr);
 				}
 			});
 			alertDialogBuilder.setNegativeButton(R.string.cancel, null);
@@ -402,6 +376,35 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 			return super.onOptionsItemSelected(item);
 		}
 		return true;
+	}
+
+	public void selectTicket(int ticknr) {
+		tcLog.d(this.getClass().getName(), "selectTicket = " + ticknr);
+		final ProgressDialog pb = startProgressBar(R.string.downloading);
+		new Ticket(ticknr, context, new onTicketCompleteListener() {
+
+			@Override
+			public void onComplete(Ticket t2) {
+				pb.dismiss();
+				if (t2.hasdata()) {
+					listener.onTicketSelected(t2);
+				} else {
+					context.runOnUiThread(new Runnable() {
+
+						@Override
+						public void run() {
+							final AlertDialog.Builder noTicketDialogBuilder = new AlertDialog.Builder(context);
+							noTicketDialogBuilder.setTitle(R.string.notfound);
+							noTicketDialogBuilder.setMessage(R.string.ticketnotfound);
+							noTicketDialogBuilder.setCancelable(false);
+							noTicketDialogBuilder.setPositiveButton(R.string.oktext, null);
+							final AlertDialog noTicketDialog = noTicketDialogBuilder.create();
+							noTicketDialog.show();
+						}
+					});
+				}
+			}
+		});
 	}
 
 	@Override
@@ -501,8 +504,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 						} catch (final JSONException e) {
 							throw new TicketLoadException("loadTicketList JSONException thrown during ticketquery", e);
 						} catch (final JSONRPCException e) {
-							tcLog.d(logTag,
-									"loadTicketList JSONException thrown during ticketquery", e);
+							tcLog.d(logTag, "loadTicketList JSONException thrown during ticketquery", e);
 							context.runOnUiThread(new Runnable() {
 								@Override
 								public void run() {

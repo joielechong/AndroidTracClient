@@ -248,7 +248,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 		final int itemId = item.getItemId();
 		if (itemId == R.id.help) {
 			final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
-			final String filename = context.getString((R.string.updatehelpfile));
+			final String filename = context.getString(R.string.updatehelpfile);
 			launchTrac.putExtra("file", filename);
 			launchTrac.putExtra("version", false);
 			startActivity(launchTrac);

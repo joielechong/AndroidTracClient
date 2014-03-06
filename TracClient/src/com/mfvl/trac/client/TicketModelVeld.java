@@ -8,7 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class TicketModelVeld {
-	
+
 	private String _name;
 	private String _label;
 	private String _type;
@@ -18,6 +18,7 @@ public class TicketModelVeld {
 	private boolean _optional;
 	private int _order;
 	private boolean _custom;
+	private boolean _canChange = false;
 
 	public TicketModelVeld(String name, String label, String value) {
 		_name = name;
@@ -26,6 +27,30 @@ public class TicketModelVeld {
 		_optional = false;
 		_options = null;
 	}
+	
+	private int hc(Object o) {
+		return (o == null ? 0 : o.hashCode());
+	}
+	
+	@Override 
+	public int hashCode() {
+     // Start with a non-zero constant.
+		int result = 17;
+
+     // Include a hash for each field.
+		result = 31 * result + (_optional ? 1 : 0);
+		result = 31 * result + (_custom ? 1 : 0);
+		result = 31 * result + (_canChange ? 1 : 0);
+		result = 31 * result + _order;
+		result = 31 * result + hc(_name);
+		result = 31 * result + hc(_label);
+		result = 31 * result + hc(_type);
+		result = 31 * result + hc(_format);
+		result = 31 * result + hc(_value);
+		result = 31 * result + hc(_options);
+		return result;
+	}
+ 
 
 	public TicketModelVeld(final JSONObject v) throws TicketModelException {
 		try {
@@ -124,6 +149,14 @@ public class TicketModelVeld {
 
 	public boolean custom() {
 		return _custom;
+	}
+	
+	public boolean canChange() {
+		return _canChange;
+	}
+	
+	public void setChange(boolean c) {
+		_canChange = c;
 	}
 
 }
