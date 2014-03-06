@@ -22,7 +22,7 @@ public class TicketModel extends Object {
 	private final Thread networkThread;
 	private int _count = 0;
 	private boolean loading;
-	private String[] cannotChange={"owner","status","timer","changetime","_ts","action","comment"};
+	private String[] cannotChange={"owner","status","timer","changetime","_ts","action","comment","resolution"};
 
 	public TicketModel() {
 		_url = Credentials.getUrl();

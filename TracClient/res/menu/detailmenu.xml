@@ -10,10 +10,10 @@
         myapp:showAsAction="ifRoom"/>
     <item
         android:id="@+id/dfempty"
-        android:enabled="false"
+        android:checkable="true"
+        android:checked="false"
         android:menuCategory="container"
-        android:title="@string/showempty"
-        android:visible="false"/>
+        android:title="@string/showempty"/>
     <item
         android:id="@+id/dfupdate"
         android:icon="@android:drawable/ic_menu_edit"

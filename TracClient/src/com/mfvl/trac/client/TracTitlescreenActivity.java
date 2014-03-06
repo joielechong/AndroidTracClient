@@ -50,8 +50,8 @@ public class TracTitlescreenActivity extends Activity {
 			if (contentString != null) {
 				final Uri uri = Uri.parse(contentString.replace("trac.client.mfvl.com/", ""));
 				final List<String> segments = uri.getPathSegments();
-				urlstring = uri.getScheme() + "://" + uri.getHost()
-						+ "/".replace("tracclient://", "http://").replace("tracclients://", "https://");
+				String u = uri.getScheme() + "://" + uri.getHost()+ "/";
+				urlstring = u.replace("tracclient://", "http://").replace("tracclients://", "https://");
 				final int count = segments.size();
 				final String mustBeTicket = segments.get(count - 2);
 				if ("ticket".equals(mustBeTicket)) {
