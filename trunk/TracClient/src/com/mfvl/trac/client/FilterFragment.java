@@ -31,7 +31,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.mfvl.trac.client.util.FilterSpec;
-import com.mfvl.trac.client.util.tcLog;
 
 public class FilterFragment extends TracClientFragment {
 	private TicketModel tm;
@@ -47,7 +46,8 @@ public class FilterFragment extends TracClientFragment {
 
 		@Override
 		public View getView(final int position, View convertView, final ViewGroup parent) {
-			tcLog.d(this.getClass().getName(), "getView pos=" + position + " " + convertView + " " + parent);
+			// tcLog.d(this.getClass().getName(), "getView pos=" + position +
+			// " " + convertView + " " + parent);
 
 			final Resources res = context.getResources();
 			final ArrayList<String> operators = new ArrayList<String>(Arrays.asList(res.getStringArray(R.array.filter2_choice)));
@@ -189,29 +189,26 @@ public class FilterFragment extends TracClientFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		// tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " +
+		// (savedInstanceState == null ? "null" : "not null"));
 		setHasOptionsMenu(true);
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		tcLog.d(this.getClass().getName(), "onCreateView savedInstanceState = "
-				+ (savedInstanceState == null ? "null" : "not null"));
+		// tcLog.d(this.getClass().getName(),
+		// "onCreateView savedInstanceState = " + (savedInstanceState == null ?
+		// "null" : "not null"));
 		final View view = inflater.inflate(R.layout.filter_view, container, false);
 		return view;
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle savedState) {
-		super.onSaveInstanceState(savedState);
-		tcLog.d(this.getClass().getName(), "onSaveInstanceState");
-	}
-
-	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		tcLog.d(this.getClass().getName(), "onActivityCreated savedInstanceState = "
-				+ (savedInstanceState == null ? "null" : "not null"));
+		// tcLog.d(this.getClass().getName(),
+		// "onActivityCreated savedInstanceState = " + (savedInstanceState ==
+		// null ? "null" : "not null"));
 		final ProgressDialog pb = startProgressBar(R.string.downloading);
 		tm = listener.getTicketModel();
 		pb.dismiss();
@@ -278,13 +275,14 @@ public class FilterFragment extends TracClientFragment {
 	@Override
 	public void onStart() {
 		super.onStart();
-		tcLog.d(this.getClass().getName(), "onStart");
+		// tcLog.d(this.getClass().getName(), "onStart");
 		tm = listener.getTicketModel();
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" + item);
+		// tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" +
+		// item);
 		final int itemId = item.getItemId();
 		if (itemId == R.id.help) {
 			final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
@@ -299,7 +297,7 @@ public class FilterFragment extends TracClientFragment {
 	}
 
 	public void setList(ArrayList<FilterSpec> l) {
-		tcLog.d(this.getClass().getName(), "setList l = " + l);
+		// tcLog.d(this.getClass().getName(), "setList l = " + l);
 		inputSpec = l;
 	}
 
@@ -310,7 +308,8 @@ public class FilterFragment extends TracClientFragment {
 		final String op = o.operator();
 		final boolean omgekeerd = op != null && op.equals("!=");
 
-		tcLog.d(this.getClass().getName(), "makeCheckBoxes " + veldnaam + " " + w + " " + omgekeerd);
+		// tcLog.d(this.getClass().getName(), "makeCheckBoxes " + veldnaam + " "
+		// + w + " " + omgekeerd);
 		final LinearLayout valCheckBoxes = new LinearLayout(context);
 		valCheckBoxes.setOrientation(LinearLayout.VERTICAL);
 		String[] ws;

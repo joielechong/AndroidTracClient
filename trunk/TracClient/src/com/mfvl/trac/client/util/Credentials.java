@@ -30,7 +30,7 @@ public class Credentials {
 
 	/** Set login credentials server-url, username, password and profile */
 	public static void setCredentials(final String url, final String username, final String password, final String profile) {
-		tcLog.d("Credentials", "setCredentials");
+		// tcLog.d("Credentials", "setCredentials");
 		_url = url;
 		_username = username;
 		_password = password;
@@ -42,7 +42,7 @@ public class Credentials {
 	 * password and profile
 	 */
 	public static void loadCredentials(Context context) {
-		tcLog.d("Credentials", "loadCredentials");
+		// tcLog.d("Credentials", "loadCredentials");
 		if (settings == null) {
 			settings = context.getSharedPreferences(PREFS_NAME, 0);
 		}
@@ -58,7 +58,7 @@ public class Credentials {
 	 * password and profile
 	 */
 	public static void storeCredentials(Context context) {
-		tcLog.d("Credentials", "storeCredentials");
+		// tcLog.d("Credentials", "storeCredentials");
 		if (settings == null) {
 			settings = context.getSharedPreferences(PREFS_NAME, 0);
 		}
@@ -102,7 +102,7 @@ public class Credentials {
 	}
 
 	public static boolean getFirstRun(Context context) {
-		tcLog.d("Credentials", "getFirstRun");
+		// tcLog.d("Credentials", "getFirstRun");
 		if (settings == null) {
 			settings = context.getSharedPreferences(PREFS_NAME, 0);
 		}
@@ -116,7 +116,7 @@ public class Credentials {
 	}
 
 	public static void storeFilterString(Context context, final String filterString) {
-		tcLog.d("Credentials", "storeFilterString: " + filterString);
+		// tcLog.d("Credentials", "storeFilterString: " + filterString);
 		if (settings == null) {
 			settings = context.getSharedPreferences(PREFS_NAME, 0);
 		}
@@ -126,7 +126,7 @@ public class Credentials {
 	}
 
 	public static String getFilterString(Context context) {
-		tcLog.d("Credentials", "getFilterString");
+		// tcLog.d("Credentials", "getFilterString");
 		if (settings == null) {
 			settings = context.getSharedPreferences(PREFS_NAME, 0);
 		}
@@ -136,7 +136,7 @@ public class Credentials {
 	}
 
 	public static void removeFilterString(Context context) {
-		tcLog.d("Credentials", "removeFilterString");
+		// tcLog.d("Credentials", "removeFilterString");
 		if (settings == null) {
 			settings = context.getSharedPreferences(PREFS_NAME, 0);
 		}
@@ -146,7 +146,7 @@ public class Credentials {
 	}
 
 	public static void storeSortString(Context context, final String sortString) {
-		tcLog.d("Credentials", "storeSortString: " + sortString);
+		// tcLog.d("Credentials", "storeSortString: " + sortString);
 		if (settings == null) {
 			settings = context.getSharedPreferences(PREFS_NAME, 0);
 		}
@@ -156,7 +156,7 @@ public class Credentials {
 	}
 
 	public static String getSortString(Context context) {
-		tcLog.d("Credentials", "getSortString");
+		// tcLog.d("Credentials", "getSortString");
 		if (settings == null) {
 			settings = context.getSharedPreferences(PREFS_NAME, 0);
 		}
@@ -166,7 +166,7 @@ public class Credentials {
 	}
 
 	public static void removeSortString(Context context) {
-		tcLog.d("Credentials", "removeSortString");
+		// tcLog.d("Credentials", "removeSortString");
 		if (settings == null) {
 			settings = context.getSharedPreferences(PREFS_NAME, 0);
 		}
@@ -209,7 +209,8 @@ public class Credentials {
 			info = manager.getPackageInfo(context.getPackageName(), 0);
 			versie = "V" + info.versionName;
 			final int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-			tcLog.d(context.getClass().getName(), "buildVersion versie = " + versie + " api = " + currentapiVersion);
+			// tcLog.d(context.getClass().getName(), "buildVersion versie = " +
+			// versie + " api = " + currentapiVersion);
 			if (isDebuggable(context) && currentapiVersion >= android.os.Build.VERSION_CODES.GINGERBREAD) {
 				versie += "/" + info.lastUpdateTime / (1000 * 60);
 			}
@@ -219,7 +220,8 @@ public class Credentials {
 				versie = "V0.3x";
 			}
 		}
-		tcLog.d(context.getClass().getName(), "buildVersion versie = " + versie);
+		// tcLog.d(context.getClass().getName(), "buildVersion versie = " +
+		// versie);
 		return versie;
 	}
 
@@ -238,7 +240,8 @@ public class Credentials {
 				dbpath = p1;
 			}
 		}
-		tcLog.d(context.getClass().getName(), "makeDbPath dbpath = " + dbpath);
+		// tcLog.d(context.getClass().getName(), "makeDbPath dbpath = " +
+		// dbpath);
 		return dbpath;
 	}
 
@@ -252,5 +255,4 @@ public class Credentials {
 		}
 		return filePath;
 	}
-
 }

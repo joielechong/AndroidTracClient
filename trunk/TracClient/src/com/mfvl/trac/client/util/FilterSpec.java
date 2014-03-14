@@ -9,9 +9,6 @@ import com.mfvl.trac.client.R;
 
 public class FilterSpec extends Object implements Serializable, Cloneable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 552288154328397222L;
 	private String _veld;
 	private String _operator;
@@ -43,7 +40,8 @@ public class FilterSpec extends Object implements Serializable, Cloneable {
 				i = 0;
 			}
 		}
-		tcLog.d(this.getClass().getName(), "FilterSpec " + _veld + " " + _operator + " " + _waarde);
+		// tcLog.d(this.getClass().getName(), "FilterSpec " + _veld + " " +
+		// _operator + " " + _waarde);
 	}
 
 	public String veld() {
@@ -71,7 +69,8 @@ public class FilterSpec extends Object implements Serializable, Cloneable {
 	}
 
 	public void setEdit(boolean edited) {
-		tcLog.i(this.getClass().getName(), "setEdit veld = " + _veld + " edited = " + edited);
+		// tcLog.i(this.getClass().getName(), "setEdit veld = " + _veld +
+		// " edited = " + edited);
 		if (edited != _edited) {
 			_edited = edited;
 			if (_edited) {
@@ -94,5 +93,23 @@ public class FilterSpec extends Object implements Serializable, Cloneable {
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
+	}
+
+	private int hc(Object o) {
+		return o == null ? 0 : o.hashCode();
+	}
+
+	@Override
+	public int hashCode() {
+		// Start with a non-zero constant.
+		int result = 17;
+
+		// Include a hash for each field.
+		result = 31 * result + (_edited ? 1 : 0);
+		result = 31 * result + hc(_veld);
+		result = 31 * result + hc(_operator);
+		result = 31 * result + hc(_waarde);
+		result = 31 * result + hc(_newwaarde);
+		return result;
 	}
 }

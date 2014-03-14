@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources>
+
+    <string-array name="fieldsnotmodified">
+        <item>owner</item>
+        <item>status</item>
+        <item>time</item>
+        <item>changetime</item>
+        <item>modified</item>
+        <item>_ts</item>
+        <item>action</item>
+        <item>comment</item>
+        <item>id</item>
+        <item>ticket</item>
+        <item>resolution</item>
+    </string-array>
+</resources>

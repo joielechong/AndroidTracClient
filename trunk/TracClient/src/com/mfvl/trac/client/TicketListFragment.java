@@ -730,7 +730,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 	}
 
 	private void doRefresh() {
-		tcLog.d(this.getClass().getName(), "doRefresh");
+		// tcLog.d(this.getClass().getName(), "doRefresh");
 		killThreads();
 		hs.setText("");
 		scrollPosition = 0;
@@ -738,14 +738,14 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 		loadTicketList(new onLoadListListener() {
 			@Override
 			public void onComplete() {
-				tcLog.d(this.getClass().getName(), "doRefresh - onComplete");
+				// tcLog.d(this.getClass().getName(), "doRefresh - onComplete");
 				loadTicketContent();
 			}
 		});
 	}
 
 	public void forceRefresh() {
-		tcLog.d(this.getClass().getName(), "forceRefresh");
+		// tcLog.d(this.getClass().getName(), "forceRefresh");
 		refreshOnRestart = true;
 	}
 
@@ -773,17 +773,18 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 	}
 
 	public void setSort(ArrayList<SortSpec> sort) {
-		tcLog.d(this.getClass().getName(), "setSort " + sort);
+		// tcLog.d(this.getClass().getName(), "setSort " + sort);
 		sortList = sort;
 	}
 
 	public int getTicketCount() {
-		tcLog.d(this.getClass().getName(), "getTicketCount");
+		// tcLog.d(this.getClass().getName(), "getTicketCount");
 		return dataAdapter.getCount();
 	}
 
 	public List<Integer> getNewTickets(final String isoTijd) {
-		tcLog.d(this.getClass().getName(), "getNewTickets isoTijd = " + isoTijd);
+		// tcLog.d(this.getClass().getName(), "getNewTickets isoTijd = " +
+		// isoTijd);
 		final JSONRPCHttpClient req = new JSONRPCHttpClient(_url, _sslHack);
 		req.setCredentials(_username, _password);
 		try {
@@ -794,30 +795,32 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 			ob.put("__jsonclass__", datum);
 			final JSONArray param = new JSONArray();
 			param.put(ob);
-			tcLog.d(this.getClass().getName(), "getNewTickets param = " + param);
+			// tcLog.d(this.getClass().getName(), "getNewTickets param = " +
+			// param);
 			final JSONArray jsonTicketlist = req.callJSONArray("ticket.getRecentChanges", param);
-			tcLog.d(this.getClass().getName(), "getNewTickets jsonTicketList = " + jsonTicketlist);
+			// tcLog.d(this.getClass().getName(),
+			// "getNewTickets jsonTicketList = " + jsonTicketlist);
 			final List<Integer> l = new ArrayList<Integer>();
 
 			final int count = jsonTicketlist.length();
 			for (int i = 0; i < count; i++) {
 				l.add(jsonTicketlist.getInt(i));
 			}
-			tcLog.d(this.getClass().getName(), "getNewTickets l = " + l);
+			// tcLog.d(this.getClass().getName(), "getNewTickets l = " + l);
 			return l;
 		} catch (final JSONException e) {
-			tcLog.d(this.getClass().getName(),
-					"getNewTickets JSONException = " + e.getMessage() + "\n" + tcLog.getStackTraceString(e), e);
+			// tcLog.d(this.getClass().getName(),"getNewTickets JSONException = "
+			// + e.getMessage() + "\n" + tcLog.getStackTraceString(e), e);
 			return null;
 		} catch (final JSONRPCException e) {
-			tcLog.d(this.getClass().getName(),
-					"getNewTickets JSONRPCException = " + e.getMessage() + "\n" + tcLog.getStackTraceString(e), e);
+			// tcLog.d(this.getClass().getName(),"getNewTickets JSONRPCException = "
+			// + e.getMessage() + "\n" + tcLog.getStackTraceString(e), e);
 			return null;
 		}
 	}
 
 	public void setHost(final String url, final String username, final String password, boolean sslHack, String profile) {
-		tcLog.d(this.getClass().getName(), "setHost " + profile);
+		// tcLog.d(this.getClass().getName(), "setHost " + profile);
 		super.setHost(url, username, password, sslHack);
 		SelectedProfile = profile;
 	}

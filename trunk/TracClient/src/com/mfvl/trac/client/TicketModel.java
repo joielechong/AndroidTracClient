@@ -1,5 +1,6 @@
 package com.mfvl.trac.client;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +13,11 @@ import org.json.JSONException;
 
 import com.mfvl.trac.client.util.Credentials;
 
-public class TicketModel extends Object {
+public class TicketModel extends Object implements Serializable, Cloneable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4307815225424930343L;
 	private final Map<String, TicketModelVeld> _velden;
 	private final Map<Integer, String> _volgorde;
 	private final String _url;
@@ -22,7 +27,6 @@ public class TicketModel extends Object {
 	private final Thread networkThread;
 	private int _count = 0;
 	private boolean loading;
-	private String[] cannotChange={"owner","status","timer","changetime","_ts","action","comment","resolution"};
 
 	public TicketModel() {
 		_url = Credentials.getUrl();
@@ -122,17 +126,17 @@ public class TicketModel extends Object {
 		}
 		return getVeld(_volgorde.get(i));
 	}
-	
+
 	private int hc(Object o) {
-		return (o == null ? 0 : o.hashCode());
+		return o == null ? 0 : o.hashCode();
 	}
-	
-	@Override 
+
+	@Override
 	public int hashCode() {
-     // Start with a non-zero constant.
+		// Start with a non-zero constant.
 		int result = 17;
 
-     // Include a hash for each field.
+		// Include a hash for each field.
 		result = 31 * result + (_sslHack ? 1 : 0);
 		result = 31 * result + _count;
 		result = 31 * result + hc(_velden);

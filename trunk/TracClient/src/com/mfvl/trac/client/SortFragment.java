@@ -18,7 +18,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.mfvl.trac.client.util.SortSpec;
-import com.mfvl.trac.client.util.tcLog;
 
 public class SortFragment extends TracClientFragment {
 
@@ -131,30 +130,27 @@ public class SortFragment extends TracClientFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		tcLog.d(this.getClass().getName(), "onCreate");
-		tcLog.d(this.getClass().getName(), "savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		// tcLog.d(this.getClass().getName(), "onCreate");
+		// tcLog.d(this.getClass().getName(), "savedInstanceState = " +
+		// (savedInstanceState == null ? "null" : "not null"));
 		setHasOptionsMenu(true);
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		tcLog.d(this.getClass().getName(), "onCreateView");
-		tcLog.d(this.getClass().getName(), "savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		// tcLog.d(this.getClass().getName(), "onCreateView");
+		// tcLog.d(this.getClass().getName(), "savedInstanceState = " +
+		// (savedInstanceState == null ? "null" : "not null"));
 		final View view = inflater.inflate(R.layout.sort_view, container, false);
 		return view;
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle savedState) {
-		super.onSaveInstanceState(savedState);
-		tcLog.d(this.getClass().getName(), "onSaveInstanceState");
-	}
-
-	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		tcLog.d(this.getClass().getName(), "onActivityCreated");
-		tcLog.d(this.getClass().getName(), "savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		// tcLog.d(this.getClass().getName(), "onActivityCreated");
+		// tcLog.d(this.getClass().getName(), "savedInstanceState = " +
+		// (savedInstanceState == null ? "null" : "not null"));
 		final View view = getView();
 		final ListView tl = (ListView) view.findViewById(R.id.sortlist);
 		final ArrayList<SortSpec> outputSpec = new ArrayList<SortSpec>();
@@ -185,13 +181,15 @@ public class SortFragment extends TracClientFragment {
 			@Override
 			public void onClick(View v1) {
 				final ArrayList<SortSpec> outputSpec = sortAdapter.items;
-				tcLog.d(this.getClass().getName(), "stor onButton outputSpec=" + outputSpec);
+				// tcLog.d(this.getClass().getName(),
+				// "stor onButton outputSpec=" + outputSpec);
 				for (int i = outputSpec.size() - 1; i >= 0; i--) {
 					if (outputSpec.get(i).richting() == null) {
 						outputSpec.remove(i);
 					}
 				}
-				tcLog.d(this.getClass().getName(), "Store is clicked! " + outputSpec);
+				// tcLog.d(this.getClass().getName(), "Store is clicked! " +
+				// outputSpec);
 				listener.setSort(outputSpec);
 				// getFragmentManager().popBackStackImmediate();
 				getFragmentManager().popBackStack();
@@ -203,17 +201,17 @@ public class SortFragment extends TracClientFragment {
 		pb.dismiss();
 
 		if (addButton != null && addSpinner != null) {
-			tcLog.d(this.getClass().getName(), "addButton ");
+			// tcLog.d(this.getClass().getName(), "addButton ");
 			final ArrayList<String> velden = tm.velden();
 			final ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, velden);
-			tcLog.d(this.getClass().getName(), "addButton " + spinAdapter);
+			// tcLog.d(this.getClass().getName(), "addButton " + spinAdapter);
 			addSpinner.setAdapter(spinAdapter);
-			tcLog.d(this.getClass().getName(), "addButton " + addSpinner);
+			// tcLog.d(this.getClass().getName(), "addButton " + addSpinner);
 			addButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v1) {
 					final String veld = velden.get((int) addSpinner.getSelectedItemId());
-					tcLog.d(this.getClass().getName(), "addButton " + veld);
+					// tcLog.d(this.getClass().getName(), "addButton " + veld);
 					final SortSpec o = new SortSpec(veld);
 					sortAdapter.add(o);
 					sortAdapter.notifyDataSetChanged();
@@ -224,14 +222,9 @@ public class SortFragment extends TracClientFragment {
 	}
 
 	@Override
-	public void onStart() {
-		super.onStart();
-		tcLog.d(this.getClass().getName(), "onStart");
-	}
-
-	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" + item);
+		// tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" +
+		// item);
 		final int itemId = item.getItemId();
 		if (itemId == R.id.help || itemId == R.id.over) {
 			final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
@@ -245,14 +238,8 @@ public class SortFragment extends TracClientFragment {
 		}
 	}
 
-	@Override
-	public void onResume() {
-		super.onResume();
-		tcLog.d(this.getClass().getName(), "onResume");
-	}
-
 	public void setList(ArrayList<SortSpec> l) {
-		tcLog.d(this.getClass().getName(), "setList l = " + l);
+		// tcLog.d(this.getClass().getName(), "setList l = " + l);
 		inputSpec = l;
 	}
 

@@ -126,7 +126,6 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public void beginTransaction() {
-		tcLog.d(this.getClass().getName(), "beginTransaction db = " + db);
 		if (db == null) {
 			this.open();
 		}
@@ -134,7 +133,6 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public void endTransaction() {
-		tcLog.d(this.getClass().getName(), "endTransaction db = " + db);
 		if (db == null) {
 			this.open();
 		}
@@ -143,8 +141,6 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public void addProfile(String name, LoginProfile profile) throws SQLException {
-		tcLog.d(this.getClass().getName(), "addProfile name = " + name + " profile = " + profile + " db = " + db);
-
 		final ContentValues values = new ContentValues();
 		values.put(NAME_ID, name);
 		values.put(URL_ID, profile.getUrl());
@@ -218,7 +214,6 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public int delProfiles() {
-		tcLog.d(this.getClass().getName(), "delProfiles db = " + db);
 		if (db == null) {
 			this.open();
 		}
@@ -227,7 +222,6 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public void readXML(final String appname) throws Exception {
-		tcLog.d(this.getClass().getName(), "readXML appname = " + appname + " db = " + db);
 		if (db == null) {
 			this.open();
 		}
