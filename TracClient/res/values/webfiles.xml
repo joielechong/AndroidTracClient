@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
-
-    <!-- Default versie - engels -->
     <string name="helpdetailfile">detailhelp</string>
     <string name="helplistfile">listhelp</string>
     <string name="whatsnewhelpfile">whatsnew</string>
@@ -11,5 +9,4 @@
     <string name="updatefieldhelpfile">updatefieldhelp</string>
     <string name="loginhelpfile">loginhelp</string>
     <string name="newhelpfile">newhelp</string>
-
 </resources>

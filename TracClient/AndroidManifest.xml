@@ -3,7 +3,7 @@
     package="com.mfvl.trac.client"
     android:installLocation="auto"
     android:versionCode="67"
-    android:versionName="0.4" >
+    android:versionName="0.4.1-rc3" >
 
     <uses-sdk
         android:minSdkVersion="8"

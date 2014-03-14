@@ -1,17 +1,24 @@
 package com.mfvl.trac.client;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 
 import com.google.ads.AdRequest;
 import com.google.ads.AdSize;
 import com.google.ads.AdView;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.mfvl.trac.client.util.Credentials;
-import com.mfvl.trac.client.util.tcLog;
 
 public class TracClientFragment extends Fragment {
 	public Ticket _ticket = null;
@@ -26,7 +33,7 @@ public class TracClientFragment extends Fragment {
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		tcLog.d(this.getClass().getName() + ".super", "onAttach ");
+		// tcLog.d(this.getClass().getName() + ".super", "onAttach ");
 		context = (TracStart) activity;
 		listener = context;
 	}
@@ -34,8 +41,9 @@ public class TracClientFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		tcLog.d(this.getClass().getName() + ".super", "onCreate savedInstanceState = "
-				+ (savedInstanceState == null ? "null" : "not null"));
+		// tcLog.d(this.getClass().getName() + ".super",
+		// "onCreate savedInstanceState = "+ (savedInstanceState == null ?
+		// "null" : "not null"));
 		if (savedInstanceState != null) {
 			_url = savedInstanceState.getString("currentURL");
 			_username = savedInstanceState.getString("currentUsername");
@@ -47,8 +55,9 @@ public class TracClientFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		tcLog.d(this.getClass().getName() + ".super", "onActivityCreated savedInstanceState = "
-				+ (savedInstanceState == null ? "null" : "not null"));
+		// tcLog.d(this.getClass().getName() + ".super",
+		// "onActivityCreated savedInstanceState = " + (savedInstanceState ==
+		// null ? "null" : "not null"));
 		if (listener != null && listener.dispAds()) {
 			final LinearLayout ll = (LinearLayout) getView().findViewById(R.id.adBlock);
 			if (ll != null) {
@@ -61,7 +70,8 @@ public class TracClientFragment extends Fragment {
 					}
 					adView.loadAd(adRequest);
 					adView.setLayoutParams(ll.getLayoutParams());
-					tcLog.d(getClass().getName(), "adView size = "+adView.getHeight());
+					// tcLog.d(getClass().getName(), "adView size = " +
+					// adView.getHeight());
 					ll.addView(adView);
 				}
 			}
@@ -71,7 +81,7 @@ public class TracClientFragment extends Fragment {
 	@Override
 	public void onSaveInstanceState(Bundle savedState) {
 		super.onSaveInstanceState(savedState);
-		tcLog.d(this.getClass().getName() + ".super", "onSaveInstanceState");
+		// tcLog.d(this.getClass().getName() + ".super", "onSaveInstanceState");
 		savedState.putString("currentURL", _url);
 		savedState.putString("currentUsername", _username);
 		savedState.putString("currentPassword", _password);
@@ -80,35 +90,29 @@ public class TracClientFragment extends Fragment {
 
 	@Override
 	public void onStart() {
-		tcLog.d(this.getClass().getName() + ".super", "onStart");
+		// tcLog.d(this.getClass().getName() + ".super", "onStart");
 		super.onStart();
 		EasyTracker.getInstance(context).activityStart(context);
 	}
 
 	@Override
 	public void onStop() {
-		tcLog.d(this.getClass().getName() + ".super", "onStop");
+		// tcLog.d(this.getClass().getName() + ".super", "onStop");
 		super.onStop();
 		EasyTracker.getInstance(context).activityStop(context);
 	}
 
 	@Override
 	public void onDestroy() {
-		tcLog.d(this.getClass().getName() + ".super", "onDestroy");
+		// tcLog.d(this.getClass().getName() + ".super", "onDestroy");
 		if (adView != null) {
 			adView.destroy();
 		}
 		super.onDestroy();
 	}
 
-	@Override
-	public void onDetach() {
-		tcLog.d(this.getClass().getName() + ".super", "onDetach");
-		super.onDetach();
-	}
-
 	public void setHost(final String url, final String username, final String password, boolean sslHack) {
-		tcLog.d(this.getClass().getName() + ".super", "setHost");
+		// tcLog.d(this.getClass().getName() + ".super", "setHost");
 		if (_url != url) {
 			_url = url;
 			_username = username;
@@ -132,4 +136,45 @@ public class TracClientFragment extends Fragment {
 		return startProgressBar(context.getString(resid));
 	}
 
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	private Spinner makeDialogSpinner(Context context, boolean dialogWanted) {
+		if (dialogWanted && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+			return new Spinner(context, Spinner.MODE_DIALOG);
+		} else {
+			return new Spinner(context);
+		}
+	}
+
+	private Spinner _makeComboSpin(Context context, final String veldnaam, List<Object> waardes, boolean optional, Object w,
+			boolean dialogWanted) {
+		// final ArrayList<Object> spinValues =
+		// (ArrayList<Object>)waardes.clone();
+		final List<Object> spinValues = new ArrayList<Object>();
+
+		if (optional) {
+			// spinValues.add(0,"");
+			spinValues.add("");
+		}
+
+		for (int i = 0; i < waardes.size(); i++) {
+			spinValues.add(waardes.get(i));
+		}
+
+		final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<Object>(context, android.R.layout.simple_spinner_item, spinValues);
+		spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		final Spinner valSpinner = makeDialogSpinner(context, dialogWanted);
+		valSpinner.setAdapter(spinAdapter);
+		if (w != null && !w.equals("")) {
+			valSpinner.setSelection(waardes.indexOf(w) + (optional ? 1 : 0), true);
+		}
+		return valSpinner;
+	}
+
+	protected Spinner makeDialogComboSpin(Context context, final String veldnaam, List<Object> waardes, boolean optional, Object w) {
+		return _makeComboSpin(context, veldnaam, waardes, optional, w, true);
+	}
+
+	protected Spinner makeComboSpin(Context context, final String veldnaam, List<Object> waardes, boolean optional, Object w) {
+		return _makeComboSpin(context, veldnaam, waardes, optional, w, false);
+	}
 }

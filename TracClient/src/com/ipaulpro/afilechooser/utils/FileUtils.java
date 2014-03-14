@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -48,7 +49,6 @@ import com.mfvl.trac.client.util.tcLog;
 public class FileUtils {
 	/** TAG for log messages. */
 	static final String TAG = "FileUtils";
-	private static final boolean DEBUG = false; // Set to true to enable logging
 
 	public static final String MIME_TYPE_AUDIO = "audio/*";
 	public static final String MIME_TYPE_TEXT = "text/*";
@@ -207,13 +207,6 @@ public class FileUtils {
 	 */
 	public static String getPath(Context context, Uri uri) throws URISyntaxException {
 
-		if (DEBUG) {
-			tcLog.d(TAG + " File -",
-					"Authority: " + uri.getAuthority() + ", Fragment: " + uri.getFragment() + ", Port: " + uri.getPort()
-							+ ", Query: " + uri.getQuery() + ", Scheme: " + uri.getScheme() + ", Host: " + uri.getHost()
-							+ ", Segments: " + uri.getPathSegments().toString());
-		}
-
 		if ("content".equalsIgnoreCase(uri.getScheme())) {
 			final String[] projection = { "_data" };
 			Cursor cursor = null;
@@ -282,9 +275,6 @@ public class FileUtils {
 		try {
 			mimeTypes = mtp.fromXmlResource(in);
 		} catch (final Exception e) {
-			if (DEBUG) {
-				tcLog.e(TAG, "getMimeTypes", e);
-			}
 		}
 		return mimeTypes;
 	}
@@ -348,10 +338,6 @@ public class FileUtils {
 	 * @author paulburke
 	 */
 	public static Bitmap getThumbnail(Context context, Uri uri, String mimeType) {
-		if (DEBUG) {
-			tcLog.d(TAG, "Attempting to get thumbnail");
-		}
-
 		if (isMediaUri(uri)) {
 			tcLog.e(TAG, "You can only retrieve thumbnails for images and videos.");
 			return null;
@@ -365,9 +351,6 @@ public class FileUtils {
 				cursor = resolver.query(uri, null, null, null, null);
 				if (cursor.moveToFirst()) {
 					final int id = cursor.getInt(0);
-					if (DEBUG) {
-						tcLog.d(TAG, "Got thumb ID: " + id);
-					}
 
 					if (mimeType.contains("video")) {
 						bm = MediaStore.Video.Thumbnails.getThumbnail(resolver, id, MediaStore.Video.Thumbnails.MINI_KIND, null);
@@ -376,9 +359,6 @@ public class FileUtils {
 					}
 				}
 			} catch (final Exception e) {
-				if (DEBUG) {
-					tcLog.e(TAG, "getThumbnail", e);
-				}
 			} finally {
 				if (cursor != null) {
 					cursor.close();
@@ -391,10 +371,11 @@ public class FileUtils {
 	private static final String HIDDEN_PREFIX = ".";
 
 	/**
-	 * File and folder comparator. TODO Expose sorting option method
+	 * File and folder comparator.
 	 * 
 	 * @author paulburke
 	 */
+	@SuppressLint("DefaultLocale")
 	private static Comparator<File> mComparator = new Comparator<File>() {
 		@Override
 		public int compare(File f1, File f2) {

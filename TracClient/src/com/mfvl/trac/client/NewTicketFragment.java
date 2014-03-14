@@ -1,8 +1,5 @@
 package com.mfvl.trac.client;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.json.JSONObject;
 
 import android.app.AlertDialog;
@@ -15,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -24,7 +20,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.mfvl.trac.client.util.tcLog;
+//import com.mfvl.trac.client.util.tcLog;
 
 public class NewTicketFragment extends TracClientFragment {
 	private final static int EXTRA = 1000;
@@ -33,14 +29,16 @@ public class NewTicketFragment extends TracClientFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+		// tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " +
+		// (savedInstanceState == null ? "null" : "not null"));
 		setHasOptionsMenu(true);
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		tcLog.d(this.getClass().getName(), "onCreateView savedInstanceState = "
-				+ (savedInstanceState == null ? "null" : "not null"));
+		// tcLog.d(this.getClass().getName(),
+		// "onCreateView savedInstanceState = " + (savedInstanceState == null ?
+		// "null" : "not null"));
 		if (container == null) {
 			return null;
 		}
@@ -55,13 +53,15 @@ public class NewTicketFragment extends TracClientFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		tcLog.d(this.getClass().getName(), "onActivityCreated savedInstanceState = "
-				+ (savedInstanceState == null ? "null" : "not null"));
+		// tcLog.d(this.getClass().getName(),
+		// "onActivityCreated savedInstanceState = "+ (savedInstanceState ==
+		// null ? "null" : "not null"));
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" + item);
+		// tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" +
+		// item);
 		final int itemId = item.getItemId();
 		if (itemId == R.id.help) {
 			final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
@@ -77,34 +77,13 @@ public class NewTicketFragment extends TracClientFragment {
 
 	@Override
 	public void setHost(final String url, final String username, final String password, boolean sslHack) {
-		tcLog.d(this.getClass().getName(), "setHost");
+		// tcLog.d(this.getClass().getName(), "setHost");
 		if (_url != url) {
 			_url = url;
 			_sslHack = sslHack;
 			_username = username;
 			_password = password;
 		}
-	}
-
-	private Spinner makeComboSpin(final String veldnaam, List<Object> waardes, boolean optional, Object w) {
-		final List<Object> spinValues = new ArrayList<Object>();
-
-		if (optional) {
-			spinValues.add("");
-		}
-
-		for (int i = 0; i < waardes.size(); i++) {
-			spinValues.add(waardes.get(i));
-		}
-
-		final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<Object>(context, android.R.layout.simple_spinner_item, spinValues);
-		spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		final Spinner valSpinner = new Spinner(context);
-		valSpinner.setAdapter(spinAdapter);
-		if (w != null && !w.equals("")) {
-			valSpinner.setSelection(waardes.indexOf(w), true);
-		}
-		return valSpinner;
 	}
 
 	private void makeRow(TableLayout tl, final String veldnaam, View tv2, final int id) {
@@ -125,7 +104,7 @@ public class NewTicketFragment extends TracClientFragment {
 	}
 
 	public void createTicket(final View view) {
-		tcLog.d(this.getClass().getName(), "createTicket");
+		// tcLog.d(this.getClass().getName(), "createTicket");
 		final Button backButton = (Button) view.findViewById(R.id.backbutton);
 		final Button storButton = (Button) view.findViewById(R.id.storebutton);
 		final TableLayout tl = (TableLayout) view.findViewById(R.id.newTickTable);
@@ -143,7 +122,7 @@ public class NewTicketFragment extends TracClientFragment {
 						|| veldnaam.equals("Owner") || veldnaam.equals("Created") || veldnaam.equals("Modified")) {
 					// ignore these fields so v stays null
 				} else if (veld.options() != null) {
-					v = makeComboSpin(veldnaam, veld.options(), veld.optional(), veld.value());
+					v = makeComboSpin(context, veldnaam, veld.options(), veld.optional(), veld.value());
 				} else {
 					v = new EditText(context);
 					((EditText) v).setTextAppearance(context, android.R.attr.textAppearanceMedium);

@@ -3,6 +3,9 @@ package com.mfvl.trac.client;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.Semaphore;
 
 import org.alexd.jsonrpc.JSONRPCException;
@@ -45,17 +48,17 @@ public class Ticket {
 	private final Semaphore actionLock = new Semaphore(1, true);
 	private String rpcerror = null;
 	/* static */private JSONRPCHttpClient req = null;
-	
+
 	private int hc(Object o) {
-		return (o == null ? 0 : o.hashCode());
+		return o == null ? 0 : o.hashCode();
 	}
-	
-	@Override 
+
+	@Override
 	public int hashCode() {
-     // Start with a non-zero constant.
+		// Start with a non-zero constant.
 		int result = 17;
 
-     // Include a hash for each field.
+		// Include a hash for each field.
 		result = 31 * result + hc(_velden);
 		result = 31 * result + hc(_history);
 		result = 31 * result + hc(_attachments);
@@ -70,8 +73,7 @@ public class Ticket {
 
 		return result;
 	}
-	
-	
+
 	public Ticket(final JSONObject velden) {
 		_ticknr = -1;
 		_velden = velden;
@@ -419,14 +421,15 @@ public class Ticket {
 
 	// update is called from within a no UI thread
 
-	public void update(String action, String comment, String veld, String waarde, final boolean notify, final TracStart context)
-			throws Exception {
-		tcLog.i(this.getClass().getName(), "update: " + action + " '" + comment + "' '" + veld + "' '" + waarde + "'");
+	public void update(String action, String comment, String veld, String waarde, final boolean notify, final TracStart context,
+			Map<String, String> modVeld) throws Exception {
+		tcLog.d(this.getClass().getName(), "update: " + action + " '" + comment + "' '" + veld + "' '" + waarde + "' " + modVeld);
+		// tcLog.d(this.getClass().getName(), "_velden voor = " + _velden);
 		if (_ticknr == -1) {
-			throw new Exception(context.getString(R.string.invtick) + " " + _ticknr);
+			throw new IllegalArgumentException(context.getString(R.string.invtick) + " " + _ticknr);
 		}
 		if (action == null) {
-			throw new Exception(context.getString(R.string.noaction));
+			throw new NullPointerException(context.getString(R.string.noaction));
 		}
 		_url = context.getUrl();
 		_username = context.getUsername();
@@ -436,6 +439,17 @@ public class Ticket {
 		if (waarde != null && veld != null && !"".equals(veld) && !"".equals(waarde)) {
 			_velden.put(veld, waarde);
 		}
+		if (modVeld != null) {
+			final Iterator<Entry<String, String>> i = modVeld.entrySet().iterator();
+			while (i.hasNext()) {
+				final Entry<String, String> e = i.next();
+				// tcLog.d(getClass().getName(), e.toString());
+				final String v = e.getKey();
+				final String w = e.getValue();
+				_velden.put(v, w);
+			}
+		}
+
 		final String cmt = comment == null ? "" : comment;
 		_velden.remove("changetime");
 		_velden.remove("time");
@@ -447,6 +461,8 @@ public class Ticket {
 					req = new JSONRPCHttpClient(_url, _sslHack);
 					req.setCredentials(_username, _password);
 				}
+				// tcLog.d(this.getClass().getName(), "_velden call = " +
+				// _velden);
 				req.callJSONArray("ticket.update", _ticknr, cmt, _velden, notify);
 				actionLock.release();
 				loadTicketData(context, null);

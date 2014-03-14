@@ -138,4 +138,7 @@
     <string name="wrongdbtext3">\nSelect the right database first</string>
     <string name="wrongdbtext2">\nRequested database = </string>
     <string name="showempty">Show empty fields</string>
+    <string name="unsaved">Leave screen and save changes?</string>
+    <string name="nee">No</string>
+    <string name="ja">Yes</string>
 </resources>

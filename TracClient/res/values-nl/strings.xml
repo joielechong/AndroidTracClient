@@ -115,4 +115,7 @@
     <string name="wrongdbtext3">\nSelecteer de juiste database eerst</string>
     <string name="wrongdbtext2">\nGevraagde database = </string>
     <string name="showempty">Toon lege velden</string>
+    <string name="unsaved">Scherm verlaten en gegevens bewaren?</string>
+    <string name="nee">Nee</string>
+    <string name="ja">Ja</string>
 </resources>

@@ -63,6 +63,7 @@ public class tcLog {
 			final String date = s.format(new Date());
 			debugString += "\n" + date + " " + tag + ": " + message;
 			debugString += "\n    Exception thrown: " + tr.getMessage();
+			debugString += "\n" + getStackTraceString(tr);
 		}
 		if (doToast) {
 			toast(tag + ": " + message);

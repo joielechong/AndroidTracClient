@@ -27,17 +27,17 @@ public class TicketModelVeld {
 		_optional = false;
 		_options = null;
 	}
-	
+
 	private int hc(Object o) {
-		return (o == null ? 0 : o.hashCode());
+		return o == null ? 0 : o.hashCode();
 	}
-	
-	@Override 
+
+	@Override
 	public int hashCode() {
-     // Start with a non-zero constant.
+		// Start with a non-zero constant.
 		int result = 17;
 
-     // Include a hash for each field.
+		// Include a hash for each field.
 		result = 31 * result + (_optional ? 1 : 0);
 		result = 31 * result + (_custom ? 1 : 0);
 		result = 31 * result + (_canChange ? 1 : 0);
@@ -50,7 +50,6 @@ public class TicketModelVeld {
 		result = 31 * result + hc(_options);
 		return result;
 	}
- 
 
 	public TicketModelVeld(final JSONObject v) throws TicketModelException {
 		try {
@@ -150,11 +149,11 @@ public class TicketModelVeld {
 	public boolean custom() {
 		return _custom;
 	}
-	
+
 	public boolean canChange() {
 		return _canChange;
 	}
-	
+
 	public void setChange(boolean c) {
 		_canChange = c;
 	}

@@ -20,7 +20,7 @@ import android.os.Process;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
 
-import com.mfvl.trac.client.util.tcLog;
+//import com.mfvl.trac.client.util.tcLog;
 
 public class RefreshService extends Service {
 
@@ -48,12 +48,12 @@ public class RefreshService extends Service {
 	private final class ServiceHandler extends Handler {
 		public ServiceHandler(Looper looper) {
 			super(looper);
-			tcLog.d(this.getClass().getName(), "ServiceHandler");
+			// tcLog.d(this.getClass().getName(), "ServiceHandler");
 		}
 
 		@Override
 		public void handleMessage(final Message msg) {
-			tcLog.d(this.getClass().getName(), "handleMessage msg = " + msg);
+			// tcLog.d(this.getClass().getName(), "handleMessage msg = " + msg);
 			final NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 			switch (msg.what) {
 			case MSG_START_TIMER:
@@ -94,9 +94,11 @@ public class RefreshService extends Service {
 							final Notification notification = mBuilder.build();
 							notification.flags |= Notification.FLAG_AUTO_CANCEL;
 							mNotificationManager.notify(notifId, notification);
-							tcLog.d(this.getClass().getName(), "Notification sent");
+							// tcLog.d(this.getClass().getName(),
+							// "Notification sent");
 						} catch (final IllegalArgumentException e) {
-							tcLog.i(this.getClass().getName(), "IllegalArgumentException in notification", e);
+							// tcLog.i(this.getClass().getName(),
+							// "IllegalArgumentException in notification", e);
 						}
 					}
 				}
@@ -107,16 +109,17 @@ public class RefreshService extends Service {
 	}
 
 	private void sendMessageToUI(int message) {
-		tcLog.d(this.getClass().getName(), "sendMessageToUI");
+		// tcLog.d(this.getClass().getName(), "sendMessageToUI");
 		try {
 			// Send data as an Integer
 			if (tracStart != null) {
 				tracStart.send(Message.obtain(null, message, 0, 0));
 			} else {
-				tcLog.d(this.getClass().getName(), "sendMessageToUI receiver is null");
+				// tcLog.d(this.getClass().getName(),
+				// "sendMessageToUI receiver is null");
 			}
 		} catch (final RemoteException e) {
-			tcLog.d(this.getClass().getName(), "sendMessageToUI failed", e);
+			// tcLog.d(this.getClass().getName(), "sendMessageToUI failed", e);
 		}
 	}
 
@@ -126,7 +129,7 @@ public class RefreshService extends Service {
 		// separate thread because the service normally runs in the process's
 		// main thread, which we don't want to block. We also make it
 		// background priority so CPU-intensive work will not disrupt our UI.
-		tcLog.d(this.getClass().getName(), "onCreate");
+		// tcLog.d(this.getClass().getName(), "onCreate");
 		final HandlerThread thread = new HandlerThread("ServiceStartArguments", Process.THREAD_PRIORITY_BACKGROUND);
 		thread.start();
 
@@ -138,7 +141,8 @@ public class RefreshService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		tcLog.d(this.getClass().getName(), "onStartCommand intent = " + intent);
+		// tcLog.d(this.getClass().getName(), "onStartCommand intent = " +
+		// intent);
 
 		// For each start request, send a message to start a job and deliver the
 		// start ID so we know which request we're stopping when we finish the
@@ -153,13 +157,13 @@ public class RefreshService extends Service {
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		tcLog.d(this.getClass().getName(), "onBind intent = " + intent);
+		// tcLog.d(this.getClass().getName(), "onBind intent = " + intent);
 		return mMessenger.getBinder();
 	}
 
 	@Override
 	public void onDestroy() {
-		tcLog.d(this.getClass().getName(), "onDestroy");
+		// tcLog.d(this.getClass().getName(), "onDestroy");
 		stopTimer();
 		final NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		mNotificationManager.cancel(notifId);
@@ -167,12 +171,12 @@ public class RefreshService extends Service {
 	}
 
 	private void startTimer(final Message msg) {
-		tcLog.d(this.getClass().getName(), "startTimer");
+		// tcLog.d(this.getClass().getName(), "startTimer");
 		monitorTimer = new Timer("monitorTickets");
 		monitorTimer.schedule(new TimerTask() {
 			@Override
 			public void run() {
-				tcLog.d(this.getClass().getName(), "timertask started");
+				// tcLog.d(this.getClass().getName(), "timertask started");
 				sendMessageToUI(MSG_REQUEST_TICKET_COUNT);
 			}
 		}, timerStart, timerPeriod);
