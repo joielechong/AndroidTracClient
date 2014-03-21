@@ -306,8 +306,8 @@ public class TracLoginFragment extends TracClientFragment {
 					@Override
 					public void run() {
 						final JSONRPCHttpClient req = new JSONRPCHttpClient(url, sslHack);
-						req.setCredentials(username, password);
 						try {
+							req.setCredentials(username, password);
 							final JSONArray retval = req.callJSONArray("system.getAPIVersion");
 							tcLog.d(this.getClass().getName(), retval.toString());
 							context.runOnUiThread(new Runnable() {
@@ -322,8 +322,8 @@ public class TracLoginFragment extends TracClientFragment {
 								}
 							});
 						} catch (final Exception e) {
-							e.printStackTrace();
-							tcLog.d(this.getClass().getName(), e.toString());
+							tcLog.d(getClass().getName(), e.toString());
+							tcLog.d(getClass().getName(), "  " + tcLog.getStackTraceString(e));
 							context.runOnUiThread(new Runnable() {
 								@Override
 								public void run() {

@@ -2,11 +2,12 @@ package org.alexd.jsonrpc;
 
 import java.io.UnsupportedEncodingException;
 
-import org.apache.http.Header;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.protocol.HTTP;
 import org.json.JSONObject;
+
+import ch.boye.httpclientandroidlib.Header;
+import ch.boye.httpclientandroidlib.entity.StringEntity;
+import ch.boye.httpclientandroidlib.message.BasicHeader;
+import ch.boye.httpclientandroidlib.protocol.HTTP;
 
 /**
  * Provides a HttpEntity for json content
@@ -27,7 +28,7 @@ class JSONEntity extends StringEntity {
 	 * 
 	 * @param jsonObject
 	 * @param encoding
-	 *            Chosen encoding from HTTP.UTF_8, HTTP.UTF_16 or ISO_8859_1 or
+	 *            Chosen encoding from Consts.UTF_8, ISO_8859_1 or
 	 *            any other supported format
 	 * @throws UnsupportedEncodingException
 	 */

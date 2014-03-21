@@ -14,9 +14,6 @@ import org.json.JSONException;
 import com.mfvl.trac.client.util.Credentials;
 
 public class TicketModel extends Object implements Serializable, Cloneable {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 4307815225424930343L;
 	private final Map<String, TicketModelVeld> _velden;
 	private final Map<Integer, String> _volgorde;

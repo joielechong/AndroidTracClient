@@ -299,6 +299,12 @@ public class DetailFragment extends TracClientFragment {
 			});
 			didUpdate = false;
 		}
+		final LinearLayout mv = (LinearLayout) getView().findViewById(R.id.modveld);
+		if (mv != null && !modVeld.isEmpty()) {
+			mv.setVisibility(View.VISIBLE);
+		} else {
+			mv.setVisibility(View.GONE);
+		}
 	}
 
 	@Override
@@ -435,6 +441,9 @@ public class DetailFragment extends TracClientFragment {
 			if (v == null) {
 				return;
 			}
+			final ListView listView = (ListView) getView().findViewById(R.id.listofFields);
+			listView.setAdapter(null);
+			values.clear();
 			final TextView tickText = (TextView) v.findViewById(R.id.ticknr);
 			if (tickText != null) {
 				tickText.setText("Ticket " + ticket.getTicketnr());
@@ -457,7 +466,6 @@ public class DetailFragment extends TracClientFragment {
 					}
 				});
 			}
-			final ListView listView = (ListView) getView().findViewById(R.id.listofFields);
 			final JSONArray fields = ticket.getFields();
 			final int count = fields.length();
 			for (int i = 0; i < count; i++) {
@@ -552,7 +560,22 @@ public class DetailFragment extends TracClientFragment {
 
 	private void selectField(final Ticket ticket, final String veld, final String waarde, final View dataView) {
 		final String[] notModified = getResources().getStringArray(R.array.fieldsnotmodified);
-		if (!Arrays.asList(notModified).contains(veld)) {
+		final String[] isStatusUpd = getResources().getStringArray(R.array.fieldsstatusupdate);
+		if (Arrays.asList(notModified).contains(veld)) {
+			context.runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					final AlertDialog.Builder alert = new AlertDialog.Builder(context);
+					alert.setTitle(R.string.notpossible);
+					alert.setMessage(R.string.notchange);
+					alert.setPositiveButton(R.string.oktext, null);
+					alert.show();
+				}
+			});
+		} else if (Arrays.asList(isStatusUpd).contains(veld)) {
+			listener.onUpdateTicket(_ticket);
+			didUpdate = true;
+		} else {
 			final TicketModelVeld tmv = tm.getVeld(veld);
 			final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -635,17 +658,6 @@ public class DetailFragment extends TracClientFragment {
 			pw.setWidth(getView().getWidth() * 9 / 10);
 			pw.setHeight(getView().getHeight() * 4 / 5);
 			pw.showAtLocation(parent, Gravity.CENTER, 0, 0);
-		} else {
-			context.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					final AlertDialog.Builder alert = new AlertDialog.Builder(context);
-					alert.setTitle(R.string.notpossible);
-					alert.setMessage(R.string.notchange);
-					alert.setPositiveButton(R.string.oktext, null);
-					alert.show();
-				}
-			});
 		}
 	}
 
