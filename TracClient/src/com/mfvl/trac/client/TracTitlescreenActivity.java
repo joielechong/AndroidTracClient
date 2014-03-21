@@ -38,7 +38,7 @@ public class TracTitlescreenActivity extends Activity {
 
 	@Override
 	public void onStart() {
-//		tcLog.i(this.getClass().getName(), "onStart");
+		// tcLog.i(this.getClass().getName(), "onStart");
 		super.onStart();
 		EasyTracker.getInstance(this).activityStart(this);
 		final Intent intent = getIntent();
@@ -46,7 +46,8 @@ public class TracTitlescreenActivity extends Activity {
 		Integer ticket = -1;
 		if (Intent.ACTION_VIEW.equals(intent.getAction())) {
 			final String contentString = intent.getDataString();
-//			tcLog.d(getClass().getName(), "View intent data = " + contentString);
+			// tcLog.d(getClass().getName(), "View intent data = " +
+			// contentString);
 			if (contentString != null) {
 				final Uri uri = Uri.parse(contentString.replace("trac.client.mfvl.com/", ""));
 				final List<String> segments = uri.getPathSegments();
@@ -89,7 +90,7 @@ public class TracTitlescreenActivity extends Activity {
 
 	@Override
 	public void onStop() {
-//		tcLog.i(this.getClass().getName(), "onStop");
+		// tcLog.i(this.getClass().getName(), "onStop");
 		super.onStop();
 		EasyTracker.getInstance(this).activityStop(this);
 	}

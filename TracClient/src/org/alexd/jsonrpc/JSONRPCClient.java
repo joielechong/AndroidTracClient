@@ -3,17 +3,18 @@ package org.alexd.jsonrpc;
 import java.util.UUID;
 
 import org.alexd.jsonrpc.JSONRPCParams.Versions;
-import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import ch.boye.httpclientandroidlib.Consts;
 
 import com.mfvl.trac.client.util.tcLog;
 
 public abstract class JSONRPCClient {
 
 	protected Versions version;
-	protected String encoding = HTTP.UTF_8;
+	protected String encoding = Consts.UTF_8.displayName();
 
 	// public static final String VERSION_1 = "1.0";
 	// public static final String VERSION_2 = "2.0";
