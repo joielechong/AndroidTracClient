@@ -579,8 +579,8 @@ public class DetailFragment extends TracClientFragment {
 			final TicketModelVeld tmv = tm.getVeld(veld);
 			final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-			final RelativeLayout ll = (RelativeLayout) inflater.inflate((tmv.options() == null ? R.layout.field_spec1
-					: R.layout.field_spec2), null, false);
+			final RelativeLayout ll = (RelativeLayout) inflater.inflate(tmv.options() == null ? R.layout.field_spec1
+					: R.layout.field_spec2, null, false);
 			final TextView tv = (TextView) ll.findViewById(R.id.veldnaam);
 			tv.setText(veld);
 			final EditText et = (EditText) ll.findViewById(R.id.veldwaarde);

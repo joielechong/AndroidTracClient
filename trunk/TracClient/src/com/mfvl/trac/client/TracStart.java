@@ -315,7 +315,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" + item);
+		tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" + item.getTitle());
 		final int itemId = item.getItemId();
 		if (itemId == R.id.over) {
 			final Intent launchTrac = new Intent(getApplicationContext(), TracShowWebPage.class);

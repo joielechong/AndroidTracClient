@@ -121,7 +121,7 @@ public class Credentials {
 			settings = context.getSharedPreferences(PREFS_NAME, 0);
 		}
 		final SharedPreferences.Editor editor = settings.edit();
-		editor.putString("filterString", (filterString == null ? "" : filterString));
+		editor.putString("filterString", filterString == null ? "" : filterString);
 		editor.commit();
 	}
 
@@ -151,7 +151,7 @@ public class Credentials {
 			settings = context.getSharedPreferences(PREFS_NAME, 0);
 		}
 		final SharedPreferences.Editor editor = settings.edit();
-		editor.putString("sortString", (sortString == null ? "" : sortString));
+		editor.putString("sortString", sortString == null ? "" : sortString);
 		editor.commit();
 	}
 

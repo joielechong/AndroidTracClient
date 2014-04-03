@@ -258,7 +258,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 
 	private void setScroll() {
 		if (listView != null) {
-			listView.setSelection((scrollPosition == 0 ? 0 : scrollPosition + 1));
+			listView.setSelection(scrollPosition == 0 ? 0 : scrollPosition + 1);
 		}
 	}
 
@@ -310,7 +310,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" + item);
+		tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" + item.getTitle());
 		final int itemId = item.getItemId();
 		if (itemId == R.id.tlnieuw) {
 			listener.onNewTicket();
@@ -525,7 +525,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 							});
 						}
 					} catch (final TicketLoadException e) {
-						tcLog.d(logTag, "loadTicketList interrupted", e);
+						tcLog.d(logTag, "loadTicketList interrupted");
 						clearTickets();
 					} finally {
 						pb.dismiss();
@@ -697,7 +697,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 						}
 					});
 				} catch (final TicketLoadException e) {
-					tcLog.d(logTag, "loadContentThread interrupted", e);
+					tcLog.d(logTag, "loadContentThread interrupted");
 					if (loadContentThread.getId() == tid) {
 						tcLog.d(logTag, "loadContentThread tickets cleared");
 						clearTickets();
