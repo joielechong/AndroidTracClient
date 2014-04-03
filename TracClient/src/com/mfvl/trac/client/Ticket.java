@@ -267,6 +267,7 @@ public class Ticket {
 				try {
 					final InputStream is = new FileInputStream(file);
 					is.read(data);
+					is.close();
 					final String b64 = Base64.encodeToString(data, Base64.DEFAULT);
 					final JSONArray ar = new JSONArray();
 					ar.put(_ticknr);

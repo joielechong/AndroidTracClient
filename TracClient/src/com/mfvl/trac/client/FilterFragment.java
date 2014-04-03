@@ -69,7 +69,7 @@ public class FilterFragment extends TracClientFragment {
 			// " "
 			// + o + " " + tmv);
 
-			final int resid = o.isEdit() ? (tmv.options() == null ? R.layout.filter_spec2 : R.layout.filter_spec3)
+			final int resid = o.isEdit() ? tmv.options() == null ? R.layout.filter_spec2 : R.layout.filter_spec3
 					: R.layout.filter_spec1;
 			final int curid = convertView == null ? -1 : convertView.getId();
 			// tcLog.d(this.getClass().getName(),"getView pos = " + position +

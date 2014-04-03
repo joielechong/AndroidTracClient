@@ -322,7 +322,7 @@ public class TracLoginFragment extends TracClientFragment {
 								}
 							});
 						} catch (final Exception e) {
-							tcLog.d(getClass().getName(), e.toString());
+							// tcLog.d(getClass().getName(), e.toString());
 							tcLog.d(getClass().getName(), "  " + tcLog.getStackTraceString(e));
 							context.runOnUiThread(new Runnable() {
 								@Override
@@ -384,7 +384,7 @@ public class TracLoginFragment extends TracClientFragment {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" + item);
+		tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" + item.getTitle());
 		final int itemId = item.getItemId();
 		if (itemId == R.id.help) {
 			final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);

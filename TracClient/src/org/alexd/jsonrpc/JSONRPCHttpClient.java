@@ -9,8 +9,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.net.Uri;
+import android.net.wifi.WifiConfiguration.Status;
+import ch.boye.httpclientandroidlib.Header;
 import ch.boye.httpclientandroidlib.HttpEntity;
 import ch.boye.httpclientandroidlib.HttpResponse;
+import ch.boye.httpclientandroidlib.HttpStatus;
 import ch.boye.httpclientandroidlib.ProtocolVersion;
 import ch.boye.httpclientandroidlib.auth.AuthScope;
 import ch.boye.httpclientandroidlib.auth.UsernamePasswordCredentials;
@@ -20,13 +23,13 @@ import ch.boye.httpclientandroidlib.client.methods.HttpPost;
 import ch.boye.httpclientandroidlib.client.protocol.HttpClientContext;
 import ch.boye.httpclientandroidlib.conn.ssl.SSLConnectionSocketFactory;
 import ch.boye.httpclientandroidlib.conn.ssl.SSLContextBuilder;
+import ch.boye.httpclientandroidlib.conn.ssl.TrustStrategy;
 import ch.boye.httpclientandroidlib.impl.client.BasicAuthCache;
 import ch.boye.httpclientandroidlib.impl.client.BasicCredentialsProvider;
 import ch.boye.httpclientandroidlib.impl.client.CloseableHttpClient;
 import ch.boye.httpclientandroidlib.impl.client.HttpClientBuilder;
 import ch.boye.httpclientandroidlib.impl.client.TargetAuthenticationStrategy;
 import ch.boye.httpclientandroidlib.util.EntityUtils;
-import ch.boye.httpclientandroidlib.conn.ssl.TrustStrategy;
 
 import com.mfvl.trac.client.util.tcLog;
 
@@ -70,12 +73,12 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 
 		@Override
 		public boolean isTrusted(final X509Certificate[] chain, final String authType) throws CertificateException {
-			//for (X509Certificate x: chain) {
-			//	tcLog.d(getClass().getName(), "cert: "+x);
-			//}
-			//tcLog.d(getClass().getName(),"chain = "+chain.length+" authType = "+authType);
-			// return chain.length == 1;
-			return true;
+			for (final X509Certificate x : chain) {
+				tcLog.d(getClass().getName(), "cert: " + x);
+			}
+			tcLog.d(getClass().getName(), "chain = " + chain.length + " authType = " + authType);
+			return chain.length == 1;
+			// return true;
 		}
 
 	}
@@ -143,89 +146,87 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 	protected JSONObject doJSONRequest(JSONObject jsonRequest) throws JSONRPCException {
 		// Create HTTP/POST request with a JSON entity containing the request
 		try {
-			final HttpPost request = new HttpPost(serviceUri);
+			int statusCode = 0;
+			HttpResponse response;
+			String actualUri = serviceUri;
+			do {
+				final HttpPost request = new HttpPost(actualUri);
 
-			if (_debug) {
-				tcLog.i(getClass().getName(), "Request: " + jsonRequest.toString());
-			}
-			lastJsonRequest = jsonRequest;
+				if (_debug) {
+					tcLog.i(getClass().getName(), "Request: " + jsonRequest.toString());
+				}
+				lastJsonRequest = jsonRequest;
 
-			HttpEntity entity;
+				HttpEntity entity;
 
-			try {
 				if (encoding.length() > 0) {
 					entity = new JSONEntity(jsonRequest, encoding);
 				} else {
 					entity = new JSONEntity(jsonRequest);
 				}
-			} catch (final UnsupportedEncodingException e1) {
-				throw new JSONRPCException("Unsupported encoding", e1);
-			}
-			request.setEntity(entity);
-			request.setProtocolVersion(PROTOCOL_VERSION);
+				request.setEntity(entity);
+				request.setProtocolVersion(PROTOCOL_VERSION);
 
-			try {
 				// Execute the request and try to decode the JSON Response
-				long t = System.currentTimeMillis();
-				final HttpResponse response = httpClient.execute(request, httpContext);
+				// long t = System.currentTimeMillis();
+				response = httpClient.execute(request, httpContext);
+				tcLog.i(getClass().getName(), "RawResponse: " + response);
+				statusCode = response.getStatusLine().getStatusCode();
+				if (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
+					Header headers[] = response.getHeaders("Location");
+					tcLog.i(getClass().getName(), "Headers: " + headers);
+					actualUri = headers[0].getValue();
+				}
+			} while (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY);
+			// t = System.currentTimeMillis() - t;
+			String responseString = EntityUtils.toString(response.getEntity());
+			lastResponse = responseString;
 
-				t = System.currentTimeMillis() - t;
-				String responseString = EntityUtils.toString(response.getEntity());
-				lastResponse = responseString;
+			responseString = responseString.trim();
 
-				responseString = responseString.trim();
+			if (_debug) {
+				tcLog.i(getClass().getName(), "Response: " + responseString);
+			}
 
-				if (_debug) {
-					tcLog.i(JSONRPCHttpClient.class.toString(), "Response: " + responseString);
+			final JSONObject jsonResponse = new JSONObject(responseString);
+			// Check for remote errors
+			if (jsonResponse.has("error")) {
+				final Object jsonError = jsonResponse.get("error");
+				if (!jsonError.equals(null)) {
+					throw new JSONRPCException(jsonResponse.get("error"));
 				}
-
-				final JSONObject jsonResponse = new JSONObject(responseString);
-				// Check for remote errors
-				if (jsonResponse.has("error")) {
-					final Object jsonError = jsonResponse.get("error");
-					if (!jsonError.equals(null)) {
-						throw new JSONRPCException(jsonResponse.get("error"));
-					}
-					return jsonResponse; // JSON-RPC 1.0
-				} else {
-					return jsonResponse; // JSON-RPC 2.0
-				}
-			} catch (final ClientProtocolException e) {
-				// Underlying errors are wrapped into a JSONRPCException
-				// instance
-				if (_debug) {
-					tcLog.e(getClass().getName(), "ClientProtocolException in JSONHTTPClient", e);
-					tcLog.e(getClass().getName(), "  " + tcLog.getStackTraceString(e));
-				}
-				throw new JSONRPCException("HTTP error: " + e.getMessage(), e);
-			} catch (final IOException e) {
-				if (_debug) {
-					tcLog.e(getClass().getName(), "IOException in JSONHTTPClient", e);
-					tcLog.e(getClass().getName(), "  " + tcLog.getStackTraceString(e));
-				}
-				throw new JSONRPCException("IO error: " + e.getMessage(), e);
-			} catch (final JSONException e) {
-				if (_debug) {
-					tcLog.e(getClass().getName(), "JSONException in JSONHTTPClient", e);
-					tcLog.e(getClass().getName(), "  " + tcLog.getStackTraceString(e));
-				}
-				final int titelstart = lastResponse.indexOf("<title>");
-				final int titeleind = lastResponse.indexOf("</title>");
-				if (titelstart == -1 || titeleind == -1) {
-					throw new JSONRPCException(lastResponse, e);
-				} else {
-					final String titel = lastResponse.substring(titelstart + 7, titeleind).trim();
-					throw new JSONRPCException("Invalid JSON response: " + titel, e);
-				}
+				return jsonResponse; // JSON-RPC 1.0
+			} else {
+				return jsonResponse; // JSON-RPC 2.0
 			}
 		} catch (final JSONRPCException e) {
 			tcLog.e(getClass().getName(), "JSONRPCException in JSONHTTPClient", e);
-			tcLog.e(getClass().getName(), "  " + tcLog.getStackTraceString(e));
 			throw new JSONRPCException(e);
+		} catch (final ClientProtocolException e) {
+			// Underlying errors are wrapped into a JSONRPCException
+			// instance
+			tcLog.e(getClass().getName(), "ClientProtocolException in JSONHTTPClient", e);
+			throw new JSONRPCException("HTTP error: " + e.getMessage());
+		} catch (final IOException e) {
+			tcLog.e(getClass().getName(), "IOException in JSONHTTPClient", e);
+			throw new JSONRPCException("IO error: " + e.getMessage());
+		} catch (final JSONException e) {
+			tcLog.e(getClass().getName(), "JSONException in JSONHTTPClient", e);
+			if (lastResponse.length() == 0) {
+				throw new JSONRPCException("JSONException: " + e.getMessage());
+			} else {
+				final int titelstart = lastResponse.indexOf("<title>");
+				final int titeleind = lastResponse.indexOf("</title>");
+				if (titelstart == -1 || titeleind == -1) {
+					throw new JSONRPCException("Invalid JSON response: " + lastResponse);
+				} else {
+					final String titel = lastResponse.substring(titelstart + 7, titeleind).trim();
+					throw new JSONRPCException("Invalid JSON response: title = " + titel);
+				}
+			}
 		} catch (final Exception e) {
 			tcLog.e(getClass().getName(), "Exception in JSONHTTPClient", e);
-			tcLog.e(getClass().getName(), "  " + tcLog.getStackTraceString(e));
-			throw new JSONRPCException("Exception in doRequest", e);
+			throw new JSONRPCException("Exception in doRequest: " + e.getMessage());
 		}
 	}
 }
