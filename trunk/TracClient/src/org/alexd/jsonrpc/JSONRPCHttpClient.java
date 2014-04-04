@@ -105,11 +105,9 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 			}
 			hcb.setTargetAuthenticationStrategy(new TargetAuthenticationStrategy());
 			httpClient = hcb.build();
-			httpContext = HttpClientContext.create();
 
 		} catch (final Exception e) {
 			httpClient = null;
-			httpContext = null;
 			serviceUri = null;
 			tcLog.e(getClass().getName(), "Exception in JSONHTTPClient", e);
 			tcLog.e(getClass().getName(), "  " + tcLog.getStackTraceString(e));
@@ -134,14 +132,9 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 		if (username != null && !"".equals(username)) {
 			_username = username;
 			_password = password;
-			final Uri u = Uri.parse(serviceUri);
-			final BasicCredentialsProvider cp = new BasicCredentialsProvider();
-			cp.setCredentials(new AuthScope(u.getHost(), u.getPort()), new UsernamePasswordCredentials(_username, _password));
-			httpContext.setCredentialsProvider(cp);
-			httpContext.setAuthCache(new BasicAuthCache());
 		}
 	}
-
+	
 	@Override
 	protected JSONObject doJSONRequest(JSONObject jsonRequest) throws JSONRPCException {
 		// Create HTTP/POST request with a JSON entity containing the request
@@ -150,6 +143,13 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 			HttpResponse response;
 			String actualUri = serviceUri;
 			do {
+				final Uri u = Uri.parse(actualUri);
+				final BasicCredentialsProvider cp = new BasicCredentialsProvider();
+				cp.setCredentials(new AuthScope(u.getHost(), u.getPort()), new UsernamePasswordCredentials(_username, _password));
+				httpContext = HttpClientContext.create();
+				httpContext.setCredentialsProvider(cp);
+				httpContext.setAuthCache(new BasicAuthCache());
+
 				final HttpPost request = new HttpPost(actualUri);
 
 				if (_debug) {
