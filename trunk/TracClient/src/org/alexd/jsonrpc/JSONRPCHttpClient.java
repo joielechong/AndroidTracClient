@@ -1,7 +1,6 @@
 package org.alexd.jsonrpc;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
@@ -9,7 +8,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.net.Uri;
-import android.net.wifi.WifiConfiguration.Status;
 import ch.boye.httpclientandroidlib.Header;
 import ch.boye.httpclientandroidlib.HttpEntity;
 import ch.boye.httpclientandroidlib.HttpResponse;
@@ -47,10 +45,6 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 	 */
 	private CloseableHttpClient httpClient;
 	/**
-	 * HttpClientContext to be used
-	 */
-	private HttpClientContext httpContext;
-	/**
 	 * Service URI
 	 */
 	private String serviceUri;
@@ -73,12 +67,12 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 
 		@Override
 		public boolean isTrusted(final X509Certificate[] chain, final String authType) throws CertificateException {
-			for (final X509Certificate x : chain) {
-				tcLog.d(getClass().getName(), "cert: " + x);
-			}
-			tcLog.d(getClass().getName(), "chain = " + chain.length + " authType = " + authType);
-			return chain.length == 1;
-			// return true;
+//			for (final X509Certificate x : chain) {
+//				tcLog.d(getClass().getName(), "cert: " + x);
+//			}
+//			tcLog.d(getClass().getName(), "chain = " + chain.length + " authType = " + authType);
+//			return chain.length == 1;
+			return true;
 		}
 
 	}
@@ -134,7 +128,7 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 			_password = password;
 		}
 	}
-	
+
 	@Override
 	protected JSONObject doJSONRequest(JSONObject jsonRequest) throws JSONRPCException {
 		// Create HTTP/POST request with a JSON entity containing the request
@@ -146,7 +140,7 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 				final Uri u = Uri.parse(actualUri);
 				final BasicCredentialsProvider cp = new BasicCredentialsProvider();
 				cp.setCredentials(new AuthScope(u.getHost(), u.getPort()), new UsernamePasswordCredentials(_username, _password));
-				httpContext = HttpClientContext.create();
+				final HttpClientContext httpContext = HttpClientContext.create();
 				httpContext.setCredentialsProvider(cp);
 				httpContext.setAuthCache(new BasicAuthCache());
 
@@ -170,10 +164,10 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 				// Execute the request and try to decode the JSON Response
 				// long t = System.currentTimeMillis();
 				response = httpClient.execute(request, httpContext);
-				tcLog.i(getClass().getName(), "RawResponse: " + response);
+//				tcLog.i(getClass().getName(), "RawResponse: " + response);
 				statusCode = response.getStatusLine().getStatusCode();
 				if (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
-					Header headers[] = response.getHeaders("Location");
+					final Header headers[] = response.getHeaders("Location");
 					tcLog.i(getClass().getName(), "Headers: " + headers);
 					actualUri = headers[0].getValue();
 				}
