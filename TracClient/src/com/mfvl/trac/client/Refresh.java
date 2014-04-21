@@ -11,7 +11,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 
-//import com.mfvl.trac.client.util.tcLog;
+import com.mfvl.trac.client.util.tcLog;
 
 public class Refresh extends Activity {
 
@@ -29,7 +29,7 @@ public class Refresh extends Activity {
 				msg.replyTo = null;
 				mService.send(msg);
 			} catch (final RemoteException e) {
-				// tcLog.e(this.getClass().getName(), "Problem connecting", e);
+				tcLog.e(this.getClass().getName(), "Problem connecting", e);
 				// In this case the service has crashed before we could even do
 				// anything with it
 			}
