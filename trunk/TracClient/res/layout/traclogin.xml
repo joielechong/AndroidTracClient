@@ -78,6 +78,14 @@
                     android:text="@string/sslHack"
                     android:visibility="gone" />
 
+                <CheckBox
+                    android:id="@+id/sslHack1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:text="@string/sslHack1"
+                    android:visibility="gone" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
+
     <!-- Default versie - engels -->
     <string name="app_name" translatable="false">TracClient</string>
     <string name="about_button">About Trac Client</string>
@@ -69,6 +70,8 @@
     <string name="Add">Add</string>
     <string name="auteur" translatable="false">Michiel van Loon</string>
     <string name="sslHack">Accept Self Signed Certificates</string>
+    <string name="sslHack1">Accept Problematic Certificates</string>
+
     <string-array name="filter2_choice" translatable="false">
         <item>"="</item>
         <item>"!="</item>
@@ -89,6 +92,7 @@
         <item>ends on</item>
         <item>does not end on</item>
     </string-array>
+
     <string name="select">Select</string>
     <string name="delete">Delete</string>
     <string name="getlist">Fetch Ticketlist</string>
@@ -124,10 +128,12 @@
     <string name="foundnew">Modified or new tickets found:</string>
     <string name="notifmod">Modified tickets found</string>
     <string name="tracLogin">Log in to TRAC server</string>
+
     <string-array name="filter1_choice">
         <item>"="</item>
         <item>"!="</item>
     </string-array>
+
     <string name="nopermission">No permission to query tickets on server. Make sure TICKET_VIEW is set for the configured user.</string>
     <string name="notickets">No tickets found</string>
     <string name="nocomment">Cannot modify comment</string>
@@ -141,4 +147,5 @@
     <string name="unsaved">Leave screen and save changes?</string>
     <string name="nee">No</string>
     <string name="ja">Yes</string>
+
 </resources>
