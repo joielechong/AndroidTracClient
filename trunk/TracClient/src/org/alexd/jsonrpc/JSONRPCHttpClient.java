@@ -67,17 +67,25 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 
 		@Override
 		public boolean isTrusted(final X509Certificate[] chain, final String authType) throws CertificateException {
-//			for (final X509Certificate x : chain) {
-//				tcLog.d(getClass().getName(), "cert: " + x);
-//			}
-//			tcLog.d(getClass().getName(), "chain = " + chain.length + " authType = " + authType);
-//			return chain.length == 1;
+			for (final X509Certificate x : chain) {
+				tcLog.d(getClass().getName(), "cert: " + x);
+			}
+			tcLog.d(getClass().getName(), "chain = " + chain.length + " authType = " + authType);
+			return chain.length == 1;
+		}
+
+	}
+
+	public class MyTrustAlwaysStrategy implements TrustStrategy {
+
+		@Override
+		public boolean isTrusted(final X509Certificate[] chain, final String authType) throws CertificateException {
 			return true;
 		}
 
 	}
 
-	public JSONRPCHttpClient(final String uri, final boolean trustAll) {
+	public JSONRPCHttpClient(final String uri, final boolean sslHack) {
 		try {
 			serviceUri = uri;
 			final HttpClientBuilder hcb = HttpClientBuilder.create();
@@ -86,17 +94,18 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 			hcb.setDefaultRequestConfig(RequestConfig.custom().setSocketTimeout(getSoTimeout())
 					.setConnectionRequestTimeout(getConnectionTimeout()).build());
 
-			if (trustAll) {
+			if (sslHack) {
 				try {
 					final SSLContextBuilder builder = new SSLContextBuilder();
-					builder.loadTrustMaterial(null, new MyTrustSelfSignedStrategy());
+					builder.loadTrustMaterial(null, new MyTrustAlwaysStrategy());
 					final SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(builder.build());
 					hcb.setSSLSocketFactory(sslsf);
 				} catch (final Exception e) {
-					tcLog.e(getClass().getName(), "Exception after trustAll", e);
+					tcLog.e(getClass().getName(), "Exception after sslHack", e);
 					tcLog.e(getClass().getName(), "  " + tcLog.getStackTraceString(e));
 				}
 			}
+			
 			hcb.setTargetAuthenticationStrategy(new TargetAuthenticationStrategy());
 			httpClient = hcb.build();
 
@@ -138,11 +147,14 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 			String actualUri = serviceUri;
 			do {
 				final Uri u = Uri.parse(actualUri);
-				final BasicCredentialsProvider cp = new BasicCredentialsProvider();
-				cp.setCredentials(new AuthScope(u.getHost(), u.getPort()), new UsernamePasswordCredentials(_username, _password));
 				final HttpClientContext httpContext = HttpClientContext.create();
-				httpContext.setCredentialsProvider(cp);
-				httpContext.setAuthCache(new BasicAuthCache());
+				if (_username != null) {
+					final BasicCredentialsProvider cp = new BasicCredentialsProvider();
+					cp.setCredentials(new AuthScope(u.getHost(), u.getPort()),
+							new UsernamePasswordCredentials(_username, _password));
+					httpContext.setCredentialsProvider(cp);
+					httpContext.setAuthCache(new BasicAuthCache());
+				}
 
 				final HttpPost request = new HttpPost(actualUri);
 
@@ -164,7 +176,7 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 				// Execute the request and try to decode the JSON Response
 				// long t = System.currentTimeMillis();
 				response = httpClient.execute(request, httpContext);
-//				tcLog.i(getClass().getName(), "RawResponse: " + response);
+				// tcLog.i(getClass().getName(), "RawResponse: " + response);
 				statusCode = response.getStatusLine().getStatusCode();
 				if (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
 					final Header headers[] = response.getHeaders("Location");
