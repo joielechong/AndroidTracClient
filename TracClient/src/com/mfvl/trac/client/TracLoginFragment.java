@@ -56,6 +56,10 @@ public class TracLoginFragment extends TracClientFragment {
 	 */
 	private boolean sslHack;
 	/**
+	 * flag to ingnire Hostname verification errors in SSL
+	 */
+	private boolean sslHostNameHack;
+	/**
 	 * flag to indicate that the credentials will be stored in the shared
 	 * preferences
 	 */
@@ -84,12 +88,12 @@ public class TracLoginFragment extends TracClientFragment {
 		tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 		setHasOptionsMenu(true);
 		if (savedInstanceState == null) {
-			tcLog.d(this.getClass().getName(), "onViewCreated use Activity");
 			// Credentials.loadCredentials(context);
 			url = context.getUrl();
 			username = context.getUsername();
 			password = context.getPassword();
 			sslHack = context.getSslHack();
+			sslHostNameHack = context.getSslHostNameHack();
 		}
 	}
 
@@ -138,12 +142,14 @@ public class TracLoginFragment extends TracClientFragment {
 				username = context.getUsername();
 				password = context.getPassword();
 				sslHack = context.getSslHack();
+				sslHostNameHack = context.getSslHostNameHack();
 			} else {
 				tcLog.d(this.getClass().getName(), "onViewCreated use savedInstanceState");
 				url = savedInstanceState.getString("url");
 				username = savedInstanceState.getString("user");
 				password = savedInstanceState.getString("pass");
 				sslHack = savedInstanceState.getBoolean("hack");
+				sslHostNameHack = savedInstanceState.getBoolean("hostnamehack");
 				bewaren = savedInstanceState.getBoolean("bewaar");
 				bewaarBox.setChecked(bewaren);
 			}
@@ -228,18 +234,20 @@ public class TracLoginFragment extends TracClientFragment {
 
 		if (url == null) {
 			if (savedInstanceState == null) {
-				tcLog.d(this.getClass().getName(), "onViewCreated use Activity");
+				tcLog.d(this.getClass().getName(), "onActivityCreated use Activity");
 				// Credentials.loadCredentials(context);
 				url = context.getUrl();
 				username = context.getUsername();
 				password = context.getPassword();
 				sslHack = context.getSslHack();
+				sslHostNameHack = context.getSslHostNameHack();
 			} else {
 				tcLog.d(this.getClass().getName(), "onActivityCreated use savedInstanceState");
 				url = savedInstanceState.getString("url");
 				username = savedInstanceState.getString("user");
 				password = savedInstanceState.getString("pass");
 				sslHack = savedInstanceState.getBoolean("hack");
+				sslHostNameHack = savedInstanceState.getBoolean("hostnamehack");
 				bewaren = savedInstanceState.getBoolean("bewaar");
 				bewaarBox.setChecked(bewaren);
 			}
@@ -285,11 +293,12 @@ public class TracLoginFragment extends TracClientFragment {
 				if (bewaren) {
 					Credentials.setCredentials(url, username, password, SelectedProfile);
 					Credentials.setSslHack(sslHack);
+					Credentials.setSslHostNameHack(sslHostNameHack);
 					Credentials.storeCredentials(context);
 				}
 				Credentials.removeFilterString(context);
 				Credentials.removeSortString(context);
-				listener.onLogin(url, username, password, sslHack, SelectedProfile);
+				listener.onLogin(url, username, password, sslHack, sslHostNameHack, SelectedProfile);
 			}
 		});
 
@@ -300,42 +309,76 @@ public class TracLoginFragment extends TracClientFragment {
 				username = userView.getText().toString();
 				password = pwView.getText().toString();
 				sslHack = sslHackBox.isChecked();
+				sslHostNameHack = false; // force check on hostname first
 				final ProgressDialog pb = startProgressBar(R.string.checking);
 				final Thread networkThread = new Thread() {
 
 					@Override
 					public void run() {
-						final JSONRPCHttpClient req = new JSONRPCHttpClient(url, sslHack);
+						final JSONRPCHttpClient req = new JSONRPCHttpClient(url, sslHack, sslHostNameHack);
+						req.setCredentials(username, password);
+
+						final String command = "system.getAPIVersion";
 						try {
-							req.setCredentials(username, password);
-							final JSONArray retval = req.callJSONArray("system.getAPIVersion");
+							final JSONArray retval = req.callJSONArray(command);
 							tcLog.d(this.getClass().getName(), retval.toString());
-							context.runOnUiThread(new Runnable() {
-								@Override
-								public void run() {
-									credWarn.setVisibility(View.GONE);
-									credWarnTxt.setText(R.string.validCred);
-									credWarnTxt.setVisibility(View.VISIBLE);
-									credWarnSts.setVisibility(View.GONE);
-									okButton.setEnabled(true);
-									storButton.setEnabled(true);
-								}
-							});
+							setValidMessage();
 						} catch (final Exception e) {
-							// tcLog.d(getClass().getName(), e.toString());
-							tcLog.d(getClass().getName(), "  " + tcLog.getStackTraceString(e));
-							context.runOnUiThread(new Runnable() {
-								@Override
-								public void run() {
-									credWarn.setVisibility(View.VISIBLE);
-									credWarnTxt.setText(R.string.invalidCred);
-									credWarnTxt.setVisibility(View.VISIBLE);
-									credWarnSts.setText(e.getMessage());
-									credWarnSts.setVisibility(View.VISIBLE);
-									okButton.setEnabled(false);
-									storButton.setEnabled(false);
-								}
-							});
+							tcLog.d(getClass().getName(), "Exception during verify 1", e);
+							if (e.getMessage().startsWith("hostname in certificate didn't match:")) {
+								context.runOnUiThread(new Runnable() {
+									@Override
+									public void run() {
+										final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+										alertDialogBuilder.setTitle(R.string.hostnametitle);
+										final String msg = context.getString(R.string.hostnametext) + e.getMessage()
+												+ context.getString(R.string.hostnameign);
+										alertDialogBuilder.setMessage(msg);
+										alertDialogBuilder.setCancelable(false);
+										alertDialogBuilder.setPositiveButton(R.string.oktext,
+												new DialogInterface.OnClickListener() {
+													@Override
+													public void onClick(DialogInterface dialog, int id) {
+														final ProgressDialog pb1 = startProgressBar(R.string.checking);
+														final Thread nt1 = new Thread() {
+															@Override
+															public void run() {
+																final JSONRPCHttpClient req1 = new JSONRPCHttpClient(url, sslHack,
+																		true);
+																req1.setCredentials(username, password);
+																try {
+																	final JSONArray retval1 = req1.callJSONArray(command);
+																	tcLog.d(this.getClass().getName(), retval1.toString());
+																	setValidMessage();
+																	sslHostNameHack = true;
+																} catch (final Exception e1) {
+																	tcLog.d(getClass().getName(), "Exception during verify 2", e);
+																	setInvalidMessage(e1.getMessage());
+																	sslHostNameHack = false;
+																} finally {
+																	pb1.dismiss();
+																}
+															}
+														};
+														nt1.start();
+													}
+												});
+										alertDialogBuilder.setNegativeButton(R.string.cancel,
+												new DialogInterface.OnClickListener() {
+													@Override
+													public void onClick(DialogInterface dialog, int id) {
+														setInvalidMessage(e.getMessage());
+														sslHostNameHack = false;
+													}
+												});
+										final AlertDialog alertDialog = alertDialogBuilder.create();
+										alertDialog.show();
+									}
+								});
+							} else {
+								setInvalidMessage(e.getMessage());
+								sslHostNameHack = false;
+							}
 						} finally {
 							pb.dismiss();
 						}
@@ -378,6 +421,36 @@ public class TracLoginFragment extends TracClientFragment {
 				});
 				alert.setNegativeButton(R.string.cancel, null);
 				alert.show();
+			}
+		});
+	}
+
+	private void setInvalidMessage(final String m) {
+		context.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				credWarn.setVisibility(View.VISIBLE);
+				credWarnTxt.setText(R.string.invalidCred);
+				credWarnTxt.setVisibility(View.VISIBLE);
+				credWarnSts.setText(m);
+				credWarnSts.setVisibility(View.VISIBLE);
+				okButton.setEnabled(false);
+				storButton.setEnabled(false);
+				sslHostNameHack = false; // force check on hostname first
+			}
+		});
+	}
+
+	private void setValidMessage() {
+		context.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				credWarn.setVisibility(View.GONE);
+				credWarnTxt.setText(R.string.validCred);
+				credWarnTxt.setVisibility(View.VISIBLE);
+				credWarnSts.setVisibility(View.GONE);
+				okButton.setEnabled(true);
+				storButton.setEnabled(true);
 			}
 		});
 	}
@@ -478,6 +551,7 @@ public class TracLoginFragment extends TracClientFragment {
 		savedState.putString("user", userView.getText().toString());
 		savedState.putString("pass", pwView.getText().toString());
 		savedState.putBoolean("hack", sslHackBox.isChecked());
+		savedState.putBoolean("hostnamehack", sslHostNameHack);
 		savedState.putBoolean("bewaar", bewaarBox.isChecked());
 	}
 

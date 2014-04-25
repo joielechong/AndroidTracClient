@@ -15,10 +15,10 @@ Je kunt de informatie op het apparaat opslaan. Wees ervan bewust dat wachtwoorde
 maar op niet gerootte apparaten is die normaliter niet beschikbaar zijn voor andere apps.
 <br>
 Als opgeslagen informatie beschikbaar is dan wordt een dropdown box getoond om een van de opgeslagen profielen te selecteren.
-</p><p>
-Als je de fout <u>No peer certificate</u> of <u>Trust anchor for certification path not found</u> krijgt, 
-selecteer dan <u>Accepteer Self Signed certificaten</u>. In dit geval wordt de SSL bescherming omzeild.
+</p>
+<p>
 Indien login informatie vereist is dan kan deze ook ingevoerd worden.
+<p>
 Gebruik de <b>Verifieer</b> knop om te controleren of de app verbinding kan maken met de server.
 Met <b>OK</b> wordt de server informatie opgeslagen.
 </p><p>
@@ -41,5 +41,13 @@ De sorteervolgorde word op <code>priority&amp;modified&amp;desc=1</code> gezet.
 <br>
 Het filter word op <code>max=500&amp;status!=closed</code> gezet.
 </p>
+<h2>SSL overwegingen</h2> 
+<h3>Self Signed Certificaten</h3>
+Als je de fout <u>No peer certificate</u> of <u>Trust anchor for certification path not found</u> krijgt, 
+selecteer dan <u>Accepteer Self Signed certificaten</u>. In dit geval wordt de SSL bescherming omzeild.
+<h3>ServerName Indication</h3>
+Op dit moment ondersteunt de app geen <u>Servername Indiaction (SNI)</u>. Dit betekent dat op systemen met meerdere hostnamen op hetzeklfde IP adres de SSL-verificatie fout kan gaan.
+Dit zal worden herkend en je wordt gevraagd om de hostname verificatie fout negeren. Dit breekt ook de bescherming door SSL, maar kunt u de site te gebruiken. 
+Ik ben nog op zoek naar een veilige oplossing. 
 </body>
 </html> 

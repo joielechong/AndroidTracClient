@@ -42,6 +42,7 @@ public class Ticket {
 	private String _username;
 	private String _password;
 	private boolean _sslHack;
+	private boolean _sslHostNameHack;
 	private boolean _hasdata = false;
 	private boolean _isloading = false;
 	private static Semaphore available = new Semaphore(1, true);
@@ -68,6 +69,7 @@ public class Ticket {
 		result = 31 * result + hc(_username);
 		result = 31 * result + hc(_password);
 		result = 31 * result + (_sslHack ? 1 : 0);
+		result = 31 * result + (_sslHostNameHack ? 1 : 0);
 		result = 31 * result + (_isloading ? 1 : 0);
 		result = 31 * result + (_hasdata ? 1 : 0);
 
@@ -148,13 +150,14 @@ public class Ticket {
 			_username = context.getUsername();
 			_password = context.getPassword();
 			_sslHack = context.getSslHack();
+			_sslHostNameHack = context.getSslHostNameHack();
 		}
 		new Thread("loadTicketData") {
 			@Override
 			public void run() {
 				available.acquireUninterruptibly();
 				if (req == null) {
-					req = new JSONRPCHttpClient(_url, _sslHack);
+					req = new JSONRPCHttpClient(_url, _sslHack, _sslHostNameHack);
 					req.setCredentials(_username, _password);
 				}
 
@@ -215,12 +218,13 @@ public class Ticket {
 		_username = context.getUsername();
 		_password = context.getPassword();
 		_sslHack = context.getSslHack();
+		_sslHostNameHack = context.getSslHostNameHack();
 		final Thread networkThread = new Thread("getAttachment") {
 			@Override
 			public void run() {
 				available.acquireUninterruptibly();
 				if (req == null) {
-					req = new JSONRPCHttpClient(_url, _sslHack);
+					req = new JSONRPCHttpClient(_url, _sslHack, _sslHostNameHack);
 					req.setCredentials(_username, _password);
 				}
 
@@ -253,12 +257,13 @@ public class Ticket {
 		_username = context.getUsername();
 		_password = context.getPassword();
 		_sslHack = context.getSslHack();
+		_sslHostNameHack = context.getSslHostNameHack();
 		new Thread() {
 			@Override
 			public void run() {
 				available.acquireUninterruptibly();
 				if (req == null) {
-					req = new JSONRPCHttpClient(_url, _sslHack);
+					req = new JSONRPCHttpClient(_url, _sslHack, _sslHostNameHack);
 					req.setCredentials(_username, _password);
 				}
 				final File file = new File(filename);
@@ -384,8 +389,9 @@ public class Ticket {
 					_username = context.getUsername();
 					_password = context.getPassword();
 					_sslHack = context.getSslHack();
+					_sslHostNameHack = context.getSslHostNameHack();
 					if (req == null) {
-						req = new JSONRPCHttpClient(_url, _sslHack);
+						req = new JSONRPCHttpClient(_url, _sslHack, _sslHostNameHack);
 						req.setCredentials(_username, _password);
 					}
 					final int newticknr = req.callInt("ticket.create", s, d, _velden);
@@ -436,6 +442,7 @@ public class Ticket {
 		_username = context.getUsername();
 		_password = context.getPassword();
 		_sslHack = context.getSslHack();
+		_sslHostNameHack = context.getSslHostNameHack();
 		_velden.put("action", action);
 		if (waarde != null && veld != null && !"".equals(veld) && !"".equals(waarde)) {
 			_velden.put(veld, waarde);
@@ -459,7 +466,7 @@ public class Ticket {
 		try {
 			if (_url != null) {
 				if (req == null) {
-					req = new JSONRPCHttpClient(_url, _sslHack);
+					req = new JSONRPCHttpClient(_url, _sslHack, _sslHostNameHack);
 					req.setCredentials(_username, _password);
 				}
 				// tcLog.d(this.getClass().getName(), "_velden call = " +

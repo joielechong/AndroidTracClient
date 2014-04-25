@@ -76,11 +76,12 @@ public class NewTicketFragment extends TracClientFragment {
 	}
 
 	@Override
-	public void setHost(final String url, final String username, final String password, boolean sslHack) {
+	public void setHost(final String url, final String username, final String password, boolean sslHack, boolean sslHostNameHack) {
 		// tcLog.d(this.getClass().getName(), "setHost");
 		if (_url != url) {
 			_url = url;
 			_sslHack = sslHack;
+			_sslHostNameHack = sslHostNameHack;
 			_username = username;
 			_password = password;
 		}

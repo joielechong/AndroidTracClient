@@ -26,6 +26,7 @@ public class TracClientFragment extends Fragment {
 	public String _username = null;
 	public String _password = null;
 	public boolean _sslHack = false;
+	public boolean _sslHostNameHack = false;
 	public TracStart context;
 	private AdView adView = null;
 	public InterFragmentListener listener = null;
@@ -49,6 +50,7 @@ public class TracClientFragment extends Fragment {
 			_username = savedInstanceState.getString("currentUsername");
 			_password = savedInstanceState.getString("currentPassword");
 			_sslHack = savedInstanceState.getBoolean("sslHack", false);
+			_sslHostNameHack = savedInstanceState.getBoolean("sslHostNameHack", false);
 		}
 	}
 
@@ -86,6 +88,7 @@ public class TracClientFragment extends Fragment {
 		savedState.putString("currentUsername", _username);
 		savedState.putString("currentPassword", _password);
 		savedState.putBoolean("sslHack", _sslHack);
+		savedState.putBoolean("sslHostNameHack", _sslHostNameHack);
 	}
 
 	@Override
@@ -111,13 +114,14 @@ public class TracClientFragment extends Fragment {
 		super.onDestroy();
 	}
 
-	public void setHost(final String url, final String username, final String password, boolean sslHack) {
+	public void setHost(final String url, final String username, final String password, boolean sslHack, boolean sslHostNameHack) {
 		// tcLog.d(this.getClass().getName() + ".super", "setHost");
 		if (_url != url) {
 			_url = url;
 			_username = username;
 			_password = password;
 			_sslHack = sslHack;
+			_sslHostNameHack = sslHostNameHack;
 			_ticket = null;
 		}
 	}

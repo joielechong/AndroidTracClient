@@ -1,0 +1,115 @@
+<resources>
+	<string name="about_button">О приложении TracClient</string>
+	<string name="Back">Назад</string>
+	<string name="tracUser">Имя пользователя</string>
+	<string name="tracUserHint">Имя пользователя</string>
+	<string name="tracPw">Пароль</string>
+	<string name="tracPwHint">Пароль</string>
+	<string name="bewaren">Сохранить учётные данные</string>
+	<string name="vertext">Проверить</string>
+	<string name="invalidCred">Учётные данные не действительны</string>
+	<string name="validCred">Учётные данные действительны</string>
+	<string name="detail_heading">Детали тикета</string>
+	<string name="list_heading">Список тикетов</string>
+	<string name="ophalen">Загрузка данных</string>
+	<string name="tlrefresh">Обновить список</string>
+	<string name="dfrefresh">Обновить тикет</string>
+	<string name="filter">Опции фильтра</string>
+	<string name="sort">Сортировка</string>
+	<string name="changehost">Выбрать другой Trac хост</string>
+	<string name="updateticket">Изменить статус тикета</string>
+	<string name="updatefield">Изменить поле тикета</string>
+	<string name="nieuw">Новый тикет</string>
+	<string name="nodata">Нет данных</string>
+	<string name="nodatadesc">Данные для тикета ещё не загружены</string>
+	<string name="connerr">Ошибка соединения</string>
+	<string name="newtick">Создать новый тикет</string>
+	<string name="store">Разместить тикет</string>
+	<string name="storerr">Ошибка во время создания тикета</string>
+	<string name="storerrdesc">Невозможно разместить тикет</string>
+	<string name="storok">Тикет создан</string>
+	<string name="storokdesc">Тикет создан, id =</string>
+	<string name="config">Настроить поля</string>
+	<string name="comment">Добавить комментарий</string>
+	<string name="state">Изменить статус</string>
+	<string name="attach">Добавить вложение</string>
+	<string name="chooser_title">Вложения тикета</string>
+	<string name="tlshare">Расшарить список</string>
+	<string name="dfshare">Поделиться тикетом</string>
+	<string name="updtick">Изменить тикет</string>
+	<string name="cancel">Отмена</string>
+	<string name="invalidJson">Пришёл невалидный JSON</string>
+	<string name="noticketUnk">Тикет не создан: причина неизвестна.</string>
+	<string name="nolist">Невозможно создать список</string>
+	<string name="noadapter">Cannot create adapter</string>
+	<string name="invtick">Неверный номер тикета</string>
+	<string name="noaction">No action supplied</string>
+	<string name="zoekfilter">Введите строку для поиска</string>
+	<string name="zoek">Поиск</string>
+	<string name="storefilter">Сохранить фильтр</string>
+	<string name="storesort">Сохранить порядок сортировки</string>
+	<string name="filterdef">Выбрать фильтр</string>
+	<string name="sortdef">Выбрать порядок сортировки</string>
+	<string name="moveup">перейти вверх</string>
+	<string name="movedown">перейти вниз</string>
+	<string name="direction">выбрать направление</string>
+	<string name="sortdel">удалить сортировку</string>
+	<string name="help">Помощь</string>
+	<string name="Add">Добавить</string>
+	<string-array name="filter3_choice">
+		<item>равно</item>
+		<item>не равно</item>
+		<item>содержит</item>
+		<item>не содержит</item>
+		<item>начинается с</item>
+		<item>не начинается с</item>
+		<item>заканчивается на</item>
+		<item>не заканчивается на</item>
+	</string-array>
+	<string name="select">Выбрать</string>
+	<string name="delete">Удалить</string>
+	<string name="storeprofile">Сохранить профиль</string>
+	<string name="profiletext">Введите название профиля, под которым он будет сохранен</string>
+	<string name="areyousure">Вы уверены?</string>
+	<string name="delprofiletext">Удалить профиль</string>
+	<string name="loadprofiletext">Невозможно загрузить профиль</string>
+	<string name="notfound">Не найдено</string>
+	<string name="sdcardmissing">Карта памяти отсутствует. Невозможно сохранить вложение</string>
+	<string name="ioerror">Внешний накопитель - ошибка записи</string>
+	<string name="chooseapp">Открыть с помощью приложения:</string>
+	<string name="notify">Извещение</string>
+	<string name="exportprofiles">Экспорт профилей</string>
+	<string name="importprofiles">Импорт профилей</string>
+	<string name="completed">Завершено</string>
+	<string name="failed">Сбой</string>
+	<string name="xmlwritecompleted">Экспорт в XML успешно завершен</string>
+	<string name="xmlreadcompleted">Импорт из XML успешно завершен</string>
+	<string name="downloading">Загрузка</string>
+	<string name="uploading">Загрузка</string>
+	<string name="saveupdate">Сохранение изменений на сервер</string>
+	<string name="saveticket">Сохранение тикета</string>
+	<string name="selectticket">Выберите индивидуальный тикет</string>
+	<string name="ticketnotfound">Тикет не найден</string>
+	<string name="chooseticknr">Введите номер тикета</string>
+	<string name="chooseticket">Выберите тикет</string>
+	<string name="checking">Проверка</string>
+	<string name="updating">Обновление</string>
+	<string name="wait">Минутку, пожалуйста</string>
+	<string name="debug">Дебаг</string>
+	<string name="foundnew">Найденные новые или изменённые тикеты:</string>
+	<string name="notifmod">Найдены изменённые тикеты</string>
+	<string name="tracLogin">Залогиньтесь на TRAC сервере</string>
+	<string name="nopermission">Нет доступа для запроса тикетов на сервере. Убедитесь, что TICKET_VIEW выбрано для данного пользователя.</string>
+	<string name="notickets">Тикеты не найдены</string>
+	<string name="nocomment">Невозможно изменить комментарий</string>
+	<string name="notpossible">Не возможно</string>
+	<string name="notchange">Вы не можете изменить данное поле</string>
+	<string name="wrongdb">Неверная база данных</string>
+	<string name="wrongdbtext1">Текущая база данных =</string>
+	<string name="wrongdbtext3">Сначала выберите подходящую базу данных</string>
+	<string name="wrongdbtext2">Необходимая база данных =</string>
+	<string name="showempty">Показать пустые поля</string>
+	<string name="unsaved">Уйти и сохранить изменения?</string>
+	<string name="nee">Нет</string>
+	<string name="ja">Да</string>
+</resources>

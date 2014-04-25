@@ -10,15 +10,14 @@
 For more information on starting TracClient form an URL see <a href="url.html">this page</a>.
 <p>
 On this screen can be specified which TRAC server should be used.
-<br />
+<br>
 You can save the information on your device. Be aware that passwords are stored in plain text, but on non rooted devices normally not available to other apps.
-<br />
+<br>
 If saved information is available a dropdown box is presented to select one of the stored profiles.
 </p>
 <p>
-If you get the error <u>No peer certificate</u> or <u>Trust anchor for certification path not found</u>, 
-select <u>Accept Self Signed certificates</u>; this disables the SSL protection.
 If login information is required then it can also be entered.
+<p>
 Use the <b>Verify</b> button to check if the app can connect to the server.
 With <b>OK</b> the server information is stored.
 </p>
@@ -28,9 +27,9 @@ Normally the URL to fill in is TRAC-addrres appended with <code>/rpc</code> if n
 Some example URLs:
 <ul>
 <li>TracClient RO: http://van-loon.xs4all.nl/TracClient/rpc
-<br />No need for username and password
+<br>No need for username and password
 <li>TracClient RW: https://van-loon.xs4all.nl/TracClient/login/rpc
-<br />A valid Username and password are needed and for this site the Selfsigned certifcate checkbox must be set.
+<br>A valid Username and password are needed and for this site the Selfsigned certifcate checkbox must be set.
 </ul>
 </p>
 <p>
@@ -44,6 +43,14 @@ The sort order is set to <code>priority&amp;modified&amp;desc=1</code>.
 <br>
 The filter is set to <code>max=500&amp;status!=closed</code>.
 </p>
+<h2>SSL considerations</h2>
+<h3>Self Signed Certificates</h3>
+If you get the error <u>No peer certificate</u> or <u>Trust anchor for certification path not found</u>, 
+select <u>Accept Self Signed certificates</u>; this effectively disables the SSL protection.
+<h3>ServerName Indication</h3>
+At the moment the app does not support <u>ServerName Indiaction (SNI)</u>, this means that on systems with several hostnames with te same IP-address  the SSL verification can go wrong. 
+This will be recognized and you will be asked to ignore the hostname verification error. 
+This also breaks the protection offered by SSL but lets you use the site. I am looking for a safer solution.  
 </font>
 </body>
 </html> 

@@ -49,7 +49,7 @@ interface InterFragmentListener {
 
 	void onNewTicket();
 
-	void onLogin(String url, String username, String password, boolean sslHack, String profile);
+	void onLogin(String url, String username, String password, boolean sslHack, boolean sslHostNameHack, String profile);
 
 	void onChangeHost();
 
@@ -83,6 +83,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	private String username;
 	private String password;
 	private boolean sslHack;
+	private boolean sslHostNameHack;
 	private String profile;
 	private TicketModel tm = null;
 	// onActivityResult requestcode for filechooser
@@ -224,6 +225,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		username = Credentials.getUsername();
 		password = Credentials.getPassword();
 		sslHack = Credentials.getSslHack();
+		sslHostNameHack = Credentials.getSslHostNameHack();
 		profile = Credentials.getProfile();
 
 		if (Credentials.getFirstRun(this)) {
@@ -263,6 +265,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 					username = lp.getUsername();
 					password = lp.getPassword();
 					sslHack = lp.getSslHack();
+					sslHostNameHack = false; // force dialog to confirm
 					profile = null;
 				}
 			}
@@ -291,7 +294,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	public void initializeList() {
 		final TicketListFragment ticketListFragment = (TicketListFragment) fm.findFragmentByTag("List_Fragment");
 		tcLog.d(this.getClass().getName(), "initializeList ticketListFragment = " + ticketListFragment);
-		ticketListFragment.setHost(url, username, password, sslHack, profile);
+		ticketListFragment.setHost(url, username, password, sslHack, sslHostNameHack, profile);
 		setFilter(Credentials.getFilterString(this));
 		setSort(Credentials.getSortString(this));
 
@@ -341,7 +344,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 		ft.addToBackStack(null);
 		ft.commit();
-		detailFragment.setHost(url, username, password, sslHack);
+		detailFragment.setHost(url, username, password, sslHack, sslHostNameHack);
 		detailFragment.setTicketContent(ticket);
 	}
 
@@ -351,7 +354,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 		final NewTicketFragment newtickFragment = new NewTicketFragment();
 		tcLog.d(this.getClass().getName(), "detailFragment =" + newtickFragment.toString());
-		newtickFragment.setHost(url, username, password, sslHack);
+		newtickFragment.setHost(url, username, password, sslHack, sslHostNameHack);
 		final FragmentTransaction ft = fm.beginTransaction();
 		ft.replace(R.id.displayList, newtickFragment, "New_Fragment2");
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -370,18 +373,19 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 		ft.addToBackStack(null);
 		ft.commit();
-		updtickFragment.setHost(url, username, password, sslHack);
+		updtickFragment.setHost(url, username, password, sslHack, sslHostNameHack);
 		updtickFragment.loadTicket(ticket);
 	}
 
 	@Override
-	public void onLogin(String newUrl, String newUser, String newPass, boolean newHack, String newProfile) {
+	public void onLogin(String newUrl, String newUser, String newPass, boolean newHack, boolean newHostNameHack, String newProfile) {
 		tcLog.d(this.getClass().getName(), "onLogin " + newProfile);
 		tm = null;
 		url = newUrl;
 		username = newUser;
 		password = newPass;
 		sslHack = newHack;
+		sslHostNameHack = newHostNameHack;
 		profile = newProfile;
 		TicketListFragment ticketListFragment = (TicketListFragment) fm.findFragmentByTag("List_Fragment");
 		if (ticketListFragment != null) {
@@ -645,6 +649,10 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	}
 
 	public boolean getSslHack() {
+		return sslHack;
+	}
+
+	public boolean getSslHostNameHack() {
 		return sslHack;
 	}
 

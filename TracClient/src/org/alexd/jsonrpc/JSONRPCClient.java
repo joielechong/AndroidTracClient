@@ -7,8 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import ch.boye.httpclientandroidlib.Consts;
-
+import com.mfvl.android.http.Consts;
 import com.mfvl.trac.client.util.tcLog;
 
 public abstract class JSONRPCClient {

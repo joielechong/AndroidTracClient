@@ -1,34 +1,36 @@
 package org.alexd.jsonrpc;
 
-import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
+
+import javax.net.ssl.SSLException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.net.Uri;
-import ch.boye.httpclientandroidlib.Header;
-import ch.boye.httpclientandroidlib.HttpEntity;
-import ch.boye.httpclientandroidlib.HttpResponse;
-import ch.boye.httpclientandroidlib.HttpStatus;
-import ch.boye.httpclientandroidlib.ProtocolVersion;
-import ch.boye.httpclientandroidlib.auth.AuthScope;
-import ch.boye.httpclientandroidlib.auth.UsernamePasswordCredentials;
-import ch.boye.httpclientandroidlib.client.ClientProtocolException;
-import ch.boye.httpclientandroidlib.client.config.RequestConfig;
-import ch.boye.httpclientandroidlib.client.methods.HttpPost;
-import ch.boye.httpclientandroidlib.client.protocol.HttpClientContext;
-import ch.boye.httpclientandroidlib.conn.ssl.SSLConnectionSocketFactory;
-import ch.boye.httpclientandroidlib.conn.ssl.SSLContextBuilder;
-import ch.boye.httpclientandroidlib.conn.ssl.TrustStrategy;
-import ch.boye.httpclientandroidlib.impl.client.BasicAuthCache;
-import ch.boye.httpclientandroidlib.impl.client.BasicCredentialsProvider;
-import ch.boye.httpclientandroidlib.impl.client.CloseableHttpClient;
-import ch.boye.httpclientandroidlib.impl.client.HttpClientBuilder;
-import ch.boye.httpclientandroidlib.impl.client.TargetAuthenticationStrategy;
-import ch.boye.httpclientandroidlib.util.EntityUtils;
 
+import com.mfvl.android.http.Header;
+import com.mfvl.android.http.HttpEntity;
+import com.mfvl.android.http.HttpResponse;
+import com.mfvl.android.http.HttpStatus;
+import com.mfvl.android.http.ProtocolVersion;
+import com.mfvl.android.http.auth.AuthScope;
+import com.mfvl.android.http.auth.UsernamePasswordCredentials;
+import com.mfvl.android.http.client.config.RequestConfig;
+import com.mfvl.android.http.client.methods.HttpPost;
+import com.mfvl.android.http.client.protocol.HttpClientContext;
+import com.mfvl.android.http.conn.ssl.AllowAllHostnameVerifier;
+import com.mfvl.android.http.conn.ssl.SSLConnectionSocketFactory;
+import com.mfvl.android.http.conn.ssl.SSLContextBuilder;
+import com.mfvl.android.http.conn.ssl.TrustStrategy;
+import com.mfvl.android.http.impl.client.BasicAuthCache;
+import com.mfvl.android.http.impl.client.BasicCredentialsProvider;
+import com.mfvl.android.http.impl.client.CloseableHttpClient;
+import com.mfvl.android.http.impl.client.HttpClientBuilder;
+import com.mfvl.android.http.impl.client.TargetAuthenticationStrategy;
+import com.mfvl.android.http.util.EntityUtils;
 import com.mfvl.trac.client.util.tcLog;
 
 /**
@@ -60,7 +62,7 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 	 */
 
 	public JSONRPCHttpClient(final String uri) {
-		this(uri, false);
+		this(uri, false, false);
 	}
 
 	public class MyTrustSelfSignedStrategy implements TrustStrategy {
@@ -85,7 +87,7 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 
 	}
 
-	public JSONRPCHttpClient(final String uri, final boolean sslHack) {
+	public JSONRPCHttpClient(final String uri, final boolean sslHack, boolean sslHostNameHack) {
 		try {
 			serviceUri = uri;
 			final HttpClientBuilder hcb = HttpClientBuilder.create();
@@ -94,26 +96,31 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 			hcb.setDefaultRequestConfig(RequestConfig.custom().setSocketTimeout(getSoTimeout())
 					.setConnectionRequestTimeout(getConnectionTimeout()).build());
 
+			final SSLContextBuilder builder = new SSLContextBuilder();
+			SSLConnectionSocketFactory sslsf;
+
 			if (sslHack) {
 				try {
-					final SSLContextBuilder builder = new SSLContextBuilder();
 					builder.loadTrustMaterial(null, new MyTrustAlwaysStrategy());
-					final SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(builder.build());
-					hcb.setSSLSocketFactory(sslsf);
 				} catch (final Exception e) {
 					tcLog.e(getClass().getName(), "Exception after sslHack", e);
-					tcLog.e(getClass().getName(), "  " + tcLog.getStackTraceString(e));
 				}
 			}
-			
+
+			if (sslHostNameHack) {
+				sslsf = new SSLConnectionSocketFactory(builder.build(), new AllowAllHostnameVerifier());
+			} else {
+				sslsf = new SSLConnectionSocketFactory(builder.build());
+			}
+
+			hcb.setSSLSocketFactory(sslsf);
 			hcb.setTargetAuthenticationStrategy(new TargetAuthenticationStrategy());
 			httpClient = hcb.build();
 
 		} catch (final Exception e) {
 			httpClient = null;
 			serviceUri = null;
-			tcLog.e(getClass().getName(), "Exception in JSONHTTPClient", e);
-			tcLog.e(getClass().getName(), "  " + tcLog.getStackTraceString(e));
+			tcLog.e(getClass().getName(), "Exception in JSONRPCHTTPClient", e);
 		}
 	}
 
@@ -155,11 +162,13 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 					httpContext.setCredentialsProvider(cp);
 					httpContext.setAuthCache(new BasicAuthCache());
 				}
+				tcLog.d(getClass().getName(), "httpContext: " + httpContext);
 
 				final HttpPost request = new HttpPost(actualUri);
+				tcLog.d(getClass().getName(), "request: " + request);
 
 				if (_debug) {
-					tcLog.i(getClass().getName(), "Request: " + jsonRequest.toString());
+					tcLog.d(getClass().getName(), "Request: " + jsonRequest.toString());
 				}
 				lastJsonRequest = jsonRequest;
 
@@ -174,17 +183,14 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 				request.setProtocolVersion(PROTOCOL_VERSION);
 
 				// Execute the request and try to decode the JSON Response
-				// long t = System.currentTimeMillis();
 				response = httpClient.execute(request, httpContext);
-				// tcLog.i(getClass().getName(), "RawResponse: " + response);
 				statusCode = response.getStatusLine().getStatusCode();
 				if (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
 					final Header headers[] = response.getHeaders("Location");
-					tcLog.i(getClass().getName(), "Headers: " + headers);
+					tcLog.i(getClass().getName(), "Headers: " + Arrays.asList(headers));
 					actualUri = headers[0].getValue();
 				}
 			} while (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY);
-			// t = System.currentTimeMillis() - t;
 			String responseString = EntityUtils.toString(response.getEntity());
 			lastResponse = responseString;
 
@@ -199,29 +205,24 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 			if (jsonResponse.has("error")) {
 				final Object jsonError = jsonResponse.get("error");
 				if (!jsonError.equals(null)) {
-					throw new JSONRPCException(jsonResponse.get("error"));
+					throw new JSONRPCException(((JSONObject) jsonError).get("message"));
 				}
 				return jsonResponse; // JSON-RPC 1.0
 			} else {
 				return jsonResponse; // JSON-RPC 2.0
 			}
 		} catch (final JSONRPCException e) {
-			tcLog.e(getClass().getName(), "JSONRPCException in JSONHTTPClient", e);
-			throw new JSONRPCException(e);
-		} catch (final ClientProtocolException e) {
-			// Underlying errors are wrapped into a JSONRPCException
-			// instance
-			tcLog.e(getClass().getName(), "ClientProtocolException in JSONHTTPClient", e);
-			throw new JSONRPCException("HTTP error: " + e.getMessage());
-		} catch (final IOException e) {
-			tcLog.e(getClass().getName(), "IOException in JSONHTTPClient", e);
-			throw new JSONRPCException("IO error: " + e.getMessage());
+			tcLog.e(getClass().getName(), "JSONRPCException in JSONRPCHTTPClient.doJSONRequest", e);
+			throw e;
+		} catch (final SSLException e) {
+			tcLog.d(getClass().getName(), "SSLException in JSONRPCHTTPClient.doJSONRequest", e);
+			throw new JSONRPCException(e.getMessage());
 		} catch (final JSONException e) {
-			tcLog.e(getClass().getName(), "JSONException in JSONHTTPClient", e);
+			tcLog.e(getClass().getName(), "JSONException in JSONRPCHTTPClient.doJSONRequest", e);
 			if (lastResponse.length() == 0) {
 				throw new JSONRPCException("JSONException: " + e.getMessage());
 			} else {
-				final int titelstart = lastResponse.indexOf("<title>");
+				final int titelstart = lastResponse.indexOf("<title");
 				final int titeleind = lastResponse.indexOf("</title>");
 				if (titelstart == -1 || titeleind == -1) {
 					throw new JSONRPCException("Invalid JSON response: " + lastResponse);
@@ -231,8 +232,8 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 				}
 			}
 		} catch (final Exception e) {
-			tcLog.e(getClass().getName(), "Exception in JSONHTTPClient", e);
-			throw new JSONRPCException("Exception in doRequest: " + e.getMessage());
+			tcLog.e(getClass().getName(), "Exception in JSONRPCHTTPClient.doJSONRequest", e);
+			throw new JSONRPCException("Exception in doRequest: " + e.getMessage(), e);
 		}
 	}
 }

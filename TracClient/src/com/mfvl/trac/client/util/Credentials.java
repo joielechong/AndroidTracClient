@@ -25,6 +25,7 @@ public class Credentials {
 	private static String _username = "";
 	private static String _password = "";
 	private static boolean _sslHack = false;
+	private static boolean _sslHostNameHack = false;
 	private static String _profile = null;
 	private static SharedPreferences settings = null;
 
@@ -50,6 +51,7 @@ public class Credentials {
 		_username = settings.getString("tracUsername", "");
 		_password = settings.getString("tracPassword", "");
 		_sslHack = settings.getBoolean("sslHack", false);
+		_sslHostNameHack = settings.getBoolean("sslHostNameHack", false);
 		_profile = settings.getString("profile", null);
 	}
 
@@ -67,6 +69,7 @@ public class Credentials {
 		editor.putString("tracUsername", _username);
 		editor.putString("tracPassword", _password);
 		editor.putBoolean("sslHack", _sslHack);
+		editor.putBoolean("sslHostNameHack", _sslHostNameHack);
 		editor.putString("profile", _profile);
 
 		// Commit the edits!
@@ -91,6 +94,14 @@ public class Credentials {
 
 	public static boolean getSslHack() {
 		return _sslHack;
+	}
+
+	public static void setSslHostNameHack(boolean sslHostNameHack) {
+		_sslHostNameHack = sslHostNameHack;
+	}
+
+	public static boolean getSslHostNameHack() {
+		return _sslHostNameHack;
 	}
 
 	public static void setProfile(String profile) {
