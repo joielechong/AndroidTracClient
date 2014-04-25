@@ -460,7 +460,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 							}
 						}
 						tcLog.d(logTag, "reqString = " + reqString);
-						final JSONRPCHttpClient req = new JSONRPCHttpClient(_url, _sslHack);
+						final JSONRPCHttpClient req = new JSONRPCHttpClient(_url, _sslHack, _sslHostNameHack);
 						req.setCredentials(_username, _password);
 						final String rs = reqString;
 						try {
@@ -608,7 +608,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 					}
 
 					tcLog.d(logTag, "loadTicketContent JSONRPCHttpClient " + _url + " " + _sslHack);
-					final JSONRPCHttpClient req = new JSONRPCHttpClient(_url, _sslHack);
+					final JSONRPCHttpClient req = new JSONRPCHttpClient(_url, _sslHack, _sslHostNameHack);
 					req.setCredentials(_username, _password);
 					for (int j = 0; j < count; j += ticketGroupCount) {
 						final JSONArray mc = new JSONArray();
@@ -785,7 +785,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 	public List<Integer> getNewTickets(final String isoTijd) {
 		// tcLog.d(this.getClass().getName(), "getNewTickets isoTijd = " +
 		// isoTijd);
-		final JSONRPCHttpClient req = new JSONRPCHttpClient(_url, _sslHack);
+		final JSONRPCHttpClient req = new JSONRPCHttpClient(_url, _sslHack, _sslHostNameHack);
 		req.setCredentials(_username, _password);
 		try {
 			final JSONArray datum = new JSONArray();
@@ -819,9 +819,10 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 		}
 	}
 
-	public void setHost(final String url, final String username, final String password, boolean sslHack, String profile) {
+	public void setHost(final String url, final String username, final String password, boolean sslHack, boolean sslHostNameHack,
+			String profile) {
 		// tcLog.d(this.getClass().getName(), "setHost " + profile);
-		super.setHost(url, username, password, sslHack);
+		super.setHost(url, username, password, sslHack, sslHostNameHack);
 		SelectedProfile = profile;
 	}
 

@@ -2,7 +2,7 @@
 <resources>
 
     <!-- NL versie -->
-    <string name="about_button">Over Trac Client</string>
+    <string name="about_button">Over TracClient</string>
     <string name="Back">Terug</string>
     <string name="tracUser">Gebruikersnaam</string>
     <string name="tracUserHint">Gebruikersnaam</string>
@@ -106,6 +106,7 @@
     <string name="checking">Controleren</string>
     <string name="updating">Bijwerken</string>
     <string name="wait">Een moment aub</string>
+    <string name="debug">Debug</string>
     <string name="foundnew">Gewijzigde of nieuwe tickets gevonden:</string>
     <string name="notifmod">Gewijzigde tickets gevonden</string>
     <string name="tracLogin">Inloggen TRAC</string>
@@ -122,5 +123,8 @@
     <string name="unsaved">Scherm verlaten en gegevens bewaren?</string>
     <string name="nee">Nee</string>
     <string name="ja">Ja</string>
+	<string name="hostnametitle">Negeer Hostnaam verificatie?"</string>
+	<string name="hostnametext">Hostnaam verificatie is gefaald tijdens het verbinding opzetten met de server.\nMelding = "</string>
+	<string name="hostnameign">\nDe verificatie negeren?"</string>
 
 </resources>

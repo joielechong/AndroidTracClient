@@ -21,6 +21,7 @@ public class TicketModel extends Object implements Serializable, Cloneable {
 	private final String _username;
 	private final String _password;
 	private final boolean _sslHack;
+	private final boolean _sslHostNameHack;
 	private final Thread networkThread;
 	private int _count = 0;
 	private boolean loading;
@@ -30,6 +31,7 @@ public class TicketModel extends Object implements Serializable, Cloneable {
 		_username = Credentials.getUsername();
 		_password = Credentials.getPassword();
 		_sslHack = Credentials.getSslHack();
+		_sslHostNameHack = Credentials.getSslHostNameHack();
 
 		_velden = new HashMap<String, TicketModelVeld>();
 		_velden.clear();
@@ -39,7 +41,7 @@ public class TicketModel extends Object implements Serializable, Cloneable {
 		networkThread = new Thread() {
 			@Override
 			public void run() {
-				final JSONRPCHttpClient req = new JSONRPCHttpClient(_url, _sslHack);
+				final JSONRPCHttpClient req = new JSONRPCHttpClient(_url, _sslHack, _sslHostNameHack);
 				req.setCredentials(_username, _password);
 
 				try {
@@ -135,6 +137,7 @@ public class TicketModel extends Object implements Serializable, Cloneable {
 
 		// Include a hash for each field.
 		result = 31 * result + (_sslHack ? 1 : 0);
+		result = 31 * result + (_sslHostNameHack ? 1 : 0);
 		result = 31 * result + _count;
 		result = 31 * result + hc(_velden);
 		result = 31 * result + hc(_volgorde);

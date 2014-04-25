@@ -3,7 +3,7 @@
 
     <!-- Default versie - engels -->
     <string name="app_name" translatable="false">TracClient</string>
-    <string name="about_button">About Trac Client</string>
+    <string name="about_button">About TracClient</string>
     <string name="Back">Back</string>
     <string name="tracUrl" translatable="false">TRAC url</string>
     <string name="tracUrlHint" translatable="false">http://host/trac/login/rpc</string>
@@ -96,7 +96,7 @@
     <string name="select">Select</string>
     <string name="delete">Delete</string>
     <string name="getlist">Fetch Ticketlist</string>
-    <string name="storeprofile">Save profile	</string>
+    <string name="storeprofile">Save profile</string>
     <string name="profiletext">Enter name for the profile to be saved</string>
     <string name="loadprofile">Load login profile</string>
     <string name="areyousure">Are you sure?</string>
@@ -124,12 +124,12 @@
     <string name="checking">Checking</string>
     <string name="updating">Updating</string>
     <string name="wait">One moment please</string>
-    <string name="debug" translatable="false">Debug</string>
+    <string name="debug">Debug</string>
     <string name="foundnew">Modified or new tickets found:</string>
     <string name="notifmod">Modified tickets found</string>
     <string name="tracLogin">Log in to TRAC server</string>
 
-    <string-array name="filter1_choice">
+    <string-array name="filter1_choice" translatable="false">
         <item>"="</item>
         <item>"!="</item>
     </string-array>
@@ -147,5 +147,8 @@
     <string name="unsaved">Leave screen and save changes?</string>
     <string name="nee">No</string>
     <string name="ja">Yes</string>
-
+	<string name="hostnametitle">Ignore Hostname verification?"</string>
+	<string name="hostnametext">Hostname verification failed when trying to connect to server.\nMessage = "</string>
+	<string name="hostnameign">\nIgnore the verification?"</string>
+	
 </resources>
