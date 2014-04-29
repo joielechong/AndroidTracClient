@@ -17,8 +17,7 @@ public class SortSpec extends Object implements Cloneable, Serializable {
 	}
 
 	public SortSpec(String veld) {
-		_veld = veld;
-		_richting = true;
+		this(veld, true);
 	}
 
 	public String veld() {

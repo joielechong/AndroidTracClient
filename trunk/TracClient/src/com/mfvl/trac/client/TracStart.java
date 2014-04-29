@@ -435,8 +435,9 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 				fs = new String[1];
 				fs[0] = filterString;
 			}
+			final String[] operators = getResources().getStringArray(R.array.filter2_choice);
 			for (final String f : fs) {
-				filter.add(new FilterSpec(f, this.getApplicationContext()));
+				filter.add(new FilterSpec(f, operators));
 			}
 		}
 		setFilter(filter);

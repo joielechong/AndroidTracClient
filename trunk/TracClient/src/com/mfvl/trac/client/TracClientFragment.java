@@ -130,7 +130,9 @@ public class TracClientFragment extends Fragment {
 		ProgressDialog progressBar = null;
 		progressBar = new ProgressDialog(context);
 		progressBar.setCancelable(true);
-		progressBar.setMessage(message);
+		if (message != null) {
+			progressBar.setMessage(message);
+		}
 		progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		progressBar.show();
 		return progressBar;
@@ -151,24 +153,23 @@ public class TracClientFragment extends Fragment {
 
 	private Spinner _makeComboSpin(Context context, final String veldnaam, List<Object> waardes, boolean optional, Object w,
 			boolean dialogWanted) {
-		// final ArrayList<Object> spinValues =
-		// (ArrayList<Object>)waardes.clone();
 		final List<Object> spinValues = new ArrayList<Object>();
 
 		if (optional) {
-			// spinValues.add(0,"");
 			spinValues.add("");
 		}
 
-		for (int i = 0; i < waardes.size(); i++) {
-			spinValues.add(waardes.get(i));
+		if (waardes != null) {
+			for (int i = 0; i < waardes.size(); i++) {
+				spinValues.add(waardes.get(i));
+			}
 		}
 
 		final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<Object>(context, android.R.layout.simple_spinner_item, spinValues);
 		spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		final Spinner valSpinner = makeDialogSpinner(context, dialogWanted);
 		valSpinner.setAdapter(spinAdapter);
-		if (w != null && !w.equals("")) {
+		if (waardes != null && w != null && !w.equals("")) {
 			valSpinner.setSelection(waardes.indexOf(w) + (optional ? 1 : 0), true);
 		}
 		return valSpinner;

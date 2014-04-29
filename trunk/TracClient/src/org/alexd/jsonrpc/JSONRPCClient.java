@@ -7,7 +7,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.mfvl.android.http.Consts;
+import ch.boye.httpclientandroidlib.Consts;
+
 import com.mfvl.trac.client.util.tcLog;
 
 public abstract class JSONRPCClient {
@@ -69,7 +70,7 @@ public abstract class JSONRPCClient {
 		return arr;
 	}
 
-	protected JSONObject doRequest(String method, Object[] params) throws JSONRPCException {
+	protected JSONObject doRequest(String method, Object[] params) throws JSONRPCException, JSONException {
 		// Copy method arguments in a json array
 		final JSONArray jsonParams = new JSONArray();
 		for (final Object param : params) {
@@ -87,6 +88,7 @@ public abstract class JSONRPCClient {
 			jsonRequest.put("id", UUID.randomUUID().hashCode());
 			jsonRequest.put("method", method);
 			jsonRequest.put("params", jsonParams);
+			jsonRequest.put("jsonrpc", "2.0");
 		} catch (final JSONException e1) {
 			throw new JSONRPCException("Invalid JSON request", e1);
 		}
@@ -123,35 +125,34 @@ public abstract class JSONRPCClient {
 
 	protected int soTimeout = 0, connectionTimeout = 0;
 
-	// public Object beginCall(String method, final Object ... params)
-	// {
-	// //Handler
-	// class RequestThread extends Thread {
-	// String mMethod;
-	// Object[] mParams;
-	// public RequestThread(String method, Object[] params)
-	// {
-	// mMethod = method;
-	// mParams = params;
-	// }
-	// @Override
-	// public void run() {
-	// try
-	// {
-	// doRequest(mMethod, mParams);
-	// }
-	// catch (JSONRPCException e)
-	// {
-	//
-	// }
-	// }
-	//
-	// };
-	// RequestThread requestThread = new RequestThread(method, params);
-	// requestThread.start();
-	//
-	// return null;
-	// }
+	public Object beginCall(String method, final Object... params) {
+		// Handler
+		class RequestThread extends Thread {
+			String mMethod;
+			Object[] mParams;
+
+			public RequestThread(String method, Object[] params) {
+				mMethod = method;
+				mParams = params;
+			}
+
+			@Override
+			public void run() {
+				try {
+					doRequest(mMethod, mParams);
+				} catch (final JSONException e) {
+				} catch (final JSONRPCException e) {
+				}
+			}
+
+		}
+		;
+
+		final RequestThread requestThread = new RequestThread(method, params);
+		requestThread.start();
+
+		return null;
+	}
 
 	/**
 	 * Get the socket operation timeout in milliseconds

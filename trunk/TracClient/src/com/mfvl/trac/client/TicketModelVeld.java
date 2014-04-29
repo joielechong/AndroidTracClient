@@ -38,34 +38,37 @@ public class TicketModelVeld {
 		int result = 17;
 
 		// Include a hash for each field.
-		result = 31 * result + (_optional ? 1 : 0);
-		result = 31 * result + (_custom ? 1 : 0);
-		result = 31 * result + (_canChange ? 1 : 0);
-		result = 31 * result + _order;
 		result = 31 * result + hc(_name);
 		result = 31 * result + hc(_label);
 		result = 31 * result + hc(_type);
 		result = 31 * result + hc(_format);
 		result = 31 * result + hc(_value);
 		result = 31 * result + hc(_options);
+		result = 31 * result + hc(_optional);
+		result = 31 * result + hc(_order);
+		result = 31 * result + hc(_custom);
+		result = 31 * result + hc(_canChange);
 		return result;
 	}
 
 	public TicketModelVeld(final JSONObject v) throws TicketModelException {
+		if (v == null) {
+			throw new TicketModelException("JSONObject is null");
+		}
 		try {
 			_name = v.getString("name");
 		} catch (final JSONException e) {
-			throw new TicketModelException("Geen naam in velddefinitie");
+			throw new TicketModelException("Geen naam in velddefinitie", e);
 		}
 		try {
 			_label = v.getString("label");
 		} catch (final JSONException e) {
-			throw new TicketModelException("Geen label in velddefinitie");
+			throw new TicketModelException("Geen label in velddefinitie", e);
 		}
 		try {
 			_type = v.getString("type");
 		} catch (final JSONException e) {
-			throw new TicketModelException("Geen type in velddefinitie");
+			throw new TicketModelException("Geen type in velddefinitie", e);
 		}
 		try {
 			_custom = v.getString("custom").equals("true");
@@ -95,7 +98,7 @@ public class TicketModelVeld {
 					_options.add(ja.getString(i));
 				}
 			} catch (final JSONException e) {
-				throw new TicketModelException("Geen opties in velddefinitie");
+				throw new TicketModelException("Geen opties in velddefinitie", e);
 			}
 			try {
 				_value = v.getString("value");

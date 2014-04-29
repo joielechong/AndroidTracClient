@@ -2,11 +2,6 @@ package com.mfvl.trac.client.util;
 
 import java.io.Serializable;
 
-import android.content.Context;
-import android.content.res.Resources;
-
-import com.mfvl.trac.client.R;
-
 public class FilterSpec extends Object implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 552288154328397222L;
@@ -23,9 +18,7 @@ public class FilterSpec extends Object implements Serializable, Cloneable {
 		_newwaarde = waarde;
 	}
 
-	public FilterSpec(String string, Context context) {
-		final Resources res = context.getResources();
-		final String[] operators = res.getStringArray(R.array.filter2_choice);
+	public FilterSpec(String string, String[] operators) {
 		_veld = null;
 		_operator = null;
 		_waarde = null;
@@ -40,10 +33,19 @@ public class FilterSpec extends Object implements Serializable, Cloneable {
 				i = 0;
 			}
 		}
-		// tcLog.d(this.getClass().getName(), "FilterSpec " + _veld + " " +
-		// _operator + " " + _waarde);
 	}
 
+	/*
+	 * public FilterSpec(String string, Context context) { final Resources res =
+	 * context.getResources(); final String[] operators =
+	 * res.getStringArray(R.array.filter2_choice); _veld = null; _operator =
+	 * null; _waarde = null; for (int i = operators.length - 1; i >= 0; i--) {
+	 * final String op = operators[i]; final int index = string.indexOf(op); if
+	 * (index > 0) { _veld = string.substring(0, index); _operator = op; _waarde
+	 * = string.substring(index + op.length()); _newwaarde = _waarde; i = 0; } }
+	 * // tcLog.d(this.getClass().getName(), "FilterSpec " + _veld + " " + //
+	 * _operator + " " + _waarde); }
+	 */
 	public String veld() {
 		return _veld;
 	}
