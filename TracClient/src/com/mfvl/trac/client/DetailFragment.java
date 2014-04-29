@@ -176,6 +176,7 @@ public class DetailFragment extends TracClientFragment {
 			if (savedInstanceState.containsKey("modveld")) {
 				modVeld = (ModVeldMap) savedInstanceState.getSerializable("modveld");
 			}
+			showEmptyFields = savedInstanceState.getBoolean("emptyfields", false);
 		}
 		setHasOptionsMenu(true);
 		tm = listener.getTicketModel();
@@ -245,6 +246,7 @@ public class DetailFragment extends TracClientFragment {
 		// tcLog.d(this.getClass().getName(), "savedInstanceState = " +
 		// (savedInstanceState == null ? "null" : "not null"));
 		if (savedInstanceState != null) {
+			showEmptyFields = savedInstanceState.getBoolean("emptyfields", false);
 			if (savedInstanceState.containsKey("currentTicket")) {
 				// tcLog.d(this.getClass().getName(),
 				// "onActivityCreated start Loading");
@@ -304,6 +306,15 @@ public class DetailFragment extends TracClientFragment {
 			mv.setVisibility(View.VISIBLE);
 		} else {
 			mv.setVisibility(View.GONE);
+		}
+	}
+
+	@Override
+	public void onPrepareOptionsMenu(Menu menu) {
+
+		final MenuItem item = menu.findItem(R.id.dfempty);
+		if (item != null) {
+			item.setChecked(showEmptyFields);
 		}
 	}
 
@@ -411,6 +422,7 @@ public class DetailFragment extends TracClientFragment {
 		if (!modVeld.isEmpty()) {
 			savedState.putSerializable("modveld", modVeld);
 		}
+		savedState.putBoolean("emptyfields", showEmptyFields);
 	}
 
 	@Override
@@ -466,14 +478,15 @@ public class DetailFragment extends TracClientFragment {
 					}
 				});
 			}
-			final JSONArray fields = ticket.getFields();
-			final int count = fields.length();
+			final ArrayList<String> fields = tm.velden();
+			final int count = fields.size();
 			for (int i = 0; i < count; i++) {
 				String veld = "veld " + i;
 				try {
-					veld = fields.getString(i);
+					veld = fields.get(i);
 					modifiedString ms = null;
-					if ("summary".equals(veld) || "_ts".equals(veld)) {
+					if ("summary".equals(veld) || "_ts".equals(veld) || "max".equals(veld) || "page".equals(veld)
+							|| "id".equals(veld)) {
 						// skip
 					} else if ("time".equals(veld) || "changetime".equals(veld)) {
 						ms = new modifiedString(veld, toonTijd(ticket.getJSONObject(veld)));
@@ -488,7 +501,7 @@ public class DetailFragment extends TracClientFragment {
 						values.add(ms);
 					}
 				} catch (final Exception e) {
-					values.add(new modifiedString(veld, "Error-> " + e.toString()));
+					values.add(new modifiedString(veld, ""));
 				}
 			}
 			final JSONArray history = ticket.getHistory();

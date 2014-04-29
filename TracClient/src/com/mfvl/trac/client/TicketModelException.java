@@ -8,4 +8,7 @@ class TicketModelException extends Exception {
 		super(string);
 	}
 
+	public TicketModelException(String message, Throwable innerException) {
+		super(message, innerException);
+	}
 }

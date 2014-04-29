@@ -4,10 +4,10 @@ import java.io.UnsupportedEncodingException;
 
 import org.json.JSONObject;
 
-import com.mfvl.android.http.Header;
-import com.mfvl.android.http.entity.StringEntity;
-import com.mfvl.android.http.message.BasicHeader;
-import com.mfvl.android.http.protocol.HTTP;
+import ch.boye.httpclientandroidlib.Header;
+import ch.boye.httpclientandroidlib.entity.StringEntity;
+import ch.boye.httpclientandroidlib.message.BasicHeader;
+import ch.boye.httpclientandroidlib.protocol.HTTP;
 
 /**
  * Provides a HttpEntity for json content

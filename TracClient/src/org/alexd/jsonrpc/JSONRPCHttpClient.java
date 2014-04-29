@@ -10,27 +10,27 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.net.Uri;
+import ch.boye.httpclientandroidlib.Header;
+import ch.boye.httpclientandroidlib.HttpEntity;
+import ch.boye.httpclientandroidlib.HttpResponse;
+import ch.boye.httpclientandroidlib.HttpStatus;
+import ch.boye.httpclientandroidlib.ProtocolVersion;
+import ch.boye.httpclientandroidlib.auth.AuthScope;
+import ch.boye.httpclientandroidlib.auth.UsernamePasswordCredentials;
+import ch.boye.httpclientandroidlib.client.config.RequestConfig;
+import ch.boye.httpclientandroidlib.client.methods.HttpPost;
+import ch.boye.httpclientandroidlib.client.protocol.HttpClientContext;
+import ch.boye.httpclientandroidlib.conn.ssl.AllowAllHostnameVerifier;
+import ch.boye.httpclientandroidlib.conn.ssl.SSLConnectionSocketFactory;
+import ch.boye.httpclientandroidlib.conn.ssl.SSLContextBuilder;
+import ch.boye.httpclientandroidlib.conn.ssl.TrustStrategy;
+import ch.boye.httpclientandroidlib.impl.client.BasicAuthCache;
+import ch.boye.httpclientandroidlib.impl.client.BasicCredentialsProvider;
+import ch.boye.httpclientandroidlib.impl.client.CloseableHttpClient;
+import ch.boye.httpclientandroidlib.impl.client.HttpClientBuilder;
+import ch.boye.httpclientandroidlib.impl.client.TargetAuthenticationStrategy;
+import ch.boye.httpclientandroidlib.util.EntityUtils;
 
-import com.mfvl.android.http.Header;
-import com.mfvl.android.http.HttpEntity;
-import com.mfvl.android.http.HttpResponse;
-import com.mfvl.android.http.HttpStatus;
-import com.mfvl.android.http.ProtocolVersion;
-import com.mfvl.android.http.auth.AuthScope;
-import com.mfvl.android.http.auth.UsernamePasswordCredentials;
-import com.mfvl.android.http.client.config.RequestConfig;
-import com.mfvl.android.http.client.methods.HttpPost;
-import com.mfvl.android.http.client.protocol.HttpClientContext;
-import com.mfvl.android.http.conn.ssl.AllowAllHostnameVerifier;
-import com.mfvl.android.http.conn.ssl.SSLConnectionSocketFactory;
-import com.mfvl.android.http.conn.ssl.SSLContextBuilder;
-import com.mfvl.android.http.conn.ssl.TrustStrategy;
-import com.mfvl.android.http.impl.client.BasicAuthCache;
-import com.mfvl.android.http.impl.client.BasicCredentialsProvider;
-import com.mfvl.android.http.impl.client.CloseableHttpClient;
-import com.mfvl.android.http.impl.client.HttpClientBuilder;
-import com.mfvl.android.http.impl.client.TargetAuthenticationStrategy;
-import com.mfvl.android.http.util.EntityUtils;
 import com.mfvl.trac.client.util.tcLog;
 
 /**
@@ -65,20 +65,22 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 		this(uri, false, false);
 	}
 
-	public class MyTrustSelfSignedStrategy implements TrustStrategy {
+	protected class MyTrustSelfSignedStrategy implements TrustStrategy {
 
 		@Override
 		public boolean isTrusted(final X509Certificate[] chain, final String authType) throws CertificateException {
-			for (final X509Certificate x : chain) {
-				tcLog.d(getClass().getName(), "cert: " + x);
+			if (_debug) {
+				for (final X509Certificate x : chain) {
+					tcLog.d(getClass().getName(), "cert: " + x);
+				}
+				tcLog.d(getClass().getName(), "chain = " + chain.length + " authType = " + authType);
 			}
-			tcLog.d(getClass().getName(), "chain = " + chain.length + " authType = " + authType);
 			return chain.length == 1;
 		}
 
 	}
 
-	public class MyTrustAlwaysStrategy implements TrustStrategy {
+	protected class MyTrustAlwaysStrategy implements TrustStrategy {
 
 		@Override
 		public boolean isTrusted(final X509Certificate[] chain, final String authType) throws CertificateException {
@@ -147,6 +149,9 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 
 	@Override
 	protected JSONObject doJSONRequest(JSONObject jsonRequest) throws JSONRPCException {
+		if (_debug) {
+			tcLog.d(getClass().getName(), "doJSONRequest - jsonRequest: " + jsonRequest.toString());
+		}
 		// Create HTTP/POST request with a JSON entity containing the request
 		try {
 			int statusCode = 0;
@@ -162,13 +167,13 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 					httpContext.setCredentialsProvider(cp);
 					httpContext.setAuthCache(new BasicAuthCache());
 				}
-				tcLog.d(getClass().getName(), "httpContext: " + httpContext);
+				if (_debug) {
+					tcLog.d(getClass().getName(), "httpContext: " + httpContext);
+				}
 
 				final HttpPost request = new HttpPost(actualUri);
-				tcLog.d(getClass().getName(), "request: " + request);
-
 				if (_debug) {
-					tcLog.d(getClass().getName(), "Request: " + jsonRequest.toString());
+					tcLog.d(getClass().getName(), "request: " + request);
 				}
 				lastJsonRequest = jsonRequest;
 
@@ -187,7 +192,9 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 				statusCode = response.getStatusLine().getStatusCode();
 				if (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
 					final Header headers[] = response.getHeaders("Location");
-					tcLog.i(getClass().getName(), "Headers: " + Arrays.asList(headers));
+					if (_debug) {
+						tcLog.i(getClass().getName(), "Headers: " + Arrays.asList(headers));
+					}
 					actualUri = headers[0].getValue();
 				}
 			} while (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY);

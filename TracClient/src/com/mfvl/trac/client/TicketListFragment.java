@@ -274,6 +274,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 					filterText.requestFocus();
 				} else {
 					filterText.setVisibility(View.GONE);
+					dataAdapter.getFilter().filter(null);
 				}
 			}
 		}
@@ -367,6 +368,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 					filterText.clearFocus();
 				}
 				zoektext = null;
+				dataAdapter.getFilter().filter(null);
 			}
 			filterText.setText(null);
 			if (loadListThread != null && loadContentThread != null && !loadListThread.isAlive() && !loadContentThread.isAlive()) {
@@ -838,8 +840,10 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 
 		@Override
 		public void onTextChanged(CharSequence s, int start, int before, int count) {
-			dataAdapter.getFilter().filter(s);
-			zoektext = s.toString();
+			if (dataAdapter != null && s != null) {
+				dataAdapter.getFilter().filter(s);
+				zoektext = s.toString();
+			}
 		}
 	};
 }
