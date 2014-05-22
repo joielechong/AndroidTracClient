@@ -14,10 +14,14 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
 import com.mfvl.trac.client.util.Credentials;
 import com.mfvl.trac.client.util.tcLog;
 
 public class TracTitlescreenActivity extends Activity {
+
+	private EasyTracker tracker;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		try {
@@ -27,9 +31,8 @@ public class TracTitlescreenActivity extends Activity {
 			getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			setContentView(R.layout.activity_titlescreen);
 
-			final String versie = Credentials.buildVersion(this, true);
 			final TextView tv = (TextView) findViewById(R.id.version_content);
-			tv.setText(versie);
+			tv.setText(Credentials.buildVersion(this, true));
 
 		} catch (final Exception e) {
 			tcLog.toast("crash: " + e.getMessage());
@@ -40,7 +43,8 @@ public class TracTitlescreenActivity extends Activity {
 	public void onStart() {
 		// tcLog.i(this.getClass().getName(), "onStart");
 		super.onStart();
-		EasyTracker.getInstance(this).activityStart(this);
+		tracker = EasyTracker.getInstance(this);
+		tracker.activityStart(this);
 		final Intent intent = getIntent();
 		String urlstring = null;
 		Integer ticket = -1;
@@ -60,6 +64,13 @@ public class TracTitlescreenActivity extends Activity {
 					for (final String segment : segments.subList(0, count - 2)) {
 						urlstring += segment + "/";
 					}
+					tracker.send(MapBuilder.createEvent("Startup", // Event
+																	// category
+																	// (required)
+							"URI start", // Event action (required)
+							urlstring, // Event label
+							ticket.longValue()) // Event value
+							.build());
 				} else {
 					tcLog.w(getClass().getName(), "View intent bad Url");
 					urlstring = null;
@@ -92,6 +103,6 @@ public class TracTitlescreenActivity extends Activity {
 	public void onStop() {
 		// tcLog.i(this.getClass().getName(), "onStop");
 		super.onStop();
-		EasyTracker.getInstance(this).activityStop(this);
+		tracker.activityStop(this);
 	}
 }

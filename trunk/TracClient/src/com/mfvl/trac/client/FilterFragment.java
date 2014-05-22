@@ -56,18 +56,13 @@ public class FilterFragment extends TracClientFragment {
 
 			View v = convertView;
 			int p;
-			if (position >= items.size() || position < 0) {
-				p = 0;
-			} else {
-				p = position;
-			}
+			p = position >= items.size() || position < 0 ? 0 : position;
 
 			final FilterSpec o = items.get(p);
 			final TicketModelVeld tmv = tm.getVeld(o.veld());
 
 			// tcLog.d(this.getClass().getName(), "getView pos=" + position +
-			// " "
-			// + o + " " + tmv);
+			// " " + o + " " + tmv);
 
 			final int resid = o.isEdit() ? tmv.options() == null ? R.layout.filter_spec2 : R.layout.filter_spec3
 					: R.layout.filter_spec1;
@@ -196,9 +191,8 @@ public class FilterFragment extends TracClientFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		// tcLog.d(this.getClass().getName(),
-		// "onCreateView savedInstanceState = " + (savedInstanceState == null ?
-		// "null" : "not null"));
+		// tcLog.d(this.getClass().getName(),"onCreateView savedInstanceState = "
+		// + (savedInstanceState == null ? "null" : "not null"));
 		final View view = inflater.inflate(R.layout.filter_view, container, false);
 		return view;
 	}
@@ -206,9 +200,8 @@ public class FilterFragment extends TracClientFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		// tcLog.d(this.getClass().getName(),
-		// "onActivityCreated savedInstanceState = " + (savedInstanceState ==
-		// null ? "null" : "not null"));
+		// tcLog.d(this.getClass().getName(),"onActivityCreated savedInstanceState = "
+		// + (savedInstanceState == null ? "null" : "not null"));
 		final ProgressDialog pb = startProgressBar(R.string.downloading);
 		tm = listener.getTicketModel();
 		pb.dismiss();

@@ -6,6 +6,7 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -26,11 +27,20 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-//import com.mfvl.trac.client.util.tcLog;
-
 public class UpdateTicketFragment extends TracClientFragment {
 	private String currentActionName = null;
 	private JSONArray _actions = null;
+	private int ticknr;
+
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		final Bundle args = this.getArguments();
+		// tcLog.d(this.getClass().getName(), "onAttach ");
+		if (args != null) {
+			ticknr = args.getInt(Const.CURRENT_TICKET);
+		}
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -38,12 +48,6 @@ public class UpdateTicketFragment extends TracClientFragment {
 		// tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " +
 		// (savedInstanceState == null ? "null" : "not null"));
 		setHasOptionsMenu(true);
-		if (savedInstanceState != null) {
-			if (savedInstanceState.containsKey("currentTicket")) {
-				savedInstanceState.getInt("currentTicket");
-				_ticket = null;
-			}
-		}
 	}
 
 	@Override
@@ -54,12 +58,10 @@ public class UpdateTicketFragment extends TracClientFragment {
 		final View view = inflater.inflate(R.layout.update_view, container, false);
 		if (savedInstanceState != null) {
 			if (savedInstanceState.containsKey("currentTicket")) {
-				final int currentTicket = savedInstanceState.getInt("currentTicket");
-				if (_ticket == null || _ticket.getTicketnr() != currentTicket) {
-					_ticket = new Ticket(currentTicket, context, null);
-				}
+				ticknr = savedInstanceState.getInt("currentTicket");
 			}
 		}
+		_ticket = listener.getTicket(ticknr);
 		if (_ticket != null) {
 			_actions = _ticket.getActions();
 			// tcLog.d(this.getClass().getName(), "actions = " + _actions);
@@ -158,12 +160,10 @@ public class UpdateTicketFragment extends TracClientFragment {
 		// null ? "null" : "not null"));
 		if (savedInstanceState != null) {
 			if (savedInstanceState.containsKey("currentTicket")) {
-				final int currentTicket = savedInstanceState.getInt("currentTicket");
-				if (_ticket == null || _ticket.getTicketnr() != currentTicket) {
-					_ticket = new Ticket(currentTicket, context, null);
-				}
+				ticknr = savedInstanceState.getInt("currentTicket");
 			}
 		}
+		_ticket = listener.getTicket(ticknr);
 		final View view = getView();
 		final TextView tv = (TextView) view.findViewById(R.id.titel);
 		if (_ticket != null) {
@@ -270,10 +270,4 @@ public class UpdateTicketFragment extends TracClientFragment {
 			savedState.putInt("currentTicket", _ticket.getTicketnr());
 		}
 	}
-
-	public void loadTicket(Ticket ticket) {
-		// tcLog.d(this.getClass().getName(), "loadTicket ticket = " + ticket);
-		_ticket = ticket;
-	}
-
 }

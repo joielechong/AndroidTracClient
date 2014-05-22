@@ -12,7 +12,6 @@
 	<string name="vertext">تأكيد</string>
 	<string name="invalidCred">بيانات الإعتماد غير صالحة</string>
 	<string name="validCred">بيانات الإعتماد صالحة</string>
-	<string name="detail_heading">تفاصيل التذكرة</string>
 	<string name="list_heading">قوائم التذكرة</string>
 	<string name="ophalen">تحميل البيانات</string>
 	<string name="tlrefresh">تحديث القائمة</string>
@@ -21,7 +20,6 @@
 	<string name="sort">ترتيب</string>
 	<string name="changehost">إختيار مستضيف متابعة آخر</string>
 	<string name="updateticket">تغيير حالة التذكرة</string>
-	<string name="updatefield">تغيير مجال التذكرة</string>
 	<string name="warning" translatable="false">!</string>
 	<string name="nieuw">تذكرة جديدة</string>
 	<string name="nodata">لا يوجد بيانات</string>
@@ -34,9 +32,7 @@
 	<string name="storerrdesc">لا يمكن تخزين التذكرة</string>
 	<string name="storok">تم عمل التذكرة</string>
 	<string name="storokdesc">=تم عمل التذكرة. المعرف</string>
-	<string name="config">تكوين الحقول</string>
 	<string name="comment">إضافة تعليق</string>
-	<string name="state">تغيير الحالة</string>
 	<string name="attach">إضافة مرفق</string>
 	<string name="chooser_title">مرفق تذكرة</string>
 	<string name="tlshare">مشاركة القائمة</string>
@@ -47,8 +43,6 @@
 	<string name="cancel">إلغاء</string>
 	<string name="invalidJson">غير صالحة JSON  تم استقبال رسالة</string>
 	<string name="noticketUnk">لم يتم عمل تذكرة: السبب غير معروف</string>
-	<string name="nolist">لا يمكن عمل قائمة</string>
-	<string name="noadapter">لا يمكن إنشاء المحول</string>
 	<string name="invtick">رقم تذكرة غير صالح</string>
 	<string name="noaction">لا يوجد إجراء متوفر</string>
 	<string name="zoekfilter">أدخل عبارة البحث</string>
@@ -57,8 +51,6 @@
 	<string name="version_text" translatable="false">V غير معروف</string>
 	<string name="storefilter">حفظ التصنيف</string>
 	<string name="storesort">حفظ نظام الترتيب</string>
-	<string name="filterdef">تحديد التصنيف</string>
-	<string name="sortdef">تحديد نظام الترتيب</string>
 	<string name="moveup">تحريك للأعلى</string>
 	<string name="movedown">تحريك للأسفل</string>
 	<string name="direction">تعيين الإتجاه</string>
@@ -89,13 +81,10 @@
 		<item>لا ينتهي عند</item>
 	</string-array>
 	<string name="select">اختيار</string>
-	<string name="delete">حذف</string>
 	<string name="getlist">جلب قائمة التذكرة</string>
 	<string name="storeprofile">حفظ الملف الشخصي</string>
 	<string name="profiletext">أدخل إسم للملف الشخصي لحفظه</string>
 	<string name="loadprofile">تحميل الدخول إلى الملف الشخصي</string>
-	<string name="areyousure">هل أنت متأكد؟</string>
-	<string name="delprofiletext">حذف الملف الشخصي</string>
 	<string name="loadprofiletext">لا يمكن تحميل الملف الشخصي</string>
 	<string name="notfound">غير موجود</string>
 	<string name="sdcardmissing">بطاقة الذاكرة الرقمية غير موجودة. لا يمكن حفظ المرفق</string>
@@ -118,7 +107,6 @@
 	<string name="chooseticket">اختيار تذكرة</string>
 	<string name="checking">فحص</string>
 	<string name="updating">تحديث</string>
-	<string name="wait">لحظة من فضلك</string>
 	<string name="debug" translatable="false">تصحيح</string>
 	<string name="foundnew">تم إيجاد تذكرة جديدة أو معدلة</string>
 	<string name="notifmod">تم إيجاد تذكرة معدلة</string>

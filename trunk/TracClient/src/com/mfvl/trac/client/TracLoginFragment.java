@@ -525,11 +525,7 @@ public class TracLoginFragment extends TracClientFragment {
 
 	private void checkHackBox(String s) {
 		if (sslHackBox != null && s != null) {
-			if (s.length() >= 6 && s.substring(0, 6).equals("https:")) {
-				sslHackBox.setVisibility(View.VISIBLE);
-			} else {
-				sslHackBox.setVisibility(View.GONE);
-			}
+			sslHackBox.setVisibility(s.length() >= 6 && s.substring(0, 6).equals("https:") ? View.VISIBLE : View.GONE);
 		}
 	}
 

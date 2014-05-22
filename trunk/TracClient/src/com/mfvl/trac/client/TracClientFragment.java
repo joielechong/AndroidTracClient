@@ -18,7 +18,10 @@ import com.google.ads.AdRequest;
 import com.google.ads.AdSize;
 import com.google.ads.AdView;
 import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.Fields;
+import com.google.analytics.tracking.android.MapBuilder;
 import com.mfvl.trac.client.util.Credentials;
+import com.mfvl.trac.client.util.tcLog;
 
 public class TracClientFragment extends Fragment {
 	public Ticket _ticket = null;
@@ -30,21 +33,29 @@ public class TracClientFragment extends Fragment {
 	public TracStart context;
 	private AdView adView = null;
 	public InterFragmentListener listener = null;
+	private EasyTracker tracker;
 
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		// tcLog.d(this.getClass().getName() + ".super", "onAttach ");
+		tcLog.d(this.getClass().getName() + ".super", "onAttach ");
 		context = (TracStart) activity;
 		listener = context;
+		final Bundle args = this.getArguments();
+		if (args != null) {
+			_url = args.getString(Const.CURRENT_URL);
+			_username = args.getString(Const.CURRENT_USERNAME);
+			_password = args.getString(Const.CURRENT_PASSWORD);
+			_sslHack = args.getBoolean("sslHack", false);
+			_sslHostNameHack = args.getBoolean("sslHostNameHack", false);
+		}
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// tcLog.d(this.getClass().getName() + ".super",
-		// "onCreate savedInstanceState = "+ (savedInstanceState == null ?
-		// "null" : "not null"));
+		tcLog.d(this.getClass().getName() + ".super", "onCreate savedInstanceState = "
+				+ (savedInstanceState == null ? "null" : "not null"));
 		if (savedInstanceState != null) {
 			_url = savedInstanceState.getString("currentURL");
 			_username = savedInstanceState.getString("currentUsername");
@@ -57,9 +68,9 @@ public class TracClientFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		// tcLog.d(this.getClass().getName() + ".super",
-		// "onActivityCreated savedInstanceState = " + (savedInstanceState ==
-		// null ? "null" : "not null"));
+		tcLog.d(this.getClass().getName() + ".super", "onActivityCreated savedInstanceState = "
+				+ (savedInstanceState == null ? "null" : "not null"));
+		tracker = EasyTracker.getInstance(context);
 		if (listener != null && listener.dispAds()) {
 			final LinearLayout ll = (LinearLayout) getView().findViewById(R.id.adBlock);
 			if (ll != null) {
@@ -83,39 +94,47 @@ public class TracClientFragment extends Fragment {
 	@Override
 	public void onSaveInstanceState(Bundle savedState) {
 		super.onSaveInstanceState(savedState);
-		// tcLog.d(this.getClass().getName() + ".super", "onSaveInstanceState");
+		tcLog.d(this.getClass().getName() + ".super", "onSaveInstanceState");
 		savedState.putString("currentURL", _url);
 		savedState.putString("currentUsername", _username);
 		savedState.putString("currentPassword", _password);
 		savedState.putBoolean("sslHack", _sslHack);
 		savedState.putBoolean("sslHostNameHack", _sslHostNameHack);
+		tcLog.d(this.getClass().getName() + ".super", "onSaveInstanceState = " + savedState);
 	}
 
 	@Override
 	public void onStart() {
-		// tcLog.d(this.getClass().getName() + ".super", "onStart");
+		tcLog.d(this.getClass().getName() + ".super", "onStart");
 		super.onStart();
-		EasyTracker.getInstance(context).activityStart(context);
+		tracker.activityStart(context);
+		tracker.set(Fields.SCREEN_NAME, getClass().getSimpleName());
+		tracker.send(MapBuilder.createAppView().build());
 	}
 
 	@Override
 	public void onStop() {
-		// tcLog.d(this.getClass().getName() + ".super", "onStop");
+		tcLog.d(this.getClass().getName() + ".super", "onStop");
 		super.onStop();
-		EasyTracker.getInstance(context).activityStop(context);
+		tracker.activityStop(context);
 	}
 
 	@Override
 	public void onDestroy() {
-		// tcLog.d(this.getClass().getName() + ".super", "onDestroy");
+		tcLog.d(this.getClass().getName() + ".super", "onDestroy");
 		if (adView != null) {
 			adView.destroy();
 		}
 		super.onDestroy();
 	}
 
+	final public void resetCache() {
+		tcLog.d(this.getClass().getName() + ".super", "resetCache");
+		listener.resetCache();
+	}
+
 	public void setHost(final String url, final String username, final String password, boolean sslHack, boolean sslHostNameHack) {
-		// tcLog.d(this.getClass().getName() + ".super", "setHost");
+		tcLog.d(this.getClass().getName() + ".super", "setHost");
 		if (_url != url) {
 			_url = url;
 			_username = username;

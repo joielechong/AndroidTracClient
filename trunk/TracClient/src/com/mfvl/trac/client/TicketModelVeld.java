@@ -48,7 +48,7 @@ public class TicketModelVeld {
 		result = 31 * result + hc(_order);
 		result = 31 * result + hc(_custom);
 		result = 31 * result + hc(_canChange);
-		return result;
+		return result + super.hashCode();
 	}
 
 	public TicketModelVeld(final JSONObject v) throws TicketModelException {

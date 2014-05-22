@@ -15,7 +15,6 @@
     <string name="vertext">Verify</string>
     <string name="invalidCred">Credentials not valid</string>
     <string name="validCred">Credentials valid</string>
-    <string name="detail_heading">Ticket Details</string>
     <string name="list_heading">Ticket Listing</string>
     <string name="ophalen">Loading data</string>
     <string name="tlrefresh">Refresh list</string>
@@ -24,7 +23,6 @@
     <string name="sort">Sort</string>
     <string name="changehost">Select another Trac host</string>
     <string name="updateticket">Modify status of ticket</string>
-    <string name="updatefield">Modify field of ticket</string>
     <string name="warning" translatable="false">!</string>
     <string name="nieuw">New ticket</string>
     <string name="nodata">No data</string>
@@ -37,9 +35,7 @@
     <string name="storerrdesc">Cannot store ticket</string>
     <string name="storok">Ticket created</string>
     <string name="storokdesc">Ticket created, id =</string>
-    <string name="config">Configure fields</string>
     <string name="comment">Add comment</string>
-    <string name="state">Change status</string>
     <string name="attach">Add attachment</string>
     <string name="chooser_title">Ticket attachment</string>
     <string name="tlshare">Share list</string>
@@ -50,8 +46,6 @@
     <string name="cancel">Cancel</string>
     <string name="invalidJson">Invalid JSON message received</string>
     <string name="noticketUnk">No ticket created: unknown reason</string>
-    <string name="nolist">Cannot create list</string>
-    <string name="noadapter">Cannot create adapter</string>
     <string name="invtick">Invalid ticketnumber</string>
     <string name="noaction">No action supplied</string>
     <string name="zoekfilter">Enter search string</string>
@@ -60,8 +54,6 @@
     <string name="version_text" translatable="false">V.unknown</string>
     <string name="storefilter">Save filter</string>
     <string name="storesort">Save sort order</string>
-    <string name="filterdef">Specify filter</string>
-    <string name="sortdef">Specify sort order</string>
     <string name="moveup">move up</string>
     <string name="movedown">move down</string>
     <string name="direction">set direction</string>
@@ -94,13 +86,10 @@
     </string-array>
 
     <string name="select">Select</string>
-    <string name="delete">Delete</string>
     <string name="getlist">Fetch Ticketlist</string>
     <string name="storeprofile">Save profile</string>
     <string name="profiletext">Enter name for the profile to be saved</string>
     <string name="loadprofile">Load login profile</string>
-    <string name="areyousure">Are you sure?</string>
-    <string name="delprofiletext">Delete profile</string>
     <string name="loadprofiletext">Profile cannot be loaded</string>
     <string name="notfound">Not found</string>
     <string name="sdcardmissing">SDcard is missing. Cannot store attachment</string>
@@ -123,7 +112,6 @@
     <string name="chooseticket">Choose ticket</string>
     <string name="checking">Checking</string>
     <string name="updating">Updating</string>
-    <string name="wait">One moment please</string>
     <string name="debug">Debug</string>
     <string name="foundnew">Modified or new tickets found:</string>
     <string name="notifmod">Modified tickets found</string>

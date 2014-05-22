@@ -11,7 +11,6 @@
     <string name="vertext">Überprüfen</string>
     <string name="invalidCred">Anmeldedaten nicht gültig</string>
     <string name="validCred">Anmeldedaten gültig</string>
-    <string name="detail_heading">Ticket Details</string>
     <string name="list_heading">Ticket Übersicht</string>
     <string name="ophalen">Daten werden geladen</string>
     <string name="tlrefresh">Liste aktualisieren</string>
@@ -20,7 +19,6 @@
     <string name="sort">Sortieren</string>
     <string name="changehost">Wählen Sie einen anderen Trac Host</string>
     <string name="updateticket">Status des Tickets ändern</string>
-    <string name="updatefield">Feld des Tickets ändern</string>
     <string name="nieuw">Neues Ticket</string>
     <string name="nodata">Keine Daten</string>
     <string name="nodatadesc">Inhalt des Tickets ist noch nicht geladen</string>
@@ -31,9 +29,7 @@
     <string name="storerrdesc">Ticket kann nicht gespeichert werden</string>
     <string name="storok">Ticket erstellt</string>
     <string name="storokdesc">Ticket erstellt, ID =</string>
-    <string name="config">Felder konfigurieren</string>
     <string name="comment">Kommentar hinzufügen</string>
-    <string name="state">Status ändern</string>
     <string name="attach">Anhang hinzufügen</string>
     <string name="chooser_title">Ticket Anhang</string>
     <string name="tlshare">Teile Liste</string>
@@ -44,16 +40,12 @@
     <string name="cancel">Abbrechen</string>
     <string name="invalidJson">Ungültige JSON-Nachricht empfangen</string>
     <string name="noticketUnk">Kein Ticket erstellt: Unbekannter Grund</string>
-    <string name="nolist">Liste kann nicht erstellt werden</string>
-    <string name="noadapter">Kann adapter nicht erstellen</string>
     <string name="invtick">Ungültige Ticketnummer</string>
     <string name="noaction">Keine Aktion übergeben</string>
     <string name="zoekfilter">Suchbegriff eingeben</string>
     <string name="zoek">Suche</string>
     <string name="storefilter">Filter speichern</string>
     <string name="storesort">Speichern Sie die Sortierreihenfolge</string>
-    <string name="filterdef">Filter auswählen</string>
-    <string name="sortdef">Reihenfolge auswählen</string>
     <string name="moveup">Verschiebe hoch</string>
     <string name="movedown">Verschiebe runter</string>
     <string name="direction">Setze Richtung</string>
@@ -74,13 +66,10 @@
     </string-array>
 
     <string name="select">Auswählen</string>
-    <string name="delete">Löschen</string>
     <string name="getlist">Ticketliste holen</string>
     <string name="storeprofile">Profil speichern	</string>
     <string name="profiletext">Geben Sie den Profilnamen an</string>
     <string name="loadprofile">Letztes Login-Profil</string>
-    <string name="areyousure">Sind Sie sicher?</string>
-    <string name="delprofiletext">Profil löschen</string>
     <string name="loadprofiletext">Profil kann nicht geladen werden</string>
     <string name="notfound">Nicht gefunden</string>
     <string name="sdcardmissing">SD-Karte fehlt. Kann Anhang nicht speichern</string>
@@ -103,7 +92,6 @@
     <string name="chooseticket">Ticket wählen</string>
     <string name="checking">Prüfe</string>
     <string name="updating">Aktualisiere</string>
-    <string name="wait">Einen Moment bitte</string>
     <string name="debug">Fehler suchen</string>
     <string name="foundnew">Geänderte oder neue Tickets gefunden:</string>
     <string name="notifmod">Geänderte Tickets gefunden</string>

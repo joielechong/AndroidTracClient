@@ -1,5 +1,6 @@
 package com.mfvl.trac.client;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -20,18 +21,15 @@ public class Refresh extends Activity {
 	private final ServiceConnection mConnection = new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName className, IBinder service) {
-			// tcLog.d(this.getClass().getName(),
-			// "onServiceConnected className = " + className + " service = " +
-			// service);
+			// tcLog.d(this.getClass().getName(),"onServiceConnected className = "
+			// + className + " service = " + service);
 			mService = new Messenger(service);
 			try {
-				final Message msg = Message.obtain(null, RefreshService.MSG_REQUEST_REFRESH);
+				final Message msg = Message.obtain(null, Const.MSG_REQUEST_REFRESH);
 				msg.replyTo = null;
 				mService.send(msg);
 			} catch (final RemoteException e) {
 				tcLog.e(this.getClass().getName(), "Problem connecting", e);
-				// In this case the service has crashed before we could even do
-				// anything with it
 			}
 		}
 
@@ -39,12 +37,11 @@ public class Refresh extends Activity {
 		public void onServiceDisconnected(ComponentName className) {
 			// tcLog.d(this.getClass().getName(),
 			// "onServiceDisconnected className = " + className);
-			// This is called when the connection with the service has been
-			// unexpectedly disconnected - process crashed.
 			mService = null;
 		}
 	};
 
+	@SuppressLint("DefaultLocale")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -61,8 +58,7 @@ public class Refresh extends Activity {
 				}
 			}
 		} catch (final Exception e) {
-			// tcLog.e(this.getClass().getName(),
-			// "Problem consuming action from intent", e);
+			tcLog.e(this.getClass().getName(), "Problem consuming action from intent", e);
 		}
 		finish();
 	}
@@ -74,8 +70,7 @@ public class Refresh extends Activity {
 		try {
 			unbindService(mConnection);
 		} catch (final Throwable t) {
-			// tcLog.e(this.getClass().getName(),
-			// "Failed to unbind from the service", t);
+			tcLog.e(this.getClass().getName(), "Failed to unbind from the service", t);
 		}
 	}
 }

@@ -35,17 +35,6 @@ public class FilterSpec extends Object implements Serializable, Cloneable {
 		}
 	}
 
-	/*
-	 * public FilterSpec(String string, Context context) { final Resources res =
-	 * context.getResources(); final String[] operators =
-	 * res.getStringArray(R.array.filter2_choice); _veld = null; _operator =
-	 * null; _waarde = null; for (int i = operators.length - 1; i >= 0; i--) {
-	 * final String op = operators[i]; final int index = string.indexOf(op); if
-	 * (index > 0) { _veld = string.substring(0, index); _operator = op; _waarde
-	 * = string.substring(index + op.length()); _newwaarde = _waarde; i = 0; } }
-	 * // tcLog.d(this.getClass().getName(), "FilterSpec " + _veld + " " + //
-	 * _operator + " " + _waarde); }
-	 */
 	public String veld() {
 		return _veld;
 	}
@@ -112,6 +101,6 @@ public class FilterSpec extends Object implements Serializable, Cloneable {
 		result = 31 * result + hc(_operator);
 		result = 31 * result + hc(_waarde);
 		result = 31 * result + hc(_newwaarde);
-		return result;
+		return result + super.hashCode();
 	}
 }

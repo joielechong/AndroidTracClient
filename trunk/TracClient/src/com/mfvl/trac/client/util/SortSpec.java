@@ -61,6 +61,6 @@ public class SortSpec extends Object implements Cloneable, Serializable {
 		// Include a hash for each field.
 		result = 31 * result + hc(_veld);
 		result = 31 * result + hc(_richting);
-		return result;
+		return result + super.hashCode();
 	}
 }
