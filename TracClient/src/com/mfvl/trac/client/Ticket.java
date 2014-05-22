@@ -3,6 +3,7 @@ package com.mfvl.trac.client;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -27,7 +28,11 @@ interface onAttachmentCompleteListener {
 	void onComplete(byte[] data);
 }
 
-public class Ticket {
+public class Ticket implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3915928655754922097L;
 	public final static String TICKET_GET = "GET";
 	public final static String TICKET_CHANGE = "CHANGE";
 	public final static String TICKET_ATTACH = "ATTACH";
@@ -76,9 +81,11 @@ public class Ticket {
 		return result;
 	}
 
-	public Ticket(final JSONObject velden) {
+	public Ticket(final JSONObject jo) {
+		tcLog.d(getClass().getName(), "Ticket = " + jo);
+
 		_ticknr = -1;
-		_velden = velden;
+		_velden = jo;
 		_history = null;
 		_attachments = null;
 		_actions = null;
@@ -100,7 +107,7 @@ public class Ticket {
 	}
 
 	public Ticket(final int ticknr, TracStart context, onTicketCompleteListener oc) {
-		tcLog.i(this.getClass().getName(), "Ticket(72) ticketnr = " + ticknr);
+		tcLog.i(this.getClass().getName(), "Ticket ticketnr = " + ticknr);
 		_ticknr = ticknr;
 		loadTicketData(context, oc);
 	}
@@ -476,14 +483,15 @@ public class Ticket {
 				loadTicketData(context, null);
 			}
 		} catch (final JSONRPCException e) {
-			try {
-				e.printStackTrace();
-				final JSONObject o = new JSONObject(e.getMessage());
-				rpcerror = o.getString("message");
-			} catch (final JSONException e1) {
-				e1.printStackTrace();
-				rpcerror = context.getString(R.string.invalidJson);
-			}
+			// try {
+			tcLog.d(getClass().getName(), "JSONRPCException", e);
+			// final JSONObject o = new JSONObject(e.getMessage());
+			// rpcerror = o.getString("message");
+			rpcerror = e.getMessage();
+			// } catch (final JSONException e1) {
+			// tcLog.d(getClass().getName(), "JSONException",e1);
+			// rpcerror = context.getString(R.string.invalidJson);
+			// }
 		} finally {
 			available.release();
 		}

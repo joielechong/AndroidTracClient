@@ -640,6 +640,8 @@ public abstract class JSONRPCClient {
 			}
 
 			return response.getJSONObject("result");
+		} catch (final JSONRPCException e) {
+			throw e;
 		} catch (final JSONException e) {
 			try {
 				return new JSONObject(response.getString("result"));
@@ -660,12 +662,14 @@ public abstract class JSONRPCClient {
 			}
 
 			if (_debug) {
-				tcLog.i(this.getClass().getName(), "callJSONObject response" + response.toString());
-				tcLog.i(this.getClass().getName(), "callJSONObject response.JSONObject(result)"
+				tcLog.d(this.getClass().getName(), "callJSONObject response" + response.toString());
+				tcLog.d(this.getClass().getName(), "callJSONObject response.JSONObject(result)"
 						+ response.getJSONObject("result").toString());
 			}
 
 			return response.getJSONObject("result");
+		} catch (final JSONRPCException e) {
+			throw e;
 		} catch (final JSONException e) {
 			try {
 				tcLog.i(this.getClass().getName(), "callJSONObject response.String(result)" + response.getString("result"));
@@ -698,6 +702,8 @@ public abstract class JSONRPCClient {
 			}
 
 			return response.getJSONObject("result");
+		} catch (final JSONRPCException e) {
+			throw e;
 		} catch (final JSONException e) {
 			try {
 				return new JSONObject(response.getString("result"));
@@ -729,6 +735,8 @@ public abstract class JSONRPCClient {
 			}
 
 			return response.getJSONArray("result");
+		} catch (final JSONRPCException e) {
+			throw e;
 		} catch (final JSONException e) {
 			try {
 				return new JSONArray(response.getString("result"));
@@ -760,6 +768,8 @@ public abstract class JSONRPCClient {
 			}
 
 			return response.getJSONArray("result");
+		} catch (final JSONRPCException e) {
+			throw e;
 		} catch (final JSONException e) {
 			try {
 				return new JSONArray(response.getString("result"));
@@ -780,6 +790,8 @@ public abstract class JSONRPCClient {
 			}
 
 			return response.getJSONArray("result");
+		} catch (final JSONRPCException e) {
+			throw e;
 		} catch (final JSONException e) {
 			try {
 				return new JSONArray(response.getString("result"));

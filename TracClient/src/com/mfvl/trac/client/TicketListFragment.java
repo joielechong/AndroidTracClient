@@ -2,8 +2,6 @@ package com.mfvl.trac.client;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import org.alexd.jsonrpc.JSONRPCException;
 import org.alexd.jsonrpc.JSONRPCHttpClient;
@@ -11,6 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -28,6 +27,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
@@ -61,7 +62,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 		}
 	}
 
-	private static final String TICKETLISTNAME = "ticketlist";
+	private static final String TICKETLISTNAME = "ticketlistInt";
 	private static final String SORTLISTNAME = "sortlist";
 	private static final String FILTERLISTNAME = "filterlist";
 	private static final String ZOEKENNAME = "zoeken";
@@ -81,30 +82,35 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 	private ArrayList<SortSpec> sortList = null;
 	private ArrayList<FilterSpec> filterList = null;
 	private int scrollPosition = 0;
+	private boolean scrolling = false;
+	private boolean hasScrolled = false;
 	private boolean refreshOnRestart = false;
 	private String SelectedProfile = null;
+	private String filterArg = null;
+	private String sortArg = null;
 
-	@SuppressWarnings("unchecked")
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		resetCache();
+		final Bundle args = this.getArguments();
+		if (args != null) {
+			filterArg = args.getString("currentFilter");
+			sortArg = args.getString("currectSortOrder");
+		}
+		if (args != null) {
+			SelectedProfile = args.getString("currentProfile");
+			if (args.containsKey("TicketArg")) {
+				selectTicket(args.getInt("TicketArg"));
+			}
+		}
+	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 		setHasOptionsMenu(true);
-		if (savedInstanceState != null) {
-			tickets = savedInstanceState.getIntArray(TICKETLISTNAME);
-			sortList = (ArrayList<SortSpec>) savedInstanceState.getSerializable(SORTLISTNAME);
-			filterList = (ArrayList<FilterSpec>) savedInstanceState.getSerializable(FILTERLISTNAME);
-		}
-		if (sortList == null) {
-			sortList = new ArrayList<SortSpec>();
-			sortList.add(new SortSpec("priority"));
-			sortList.add(new SortSpec("modified", false));
-		}
-		if (filterList == null) {
-			filterList = new ArrayList<FilterSpec>();
-			filterList.add(new FilterSpec("max", "=", "500"));
-			filterList.add(new FilterSpec("status", "!=", "closed"));
-		}
 		if (dataAdapter == null) {
 			dataAdapter = new ColoredArrayAdapter<Ticket>(context, R.layout.ticket_list);
 		}
@@ -117,7 +123,30 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 		final View view = inflater.inflate(R.layout.list_view, container, false);
 		listView = (ListView) view.findViewById(R.id.listOfTickets);
 		registerForContextMenu(listView);
+		scrolling = false;
+		hasScrolled = false;
 		listView.setOnItemClickListener(this);
+		listView.setOnScrollListener(new OnScrollListener() {
+			@Override
+			public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+				if (scrolling || hasScrolled) {
+					scrollPosition = firstVisibleItem;
+					// tcLog.d(getClass().getName(),"onScroll scrollPosition <= "+scrollPosition);
+				}
+			}
+
+			@Override
+			public void onScrollStateChanged(AbsListView view, int scrollState) {
+				if (scrollState == SCROLL_STATE_IDLE) {
+					if (scrolling) {
+						hasScrolled = true;
+						scrolling = false;
+					}
+				} else {
+					scrolling = true;
+				}
+			}
+		});
 		filterText = (EditText) view.findViewById(R.id.search_box);
 		hs = (TextView) view.findViewById(R.id.listProgress);
 		listView.setAdapter(dataAdapter);
@@ -142,18 +171,43 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		tcLog.d(this.getClass().getName(), "onActivityCreated savedInstanceState = "
 				+ (savedInstanceState == null ? "null" : "not null"));
 		final boolean saveRefreshOnRestart = refreshOnRestart;
-		listener.initializeList();
+		// listener.initializeList();
 		refreshOnRestart = saveRefreshOnRestart;
+		if (filterArg != null) {
+			listener.setFilter(filterArg);
+			filterArg = null;
+		}
+		if (sortArg != null) {
+			listener.setSort(sortArg);
+			sortArg = null;
+		}
+		if (savedInstanceState != null) {
+			tickets = savedInstanceState.getIntArray(TICKETLISTNAME);
+			listener.setSort((ArrayList<SortSpec>) savedInstanceState.getSerializable(SORTLISTNAME));
+			listener.setFilter((ArrayList<FilterSpec>) savedInstanceState.getSerializable(FILTERLISTNAME));
+		}
+		if (sortList == null) {
+			sortList = new ArrayList<SortSpec>();
+			sortList.add(new SortSpec("priority"));
+			sortList.add(new SortSpec("modified", false));
+		}
+		if (filterList == null) {
+			filterList = new ArrayList<FilterSpec>();
+			filterList.add(new FilterSpec("max", "=", "500"));
+			filterList.add(new FilterSpec("status", "!=", "closed"));
+		}
 		if (savedInstanceState != null) {
 			zoeken = savedInstanceState.getBoolean(ZOEKENNAME);
 			zoektext = savedInstanceState.getString(ZOEKTEXTNAME);
 			scrollPosition = savedInstanceState.getInt(SCROLLPOSITIONNAME);
+			// tcLog.d(getClass().getName(),"onActivityCreated scrollPosition <= "+scrollPosition);
 		}
 		if (zoeken) {
 			filterText.setVisibility(View.VISIBLE);
@@ -174,7 +228,9 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 		if (refreshOnRestart) {
 			killThreads();
 			scrollPosition = 0;
+			// tcLog.d(getClass().getName(),"onResume scrollPosition <= "+scrollPosition);
 			clearTickets();
+			listView.invalidate();
 			refreshOnRestart = false;
 		}
 
@@ -214,6 +270,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 		tcLog.d(this.getClass().getName(), "onPause");
 		super.onPause();
 		scrollPosition = listView.getFirstVisiblePosition();
+		// tcLog.d(getClass().getName(),"onPause scrollPosition <= "+scrollPosition);
 	}
 
 	@Override
@@ -231,34 +288,33 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 		tcLog.d(this.getClass().getName(), "onContextItemSelected");
 		final AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 		final Ticket t = (Ticket) listView.getItemAtPosition(info.position);
-		switch (item.getItemId()) {
-		case R.id.select:
-			if (t.hasdata()) {
+		if (t.hasdata()) {
+			switch (item.getItemId()) {
+			case R.id.select:
 				listener.onTicketSelected(t);
-			}
-			return true;
-		case R.id.dfupdate:
-			if (t.hasdata()) {
+				return true;
+			case R.id.dfupdate:
 				listener.onUpdateTicket(t);
-			}
-			return true;
-		case R.id.dfshare:
-			if (t.hasdata()) {
+				return true;
+			case R.id.dfshare:
 				final Intent sendIntent = new Intent();
 				sendIntent.setAction(Intent.ACTION_SEND);
 				sendIntent.putExtra(Intent.EXTRA_TEXT, t.toText());
 				sendIntent.setType("text/plain");
 				startActivity(sendIntent);
+				return true;
+			default:
 			}
-			return true;
-		default:
-			return super.onContextItemSelected(item);
 		}
+		return super.onContextItemSelected(item);
 	}
 
 	private void setScroll() {
 		if (listView != null) {
-			listView.setSelection(scrollPosition == 0 ? 0 : scrollPosition + 1);
+			listView.setSelection(scrollPosition);
+			// listView.setSelection(scrollPosition == 0 ? 0 : scrollPosition +
+			// 1);
+			// tcLog.d(getClass().getName(),"setScroll scrollPosition = "+scrollPosition);
 		}
 	}
 
@@ -267,7 +323,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 		final View v = getView();
 		if (v != null) {
 			final EditText filterText = (EditText) v.findViewById(R.id.search_box);
-			if (filterText != null && listView != null) {
+			if (filterText != null && listView != null && dataAdapter != null) {
 				if (zoeken) {
 					dataAdapter.getFilter().filter(filterText.getText());
 					filterText.setVisibility(View.VISIBLE);
@@ -382,31 +438,37 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 
 	public void selectTicket(int ticknr) {
 		tcLog.d(this.getClass().getName(), "selectTicket = " + ticknr);
-		final ProgressDialog pb = startProgressBar(R.string.downloading);
-		new Ticket(ticknr, context, new onTicketCompleteListener() {
+		final Ticket t = listener.getTicket(ticknr);
+		if (t != null && t.hasdata()) {
+			listener.onTicketSelected(t);
+		} else {
+			final ProgressDialog pb = startProgressBar(R.string.downloading);
+			new Ticket(ticknr, context, new onTicketCompleteListener() {
 
-			@Override
-			public void onComplete(Ticket t2) {
-				pb.dismiss();
-				if (t2.hasdata()) {
-					listener.onTicketSelected(t2);
-				} else {
-					context.runOnUiThread(new Runnable() {
+				@Override
+				public void onComplete(Ticket t2) {
+					pb.dismiss();
+					if (t2.hasdata()) {
+						listener.putTicket(t2);
+						listener.onTicketSelected(t2);
+					} else {
+						context.runOnUiThread(new Runnable() {
 
-						@Override
-						public void run() {
-							final AlertDialog.Builder noTicketDialogBuilder = new AlertDialog.Builder(context);
-							noTicketDialogBuilder.setTitle(R.string.notfound);
-							noTicketDialogBuilder.setMessage(R.string.ticketnotfound);
-							noTicketDialogBuilder.setCancelable(false);
-							noTicketDialogBuilder.setPositiveButton(R.string.oktext, null);
-							final AlertDialog noTicketDialog = noTicketDialogBuilder.create();
-							noTicketDialog.show();
-						}
-					});
+							@Override
+							public void run() {
+								final AlertDialog.Builder noTicketDialogBuilder = new AlertDialog.Builder(context);
+								noTicketDialogBuilder.setTitle(R.string.notfound);
+								noTicketDialogBuilder.setMessage(R.string.ticketnotfound);
+								noTicketDialogBuilder.setCancelable(false);
+								noTicketDialogBuilder.setPositiveButton(R.string.oktext, null);
+								final AlertDialog noTicketDialog = noTicketDialogBuilder.create();
+								noTicketDialog.show();
+							}
+						});
+					}
 				}
-			}
-		});
+			});
+		}
 	}
 
 	@Override
@@ -420,8 +482,10 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 		savedState.putString(ZOEKTEXTNAME, zoektext);
 		if (listView != null) {
 			scrollPosition = listView.getFirstVisiblePosition();
+			// tcLog.d(getClass().getName(),"onSaveInstanceState scrollPosition <= "+scrollPosition);
 		}
 		savedState.putInt(SCROLLPOSITIONNAME, scrollPosition);
+		tcLog.d(this.getClass().getName(), "onSaveInstanceState = " + savedState);
 	}
 
 	private void loadTicketList(final onLoadListListener oc) {
@@ -586,7 +650,8 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 				final String logTag = this.getClass().getName() + "." + tid;
 				try {
 					tcLog.d(logTag, "loadTicketContent thread = " + this);
-					final Map<Integer, Ticket> ticketMap = new TreeMap<Integer, Ticket>();
+					// final Map<Integer, Ticket> ticketMap = new
+					// TreeMap<Integer, Ticket>();
 					final int count = tickets.length;
 					final int progress[] = new int[2];
 					progress[0] = 0;
@@ -599,7 +664,10 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 								for (int i = 0; i < count; i++) {
 									final Ticket t = new Ticket(tickets[i], null, null, null, null);
 									dataAdapter.add(t);
-									ticketMap.put(tickets[i], t);
+									listener.putTicket(t);
+								}
+								if (listView != null) {
+									listView.invalidate();
 								}
 							}
 						}
@@ -648,7 +716,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 									final JSONArray result = res.getJSONArray("result");
 									final int startpos = id.indexOf("_") + 1;
 									final int thisTicket = Integer.parseInt(id.substring(startpos));
-									final Ticket t = ticketMap.get(thisTicket);
+									final Ticket t = listener.getTicket(thisTicket);
 									if (t != null) {
 										if (id.equals(Ticket.TICKET_GET + "_" + thisTicket)) {
 											final JSONObject v = result.getJSONObject(3);
@@ -666,6 +734,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 										} else {
 											tcLog.d(logTag, "loadTickets, onverwachte respons = " + result);
 										}
+										// listener.putTicket(t);
 									}
 								} catch (final Exception e1) {
 									throw new TicketLoadException(
@@ -732,22 +801,21 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 	}
 
 	private void doRefresh() {
-		// tcLog.d(this.getClass().getName(), "doRefresh");
 		killThreads();
 		hs.setText("");
 		scrollPosition = 0;
+		// tcLog.d(getClass().getName(),"doRefresh scrollPosition <= "+scrollPosition);
 		clearTickets();
 		loadTicketList(new onLoadListListener() {
 			@Override
 			public void onComplete() {
-				// tcLog.d(this.getClass().getName(), "doRefresh - onComplete");
 				loadTicketContent();
 			}
 		});
 	}
 
 	public void forceRefresh() {
-		// tcLog.d(this.getClass().getName(), "forceRefresh");
+		tcLog.d(this.getClass().getName(), "forceRefresh");
 		refreshOnRestart = true;
 	}
 
@@ -775,18 +843,15 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 	}
 
 	public void setSort(ArrayList<SortSpec> sort) {
-		// tcLog.d(this.getClass().getName(), "setSort " + sort);
+		tcLog.d(this.getClass().getName(), "setSort " + sort);
 		sortList = sort;
 	}
 
 	public int getTicketCount() {
-		// tcLog.d(this.getClass().getName(), "getTicketCount");
 		return dataAdapter.getCount();
 	}
 
 	public List<Integer> getNewTickets(final String isoTijd) {
-		// tcLog.d(this.getClass().getName(), "getNewTickets isoTijd = " +
-		// isoTijd);
 		final JSONRPCHttpClient req = new JSONRPCHttpClient(_url, _sslHack, _sslHostNameHack);
 		req.setCredentials(_username, _password);
 		try {
@@ -797,35 +862,29 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 			ob.put("__jsonclass__", datum);
 			final JSONArray param = new JSONArray();
 			param.put(ob);
-			// tcLog.d(this.getClass().getName(), "getNewTickets param = " +
-			// param);
 			final JSONArray jsonTicketlist = req.callJSONArray("ticket.getRecentChanges", param);
-			// tcLog.d(this.getClass().getName(),
-			// "getNewTickets jsonTicketList = " + jsonTicketlist);
 			final List<Integer> l = new ArrayList<Integer>();
 
 			final int count = jsonTicketlist.length();
 			for (int i = 0; i < count; i++) {
 				l.add(jsonTicketlist.getInt(i));
 			}
-			// tcLog.d(this.getClass().getName(), "getNewTickets l = " + l);
 			return l;
 		} catch (final JSONException e) {
-			// tcLog.d(this.getClass().getName(),"getNewTickets JSONException = "
-			// + e.getMessage() + "\n" + tcLog.getStackTraceString(e), e);
+			tcLog.e(this.getClass().getName(), "getNewTickets JSONException", e);
 			return null;
 		} catch (final JSONRPCException e) {
-			// tcLog.d(this.getClass().getName(),"getNewTickets JSONRPCException = "
-			// + e.getMessage() + "\n" + tcLog.getStackTraceString(e), e);
+			tcLog.e(this.getClass().getName(), "getNewTickets JSONRPCException", e);
 			return null;
 		}
 	}
 
 	public void setHost(final String url, final String username, final String password, boolean sslHack, boolean sslHostNameHack,
 			String profile) {
-		// tcLog.d(this.getClass().getName(), "setHost " + profile);
+		tcLog.d(this.getClass().getName(), "setHost " + profile);
 		super.setHost(url, username, password, sslHack, sslHostNameHack);
 		SelectedProfile = profile;
+		resetCache();
 	}
 
 	private final TextWatcher filterTextWatcher = new TextWatcher() {

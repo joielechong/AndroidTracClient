@@ -57,6 +57,6 @@ public class LoginProfile extends Object implements Serializable, Cloneable {
 		result = 31 * result + hc(_url);
 		result = 31 * result + hc(_username);
 		result = 31 * result + hc(_password);
-		return result;
+		return result + super.hashCode();
 	}
 }

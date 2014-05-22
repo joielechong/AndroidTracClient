@@ -12,7 +12,6 @@
     <string name="vertext">Verifieer</string>
     <string name="invalidCred">Gegevens niet geldig</string>
     <string name="validCred">Gegevens geldig</string>
-    <string name="detail_heading">Ticket Details</string>
     <string name="list_heading">Ticket Overzicht</string>
     <string name="ophalen">Ophalen gegevens</string>
     <string name="tlrefresh">Verversen lijst</string>
@@ -21,7 +20,6 @@
     <string name="sort">Sorteren</string>
     <string name="changehost">Kies andere Trac host</string>
     <string name="updateticket">Wijzig status van ticket</string>
-    <string name="updatefield">Wijzig veld van ticket</string>
     <string name="nieuw">Nieuw ticket</string>
     <string name="nodata">Geen gegevens</string>
     <string name="nodatadesc">Gegevens van dit ticket zijn nog niet geladen</string>
@@ -32,9 +30,7 @@
     <string name="storerrdesc">Kan ticket niet opslaan</string>
     <string name="storok">Ticket aangemaakt</string>
     <string name="storokdesc">Ticket aangemaakt, id =</string>
-    <string name="config">Configureer velden</string>
     <string name="comment">Voeg commentaar toe</string>
-    <string name="state">Wijzig status</string>
     <string name="attach">Voeg bijlage toe</string>
     <string name="chooser_title">Ticket bijlage</string>
     <string name="tlshare">Delen lijst</string>
@@ -45,16 +41,12 @@
     <string name="cancel">Afbreken</string>
     <string name="invalidJson">Ongeldig JSON bericht ontvangen</string>
     <string name="noticketUnk">Geen ticket aangemaakt: onbekende reden</string>
-    <string name="nolist">Kan lijst niet aanmaken</string>
-    <string name="noadapter">Kan adapter niet aanmaken</string>
     <string name="invtick">Ongeldig ticketnummer</string>
     <string name="noaction">Geen actie gegeven</string>
     <string name="zoekfilter">Geef zoekstring</string>
     <string name="zoek">Zoek</string>
     <string name="storefilter">Sla filter op</string>
     <string name="storesort">Sla sortering op</string>
-    <string name="filterdef">Definieer filter</string>
-    <string name="sortdef">Definieer sortering</string>
     <string name="moveup">omhoog</string>
     <string name="movedown">omlaag</string>
     <string name="direction">zet richting</string>
@@ -76,13 +68,10 @@
     </string-array>
 
     <string name="select">Selecteer</string>
-    <string name="delete">Verwijder</string>
     <string name="getlist">Haal ticketlijst op</string>
     <string name="storeprofile">Bewaar profiel</string>
     <string name="profiletext">Voer een naam in voor het op te slaan profiel</string>
     <string name="loadprofile">Laad login profiel</string>
-    <string name="areyousure">Weet je het zeker?</string>
-    <string name="delprofiletext">Verwijder profiel</string>
     <string name="loadprofiletext">Profiel kan niet geladen worden</string>
     <string name="notfound">Niet gevonden</string>
     <string name="sdcardmissing">Geen SDkaart. Kan bijlage niet opslaan.</string>
@@ -105,7 +94,6 @@
     <string name="chooseticket">Kies ticket</string>
     <string name="checking">Controleren</string>
     <string name="updating">Bijwerken</string>
-    <string name="wait">Een moment aub</string>
     <string name="debug">Debug</string>
     <string name="foundnew">Gewijzigde of nieuwe tickets gevonden:</string>
     <string name="notifmod">Gewijzigde tickets gevonden</string>

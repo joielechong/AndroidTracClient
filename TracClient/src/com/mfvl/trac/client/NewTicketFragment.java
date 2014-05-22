@@ -20,7 +20,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-//import com.mfvl.trac.client.util.tcLog;
+import com.mfvl.trac.client.util.tcLog;
 
 public class NewTicketFragment extends TracClientFragment {
 	private final static int EXTRA = 1000;
@@ -36,9 +36,8 @@ public class NewTicketFragment extends TracClientFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		// tcLog.d(this.getClass().getName(),
-		// "onCreateView savedInstanceState = " + (savedInstanceState == null ?
-		// "null" : "not null"));
+		// tcLog.d(this.getClass().getName(),"onCreateView savedInstanceState = "
+		// + (savedInstanceState == null ? "null" : "not null"));
 		if (container == null) {
 			return null;
 		}
@@ -53,9 +52,8 @@ public class NewTicketFragment extends TracClientFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		// tcLog.d(this.getClass().getName(),
-		// "onActivityCreated savedInstanceState = "+ (savedInstanceState ==
-		// null ? "null" : "not null"));
+		// tcLog.d(this.getClass().getName(),"onActivityCreated savedInstanceState = "+
+		// (savedInstanceState == null ? "null" : "not null"));
 	}
 
 	@Override
@@ -73,18 +71,6 @@ public class NewTicketFragment extends TracClientFragment {
 			return super.onOptionsItemSelected(item);
 		}
 		return true;
-	}
-
-	@Override
-	public void setHost(final String url, final String username, final String password, boolean sslHack, boolean sslHostNameHack) {
-		// tcLog.d(this.getClass().getName(), "setHost");
-		if (_url != url) {
-			_url = url;
-			_sslHack = sslHack;
-			_sslHostNameHack = sslHostNameHack;
-			_username = username;
-			_password = password;
-		}
 	}
 
 	private void makeRow(TableLayout tl, final String veldnaam, View tv2, final int id) {
@@ -111,10 +97,9 @@ public class NewTicketFragment extends TracClientFragment {
 		final TableLayout tl = (TableLayout) view.findViewById(R.id.newTickTable);
 
 		try {
-			final int count = tm.count();
 			View e = view.findViewById(R.id.waarde);
 			final LayoutParams lp = e.getLayoutParams();
-			for (int i = 0; i < count; i++) {
+			for (int i = 0; i < tm.count(); i++) {
 				View v = null;
 				final TicketModelVeld veld = tm.getVeld(i);
 				final String veldnaam = veld.label();
@@ -148,6 +133,7 @@ public class NewTicketFragment extends TracClientFragment {
 			e = view.findViewById(R.id.veld);
 			e.setVisibility(View.GONE);
 		} catch (final Exception e) {
+			tcLog.e(getClass().getName(), "Exception in createTicket", e);
 		} finally {
 			view.invalidate();
 		}
@@ -188,6 +174,7 @@ public class NewTicketFragment extends TracClientFragment {
 											velden.put(veldnaam, val);
 										}
 									} catch (final Exception e) {
+										tcLog.e(getClass().getName(), "Exception in createTicket", e);
 									}
 								}
 							}
@@ -201,6 +188,7 @@ public class NewTicketFragment extends TracClientFragment {
 							if (newtick < 0) {
 								throw new RuntimeException("Ticket == -1 ontvangen");
 							}
+							listener.putTicket(t);
 							listener.refreshOverview();
 							context.runOnUiThread(new Runnable() {
 								@Override
@@ -217,7 +205,7 @@ public class NewTicketFragment extends TracClientFragment {
 							});
 
 						} catch (final Exception e) {
-							e.printStackTrace();
+							tcLog.e(getClass().getName(), "Exception in createTicket", e);
 							context.runOnUiThread(new Runnable() {
 								@Override
 								public void run() {

@@ -110,20 +110,11 @@ public class TicketModel extends Object implements Serializable, Cloneable {
 
 	TicketModelVeld getVeld(final String naam) {
 		wacht();
-		if (_velden.containsKey(naam)) {
-			return _velden.get(naam);
-		} else if (naam.equals("id")) {
-			return new TicketModelVeld(naam, naam, "0");
-		} else {
-			return null;
-		}
+		return _velden.containsKey(naam) ? _velden.get(naam) : naam.equals("id") ? new TicketModelVeld(naam, naam, "0") : null;
 	}
 
 	TicketModelVeld getVeld(final int i) {
-		if (i < 0 || i >= _count) {
-			return null;
-		}
-		return getVeld(_volgorde.get(i));
+		return i < 0 || i >= _count ? null : getVeld(_volgorde.get(i));
 	}
 
 	private int hc(Object o) {
@@ -144,6 +135,6 @@ public class TicketModel extends Object implements Serializable, Cloneable {
 		result = 31 * result + hc(_url);
 		result = 31 * result + hc(_username);
 		result = 31 * result + hc(_password);
-		return result;
+		return result + super.hashCode();
 	}
 }

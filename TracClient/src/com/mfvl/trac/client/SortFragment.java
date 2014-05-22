@@ -18,11 +18,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.mfvl.trac.client.util.SortSpec;
+import com.mfvl.trac.client.util.tcLog;
 
 public class SortFragment extends TracClientFragment {
-
-	private static int UPARROW = android.R.drawable.arrow_up_float;
-	private static int DOWNARROW = android.R.drawable.arrow_down_float;
 
 	private class SortAdapter extends ArrayAdapter<SortSpec> {
 
@@ -31,6 +29,10 @@ public class SortFragment extends TracClientFragment {
 		public SortAdapter(Context context, int textViewResourceId, ArrayList<SortSpec> items) {
 			super(context, textViewResourceId, items);
 			this.items = items;
+		}
+
+		public ArrayList<SortSpec> getArray() {
+			return items;
 		}
 
 		@Override
@@ -52,29 +54,17 @@ public class SortFragment extends TracClientFragment {
 					tt.setText(o.veld());
 				}
 				if (direc != null) {
-					if (o.richting()) {
-						direc.setImageResource(UPARROW);
-					} else {
-						direc.setImageResource(DOWNARROW);
-					}
+					direc.setImageResource(o.richting() ? Const.UPARROW : Const.DOWNARROW);
 					direc.setOnClickListener(new ImageButton.OnClickListener() {
 						@Override
 						public void onClick(View dv) {
-							if (o.flip()) {
-								direc.setImageResource(UPARROW);
-							} else {
-								direc.setImageResource(DOWNARROW);
-							}
+							direc.setImageResource(o.flip() ? Const.UPARROW : Const.DOWNARROW);
 						}
 					});
 				}
 
 				if (sortup != null) {
-					if (position == 0) {
-						sortup.setVisibility(View.INVISIBLE);
-					} else {
-						sortup.setVisibility(View.VISIBLE);
-					}
+					sortup.setVisibility(position == 0 ? View.INVISIBLE : View.VISIBLE);
 					sortup.setOnClickListener(new ImageButton.OnClickListener() {
 						@Override
 						public void onClick(View dv) {
@@ -90,11 +80,7 @@ public class SortFragment extends TracClientFragment {
 				}
 
 				if (sortdown != null) {
-					if (position == items.size() - 1) {
-						sortdown.setVisibility(View.INVISIBLE);
-					} else {
-						sortdown.setVisibility(View.VISIBLE);
-					}
+					sortdown.setVisibility(position == items.size() - 1 ? View.INVISIBLE : View.VISIBLE);
 					sortdown.setOnClickListener(new ImageButton.OnClickListener() {
 						@Override
 						public void onClick(View dv) {
@@ -124,41 +110,54 @@ public class SortFragment extends TracClientFragment {
 	}
 
 	private TicketModel tm;
-	private ArrayList<SortSpec> inputSpec;
+	private ArrayList<SortSpec> inputSpec = null;
 	private SortAdapter sortAdapter = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// tcLog.d(this.getClass().getName(), "onCreate");
-		// tcLog.d(this.getClass().getName(), "savedInstanceState = " +
-		// (savedInstanceState == null ? "null" : "not null"));
+		// tcLog.d(this.getClass().getName(), "onCreate" savedInstanceState =
+		// " + (savedInstanceState == null ? "null" : "not null"));
 		setHasOptionsMenu(true);
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		// tcLog.d(this.getClass().getName(), "onCreateView");
-		// tcLog.d(this.getClass().getName(), "savedInstanceState = " +
-		// (savedInstanceState == null ? "null" : "not null"));
+		// tcLog.d(this.getClass().getName(),
+		// "onCreateView savedInstanceState = " + (savedInstanceState == null ?
+		// "null" : "not null"));
 		final View view = inflater.inflate(R.layout.sort_view, container, false);
 		return view;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
+		ArrayList<SortSpec> outputSpec = null;
+
 		super.onActivityCreated(savedInstanceState);
-		// tcLog.d(this.getClass().getName(), "onActivityCreated");
-		// tcLog.d(this.getClass().getName(), "savedInstanceState = " +
-		// (savedInstanceState == null ? "null" : "not null"));
+		tcLog.d(getClass().getName(), "onActivityCreated savedInstanceState = "
+				+ (savedInstanceState == null ? "null" : "not null"));
+		if (savedInstanceState != null) {
+			if (savedInstanceState.containsKey("inputSpec")) {
+				inputSpec = (ArrayList<SortSpec>) savedInstanceState.getSerializable("inputSpec");
+			}
+			if (savedInstanceState.containsKey("outputSpec")) {
+				outputSpec = (ArrayList<SortSpec>) savedInstanceState.getSerializable("outputSpec");
+			}
+		}
 		final View view = getView();
 		final ListView tl = (ListView) view.findViewById(R.id.sortlist);
-		final ArrayList<SortSpec> outputSpec = new ArrayList<SortSpec>();
-		for (final SortSpec o : inputSpec) {
-			try {
-				outputSpec.add((SortSpec) o.clone());
-			} catch (final Exception e) {
-				outputSpec.add(o);
+		if (outputSpec == null) {
+			outputSpec = new ArrayList<SortSpec>();
+			if (inputSpec != null) {
+				for (final SortSpec o : inputSpec) {
+					try {
+						outputSpec.add((SortSpec) o.clone());
+					} catch (final Exception e) {
+						outputSpec.add(o);
+					}
+				}
 			}
 		}
 		sortAdapter = new SortAdapter(context, R.layout.sort_spec, outputSpec);
@@ -181,15 +180,11 @@ public class SortFragment extends TracClientFragment {
 			@Override
 			public void onClick(View v1) {
 				final ArrayList<SortSpec> outputSpec = sortAdapter.items;
-				// tcLog.d(this.getClass().getName(),
-				// "stor onButton outputSpec=" + outputSpec);
 				for (int i = outputSpec.size() - 1; i >= 0; i--) {
 					if (outputSpec.get(i).richting() == null) {
 						outputSpec.remove(i);
 					}
 				}
-				// tcLog.d(this.getClass().getName(), "Store is clicked! " +
-				// outputSpec);
 				listener.setSort(outputSpec);
 				// getFragmentManager().popBackStackImmediate();
 				getFragmentManager().popBackStack();
@@ -226,11 +221,11 @@ public class SortFragment extends TracClientFragment {
 		// tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" +
 		// item);
 		final int itemId = item.getItemId();
-		if (itemId == R.id.help || itemId == R.id.over) {
+		if (itemId == R.id.help) {
 			final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
-			final String filename = context.getString(itemId == R.id.over ? R.string.whatsnewhelpfile : R.string.sorthelpfile);
+			final String filename = context.getString(R.string.sorthelpfile);
 			launchTrac.putExtra("file", filename);
-			launchTrac.putExtra("version", itemId == R.id.over);
+			launchTrac.putExtra("version", false);
 			startActivity(launchTrac);
 			return true;
 		} else {
@@ -241,6 +236,24 @@ public class SortFragment extends TracClientFragment {
 	public void setList(ArrayList<SortSpec> l) {
 		// tcLog.d(this.getClass().getName(), "setList l = " + l);
 		inputSpec = l;
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle savedState) {
+		super.onSaveInstanceState(savedState);
+		tcLog.d(this.getClass().getName(), "onSaveInstanceState");
+		if (inputSpec != null) {
+			tcLog.d(this.getClass().getName(), "onSaveInstanceState inputSpec = " + inputSpec);
+			savedState.putSerializable("inputSpec", inputSpec);
+		}
+		if (sortAdapter != null) {
+			final ArrayList<SortSpec> outputSpec = sortAdapter.getArray();
+			if (outputSpec != null) {
+				tcLog.d(this.getClass().getName(), "onSaveInstanceState outputSpec = " + outputSpec);
+				savedState.putSerializable("outputSpec", outputSpec);
+			}
+		}
+		tcLog.d(this.getClass().getName(), "onSaveInstanceState = " + savedState);
 	}
 
 }

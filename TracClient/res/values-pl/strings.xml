@@ -9,7 +9,6 @@
 	<string name="vertext">Potwierdź</string>
 	<string name="invalidCred">Dane uwierzytelniające nie są ważne</string>
 	<string name="validCred">Dane uwierzytelniające ważne</string>
-	<string name="detail_heading">Szczegóły Biletu</string>
 	<string name="list_heading">Lista Biletów</string>
 	<string name="ophalen">Ładowanie danych</string>
 	<string name="tlrefresh">Odśwież listę</string>
@@ -18,7 +17,6 @@
 	<string name="sort">Sortuj</string>
 	<string name="changehost">Wybierz inny Trac host</string>
 	<string name="updateticket">Zmień status biletu</string>
-	<string name="updatefield">Zmodyfikuj pole biletu</string>
 	<string name="nieuw">Nowy bilet</string>
 	<string name="nodata">Brak danych</string>
 	<string name="nodatadesc">Dane tego biletu nie zostały jeszcze załadowane</string>
@@ -29,9 +27,7 @@
 	<string name="storerrdesc">Nie można zachować biletu</string>
 	<string name="storok">Bilet został utworzony</string>
 	<string name="storokdesc">Utworzono bilet, id =</string>
-	<string name="config">Skonfiguruj pola</string>
 	<string name="comment">Dodaj komentarz</string>
-	<string name="state">Zmień status</string>
 	<string name="attach">Dodaj załącznik</string>
 	<string name="chooser_title">Załącznik biletu</string>
 	<string name="tlshare">Udostępnij listę</string>
@@ -42,16 +38,12 @@
 	<string name="cancel">Anuluj</string>
 	<string name="invalidJson">Otrzymano nieprawidłową wiadomość JSON</string>
 	<string name="noticketUnk">Nie utworzono biletu: przyczyna nieznana</string>
-	<string name="nolist">Nie można utworzyć listy</string>
-	<string name="noadapter">Nie można utworzyć adaptera</string>
 	<string name="invtick">Nieprawidłowy numer biletu</string>
 	<string name="noaction">Nie podjęto działania</string>
 	<string name="zoekfilter">Wprowadź ścieżkę wyszukiwania</string>
 	<string name="zoek">Wyszukaj</string>
 	<string name="storefilter">Zapisz filtr</string>
 	<string name="storesort">Zapisz kolejność sortowania</string>
-	<string name="filterdef">Określ filtr</string>
-	<string name="sortdef">Określ kolejność sortowania</string>
 	<string name="moveup">przesuń w górę</string>
 	<string name="movedown">przesuń w dół</string>
 	<string name="direction">ustaw kierunek</string>
@@ -71,13 +63,10 @@
 		<item>nie kończy się na</item>
 	</string-array>
 	<string name="select">Wybierz</string>
-	<string name="delete">Usuń</string>
 	<string name="getlist">Ładuj Listę Biletów</string>
 	<string name="storeprofile">Zapisz profil</string>
 	<string name="profiletext">Wprowadź nazwę dla zapisywanego profilu</string>
 	<string name="loadprofile">Załaduj profil</string>
-	<string name="areyousure">Na pewno?</string>
-	<string name="delprofiletext">Usuń profil</string>
 	<string name="loadprofiletext">Nie można załadować profilu</string>
 	<string name="notfound">Nie znaleziono</string>
 	<string name="sdcardmissing">Brak karty SD. Nie można zachować załącznika</string>
@@ -100,7 +89,6 @@
 	<string name="chooseticket">Wybierz bilet</string>
 	<string name="checking">Trwa sprawdzanie</string>
 	<string name="updating">Aktualizacja w toku</string>
-	<string name="wait">Jedną chwilkę</string>
 	<string name="debug">Usuń błędy</string>
 	<string name="foundnew">Znaleziono nowe lub edytowane bilety:</string>
 	<string name="notifmod">Znaleziono edytowane bilety</string>
