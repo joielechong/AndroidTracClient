@@ -10,18 +10,18 @@ import com.mfvl.trac.client.TracStart;
 
 public class ColoredArrayAdapter<T> extends ArrayAdapter<T> {
 
+	private final List<T> items;
 	private final int[] colors = new int[] { 0x00000000, 0x30111111 };
 
 	public ColoredArrayAdapter(TracStart context, int resource, List<T> list) {
 		super(context, resource, list);
+		items=list;
 	}
-
-	public ColoredArrayAdapter(TracStart context, int resource, T[] list) {
-		super(context, resource, list);
-	}
-
-	public ColoredArrayAdapter(TracStart context, int resource) {
-		super(context, resource);
+	
+	@Override
+	public void clear() {
+		items.clear();
+		super.clear();
 	}
 
 	@Override

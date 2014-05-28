@@ -12,6 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import com.mfvl.trac.client.util.Credentials;
+import com.mfvl.trac.client.util.tcLog;
 
 public class TicketModel extends Object implements Serializable, Cloneable {
 	private static final long serialVersionUID = 4307815225424930343L;
@@ -41,6 +42,7 @@ public class TicketModel extends Object implements Serializable, Cloneable {
 		networkThread = new Thread() {
 			@Override
 			public void run() {
+				tcLog.d(getClass().getName(), "TicketModel_url = "+_url);
 				final JSONRPCHttpClient req = new JSONRPCHttpClient(_url, _sslHack, _sslHostNameHack);
 				req.setCredentials(_username, _password);
 

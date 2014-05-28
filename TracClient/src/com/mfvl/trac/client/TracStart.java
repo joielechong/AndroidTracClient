@@ -22,6 +22,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
@@ -89,6 +90,7 @@ interface InterFragmentListener {
 }
 
 public class TracStart extends ActionBarActivity implements InterFragmentListener {
+	private boolean debug = false; // disable menuoption at startup
 	private String url;
 	private String username;
 	private String password;
@@ -100,7 +102,6 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	private static final int REQUEST_CODE = 6384;
 	private onFileSelectedListener _oc = null;
 	private boolean dispAds;
-	private boolean debug = false; // disable menuoption at startup
 	private FragmentManager fm = null;
 	private long referenceTime = 0;
 	private static final int timerCorr = 60 * 1000 * 2; // 2 minuten
@@ -227,6 +228,9 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		startService(new Intent(this, RefreshService.class));
 
 		setContentView(R.layout.tracstart);
+		if (Credentials.isRCVersion(this)) {
+			debug = true;
+		}
 		Credentials.loadCredentials(this);
 
 		dispAds = getIntent().getBooleanExtra("AdMob", true);
@@ -320,6 +324,11 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		bindService(new Intent(this, RefreshService.class), mConnection, Context.BIND_AUTO_CREATE);
 		mIsBound = true;
 		setReferenceTime();
+	}
+	
+	@Override
+	public void onAttachFragment(final Fragment frag) {
+		Credentials.reloadCredentials(this);
 	}
 
 	public void initializeList(final TicketListFragment ticketListFragment) {
@@ -666,12 +675,9 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	public void onBackPressed() {
 		tcLog.d(this.getClass().getName(), "onBackPressed");
 		final DetailFragment df = (DetailFragment) fm.findFragmentByTag(DetailFragmentTag);
-		boolean callSuper = true;
-		if (df != null) {
-			callSuper = !df.onBackPressed();
-		}
+		final boolean callSuper = (df != null ? !df.onBackPressed() : true);
 		if (callSuper) {
-			super.onBackPressed();
+			super.onBackPressed(); 
 		}
 	}
 
@@ -792,16 +798,20 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	@Override
 	public Ticket getTicket(int ticknr) {
-		return ticketMap.get(ticknr);
+//		tcLog.d(getClass().getName(), "getTicket ticknr = "+ticknr+ " "+ticketMap.containsKey(ticknr));
+		return (ticketMap.containsKey(ticknr) ? ticketMap.get(ticknr) : null);
 	}
 
 	@Override
 	public void putTicket(Ticket ticket) {
+//		tcLog.d(getClass().getName(), "putTicket ticket = "+ticket);
 		ticketMap.put(ticket.getTicketnr(), ticket);
 	}
 
 	@Override
 	public void resetCache() {
+//		tcLog.d(getClass().getName(), "resetCache voor ticketMap = "+ticketMap);
 		ticketMap = new TreeMap<Integer, Ticket>();
+//		tcLog.d(getClass().getName(), "resetCache na ticketMap = "+ticketMap);
 	}
 }
