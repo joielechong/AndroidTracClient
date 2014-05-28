@@ -21,6 +21,7 @@ import android.os.Environment;
 
 public class Credentials {
 	public static final String PREFS_NAME = "Trac";
+	private static String versie = null;
 	private static String _url = "";
 	private static String _username = "";
 	private static String _password = "";
@@ -29,20 +30,11 @@ public class Credentials {
 	private static String _profile = null;
 	private static SharedPreferences settings = null;
 
-	/** Set login credentials server-url, username, password and profile */
-	public static void setCredentials(final String url, final String username, final String password, final String profile) {
-		// tcLog.d("Credentials", "setCredentials");
-		_url = url;
-		_username = username;
-		_password = password;
-		_profile = profile;
-	}
-
 	/**
 	 * Load login credentials from shared preferences: server-url, username,
 	 * password and profile
 	 */
-	public static void loadCredentials(Context context) {
+	public static void loadCredentials(final Context context) {
 		// tcLog.d("Credentials", "loadCredentials");
 		if (settings == null) {
 			settings = context.getSharedPreferences(PREFS_NAME, 0);
@@ -54,12 +46,18 @@ public class Credentials {
 		_sslHostNameHack = settings.getBoolean("sslHostNameHack", false);
 		_profile = settings.getString("profile", null);
 	}
+	
+	public static void reloadCredentials(final Context context) {
+		if (settings == null) {
+			loadCredentials(context);
+		}
+	}
 
 	/**
 	 * Store login credentials to shared preferences: server-url, username,
 	 * password and profile
 	 */
-	public static void storeCredentials(Context context) {
+	public static void storeCredentials(final Context context) {
 		// tcLog.d("Credentials", "storeCredentials");
 		if (settings == null) {
 			settings = context.getSharedPreferences(PREFS_NAME, 0);
@@ -74,6 +72,15 @@ public class Credentials {
 
 		// Commit the edits!
 		editor.commit();
+	}
+
+	/** Set login credentials server-url, username, password and profile */
+	public static void setCredentials(final String url, final String username, final String password, final String profile) {
+		// tcLog.d("Credentials", "setCredentials");
+		_url = url;
+		_username = username;
+		_password = password;
+		_profile = profile;
 	}
 
 	public static String getUrl() {
@@ -117,7 +124,7 @@ public class Credentials {
 		if (settings == null) {
 			settings = context.getSharedPreferences(PREFS_NAME, 0);
 		}
-		final String thisRun = buildVersion(context, false);
+		final String thisRun = buildVersion(context);
 		final String lastRun = settings.getString("firstRun", "");
 		final SharedPreferences.Editor editor = settings.edit();
 		editor.putString("firstRun", thisRun);
@@ -212,28 +219,36 @@ public class Credentials {
 	}
 
 	@TargetApi(Build.VERSION_CODES.GINGERBREAD)
-	public static String buildVersion(Context context, boolean extra) {
-		String versie = null;
+	public static String buildVersion(Context context) {
 		final PackageManager manager = context.getPackageManager();
 		PackageInfo info;
-		try {
-			info = manager.getPackageInfo(context.getPackageName(), 0);
-			versie = "V" + info.versionName;
-			final int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-			// tcLog.d(context.getClass().getName(), "buildVersion versie = " +
-			// versie + " api = " + currentapiVersion);
-			if (isDebuggable(context) && currentapiVersion >= android.os.Build.VERSION_CODES.GINGERBREAD) {
-				versie += "/" + info.lastUpdateTime / (1000 * 60);
-			}
-		} catch (final NameNotFoundException e) {
-			e.printStackTrace();
-			if (versie == null) {
-				versie = "V0.3x";
+		if (versie == null) {
+			try {
+				info = manager.getPackageInfo(context.getPackageName(), 0);
+				versie = "V" + info.versionName;
+				final int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+				// tcLog.d(context.getClass().getName(), "buildVersion versie = " +
+				// versie + " api = " + currentapiVersion);
+				if (isDebuggable(context) && currentapiVersion >= android.os.Build.VERSION_CODES.GINGERBREAD) {
+					versie += "/" + info.lastUpdateTime / (1000 * 60);
+				}
+			} catch (final NameNotFoundException e) {
+				e.printStackTrace();
+				if (versie == null) {
+					versie = "V0.3.x";
+				}
 			}
 		}
-		// tcLog.d(context.getClass().getName(), "buildVersion versie = " +
-		// versie);
+		// tcLog.d(context.getClass().getName(), "buildVersion versie = " + versie);
 		return versie;
+	}
+	
+	public static boolean isRCVersion(Context context) {
+		buildVersion(context);
+		if (versie == null) {
+			return false;
+		}
+		return versie.toLowerCase().contains("rc");			
 	}
 
 	public static String makeDbPath(Context context, String dbname) {
@@ -251,8 +266,7 @@ public class Credentials {
 				dbpath = p1;
 			}
 		}
-		// tcLog.d(context.getClass().getName(), "makeDbPath dbpath = " +
-		// dbpath);
+		// tcLog.d(context.getClass().getName(), "makeDbPath dbpath = " + dbpath);
 		return dbpath;
 	}
 

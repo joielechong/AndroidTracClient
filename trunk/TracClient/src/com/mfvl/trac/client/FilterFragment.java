@@ -207,15 +207,31 @@ public class FilterFragment extends TracClientFragment {
 		pb.dismiss();
 		final View view = getView();
 		final ListView lv = (ListView) view.findViewById(R.id.filterlist);
-		final ArrayList<FilterSpec> outputSpec = new ArrayList<FilterSpec>();
-		for (final FilterSpec o : inputSpec) {
-			o.setEdit(false);
-			try {
-				outputSpec.add((FilterSpec) o.clone());
-			} catch (final Exception e) {
-				outputSpec.add(o);
+		ArrayList<FilterSpec> outputSpec = new ArrayList<FilterSpec>();
+
+
+		if (savedInstanceState != null) {
+			if (savedInstanceState.containsKey("inputSpec")) {
+				inputSpec = (ArrayList<FilterSpec>) savedInstanceState.getSerializable("inputSpec");
+			}
+			if (savedInstanceState.containsKey("outputSpec")) {
+				outputSpec = (ArrayList<FilterSpec>) savedInstanceState.getSerializable("outputSpec");
 			}
 		}
+		if (outputSpec == null) {
+			outputSpec = new ArrayList<FilterSpec>();
+			if (inputSpec != null) {
+				for (final FilterSpec o : inputSpec) {
+					o.setEdit(false);
+					try {
+						outputSpec.add((FilterSpec) o.clone());
+					} catch (final Exception e) {
+						outputSpec.add(o);
+					}
+				}
+			}
+		}
+
 		filterAdapter = new FilterAdapter(context, android.R.layout.simple_list_item_1, outputSpec);
 		lv.setAdapter(filterAdapter);
 

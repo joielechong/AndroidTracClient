@@ -21,7 +21,7 @@ import com.mfvl.trac.client.util.ISO8601;
 import com.mfvl.trac.client.util.tcLog;
 
 interface onTicketCompleteListener {
-	void onComplete(Ticket t);
+	void onComplete(Ticket t); 
 }
 
 interface onAttachmentCompleteListener {
@@ -113,7 +113,7 @@ public class Ticket implements Serializable {
 	}
 
 	public void refresh(TracStart context, onTicketCompleteListener oc) {
-		tcLog.i(this.getClass().getName() + "refresh", "Ticketnr = " + _ticknr);
+		tcLog.i(this.getClass().getName(), "refresh Ticketnr = " + _ticknr);
 		actionLock.release();
 		available.release();
 		loadTicketData(context, oc);
@@ -195,7 +195,7 @@ public class Ticket implements Serializable {
 								_actions = result;
 								actionLock.release();
 							} else {
-								tcLog.i(this.getClass().getName(), "loadTicketData, onverwachte respons = " + result);
+								tcLog.i(this.getClass().getName(), "loadTicketData, unexpected response = " + result);
 							}
 						} catch (final Exception e1) {
 							e1.printStackTrace();
@@ -560,5 +560,4 @@ public class Ticket implements Serializable {
 		}
 		return tekst;
 	}
-
 }

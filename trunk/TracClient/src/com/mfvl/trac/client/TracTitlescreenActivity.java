@@ -32,7 +32,7 @@ public class TracTitlescreenActivity extends Activity {
 			setContentView(R.layout.activity_titlescreen);
 
 			final TextView tv = (TextView) findViewById(R.id.version_content);
-			tv.setText(Credentials.buildVersion(this, true));
+			tv.setText(Credentials.buildVersion(this));
 
 		} catch (final Exception e) {
 			tcLog.toast("crash: " + e.getMessage());

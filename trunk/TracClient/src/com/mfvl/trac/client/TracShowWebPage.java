@@ -35,7 +35,7 @@ public class TracShowWebPage extends Activity {
 			tv1.setVisibility(View.GONE);
 			tv2.setVisibility(View.GONE);
 		} else {
-			final String versie = Credentials.buildVersion(this, true);
+			final String versie = Credentials.buildVersion(this);
 			tv.setText(versie);
 		}
 		final WebView wv = (WebView) findViewById(R.id.webfile);
