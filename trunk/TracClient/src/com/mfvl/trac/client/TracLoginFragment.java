@@ -325,6 +325,7 @@ public class TracLoginFragment extends TracClientFragment {
 							setValidMessage();
 						} catch (final Exception e) {
 							tcLog.d(getClass().getName(), "Exception during verify 1", e);
+							tcLog.toast("=="+e.getMessage()+"==");
 							if (e.getMessage().startsWith("hostname in certificate didn't match:")) {
 								context.runOnUiThread(new Runnable() {
 									@Override
@@ -352,9 +353,14 @@ public class TracLoginFragment extends TracClientFragment {
 																	setValidMessage();
 																	sslHostNameHack = true;
 																} catch (final Exception e1) {
-																	tcLog.d(getClass().getName(), "Exception during verify 2", e);
-																	setInvalidMessage(e1.getMessage());
-																	sslHostNameHack = false;
+																	tcLog.d(getClass().getName(), "Exception during verify 2", e1);
+																	tcLog.toast("=="+e1.getMessage()+"==");
+																	if ("NOJSON".equals(e1.getMessage())) {
+																		setNoJSONMessage();
+																	} else {
+																		setInvalidMessage(e1.getMessage());
+																		sslHostNameHack = false;
+																	}
 																} finally {
 																	pb1.dismiss();
 																}
@@ -374,6 +380,8 @@ public class TracLoginFragment extends TracClientFragment {
 										alertDialog.show();
 									}
 								});
+							} else if ("NOJSON".equals(e.getMessage())) {
+								setNoJSONMessage();
 							} else {
 								setInvalidMessage(e.getMessage());
 								sslHostNameHack = false;
@@ -574,6 +582,20 @@ public class TracLoginFragment extends TracClientFragment {
 			SelectedProfile = null;
 		}
 	};
+	
+	private void setNoJSONMessage() {
+		context.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				credWarn.setVisibility(View.VISIBLE);
+				credWarnTxt.setText(R.string.noJSON);
+				credWarnTxt.setVisibility(View.VISIBLE);
+				okButton.setEnabled(false);
+				storButton.setEnabled(false);
+				sslHostNameHack = false; // force check on hostname first
+			}
+		});
+	}
 
 	private void setInvalidMessage(final String m) {
 		context.runOnUiThread(new Runnable() {
@@ -584,8 +606,8 @@ public class TracLoginFragment extends TracClientFragment {
 				credWarnTxt.setVisibility(View.VISIBLE);
 				if (m != null) {
 					credWarnSts.setText(m);
+					credWarnSts.setVisibility(View.VISIBLE);
 				}
-				credWarnSts.setVisibility(View.VISIBLE);
 				okButton.setEnabled(false);
 				storButton.setEnabled(false);
 				sslHostNameHack = false; // force check on hostname first

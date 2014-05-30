@@ -114,5 +114,6 @@
 	<string name="hostnametitle">Negeer Hostnaam verificatie?"</string>
 	<string name="hostnametext">Hostnaam verificatie is gefaald tijdens het verbinding opzetten met de server.\nMelding = "</string>
 	<string name="hostnameign">\nDe verificatie negeren?"</string>
+	<string name="noJSON">"Geen JSON ondersteuning op de TRAC-server"</string>
 
 </resources>

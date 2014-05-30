@@ -109,5 +109,6 @@
     <string name="unsaved">Bildschirm verlassen und Änderungen speichern?</string>
     <string name="nee">Nein</string>
     <string name="ja">Ja</string>
+	<string name="noJSON">"Kein JSON unterstutzung auf Trac host"</string>
 
 </resources>
