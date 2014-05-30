@@ -138,5 +138,6 @@
 	<string name="hostnametitle">Ignore Hostname verification?"</string>
 	<string name="hostnametext">Hostname verification failed when trying to connect to server.\nMessage = "</string>
 	<string name="hostnameign">\nIgnore the verification?"</string>
+	<string name="noJSON">"No JSON support on the TRAC-server"</string>
 	
 </resources>
