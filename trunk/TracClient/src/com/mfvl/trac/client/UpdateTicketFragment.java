@@ -31,6 +31,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 	private String currentActionName = null;
 	private JSONArray _actions = null;
 	private int ticknr;
+	private Boolean sissaved = false;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -186,7 +187,11 @@ public class UpdateTicketFragment extends TracClientFragment {
 		backButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v1) {
-				getFragmentManager().popBackStackImmediate();
+				synchronized (sissaved) {
+				if ( !sissaved) {
+					getFragmentManager().popBackStackImmediate();
+					}
+				}
 			}
 		});
 
@@ -224,7 +229,11 @@ public class UpdateTicketFragment extends TracClientFragment {
 							context.runOnUiThread(new Runnable() {
 								@Override
 								public void run() {
-									getFragmentManager().popBackStackImmediate();
+									synchronized (sissaved) {
+										if ( !sissaved) {
+											getFragmentManager().popBackStackImmediate();
+										}
+									}
 								}
 							});
 						} catch (final Exception e) {
@@ -254,6 +263,14 @@ public class UpdateTicketFragment extends TracClientFragment {
 			}
 		});
 	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		synchronized (sissaved) {
+			sissaved = false;
+		}
+	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -274,10 +291,13 @@ public class UpdateTicketFragment extends TracClientFragment {
 
 	@Override
 	public void onSaveInstanceState(Bundle savedState) {
-		super.onSaveInstanceState(savedState);
-		// tcLog.d(this.getClass().getName(), "onSaveInstanceState");
-		if (_ticket != null) {
-			savedState.putInt("currentTicket", _ticket.getTicketnr());
+		synchronized (sissaved) {
+			super.onSaveInstanceState(savedState);
+			// tcLog.d(this.getClass().getName(), "onSaveInstanceState");
+			if (_ticket != null) {
+				savedState.putInt("currentTicket", _ticket.getTicketnr());
+			}
+			sissaved = true;
 		}
 	}
 }

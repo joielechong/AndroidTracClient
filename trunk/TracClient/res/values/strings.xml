@@ -86,7 +86,7 @@
     </string-array>
 
     <string name="select">Select</string>
-    <string name="getlist">Fetch Ticketlist</string>
+    <string name="getlist">Fetching Ticketlist</string>
     <string name="storeprofile">Save profile</string>
     <string name="profiletext">Enter name for the profile to be saved</string>
     <string name="loadprofile">Load login profile</string>
@@ -135,9 +135,9 @@
     <string name="unsaved">Leave screen and save changes?</string>
     <string name="nee">No</string>
     <string name="ja">Yes</string>
-	<string name="hostnametitle">Ignore Hostname verification?"</string>
-	<string name="hostnametext">Hostname verification failed when trying to connect to server.\nMessage = "</string>
-	<string name="hostnameign">\nIgnore the verification?"</string>
-	<string name="noJSON">"No JSON support on the TRAC-server"</string>
-	
+    <string name="hostnametitle">Ignore Hostname verification?"</string>
+    <string name="hostnametext">Hostname verification failed when trying to connect to server.\nMessage = "</string>
+    <string name="hostnameign">\nIgnore the verification?"</string>
+    <string name="noJSON">"No JSON support on the TRAC-server"</string>
+
 </resources>

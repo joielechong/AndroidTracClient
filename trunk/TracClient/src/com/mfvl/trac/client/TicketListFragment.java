@@ -86,6 +86,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 	private static final int MSG_RELOAD = 7;
 	private static final int MSG_REFRESH = 8;
 	private static final int MSG_CLEARTICK = 9;
+	private static final int MSG_KILLANDLOADLIST = 10;
 
 	private final class TicketListHandler extends Handler {
 		Boolean loadListLock = false;
@@ -94,6 +95,16 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 		public TicketListHandler(Looper looper) {
 			super(looper);
 			tcLog.d(this.getClass().getName(), "TicketListHandler");
+		}
+		
+		public void mySendEmptyMessage(int message) {
+			tcLog.d(this.getClass().getName(), "mySendEmptyMessage message = " + message);
+			sendEmptyMessage(message);
+		}
+
+		public void myRemoveMessages(int message) {
+			tcLog.d(this.getClass().getName(), "myRemoveMessages message = " + message);
+			removeMessages(message);
 		}
 
 		@Override
@@ -104,10 +115,10 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 			case MSG_INIT:
 				break;
 			case MSG_QUIT:
-				removeMessages(MSG_RELOAD);
-				removeMessages(MSG_REFRESH);
-				sendEmptyMessage(MSG_KILLLIST);
-				sendEmptyMessage(MSG_KILLCONT);
+				myRemoveMessages(MSG_RELOAD);
+				myRemoveMessages(MSG_REFRESH);
+				mySendEmptyMessage(MSG_KILLLIST);
+				mySendEmptyMessage(MSG_KILLCONT);
 				break;
 			case MSG_LOADLIST:
 				if (!loadListLock && !loadContLock) {
@@ -122,7 +133,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 									public void onComplete(final int error) {
 										loadListLock = false;
 										if (error == CMPL_SUCCESS) {
-											sendEmptyMessage(MSG_LOADCONT);
+											mySendEmptyMessage(MSG_LOADCONT);
 										}
 									}
 								});
@@ -154,26 +165,38 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 				}
 				break;
 			case MSG_KILLLIST:
-				removeMessages(MSG_LOADLIST);
+				myRemoveMessages(MSG_LOADLIST);
 				if (loadListThread != null && loadListThread.isAlive()) {
 					tcLog.d(this.getClass().getName(), "killLoadListThread");
 					loadListThread.interrupt();
 				}
 				break;
+			case MSG_KILLANDLOADLIST:
+				myRemoveMessages(MSG_LOADLIST);
+				if (loadListThread != null && loadListThread.isAlive()) {
+					tcLog.d(this.getClass().getName(), "killLoadListThread");
+					loadListThread.interrupt();
+				}
+				mySendEmptyMessage(MSG_LOADLIST);
+				break;
 			case MSG_KILLCONT:
-				removeMessages(MSG_LOADCONT);
+				myRemoveMessages(MSG_LOADCONT);
 				if (loadContentThread != null && loadContentThread.isAlive()) {
 					tcLog.d(this.getClass().getName(), "killLoadContentThread");
 					loadContentThread.interrupt();
 				}
 				break;
 			case MSG_RELOAD:
-				sendEmptyMessage(MSG_KILLLIST);
-				sendEmptyMessage(MSG_KILLCONT);
-				sendEmptyMessage(MSG_LOADLIST);
+				myRemoveMessages(MSG_KILLLIST);
+				myRemoveMessages(MSG_KILLANDLOADLIST);
+				myRemoveMessages(MSG_KILLCONT);
+				mySendEmptyMessage(MSG_KILLANDLOADLIST);
+				mySendEmptyMessage(MSG_KILLCONT);
 				break;
 			case MSG_REFRESH:
-				listView.invalidate();
+				if (listView != null) {
+					listView.invalidate();
+				}
 				break;
 			case MSG_CLEARTICK:
 				clearTickets();
@@ -315,7 +338,9 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 				alertDialogBuilder.setTitle(R.string.nodata);
 				alertDialogBuilder.setMessage(R.string.nodatadesc).setCancelable(false).setPositiveButton(R.string.oktext, null);
 				final AlertDialog alertDialog = alertDialogBuilder.create();
-				alertDialog.show();
+				if (!context.isFinishing()) {
+					alertDialog.show();
+				}
 			}
 			break;
 		}
@@ -376,7 +401,6 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 		super.onResume();
 		tcLog.d(this.getClass().getName(), "onResume");
 		if (refreshOnRestart) {
-			killThreads();
 			sendMessage(MSG_RELOAD);
 			scrollPosition = 0;
 			// tcLog.d(getClass().getName(),"onResume scrollPosition <= "+scrollPosition);
@@ -544,7 +568,9 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 			});
 			alertDialogBuilder.setNegativeButton(R.string.cancel, null);
 			final AlertDialog alertDialog = alertDialogBuilder.create();
-			alertDialog.show();
+			if (!context.isFinishing()) {
+				alertDialog.show();
+			}
 		} else if (itemId == R.id.tlfilter) {
 			tcLog.d(this.getClass().getName(), "tlfilter filterList = " + filterList);
 			listener.onFilterSelected(filterList);
