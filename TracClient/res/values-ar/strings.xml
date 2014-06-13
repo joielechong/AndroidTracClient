@@ -3,7 +3,6 @@
 	<string name="about_button">عن متابع الزبائن</string>
 	<string name="Back">رجوع</string>
 	<string name="tracUrl" translatable="false">رابط المتابعة</string>
-	<string name="tracUrlHint" translatable="false">http://host/trac/login/rpc</string>
 	<string name="tracUser">إسم المستخدم</string>
 	<string name="tracUserHint">إسم المستخدم</string>
 	<string name="tracPw">كلمة المرور</string>
@@ -20,7 +19,6 @@
 	<string name="sort">ترتيب</string>
 	<string name="changehost">إختيار مستضيف متابعة آخر</string>
 	<string name="updateticket">تغيير حالة التذكرة</string>
-	<string name="warning" translatable="false">!</string>
 	<string name="nieuw">تذكرة جديدة</string>
 	<string name="nodata">لا يوجد بيانات</string>
 	<string name="nodatadesc">لم يتم تحميل بيانات هذه التذكرة</string>
@@ -60,16 +58,6 @@
 	<string name="auteur" translatable="false">ميشيل فان لون</string>
 	<string name="sslHack">قبول الشهادة الموقعة ذاتيا</string>
 	<string name="sslHack1">قبول شهادات الإشكالية</string>
-	<string-array name="filter2_choice" translatable="false">
-		<item>"="</item>
-		<item>"!="</item>
-		<item>"~="</item>
-		<item>"!~="</item>
-		<item>"^="</item>
-		<item>"!^="</item>
-		<item>"$="</item>
-		<item>"!$="</item>
-	</string-array>
 	<string-array name="filter3_choice">
 		<item>مساو لـ</item>
 		<item>غير مساو لـ</item>
@@ -111,10 +99,6 @@
 	<string name="foundnew">تم إيجاد تذكرة جديدة أو معدلة</string>
 	<string name="notifmod">تم إيجاد تذكرة معدلة</string>
 	<string name="tracLogin">تسجيل الدخول لخادم "المتابعة"</string>
-	<string-array name="filter1_choice" translatable="false">
-		<item>"="</item>
-		<item>"!="</item>
-	</string-array>
 	<string name="nopermission">معد للمستخدم المكون TICKET_VIEW لا يوجد تصريح للإستفسار عن التذاكر على الخادم . تأكد من أن</string>
 	<string name="notickets">لا يوجد تذكرة</string>
 	<string name="nocomment">لا يمكن تغيير التعليق</string>

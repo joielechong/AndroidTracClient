@@ -9,7 +9,6 @@
 	<string name="vertext">Verificar</string>
 	<string name="invalidCred">Credenciais inválidas</string>
 	<string name="validCred">Credenciais válidas</string>
-	<string name="detail_heading">Detalhes do Tíquete</string>
 	<string name="list_heading">Listagem de bilhetes</string>
 	<string name="ophalen">Carregando dados</string>
 	<string name="tlrefresh">Atualizar lista</string>
@@ -29,7 +28,6 @@
 	<string name="storerrdesc">Impossível armazenar bilhete</string>
 	<string name="storok">Bilhete criado</string>
 	<string name="storokdesc">Bilhete criado, id =</string>
-	<string name="config">Configurar campos</string>
 	<string name="comment">Adicionar comentário</string>
 	<string name="state">Alterar Status</string>
 	<string name="attach">Adicionar anexo</string>
@@ -71,13 +69,10 @@
 		<item>não acaba em</item>
 	</string-array>
 	<string name="select">Selecionar</string>
-	<string name="delete">Excluir</string>
 	<string name="getlist">Buscar lista de bilhetes</string>
 	<string name="storeprofile">Salvar perfil</string>
 	<string name="profiletext">Introduza um nome para salvar o perfil</string>
 	<string name="loadprofile">Carregar login do perfil</string>
-	<string name="areyousure">Você tem certeza?</string>
-	<string name="delprofiletext">Excluir perfil</string>
 	<string name="loadprofiletext">Perfil não pode ser carregado</string>
 	<string name="notfound">Não encontrado</string>
 	<string name="sdcardmissing">Falta cartão SD. Impossível armazenar anexo</string>
