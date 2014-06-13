@@ -1,0 +1,117 @@
+<resources>
+
+    <string name="about_button">À propos de TracClient</string>
+    <string name="Back">Retour</string>
+    <string name="tracUser">Nom d\'utilisateur</string>
+    <string name="tracUserHint">Nom d\'utilisateur</string>
+    <string name="tracPw">Mot de passe</string>
+    <string name="tracPwHint">Mot de passe</string>
+    <string name="bewaren">pouvoirs de magasins</string>
+    <string name="vertext">Vérification</string>
+    <string name="invalidCred">Pouvoirs pas valide</string>
+    <string name="validCred">Informations d\'identification valides</string>
+    <string name="list_heading">Annonce de billets</string>
+    <string name="ophalen">Chargement des données</string>
+    <string name="tlrefresh">Actualiser la liste</string>
+    <string name="dfrefresh">Actualiser billet</string>
+    <string name="filter">Options de filtrage</string>
+    <string name="sort">Trier</string>
+    <string name="changehost">Sélectionner un autre hôte Trac</string>
+    <string name="updateticket">Modifier le statut du billet</string>
+    <string name="nieuw">Nouveau ticket</string>
+    <string name="nodata">Pas de données</string>
+    <string name="nodatadesc">Les données de ce billet n\'est pas encore chargé</string>
+    <string name="connerr">Erreur de connexion</string>
+    <string name="newtick">Créer un nouveau billet</string>
+    <string name="store">billet de magasin</string>
+    <string name="storerr">Erreur créer pendant billet</string>
+    <string name="storerrdesc">Vous ne pouvez pas stocker billet</string>
+    <string name="storok">Ticket créé</string>
+    <string name="storokdesc">Billet créé, id =</string>
+    <string name="comment">Ajouter un commentaire</string>
+    <string name="attach">Ajouter une pièce jointe</string>
+    <string name="chooser_title">fixation de billets</string>
+    <string name="tlshare">Liste de partage</string>
+    <string name="dfshare">Partager billet</string>
+    <string name="updtick">Modifiez billet</string>
+    <string name="perfact">Effectuer une action</string>
+    <string name="storeupd">changements de magasins</string>
+    <string name="cancel">Annuler</string>
+    <string name="invalidJson">Un message JSON valide reçu</string>
+    <string name="noticketUnk">Aucun billet de création: raison inconnue</string>
+    <string name="invtick">Ticketnumber invalide</string>
+    <string name="noaction">Aucune action fourni</string>
+    <string name="zoekfilter">Entrez la chaîne de recherche</string>
+    <string name="zoek">Recherche</string>
+    <string name="storefilter">Enregistrer le filtre</string>
+    <string name="storesort">Enregistrer l\'ordre de tri</string>
+    <string name="moveup">déplacer vers le haut</string>
+    <string name="movedown">descendre</string>
+    <string name="direction">direction ensemble</string>
+    <string name="sortdel">enlever sort</string>
+    <string name="help">Aide</string>
+    <string name="Add">Ajouter</string>
+    <string name="sslHack">Accepter auto-signé Certificats</string>
+    <string name="sslHack1">Accepter problématiques Certificats</string>
+
+    <string-array name="filter3_choice">
+        <item>est égal à</item>
+        <item>n\'est pas égal à</item>
+        <item>contient</item>
+        <item>ne contient pas de</item>
+        <item>commence par</item>
+        <item>ne commence pas par</item>
+        <item>se termine sur</item>
+        <item>ne se termine pas sur</item>
+    </string-array>
+
+    <string name="select">Sélectionner</string>
+    <string name="getlist">Choisissez la liste de billets</string>
+    <string name="storeprofile">Enregistrer votre profil</string>
+    <string name="profiletext">Entrez un nom pour le profil pour être sauvé</string>
+    <string name="loadprofile">Profil de charge de connexion</string>
+    <string name="loadprofiletext">Profil ne peut pas être chargé</string>
+    <string name="notfound">Introuvable</string>
+    <string name="sdcardmissing">Carte SD est manquant. Vous ne pouvez pas stocker attachement</string>
+    <string name="ioerror">ExternalStorage - Erreur d\'écriture</string>
+    <string name="chooseapp">Choisissez une application à ouvrir avec:</string>
+    <string name="notify">Notifier</string>
+    <string name="exportprofiles">profils d\'exportation</string>
+    <string name="importprofiles">Importer des profils</string>
+    <string name="completed">Terminés</string>
+    <string name="failed">Échec</string>
+    <string name="xmlwritecompleted">Exporter vers XML a réussi</string>
+    <string name="xmlreadcompleted">Importation à partir de XML a réussi</string>
+    <string name="downloading">Téléchargement en cours…</string>
+    <string name="uploading">Jusqu\'à chargement</string>
+    <string name="saveupdate">Enregistrement mise à jour sur le serveur</string>
+    <string name="saveticket">Enregistrement billet</string>
+    <string name="selectticket">Sélectionnez billet individuel</string>
+    <string name="ticketnotfound">Billet pas trouvé</string>
+    <string name="chooseticknr">Entrez ticketnumber</string>
+    <string name="chooseticket">Choisissez billet</string>
+    <string name="checking">Compte chèque</string>
+    <string name="updating">Réactualisation</string>
+    <string name="debug">Débogage</string>
+    <string name="foundnew">Modification ou de nouveaux billets trouvés:</string>
+    <string name="notifmod">Billets modifiés trouvés</string>
+    <string name="tracLogin">Connectez-vous au serveur de TRAC</string>
+    <string name="nopermission">Aucune autorisation d\'interroger des billets sur le serveur. Assurez-vous que TICKET_VIEW est défini pour l\'utilisateur configuré.</string>
+    <string name="notickets">Pas de billets trouvé</string>
+    <string name="nocomment">Vous ne pouvez pas modifier commentaire</string>
+    <string name="notpossible">Pas possible</string>
+    <string name="notchange">Vous ne pouvez pas modifier ce champ</string>
+    <string name="wrongdb">Base de données erronées</string>
+    <string name="wrongdbtext1">= Base de données actuelle </string>
+    <string name="wrongdbtext3">\nSélectionnez le droit première base de données</string>
+    <string name="wrongdbtext2">\nRequested base de données = </string>
+    <string name="showempty">Afficher les champs vides</string>
+    <string name="unsaved">Laissez l\'écran et enregistrer les modifications?</string>
+    <string name="nee">Non</string>
+    <string name="ja">Oui</string>
+    <string name="hostnametitle">Ignorer la vérification de nom d\'hôte? </string>
+    <string name="hostnametext">vérification de nom d\'hôte a échoué lors de la tentative de connexion au serveur. \nMessage = </string>
+    <string name="hostnameign">\nignorez la vérification? </string>
+    <string name="noJSON">Pas de support de JSON sur le TRAC-serveur</string>
+
+</resources>

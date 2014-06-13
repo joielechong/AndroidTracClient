@@ -9,6 +9,7 @@
 	<string name="vertext">Verificar</string>
 	<string name="invalidCred">Credenciais inválidas</string>
 	<string name="validCred">Credenciais válidas</string>
+	<string name="detail_heading">Detalhes do Tíquete</string>
 	<string name="list_heading">Listagem de bilhetes</string>
 	<string name="ophalen">Carregando dados</string>
 	<string name="tlrefresh">Atualizar lista</string>
@@ -17,6 +18,7 @@
 	<string name="sort">Classificar</string>
 	<string name="changehost">Selecione outra faixa de rastreamento</string>
 	<string name="updateticket">Mudar a condição do bilhete</string>
+	<string name="updatefield">Mudar o campo do bilhete</string>
 	<string name="nieuw">Bilhete novo</string>
 	<string name="nodata">Sem informações</string>
 	<string name="nodatadesc">As informações desse bilhete ainda não estão disponíveis</string>
@@ -27,7 +29,9 @@
 	<string name="storerrdesc">Impossível armazenar bilhete</string>
 	<string name="storok">Bilhete criado</string>
 	<string name="storokdesc">Bilhete criado, id =</string>
+	<string name="config">Configurar campos</string>
 	<string name="comment">Adicionar comentário</string>
+	<string name="state">Alterar Status</string>
 	<string name="attach">Adicionar anexo</string>
 	<string name="chooser_title">Bilhete anexo</string>
 	<string name="tlshare">Compartilhar lista</string>
@@ -38,12 +42,16 @@
 	<string name="cancel">Cancelar</string>
 	<string name="invalidJson">Recebida mensagem de JSON inválida</string>
 	<string name="noticketUnk">Nenhum bilhete criado: razão desconhecida</string>
+	<string name="nolist">Não foi possível criar a lista</string>
+	<string name="noadapter">Não foi possível criar o adaptador</string>
 	<string name="invtick">Número de bilhete inválido</string>
 	<string name="noaction">Nenhuma ação completada</string>
 	<string name="zoekfilter">Introduzir sequência de busca</string>
 	<string name="zoek">Buscar</string>
 	<string name="storefilter">Salvar filtro</string>
 	<string name="storesort">Salvar ordem de classificação</string>
+	<string name="filterdef">Especificar filtro</string>
+	<string name="sortdef">Especificar ordem de classificação</string>
 	<string name="moveup">mover acima</string>
 	<string name="movedown">mover abaixo</string>
 	<string name="direction">determinar direção</string>
@@ -63,10 +71,13 @@
 		<item>não acaba em</item>
 	</string-array>
 	<string name="select">Selecionar</string>
+	<string name="delete">Excluir</string>
 	<string name="getlist">Buscar lista de bilhetes</string>
 	<string name="storeprofile">Salvar perfil</string>
 	<string name="profiletext">Introduza um nome para salvar o perfil</string>
 	<string name="loadprofile">Carregar login do perfil</string>
+	<string name="areyousure">Você tem certeza?</string>
+	<string name="delprofiletext">Excluir perfil</string>
 	<string name="loadprofiletext">Perfil não pode ser carregado</string>
 	<string name="notfound">Não encontrado</string>
 	<string name="sdcardmissing">Falta cartão SD. Impossível armazenar anexo</string>
@@ -89,6 +100,7 @@
 	<string name="chooseticket">Escolher bilhete</string>
 	<string name="checking">Verificando</string>
 	<string name="updating">Atualizando</string>
+	<string name="wait">Um momento, por favor</string>
 	<string name="debug">Depurar</string>
 	<string name="foundnew">Modificado ou novos bilhetes encontrados:</string>
 	<string name="notifmod">Bilhetes modificados encontrados</string>
