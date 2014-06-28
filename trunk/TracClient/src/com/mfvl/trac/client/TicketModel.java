@@ -58,12 +58,8 @@ public class TicketModel extends Object implements Serializable, Cloneable {
 					_volgorde.put(_count, "max");
 					_velden.put("page", new TicketModelVeld("page", "page", "0"));
 					_volgorde.put(_count + 1, "page");
-				} catch (final JSONRPCException e) {
-					e.printStackTrace();
-				} catch (final JSONException e) {
-					e.printStackTrace();
-				} catch (final TicketModelException e) {
-					e.printStackTrace();
+				} catch (final Exception e) {
+					tcLog.i(getClass().getName(),"TicketModel exception",e);
 				}
 				loading = false;
 			}
@@ -104,7 +100,7 @@ public class TicketModel extends Object implements Serializable, Cloneable {
 			try {
 				networkThread.join();
 			} catch (final Exception e) {
-				e.printStackTrace();
+				tcLog.i(getClass().getName(), "exception in wacht",e);
 			}
 		}
 		loading = false;

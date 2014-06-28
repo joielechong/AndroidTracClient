@@ -193,7 +193,9 @@ public class SortFragment extends TracClientFragment {
 
 		final ProgressDialog pb = startProgressBar(R.string.downloading);
 		tm = listener.getTicketModel();
-		pb.dismiss();
+		if (pb != null && !context.isFinishing()) {
+			pb.dismiss();
+		}
 
 		if (addButton != null && addSpinner != null) {
 			// tcLog.d(this.getClass().getName(), "addButton ");

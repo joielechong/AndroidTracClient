@@ -362,7 +362,9 @@ public class TracLoginFragment extends TracClientFragment {
 																		sslHostNameHack = false;
 																	}
 																} finally {
-																	pb1.dismiss();
+																	if (pb1 != null && !context.isFinishing()) {
+																		pb1.dismiss();
+																	}
 																}
 															}
 														}.start();
@@ -387,7 +389,9 @@ public class TracLoginFragment extends TracClientFragment {
 								sslHostNameHack = false;
 							}
 						} finally {
-							pb.dismiss();
+							if (pb != null && !context.isFinishing()) {
+								pb.dismiss();
+							}
 						}
 					}
 				}.start();

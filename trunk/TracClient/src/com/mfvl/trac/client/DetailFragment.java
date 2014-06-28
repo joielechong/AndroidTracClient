@@ -360,7 +360,9 @@ public class DetailFragment extends TracClientFragment {
 									@Override
 									public void onComplete(Ticket t2) {
 										refresh_ticket();
-										pb.dismiss();
+										if (pb != null && !context.isFinishing()) {
+											pb.dismiss();
+										}
 									}
 								});
 
@@ -407,7 +409,9 @@ public class DetailFragment extends TracClientFragment {
 								lv.invalidateViews();
 							}
 						}
-						pb.dismiss();
+						if (pb != null && !context.isFinishing()) {
+							pb.dismiss();
+						}
 					}
 				});
 			};
@@ -633,7 +637,9 @@ public class DetailFragment extends TracClientFragment {
 			canBut.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					pw.dismiss();
+					if (pw != null && !context.isFinishing()) {
+						pw.dismiss();
+					}
 				}
 			});
 
@@ -671,7 +677,9 @@ public class DetailFragment extends TracClientFragment {
 					if (mv != null && !modVeld.isEmpty()) {
 						mv.setVisibility(View.VISIBLE);
 					}
-					pw.dismiss();
+					if (pw != null && !context.isFinishing()) {
+						pw.dismiss();
+					}
 				}
 			});
 
@@ -690,7 +698,7 @@ public class DetailFragment extends TracClientFragment {
 	public boolean onBackPressed() {
 		tcLog.d(this.getClass().getName(), "onBackPressed");
 		if (pw != null) {
-			if (pw.isShowing()) {
+			if (pw.isShowing() && !context.isFinishing()) {
 				pw.dismiss();
 				return true;
 			}
@@ -766,7 +774,9 @@ public class DetailFragment extends TracClientFragment {
 									}
 								});
 							} finally {
-								pb.dismiss();
+								if (pb != null && !context.isFinishing()) {
+									pb.dismiss();
+								}
 							}
 						};
 					});

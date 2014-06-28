@@ -213,7 +213,9 @@ public class Credentials {
 				}
 			}
 		} catch (final NameNotFoundException e) {
+				tcLog.i(ctx.getClass().getName(),"isDebuggable",e);
 		} catch (final CertificateException e) {
+				tcLog.i(ctx.getClass().getName(),"isDebuggable",e);
 		}
 		return debuggable;
 	}
@@ -233,9 +235,9 @@ public class Credentials {
 					versie += "/" + info.lastUpdateTime / (1000 * 60);
 				}
 			} catch (final NameNotFoundException e) {
-				e.printStackTrace();
+				tcLog.i(context.getClass().getName(),"buildVersion",e);
 				if (versie == null) {
-					versie = "V0.3.x";
+					versie = "V0.5.x";
 				}
 			}
 		}

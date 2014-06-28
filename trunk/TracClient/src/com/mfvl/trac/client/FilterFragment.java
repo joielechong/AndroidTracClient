@@ -31,6 +31,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.mfvl.trac.client.util.FilterSpec;
+import com.mfvl.trac.client.util.tcLog;
 
 public class FilterFragment extends TracClientFragment {
 	private TicketModel tm;
@@ -197,17 +198,21 @@ public class FilterFragment extends TracClientFragment {
 		return view;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		// tcLog.d(this.getClass().getName(),"onActivityCreated savedInstanceState = "
 		// + (savedInstanceState == null ? "null" : "not null"));
+		tcLog.d(this.getClass().getName(), "onActivityCreated on entry inputSpec = " + inputSpec);
 		final ProgressDialog pb = startProgressBar(R.string.downloading);
 		tm = listener.getTicketModel();
-		pb.dismiss();
+		if (pb != null && !context.isFinishing()) {
+			pb.dismiss();
+		}
 		final View view = getView();
 		final ListView lv = (ListView) view.findViewById(R.id.filterlist);
-		ArrayList<FilterSpec> outputSpec = new ArrayList<FilterSpec>();
+		ArrayList<FilterSpec> outputSpec = null;
 
 
 		if (savedInstanceState != null) {
@@ -218,6 +223,7 @@ public class FilterFragment extends TracClientFragment {
 				outputSpec = (ArrayList<FilterSpec>) savedInstanceState.getSerializable("outputSpec");
 			}
 		}
+		
 		if (outputSpec == null) {
 			outputSpec = new ArrayList<FilterSpec>();
 			if (inputSpec != null) {
@@ -231,6 +237,9 @@ public class FilterFragment extends TracClientFragment {
 				}
 			}
 		}
+
+		tcLog.d(this.getClass().getName(), "onActivityCreated on exit inputSpec = " + inputSpec);
+		tcLog.d(this.getClass().getName(), "onActivityCreated on exit outputSpec = " + outputSpec);
 
 		filterAdapter = new FilterAdapter(context, android.R.layout.simple_list_item_1, outputSpec);
 		lv.setAdapter(filterAdapter);
@@ -306,7 +315,7 @@ public class FilterFragment extends TracClientFragment {
 	}
 
 	public void setList(ArrayList<FilterSpec> l) {
-		// tcLog.d(this.getClass().getName(), "setList l = " + l);
+		tcLog.d(this.getClass().getName(), "setList l = " + l);
 		inputSpec = l;
 	}
 
