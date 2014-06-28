@@ -2,7 +2,6 @@ package com.mfvl.trac.client;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Semaphore;
 
 import org.alexd.jsonrpc.JSONRPCException;
 import org.alexd.jsonrpc.JSONRPCHttpClient;
@@ -618,7 +617,9 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 
 				@Override
 				public void onComplete(Ticket t2) {
-					pb.dismiss();
+					if (pb != null && !context.isFinishing()) {
+						pb.dismiss();
+					}
 					if (t2.hasdata()) {
 						listener.putTicket(t2);
 						listener.onTicketSelected(t2);
@@ -667,8 +668,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 			loadListThread = new Thread() {
 				@Override
 				public void run() {
-					final long tid = this.getId();
-					final String logTag = this.getClass().getName() + "." + tid;
+					final String logTag = this.getClass().getName() + "." + this.getId();
 					try {
 						tcLog.d(logTag, "loadTicketList in loadListThread ");
 						listener.setReferenceTime();
@@ -767,7 +767,9 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 						sendMessage(MSG_CLEARTICK);
 						oc.onComplete(CMPL_EXCEPTION);
 					} finally {
-						pb.dismiss();
+						if (pb != null && !context.isFinishing()) {
+							pb.dismiss();
+						}
 						tcLog.d(logTag, "loadTicketList ended");
 						if (listView != null) {
 							listView.postInvalidate();
@@ -1007,7 +1009,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 			try {
 				lijst += t.getTicketnr() + ";" + t.getString("status") + ";" + t.getString("summary") + "\r\n";
 			} catch (final JSONException e) {
-				e.printStackTrace();
+				tcLog.i(getClass().getName(),"shareList exception",e);
 			}
 		}
 		final Intent sendIntent = new Intent();

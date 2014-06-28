@@ -198,7 +198,7 @@ public class Ticket implements Serializable {
 								tcLog.i(this.getClass().getName(), "loadTicketData, unexpected response = " + result);
 							}
 						} catch (final Exception e1) {
-							e1.printStackTrace();
+							tcLog.e(getClass().getName(),"loadTicketData error while reading response",e1);
 						}
 					}
 					_hasdata = _velden != null && _history != null && _actions != null;
@@ -207,12 +207,8 @@ public class Ticket implements Serializable {
 						available.release();
 						oc.onComplete(Ticket.this);
 					}
-				} catch (final JSONRPCException e) {
-					tcLog.i(this.getClass().getName() + "loadTicketData", e.toString());
-				} catch (final JSONException e) {
-					tcLog.i(this.getClass().getName() + "loadTicketData", e.toString());
 				} catch (final Exception e) {
-					e.printStackTrace();
+					tcLog.i(getClass().getName(),"loadTicketData exception",e);
 				} finally {
 					available.release();
 				}
@@ -410,7 +406,7 @@ public class Ticket implements Serializable {
 						final JSONObject o = new JSONObject(e.getMessage());
 						rpcerror = o.getString("message");
 					} catch (final JSONException e1) {
-						e1.printStackTrace();
+						tcLog.e(getClass().getName(),"create failed",e1);
 						rpcerror = context.getString(R.string.invalidJson);
 					}
 				}
@@ -433,7 +429,7 @@ public class Ticket implements Serializable {
 		return _ticknr;
 	}
 
-	// update is called from within a no UI thread
+	// update is called from within a non UI thread
 
 	public void update(String action, String comment, String veld, String waarde, final boolean notify, final TracStart context,
 			Map<String, String> modVeld) throws Exception {
@@ -483,15 +479,8 @@ public class Ticket implements Serializable {
 				loadTicketData(context, null);
 			}
 		} catch (final JSONRPCException e) {
-			// try {
-			tcLog.d(getClass().getName(), "JSONRPCException", e);
-			// final JSONObject o = new JSONObject(e.getMessage());
-			// rpcerror = o.getString("message");
+			tcLog.e(getClass().getName(), "JSONRPCException", e);
 			rpcerror = e.getMessage();
-			// } catch (final JSONException e1) {
-			// tcLog.d(getClass().getName(), "JSONException",e1);
-			// rpcerror = context.getString(R.string.invalidJson);
-			// }
 		} finally {
 			available.release();
 		}
@@ -534,7 +523,7 @@ public class Ticket implements Serializable {
 				}
 			}
 		} catch (final JSONException e) {
-			e.printStackTrace();
+			tcLog.e(getClass().getName(),"toText velden failed",e);
 		}
 		for (int j = 0; j < _history.length(); j++) {
 			JSONArray cmt;
@@ -545,7 +534,7 @@ public class Ticket implements Serializable {
 							+ "\n";
 				}
 			} catch (final JSONException e) {
-				e.printStackTrace();
+				tcLog.e(getClass().getName(),"toText history failed",e);
 			}
 		}
 		for (int j = 0; j < _attachments.length(); j++) {
@@ -555,7 +544,7 @@ public class Ticket implements Serializable {
 				tekst += "bijlage " + (j + 1) + ": " + toonTijd(bijlage.getJSONObject(3)) + " - " + bijlage.getString(4) + " - "
 						+ bijlage.getString(0) + " - " + bijlage.getString(1) + "\n";
 			} catch (final JSONException e) {
-				e.printStackTrace();
+				tcLog.e(getClass().getName(),"toText atachment failed",e);
 			}
 		}
 		return tekst;

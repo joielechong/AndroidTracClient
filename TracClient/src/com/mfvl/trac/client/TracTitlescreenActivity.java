@@ -5,6 +5,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,6 +16,8 @@ import android.widget.TextView;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.mfvl.trac.client.util.Credentials;
 import com.mfvl.trac.client.util.tcLog;
 
@@ -45,6 +48,23 @@ public class TracTitlescreenActivity extends Activity {
 		super.onStart();
 		tracker = EasyTracker.getInstance(this);
 		tracker.activityStart(this);
+		boolean adMobAvailable = false;
+		try {
+			int isAvailable = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+			tcLog.d(getClass().getName(), "Google Play Services available? : " + isAvailable);
+			if (isAvailable == ConnectionResult.SUCCESS) {
+				adMobAvailable = true;
+			} else {
+				if (GooglePlayServicesUtil.isUserRecoverableError(isAvailable)) {
+					Dialog dialog = GooglePlayServicesUtil.getErrorDialog(isAvailable, this, 123456);
+					dialog.show();
+				} else {
+					tcLog.d(getClass().getName(), "Hoe kom je hier");
+				}
+			}
+		} catch (Exception e) {
+			tcLog.e(getClass().getName(),"Exception while determining Google Play Services",e);
+		}
 		final Intent intent = getIntent();
 		String urlstring = null;
 		Integer ticket = -1;
@@ -78,7 +98,8 @@ public class TracTitlescreenActivity extends Activity {
 			}
 		}
 		final Intent launchTrac = new Intent(getApplicationContext(), TracStart.class);
-		launchTrac.putExtra("AdMob", true);
+//		adMobAvailable=false;
+		launchTrac.putExtra("AdMob", adMobAvailable);
 		if (urlstring != null) {
 			launchTrac.putExtra("url", urlstring);
 			launchTrac.putExtra("ticket", (long) ticket);

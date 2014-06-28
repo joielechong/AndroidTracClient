@@ -44,7 +44,9 @@ public class NewTicketFragment extends TracClientFragment {
 		final View view = inflater.inflate(R.layout.newtick_view, container, false);
 		final ProgressDialog pb = startProgressBar(R.string.downloading);
 		tm = listener.getTicketModel();
-		pb.dismiss();
+		if (pb != null && !context.isFinishing()) {
+			pb.dismiss();
+		}
 		createTicket(view);
 		return view;
 	}
@@ -223,7 +225,9 @@ public class NewTicketFragment extends TracClientFragment {
 								}
 							});
 						} finally {
-							pb.dismiss();
+							if (pb != null && !context.isFinishing()) {
+								pb.dismiss();
+							}
 						}
 					}
 				}.start();

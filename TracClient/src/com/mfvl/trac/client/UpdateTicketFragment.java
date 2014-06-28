@@ -11,6 +11,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +27,8 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.mfvl.trac.client.util.tcLog;
 
 public class UpdateTicketFragment extends TracClientFragment {
 	private String currentActionName = null;
@@ -127,7 +130,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 										try {
 											opties.add(ifOpties.getString(j));
 										} catch (final JSONException e) {
-											e.printStackTrace();
+											tcLog.e(getClass().getName(),"displayView exception adding "+ifOpties+" j="+j,e);
 										}
 									}
 									final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<Object>(context,
@@ -139,7 +142,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 									}
 								}
 							} catch (final Exception e) {
-								e.printStackTrace();
+								tcLog.e(getClass().getName(),"displayView exception getting fields",e);
 							}
 						}
 						view.postInvalidate();
@@ -148,7 +151,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 				rg.addView(rb);
 			}
 		} catch (final Exception e) {
-			e.printStackTrace();
+			tcLog.e(getClass().getName(),"displayView exception loading ticketdata",e);
 		}
 	}
 
@@ -231,13 +234,16 @@ public class UpdateTicketFragment extends TracClientFragment {
 								public void run() {
 									synchronized (sissaved) {
 										if ( !sissaved) {
-											getFragmentManager().popBackStackImmediate();
+											FragmentManager fm = getFragmentManager();
+											if (fm != null) {
+												getFragmentManager().popBackStackImmediate();
+											}
 										}
 									}
 								}
 							});
 						} catch (final Exception e) {
-							e.printStackTrace();
+							tcLog.i(getClass().getName(),"update failed",e);
 							context.runOnUiThread(new Runnable() {
 								@Override
 								public void run() {
@@ -255,7 +261,9 @@ public class UpdateTicketFragment extends TracClientFragment {
 								}
 							});
 						} finally {
-							pb.dismiss();
+							if (pb != null && !context.isFinishing()) {
+								pb.dismiss();
+							}
 						}
 
 					}

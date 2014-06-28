@@ -233,7 +233,13 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		}
 		Credentials.loadCredentials(this);
 
-		dispAds = getIntent().getBooleanExtra("AdMob", true);
+		if (getIntent().hasExtra("AdMob")) {
+			dispAds = getIntent().getBooleanExtra("AdMob", true);
+		} else if (savedInstanceState != null) {
+			dispAds = savedInstanceState.getBoolean("Admob", true);
+		} else {
+			dispAds = true;
+		}
 
 		urlArg = getIntent().getStringExtra("url");
 		ticketArg = (int) getIntent().getLongExtra("ticket", -1);
@@ -295,7 +301,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		}
 
 		fm = getSupportFragmentManager();
-		if (savedInstanceState == null) {
+//		if (savedInstanceState == null) {
 			final FragmentTransaction ft = fm.beginTransaction();
 			if (url.length() > 0) {
 				final TicketListFragment ticketListFragment = new TicketListFragment();
@@ -319,11 +325,17 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 			}
 			ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			ft.commit();
-		}
+//		}
 
 		bindService(new Intent(this, RefreshService.class), mConnection, Context.BIND_AUTO_CREATE);
 		mIsBound = true;
 		setReferenceTime();
+	}
+	
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		savedInstanceState.putBoolean("Admob", dispAds);
+		tcLog.d(this.getClass().getName(), "onSaveInstanceState savedInstanceState = " + savedInstanceState);
 	}
 	
 	@Override
@@ -379,12 +391,6 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		final DetailFragment detailFragment = new DetailFragment();
 		final Bundle args = makeArgs();
 		args.putInt(Const.CURRENT_TICKET, ticket.getTicketnr());
-		// try {
-		// args.putString("Ticket",ticket.toJSON().toString());
-		// } catch (JSONException e) {
-		// TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
 		detailFragment.setArguments(args);
 		tcLog.d(this.getClass().getName(), "detailFragment =" + detailFragment.toString());
 		final FragmentTransaction ft = fm.beginTransaction();
@@ -666,8 +672,8 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	@Override
 	public void onStart() {
-		tcLog.d(this.getClass().getName(), "onStart");
 		super.onStart();
+		tcLog.d(this.getClass().getName(), "onStart");
 		EasyTracker.getInstance(this).activityStart(this);
 	}
 
@@ -683,14 +689,14 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	@Override
 	public void onStop() {
-		tcLog.d(this.getClass().getName(), "onStop");
 		super.onStop();
+		tcLog.d(this.getClass().getName(), "onStop");
 		EasyTracker.getInstance(this).activityStop(this);
 	}
 
 	@Override
 	public void onDestroy() {
-		// tcLog.d(this.getClass().getName(), "onDestroy");
+		tcLog.d(this.getClass().getName(), "onDestroy");
 		sendMessageToService(Const.MSG_STOP_TIMER);
 		unbindService(mConnection);
 		stopService(new Intent(this, RefreshService.class));
