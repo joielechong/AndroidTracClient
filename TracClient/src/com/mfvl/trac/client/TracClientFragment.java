@@ -5,8 +5,11 @@ import java.util.List;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
@@ -43,14 +46,16 @@ public class TracClientFragment extends Fragment {
 	private int padRight;
 	private int padBot;
 	private int padLeft;
+	private String adUnitId;
+	private String[] testDevices;
 
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		tcLog.d(this.getClass().getName() + ".super", "onAttach ");
+		tcLog.d(getClass().getName() + ".super", "onAttach ");
 		context = (TracStart) activity;
 		listener = context;
-		final Bundle args = this.getArguments();
+		final Bundle args = getArguments();
 		if (args != null) {
 			_url = args.getString(Const.CURRENT_URL);
 			_username = args.getString(Const.CURRENT_USERNAME);
@@ -63,7 +68,7 @@ public class TracClientFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		tcLog.d(this.getClass().getName() + ".super", "onCreate savedInstanceState = "
+		tcLog.d(getClass().getName() + ".super", "onCreate savedInstanceState = "
 				+ (savedInstanceState == null ? "null" : "not null"));
 		if (savedInstanceState != null) {
 			_url = savedInstanceState.getString("currentURL");
@@ -72,28 +77,57 @@ public class TracClientFragment extends Fragment {
 			_sslHack = savedInstanceState.getBoolean("sslHack", false);
 			_sslHostNameHack = savedInstanceState.getBoolean("sslHostNameHack", false);
 		}
+		Bundle aBundle;
+		try {
+			ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+			aBundle=ai.metaData;
+			if (aBundle == null) {
+				listener.setDispAds(false);
+			} else {
+				adUnitId=aBundle.getString("com.mfvl.trac.client.adUnitId");
+				String t=aBundle.getString("com.mfvl.trac.client.testDevices");
+				try {
+					testDevices=t.split("\\,");
+				} catch (final IllegalArgumentException e) {
+					testDevices = new String[1];
+					testDevices[0] = t;
+				}
+			}
+		} catch (Exception e) {
+			aBundle = null;
+			listener.setDispAds(false);
+			adUnitId="";
+			testDevices = new String[1];
+			testDevices[0]="";
+		}
+//		tcLog.d(getClass().getName() + ".super", "onCreate adUnitId = "+adUnitId);
+//		tcLog.d(getClass().getName() + ".super", "onCreate testDevices = "+Arrays.asList(testDevices));
 	}
 	
 	@Override
 	public void onViewCreated(final View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
+		tcLog.d(getClass().getName() + ".super", "onViewCreated");
 		final View activityRootView = view.findViewById(R.id.updateTop);
 		final View aboveView = view.findViewById(R.id.aboveAdBlock);
 		final LinearLayout ll = (LinearLayout) view.findViewById(R.id.adBlock);
 
 		if (listener != null && listener.dispAds()) {
 			if (ll != null) {
-
 				final AdView adView = new AdView(context);
-				adView.setAdUnitId("ca-app-pub-3154118785616242/7091928539");
+				adView.setAdUnitId(adUnitId);
 				adView.setAdSize(AdSize.BANNER);
 
 				final AdRequest.Builder arb = new AdRequest.Builder();
 				if (adView != null && arb != null) {
 					if (Credentials.isDebuggable(context)) {
-						arb.addTestDevice(AdRequest.DEVICE_ID_EMULATOR).addTestDevice("9A306D880ED517968FD50C3A2340839E");
-
+						arb.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
+						for (String t:testDevices) {
+							tcLog.d(getClass().getName() + ".super", "onViewCreated testDevice = "+t);
+							arb.addTestDevice(t);
+						}
 					}
+					arb.setGender(AdRequest.GENDER_UNKNOWN);
 					final AdRequest adRequest = arb.build();
 
 					if (adRequest != null) {
@@ -149,7 +183,7 @@ public class TracClientFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		tcLog.d(this.getClass().getName() + ".super", "onActivityCreated savedInstanceState = "
+		tcLog.d(getClass().getName() + ".super", "onActivityCreated savedInstanceState = "
 				+ (savedInstanceState == null ? "null" : "not null"));
 		tracker = EasyTracker.getInstance(context);
 	}
@@ -157,7 +191,7 @@ public class TracClientFragment extends Fragment {
 	@Override
 	public void onSaveInstanceState(Bundle savedState) {
 		super.onSaveInstanceState(savedState);
-		tcLog.d(this.getClass().getName() + ".super", "onSaveInstanceState");
+		tcLog.d(getClass().getName() + ".super", "onSaveInstanceState");
 		savedState.putString("currentURL", _url);
 		savedState.putString("currentUsername", _username);
 		savedState.putString("currentPassword", _password);
@@ -168,7 +202,7 @@ public class TracClientFragment extends Fragment {
 
 	@Override
 	public void onStart() {
-		tcLog.d(this.getClass().getName() + ".super", "onStart");
+		tcLog.d(getClass().getName() + ".super", "onStart");
 		super.onStart();
 		tracker.activityStart(context);
 		tracker.set(Fields.SCREEN_NAME, getClass().getSimpleName());
@@ -177,7 +211,7 @@ public class TracClientFragment extends Fragment {
 
 	@Override
 	public void onStop() {
-		tcLog.d(this.getClass().getName() + ".super", "onStop");
+		tcLog.d(getClass().getName() + ".super", "onStop");
 		super.onStop();
 		tracker.activityStop(context);
 	}
@@ -200,7 +234,7 @@ public class TracClientFragment extends Fragment {
 
 	@Override
 	public void onDestroy() {
-		tcLog.d(this.getClass().getName() + ".super", "onDestroy");
+		tcLog.d(getClass().getName() + ".super", "onDestroy");
 		if (adView != null) {
 			adView.destroy();
 		}
@@ -208,12 +242,12 @@ public class TracClientFragment extends Fragment {
 	}
 
 	final public void resetCache() {
-		tcLog.d(this.getClass().getName() + ".super", "resetCache");
+		tcLog.d(getClass().getName() + ".super", "resetCache");
 		listener.resetCache();
 	}
 
 	public void setHost(final String url, final String username, final String password, boolean sslHack, boolean sslHostNameHack) {
-		tcLog.d(this.getClass().getName() + ".super", "setHost");
+		tcLog.d(getClass().getName() + ".super", "setHost");
 		if (_url != url) {
 			_url = url;
 			_username = username;
@@ -284,4 +318,41 @@ public class TracClientFragment extends Fragment {
 	protected Spinner makeComboSpin(Context context, final String veldnaam, List<Object> waardes, boolean optional, Object w) {
 		return _makeComboSpin(context, veldnaam, waardes, optional, w, false);
 	}
+	protected void selectTicket(int ticknr) {
+		tcLog.d(this.getClass().getName(), "selectTicket = " + ticknr);
+		final Ticket t = listener.getTicket(ticknr);
+		if (t != null && t.hasdata()) {
+			listener.onTicketSelected(t);
+		} else {
+			final ProgressDialog pb = startProgressBar(R.string.downloading);
+			new Ticket(ticknr, context, new onTicketCompleteListener() {
+
+				@Override
+				public void onComplete(Ticket t2) {
+					if (pb != null && !context.isFinishing()) {
+						pb.dismiss();
+					}
+					if (t2.hasdata()) {
+						listener.putTicket(t2);
+						listener.onTicketSelected(t2);
+					} else {
+						context.runOnUiThread(new Runnable() {
+
+							@Override
+							public void run() {
+								final AlertDialog.Builder noTicketDialogBuilder = new AlertDialog.Builder(context);
+								noTicketDialogBuilder.setTitle(R.string.notfound);
+								noTicketDialogBuilder.setMessage(R.string.ticketnotfound);
+								noTicketDialogBuilder.setCancelable(false);
+								noTicketDialogBuilder.setPositiveButton(R.string.oktext, null);
+								final AlertDialog noTicketDialog = noTicketDialogBuilder.create();
+								noTicketDialog.show();
+							}
+						});
+					}
+				}
+			});
+		}
+	}
+
 }

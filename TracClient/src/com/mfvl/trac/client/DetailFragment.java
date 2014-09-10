@@ -26,6 +26,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.InputType;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -53,11 +54,11 @@ import com.mfvl.trac.client.util.ISO8601;
 import com.mfvl.trac.client.util.tcLog;
 
 public class DetailFragment extends TracClientFragment {
-	public class ModVeldMap extends HashMap<String, String> implements Serializable {
+	private class ModVeldMap extends HashMap<String, String> implements Serializable {
 		private static final long serialVersionUID = 191019591150L;
 	}
 
-	public class modifiedString {
+	private class modifiedString {
 		private boolean _updated;
 		private final String _veld;
 		private String _waarde;
@@ -105,10 +106,6 @@ public class DetailFragment extends TracClientFragment {
 			return _veld;
 		}
 
-		public String waarde() {
-			return _waarde;
-		}
-
 		@Override
 		public boolean equals(Object o) {
 			if (this == o) {
@@ -123,7 +120,7 @@ public class DetailFragment extends TracClientFragment {
 		}
 	}
 
-	public class ModifiedStringArrayAdapter extends ColoredArrayAdapter<modifiedString> {
+	private class ModifiedStringArrayAdapter extends ColoredArrayAdapter<modifiedString> {
 		public ModifiedStringArrayAdapter(TracStart context, int resource, List<modifiedString> list) {
 			super(context, resource, list);
 		}
@@ -146,13 +143,22 @@ public class DetailFragment extends TracClientFragment {
 	private boolean sendNotification = false;
 	private boolean didUpdate = false;
 	private final List<modifiedString> values = new ArrayList<modifiedString>();
+	private String[] notModified;
+	private String[] isStatusUpd;
+	private MenuItem selectItem;
 
 	final public static String mimeUnknown = "application/unknown";
+	
+	private void setSelect(final boolean value) {
+		tcLog.d(this.getClass().getName(), "setSelect "+value);
+		if (selectItem != null) {
+			selectItem.setEnabled(value);
+		}
+	}
 
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		// tcLog.d(this.getClass().getName(), "onAttach ");
 		final Bundle args = this.getArguments();
 		if (args != null) {
 			ticknr = args.getInt(Const.CURRENT_TICKET);
@@ -167,13 +173,6 @@ public class DetailFragment extends TracClientFragment {
 		// (savedInstanceState == null ? "null" : "not null"));
 		modVeld = new ModVeldMap();
 		modVeld.clear();
-		if (savedInstanceState != null) {
-			ticknr = savedInstanceState.getInt("currentTicket", -1);
-			if (savedInstanceState.containsKey("modveld")) {
-				modVeld = (ModVeldMap) savedInstanceState.getSerializable("modveld");
-			}
-			showEmptyFields = savedInstanceState.getBoolean("emptyfields", false);
-		}
 		setHasOptionsMenu(true);
 		tm = listener.getTicketModel();
 		didUpdate = false;
@@ -184,20 +183,12 @@ public class DetailFragment extends TracClientFragment {
 		// tcLog.d(this.getClass().getName(), "onCreateOptionsMenu");
 		inflater.inflate(R.menu.detailmenu, menu);
 		super.onCreateOptionsMenu(menu, inflater);
+		selectItem = menu.findItem(R.id.dfselect);
+		setSelect(true);
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		// tcLog.d(this.getClass().getName(), "onCreateView");
-		// tcLog.d(this.getClass().getName(), "savedInstanceState = " +
-		// (savedInstanceState == null ? "null" : "not null"));
-		if (savedInstanceState != null) {
-			ticknr = savedInstanceState.getInt("currentTicket", -1);
-			if (savedInstanceState.containsKey("modveld")) {
-				modVeld = (ModVeldMap) savedInstanceState.getSerializable("modveld");
-			}
-			showEmptyFields = savedInstanceState.getBoolean("emptyfields", false);
-		}
 		final View view = inflater.inflate(R.layout.detail_view, container, false);
 		return view;
 	}
@@ -205,14 +196,6 @@ public class DetailFragment extends TracClientFragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		if (savedInstanceState != null) {
-			ticknr = savedInstanceState.getInt("currentTicket", -1);
-			if (savedInstanceState.containsKey("modveld")) {
-				modVeld = (ModVeldMap) savedInstanceState.getSerializable("modveld");
-			}
-			showEmptyFields = savedInstanceState.getBoolean("emptyfields", false);
-		}
-
 		final Button canButton = (Button) view.findViewById(R.id.cancel);
 		final Button updButton = (Button) view.findViewById(R.id.storebutton);
 		final CheckBox updNotify = (CheckBox) view.findViewById(R.id.updNotify);
@@ -222,6 +205,7 @@ public class DetailFragment extends TracClientFragment {
 				@Override
 				public void onClick(View view) {
 					modVeld.clear();
+					setSelect(true);
 					getFragmentManager().popBackStack();
 				}
 			});
@@ -264,9 +248,12 @@ public class DetailFragment extends TracClientFragment {
 				if (savedInstanceState.containsKey("modveld")) {
 					modVeld = (ModVeldMap) savedInstanceState.getSerializable("modveld");
 				}
+				setSelect(modVeld.isEmpty());
 				ticknr = savedInstanceState.getInt("currentTicket", -1);
 			}
 		}
+	notModified = getResources().getStringArray(R.array.fieldsnotmodified);
+	isStatusUpd = getResources().getStringArray(R.array.fieldsstatusupdate);
 	}
 
 	@Override
@@ -311,26 +298,27 @@ public class DetailFragment extends TracClientFragment {
 		View v = getView();
 		if (v != null) {
 			final LinearLayout mv = (LinearLayout) v.findViewById(R.id.modveld);
-			if (mv != null && !modVeld.isEmpty()) {
-				mv.setVisibility(View.VISIBLE);
-			} else {
-				mv.setVisibility(View.GONE);
+			if (mv != null) {
+				mv.setVisibility(modVeld.isEmpty() ? View.GONE : View.VISIBLE);
 			}
 		}
+		setSelect(modVeld.isEmpty());
 	}
 
 	@Override
 	public void onPrepareOptionsMenu(Menu menu) {
-
-		final MenuItem item = menu.findItem(R.id.dfempty);
+		super.onPrepareOptionsMenu(menu);
+		tcLog.i(getClass().getName(), "onPrepareOptionsMenu");
+		MenuItem item = menu.findItem(R.id.dfempty);
 		if (item != null) {
 			item.setChecked(showEmptyFields);
 		}
+		setSelect(modVeld.isEmpty());
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// tcLog.d(this.getClass().getName(), "onOptionsItemSelected " +
+		// tcLog.d(getClass().getName(), "onOptionsItemSelected " +
 		// item.toString());
 		if (item.getItemId() == R.id.dfupdate) {
 			if (_ticket != null) {
@@ -345,6 +333,27 @@ public class DetailFragment extends TracClientFragment {
 			launchTrac.putExtra("version", false);
 			startActivity(launchTrac);
 			return true;
+		} else if (item.getItemId() == R.id.dfselect) {
+			final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+			alertDialogBuilder.setTitle(R.string.chooseticket);
+			alertDialogBuilder.setMessage(R.string.chooseticknr);
+			final EditText input = new EditText(context);
+			input.setInputType(InputType.TYPE_CLASS_NUMBER);
+			alertDialogBuilder.setView(input);
+
+			alertDialogBuilder.setCancelable(false);
+			alertDialogBuilder.setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int id) {
+					final int ticknr = Integer.parseInt(input.getText().toString());
+					selectTicket(ticknr);
+				}
+			});
+			alertDialogBuilder.setNegativeButton(R.string.cancel, null);
+			final AlertDialog alertDialog = alertDialogBuilder.create();
+			if (!context.isFinishing()) {
+				alertDialog.show();
+			}
 		} else if (item.getItemId() == R.id.dfattach) {
 			if (_ticket != null) {
 				listener.onChooserSelected(new onFileSelectedListener() {
@@ -421,19 +430,19 @@ public class DetailFragment extends TracClientFragment {
 	@Override
 	public void onSaveInstanceState(Bundle savedState) {
 		super.onSaveInstanceState(savedState);
-		tcLog.d(this.getClass().getName(), "onSaveInstanceState _ticket = " + _ticket);
+		tcLog.d(getClass().getName(), "onSaveInstanceState _ticket = " + _ticket);
 		if (_ticket != null) {
 			savedState.putInt("currentTicket", _ticket.getTicketnr());
 		} else if (ticknr != -1) {
-			tcLog.d(this.getClass().getName(), "onSaveInstanceState ticknr = " + ticknr);
+			tcLog.d(getClass().getName(), "onSaveInstanceState ticknr = " + ticknr);
 			savedState.putInt("currentTicket", ticknr);
 		}
 		if (!modVeld.isEmpty()) {
-			tcLog.d(this.getClass().getName(), "onSaveInstanceState modVeld = " + modVeld);
+			tcLog.d(getClass().getName(), "onSaveInstanceState modVeld = " + modVeld);
 			savedState.putSerializable("modveld", modVeld);
 		}
 		savedState.putBoolean("emptyfields", showEmptyFields);
-		tcLog.d(this.getClass().getName(), "onSaveInstanceState = " + savedState);
+		tcLog.d(getClass().getName(), "onSaveInstanceState = " + savedState);
 	}
 
 	@Override
@@ -479,7 +488,7 @@ public class DetailFragment extends TracClientFragment {
 					}
 					tickText.append(" : " + summ);
 				} catch (final JSONException e) {
-					tcLog.e(getClass().getName(), "JSONException fetching summary", e);
+					tcLog.e(getClass().getName(), "JSONException fetching summary");
 				}
 				tickText.setOnLongClickListener(new View.OnLongClickListener() {
 					@Override
@@ -509,11 +518,12 @@ public class DetailFragment extends TracClientFragment {
 						if (modVeld.containsKey(veld)) {
 							ms.setUpdated(true);
 							ms.setWaarde(modVeld.get(veld));
+							setSelect(false);
 						}
 						values.add(ms);
 					}
 				} catch (final Exception e) {
-					tcLog.e(getClass().getName(), "JSONException fetching field " + veld, e);
+					tcLog.e(getClass().getName(), "JSONException fetching field " + veld);
 					values.add(new modifiedString(veld, ""));
 				}
 			}
@@ -528,7 +538,7 @@ public class DetailFragment extends TracClientFragment {
 									+ " - " + cmt.getString(4)));
 						}
 					} catch (final JSONException e) {
-						tcLog.e(getClass().getName(), "JSONException in displayTicket loading history", e);
+						tcLog.e(getClass().getName(), "JSONException in displayTicket loading history");
 					}
 				}
 			}
@@ -575,7 +585,7 @@ public class DetailFragment extends TracClientFragment {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 					final modifiedString t = (modifiedString) ((ListView) parent).getItemAtPosition(position);
-					tcLog.d(this.getClass().getName() + ".onItemLongClick", t.toString());
+					tcLog.d(this.getClass().getName() + ".onItemClick", t.toString());
 					if (t.length() >= 8 && "bijlage ".equals(t.substring(0, 8))) {
 						final int d = t.indexOf(":");
 						final int bijlagenr = Integer.parseInt(t.substring(8, d));
@@ -589,8 +599,6 @@ public class DetailFragment extends TracClientFragment {
 	}
 
 	private void selectField(final String veld, final String waarde, final View dataView) {
-		final String[] notModified = getResources().getStringArray(R.array.fieldsnotmodified);
-		final String[] isStatusUpd = getResources().getStringArray(R.array.fieldsstatusupdate);
 		if (Arrays.asList(notModified).contains(veld)) {
 			context.runOnUiThread(new Runnable() {
 				@Override
@@ -626,8 +634,7 @@ public class DetailFragment extends TracClientFragment {
 			}
 
 			if (spinValue != null) {
-				spinValue
-						.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+				spinValue.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 				final LinearLayout vc = (LinearLayout) ll.findViewById(R.id.veld);
 				if (vc != null) {
 					vc.addView(spinValue);
@@ -653,7 +660,7 @@ public class DetailFragment extends TracClientFragment {
 					if (et != null) {
 						newValue = et.getText().toString();
 					}
-					if (newValue != null && !newValue.equals(waarde) || newValue == null && waarde != null) {
+					if ((newValue != null && !newValue.equals(waarde)) || (newValue == null && waarde != null)) {
 						if (veld.equals("summary")) {
 							((TextView) dataView).setText(newValue);
 							((TextView) dataView).setTextColor(Color.RED);
@@ -672,6 +679,7 @@ public class DetailFragment extends TracClientFragment {
 							}
 							modVeld.put(veld, newValue);
 						}
+						setSelect(false);
 					}
 					final LinearLayout mv = (LinearLayout) getView().findViewById(R.id.modveld);
 					if (mv != null && !modVeld.isEmpty()) {
@@ -803,6 +811,7 @@ public class DetailFragment extends TracClientFragment {
 					context.runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
+							setSelect(true);
 							refresh_ticket();
 						}
 					});
