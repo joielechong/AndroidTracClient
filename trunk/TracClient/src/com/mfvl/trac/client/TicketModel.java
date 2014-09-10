@@ -6,10 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.alexd.jsonrpc.JSONRPCException;
 import org.alexd.jsonrpc.JSONRPCHttpClient;
 import org.json.JSONArray;
-import org.json.JSONException;
 
 import com.mfvl.trac.client.util.Credentials;
 import com.mfvl.trac.client.util.tcLog;

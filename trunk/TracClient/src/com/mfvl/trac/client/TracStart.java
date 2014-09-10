@@ -47,6 +47,7 @@ interface onFileSelectedListener {
 
 interface InterFragmentListener {
 	boolean dispAds();
+	void setDispAds(boolean b);
 
 	void onTicketSelected(Ticket ticket);
 
@@ -706,6 +707,11 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	@Override
 	public boolean dispAds() {
 		return dispAds;
+	}
+	
+	@Override
+	public void setDispAds(boolean b) {
+		dispAds = b;
 	}
 
 	public String getUrl() {

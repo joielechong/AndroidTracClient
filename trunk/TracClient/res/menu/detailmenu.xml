@@ -25,6 +25,10 @@
         android:menuCategory="container"
         android:title="@string/attach"/>
     <item
+        android:id="@+id/dfselect"
+        android:menuCategory="container"
+        android:title="@string/selectticket"/>
+    <item
         android:id="@+id/dfshare"
         android:icon="@android:drawable/ic_menu_share"
         android:menuCategory="container"
