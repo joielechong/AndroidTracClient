@@ -30,6 +30,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.ipaulpro.afilechooser.utils.FileUtils;
@@ -52,6 +53,10 @@ interface InterFragmentListener {
 	void onTicketSelected(Ticket ticket);
 
 	Ticket getTicket(int ticknr);
+	
+	int getTicketCount();
+	int getNextTicket(int ticket);
+	int getPrevTicket(int ticket);
 
 	void putTicket(Ticket ticket);
 
@@ -442,7 +447,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		sslHack = newHack;
 		sslHostNameHack = newHostNameHack;
 		profile = newProfile;
-		TicketListFragment ticketListFragment = (TicketListFragment) fm.findFragmentByTag(ListFragmentTag);
+		TicketListFragment ticketListFragment = getTicketListFragment();
 		if (ticketListFragment != null) {
 			initializeList(ticketListFragment);
 		}
@@ -475,7 +480,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	@Override
 	public void setFilter(ArrayList<FilterSpec> filter) {
-		final TicketListFragment tlf = (TicketListFragment) fm.findFragmentByTag(ListFragmentTag);
+		final TicketListFragment tlf = getTicketListFragment();
 		tcLog.d(this.getClass().getName(), "setFilter " + filter);
 		String filterString = "";
 		if (filter != null) {
@@ -518,7 +523,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	@Override
 	public void setSort(ArrayList<SortSpec> sort) {
-		final TicketListFragment tlf = (TicketListFragment) fm.findFragmentByTag(ListFragmentTag);
+		final TicketListFragment tlf = getTicketListFragment();
 		tcLog.d(this.getClass().getName(), "setSort " + sort);
 
 		String sortString = "";
@@ -752,7 +757,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	@Override
 	public void refreshOverview() {
-		final TicketListFragment ticketListFragment = (TicketListFragment) fm.findFragmentByTag(ListFragmentTag);
+		final TicketListFragment ticketListFragment = getTicketListFragment();
 		tcLog.d(this.getClass().getName(), "refreshOverview ticketListFragment = " + ticketListFragment);
 		if (ticketListFragment != null) {
 			ticketListFragment.forceRefresh();
@@ -766,7 +771,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		tcLog.d(this.getClass().getName(), "enableDebug");
 		debug = true;
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
-			this.invalidateOptionsMenu();
+			invalidateOptionsMenu();
 		}
 		tcLog.toast("Debug enabled");
 	}
@@ -778,25 +783,23 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		sendIntent.setType("text/plain");
 		startActivity(sendIntent);
 	}
+	
+	private TicketListFragment getTicketListFragment() {
+		return (TicketListFragment) fm.findFragmentByTag(ListFragmentTag);
+	}
 
-	private int getTicketCount() {
-		final TicketListFragment ticketListFragment = (TicketListFragment) fm.findFragmentByTag(ListFragmentTag);
+	public int getTicketCount() {
+		final TicketListFragment ticketListFragment = getTicketListFragment();
 		// tcLog.d(this.getClass().getName(),
 		// "getTicketCount ticketListFragment = " + ticketListFragment);
-		if (ticketListFragment != null) {
-			return ticketListFragment.getTicketCount();
-		}
-		return -1;
+		return (ticketListFragment != null ? ticketListFragment.getTicketCount() : -1);
 	}
 
 	private List<Integer> getNewTickets(final String isoTijd) {
-		final TicketListFragment ticketListFragment = (TicketListFragment) fm.findFragmentByTag(ListFragmentTag);
+		final TicketListFragment ticketListFragment = getTicketListFragment();
 		// tcLog.d(this.getClass().getName(),
 		// "getNewTickets ticketListFragment = " + ticketListFragment);
-		if (ticketListFragment != null) {
-			return ticketListFragment.getNewTickets(isoTijd);
-		}
-		return null;
+		return  (ticketListFragment != null ? ticketListFragment.getNewTickets(isoTijd) : null);
 	}
 
 	@Override
@@ -825,5 +828,27 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 //		tcLog.d(getClass().getName(), "resetCache voor ticketMap = "+ticketMap);
 		ticketMap = new TreeMap<Integer, Ticket>();
 //		tcLog.d(getClass().getName(), "resetCache na ticketMap = "+ticketMap);
+	}
+
+	@Override
+	public int getNextTicket(int ticket) {
+		final TicketListFragment ticketListFragment = getTicketListFragment();
+		return (ticketListFragment != null ? ticketListFragment.getNextTicket(ticket) : -1);
+	}
+
+	@Override
+	public int getPrevTicket(int ticket) {
+		final TicketListFragment ticketListFragment = getTicketListFragment();
+		return (ticketListFragment != null ? ticketListFragment.getPrevTicket(ticket) : -1);
+	}
+	
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent ev) {
+		boolean ret = super.dispatchTouchEvent(ev);
+		final DetailFragment df = (DetailFragment) fm.findFragmentByTag(DetailFragmentTag);
+		if (df != null) {
+			ret |= df.dispatchTouchEvent(ev);
+		}
+		return ret;
 	}
 }

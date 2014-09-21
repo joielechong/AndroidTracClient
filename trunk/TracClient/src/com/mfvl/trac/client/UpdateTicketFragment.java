@@ -39,7 +39,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		final Bundle args = this.getArguments();
+		final Bundle args = getArguments();
 		// tcLog.d(this.getClass().getName(), "onAttach ");
 		if (args != null) {
 			ticknr = args.getInt(Const.CURRENT_TICKET);

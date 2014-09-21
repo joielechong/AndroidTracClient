@@ -14,7 +14,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -27,6 +26,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.InputType;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -53,9 +53,14 @@ import com.mfvl.trac.client.util.ColoredArrayAdapter;
 import com.mfvl.trac.client.util.ISO8601;
 import com.mfvl.trac.client.util.tcLog;
 
-public class DetailFragment extends TracClientFragment {
+import android.view.GestureDetector.OnGestureListener;
+import android.view.MotionEvent;
+
+public class DetailFragment extends TracClientFragment implements OnGestureListener {
+	protected static final int LARGE_MOVE = 60;
+	
 	private class ModVeldMap extends HashMap<String, String> implements Serializable {
-		private static final long serialVersionUID = 191019591150L;
+		private static final long serialVersionUID = 191019591050L;
 	}
 
 	private class modifiedString {
@@ -127,10 +132,15 @@ public class DetailFragment extends TracClientFragment {
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			final View view = super.getView(position, convertView, parent);
-			final modifiedString ms = this.getItem(position);
-			((TextView) view).setTextColor(ms.updated() ? Color.RED : Color.BLACK);
-			return view;
+			try {
+				final View view = super.getView(position, convertView, parent);
+				final modifiedString ms = getItem(position);
+				((TextView) view).setTextColor(ms.updated() ? Color.RED : Color.BLACK);
+				return view;
+			} catch (Exception e) {
+				tcLog.e(getClass().getName(),"getView exception",e);
+				return null;
+			}
 		}
 	}
 
@@ -146,6 +156,7 @@ public class DetailFragment extends TracClientFragment {
 	private String[] notModified;
 	private String[] isStatusUpd;
 	private MenuItem selectItem;
+	private GestureDetector gestureDetector = null;
 
 	final public static String mimeUnknown = "application/unknown";
 	
@@ -157,20 +168,16 @@ public class DetailFragment extends TracClientFragment {
 	}
 
 	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-		final Bundle args = this.getArguments();
-		if (args != null) {
-			ticknr = args.getInt(Const.CURRENT_TICKET);
-		}
-	}
-
-	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// tcLog.d(this.getClass().getName(), "onCreate");
 		// tcLog.d(this.getClass().getName(), "savedInstanceState = " +
 		// (savedInstanceState == null ? "null" : "not null"));
+		final Bundle args = getArguments();
+		if (args != null) {
+			ticknr = args.getInt(Const.CURRENT_TICKET);
+		}
+		
 		modVeld = new ModVeldMap();
 		modVeld.clear();
 		setHasOptionsMenu(true);
@@ -233,6 +240,18 @@ public class DetailFragment extends TracClientFragment {
 			});
 		}
 	}
+	
+	@Override
+	public void onStart() {
+		super.onStart();
+		gestureDetector = new GestureDetector(context,this);
+	}
+	
+	@Override
+	public void onStop() {
+		super.onStop();
+		gestureDetector = null;
+	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -259,27 +278,30 @@ public class DetailFragment extends TracClientFragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-
 		if (ticknr != -1) {
-			_ticket = listener.getTicket(ticknr);
-			if (_ticket == null) {
-				_ticket = new Ticket(ticknr, context, new onTicketCompleteListener() {
-					@Override
-					public void onComplete(Ticket t) {
-						context.runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								listener.putTicket(_ticket);
-								_resume();
-							}
-						});
-					}
-				});
-			} else {
-				_resume();
-			}
+			_onResume();
 		} else {
 			getFragmentManager().popBackStack();
+		}
+	}
+
+	private void _onResume() {
+		_ticket = listener.getTicket(ticknr);
+		if (_ticket == null) {
+			_ticket = new Ticket(ticknr, context, new onTicketCompleteListener() {
+				@Override
+				public void onComplete(Ticket t) {
+					context.runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							listener.putTicket(_ticket);
+							_resume();
+						}
+					});
+				}
+			});
+		} else {
+			_resume();
 		}
 	}
 
@@ -797,7 +819,7 @@ public class DetailFragment extends TracClientFragment {
 	}
 
 	private void updateTicket() {
-		// tcLog.d(getClass().getName(), "updateTicket");
+		tcLog.d(getClass().getName(), "updateTicket");
 		new Thread() {
 			@Override
 			public void run() {
@@ -836,5 +858,50 @@ public class DetailFragment extends TracClientFragment {
 				}
 			}
 		}.start();
+	}
+
+	@Override
+	public boolean onDown(MotionEvent e) {
+		return false;
+	}
+
+	@Override
+	public void onShowPress(MotionEvent e) {
+	}
+
+	@Override
+	public boolean onSingleTapUp(MotionEvent e) {
+		return false;
+	}
+
+	@Override
+	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+		return false;
+	}
+
+	@Override
+	public void onLongPress(MotionEvent e) {
+	}
+
+	@Override
+	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+		final int newTicket;
+//		tcLog.d(getClass().getName(),"onFling e1 = "+e1+", e2 = "+e2);
+		if (e1.getX() - e2.getX() > LARGE_MOVE) {
+			newTicket = listener.getNextTicket(_ticket.getTicketnr());
+		} else if (e2.getX() - e1.getX() > LARGE_MOVE) {
+			newTicket = listener.getPrevTicket(_ticket.getTicketnr());
+		} else {
+			newTicket = -1;
+		}
+		if (newTicket >= 0 && modVeld.isEmpty()) {
+			ticknr = newTicket;
+			_onResume();
+		} 
+		return true;
+	}
+	
+	public boolean dispatchTouchEvent(MotionEvent ev) {
+		return (gestureDetector != null ? gestureDetector.onTouchEvent(ev) : false);
 	}
 }

@@ -18,12 +18,14 @@
         android:id="@+id/dfupdate"
         android:icon="@android:drawable/ic_menu_edit"
         android:menuCategory="container"
-        android:title="@string/updateticket"/>
+        android:title="@string/updateticket"
+        myapp:showAsAction="ifRoom"/>
     <item
         android:id="@+id/dfattach"
         android:icon="@drawable/content_new_attachment"
         android:menuCategory="container"
-        android:title="@string/attach"/>
+        android:title="@string/attach"
+        myapp:showAsAction="ifRoom"/>
     <item
         android:id="@+id/dfselect"
         android:menuCategory="container"

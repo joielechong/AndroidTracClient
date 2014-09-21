@@ -184,7 +184,6 @@ public class NewTicketFragment extends TracClientFragment {
 							velden.put("reporter", _username);
 							final CheckBox updNotify = (CheckBox) view.findViewById(R.id.updNotify);
 							final boolean notify = updNotify == null ? false : updNotify.isChecked();
-
 							final Ticket t = new Ticket(velden);
 							final int newtick = t.create(context, notify);
 							if (newtick < 0) {
@@ -205,7 +204,6 @@ public class NewTicketFragment extends TracClientFragment {
 									getFragmentManager().popBackStackImmediate();
 								}
 							});
-
 						} catch (final Exception e) {
 							tcLog.e(getClass().getName(), "Exception in createTicket", e);
 							context.runOnUiThread(new Runnable() {
@@ -234,7 +232,5 @@ public class NewTicketFragment extends TracClientFragment {
 
 			}
 		});
-
 	}
-
 }
