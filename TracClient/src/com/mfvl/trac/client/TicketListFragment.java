@@ -625,7 +625,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 		if (_url != null) {
 			final ProgressDialog pb = startProgressBar(context.getString(R.string.getlist)
 					+ (SelectedProfile == null ? "" : "\n" + SelectedProfile));
-			loadListThread = new Thread() {
+			new Thread() {
 				@Override
 				public void run() {
 					final String logTag = this.getClass().getName() + "." + this.getId();
@@ -736,8 +736,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 						}
 					}
 				}
-			};
-			loadListThread.start();
+			}.start();
 		}
 	}
 
@@ -752,11 +751,11 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 			// dataAdapter.notifyDataSetChanged();
 			newDataAdapter();
 			listView.setAdapter(dataAdapter);
-			tcLog.d(getClass().getName(), "_clearTickets dataAdapter = " + dataAdapter);
-			tcLog.d(getClass().getName(), "_clearTickets count = " + dataAdapter.getCount());
-			tcLog.d(getClass().getName(), "_clearTickets listView = " + listView);
-			tcLog.d(getClass().getName(), "_clearTickets listViewAdapter = " + listView.getAdapter());
-			tcLog.d(getClass().getName(), "_clearTickets count = " + listView.getAdapter().getCount());
+//			tcLog.d(getClass().getName(), "_clearTickets dataAdapter = " + dataAdapter);
+//			tcLog.d(getClass().getName(), "_clearTickets count = " + dataAdapter.getCount());
+//			tcLog.d(getClass().getName(), "_clearTickets listView = " + listView);
+//			tcLog.d(getClass().getName(), "_clearTickets listViewAdapter = " + listView.getAdapter());
+//			tcLog.d(getClass().getName(), "_clearTickets count = " + listView.getAdapter().getCount());
 		}
 	}
 
@@ -794,7 +793,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 
 	private void loadTicketContent(final onCompleteListener oc) {
 		tcLog.d(this.getClass().getName(), "loadTicketContent started ");
-		loadContentThread = new Thread() {
+		new Thread() {
 			@Override
 			public void run() {
 				final long tid = this.getId();
@@ -854,7 +853,9 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 							@Override
 							public void run() {
 								hs.setText(progress[0] + "/" + progress[1]);
-								dataAdapter.notifyDataSetChanged();
+								if (dataAdapter != null) {
+									dataAdapter.notifyDataSetChanged();
+								}
 							}
 						});
 
@@ -900,7 +901,9 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 								@Override
 								public void run() {
 									hs.setText(progress[0] + "/" + progress[1]);
-									dataAdapter.notifyDataSetChanged();
+									if (dataAdapter != null) {
+										dataAdapter.notifyDataSetChanged();
+									}
 								}
 							});
 						} catch (final TicketLoadException e) {
@@ -915,7 +918,9 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 						public void run() {
 							tcLog.d(logTag, "loadTicketContent invalidate views");
 							oc.onComplete(CMPL_SUCCESS);
-							dataAdapter.notifyDataSetChanged();
+							if (dataAdapter != null) {
+								dataAdapter.notifyDataSetChanged();
+							}
 							if (listView != null) {
 								listView.invalidateViews();
 							}
@@ -925,14 +930,18 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 					});
 				} catch (final TicketLoadException e) {
 					tcLog.d(logTag, "loadContentThread interrupted");
-					oc.onComplete(CMPL_EXCEPTION);
+					if (oc !=null) {
+						oc.onComplete(CMPL_EXCEPTION);
+					}
 					if (loadContentThread.getId() == tid) {
 						tcLog.d(logTag, "loadContentThread tickets cleared");
 						sendMessage(MSG_CLEARTICK);
 					}
 				} catch (final Exception e) {
 					tcLog.d(logTag, "loadContentThread exception", e);
-					oc.onComplete(CMPL_EXCEPTION);
+					if (oc != null) {
+						oc.onComplete(CMPL_EXCEPTION);
+					}
 					if (loadContentThread.getId() == tid) {
 						tcLog.d(logTag, "loadContentThread tickets cleared");
 						sendMessage(MSG_CLEARTICK);
@@ -941,8 +950,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 					tcLog.d(logTag, "loadTicketContent ended");
 				}
 			}
-		};
-		loadContentThread.start();
+		}.start();
 	}
 
 	private void killThreads() {
@@ -1029,6 +1037,34 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 			tcLog.e(this.getClass().getName(), "getNewTickets JSONRPCException", e);
 			return null;
 		}
+	}
+	
+	private int getNeighTicket(int ticknr,int dir) {
+		tcLog.d(getClass().getName(),"getNeighTicket ticknr = "+ ticknr + ", dir = "+dir);
+		Ticket t = listener.getTicket(ticknr);
+		tcLog.d(getClass().getName(),"t = "+ t);
+		if (t == null) {
+			return -1;
+		} else {
+			int pos = dataAdapter.getPosition(t);
+			int newpos = pos + dir;
+//			tcLog.d(getClass().getName(),"pos = "+ pos+", newpos = "+newpos+", count = "+dataAdapter.getCount());
+			if (newpos < 0 || newpos >= dataAdapter.getCount()) {
+				return ticknr;
+			} else {
+				t = dataAdapter.getItem(newpos);
+				tcLog.d(getClass().getName(),"new ticket = "+t);
+				return (t!=null?t.getTicketnr():ticknr);
+			}
+		}
+	}
+	
+	public int getNextTicket(int ticket) {
+		return getNeighTicket(ticket,1);
+	}
+
+	public int getPrevTicket(int ticket) {
+		return getNeighTicket(ticket,-1);
 	}
 
 	public void setHost(final String url, final String username, final String password, boolean sslHack, boolean sslHostNameHack,

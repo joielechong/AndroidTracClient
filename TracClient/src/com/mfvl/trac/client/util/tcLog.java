@@ -24,7 +24,7 @@ public class tcLog {
 	public static String getDebug() {
 		return debugString;
 	}
-
+	
 	private static void _toast(Activity c, String string) {
 		Toast.makeText(c, string, Toast.LENGTH_SHORT).show();
 	}

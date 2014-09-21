@@ -9,7 +9,7 @@ public class FilterSpec extends Object implements Serializable, Cloneable {
 	private String _operator;
 	private String _waarde;
 	private String _newwaarde;
-	private boolean _edited = false;
+	private Boolean _edited = false;
 
 	public FilterSpec(String veld, String operator, String waarde) {
 		_veld = veld;
@@ -93,14 +93,14 @@ public class FilterSpec extends Object implements Serializable, Cloneable {
 	@Override
 	public int hashCode() {
 		// Start with a non-zero constant.
-		int result = 17;
+		int result = 23;
 
 		// Include a hash for each field.
-		result = 31 * result + (_edited ? 1 : 0);
-		result = 31 * result + hc(_veld);
-		result = 31 * result + hc(_operator);
-		result = 31 * result + hc(_waarde);
-		result = 31 * result + hc(_newwaarde);
-		return result + super.hashCode();
+		result = 37 * result + hc(_edited);
+		result = 37 * result + hc(_veld);
+		result = 37 * result + hc(_operator);
+		result = 37 * result + hc(_waarde);
+		result = 37 * result + hc(_newwaarde);
+		return 37*result + super.hashCode();
 	}
 }

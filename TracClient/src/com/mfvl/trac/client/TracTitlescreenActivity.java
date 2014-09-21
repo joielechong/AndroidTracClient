@@ -65,9 +65,15 @@ public class TracTitlescreenActivity extends Activity {
 		} catch (Exception e) {
 			tcLog.e(getClass().getName(),"Exception while determining Google Play Services",e);
 		}
-		final Intent intent = getIntent();
+		
+		final Intent launchTrac = new Intent(getApplicationContext(), TracStart.class);
+//		adMobAvailable=false;
+		launchTrac.putExtra("AdMob", adMobAvailable);
+
 		String urlstring = null;
-		Integer ticket = -1;
+
+		final Intent intent = getIntent();
+//		Integer ticket = -1;
 		if (Intent.ACTION_VIEW.equals(intent.getAction())) {
 			final String contentString = intent.getDataString();
 			// tcLog.d(getClass().getName(), "View intent data = " +
@@ -80,29 +86,22 @@ public class TracTitlescreenActivity extends Activity {
 				final int count = segments.size();
 				final String mustBeTicket = segments.get(count - 2);
 				if ("ticket".equals(mustBeTicket)) {
-					ticket = Integer.parseInt(segments.get(count - 1));
+					int ticket = Integer.parseInt(segments.get(count - 1));
 					for (final String segment : segments.subList(0, count - 2)) {
 						urlstring += segment + "/";
 					}
-					tracker.send(MapBuilder.createEvent("Startup", // Event
-																	// category
-																	// (required)
+					tracker.send(MapBuilder.createEvent("Startup", // Event category (required)
 							"URI start", // Event action (required)
 							urlstring, // Event label
-							ticket.longValue()) // Event value
+							(long) ticket) // Event value
 							.build());
+					launchTrac.putExtra("url", urlstring);
+					launchTrac.putExtra("ticket", (long) ticket);
 				} else {
 					tcLog.w(getClass().getName(), "View intent bad Url");
 					urlstring = null;
 				}
 			}
-		}
-		final Intent launchTrac = new Intent(getApplicationContext(), TracStart.class);
-//		adMobAvailable=false;
-		launchTrac.putExtra("AdMob", adMobAvailable);
-		if (urlstring != null) {
-			launchTrac.putExtra("url", urlstring);
-			launchTrac.putExtra("ticket", (long) ticket);
 		}
 		final Handler handler = new Handler();
 		final Timer t = new Timer();

@@ -56,11 +56,11 @@ public class SortSpec extends Object implements Cloneable, Serializable {
 	@Override
 	public int hashCode() {
 		// Start with a non-zero constant.
-		int result = 17;
+		int result = 19;
 
 		// Include a hash for each field.
-		result = 31 * result + hc(_veld);
-		result = 31 * result + hc(_richting);
-		return result + super.hashCode();
+		result = 29 * result + hc(_veld);
+		result = 29 * result + hc(_richting);
+		return 29*result + super.hashCode();
 	}
 }

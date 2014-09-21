@@ -31,8 +31,10 @@
         android:title="@string/filter"/>
     <item
         android:id="@+id/tlsort"
+        android:icon="@android:drawable/ic_menu_sort_by_size"
         android:menuCategory="container"
-        android:title="@string/sort"/>
+        android:title="@string/sort"
+        myapp:showAsAction="ifRoom"/>
     <item
         android:id="@+id/tlselect"
         android:menuCategory="container"

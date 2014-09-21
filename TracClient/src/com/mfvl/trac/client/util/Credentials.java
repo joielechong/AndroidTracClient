@@ -30,15 +30,19 @@ public class Credentials {
 	private static String _profile = null;
 	private static SharedPreferences settings = null;
 
+	private static void getSettings(final Context context) {
+		if (settings == null) {
+			settings = context.getSharedPreferences(PREFS_NAME, 0);
+		}
+	}
+	
 	/**
 	 * Load login credentials from shared preferences: server-url, username,
 	 * password and profile
 	 */
 	public static void loadCredentials(final Context context) {
 		// tcLog.d("Credentials", "loadCredentials");
-		if (settings == null) {
-			settings = context.getSharedPreferences(PREFS_NAME, 0);
-		}
+		getSettings(context);
 		_url = settings.getString("tracUrl", "");
 		_username = settings.getString("tracUsername", "");
 		_password = settings.getString("tracPassword", "");
@@ -59,9 +63,7 @@ public class Credentials {
 	 */
 	public static void storeCredentials(final Context context) {
 		// tcLog.d("Credentials", "storeCredentials");
-		if (settings == null) {
-			settings = context.getSharedPreferences(PREFS_NAME, 0);
-		}
+		getSettings(context);
 		final SharedPreferences.Editor editor = settings.edit();
 		editor.putString("tracUrl", _url);
 		editor.putString("tracUsername", _username);
@@ -121,9 +123,7 @@ public class Credentials {
 
 	public static boolean getFirstRun(Context context) {
 		// tcLog.d("Credentials", "getFirstRun");
-		if (settings == null) {
-			settings = context.getSharedPreferences(PREFS_NAME, 0);
-		}
+		getSettings(context);
 		final String thisRun = buildVersion(context);
 		final String lastRun = settings.getString("firstRun", "");
 		final SharedPreferences.Editor editor = settings.edit();
@@ -135,9 +135,7 @@ public class Credentials {
 
 	public static void storeFilterString(Context context, final String filterString) {
 		// tcLog.d("Credentials", "storeFilterString: " + filterString);
-		if (settings == null) {
-			settings = context.getSharedPreferences(PREFS_NAME, 0);
-		}
+		getSettings(context);
 		final SharedPreferences.Editor editor = settings.edit();
 		editor.putString("filterString", filterString == null ? "" : filterString);
 		editor.commit();
@@ -145,9 +143,7 @@ public class Credentials {
 
 	public static String getFilterString(Context context) {
 		// tcLog.d("Credentials", "getFilterString");
-		if (settings == null) {
-			settings = context.getSharedPreferences(PREFS_NAME, 0);
-		}
+		getSettings(context);
 		final String filterString = settings.getString("filterString", "max=500&status!=closed");
 		tcLog.d("Credentials", "getFilterString filterString = " + filterString);
 		return filterString;
@@ -155,9 +151,7 @@ public class Credentials {
 
 	public static void removeFilterString(Context context) {
 		// tcLog.d("Credentials", "removeFilterString");
-		if (settings == null) {
-			settings = context.getSharedPreferences(PREFS_NAME, 0);
-		}
+		getSettings(context);
 		final SharedPreferences.Editor editor = settings.edit();
 		editor.putString("filterString", "max=500&status!=closed");
 		editor.commit();
@@ -165,9 +159,7 @@ public class Credentials {
 
 	public static void storeSortString(Context context, final String sortString) {
 		// tcLog.d("Credentials", "storeSortString: " + sortString);
-		if (settings == null) {
-			settings = context.getSharedPreferences(PREFS_NAME, 0);
-		}
+		getSettings(context);
 		final SharedPreferences.Editor editor = settings.edit();
 		editor.putString("sortString", sortString == null ? "" : sortString);
 		editor.commit();
@@ -175,19 +167,15 @@ public class Credentials {
 
 	public static String getSortString(Context context) {
 		// tcLog.d("Credentials", "getSortString");
-		if (settings == null) {
-			settings = context.getSharedPreferences(PREFS_NAME, 0);
-		}
+		getSettings(context);
 		final String sortString = settings.getString("sortString", "order=priority&order=modified&desc=1");
 		tcLog.d("Credentials", "getSortString sortString = " + sortString);
 		return sortString;
 	}
-
+	
 	public static void removeSortString(Context context) {
 		// tcLog.d("Credentials", "removeSortString");
-		if (settings == null) {
-			settings = context.getSharedPreferences(PREFS_NAME, 0);
-		}
+		getSettings(context);
 		final SharedPreferences.Editor editor = settings.edit();
 		editor.putString("sortString", "order=priority&order=modified&desc=1");
 		editor.commit();
