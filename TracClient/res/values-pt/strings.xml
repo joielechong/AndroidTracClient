@@ -58,7 +58,7 @@
 	<string name="Add">Adicionar</string>
 	<string name="sslHack">Aceitar Certificados Próprios Assinados</string>
 	<string name="sslHack1">Aceitar Certificados Problemáticos</string>
-	<string-array name="filter3_choice">
+	<string-array name="filter_names">
 		<item>é igual a</item>
 		<item>não é igual a</item>
 		<item>contém</item>

@@ -239,10 +239,10 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		}
 		Credentials.loadCredentials(this);
 
-		if (getIntent().hasExtra("AdMob")) {
-			dispAds = getIntent().getBooleanExtra("AdMob", true);
+		if (getIntent().hasExtra(Const.ADMOB)) {
+			dispAds = getIntent().getBooleanExtra(Const.ADMOB, true);
 		} else if (savedInstanceState != null) {
-			dispAds = savedInstanceState.getBoolean("Admob", true);
+			dispAds = savedInstanceState.getBoolean(Const.ADMOB, true);
 		} else {
 			dispAds = true;
 		}
@@ -307,7 +307,19 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		}
 
 		fm = getSupportFragmentManager();
-//		if (savedInstanceState == null) {
+		if (savedInstanceState != null) {
+			Credentials.reloadCredentials(this);
+			if (fm != null) {
+				restoreFragment(savedInstanceState,ListFragmentTag);
+				restoreFragment(savedInstanceState,LoginFragmentTag);
+				restoreFragment(savedInstanceState,DetailFragmentTag);
+				restoreFragment(savedInstanceState,NewFragmentTag);
+				restoreFragment(savedInstanceState,UpdFragmentTag);
+				restoreFragment(savedInstanceState,FilterFragmentTag);
+				restoreFragment(savedInstanceState,SortFragmentTag);
+			}
+			initializeList(getTicketListFragment());
+		} else {
 			final FragmentTransaction ft = fm.beginTransaction();
 			if (url.length() > 0) {
 				final TicketListFragment ticketListFragment = new TicketListFragment();
@@ -331,16 +343,57 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 			}
 			ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			ft.commit();
-//		}
+		}
 
 		bindService(new Intent(this, RefreshService.class), mConnection, Context.BIND_AUTO_CREATE);
 		mIsBound = true;
 		setReferenceTime();
 	}
 	
+	private void restoreFragment(Bundle savedInstanceState,final String tag) {
+		if (savedInstanceState.containsKey(tag)) {
+			Fragment f;
+			try {
+				f = fm.getFragment(savedInstanceState, tag);
+				if (f != null) {
+					tcLog.d(getClass().getName(),"restoreFragment, "+tag+" restored");
+				} else {
+					tcLog.d(getClass().getName(),"restoreFragment, "+tag+" not restored");
+				}
+			} catch (Exception e) {
+				tcLog.d(getClass().getName(),"restoreFragment, "+tag+" restore failed");
+			}
+		}
+	}
+	
+	private void saveFragment(Bundle savedInstanceState,final String tag) {
+		try {
+			Fragment f = getFragment(tag);
+			if (f != null) {
+				fm.putFragment(savedInstanceState, tag, f);
+				tcLog.d(getClass().getName(),"saveFragment, "+tag+" saved");
+			} else {
+				tcLog.d(getClass().getName(),"saveFragment, "+tag+" not saved");
+			}
+		} catch (Exception e) {
+			tcLog.d(getClass().getName(),"saveFragment, "+tag+" save failed");
+		// Exception if fragment not on stack can be ignored
+		}
+	}
+	
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
+		super.onSaveInstanceState(savedInstanceState);
 		savedInstanceState.putBoolean("Admob", dispAds);
+		if (fm != null) {
+			saveFragment(savedInstanceState,ListFragmentTag);
+			saveFragment(savedInstanceState,LoginFragmentTag);
+			saveFragment(savedInstanceState,DetailFragmentTag);
+			saveFragment(savedInstanceState,NewFragmentTag);
+			saveFragment(savedInstanceState,UpdFragmentTag);
+			saveFragment(savedInstanceState,FilterFragmentTag);
+			saveFragment(savedInstanceState,SortFragmentTag);
+		}
 		tcLog.d(this.getClass().getName(), "onSaveInstanceState savedInstanceState = " + savedInstanceState);
 	}
 	
@@ -350,18 +403,20 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	}
 
 	public void initializeList(final TicketListFragment ticketListFragment) {
-		tcLog.d(this.getClass().getName(), "initializeList ticketListFragment = " + ticketListFragment);
-		ticketListFragment.setHost(url, username, password, sslHack, sslHostNameHack, profile);
-		setFilter(Credentials.getFilterString(this));
-		setSort(Credentials.getSortString(this));
+		if (ticketListFragment != null) {
+			tcLog.d(this.getClass().getName(), "initializeList ticketListFragment = " + ticketListFragment);
+			ticketListFragment.setHost(url, username, password, sslHack, sslHostNameHack, profile);
+			setFilter(Credentials.getFilterString(this));
+			setSort(Credentials.getSortString(this));
 
-		if (urlArg != null) {
-			tcLog.d(this.getClass().getName(), "select Ticket = " + ticketArg);
-			if (ticketListFragment != null) {
-				ticketListFragment.selectTicket(ticketArg);
+			if (urlArg != null) {
+				tcLog.d(this.getClass().getName(), "select Ticket = " + ticketArg);
+				if (ticketListFragment != null) {
+					ticketListFragment.selectTicket(ticketArg);
+				}
+				urlArg = null;
+				ticketArg = -1;
 			}
-			urlArg = null;
-			ticketArg = -1;
 		}
 	}
 
@@ -480,7 +535,6 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	@Override
 	public void setFilter(ArrayList<FilterSpec> filter) {
-		final TicketListFragment tlf = getTicketListFragment();
 		tcLog.d(this.getClass().getName(), "setFilter " + filter);
 		String filterString = "";
 		if (filter != null) {
@@ -493,11 +547,12 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		}
 		Credentials.storeFilterString(this, filterString);
 
+		final TicketListFragment tlf = getTicketListFragment();
 		if (tlf != null) {
 			tlf.setFilter(filter);
 			refreshOverview();
 		} else {
-			tcLog.toast("setFilter fragment is null");
+			tcLog.toast("setFilter TicketListFragment is null");
 		}
 	}
 
@@ -523,7 +578,6 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	@Override
 	public void setSort(ArrayList<SortSpec> sort) {
-		final TicketListFragment tlf = getTicketListFragment();
 		tcLog.d(this.getClass().getName(), "setSort " + sort);
 
 		String sortString = "";
@@ -537,11 +591,12 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		}
 		Credentials.storeSortString(this, sortString);
 
+		final TicketListFragment tlf = getTicketListFragment();
 		if (tlf != null) {
 			tlf.setSort(sort);
 			refreshOverview();
 		} else {
-			tcLog.toast("setSort fragment is null");
+			tcLog.toast("setSort TicketListFragment is null");
 		}
 	}
 
@@ -784,21 +839,23 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		startActivity(sendIntent);
 	}
 	
+	private Fragment getFragment(final String tag) {
+		return fm.findFragmentByTag(tag);
+	}
+	
 	private TicketListFragment getTicketListFragment() {
-		return (TicketListFragment) fm.findFragmentByTag(ListFragmentTag);
+		return (TicketListFragment) getFragment(ListFragmentTag);
 	}
 
 	public int getTicketCount() {
 		final TicketListFragment ticketListFragment = getTicketListFragment();
-		// tcLog.d(this.getClass().getName(),
-		// "getTicketCount ticketListFragment = " + ticketListFragment);
+		tcLog.d(this.getClass().getName(),"getTicketCount ticketListFragment = " + ticketListFragment);
 		return (ticketListFragment != null ? ticketListFragment.getTicketCount() : -1);
 	}
 
 	private List<Integer> getNewTickets(final String isoTijd) {
 		final TicketListFragment ticketListFragment = getTicketListFragment();
-		// tcLog.d(this.getClass().getName(),
-		// "getNewTickets ticketListFragment = " + ticketListFragment);
+		tcLog.d(this.getClass().getName(),"getNewTickets ticketListFragment = " + ticketListFragment);
 		return  (ticketListFragment != null ? ticketListFragment.getNewTickets(isoTijd) : null);
 	}
 
@@ -845,7 +902,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
 		boolean ret = super.dispatchTouchEvent(ev);
-		final DetailFragment df = (DetailFragment) fm.findFragmentByTag(DetailFragmentTag);
+		final DetailFragment df = (DetailFragment) getFragment(DetailFragmentTag);
 		if (df != null) {
 			ret |= df.dispatchTouchEvent(ev);
 		}

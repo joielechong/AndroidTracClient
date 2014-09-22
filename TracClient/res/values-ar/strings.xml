@@ -58,7 +58,7 @@
 	<string name="auteur" translatable="false">ميشيل فان لون</string>
 	<string name="sslHack">قبول الشهادة الموقعة ذاتيا</string>
 	<string name="sslHack1">قبول شهادات الإشكالية</string>
-	<string-array name="filter3_choice">
+	<string-array name="filter_names">
 		<item>مساو لـ</item>
 		<item>غير مساو لـ</item>
 		<item>يحتوي</item>

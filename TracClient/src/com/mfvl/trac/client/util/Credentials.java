@@ -6,9 +6,13 @@ import java.io.FileNotFoundException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Locale;
 
 import javax.security.auth.x500.X500Principal;
 
+import com.mfvl.trac.client.Const;
+
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -20,7 +24,6 @@ import android.os.Build;
 import android.os.Environment;
 
 public class Credentials {
-	public static final String PREFS_NAME = "Trac";
 	private static String versie = null;
 	private static String _url = "";
 	private static String _username = "";
@@ -29,10 +32,10 @@ public class Credentials {
 	private static boolean _sslHostNameHack = false;
 	private static String _profile = null;
 	private static SharedPreferences settings = null;
-
+	
 	private static void getSettings(final Context context) {
 		if (settings == null) {
-			settings = context.getSharedPreferences(PREFS_NAME, 0);
+			settings = context.getSharedPreferences(Const.PREFS_NAME, 0);
 		}
 	}
 	
@@ -43,12 +46,12 @@ public class Credentials {
 	public static void loadCredentials(final Context context) {
 		// tcLog.d("Credentials", "loadCredentials");
 		getSettings(context);
-		_url = settings.getString("tracUrl", "");
-		_username = settings.getString("tracUsername", "");
-		_password = settings.getString("tracPassword", "");
-		_sslHack = settings.getBoolean("sslHack", false);
-		_sslHostNameHack = settings.getBoolean("sslHostNameHack", false);
-		_profile = settings.getString("profile", null);
+		_url = settings.getString(Const.PREF_URL, "");
+		_username = settings.getString(Const.PREF_USER, "");
+		_password = settings.getString(Const.PREF_PASS, "");
+		_sslHack = settings.getBoolean(Const.PREF_HACK, false);
+		_sslHostNameHack = settings.getBoolean(Const.PREF_HNH, false);
+		_profile = settings.getString(Const.PREF_PROF, null);
 	}
 	
 	public static void reloadCredentials(final Context context) {
@@ -65,12 +68,12 @@ public class Credentials {
 		// tcLog.d("Credentials", "storeCredentials");
 		getSettings(context);
 		final SharedPreferences.Editor editor = settings.edit();
-		editor.putString("tracUrl", _url);
-		editor.putString("tracUsername", _username);
-		editor.putString("tracPassword", _password);
-		editor.putBoolean("sslHack", _sslHack);
-		editor.putBoolean("sslHostNameHack", _sslHostNameHack);
-		editor.putString("profile", _profile);
+		editor.putString(Const.PREF_URL, _url);
+		editor.putString(Const.PREF_USER, _username);
+		editor.putString(Const.PREF_PASS, _password);
+		editor.putBoolean(Const.PREF_HACK, _sslHack);
+		editor.putBoolean(Const.PREF_HNH, _sslHostNameHack);
+		editor.putString(Const.PREF_PROF, _profile);
 
 		// Commit the edits!
 		editor.commit();
@@ -125,59 +128,59 @@ public class Credentials {
 		// tcLog.d("Credentials", "getFirstRun");
 		getSettings(context);
 		final String thisRun = buildVersion(context);
-		final String lastRun = settings.getString("firstRun", "");
+		final String lastRun = settings.getString(Const.PREF_1ST, "");
 		final SharedPreferences.Editor editor = settings.edit();
-		editor.putString("firstRun", thisRun);
+		editor.putString(Const.PREF_1ST, thisRun);
 		editor.commit();
 
 		return !lastRun.equals(thisRun);
 	}
 
 	public static void storeFilterString(Context context, final String filterString) {
-		// tcLog.d("Credentials", "storeFilterString: " + filterString);
+		tcLog.d("Credentials", "storeFilterString: " + filterString);
 		getSettings(context);
 		final SharedPreferences.Editor editor = settings.edit();
-		editor.putString("filterString", filterString == null ? "" : filterString);
+		editor.putString(Const.PREF_FILTER, filterString == null ? "" : filterString);
 		editor.commit();
 	}
 
 	public static String getFilterString(Context context) {
 		// tcLog.d("Credentials", "getFilterString");
 		getSettings(context);
-		final String filterString = settings.getString("filterString", "max=500&status!=closed");
+		final String filterString = settings.getString(Const.PREF_FILTER, "max=500&status!=closed");
 		tcLog.d("Credentials", "getFilterString filterString = " + filterString);
 		return filterString;
 	}
 
 	public static void removeFilterString(Context context) {
-		// tcLog.d("Credentials", "removeFilterString");
+		tcLog.d("Credentials", "removeFilterString");
 		getSettings(context);
 		final SharedPreferences.Editor editor = settings.edit();
-		editor.putString("filterString", "max=500&status!=closed");
+		editor.putString(Const.PREF_FILTER, "max=500&status!=closed");
 		editor.commit();
 	}
 
 	public static void storeSortString(Context context, final String sortString) {
-		// tcLog.d("Credentials", "storeSortString: " + sortString);
+		tcLog.d("Credentials", "storeSortString: " + sortString);
 		getSettings(context);
 		final SharedPreferences.Editor editor = settings.edit();
-		editor.putString("sortString", sortString == null ? "" : sortString);
+		editor.putString(Const.PREF_SORT, sortString == null ? "" : sortString);
 		editor.commit();
 	}
 
 	public static String getSortString(Context context) {
 		// tcLog.d("Credentials", "getSortString");
 		getSettings(context);
-		final String sortString = settings.getString("sortString", "order=priority&order=modified&desc=1");
+		final String sortString = settings.getString(Const.PREF_SORT, "order=priority&order=modified&desc=1");
 		tcLog.d("Credentials", "getSortString sortString = " + sortString);
 		return sortString;
 	}
 	
 	public static void removeSortString(Context context) {
-		// tcLog.d("Credentials", "removeSortString");
+		tcLog.d("Credentials", "removeSortString");
 		getSettings(context);
 		final SharedPreferences.Editor editor = settings.edit();
-		editor.putString("sortString", "order=priority&order=modified&desc=1");
+		editor.putString(Const.PREF_SORT, "order=priority&order=modified&desc=1");
 		editor.commit();
 	}
 
@@ -238,7 +241,7 @@ public class Credentials {
 		if (versie == null) {
 			return false;
 		}
-		return versie.toLowerCase().contains("rc");			
+		return versie.toLowerCase(Locale.US).contains("rc");			
 	}
 
 	public static String makeDbPath(Context context, String dbname) {

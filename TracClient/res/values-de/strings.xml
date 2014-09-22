@@ -53,7 +53,7 @@
 	<string name="Add">Hinzufügen</string>
 	<string name="sslHack">Selbstsignierte Zertifikate akzeptieren</string>
 	<string name="sslHack1">Problematische Zertifikate akzeptieren</string>
-	<string-array name="filter3_choice">
+	<string-array name="filter_names">
 		<item>ist gleich</item>
 		<item>ist nicht gleich</item>
 		<item>enthält</item>

@@ -54,7 +54,7 @@
     <string name="sslHack">Accepter auto-signé Certificats</string>
     <string name="sslHack1">Accepter problématiques Certificats</string>
 
-    <string-array name="filter3_choice">
+    <string-array name="filter_names">
         <item>est égal à</item>
         <item>n\'est pas égal à</item>
         <item>contient</item>
@@ -109,9 +109,9 @@
     <string name="unsaved">Laissez l\'écran et enregistrer les modifications?</string>
     <string name="nee">Non</string>
     <string name="ja">Oui</string>
-    <string name="hostnametitle">Ignorer la vérification de nom d\'hôte? </string>
-    <string name="hostnametext">vérification de nom d\'hôte a échoué lors de la tentative de connexion au serveur. \nMessage = </string>
-    <string name="hostnameign">\nignorez la vérification? </string>
+    <string name="hostnametitle">Ignorer la vérification de nom d\'hôte?</string>
+    <string name="hostnametext">Vérification de nom d\'hôte a échoué lors de la tentative de connexion au serveur.\nMessage =</string>
+    <string name="hostnameign">\nIgnorez la vérification?</string>
     <string name="noJSON">Pas de support de JSON sur le TRAC-serveur</string>
 
 </resources>

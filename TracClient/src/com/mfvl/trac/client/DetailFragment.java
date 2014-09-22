@@ -262,13 +262,13 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 
 		if (savedInstanceState != null) {
 			showEmptyFields = savedInstanceState.getBoolean("emptyfields", false);
-			if (savedInstanceState.containsKey("currentTicket")) {
+			if (savedInstanceState.containsKey(Const.CURRENT_TICKET)) {
 				// tcLog.d(this.getClass().getName(),"onActivityCreated start Loading");
 				if (savedInstanceState.containsKey("modveld")) {
 					modVeld = (ModVeldMap) savedInstanceState.getSerializable("modveld");
 				}
 				setSelect(modVeld.isEmpty());
-				ticknr = savedInstanceState.getInt("currentTicket", -1);
+				ticknr = savedInstanceState.getInt(Const.CURRENT_TICKET, -1);
 			}
 		}
 	notModified = getResources().getStringArray(R.array.fieldsnotmodified);
@@ -454,10 +454,10 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 		super.onSaveInstanceState(savedState);
 		tcLog.d(getClass().getName(), "onSaveInstanceState _ticket = " + _ticket);
 		if (_ticket != null) {
-			savedState.putInt("currentTicket", _ticket.getTicketnr());
+			savedState.putInt(Const.CURRENT_TICKET, _ticket.getTicketnr());
 		} else if (ticknr != -1) {
 			tcLog.d(getClass().getName(), "onSaveInstanceState ticknr = " + ticknr);
-			savedState.putInt("currentTicket", ticknr);
+			savedState.putInt(Const.CURRENT_TICKET, ticknr);
 		}
 		if (!modVeld.isEmpty()) {
 			tcLog.d(getClass().getName(), "onSaveInstanceState modVeld = " + modVeld);
