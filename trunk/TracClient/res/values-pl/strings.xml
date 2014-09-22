@@ -52,7 +52,7 @@
 	<string name="Add">Dodaj</string>
 	<string name="sslHack">Akceptuj Certyfikaty z Podpisem Własnym (SSC)</string>
 	<string name="sslHack1">Akceptuj Certyfikaty Problematyczne</string>
-	<string-array name="filter3_choice">
+	<string-array name="filter_names">
 		<item>jest równe</item>
 		<item>nie jest równe</item>
 		<item>zawiera</item>

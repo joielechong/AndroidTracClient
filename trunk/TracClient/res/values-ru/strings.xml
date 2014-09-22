@@ -53,7 +53,7 @@
         <string name="Add">Добавить</string>
         <string name="sslHack">Принять собственные сертификаты</string>
         <string name="sslHack1">Принять проблемах с сертификатами</string>
-        <string-array name="filter3_choice">
+        <string-array name="filter_names">
                 <item>равно</item>
                 <item>не равно</item>
                 <item>содержит</item>

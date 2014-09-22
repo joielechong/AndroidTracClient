@@ -145,9 +145,9 @@ public class TracLoginFragment extends TracClientFragment {
 				sslHostNameHack = context.getSslHostNameHack();
 			} else {
 				tcLog.d(this.getClass().getName(), "onViewCreated use savedInstanceState");
-				url = savedInstanceState.getString("url");
-				username = savedInstanceState.getString("user");
-				password = savedInstanceState.getString("pass");
+				url = savedInstanceState.getString(Const.NEW_URL);
+				username = savedInstanceState.getString(Const.NEW_USERNAME);
+				password = savedInstanceState.getString(Const.NEW_PASSWORD);
 				sslHack = savedInstanceState.getBoolean("hack");
 				sslHostNameHack = savedInstanceState.getBoolean("hostnamehack");
 				bewaren = savedInstanceState.getBoolean("bewaar");
@@ -243,9 +243,9 @@ public class TracLoginFragment extends TracClientFragment {
 				sslHostNameHack = context.getSslHostNameHack();
 			} else {
 				tcLog.d(this.getClass().getName(), "onActivityCreated use savedInstanceState");
-				url = savedInstanceState.getString("url");
-				username = savedInstanceState.getString("user");
-				password = savedInstanceState.getString("pass");
+				url = savedInstanceState.getString(Const.NEW_URL);
+				username = savedInstanceState.getString(Const.NEW_USERNAME);
+				password = savedInstanceState.getString(Const.NEW_PASSWORD);
 				sslHack = savedInstanceState.getBoolean("hack");
 				sslHostNameHack = savedInstanceState.getBoolean("hostnamehack");
 				bewaren = savedInstanceState.getBoolean("bewaar");
@@ -527,9 +527,9 @@ public class TracLoginFragment extends TracClientFragment {
 	public void onSaveInstanceState(Bundle savedState) {
 		super.onSaveInstanceState(savedState);
 		tcLog.d(this.getClass().getName(), "onSaveInstanceState");
-		savedState.putString("url", urlView.getText().toString());
-		savedState.putString("user", userView.getText().toString());
-		savedState.putString("pass", pwView.getText().toString());
+		savedState.putString(Const.NEW_URL, urlView.getText().toString());
+		savedState.putString(Const.NEW_USERNAME, userView.getText().toString());
+		savedState.putString(Const.NEW_PASSWORD, pwView.getText().toString());
 		savedState.putBoolean("hack", sslHackBox.isChecked());
 		savedState.putBoolean("hostnamehack", sslHostNameHack);
 		savedState.putBoolean("bewaar", bewaarBox.isChecked());

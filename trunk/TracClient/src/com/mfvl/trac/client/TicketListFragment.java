@@ -933,7 +933,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 					if (oc !=null) {
 						oc.onComplete(CMPL_EXCEPTION);
 					}
-					if (loadContentThread.getId() == tid) {
+					if (loadContentThread != null && loadContentThread.getId() == tid) {
 						tcLog.d(logTag, "loadContentThread tickets cleared");
 						sendMessage(MSG_CLEARTICK);
 					}
@@ -1008,7 +1008,12 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 	}
 
 	public int getTicketCount() {
-		return dataAdapter.getCount();
+		try {
+			return dataAdapter.getCount();
+		} catch (Exception e) {
+			tcLog.e(this.getClass().getName(), "getTicketCount Exception", e);
+			return -1;			
+		}
 	}
 
 	public List<Integer> getNewTickets(final String isoTijd) {
@@ -1036,6 +1041,9 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 		} catch (final JSONRPCException e) {
 			tcLog.e(this.getClass().getName(), "getNewTickets JSONRPCException", e);
 			return null;
+		} catch (Exception e) {
+			tcLog.e(this.getClass().getName(), "getNewTickets Exception", e);
+			return null;			
 		}
 	}
 	

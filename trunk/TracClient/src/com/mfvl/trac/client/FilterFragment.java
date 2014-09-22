@@ -52,7 +52,7 @@ public class FilterFragment extends TracClientFragment {
 
 			final Resources res = context.getResources();
 			final ArrayList<String> operators = new ArrayList<String>(Arrays.asList(res.getStringArray(R.array.filter2_choice)));
-			final ArrayList<String> operatornames = new ArrayList<String>(Arrays.asList(res.getStringArray(R.array.filter3_choice)));
+			final ArrayList<String> operatornames = new ArrayList<String>(Arrays.asList(res.getStringArray(R.array.filter_names)));
 			final ListView listView = (ListView) parent;
 
 			View v = convertView;

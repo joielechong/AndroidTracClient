@@ -56,7 +56,7 @@
     <string name="sslHack">Accepteer Self Signed Certificaten</string>
     <string name="sslHack1">Accepteer Problematische Certificaten</string>
 
-    <string-array name="filter3_choice">
+    <string-array name="filter_names">
         <item>is gelijk aan</item>
         <item>is niet gelijk aan</item>
         <item>bevat</item>
