@@ -1,18 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:myapp="http://schemas.android.com/apk/res-auto" >
 
     <item
         android:id="@+id/help"
         android:icon="@android:drawable/ic_menu_help"
         android:menuCategory="container"
         android:orderInCategory="9997"
-        android:title="@string/help"/>
+        android:title="@string/help"
+        myapp:showAsAction="ifRoom"/>
     <item
         android:id="@+id/over"
         android:icon="@android:drawable/ic_menu_info_details"
         android:menuCategory="container"
         android:orderInCategory="9998"
-        android:title="@string/about_button"/>
+        android:title="@string/about_button"
+        myapp:showAsAction="ifRoom"/>
     <item
         android:id="@+id/debug"
         android:enabled="false"
@@ -20,5 +23,10 @@
         android:orderInCategory="9999"
         android:title="@string/debug"
         android:visible="false"/>
+    <item
+        android:id="@+id/prefs"
+        android:menuCategory="container"
+        android:orderInCategory="9996"
+        android:title="@string/prefs"/>
 
 </menu>

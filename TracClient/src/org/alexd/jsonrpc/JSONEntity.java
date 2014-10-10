@@ -15,7 +15,7 @@ import ch.boye.httpclientandroidlib.protocol.HTTP;
 class JSONEntity extends StringEntity {
 	/**
 	 * Basic constructor
-	 * 
+	 *
 	 * @param jsonObject
 	 * @throws UnsupportedEncodingException
 	 */
@@ -25,7 +25,7 @@ class JSONEntity extends StringEntity {
 
 	/**
 	 * Constructor with encoding specified
-	 * 
+	 *
 	 * @param jsonObject
 	 * @param encoding
 	 *            Chosen encoding from Consts.UTF_8, ISO_8859_1 or any other

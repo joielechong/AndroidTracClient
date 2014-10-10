@@ -5,9 +5,9 @@ package org.alexd.jsonrpc;
  * JSON-RPC call fail (network not available, non existing method, error during
  * the remote execution ...) You can use the inherited method getCause() to see
  * which Exception has caused a JSONRPCException to be thrown
- * 
+ *
  * @author Alexandre
- * 
+ *
  */
 public class JSONRPCException extends Exception {
 

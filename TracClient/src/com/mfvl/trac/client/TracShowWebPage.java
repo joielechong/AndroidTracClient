@@ -26,7 +26,11 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
 
-import com.google.analytics.tracking.android.EasyTracker;
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.HitBuilders.EventBuilder;
+import com.google.android.gms.analytics.Tracker;
+
 import com.mfvl.trac.client.util.Credentials;
 
 public class TracShowWebPage extends Activity {
@@ -36,6 +40,8 @@ public class TracShowWebPage extends Activity {
 		// tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " +
 		// savedInstanceState);
 		super.onCreate(savedInstanceState);
+		//Get a Tracker (should auto-report)
+		((TracClient) getApplication()).getTracker(Const.TrackerName.APP_TRACKER);
 		final Intent i = this.getIntent();
 		final boolean toonVersie = i.getBooleanExtra(Const.HELP_VERSION, true);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -54,6 +60,13 @@ public class TracShowWebPage extends Activity {
 			final String versie = Credentials.buildVersion(this);
 			tv.setText(versie);
 		}
+		Tracker t = ((TracClient) getApplication()).getTracker(Const.TrackerName.APP_TRACKER);
+		// Build and send an Event.
+		t.send(new HitBuilders.EventBuilder()
+			.setCategory("Normal")
+			.setAction("WebView")
+			.setLabel(filename)
+			.build());
 		final WebView wv = (WebView) findViewById(R.id.webfile);
 		wv.setWebViewClient(new WebViewClient());
 		wv.loadUrl(filename);
@@ -63,14 +76,14 @@ public class TracShowWebPage extends Activity {
 	public void onStart() {
 		// tcLog.d(this.getClass().getName(), "onStart");
 		super.onStart();
-		EasyTracker.getInstance(this).activityStart(this);
+		GoogleAnalytics.getInstance(this).reportActivityStart(this);
 	}
 
 	@Override
 	public void onStop() {
 		// tcLog.d(this.getClass().getName(), "onStop");
 		super.onStop();
-		EasyTracker.getInstance(this).activityStop(this);
+		GoogleAnalytics.getInstance(this).reportActivityStop(this);
 	}
 
 }

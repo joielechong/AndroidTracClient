@@ -35,6 +35,7 @@
         android:icon="@android:drawable/ic_menu_share"
         android:menuCategory="container"
         android:title="@string/dfshare"
+        myapp:actionProviderClass="android.support.v7.widget.ShareActionProvider"
         myapp:showAsAction="ifRoom"/>
 
 </menu>

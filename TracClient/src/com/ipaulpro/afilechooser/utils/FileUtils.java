@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2007-2008 OpenIntents.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,6 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Modifications by Michiel van Loon (C) 2014
  */
 
 package com.ipaulpro.afilechooser.utils;
@@ -37,14 +39,14 @@ import android.provider.MediaStore;
 import android.provider.MediaStore.Audio;
 import android.provider.MediaStore.Video;
 
-import com.mfvl.trac.client.R;
-import com.mfvl.trac.client.util.tcLog;
+import com.mfvl.trac.client.R; 				// Changed namespace
+import com.mfvl.trac.client.util.tcLog; 	//Logging buffered for debug purposes
 
 /**
  * @version 2009-07-03
- * 
+ *
  * @author Peli
- * 
+ *
  */
 public class FileUtils {
 	/** TAG for log messages. */
@@ -58,7 +60,7 @@ public class FileUtils {
 
 	/**
 	 * Whether the filename is a video file.
-	 * 
+	 *
 	 * @param filename
 	 * @return
 	 */
@@ -70,7 +72,7 @@ public class FileUtils {
 
 	/**
 	 * Whether the URI is a local one.
-	 * 
+	 *
 	 * @param uri
 	 * @return
 	 */
@@ -83,7 +85,7 @@ public class FileUtils {
 
 	/**
 	 * Gets the extension of a file name, like ".png" or ".jpg".
-	 * 
+	 *
 	 * @param uri
 	 * @return Extension including the dot("."); "" if there is no extension;
 	 *         null if uri was null.
@@ -104,7 +106,7 @@ public class FileUtils {
 
 	/**
 	 * Returns true if uri is a media uri.
-	 * 
+	 *
 	 * @param uri
 	 * @return
 	 */
@@ -122,7 +124,7 @@ public class FileUtils {
 
 	/**
 	 * Convert File into Uri.
-	 * 
+	 *
 	 * @param file
 	 * @return uri
 	 */
@@ -135,7 +137,7 @@ public class FileUtils {
 
 	/**
 	 * Convert Uri into File.
-	 * 
+	 *
 	 * @param uri
 	 * @return file
 	 */
@@ -151,7 +153,7 @@ public class FileUtils {
 
 	/**
 	 * Returns the path only (without file name).
-	 * 
+	 *
 	 * @param file
 	 * @return
 	 */
@@ -177,7 +179,7 @@ public class FileUtils {
 
 	/**
 	 * Constructs a file from a path and file name.
-	 * 
+	 *
 	 * @param curdir
 	 * @param file
 	 * @return
@@ -197,12 +199,12 @@ public class FileUtils {
 
 	/**
 	 * Get a file path from a Uri.
-	 * 
+	 *
 	 * @param context
 	 * @param uri
 	 * @return
 	 * @throws URISyntaxException
-	 * 
+	 *
 	 * @author paulburke
 	 */
 	public static String getPath(Context context, Uri uri) throws URISyntaxException {
@@ -231,10 +233,10 @@ public class FileUtils {
 
 	/**
 	 * Get the file size in a human-readable string.
-	 * 
+	 *
 	 * @param size
 	 * @return
-	 * 
+	 *
 	 * @author paulburke
 	 */
 	public static String getReadableFileSize(int size) {
@@ -263,7 +265,7 @@ public class FileUtils {
 
 	/**
 	 * Load MIME types from XML
-	 * 
+	 *
 	 * @param context
 	 * @return
 	 */
@@ -281,7 +283,7 @@ public class FileUtils {
 
 	/**
 	 * Get the file MIME type
-	 * 
+	 *
 	 * @param context
 	 * @param file
 	 * @return
@@ -297,13 +299,13 @@ public class FileUtils {
 
 	/**
 	 * Attempt to retrieve the thumbnail of given File from the MediaStore.
-	 * 
+	 *
 	 * This should not be called on the UI thread.
-	 * 
+	 *
 	 * @param context
 	 * @param file
 	 * @return
-	 * 
+	 *
 	 * @author paulburke
 	 */
 	public static Bitmap getThumbnail(Context context, File file) {
@@ -312,13 +314,13 @@ public class FileUtils {
 
 	/**
 	 * Attempt to retrieve the thumbnail of given Uri from the MediaStore.
-	 * 
+	 *
 	 * This should not be called on the UI thread.
-	 * 
+	 *
 	 * @param context
 	 * @param uri
 	 * @return
-	 * 
+	 *
 	 * @author paulburke
 	 */
 	public static Bitmap getThumbnail(Context context, Uri uri) {
@@ -327,14 +329,14 @@ public class FileUtils {
 
 	/**
 	 * Attempt to retrieve the thumbnail of given Uri from the MediaStore.
-	 * 
+	 *
 	 * This should not be called on the UI thread.
-	 * 
+	 *
 	 * @param context
 	 * @param uri
 	 * @param mimeType
 	 * @return
-	 * 
+	 *
 	 * @author paulburke
 	 */
 	public static Bitmap getThumbnail(Context context, Uri uri, String mimeType) {
@@ -372,7 +374,7 @@ public class FileUtils {
 
 	/**
 	 * File and folder comparator.
-	 * 
+	 *
 	 * @author paulburke
 	 */
 	@SuppressLint("DefaultLocale")
@@ -386,7 +388,7 @@ public class FileUtils {
 
 	/**
 	 * File (not directories) filter.
-	 * 
+	 *
 	 * @author paulburke
 	 */
 	private static FileFilter mFileFilter = new FileFilter() {
@@ -400,7 +402,7 @@ public class FileUtils {
 
 	/**
 	 * Folder (directories) filter.
-	 * 
+	 *
 	 * @author paulburke
 	 */
 	private static FileFilter mDirFilter = new FileFilter() {
@@ -414,10 +416,10 @@ public class FileUtils {
 
 	/**
 	 * Get a list of Files in the give path
-	 * 
+	 *
 	 * @param path
 	 * @return Collection of files in give directory
-	 * 
+	 *
 	 * @author paulburke
 	 */
 	public static List<File> getFileList(String path) {
@@ -453,9 +455,9 @@ public class FileUtils {
 
 	/**
 	 * Get the Intent for selecting content to be used in an Intent Chooser.
-	 * 
+	 *
 	 * @return The intent for opening a file with Intent.createChooser()
-	 * 
+	 *
 	 * @author paulburke
 	 */
 	public static Intent createGetContentIntent() {

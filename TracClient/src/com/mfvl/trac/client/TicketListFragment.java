@@ -547,12 +547,14 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		tcLog.d(this.getClass().getName(), "onCreateOptionsMenu");
+		tcLog.d(getClass().getName(), "onCreateOptionsMenu");
 		inflater.inflate(R.menu.ticketlistmenu, menu);
 		super.onCreateOptionsMenu(menu, inflater);
 		MenuItem shareItem = menu.findItem(R.id.tlshare);
 		mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
-		mShareActionProvider.setShareIntent(shareList());
+		Intent sl = shareList();
+		tcLog.d(getClass().getName(),"shareItem = "+shareItem+" "+mShareActionProvider+ " " + sl);
+		mShareActionProvider.setShareIntent(sl);
 	}
 
 	@Override
@@ -980,7 +982,13 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 					}
 				} finally {
 					tcLog.d(logTag, "loadTicketContent ended");
-					mShareActionProvider.setShareIntent(shareList());
+					context.runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							tcLog.d(logTag, "loadTicketContent updating ShareActionProvider");
+							mShareActionProvider.setShareIntent(shareList());
+						}
+					});
 				}
 			}
 		}.start();
