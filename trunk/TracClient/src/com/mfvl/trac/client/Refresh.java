@@ -28,6 +28,10 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Tracker;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.HitBuilders.EventBuilder;
 import com.mfvl.trac.client.util.tcLog;
 
 public class Refresh extends Activity {
@@ -64,10 +68,19 @@ public class Refresh extends Activity {
 		// tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " +
 		// (savedInstanceState == null ? "null" : "not null"));
 
+		((TracClient) getApplication()).getTracker(Const.TrackerName.APP_TRACKER);
+
 		try {
 			final String action = getIntent().getAction().toUpperCase();
 
 			if (action != null) {
+				Tracker t = ((TracClient) getApplication()).getTracker(Const.TrackerName.APP_TRACKER);
+				// Build and send an Event.
+				t.send(new HitBuilders.EventBuilder()
+					.setCategory("Normal")
+					.setAction("Refresh")
+					.setLabel(action)
+					.build());
 				if (action.equalsIgnoreCase(RefreshService.refreshAction)) {
 					bindService(new Intent(this, RefreshService.class), mConnection, Context.BIND_AUTO_CREATE);
 					// tcLog.i(this.getClass().getName(), "Refresh sent");

@@ -110,6 +110,12 @@ public class tcLog {
 		return i;
 	}
 
+	public static int e(String tag, Throwable tr) {
+		final int i = Log.w(tag, tr);
+		myLog("E." + tag, "", tr);
+		return i;
+	}
+
 	public static int i(String tag, String msg) {
 		final int i = Log.i(tag, msg);
 		myLog("I." + tag, msg);

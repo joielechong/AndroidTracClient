@@ -37,9 +37,15 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.Fields;
-import com.google.analytics.tracking.android.MapBuilder;
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Tracker;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.HitBuilders.AppViewBuilder;
+
+//import com.google.analytics.tracking.android.EasyTracker;
+//import com.google.analytics.tracking.android.Fields;
+//import com.google.analytics.tracking.android.MapBuilder;
+
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
@@ -56,7 +62,6 @@ public class TracClientFragment extends Fragment {
 	public TracStart context;
 	private final AdView adView = null;
 	public InterFragmentListener listener = null;
-	private EasyTracker tracker;
 	private boolean adsVisible = true;
 	private int padTop;
 	private int padRight;
@@ -117,6 +122,9 @@ public class TracClientFragment extends Fragment {
 			testDevices = new String[1];
 			testDevices[0] = "";
 		}
+
+		//Get a Tracker (should auto-report)
+		((TracClient) context.getApplication()).getTracker(Const.TrackerName.APP_TRACKER);
 	}
 
 	@Override
@@ -210,7 +218,6 @@ public class TracClientFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		tcLog.d(getClass().getName() + ".super", "onActivityCreated savedInstanceState = "+ savedInstanceState);
-		tracker = EasyTracker.getInstance(context);
 	}
 
 	@Override
@@ -222,23 +229,33 @@ public class TracClientFragment extends Fragment {
 		savedState.putString(Const.CURRENT_PASSWORD, _password);
 		savedState.putBoolean(Const.CURRENT_SSLHACK, _sslHack);
 		savedState.putBoolean(Const.CURRENT_SSLHOSTNAMEHACK, _sslHostNameHack);
-		tcLog.d(this.getClass().getName() + ".super", "onSaveInstanceState = " + savedState);
+		tcLog.d(getClass().getName() + ".super", "onSaveInstanceState = " + savedState);
 	}
 
 	@Override
 	public void onStart() {
 		tcLog.d(getClass().getName() + ".super", "onStart");
 		super.onStart();
-		tracker.activityStart(context);
-		tracker.set(Fields.SCREEN_NAME, getClass().getSimpleName());
-		tracker.send(MapBuilder.createAppView().build());
+		//Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
+		GoogleAnalytics analytics = GoogleAnalytics.getInstance(context);
+		analytics.reportActivityStart(context);
+
+       // Get tracker.
+        Tracker t = ((TracClient) context.getApplication()).getTracker(Const.TrackerName.APP_TRACKER);
+
+        // Set screen name.
+        t.setScreenName(getClass().getSimpleName());
+
+        // Send a screen view.
+        t.send(new HitBuilders.AppViewBuilder().build());
 	}
 
 	@Override
 	public void onStop() {
 		tcLog.d(getClass().getName() + ".super", "onStop");
 		super.onStop();
-		tracker.activityStop(context);
+		//Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
+		GoogleAnalytics.getInstance(context).reportActivityStop(context);
 	}
 
 	@Override

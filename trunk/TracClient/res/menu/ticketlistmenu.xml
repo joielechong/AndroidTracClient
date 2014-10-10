@@ -33,8 +33,7 @@
         android:id="@+id/tlsort"
         android:icon="@android:drawable/ic_menu_sort_by_size"
         android:menuCategory="container"
-        android:title="@string/sort"
-        myapp:showAsAction="ifRoom"/>
+        android:title="@string/sort"/>
     <item
         android:id="@+id/tlselect"
         android:menuCategory="container"
@@ -44,6 +43,7 @@
         android:icon="@android:drawable/ic_menu_share"
         android:menuCategory="container"
         android:title="@string/tlshare"
+        myapp:actionProviderClass="android.support.v7.widget.ShareActionProvider"
         myapp:showAsAction="ifRoom"/>
 
-</menu>
+</menu> 

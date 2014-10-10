@@ -56,7 +56,7 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 
 	/**
 	 * Construct a JsonRPCClient with the given service uri
-	 * 
+	 *
 	 * @param uri
 	 *            uri of the service
 	 */
@@ -128,7 +128,7 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 
 	/**
 	 * Construct a JsonRPCClient with the given httpClient and service uri
-	 * 
+	 *
 	 * @param client
 	 *            httpClient to use
 	 * @param uri
@@ -214,9 +214,9 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 				if (!jsonError.equals(null)) {
 					throw new JSONRPCException(((JSONObject) jsonError).get("message"));
 				}
-//				return jsonResponse; // JSON-RPC 1.0
-//			} else {
-//				return jsonResponse; // JSON-RPC 2.0
+				// return jsonResponse; // JSON-RPC 1.0
+				// } else {
+				// return jsonResponse; // JSON-RPC 2.0
 			}
 			return jsonResponse;
 		} catch (final JSONRPCException e) {
@@ -233,8 +233,8 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 				final int titelstart = lastResponse.indexOf("<title");
 				final int titeleind = lastResponse.indexOf("</title>");
 				if (titelstart == -1 || titeleind == -1) {
-					tcLog.toast(lastResponse.substring(0,20)+"==");
-					if ("No protocol matching".equals(lastResponse.substring(0,20))) {
+					tcLog.toast(lastResponse.substring(0, 20) + "==");
+					if ("No protocol matching".equals(lastResponse.substring(0, 20))) {
 						throw new JSONRPCException("NOJSON");
 					} else {
 						throw new JSONRPCException("Invalid JSON response: " + lastResponse);

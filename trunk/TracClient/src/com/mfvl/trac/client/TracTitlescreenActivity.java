@@ -30,16 +30,18 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Tracker;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.HitBuilders.EventBuilder;
+
 import com.mfvl.trac.client.util.Credentials;
 import com.mfvl.trac.client.util.tcLog;
 
 public class TracTitlescreenActivity extends Activity {
-
-	private EasyTracker tracker;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -56,14 +58,15 @@ public class TracTitlescreenActivity extends Activity {
 		} catch (final Exception e) {
 			tcLog.toast("crash: " + e.getMessage());
 		}
+		//Get a Tracker (should auto-report)
+		((TracClient) getApplication()).getTracker(Const.TrackerName.APP_TRACKER);
 	}
 
 	@Override
 	public void onStart() {
-		// tcLog.i(this.getClass().getName(), "onStart");
+		//tcLog.i(getClass().getName(), "onStart");
 		super.onStart();
-		tracker = EasyTracker.getInstance(this);
-		tracker.activityStart(this);
+
 		boolean adMobAvailable = false;
 		try {
 			final int isAvailable = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
@@ -82,7 +85,12 @@ public class TracTitlescreenActivity extends Activity {
 			tcLog.e(getClass().getName(), "Exception while determining Google Play Services", e);
 		}
 
+		//Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
+		GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+		analytics.reportActivityStart(this);
+
 		final Intent launchTrac = new Intent(getApplicationContext(), TracStart.class);
+
 		// adMobAvailable=false;
 		launchTrac.putExtra(Const.ADMOB, adMobAvailable);
 
@@ -106,13 +114,14 @@ public class TracTitlescreenActivity extends Activity {
 					for (final String segment : segments.subList(0, count - 2)) {
 						urlstring += segment + "/";
 					}
-					tracker.send(MapBuilder.createEvent("Startup", // Event
-																	// category
-																	// (required)
-							"URI start", // Event action (required)
-							urlstring, // Event label
-							(long) ticket) // Event value
-							.build());
+					Tracker t = ((TracClient) getApplication()).getTracker(Const.TrackerName.APP_TRACKER);
+					// Build and send an Event.
+					t.send(new HitBuilders.EventBuilder()
+						.setCategory("Startup")
+						.setAction("URI start")
+						.setLabel(urlstring)
+						.setValue((long) ticket)
+						.build());
 					launchTrac.putExtra(Const.INTENT_URL, urlstring);
 					launchTrac.putExtra(Const.INTENT_TICKET, (long) ticket);
 				} else {
@@ -139,8 +148,11 @@ public class TracTitlescreenActivity extends Activity {
 
 	@Override
 	public void onStop() {
-		// tcLog.i(this.getClass().getName(), "onStop");
+		//tcLog.i(getClass().getName(), "onStop");
 		super.onStop();
-		tracker.activityStop(this);
+		//Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
+		GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+		analytics.reportActivityStop(this);
+
 	}
 }

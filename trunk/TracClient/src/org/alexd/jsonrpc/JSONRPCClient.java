@@ -21,7 +21,7 @@ public abstract class JSONRPCClient {
 
 	/**
 	 * Create a JSONRPCClient from a given uri
-	 * 
+	 *
 	 * @param uri
 	 *            The URI of the JSON-RPC service
 	 * @return a JSONRPCClient instance acting as a proxy for the web service
@@ -163,7 +163,7 @@ public abstract class JSONRPCClient {
 
 	/**
 	 * Set the socket operation timeout
-	 * 
+	 *
 	 * @param soTimeout
 	 *            timeout in milliseconds
 	 */
@@ -180,7 +180,7 @@ public abstract class JSONRPCClient {
 
 	/**
 	 * Set the connection timeout
-	 * 
+	 *
 	 * @param connectionTimeout
 	 *            timeout in milliseconds
 	 */
@@ -190,7 +190,7 @@ public abstract class JSONRPCClient {
 
 	/**
 	 * Perform a remote JSON-RPC method call
-	 * 
+	 *
 	 * @param method
 	 *            The name of the method to invoke
 	 * @param params
@@ -209,7 +209,7 @@ public abstract class JSONRPCClient {
 
 	/**
 	 * Perform a remote JSON-RPC method call
-	 * 
+	 *
 	 * @param method
 	 *            The name of the method to invoke
 	 * @param params
@@ -236,7 +236,7 @@ public abstract class JSONRPCClient {
 
 	/**
 	 * Perform a remote JSON-RPC method call
-	 * 
+	 *
 	 * @param method
 	 *            The name of the method to invoke
 	 * @param params
@@ -257,7 +257,7 @@ public abstract class JSONRPCClient {
 
 	/**
 	 * Perform a remote JSON-RPC method call
-	 * 
+	 *
 	 * @param method
 	 *            The name of the method to invoke
 	 * @param params
@@ -292,7 +292,7 @@ public abstract class JSONRPCClient {
 
 	/**
 	 * Perform a remote JSON-RPC method call
-	 * 
+	 *
 	 * @param method
 	 *            The name of the method to invoke
 	 * @param params
@@ -322,7 +322,7 @@ public abstract class JSONRPCClient {
 
 	/**
 	 * Perform a remote JSON-RPC method call
-	 * 
+	 *
 	 * @param method
 	 *            The name of the method to invoke
 	 * @param params
@@ -371,7 +371,7 @@ public abstract class JSONRPCClient {
 
 	/**
 	 * Perform a remote JSON-RPC method call
-	 * 
+	 *
 	 * @param method
 	 *            The name of the method to invoke
 	 * @param params
@@ -401,7 +401,7 @@ public abstract class JSONRPCClient {
 
 	/**
 	 * Perform a remote JSON-RPC method call
-	 * 
+	 *
 	 * @param method
 	 *            The name of the method to invoke
 	 * @param params
@@ -452,7 +452,7 @@ public abstract class JSONRPCClient {
 
 	/**
 	 * Perform a remote JSON-RPC method call
-	 * 
+	 *
 	 * @param method
 	 *            The name of the method to invoke
 	 * @param params
@@ -484,7 +484,7 @@ public abstract class JSONRPCClient {
 
 	/**
 	 * Perform a remote JSON-RPC method call
-	 * 
+	 *
 	 * @param method
 	 *            The name of the method to invoke
 	 * @param params
@@ -537,7 +537,7 @@ public abstract class JSONRPCClient {
 
 	/**
 	 * Perform a remote JSON-RPC method call
-	 * 
+	 *
 	 * @param method
 	 *            The name of the method to invoke
 	 * @param params
@@ -569,7 +569,7 @@ public abstract class JSONRPCClient {
 
 	/**
 	 * Perform a remote JSON-RPC method call
-	 * 
+	 *
 	 * @param method
 	 *            The name of the method to invoke
 	 * @param params
@@ -622,7 +622,7 @@ public abstract class JSONRPCClient {
 
 	/**
 	 * Perform a remote JSON-RPC method call
-	 * 
+	 *
 	 * @param method
 	 *            The name of the method to invoke
 	 * @param params
@@ -684,7 +684,7 @@ public abstract class JSONRPCClient {
 
 	/**
 	 * Perform a remote JSON-RPC method call
-	 * 
+	 *
 	 * @param method
 	 *            The name of the method to invoke
 	 * @param params
@@ -717,7 +717,7 @@ public abstract class JSONRPCClient {
 
 	/**
 	 * Perform a remote JSON-RPC method call
-	 * 
+	 *
 	 * @param method
 	 *            The name of the method to invoke
 	 * @param params
@@ -750,7 +750,7 @@ public abstract class JSONRPCClient {
 
 	/**
 	 * Perform a remote JSON-RPC method call
-	 * 
+	 *
 	 * @param method
 	 *            The name of the method to invoke
 	 * @param params

@@ -48,7 +48,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 
-import com.google.analytics.tracking.android.EasyTracker;
+import com.google.android.gms.analytics.GoogleAnalytics;
+
 import com.ipaulpro.afilechooser.utils.FileUtils;
 import com.mfvl.trac.client.util.Credentials;
 import com.mfvl.trac.client.util.FilterSpec;
@@ -262,6 +263,9 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " + savedInstanceState);
+
+		//Get a Tracker (should auto-report)
+		((TracClient) getApplication()).getTracker(Const.TrackerName.APP_TRACKER);
 
 		startService(new Intent(this, RefreshService.class));
 
@@ -809,9 +813,18 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	public void onStart() {
 		super.onStart();
 		tcLog.d(this.getClass().getName(), "onStart");
-		EasyTracker.getInstance(this).activityStart(this);
+		//Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
+		GoogleAnalytics.getInstance(this).reportActivityStart(this);
 	}
 
+	@Override
+	public void onStop() {
+		super.onStop();
+		tcLog.d(getClass().getName(), "onStop");
+		//Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
+		GoogleAnalytics.getInstance(this).reportActivityStop(this);
+	}
+	
 	@Override
 	public void onBackPressed() {
 		tcLog.d(getClass().getName(), "onBackPressed");
@@ -822,13 +835,6 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		if (callSuper) {
 			super.onBackPressed();
 		}
-	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
-		tcLog.d(getClass().getName(), "onStop");
-		EasyTracker.getInstance(this).activityStop(this);
 	}
 
 	@Override
