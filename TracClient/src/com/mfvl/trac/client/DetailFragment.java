@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2013,2014 Michiel van Loon
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.mfvl.trac.client;
 
 import java.io.File;
@@ -25,13 +41,17 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.ShareActionProvider;
 import android.text.InputType;
 import android.view.GestureDetector;
+import android.view.GestureDetector.OnGestureListener;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -53,12 +73,7 @@ import com.mfvl.trac.client.util.ColoredArrayAdapter;
 import com.mfvl.trac.client.util.ISO8601;
 import com.mfvl.trac.client.util.tcLog;
 
-import android.view.GestureDetector.OnGestureListener;
-import android.view.MotionEvent;
-
 public class DetailFragment extends TracClientFragment implements OnGestureListener {
-	protected static final int LARGE_MOVE = 60;
-	
 	private class ModVeldMap extends HashMap<String, String> implements Serializable {
 		private static final long serialVersionUID = 191019591050L;
 	}
@@ -137,12 +152,17 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 				final modifiedString ms = getItem(position);
 				((TextView) view).setTextColor(ms.updated() ? Color.RED : Color.BLACK);
 				return view;
-			} catch (Exception e) {
-				tcLog.e(getClass().getName(),"getView exception",e);
+			} catch (final Exception e) {
+				tcLog.e(getClass().getName(), "getView exception", e);
 				return null;
 			}
 		}
 	}
+
+	private static final String EMPTYFIELDS = "emptyfields";
+	private static final String MODVELD = "modveld";
+	final public static String mimeUnknown = "application/unknown";
+	protected static final int LARGE_MOVE = 60;
 
 	private File path = null;
 	private int ticknr = -1;
@@ -157,11 +177,10 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 	private String[] isStatusUpd;
 	private MenuItem selectItem;
 	private GestureDetector gestureDetector = null;
+	private ShareActionProvider mShareActionProvider;
 
-	final public static String mimeUnknown = "application/unknown";
-	
 	private void setSelect(final boolean value) {
-		tcLog.d(this.getClass().getName(), "setSelect "+value);
+		tcLog.d(this.getClass().getName(), "setSelect " + value);
 		if (selectItem != null) {
 			selectItem.setEnabled(value);
 		}
@@ -177,7 +196,10 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 		if (args != null) {
 			ticknr = args.getInt(Const.CURRENT_TICKET);
 		}
-		
+		if (savedInstanceState != null && savedInstanceState.containsKey(Const.CURRENT_TICKET) ) {
+			ticknr = savedInstanceState.getInt(Const.CURRENT_TICKET, -1);
+		}
+
 		modVeld = new ModVeldMap();
 		modVeld.clear();
 		setHasOptionsMenu(true);
@@ -192,8 +214,12 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 		super.onCreateOptionsMenu(menu, inflater);
 		selectItem = menu.findItem(R.id.dfselect);
 		setSelect(true);
+		// Set up ShareActionProvider's default share intent
+		MenuItem shareItem = menu.findItem(R.id.dfshare);
+		mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
+		mShareActionProvider.setShareIntent(listener.shareTicketIntent(ticknr));
 	}
-
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View view = inflater.inflate(R.layout.detail_view, container, false);
@@ -240,19 +266,19 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 			});
 		}
 	}
-	
+
 	@Override
 	public void onStart() {
 		super.onStart();
-		gestureDetector = new GestureDetector(context,this);
+		gestureDetector = new GestureDetector(context, this);
 	}
-	
+
 	@Override
 	public void onStop() {
 		super.onStop();
 		gestureDetector = null;
 	}
-
+	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -261,18 +287,18 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 		// (savedInstanceState == null ? "null" : "not null"));
 
 		if (savedInstanceState != null) {
-			showEmptyFields = savedInstanceState.getBoolean("emptyfields", false);
+			showEmptyFields = savedInstanceState.getBoolean(EMPTYFIELDS, false);
 			if (savedInstanceState.containsKey(Const.CURRENT_TICKET)) {
 				// tcLog.d(this.getClass().getName(),"onActivityCreated start Loading");
-				if (savedInstanceState.containsKey("modveld")) {
-					modVeld = (ModVeldMap) savedInstanceState.getSerializable("modveld");
+				if (savedInstanceState.containsKey(MODVELD)) {
+					modVeld = (ModVeldMap) savedInstanceState.getSerializable(MODVELD);
 				}
 				setSelect(modVeld.isEmpty());
 				ticknr = savedInstanceState.getInt(Const.CURRENT_TICKET, -1);
 			}
 		}
-	notModified = getResources().getStringArray(R.array.fieldsnotmodified);
-	isStatusUpd = getResources().getStringArray(R.array.fieldsstatusupdate);
+		notModified = getResources().getStringArray(R.array.fieldsnotmodified);
+		isStatusUpd = getResources().getStringArray(R.array.fieldsstatusupdate);
 	}
 
 	@Override
@@ -317,7 +343,7 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 			});
 			didUpdate = false;
 		}
-		View v = getView();
+		final View v = getView();
 		if (v != null) {
 			final LinearLayout mv = (LinearLayout) v.findViewById(R.id.modveld);
 			if (mv != null) {
@@ -331,7 +357,7 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 	public void onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
 		tcLog.i(getClass().getName(), "onPrepareOptionsMenu");
-		MenuItem item = menu.findItem(R.id.dfempty);
+		final MenuItem item = menu.findItem(R.id.dfempty);
 		if (item != null) {
 			item.setChecked(showEmptyFields);
 		}
@@ -346,15 +372,13 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 			if (_ticket != null) {
 				listener.onUpdateTicket(_ticket);
 				didUpdate = true;
-				return true;
 			}
 		} else if (item.getItemId() == R.id.help) {
 			final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
 			final String filename = context.getString(R.string.helpdetailfile);
-			launchTrac.putExtra("file", filename);
-			launchTrac.putExtra("version", false);
+			launchTrac.putExtra(Const.HELP_FILE, filename);
+			launchTrac.putExtra(Const.HELP_VERSION, false);
 			startActivity(launchTrac);
-			return true;
 		} else if (item.getItemId() == R.id.dfselect) {
 			final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
 			alertDialogBuilder.setTitle(R.string.chooseticket);
@@ -367,8 +391,10 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 			alertDialogBuilder.setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int id) {
-					final int ticknr = Integer.parseInt(input.getText().toString());
-					selectTicket(ticknr);
+					final int newTicket = Integer.parseInt(input.getText().toString());
+//					selectTicket(ticknr);
+					ticknr = newTicket;
+					_onResume();
 				}
 			});
 			alertDialogBuilder.setNegativeButton(R.string.cancel, null);
@@ -401,27 +427,21 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 						}.start();
 					}
 				});
-				return true;
 			}
 		} else if (item.getItemId() == R.id.dfrefresh) {
 			if (_ticket != null) {
 				refresh_ticket();
-				return true;
-			}
-		} else if (item.getItemId() == R.id.dfshare) {
-			if (_ticket != null) {
-				listener.shareTicket(_ticket);
-				return true;
 			}
 		} else if (item.getItemId() == R.id.dfempty) {
 			item.setChecked(!item.isChecked());
 			showEmptyFields = item.isChecked();
 			if (_ticket != null) {
 				refresh_ticket();
-				return true;
 			}
+		} else {
+			return super.onOptionsItemSelected(item);
 		}
-		return super.onOptionsItemSelected(item);
+		return true;
 	}
 
 	public void refresh_ticket() {
@@ -429,6 +449,7 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 		_ticket.refresh(context, new onTicketCompleteListener() {
 			@Override
 			public void onComplete(Ticket t2) {
+				mShareActionProvider.setShareIntent(listener.shareTicketIntent(t2.getTicketnr()));
 				context.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
@@ -461,9 +482,9 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 		}
 		if (!modVeld.isEmpty()) {
 			tcLog.d(getClass().getName(), "onSaveInstanceState modVeld = " + modVeld);
-			savedState.putSerializable("modveld", modVeld);
+			savedState.putSerializable(MODVELD, modVeld);
 		}
-		savedState.putBoolean("emptyfields", showEmptyFields);
+		savedState.putBoolean(EMPTYFIELDS, showEmptyFields);
 		tcLog.d(getClass().getName(), "onSaveInstanceState = " + savedState);
 	}
 
@@ -656,7 +677,8 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 			}
 
 			if (spinValue != null) {
-				spinValue.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+				spinValue
+						.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 				final LinearLayout vc = (LinearLayout) ll.findViewById(R.id.veld);
 				if (vc != null) {
 					vc.addView(spinValue);
@@ -682,8 +704,8 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 					if (et != null) {
 						newValue = et.getText().toString();
 					}
-					if ((newValue != null && !newValue.equals(waarde)) || (newValue == null && waarde != null)) {
-						if (veld.equals("summary")) {
+					if (newValue != null && !newValue.equals(waarde) || newValue == null && waarde != null) {
+						if ("summary".equals(veld)) {
 							((TextView) dataView).setText(newValue);
 							((TextView) dataView).setTextColor(Color.RED);
 							tcLog.d(getClass().getName(), "OnClick tickText na postInvalidate + " + dataView);
@@ -886,7 +908,7 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 	@Override
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 		final int newTicket;
-//		tcLog.d(getClass().getName(),"onFling e1 = "+e1+", e2 = "+e2);
+		// tcLog.d(getClass().getName(),"onFling e1 = "+e1+", e2 = "+e2);
 		if (e1.getX() - e2.getX() > LARGE_MOVE) {
 			newTicket = listener.getNextTicket(_ticket.getTicketnr());
 		} else if (e2.getX() - e1.getX() > LARGE_MOVE) {
@@ -897,11 +919,11 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 		if (newTicket >= 0 && modVeld.isEmpty()) {
 			ticknr = newTicket;
 			_onResume();
-		} 
+		}
 		return true;
 	}
-	
+
 	public boolean dispatchTouchEvent(MotionEvent ev) {
-		return (gestureDetector != null ? gestureDetector.onTouchEvent(ev) : false);
+		return gestureDetector != null ? gestureDetector.onTouchEvent(ev) : false;
 	}
 }

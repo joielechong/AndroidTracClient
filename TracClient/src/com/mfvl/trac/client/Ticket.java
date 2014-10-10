@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2013,2014 Michiel van Loon
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.mfvl.trac.client;
 
 import java.io.File;
@@ -21,7 +37,7 @@ import com.mfvl.trac.client.util.ISO8601;
 import com.mfvl.trac.client.util.tcLog;
 
 interface onTicketCompleteListener {
-	void onComplete(Ticket t); 
+	void onComplete(Ticket t);
 }
 
 interface onAttachmentCompleteListener {
@@ -30,7 +46,7 @@ interface onAttachmentCompleteListener {
 
 public class Ticket implements Serializable {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -3915928655754922097L;
 	public final static String TICKET_GET = "GET";
@@ -69,16 +85,25 @@ public class Ticket implements Serializable {
 		result = 31 * result + hc(_history);
 		result = 31 * result + hc(_attachments);
 		result = 31 * result + hc(_actions);
-		result = 31 * result + _ticknr;
+		result = 31 * result + hc(_ticknr);
 		result = 31 * result + hc(_url);
 		result = 31 * result + hc(_username);
 		result = 31 * result + hc(_password);
-		result = 31 * result + (_sslHack ? 1 : 0);
-		result = 31 * result + (_sslHostNameHack ? 1 : 0);
-		result = 31 * result + (_isloading ? 1 : 0);
-		result = 31 * result + (_hasdata ? 1 : 0);
+		result = 31 * result + hc(_sslHack);
+		result = 31 * result + hc(_sslHostNameHack);
+		result = 31 * result + hc(_isloading);
+		result = 31 * result + hc(_hasdata);
 
-		return result;
+		return result + 31 * super.hashCode();
+	}
+
+	private void retrieveCredentials(TracStart context) {
+		InterFragmentListener listener = context;
+		_url = listener.getUrl();
+		_username = listener.getUsername();
+		_password = listener.getPassword();
+		_sslHack = listener.getSslHack();
+		_sslHostNameHack = listener.getSslHostNameHack();
 	}
 
 	public Ticket(final JSONObject jo) {
@@ -153,11 +178,7 @@ public class Ticket implements Serializable {
 		actionLock.acquireUninterruptibly();
 		_isloading = true;
 		if (_url == null) {
-			_url = context.getUrl();
-			_username = context.getUsername();
-			_password = context.getPassword();
-			_sslHack = context.getSslHack();
-			_sslHostNameHack = context.getSslHostNameHack();
+			retrieveCredentials(context);
 		}
 		new Thread("loadTicketData") {
 			@Override
@@ -198,7 +219,7 @@ public class Ticket implements Serializable {
 								tcLog.i(this.getClass().getName(), "loadTicketData, unexpected response = " + result);
 							}
 						} catch (final Exception e1) {
-							tcLog.e(getClass().getName(),"loadTicketData error while reading response",e1);
+							tcLog.e(getClass().getName(), "loadTicketData error while reading response", e1);
 						}
 					}
 					_hasdata = _velden != null && _history != null && _actions != null;
@@ -208,7 +229,7 @@ public class Ticket implements Serializable {
 						oc.onComplete(Ticket.this);
 					}
 				} catch (final Exception e) {
-					tcLog.i(getClass().getName(),"loadTicketData exception",e);
+					tcLog.i(getClass().getName(), "loadTicketData exception", e);
 				} finally {
 					available.release();
 				}
@@ -217,11 +238,7 @@ public class Ticket implements Serializable {
 	}
 
 	public void getAttachment(final String filename, TracStart context, final onAttachmentCompleteListener oc) {
-		_url = context.getUrl();
-		_username = context.getUsername();
-		_password = context.getPassword();
-		_sslHack = context.getSslHack();
-		_sslHostNameHack = context.getSslHostNameHack();
+		retrieveCredentials(context);
 		final Thread networkThread = new Thread("getAttachment") {
 			@Override
 			public void run() {
@@ -256,11 +273,7 @@ public class Ticket implements Serializable {
 
 	public void addAttachment(final String filename, final TracStart context, final onTicketCompleteListener oc) {
 		tcLog.i(this.getClass().getName() + ".addAttachment", filename);
-		_url = context.getUrl();
-		_username = context.getUsername();
-		_password = context.getPassword();
-		_sslHack = context.getSslHack();
-		_sslHostNameHack = context.getSslHostNameHack();
+		retrieveCredentials(context);
 		new Thread() {
 			@Override
 			public void run() {
@@ -388,11 +401,7 @@ public class Ticket implements Serializable {
 			public void run() {
 				available.acquireUninterruptibly();
 				try {
-					_url = context.getUrl();
-					_username = context.getUsername();
-					_password = context.getPassword();
-					_sslHack = context.getSslHack();
-					_sslHostNameHack = context.getSslHostNameHack();
+					retrieveCredentials(context);
 					if (req == null) {
 						req = new JSONRPCHttpClient(_url, _sslHack, _sslHostNameHack);
 						req.setCredentials(_username, _password);
@@ -406,7 +415,7 @@ public class Ticket implements Serializable {
 						final JSONObject o = new JSONObject(e.getMessage());
 						rpcerror = o.getString("message");
 					} catch (final JSONException e1) {
-						tcLog.e(getClass().getName(),"create failed",e1);
+						tcLog.e(getClass().getName(), "create failed", e1);
 						rpcerror = context.getString(R.string.invalidJson);
 					}
 				}
@@ -428,7 +437,7 @@ public class Ticket implements Serializable {
 
 		return _ticknr;
 	}
-
+	
 	// update is called from within a non UI thread
 
 	public void update(String action, String comment, String veld, String waarde, final boolean notify, final TracStart context,
@@ -441,11 +450,7 @@ public class Ticket implements Serializable {
 		if (action == null) {
 			throw new NullPointerException(context.getString(R.string.noaction));
 		}
-		_url = context.getUrl();
-		_username = context.getUsername();
-		_password = context.getPassword();
-		_sslHack = context.getSslHack();
-		_sslHostNameHack = context.getSslHostNameHack();
+		retrieveCredentials(context);
 		_velden.put("action", action);
 		if (waarde != null && veld != null && !"".equals(veld) && !"".equals(waarde)) {
 			_velden.put(veld, waarde);
@@ -523,7 +528,7 @@ public class Ticket implements Serializable {
 				}
 			}
 		} catch (final JSONException e) {
-			tcLog.e(getClass().getName(),"toText velden failed",e);
+			tcLog.e(getClass().getName(), "toText velden failed", e);
 		}
 		for (int j = 0; j < _history.length(); j++) {
 			JSONArray cmt;
@@ -534,7 +539,7 @@ public class Ticket implements Serializable {
 							+ "\n";
 				}
 			} catch (final JSONException e) {
-				tcLog.e(getClass().getName(),"toText history failed",e);
+				tcLog.e(getClass().getName(), "toText history failed", e);
 			}
 		}
 		for (int j = 0; j < _attachments.length(); j++) {
@@ -544,7 +549,7 @@ public class Ticket implements Serializable {
 				tekst += "bijlage " + (j + 1) + ": " + toonTijd(bijlage.getJSONObject(3)) + " - " + bijlage.getString(4) + " - "
 						+ bijlage.getString(0) + " - " + bijlage.getString(1) + "\n";
 			} catch (final JSONException e) {
-				tcLog.e(getClass().getName(),"toText atachment failed",e);
+				tcLog.e(getClass().getName(), "toText atachment failed", e);
 			}
 		}
 		return tekst;

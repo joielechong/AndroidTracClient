@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2013,2014 Michiel van Loon
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.mfvl.trac.client.util;
 
 import java.io.ByteArrayInputStream;
@@ -10,9 +26,6 @@ import java.util.Locale;
 
 import javax.security.auth.x500.X500Principal;
 
-import com.mfvl.trac.client.Const;
-
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -23,6 +36,8 @@ import android.content.pm.Signature;
 import android.os.Build;
 import android.os.Environment;
 
+import com.mfvl.trac.client.Const;
+
 public class Credentials {
 	private static String versie = null;
 	private static String _url = "";
@@ -32,13 +47,13 @@ public class Credentials {
 	private static boolean _sslHostNameHack = false;
 	private static String _profile = null;
 	private static SharedPreferences settings = null;
-	
+
 	private static void getSettings(final Context context) {
 		if (settings == null) {
 			settings = context.getSharedPreferences(Const.PREFS_NAME, 0);
 		}
 	}
-	
+
 	/**
 	 * Load login credentials from shared preferences: server-url, username,
 	 * password and profile
@@ -53,7 +68,7 @@ public class Credentials {
 		_sslHostNameHack = settings.getBoolean(Const.PREF_HNH, false);
 		_profile = settings.getString(Const.PREF_PROF, null);
 	}
-	
+
 	public static void reloadCredentials(final Context context) {
 		if (settings == null) {
 			loadCredentials(context);
@@ -175,7 +190,7 @@ public class Credentials {
 		tcLog.d("Credentials", "getSortString sortString = " + sortString);
 		return sortString;
 	}
-	
+
 	public static void removeSortString(Context context) {
 		tcLog.d("Credentials", "removeSortString");
 		getSettings(context);
@@ -204,9 +219,9 @@ public class Credentials {
 				}
 			}
 		} catch (final NameNotFoundException e) {
-				tcLog.i(ctx.getClass().getName(),"isDebuggable",e);
+			tcLog.i(ctx.getClass().getName(), "isDebuggable", e);
 		} catch (final CertificateException e) {
-				tcLog.i(ctx.getClass().getName(),"isDebuggable",e);
+			tcLog.i(ctx.getClass().getName(), "isDebuggable", e);
 		}
 		return debuggable;
 	}
@@ -220,28 +235,30 @@ public class Credentials {
 				info = manager.getPackageInfo(context.getPackageName(), 0);
 				versie = "V" + info.versionName;
 				final int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-				// tcLog.d(context.getClass().getName(), "buildVersion versie = " +
+				// tcLog.d(context.getClass().getName(),
+				// "buildVersion versie = " +
 				// versie + " api = " + currentapiVersion);
 				if (isDebuggable(context) && currentapiVersion >= android.os.Build.VERSION_CODES.GINGERBREAD) {
 					versie += "/" + info.lastUpdateTime / (1000 * 60);
 				}
 			} catch (final NameNotFoundException e) {
-				tcLog.i(context.getClass().getName(),"buildVersion",e);
+				tcLog.i(context.getClass().getName(), "buildVersion", e);
 				if (versie == null) {
 					versie = "V0.5.x";
 				}
 			}
 		}
-		// tcLog.d(context.getClass().getName(), "buildVersion versie = " + versie);
+		// tcLog.d(context.getClass().getName(), "buildVersion versie = " +
+		// versie);
 		return versie;
 	}
-	
+
 	public static boolean isRCVersion(Context context) {
 		buildVersion(context);
 		if (versie == null) {
 			return false;
 		}
-		return versie.toLowerCase(Locale.US).contains("rc");			
+		return versie.toLowerCase(Locale.US).contains("rc");
 	}
 
 	public static String makeDbPath(Context context, String dbname) {
@@ -259,7 +276,8 @@ public class Credentials {
 				dbpath = p1;
 			}
 		}
-		// tcLog.d(context.getClass().getName(), "makeDbPath dbpath = " + dbpath);
+		// tcLog.d(context.getClass().getName(), "makeDbPath dbpath = " +
+		// dbpath);
 		return dbpath;
 	}
 
