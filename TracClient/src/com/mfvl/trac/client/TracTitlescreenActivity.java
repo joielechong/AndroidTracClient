@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2013,2014 Michiel van Loon
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.mfvl.trac.client;
 
 import java.util.List;
@@ -50,30 +66,30 @@ public class TracTitlescreenActivity extends Activity {
 		tracker.activityStart(this);
 		boolean adMobAvailable = false;
 		try {
-			int isAvailable = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+			final int isAvailable = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
 			tcLog.d(getClass().getName(), "Google Play Services available? : " + isAvailable);
 			if (isAvailable == ConnectionResult.SUCCESS) {
 				adMobAvailable = true;
 			} else {
 				if (GooglePlayServicesUtil.isUserRecoverableError(isAvailable)) {
-					Dialog dialog = GooglePlayServicesUtil.getErrorDialog(isAvailable, this, 123456);
+					final Dialog dialog = GooglePlayServicesUtil.getErrorDialog(isAvailable, this, 123456);
 					dialog.show();
 				} else {
 					tcLog.d(getClass().getName(), "Hoe kom je hier");
 				}
 			}
-		} catch (Exception e) {
-			tcLog.e(getClass().getName(),"Exception while determining Google Play Services",e);
+		} catch (final Exception e) {
+			tcLog.e(getClass().getName(), "Exception while determining Google Play Services", e);
 		}
-		
+
 		final Intent launchTrac = new Intent(getApplicationContext(), TracStart.class);
-//		adMobAvailable=false;
-		launchTrac.putExtra("AdMob", adMobAvailable);
+		// adMobAvailable=false;
+		launchTrac.putExtra(Const.ADMOB, adMobAvailable);
 
 		String urlstring = null;
 
 		final Intent intent = getIntent();
-//		Integer ticket = -1;
+		// Integer ticket = -1;
 		if (Intent.ACTION_VIEW.equals(intent.getAction())) {
 			final String contentString = intent.getDataString();
 			// tcLog.d(getClass().getName(), "View intent data = " +
@@ -86,17 +102,19 @@ public class TracTitlescreenActivity extends Activity {
 				final int count = segments.size();
 				final String mustBeTicket = segments.get(count - 2);
 				if ("ticket".equals(mustBeTicket)) {
-					int ticket = Integer.parseInt(segments.get(count - 1));
+					final int ticket = Integer.parseInt(segments.get(count - 1));
 					for (final String segment : segments.subList(0, count - 2)) {
 						urlstring += segment + "/";
 					}
-					tracker.send(MapBuilder.createEvent("Startup", // Event category (required)
+					tracker.send(MapBuilder.createEvent("Startup", // Event
+																	// category
+																	// (required)
 							"URI start", // Event action (required)
 							urlstring, // Event label
 							(long) ticket) // Event value
 							.build());
-					launchTrac.putExtra("url", urlstring);
-					launchTrac.putExtra("ticket", (long) ticket);
+					launchTrac.putExtra(Const.INTENT_URL, urlstring);
+					launchTrac.putExtra(Const.INTENT_TICKET, (long) ticket);
 				} else {
 					tcLog.w(getClass().getName(), "View intent bad Url");
 					urlstring = null;
