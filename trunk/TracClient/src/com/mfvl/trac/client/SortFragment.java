@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2013,2014 Michiel van Loon
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.mfvl.trac.client;
 
 import java.util.ArrayList;
@@ -109,6 +125,9 @@ public class SortFragment extends TracClientFragment {
 		}
 	}
 
+	private final static String inputSpecText = "inputSpec";
+	private final static String outputSpecText = "outputSpec";
+
 	private TicketModel tm;
 	private ArrayList<SortSpec> inputSpec = null;
 	private SortAdapter sortAdapter = null;
@@ -116,8 +135,6 @@ public class SortFragment extends TracClientFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// tcLog.d(this.getClass().getName(), "onCreate" savedInstanceState =
-		// " + (savedInstanceState == null ? "null" : "not null"));
 		setHasOptionsMenu(true);
 	}
 
@@ -139,11 +156,11 @@ public class SortFragment extends TracClientFragment {
 		tcLog.d(getClass().getName(), "onActivityCreated savedInstanceState = "
 				+ (savedInstanceState == null ? "null" : "not null"));
 		if (savedInstanceState != null) {
-			if (savedInstanceState.containsKey("inputSpec")) {
-				inputSpec = (ArrayList<SortSpec>) savedInstanceState.getSerializable("inputSpec");
+			if (savedInstanceState.containsKey(inputSpecText)) {
+				inputSpec = (ArrayList<SortSpec>) savedInstanceState.getSerializable(inputSpecText);
 			}
-			if (savedInstanceState.containsKey("outputSpec")) {
-				outputSpec = (ArrayList<SortSpec>) savedInstanceState.getSerializable("outputSpec");
+			if (savedInstanceState.containsKey(outputSpecText)) {
+				outputSpec = (ArrayList<SortSpec>) savedInstanceState.getSerializable(outputSpecText);
 			}
 		}
 		final View view = getView();
@@ -220,14 +237,13 @@ public class SortFragment extends TracClientFragment {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" +
-		// item);
+		// tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" + item);
 		final int itemId = item.getItemId();
 		if (itemId == R.id.help) {
 			final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
 			final String filename = context.getString(R.string.sorthelpfile);
-			launchTrac.putExtra("file", filename);
-			launchTrac.putExtra("version", false);
+			launchTrac.putExtra(Const.HELP_FILE, filename);
+			launchTrac.putExtra(Const.HELP_VERSION, false);
 			startActivity(launchTrac);
 			return true;
 		} else {
@@ -246,13 +262,13 @@ public class SortFragment extends TracClientFragment {
 		tcLog.d(this.getClass().getName(), "onSaveInstanceState");
 		if (inputSpec != null) {
 			tcLog.d(this.getClass().getName(), "onSaveInstanceState inputSpec = " + inputSpec);
-			savedState.putSerializable("inputSpec", inputSpec);
+			savedState.putSerializable(inputSpecText, inputSpec);
 		}
 		if (sortAdapter != null) {
 			final ArrayList<SortSpec> outputSpec = sortAdapter.getArray();
 			if (outputSpec != null) {
 				tcLog.d(this.getClass().getName(), "onSaveInstanceState outputSpec = " + outputSpec);
-				savedState.putSerializable("outputSpec", outputSpec);
+				savedState.putSerializable(outputSpecText, outputSpec);
 			}
 		}
 		tcLog.d(this.getClass().getName(), "onSaveInstanceState = " + savedState);

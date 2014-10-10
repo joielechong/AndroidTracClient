@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2013,2014 Michiel van Loon
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.mfvl.trac.client;
 
 import java.util.ArrayList;
@@ -35,7 +51,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 	private JSONArray _actions = null;
 	private int ticknr;
 	private Boolean sissaved = false;
-	
+
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
@@ -49,8 +65,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " +
-		// (savedInstanceState == null ? "null" : "not null"));
+		// tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " + savedInstanceState );
 		setHasOptionsMenu(true);
 	}
 
@@ -62,8 +77,8 @@ public class UpdateTicketFragment extends TracClientFragment {
 		final View view = inflater.inflate(R.layout.update_view, container, false);
 		return view;
 	}
-	
-	private void displayView(final int checkedButton, final int spinPosition,final String optionVal) {
+
+	private void displayView(final int checkedButton, final int spinPosition, final String optionVal) {
 		final View view = getView();
 		final TextView tv = (TextView) view.findViewById(R.id.titel);
 		final String text = context.getString(R.string.updtick) + " " + _ticket;
@@ -84,7 +99,8 @@ public class UpdateTicketFragment extends TracClientFragment {
 				final Spinner optiesSpin = (Spinner) view.findViewById(R.id.opties);
 				final EditText optieval = (EditText) view.findViewById(R.id.optieval);
 				final JSONArray inputfields = actie.getJSONArray(3);
-				// tcLog.d(this.getClass().getName(), "inputfields = " + inputfields);
+				// tcLog.d(this.getClass().getName(), "inputfields = " +
+				// inputfields);
 				rb.setId(i);
 				if (i == 0) {
 					rb.setChecked(true);
@@ -120,7 +136,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 										} else {
 											optieval.setVisibility(View.GONE);
 											optieval.setText(null);
-										}	
+										}
 									} else {
 										optieval.setVisibility(View.GONE);
 										optieval.setText(null);
@@ -130,7 +146,8 @@ public class UpdateTicketFragment extends TracClientFragment {
 											try {
 												opties.add(ifOpties.getString(j));
 											} catch (final JSONException e) {
-												tcLog.e(getClass().getName(),"displayView exception adding "+ifOpties+" j="+j,e);
+												tcLog.e(getClass().getName(), "displayView exception adding " + ifOpties + " j="
+														+ j, e);
 											}
 										}
 										final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<Object>(context,
@@ -142,7 +159,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 										}
 									}
 								} catch (final Exception e) {
-									tcLog.e(getClass().getName(),"displayView exception getting fields",e);
+									tcLog.e(getClass().getName(), "displayView exception getting fields", e);
 								}
 							}
 							view.postInvalidate();
@@ -152,9 +169,9 @@ public class UpdateTicketFragment extends TracClientFragment {
 				rg.addView(rb);
 			}
 		} catch (final Exception e) {
-			tcLog.e(getClass().getName(),"displayView exception loading ticketdata",e);
+			tcLog.e(getClass().getName(), "displayView exception loading ticketdata", e);
 		}
-		tcLog.d(getClass().getName(),"displayView currentButton = "+checkedButton);
+		tcLog.d(getClass().getName(), "displayView currentButton = " + checkedButton);
 		rg.check(checkedButton);
 	}
 
@@ -163,9 +180,9 @@ public class UpdateTicketFragment extends TracClientFragment {
 		final int button;
 		final String optionVal;
 		final int spinPosition;
-		
+
 		super.onActivityCreated(savedInstanceState);
-		tcLog.d(this.getClass().getName(),"onActivityCreated savedInstanceState = "+savedInstanceState);
+		tcLog.d(this.getClass().getName(), "onActivityCreated savedInstanceState = " + savedInstanceState);
 		if (savedInstanceState != null) {
 			if (savedInstanceState.containsKey(Const.CURRENT_TICKET)) {
 				ticknr = savedInstanceState.getInt(Const.CURRENT_TICKET);
@@ -173,17 +190,17 @@ public class UpdateTicketFragment extends TracClientFragment {
 			if (savedInstanceState.containsKey(Const.UPDATE_OPTION_VAL)) {
 				optionVal = savedInstanceState.getString(Const.UPDATE_OPTION_VAL);
 			} else {
-				optionVal  = null;
+				optionVal = null;
 			}
 			if (savedInstanceState.containsKey(Const.UPDATE_SPIN_POSITION)) {
 				spinPosition = savedInstanceState.getInt(Const.UPDATE_SPIN_POSITION);
 			} else {
-				spinPosition  = 0;
+				spinPosition = 0;
 			}
 			if (savedInstanceState.containsKey(Const.UPDATE_CURRENT_BUTTON)) {
 				button = savedInstanceState.getInt(Const.UPDATE_CURRENT_BUTTON);
 			} else {
-				button  = 0;
+				button = 0;
 			}
 		} else {
 			button = 0;
@@ -192,16 +209,16 @@ public class UpdateTicketFragment extends TracClientFragment {
 		}
 		_ticket = listener.getTicket(ticknr);
 		if (_ticket != null) {
-			displayView(button,spinPosition,optionVal);
+			displayView(button, spinPosition, optionVal);
 		} else {
-			_ticket = new Ticket(ticknr,context,new onTicketCompleteListener() {
+			_ticket = new Ticket(ticknr, context, new onTicketCompleteListener() {
 				@Override
 				public void onComplete(Ticket ticket) {
 					context.runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
 							listener.putTicket(_ticket);
-							displayView(button,spinPosition,optionVal);
+							displayView(button, spinPosition, optionVal);
 						}
 					});
 				}
@@ -215,8 +232,8 @@ public class UpdateTicketFragment extends TracClientFragment {
 			@Override
 			public void onClick(View v1) {
 				synchronized (sissaved) {
-				if ( !sissaved) {
-					getFragmentManager().popBackStackImmediate();
+					if (!sissaved) {
+						getFragmentManager().popBackStackImmediate();
 					}
 				}
 			}
@@ -237,7 +254,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 				final Spinner optiesSpin = (Spinner) view.findViewById(R.id.opties);
 				final EditText optieVal = (EditText) view.findViewById(R.id.optieval);
 				if (currentActionName != null) {
-					if (optieVal.getText() != null && !"".equals(optieVal.getText())) {
+					if (!"".equals(optieVal.getText())) {
 						w = optieVal.getText().toString();
 					}
 					if (optiesSpin.getAdapter() != null) {
@@ -257,8 +274,8 @@ public class UpdateTicketFragment extends TracClientFragment {
 								@Override
 								public void run() {
 									synchronized (sissaved) {
-										if ( !sissaved) {
-											FragmentManager fm = getFragmentManager();
+										if (!sissaved) {
+											final FragmentManager fm = getFragmentManager();
 											if (fm != null) {
 												getFragmentManager().popBackStackImmediate();
 											}
@@ -267,7 +284,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 								}
 							});
 						} catch (final Exception e) {
-							tcLog.i(getClass().getName(),"update failed",e);
+							tcLog.i(getClass().getName(), "update failed", e);
 							context.runOnUiThread(new Runnable() {
 								@Override
 								public void run() {
@@ -295,7 +312,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 			}
 		});
 	}
-	
+
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -312,13 +329,13 @@ public class UpdateTicketFragment extends TracClientFragment {
 		if (itemId == R.id.help) {
 			final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
 			final String filename = context.getString(R.string.updatehelpfile);
-			launchTrac.putExtra("file", filename);
-			launchTrac.putExtra("version", false);
+			launchTrac.putExtra(Const.HELP_FILE, filename);
+			launchTrac.putExtra(Const.HELP_VERSION, false);
 			startActivity(launchTrac);
-			return true;
 		} else {
 			return super.onOptionsItemSelected(item);
 		}
+		return true;
 	}
 
 	@Override
@@ -328,23 +345,23 @@ public class UpdateTicketFragment extends TracClientFragment {
 			if (_ticket != null) {
 				savedState.putInt(Const.CURRENT_TICKET, _ticket.getTicketnr());
 			}
-			View view = getView();
+			final View view = getView();
 			if (view != null) {
 				final RadioGroup rg = (RadioGroup) view.findViewById(R.id.actionblock);
 				if (rg != null) {
-					savedState.putInt(Const.UPDATE_CURRENT_BUTTON,rg.getCheckedRadioButtonId());
+					savedState.putInt(Const.UPDATE_CURRENT_BUTTON, rg.getCheckedRadioButtonId());
 				}
 				final Spinner optiesSpin = (Spinner) view.findViewById(R.id.opties);
 				if (optiesSpin != null) {
-					savedState.putInt(Const.UPDATE_SPIN_POSITION,optiesSpin.getSelectedItemPosition());
+					savedState.putInt(Const.UPDATE_SPIN_POSITION, optiesSpin.getSelectedItemPosition());
 				}
 				final EditText optieVal = (EditText) view.findViewById(R.id.optieval);
 				if (optieVal != null) {
-					savedState.putString(Const.UPDATE_OPTION_VAL,optieVal.getText().toString());
+					savedState.putString(Const.UPDATE_OPTION_VAL, optieVal.getText().toString());
 				}
 			}
 			sissaved = true;
-			tcLog.d(this.getClass().getName(), "onSaveInstanceState, savedState = "+savedState);
+			tcLog.d(this.getClass().getName(), "onSaveInstanceState, savedState = " + savedState);
 		}
 	}
 }

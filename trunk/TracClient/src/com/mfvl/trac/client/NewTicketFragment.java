@@ -1,4 +1,22 @@
+/*
+ * Copyright (C) 2013,2014 Michiel van Loon
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.mfvl.trac.client;
+
+import java.util.Arrays;
 
 import org.json.JSONObject;
 
@@ -60,14 +78,13 @@ public class NewTicketFragment extends TracClientFragment {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" +
-		// item.getTitle());
+		// tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" + item.getTitle());
 		final int itemId = item.getItemId();
 		if (itemId == R.id.help) {
 			final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
 			final String filename = context.getString(R.string.newhelpfile);
-			launchTrac.putExtra("file", filename);
-			launchTrac.putExtra("version", false);
+			launchTrac.putExtra(Const.HELP_FILE, filename);
+			launchTrac.putExtra(Const.HELP_VERSION, false);
 			startActivity(launchTrac);
 		} else {
 			return super.onOptionsItemSelected(item);
@@ -101,13 +118,14 @@ public class NewTicketFragment extends TracClientFragment {
 		try {
 			View e = view.findViewById(R.id.waarde);
 			final LayoutParams lp = e.getLayoutParams();
+			String[] ignoreFields = getResources().getStringArray(R.array.ignorecreatefields);
+
 			for (int i = 0; i < tm.count(); i++) {
 				View v = null;
 				final TicketModelVeld veld = tm.getVeld(i);
 				final String veldnaam = veld.label();
 				int extra = 0;
-				if (veldnaam.equals("Resolution") || veldnaam.equals("Status") || veldnaam.equals("Reporter")
-						|| veldnaam.equals("Owner") || veldnaam.equals("Created") || veldnaam.equals("Modified")) {
+				if (Arrays.asList(ignoreFields).contains(veldnaam)) {
 					// ignore these fields so v stays null
 				} else if (veld.options() != null) {
 					v = makeComboSpin(context, veldnaam, veld.options(), veld.optional(), veld.value());
@@ -165,7 +183,7 @@ public class NewTicketFragment extends TracClientFragment {
 									w = tl.findViewById(i + 300 + EXTRA);
 									if (w != null) {
 										final String s = ((EditText) w).getText().toString();
-										if (s != null && !s.equals("")) {
+										if (!"".equals(s)) {
 											velden.put(veldnaam, s);
 										}
 									}
@@ -212,7 +230,7 @@ public class NewTicketFragment extends TracClientFragment {
 									final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
 									alertDialogBuilder.setTitle(R.string.storerr);
 									final String message = e.getMessage();
-									if (message == null || message.equals("")) {
+									if (message == null || "".equals(message)) {
 										alertDialogBuilder.setMessage(R.string.storerrdesc);
 									} else {
 										alertDialogBuilder.setMessage(message);

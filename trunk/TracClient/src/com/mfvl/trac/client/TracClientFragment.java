@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2013,2014 Michiel van Loon
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.mfvl.trac.client;
 
 import java.util.ArrayList;
@@ -14,6 +30,7 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.ArrayAdapter;
@@ -24,7 +41,6 @@ import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Fields;
 import com.google.analytics.tracking.android.MapBuilder;
 import com.google.android.gms.ads.AdRequest;
-
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.mfvl.trac.client.util.Credentials;
@@ -38,7 +54,7 @@ public class TracClientFragment extends Fragment {
 	public boolean _sslHack = false;
 	public boolean _sslHostNameHack = false;
 	public TracStart context;
-	private AdView adView = null;
+	private final AdView adView = null;
 	public InterFragmentListener listener = null;
 	private EasyTracker tracker;
 	private boolean adsVisible = true;
@@ -60,8 +76,8 @@ public class TracClientFragment extends Fragment {
 			_url = args.getString(Const.CURRENT_URL);
 			_username = args.getString(Const.CURRENT_USERNAME);
 			_password = args.getString(Const.CURRENT_PASSWORD);
-			_sslHack = args.getBoolean("sslHack", false);
-			_sslHostNameHack = args.getBoolean("sslHostNameHack", false);
+			_sslHack = args.getBoolean(Const.CURRENT_SSLHACK, false);
+			_sslHostNameHack = args.getBoolean(Const.CURRENT_SSLHOSTNAMEHACK, false);
 		}
 	}
 
@@ -71,39 +87,38 @@ public class TracClientFragment extends Fragment {
 		tcLog.d(getClass().getName() + ".super", "onCreate savedInstanceState = "
 				+ (savedInstanceState == null ? "null" : "not null"));
 		if (savedInstanceState != null) {
-			_url = savedInstanceState.getString("currentURL");
-			_username = savedInstanceState.getString("currentUsername");
-			_password = savedInstanceState.getString("currentPassword");
-			_sslHack = savedInstanceState.getBoolean("sslHack", false);
-			_sslHostNameHack = savedInstanceState.getBoolean("sslHostNameHack", false);
+			_url = savedInstanceState.getString(Const.CURRENT_URL);
+			_username = savedInstanceState.getString(Const.CURRENT_USERNAME);
+			_password = savedInstanceState.getString(Const.CURRENT_PASSWORD);
+			_sslHack = savedInstanceState.getBoolean(Const.CURRENT_SSLHACK, false);
+			_sslHostNameHack = savedInstanceState.getBoolean(Const.CURRENT_SSLHOSTNAMEHACK, false);
 		}
 		Bundle aBundle;
 		try {
-			ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
-			aBundle=ai.metaData;
+			final ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(),
+					PackageManager.GET_META_DATA);
+			aBundle = ai.metaData;
 			if (aBundle == null) {
 				listener.setDispAds(false);
 			} else {
-				adUnitId=aBundle.getString("com.mfvl.trac.client.adUnitId");
-				String t=aBundle.getString("com.mfvl.trac.client.testDevices");
+				adUnitId = aBundle.getString("com.mfvl.trac.client.adUnitId");
+				final String t = aBundle.getString("com.mfvl.trac.client.testDevices");
 				try {
-					testDevices=t.split("\\,");
+					testDevices = t.split("\\,");
 				} catch (final IllegalArgumentException e) {
 					testDevices = new String[1];
 					testDevices[0] = t;
 				}
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			aBundle = null;
 			listener.setDispAds(false);
-			adUnitId="";
+			adUnitId = "";
 			testDevices = new String[1];
-			testDevices[0]="";
+			testDevices[0] = "";
 		}
-//		tcLog.d(getClass().getName() + ".super", "onCreate adUnitId = "+adUnitId);
-//		tcLog.d(getClass().getName() + ".super", "onCreate testDevices = "+Arrays.asList(testDevices));
 	}
-	
+
 	@Override
 	public void onViewCreated(final View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
@@ -122,8 +137,8 @@ public class TracClientFragment extends Fragment {
 				if (adView != null && arb != null) {
 					if (Credentials.isDebuggable(context)) {
 						arb.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
-						for (String t:testDevices) {
-							tcLog.d(getClass().getName() + ".super", "onViewCreated testDevice = "+t);
+						for (final String t : testDevices) {
+							tcLog.d(getClass().getName() + ".super", "onViewCreated testDevice = " + t);
 							arb.addTestDevice(t);
 						}
 					}
@@ -131,11 +146,14 @@ public class TracClientFragment extends Fragment {
 					final AdRequest adRequest = arb.build();
 
 					if (adRequest != null) {
-						adView.loadAd(adRequest);
-						adView.setLayoutParams(ll.getLayoutParams());
-						// tcLog.d(getClass().getName(), "adView size = " +
-						// adView.getHeight());
-						ll.addView(adView);
+						try {
+							adView.loadAd(adRequest);
+							adView.setLayoutParams(ll.getLayoutParams());
+							// tcLog.d(getClass().getName(), "adView size = " +adView.getHeight());
+							ll.addView(adView);
+						} catch (Exception e) {
+							listener.setDispAds(false);
+						}
 					}
 				}
 				if (activityRootView != null && aboveView != null) {
@@ -147,28 +165,36 @@ public class TracClientFragment extends Fragment {
 					activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
 						@Override
 						public void onGlobalLayout() {
-							Rect r = new Rect();
-							//r will be populated with the coordinates of your view that area still visible.
+							final ActionBar ab = context.getSupportActionBar();
+							final Rect r = new Rect();
+							// r will be populated with the coordinates of your
+							// view that area still visible.
 							activityRootView.getWindowVisibleDisplayFrame(r);
 
-							int heightDiff = activityRootView.getRootView().getHeight() - (r.bottom - r.top);
-//							tcLog.d(getClass().getName(),"OnGlobalLayout heightDiff = "+ heightDiff);
-//							tcLog.d(getClass().getName(),"OnGlobalLayout r = "+ r);
-							if (heightDiff > 100) { // if more than 100 pixels, its probably a keyboard...
+							final int heightDiff = activityRootView.getRootView().getHeight() - (r.bottom - r.top);
+							// tcLog.d(getClass().getName(),"OnGlobalLayout heightDiff = "+
+							// heightDiff);
+							// tcLog.d(getClass().getName(),"OnGlobalLayout r = "+
+							// r);
+							if (heightDiff > 100) { // if more than 100 pixels,
+													// its probably a
+													// keyboard...
 								if (adsVisible) {
 									ll.setVisibility(View.GONE);
-									aboveView.setPadding(padLeft,padTop,padRight,0);
+									aboveView.setPadding(padLeft, padTop, padRight, 0);
 									adsVisible = false;
 								}
+								ab.hide();
 							} else {
-								if (! adsVisible) {
+								if (!adsVisible) {
 									ll.setVisibility(View.VISIBLE);
-									aboveView.setPadding(padLeft,padTop,padRight,padBot);
+									aboveView.setPadding(padLeft, padTop, padRight, padBot);
 									adsVisible = true;
 								}
+								ab.show();
 							}
 						}
-					}); 
+					});
 				}
 			}
 		} else {
@@ -183,20 +209,19 @@ public class TracClientFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		tcLog.d(getClass().getName() + ".super", "onActivityCreated savedInstanceState = "
-				+ (savedInstanceState == null ? "null" : "not null"));
+		tcLog.d(getClass().getName() + ".super", "onActivityCreated savedInstanceState = "+ savedInstanceState);
 		tracker = EasyTracker.getInstance(context);
 	}
-	
+
 	@Override
 	public void onSaveInstanceState(Bundle savedState) {
 		super.onSaveInstanceState(savedState);
 		tcLog.d(getClass().getName() + ".super", "onSaveInstanceState");
-		savedState.putString("currentURL", _url);
-		savedState.putString("currentUsername", _username);
-		savedState.putString("currentPassword", _password);
-		savedState.putBoolean("sslHack", _sslHack);
-		savedState.putBoolean("sslHostNameHack", _sslHostNameHack);
+		savedState.putString(Const.CURRENT_URL, _url);
+		savedState.putString(Const.CURRENT_USERNAME, _username);
+		savedState.putString(Const.CURRENT_PASSWORD, _password);
+		savedState.putBoolean(Const.CURRENT_SSLHACK, _sslHack);
+		savedState.putBoolean(Const.CURRENT_SSLHOSTNAMEHACK, _sslHostNameHack);
 		tcLog.d(this.getClass().getName() + ".super", "onSaveInstanceState = " + savedState);
 	}
 
@@ -318,6 +343,7 @@ public class TracClientFragment extends Fragment {
 	protected Spinner makeComboSpin(Context context, final String veldnaam, List<Object> waardes, boolean optional, Object w) {
 		return _makeComboSpin(context, veldnaam, waardes, optional, w, false);
 	}
+
 	protected void selectTicket(int ticknr) {
 		tcLog.d(this.getClass().getName(), "selectTicket = " + ticknr);
 		final Ticket t = listener.getTicket(ticknr);

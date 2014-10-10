@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2013,2014 Michiel van Loon
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.mfvl.trac.client.util;
 
 import java.io.BufferedInputStream;
@@ -56,7 +72,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 
 		@Override
 		public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException,
-				RuntimeException {
+		RuntimeException {
 
 			if (localName.equals(_appname) && state == 0) {
 				state++;
@@ -66,12 +82,12 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 				if (_pdb.delProfiles() == -1) {
 					throw new RuntimeException("delProfiles mislukt");
 				}
-			} else if (localName.equals("profile") && state == 2) {
+			} else if ("profile".equals(localName) && state == 2) {
 				state++;
 				lp = new LoginProfile(attributes.getValue(ProfileDatabaseHelper.URL_ID),
 						attributes.getValue(ProfileDatabaseHelper.USERNAME_ID),
-						attributes.getValue(ProfileDatabaseHelper.PASSWORD_ID), attributes.getValue(
-								ProfileDatabaseHelper.SSLHACK_ID).equals("1"));
+						attributes.getValue(ProfileDatabaseHelper.PASSWORD_ID), 
+						"1".equals(attributes.getValue(ProfileDatabaseHelper.SSLHACK_ID)));
 				profileName = attributes.getValue(ProfileDatabaseHelper.NAME_ID);
 			}
 		}
@@ -83,7 +99,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 			} else if (localName.equals(ProfileDatabaseHelper.TABLE_NAME) && state == 2) {
 				_pdb.endTransaction();
 				state--;
-			} else if (localName.equals("profile") && state == 3) {
+			} else if ("profile".equals(localName) && state == 3) {
 				_pdb.addProfile(profileName, lp);
 				state--;
 			}
