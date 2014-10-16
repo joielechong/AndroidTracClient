@@ -31,14 +31,14 @@
         android:orientation="horizontal" >
 
         <Button
-            android:id="@+id/cancel"
+            android:id="@+id/cancelpw"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:text="@string/cancel" />
 
         <Button
-            android:id="@+id/storebutton"
+            android:id="@+id/storepw"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"

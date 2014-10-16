@@ -5,14 +5,13 @@ import android.app.Application;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.analytics.Logger;
-import com.google.android.gms.analytics.Logger.LogLevel;
 
 import java.util.HashMap;
 import com.mfvl.trac.client.util.tcLog;
  
 public class TracClient extends Application {
 
-	private class MyLogger implements Logger {
+	private class MyLogger extends tcLog implements Logger {
 		private int _l = 0;
 		private String _tag = "";
 		
@@ -22,27 +21,27 @@ public class TracClient extends Application {
 	
 		@Override
 		public void error (String s) {
-			tcLog.e(_tag,s);
+			super.e(_tag,s);
 		}
 		
 		@Override
 		public void error (Exception e) {
-			tcLog.e(_tag,e);
+			super.e(_tag,e);
 		}
 		
 		@Override
 		public void info (String s) {
-			tcLog.i(_tag,s);
+			super.i(_tag,s);
 		}
 		
 		@Override
 		public void verbose (String s) {
-			tcLog.v(_tag,s);
+			super.v(_tag,s);
 		}
 		
 		@Override
 		public void warn (String s) {
-			tcLog.w(_tag,s);
+			super.w(_tag,s);
 		}
 		
 		@Override
@@ -52,7 +51,7 @@ public class TracClient extends Application {
 		
 		@Override
 		public void setLogLevel (int l) {
-			tcLog.d(getClass().getName(),"LogLevel set to "+l);
+			super.d(getClass().getName(),"LogLevel set to "+l);
 			_l =l;
 		}
 		

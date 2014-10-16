@@ -47,8 +47,21 @@ public class Credentials {
 	private static boolean _sslHostNameHack = false;
 	private static String _profile = null;
 	private static SharedPreferences settings = null;
+    private static Credentials _instance = null;
+	
+	private Credentials() {
+	}
+	
+    public static Credentials getInstance()
+    {
+        if (_instance == null)
+        {
+            _instance = new Credentials();
+        }
+        return _instance;
+    }
 
-	private static void getSettings(final Context context) {
+	private void getSettings(final Context context) {
 		if (settings == null) {
 			settings = context.getSharedPreferences(Const.PREFS_NAME, 0);
 		}
@@ -58,7 +71,7 @@ public class Credentials {
 	 * Load login credentials from shared preferences: server-url, username,
 	 * password and profile
 	 */
-	public static void loadCredentials(final Context context) {
+	public void loadCredentials(final Context context) {
 		// tcLog.d("Credentials", "loadCredentials");
 		getSettings(context);
 		_url = settings.getString(Const.PREF_URL, "");
@@ -69,7 +82,7 @@ public class Credentials {
 		_profile = settings.getString(Const.PREF_PROF, null);
 	}
 
-	public static void reloadCredentials(final Context context) {
+	public  void reloadCredentials(final Context context) {
 		if (settings == null) {
 			loadCredentials(context);
 		}
@@ -79,7 +92,7 @@ public class Credentials {
 	 * Store login credentials to shared preferences: server-url, username,
 	 * password and profile
 	 */
-	public static void storeCredentials(final Context context) {
+	public  void storeCredentials(final Context context) {
 		// tcLog.d("Credentials", "storeCredentials");
 		getSettings(context);
 		final SharedPreferences.Editor editor = settings.edit();
@@ -95,7 +108,7 @@ public class Credentials {
 	}
 
 	/** Set login credentials server-url, username, password and profile */
-	public static void setCredentials(final String url, final String username, final String password, final String profile) {
+	public void setCredentials(final String url, final String username, final String password, final String profile) {
 		// tcLog.d("Credentials", "setCredentials");
 		_url = url;
 		_username = username;
@@ -103,43 +116,43 @@ public class Credentials {
 		_profile = profile;
 	}
 
-	public static String getUrl() {
+	public String getUrl() {
 		return _url;
 	}
 
-	public static String getUsername() {
+	public String getUsername() {
 		return _username;
 	}
 
-	public static String getPassword() {
+	public String getPassword() {
 		return _password;
 	}
 
-	public static void setSslHack(boolean sslHack) {
+	public void setSslHack(boolean sslHack) {
 		_sslHack = sslHack;
 	}
 
-	public static boolean getSslHack() {
+	public boolean getSslHack() {
 		return _sslHack;
 	}
 
-	public static void setSslHostNameHack(boolean sslHostNameHack) {
+	public void setSslHostNameHack(boolean sslHostNameHack) {
 		_sslHostNameHack = sslHostNameHack;
 	}
 
-	public static boolean getSslHostNameHack() {
+	public boolean getSslHostNameHack() {
 		return _sslHostNameHack;
 	}
 
-	public static void setProfile(String profile) {
+	public void setProfile(String profile) {
 		_profile = profile;
 	}
 
-	public static String getProfile() {
+	public String getProfile() {
 		return _profile;
 	}
 
-	public static boolean getFirstRun(Context context) {
+	public boolean getFirstRun(Context context) {
 		// tcLog.d("Credentials", "getFirstRun");
 		getSettings(context);
 		final String thisRun = buildVersion(context);
@@ -151,7 +164,7 @@ public class Credentials {
 		return !lastRun.equals(thisRun);
 	}
 
-	public static void storeFilterString(Context context, final String filterString) {
+	public void storeFilterString(Context context, final String filterString) {
 		tcLog.d("Credentials", "storeFilterString: " + filterString);
 		getSettings(context);
 		final SharedPreferences.Editor editor = settings.edit();
@@ -159,7 +172,7 @@ public class Credentials {
 		editor.commit();
 	}
 
-	public static String getFilterString(Context context) {
+	public String getFilterString(Context context) {
 		// tcLog.d("Credentials", "getFilterString");
 		getSettings(context);
 		final String filterString = settings.getString(Const.PREF_FILTER, "max=500&status!=closed");
@@ -167,7 +180,7 @@ public class Credentials {
 		return filterString;
 	}
 
-	public static void removeFilterString(Context context) {
+	public void removeFilterString(Context context) {
 		tcLog.d("Credentials", "removeFilterString");
 		getSettings(context);
 		final SharedPreferences.Editor editor = settings.edit();
@@ -175,7 +188,7 @@ public class Credentials {
 		editor.commit();
 	}
 
-	public static void storeSortString(Context context, final String sortString) {
+	public void storeSortString(Context context, final String sortString) {
 		tcLog.d("Credentials", "storeSortString: " + sortString);
 		getSettings(context);
 		final SharedPreferences.Editor editor = settings.edit();
@@ -183,7 +196,7 @@ public class Credentials {
 		editor.commit();
 	}
 
-	public static String getSortString(Context context) {
+	public String getSortString(Context context) {
 		// tcLog.d("Credentials", "getSortString");
 		getSettings(context);
 		final String sortString = settings.getString(Const.PREF_SORT, "order=priority&order=modified&desc=1");
@@ -191,7 +204,7 @@ public class Credentials {
 		return sortString;
 	}
 
-	public static void removeSortString(Context context) {
+	public void removeSortString(Context context) {
 		tcLog.d("Credentials", "removeSortString");
 		getSettings(context);
 		final SharedPreferences.Editor editor = settings.edit();
@@ -201,7 +214,7 @@ public class Credentials {
 
 	private static final X500Principal DEBUG_DN = new X500Principal("CN=Android Debug,O=Android,C=US");
 
-	public static boolean isDebuggable(Context ctx) {
+	public boolean isDebuggable(Context ctx) {
 		boolean debuggable = false;
 
 		try {
@@ -227,7 +240,7 @@ public class Credentials {
 	}
 
 	@TargetApi(Build.VERSION_CODES.GINGERBREAD)
-	public static String buildVersion(Context context) {
+	public String buildVersion(Context context) {
 		final PackageManager manager = context.getPackageManager();
 		PackageInfo info;
 		if (versie == null) {
@@ -244,7 +257,7 @@ public class Credentials {
 			} catch (final NameNotFoundException e) {
 				tcLog.i(context.getClass().getName(), "buildVersion", e);
 				if (versie == null) {
-					versie = "V0.5.x";
+					versie = "V0.6.x";
 				}
 			}
 		}
@@ -253,7 +266,7 @@ public class Credentials {
 		return versie;
 	}
 
-	public static boolean isRCVersion(Context context) {
+	public boolean isRCVersion(Context context) {
 		buildVersion(context);
 		if (versie == null) {
 			return false;
@@ -261,7 +274,7 @@ public class Credentials {
 		return versie.toLowerCase(Locale.US).contains("rc");
 	}
 
-	public static String makeDbPath(Context context, String dbname) {
+	public String makeDbPath(Context context, String dbname) {
 		final File extpath = Environment.getExternalStorageDirectory();
 
 		String dbpath = dbname;
@@ -281,7 +294,7 @@ public class Credentials {
 		return dbpath;
 	}
 
-	public static String makeExtFilePath(String filename) throws FileNotFoundException {
+	public String makeExtFilePath(String filename) throws FileNotFoundException {
 		final File extpath = Environment.getExternalStorageDirectory();
 
 		final String filePath = extpath.toString() + "/TracClient/" + filename;

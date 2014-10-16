@@ -95,7 +95,9 @@ public class RefreshService extends Service {
 							final NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(RefreshService.this)
 							.setSmallIcon(R.drawable.traclogo)
 							.setContentTitle(RefreshService.this.getString(R.string.notifmod))
-							.setContentText(RefreshService.this.getString(R.string.foundnew) + " " + newTickets)
+							.setTicker(RefreshService.this.getString(R.string.foundnew))
+							.setContentText(RefreshService.this.getString(R.string.foundnew))
+							.setSubText(newTickets.toString())
 							.setContentIntent(pendingIntent);
 							final Notification notification = mBuilder.build();
 							notification.flags |= Notification.FLAG_AUTO_CANCEL;
@@ -132,7 +134,7 @@ public class RefreshService extends Service {
 		// main thread, which we don't want to block. We also make it
 		// background priority so CPU-intensive work will not disrupt our UI.
 		// tcLog.d(this.getClass().getName(), "onCreate");
-		mHandlerThread = new HandlerThread("ServiceStartArguments", Process.THREAD_PRIORITY_BACKGROUND);
+		mHandlerThread = new HandlerThread("ServiceHandler", Process.THREAD_PRIORITY_BACKGROUND);
 		mHandlerThread.start();
 
 		// Get the HandlerThread's Looper and use it for our Handler
@@ -142,8 +144,7 @@ public class RefreshService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		// tcLog.d(this.getClass().getName(), "onStartCommand intent = " +
-		// intent);
+		// tcLog.d(this.getClass().getName(), "onStartCommand intent = " + intent);
 
 		// For each start request, send a message to start a job and deliver the
 		// start ID so we know which request we're stopping when we finish the

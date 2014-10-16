@@ -28,7 +28,6 @@ import android.widget.TextView;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.HitBuilders.EventBuilder;
 import com.google.android.gms.analytics.Tracker;
 
 import com.mfvl.trac.client.util.Credentials;
@@ -41,7 +40,8 @@ public class TracShowWebPage extends Activity {
 		// savedInstanceState);
 		super.onCreate(savedInstanceState);
 		//Get a Tracker (should auto-report)
-		((TracClient) getApplication()).getTracker(Const.TrackerName.APP_TRACKER);
+		Tracker t = ((TracClient) getApplication()).getTracker(Const.TrackerName.APP_TRACKER);
+                t.setScreenName(getClass().getName());
 		final Intent i = this.getIntent();
 		final boolean toonVersie = i.getBooleanExtra(Const.HELP_VERSION, true);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -57,10 +57,9 @@ public class TracShowWebPage extends Activity {
 			tv1.setVisibility(View.GONE);
 			tv2.setVisibility(View.GONE);
 		} else {
-			final String versie = Credentials.buildVersion(this);
+			final String versie = Credentials.getInstance().buildVersion(this);
 			tv.setText(versie);
 		}
-		Tracker t = ((TracClient) getApplication()).getTracker(Const.TrackerName.APP_TRACKER);
 		// Build and send an Event.
 		t.send(new HitBuilders.EventBuilder()
 			.setCategory("Normal")
@@ -68,6 +67,7 @@ public class TracShowWebPage extends Activity {
 			.setLabel(filename)
 			.build());
 		final WebView wv = (WebView) findViewById(R.id.webfile);
+		wv.getSettings().setJavaScriptEnabled(true);
 		wv.setWebViewClient(new WebViewClient());
 		wv.loadUrl(filename);
 	}

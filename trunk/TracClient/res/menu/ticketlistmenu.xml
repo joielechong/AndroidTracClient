@@ -19,6 +19,13 @@
         android:menuCategory="container"
         android:title="@string/changehost"/>
     <item
+        android:id="@+id/tlshare"
+        android:icon="@android:drawable/ic_menu_share"
+        android:menuCategory="container"
+        android:title="@string/tlshare"
+        myapp:actionProviderClass="android.support.v7.widget.ShareActionProvider"
+        myapp:showAsAction="ifRoom"/>
+    <item
         android:id="@+id/tlzoek"
         android:icon="@android:drawable/ic_menu_search"
         android:menuCategory="container"
@@ -38,12 +45,5 @@
         android:id="@+id/tlselect"
         android:menuCategory="container"
         android:title="@string/selectticket"/>
-    <item
-        android:id="@+id/tlshare"
-        android:icon="@android:drawable/ic_menu_share"
-        android:menuCategory="container"
-        android:title="@string/tlshare"
-        myapp:actionProviderClass="android.support.v7.widget.ShareActionProvider"
-        myapp:showAsAction="ifRoom"/>
 
 </menu> 

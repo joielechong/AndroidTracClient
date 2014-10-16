@@ -15,10 +15,11 @@
         android:menuCategory="container"
         android:title="@string/showempty"/>
     <item
-        android:id="@+id/dfupdate"
-        android:icon="@android:drawable/ic_menu_edit"
+        android:id="@+id/dfshare"
+        android:icon="@android:drawable/ic_menu_share"
         android:menuCategory="container"
-        android:title="@string/updateticket"
+        android:title="@string/dfshare"
+        myapp:actionProviderClass="android.support.v7.widget.ShareActionProvider"
         myapp:showAsAction="ifRoom"/>
     <item
         android:id="@+id/dfattach"
@@ -27,15 +28,14 @@
         android:title="@string/attach"
         myapp:showAsAction="ifRoom"/>
     <item
+        android:id="@+id/dfupdate"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:menuCategory="container"
+        android:title="@string/updateticket"
+        myapp:showAsAction="ifRoom"/>
+    <item
         android:id="@+id/dfselect"
         android:menuCategory="container"
         android:title="@string/selectticket"/>
-    <item
-        android:id="@+id/dfshare"
-        android:icon="@android:drawable/ic_menu_share"
-        android:menuCategory="container"
-        android:title="@string/dfshare"
-        myapp:actionProviderClass="android.support.v7.widget.ShareActionProvider"
-        myapp:showAsAction="ifRoom"/>
 
 </menu>

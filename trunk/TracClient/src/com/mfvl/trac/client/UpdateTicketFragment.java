@@ -207,7 +207,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 			optionVal = null;
 			spinPosition = 0;
 		}
-		_ticket = listener.getTicket(ticknr);
+		_ticket = Tickets.getInstance().getTicket(ticknr);
 		if (_ticket != null) {
 			displayView(button, spinPosition, optionVal);
 		} else {
@@ -217,7 +217,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 					context.runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
-							listener.putTicket(_ticket);
+							Tickets.getInstance().putTicket(_ticket);
 							displayView(button, spinPosition, optionVal);
 						}
 					});

@@ -52,7 +52,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 	public boolean upgrade = false;
 
 	public ProfileDatabaseHelper(Context context) {
-		super(context, Credentials.makeDbPath(context, DATABASE_NAME), null, DATABASE_VERSION);
+		super(context, Credentials.getInstance().makeDbPath(context, DATABASE_NAME), null, DATABASE_VERSION);
 	}
 
 	public class XMLHandler extends DefaultHandler {
@@ -241,7 +241,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 		if (db == null) {
 			this.open();
 		}
-		final String fileName = Credentials.makeExtFilePath(appname + ".xml");
+		final String fileName = Credentials.getInstance().makeExtFilePath(appname + ".xml");
 		final InputStream in = new BufferedInputStream(new FileInputStream(fileName));
 		try {
 
@@ -266,7 +266,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public void writeXML(final String appname) throws Exception {
-		final String fileName = Credentials.makeExtFilePath(appname + ".xml");
+		final String fileName = Credentials.getInstance().makeExtFilePath(appname + ".xml");
 		final OutputStream out = new BufferedOutputStream(new FileOutputStream(fileName));
 
 		String xmlString = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n";

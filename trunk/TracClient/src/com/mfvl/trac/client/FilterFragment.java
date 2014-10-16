@@ -225,7 +225,7 @@ public class FilterFragment extends TracClientFragment {
 		// + (savedInstanceState == null ? "null" : "not null"));
 		tcLog.d(this.getClass().getName(), "onActivityCreated on entry inputSpec = " + inputSpec);
 		final ProgressDialog pb = startProgressBar(R.string.downloading);
-		tm = listener.getTicketModel();
+		tm = TicketModel.getInstance();
 		if (pb != null && !context.isFinishing()) {
 			pb.dismiss();
 		}
@@ -312,7 +312,7 @@ public class FilterFragment extends TracClientFragment {
 	public void onStart() {
 		super.onStart();
 		// tcLog.d(this.getClass().getName(), "onStart");
-		tm = listener.getTicketModel();
+		tm = TicketModel.getInstance();
 	}
 
 	@Override

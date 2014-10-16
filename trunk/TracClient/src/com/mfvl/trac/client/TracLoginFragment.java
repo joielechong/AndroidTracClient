@@ -105,7 +105,7 @@ public class TracLoginFragment extends TracClientFragment {
 		tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 		setHasOptionsMenu(true);
 		if (savedInstanceState == null) {
-			// Credentials.loadCredentials(context);
+			// Credentials.getInstance().loadCredentials(context);
 			url = listener.getUrl();
 			username = listener.getUsername();
 			password = listener.getPassword();
@@ -153,7 +153,7 @@ public class TracLoginFragment extends TracClientFragment {
 		if (url == null) {
 			if (savedInstanceState == null) {
 //				tcLog.d(this.getClass().getName(), "onViewCreated use Activity");
-				// Credentials.loadCredentials(context);
+				// Credentials.getInstance().loadCredentials(context);
 				url = listener.getUrl();
 				username = listener.getUsername();
 				password = listener.getPassword();
@@ -251,7 +251,7 @@ public class TracLoginFragment extends TracClientFragment {
 		if (url == null) {
 			if (savedInstanceState == null) {
 //				tcLog.d(this.getClass().getName(), "onActivityCreated use Activity");
-				// Credentials.loadCredentials(context);
+				// Credentials.getInstance().loadCredentials(context);
 				url = listener.getUrl();
 				username = listener.getUsername();
 				password = listener.getPassword();
@@ -307,14 +307,15 @@ public class TracLoginFragment extends TracClientFragment {
 				bewaren = bewaarBox.isChecked();
 				sslHack = sslHackBox.isChecked();
 				if (bewaren) {
-					Credentials.setCredentials(url, username, password, SelectedProfile);
-					Credentials.setSslHack(sslHack);
-					Credentials.setSslHostNameHack(sslHostNameHack);
-					Credentials.storeCredentials(context);
+					Credentials.getInstance().setCredentials(url, username, password, SelectedProfile);
+					Credentials.getInstance().setSslHack(sslHack);
+					Credentials.getInstance().setSslHostNameHack(sslHostNameHack);
+					Credentials.getInstance().storeCredentials(context);
 				}
-				Credentials.removeFilterString(context);
-				Credentials.removeSortString(context);
+				Credentials.getInstance().removeFilterString(context);
+				Credentials.getInstance().removeSortString(context);
 				listener.onLogin(url, username, password, sslHack, sslHostNameHack, SelectedProfile);
+				getFragmentManager().popBackStack();
 			}
 		});
 
@@ -542,12 +543,24 @@ public class TracLoginFragment extends TracClientFragment {
 	@Override
 	public void onSaveInstanceState(Bundle savedState) {
 		super.onSaveInstanceState(savedState);
-		savedState.putString(Const.NEW_URL, urlView.getText().toString());
-		savedState.putString(Const.NEW_USERNAME, userView.getText().toString());
-		savedState.putString(Const.NEW_PASSWORD, pwView.getText().toString());
+		try {
+			savedState.putString(Const.NEW_URL, urlView.getText().toString());
+		} catch(Exception e) {
+		}
+		try {
+			savedState.putString(Const.NEW_USERNAME, userView.getText().toString());
+		} catch(Exception e) {
+		}
+		try {
+			savedState.putString(Const.NEW_PASSWORD, pwView.getText().toString());
+		} catch(Exception e) {
+		}
 		savedState.putBoolean(Const.CURRENT_SSLHACK, sslHackBox.isChecked());
 		savedState.putBoolean(Const.CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
-		savedState.putBoolean(bewaarText, bewaarBox.isChecked());
+		try {
+			savedState.putBoolean(bewaarText, bewaarBox.isChecked());
+		} catch(Exception e) {
+		}
 		tcLog.d(this.getClass().getName(), "onSaveInstanceState savedState = "+savedState);
 	}
 
