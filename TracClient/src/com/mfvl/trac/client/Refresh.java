@@ -28,10 +28,8 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 
-import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.HitBuilders.EventBuilder;
 import com.mfvl.trac.client.util.tcLog;
 
 public class Refresh extends Activity {

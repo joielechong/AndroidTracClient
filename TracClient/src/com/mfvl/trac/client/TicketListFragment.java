@@ -75,21 +75,6 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 		void onComplete(final int errorcode);
 	}
 
-	private class TicketLoadException extends Exception {
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 7847222445437027235L;
-
-		public TicketLoadException(String s) {
-			super(s);
-		}
-
-		public TicketLoadException(String s, Throwable e) {
-			super(s, e);
-		}
-	}
-
 	private HandlerThread mHandlerThread = null;
 	private TicketListHandler mTicketListHandler;
 	private Messenger mMessenger = null;
@@ -110,10 +95,39 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 	private final class TicketListHandler extends Handler {
 		Boolean loadListLock = false;
 		Boolean loadContLock = false;
+		Runnable loadTicketListRun;
+		Runnable loadTicketContentRun;
 
 		public TicketListHandler(Looper looper) {
 			super(looper);
 			tcLog.d(this.getClass().getName(), HandlerName);
+			loadTicketListRun = new Runnable() {
+				@Override
+				public void run() {
+					loadTicketList(new onCompleteListener() {
+						@Override
+						public void onComplete(final int error) {
+							loadListLock = false;
+							tcLog.d(getClass().getName(),"loadlistLock = "+loadListLock);
+							if (error == CMPL_SUCCESS) {
+//								mTicketListHandler.post(loadTicketContentRun);
+								mySendEmptyMessage(MSG_LOADCONT);
+							}
+						}
+					});
+				}
+			};
+			loadTicketContentRun = new Runnable() {
+				@Override
+				public void run() {
+					loadTicketContent(new onCompleteListener() {
+						@Override
+						public void onComplete(final int error) {
+							loadContLock = false;
+						}
+					});
+				}
+			};
 		}
 
 		public void mySendEmptyMessage(int message) {
@@ -129,7 +143,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 		@Override
 		public void handleMessage(final Message msg) {
 
-//			tcLog.d(this.getClass().getName(), "handleMessage msg = " + msg);
+			tcLog.d(this.getClass().getName(), "handleMessage msg = " + msg);
 			switch (msg.what) {
 			case MSG_INIT:
 				break;
@@ -138,70 +152,57 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 				myRemoveMessages(MSG_REFRESH);
 				mySendEmptyMessage(MSG_KILLLIST);
 				mySendEmptyMessage(MSG_KILLCONT);
+				removeCallbacks(loadTicketListRun);
+				removeCallbacks(loadTicketContentRun);
 				break;
 			case MSG_LOADLIST:
 				if (!loadListLock && !loadContLock) {
 					synchronized (loadListLock) {
 						loadListLock = true;
+						tcLog.d(getClass().getName(),"loadlistLock = "+loadListLock);
 						clearTickets();
-						post(new Runnable() {
-							@Override
-							public void run() {
-								loadTicketList(new onCompleteListener() {
-									@Override
-									public void onComplete(final int error) {
-										loadListLock = false;
-										if (error == CMPL_SUCCESS) {
-											mySendEmptyMessage(MSG_LOADCONT);
-										}
-									}
-								});
-							}
-						});
+						post(loadTicketListRun);
 					}
-//				} else {
-//					tcLog.d(getClass().getName(), "MSG_LOADLIST called while active " + loadListLock + " " + loadContLock);
+				} else {
+					tcLog.d(getClass().getName(), "MSG_LOADLIST called while active " + loadListLock + " " + loadContLock);
 				}
 				break;
 			case MSG_LOADCONT:
 				if (!loadListLock && !loadContLock) {
 					synchronized (loadListLock) {
 						loadContLock = true;
-						post(new Runnable() {
-							@Override
-							public void run() {
-								loadTicketContent(new onCompleteListener() {
-									@Override
-									public void onComplete(final int error) {
-										loadContLock = false;
-									}
-								});
-							}
-						});
+						post(loadTicketContentRun);
 					}
-//				} else {
-//					tcLog.d(getClass().getName(), "MSG_LOADCONT called while active " + loadListLock + " " + loadContLock);
+				} else {
+					tcLog.d(getClass().getName(), "MSG_LOADCONT called while active " + loadListLock + " " + loadContLock);
 				}
 				break;
 			case MSG_KILLLIST:
 				myRemoveMessages(MSG_LOADLIST);
+				removeCallbacks(loadTicketListRun);
 				if (loadListThread != null && loadListThread.isAlive()) {
 //					tcLog.d(this.getClass().getName(), "killLoadListThread");
 					loadListThread.interrupt();
 				}
+				loadListLock = false;
+				tcLog.d(getClass().getName(),"loadlistLock = "+loadListLock);
 				break;
 			case MSG_KILLANDLOADLIST:
 				myRemoveMessages(MSG_LOADLIST);
+				removeCallbacks(loadTicketListRun);
 				if (loadListThread != null && loadListThread.isAlive()) {
-//					tcLog.d(this.getClass().getName(), "killLoadListThread");
+					tcLog.d(this.getClass().getName(), "killLoadListThread");
 					loadListThread.interrupt();
 				}
+//				post(loadTicketListRun);
 				mySendEmptyMessage(MSG_LOADLIST);
+				loadContLock = false;
 				break;
 			case MSG_KILLCONT:
 				myRemoveMessages(MSG_LOADCONT);
+				removeCallbacks(loadTicketContentRun);
 				if (loadContentThread != null && loadContentThread.isAlive()) {
-//					tcLog.d(this.getClass().getName(), "killLoadContentThread");
+					tcLog.d(this.getClass().getName(), "killLoadContentThread");
 					loadContentThread.interrupt();
 				}
 				break;
@@ -224,6 +225,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 				super.handleMessage(msg);
 			}
 		}
+		
 	}
 
 	private static final String TICKETLISTNAME = "ticketlistInt";
@@ -240,12 +242,8 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 	private final static int ticketGroupCount = 50;
 	private EditText filterText = null;
 	private TextView hs = null;
-	private int tickets[] = null;
 	private boolean zoeken = false;
 	private String zoektext = "";
-	private ArrayList<SortSpec> sortList = null;
-	private ArrayList<FilterSpec> filterList = null;
-	private ArrayList<Ticket> ticketList = null;
 	private int scrollPosition = 0;
 	private boolean scrolling = false;
 	private boolean hasScrolled = false;
@@ -259,6 +257,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
+		tcLog.d(this.getClass().getName(), "onAttach");
 		resetCache();
 		final Bundle args = this.getArguments();
 		if (args != null) {
@@ -274,15 +273,20 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 	}
 
 	private void newDataAdapter() {
-		ticketList = new ArrayList<Ticket>();
-		dataAdapter = new ColoredArrayAdapter<Ticket>(context, R.layout.ticket_list, ticketList);
+		tcLog.d(getClass().getName(), "newDataAdapter");
+		Tickets.getInstance();
+		if (Tickets.ticketList == null) {
+			Tickets.ticketList = new ArrayList<Ticket>();
+		}
+		dataAdapter = new ColoredArrayAdapter<Ticket>(context, R.layout.ticket_list, Tickets.ticketList);
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+//		tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 		setHasOptionsMenu(true);
+		
 		newDataAdapter();
 		mHandlerThread = new HandlerThread(HandlerName, Process.THREAD_PRIORITY_DEFAULT);
 		mHandlerThread.start();
@@ -294,7 +298,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 	}
 
 	private void sendMessage(int message) {
-//		tcLog.d(this.getClass().getName(), "sendMessage message = " + message);
+		tcLog.d(this.getClass().getName(), "sendMessage message = " + message);
 		if (mMessenger != null) {
 			try {
 				final Message msg = Message.obtain();
@@ -348,6 +352,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//		tcLog.d(this.getClass().getName(), "onItemClick");
 		switch (parent.getId()) {
 		case R.id.listOfTickets:
 			final Ticket t = (Ticket) ((ListView) parent).getItemAtPosition(position);
@@ -371,6 +376,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		tcLog.d(this.getClass().getName(), "onActivityCreated savedInstanceState = "+ savedInstanceState);
+		Tickets.getInstance();
 		final boolean saveRefreshOnRestart = refreshOnRestart;
 		// listener.initializeList();
 		refreshOnRestart = saveRefreshOnRestart;
@@ -383,19 +389,19 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 			sortArg = null;
 		}
 		if (savedInstanceState != null) {
-			tickets = savedInstanceState.getIntArray(TICKETLISTNAME);
+			Tickets.tickets = savedInstanceState.getIntArray(TICKETLISTNAME);
 			listener.setSort((ArrayList<SortSpec>) savedInstanceState.getSerializable(SORTLISTNAME));
 			listener.setFilter((ArrayList<FilterSpec>) savedInstanceState.getSerializable(FILTERLISTNAME));
 		}
-		if (sortList == null) {
-			sortList = new ArrayList<SortSpec>();
-			sortList.add(new SortSpec("priority"));
-			sortList.add(new SortSpec("modified", false));
+		if (Tickets.sortList == null) {
+			Tickets.sortList = new ArrayList<SortSpec>();
+			Tickets.sortList.add(new SortSpec("priority"));
+			Tickets.sortList.add(new SortSpec("modified", false));
 		}
-		if (filterList == null) {
-			filterList = new ArrayList<FilterSpec>();
-			filterList.add(new FilterSpec("max", "=", "500"));
-			filterList.add(new FilterSpec("status", "!=", "closed"));
+		if (Tickets.filterList == null) {
+			Tickets.filterList = new ArrayList<FilterSpec>();
+			Tickets.filterList.add(new FilterSpec("max", "=", "500"));
+			Tickets.filterList.add(new FilterSpec("status", "!=", "closed"));
 		}
 		if (savedInstanceState != null) {
 			zoeken = savedInstanceState.getBoolean(ZOEKENNAME);
@@ -419,6 +425,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 	public void onResume() {
 		super.onResume();
 		tcLog.d(this.getClass().getName(), "onResume");
+		Tickets.getInstance();
 		if (refreshOnRestart) {
 			sendMessage(MSG_RELOAD);
 			scrollPosition = 0;
@@ -426,22 +433,19 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 			refreshOnRestart = false;
 		}
 
-//		tcLog.d(this.getClass().getName(), "onResume getCount = " + dataAdapter.getCount());
-//		tcLog.d(this.getClass().getName(), "onResume tickets = " + tickets);
-//		tcLog.d(this.getClass().getName(), "onResume loadListThread = " + loadListThread + " "
-//				+ (loadListThread != null && loadListThread.isAlive()));
-//		tcLog.d(this.getClass().getName(), "onResume loadContentThread = " + loadContentThread + " "
-//				+ (loadContentThread != null && loadContentThread.isAlive()));
-
 		if (loadListThread == null || !loadListThread.isAlive() || loadListThread.isInterrupted()) {
-			if (tickets == null || tickets.length == 0) {
+			tcLog.d(this.getClass().getName(), "onResume checkLoadList-1");
+			if (Tickets.tickets == null || Tickets.tickets.length == 0) {
+				tcLog.d(this.getClass().getName(), "onResume checkLoadList-2");
 				killLoadContentThread();
 				hs.setText("");
 				sendMessage(MSG_LOADLIST);
 			} else if (dataAdapter.getCount() == 0
 					&& (loadContentThread == null || !loadContentThread.isAlive() || loadContentThread.isInterrupted())) {
+				tcLog.d(this.getClass().getName(), "onResume checkLoadList-3");
 				sendMessage(MSG_LOADCONT);
 			} else {
+				tcLog.d(this.getClass().getName(), "onResume checkLoadList-4");
 				dataAdapter.notifyDataSetChanged();
 			}
 		}
@@ -484,10 +488,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 				listener.onUpdateTicket(t);
 				return true;
 			case R.id.dfshare:
-				final Intent sendIntent = new Intent();
-				sendIntent.setAction(Intent.ACTION_SEND);
-				sendIntent.putExtra(Intent.EXTRA_TEXT, t.toText());
-				sendIntent.setType("text/plain");
+				final Intent sendIntent = listener.shareTicketIntent(t);
 				startActivity(sendIntent);
 				return true;
 			default:
@@ -559,12 +560,12 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-//		tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" + item.getTitle());
+		tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" + item.getTitle());
+		Tickets.getInstance();
 		final int itemId = item.getItemId();
 		if (itemId == R.id.tlnieuw) {
 			listener.onNewTicket();
 		} else if (itemId == R.id.tlrefresh) {
-//			tcLog.d(this.getClass().getName(), "tlrefresh");
 			sendMessage(MSG_RELOAD);
 			doRefresh();
 		} else if (itemId == R.id.help) {
@@ -595,14 +596,12 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 				alertDialog.show();
 			}
 		} else if (itemId == R.id.tlfilter) {
-			listener.onFilterSelected(filterList);
+			listener.onFilterSelected(Tickets.filterList);
 		} else if (itemId == R.id.tlsort) {
-			listener.onSortSelected(sortList);
+			listener.onSortSelected(Tickets.sortList);
 		} else if (itemId == R.id.tlchangehost) {
 			killThreads();
 			listener.onChangeHost();
-//		} else if (itemId == R.id.tlshare) {
-//			shareList();
 		} else if (itemId == R.id.tlzoek) {
 			zoeken = !zoeken;
 			if (zoeken) {
@@ -630,15 +629,14 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 	@Override
 	public void onSaveInstanceState(Bundle savedState) {
 		super.onSaveInstanceState(savedState);
-		tcLog.d(this.getClass().getName(), "onSaveInstanceState");
-		savedState.putIntArray(TICKETLISTNAME, tickets);
-		savedState.putSerializable(SORTLISTNAME, sortList);
-		savedState.putSerializable(FILTERLISTNAME, filterList);
+		Tickets.getInstance();
+		savedState.putIntArray(TICKETLISTNAME, Tickets.tickets);
+		savedState.putSerializable(SORTLISTNAME, Tickets.sortList);
+		savedState.putSerializable(FILTERLISTNAME, Tickets.filterList);
 		savedState.putBoolean(ZOEKENNAME, zoeken);
 		savedState.putString(ZOEKTEXTNAME, zoektext);
 		if (listView != null) {
 			scrollPosition = listView.getFirstVisiblePosition();
-			// tcLog.d(getClass().getName(),"onSaveInstanceState scrollPosition <= "+scrollPosition);
 		}
 		savedState.putInt(SCROLLPOSITIONNAME, scrollPosition);
 		tcLog.d(this.getClass().getName(), "onSaveInstanceState = " + savedState);
@@ -653,6 +651,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 				@Override
 				public void run() {
 					final String logTag = this.getClass().getName() + "." + this.getId();
+					Tickets.getInstance();
 					try {
 						tcLog.d(logTag, "loadTicketList in loadListThread ");
 						listener.setReferenceTime();
@@ -663,7 +662,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 							}
 						});
 						String reqString = "";
-						for (final FilterSpec fs : filterList) {
+						for (final FilterSpec fs : Tickets.filterList) {
 							if (fs != null) {
 								if (reqString.length() > 0) {
 									reqString += "&";
@@ -671,7 +670,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 								reqString += fs.toString();
 							}
 						}
-						for (final SortSpec s : sortList) {
+						for (final SortSpec s : Tickets.sortList) {
 							if (s != null) {
 								if (reqString.length() > 0) {
 									reqString += "&";
@@ -694,12 +693,12 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 							}
 							tcLog.d(logTag, jsonTicketlist.toString());
 							final int count = jsonTicketlist.length();
-							final TicketModel tm = listener.getTicketModel();
+							final TicketModel tm = TicketModel.getInstance();
 							if (count > 0) {
-								tickets = new int[count];
-								if (tickets != null) {
+								Tickets.tickets = new int[count];
+								if (Tickets.tickets != null) {
 									for (int i = 0; i < count; i++) {
-										tickets[i] = jsonTicketlist.getInt(i);
+										Tickets.tickets[i] = jsonTicketlist.getInt(i);
 									}
 									tcLog.d(logTag, "loadTicketList ticketlist loaded");
 									oc.onComplete(CMPL_SUCCESS);
@@ -770,26 +769,15 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 	}
 
 	private void _clearTickets() {
-		tickets = null;
-		listener.resetCache();
+		Tickets.getInstance();
+		Tickets.tickets = null;
+		Tickets.getInstance().resetCache();
 		if (listView != null) {
 			zoeken = false;
 			zoektext = null;
-			ticketList.clear();
-			// dataAdapter.clear();
-			// dataAdapter.notifyDataSetChanged();
+			Tickets.ticketList = null;
 			newDataAdapter();
 			listView.setAdapter(dataAdapter);
-			// tcLog.d(getClass().getName(), "_clearTickets dataAdapter = " +
-			// dataAdapter);
-			// tcLog.d(getClass().getName(), "_clearTickets count = " +
-			// dataAdapter.getCount());
-			// tcLog.d(getClass().getName(), "_clearTickets listView = " +
-			// listView);
-			// tcLog.d(getClass().getName(), "_clearTickets listViewAdapter = "
-			// + listView.getAdapter());
-			// tcLog.d(getClass().getName(), "_clearTickets count = " +
-			// listView.getAdapter().getCount());
 		}
 	}
 
@@ -832,9 +820,10 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 			public void run() {
 				final long tid = this.getId();
 				final String logTag = this.getClass().getName() + "." + tid;
+				Tickets.getInstance();
 				try {
 					tcLog.d(logTag, "loadTicketContent thread = " + this);
-					final int count = tickets.length;
+					final int count = Tickets.tickets.length;
 					final int progress[] = new int[2];
 					progress[0] = 0;
 					progress[1] = count;
@@ -844,11 +833,11 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 							try {
 								if (!isInterrupted()) {
 									hs.setText(R.string.ophalen);
-									if (tickets != null) {
+									if (Tickets.tickets != null) {
 										for (int i = 0; i < count; i++) {
-											final Ticket t = new Ticket(tickets[i], null, null, null, null);
+											final Ticket t = new Ticket(Tickets.tickets[i], null, null, null, null);
 											dataAdapter.add(t);
-											listener.putTicket(t);
+											Tickets.getInstance().putTicket(t);
 										}
 									}
 									if (listView != null) {
@@ -872,7 +861,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 						final JSONArray mc = new JSONArray();
 						for (int i = j; i < (j + ticketGroupCount < count ? j + ticketGroupCount : count); i++) {
 							try {
-								buildCall(mc, tickets[i]);
+								buildCall(mc, Tickets.tickets[i]);
 							} catch (final Exception e) {
 								throw new TicketLoadException("loadTicketContent Exception during buildCall");
 							}
@@ -899,6 +888,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 								throw new TicketLoadException("loadTicketContent interrupt3 detected");
 							}
 							// tcLog.d(logTag, "mcresult = " + mcresult);
+							Ticket t = null;
 							for (int i = 0; i < mcresult.length(); i++) {
 								try {
 									final JSONObject res = mcresult.getJSONObject(i);
@@ -906,7 +896,9 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 									final JSONArray result = res.getJSONArray("result");
 									final int startpos = id.indexOf("_") + 1;
 									final int thisTicket = Integer.parseInt(id.substring(startpos));
-									final Ticket t = listener.getTicket(thisTicket);
+									if (t == null || t.getTicketnr() != thisTicket) {
+										t = Tickets.getInstance().getTicket(thisTicket);
+									}
 									if (t != null) {
 										if (id.equals(Ticket.TICKET_GET + "_" + thisTicket)) {
 											final JSONObject v = result.getJSONObject(3);
@@ -924,7 +916,6 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 										} else {
 											tcLog.d(logTag, "loadTickets, onverwachte respons = " + result);
 										}
-										// listener.putTicket(t);
 									}
 								} catch (final Exception e1) {
 									throw new TicketLoadException(
@@ -1040,12 +1031,14 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 
 	public void setFilter(ArrayList<FilterSpec> filter) {
 		tcLog.d(this.getClass().getName(), "setFilter " + filter);
-		filterList = filter;
-	}
+		Tickets.getInstance();
+		Tickets.filterList = filter;
+}
 
 	public void setSort(ArrayList<SortSpec> sort) {
 		tcLog.d(this.getClass().getName(), "setSort " + sort);
-		sortList = sort;
+		Tickets.getInstance();
+		Tickets.sortList = sort;
 	}
 
 	public int getTicketCount() {
@@ -1090,7 +1083,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 
 	private int getNeighTicket(int ticknr, int dir) {
 		tcLog.d(getClass().getName(), "getNeighTicket ticknr = " + ticknr + ", dir = " + dir);
-		Ticket t = listener.getTicket(ticknr);
+		Ticket t = Tickets.getInstance().getTicket(ticknr);
 		tcLog.d(getClass().getName(), "t = " + t);
 		if (t == null) {
 			return -1;
@@ -1121,6 +1114,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 		tcLog.d(this.getClass().getName(), "setHost " + profile);
 		super.setHost(url, username, password, sslHack, sslHostNameHack);
 		SelectedProfile = profile;
+		Tickets.getInstance().setHost(url,username,password,sslHack,sslHostNameHack);
 		resetCache();
 	}
 

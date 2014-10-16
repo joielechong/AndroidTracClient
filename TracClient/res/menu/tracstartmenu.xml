@@ -23,10 +23,5 @@
         android:orderInCategory="9999"
         android:title="@string/debug"
         android:visible="false"/>
-    <item
-        android:id="@+id/prefs"
-        android:menuCategory="container"
-        android:orderInCategory="9996"
-        android:title="@string/prefs"/>
 
 </menu>

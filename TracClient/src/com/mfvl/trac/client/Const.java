@@ -59,6 +59,8 @@ public final class Const {
 	static final String HELP_FILE = "file";
 	static final String HELP_VERSION = "version";
 
+	static final String EMPTYFIELDS = "emptyfields";
+	static final String MODVELD = "modveld";
 	/*
 	 * Shared preferences
 	 */
@@ -79,6 +81,7 @@ public final class Const {
 	 */
 	static final int UPARROW = android.R.drawable.arrow_up_float;
 	static final int DOWNARROW = android.R.drawable.arrow_down_float;
+	final static String mimeUnknown = "application/unknown";
 
 	public enum TrackerName {
 		APP_TRACKER, // Tracker used only in this app.

@@ -61,7 +61,7 @@ public class NewTicketFragment extends TracClientFragment {
 		}
 		final View view = inflater.inflate(R.layout.newtick_view, container, false);
 		final ProgressDialog pb = startProgressBar(R.string.downloading);
-		tm = listener.getTicketModel();
+		tm = TicketModel.getInstance();
 		if (pb != null && !context.isFinishing()) {
 			pb.dismiss();
 		}
@@ -207,7 +207,7 @@ public class NewTicketFragment extends TracClientFragment {
 							if (newtick < 0) {
 								throw new RuntimeException("Ticket == -1 ontvangen");
 							}
-							listener.putTicket(t);
+							Tickets.getInstance().putTicket(t);
 							listener.refreshOverview();
 							context.runOnUiThread(new Runnable() {
 								@Override

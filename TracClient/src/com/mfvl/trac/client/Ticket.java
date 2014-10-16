@@ -39,7 +39,7 @@ import com.mfvl.trac.client.util.tcLog;
 interface onTicketCompleteListener {
 	void onComplete(Ticket t);
 }
-
+ 
 interface onAttachmentCompleteListener {
 	void onComplete(byte[] data);
 }

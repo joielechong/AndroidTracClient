@@ -28,25 +28,28 @@ import org.json.JSONArray;
 import com.mfvl.trac.client.util.Credentials;
 import com.mfvl.trac.client.util.tcLog;
 
-public class TicketModel extends Object implements Serializable, Cloneable {
+public class TicketModel implements Serializable, Cloneable {
 	private static final long serialVersionUID = 4307815225424930343L;
-	private final Map<String, TicketModelVeld> _velden;
-	private final Map<Integer, String> _volgorde;
-	private final String _url;
-	private final String _username;
-	private final String _password;
-	private final boolean _sslHack;
-	private final boolean _sslHostNameHack;
-	private final Thread networkThread;
-	private int _count = 0;
-	private boolean loading;
+	private static Map<String, TicketModelVeld> _velden;
+	private static Map<Integer, String> _volgorde;
+	private static String _url;
+	private static String _username;
+	private static String _password;
+	private static boolean _sslHack;
+	private static boolean _sslHostNameHack;
+	private static int _count;
+	private static boolean loading;
+	private static Thread networkThread = null;
+	private static TicketModel _instance = null;
 
-	public TicketModel() {
-		_url = Credentials.getUrl();
-		_username = Credentials.getUsername();
-		_password = Credentials.getPassword();
-		_sslHack = Credentials.getSslHack();
-		_sslHostNameHack = Credentials.getSslHostNameHack();
+	private TicketModel() {
+		final Credentials cred = Credentials.getInstance();
+		_url = cred.getUrl();
+		_username = cred.getUsername();
+		_password = cred.getPassword();
+		_sslHack = cred.getSslHack();
+		_sslHostNameHack = cred.getSslHostNameHack();
+		_count = 0;
 
 		_velden = new HashMap<String, TicketModelVeld>();
 		_velden.clear();
@@ -56,7 +59,7 @@ public class TicketModel extends Object implements Serializable, Cloneable {
 		networkThread = new Thread() {
 			@Override
 			public void run() {
-				tcLog.d(getClass().getName(), "TicketModel_url = " + _url);
+				tcLog.d(getClass().getName(), "TicketModel _url = " + _url);
 				final JSONRPCHttpClient req = new JSONRPCHttpClient(_url, _sslHack, _sslHostNameHack);
 				req.setCredentials(_username, _password);
 
@@ -79,6 +82,20 @@ public class TicketModel extends Object implements Serializable, Cloneable {
 			}
 		};
 		networkThread.start();
+	}
+	
+	public static TicketModel getInstance() {
+		if (_instance == null) {
+			_instance = new TicketModel();			
+		}
+ 		tcLog.d(_instance.getClass().getName(), "TicketModel getInstance" );
+       return _instance;
+	}
+	
+	public static TicketModel newInstance() {
+		_instance = new TicketModel();
+		tcLog.d(_instance.getClass().getName(), "TicketModel newInstance" );
+        return _instance;
 	}
 
 	@Override

@@ -40,7 +40,6 @@ import android.widget.Spinner;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.HitBuilders.AppViewBuilder;
 
 //import com.google.analytics.tracking.android.EasyTracker;
 //import com.google.analytics.tracking.android.Fields;
@@ -143,7 +142,7 @@ public class TracClientFragment extends Fragment {
 
 				final AdRequest.Builder arb = new AdRequest.Builder();
 				if (adView != null && arb != null) {
-					if (Credentials.isDebuggable(context)) {
+					if (Credentials.getInstance().isDebuggable(context)) {
 						arb.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
 						for (final String t : testDevices) {
 							tcLog.d(getClass().getName() + ".super", "onViewCreated testDevice = " + t);
@@ -285,7 +284,7 @@ public class TracClientFragment extends Fragment {
 
 	final public void resetCache() {
 		tcLog.d(getClass().getName() + ".super", "resetCache");
-		listener.resetCache();
+		Tickets.getInstance().resetCache();
 	}
 
 	public void setHost(final String url, final String username, final String password, boolean sslHack, boolean sslHostNameHack) {
@@ -363,7 +362,7 @@ public class TracClientFragment extends Fragment {
 
 	protected void selectTicket(int ticknr) {
 		tcLog.d(this.getClass().getName(), "selectTicket = " + ticknr);
-		final Ticket t = listener.getTicket(ticknr);
+		final Ticket t = Tickets.getInstance().getTicket(ticknr);
 		if (t != null && t.hasdata()) {
 			listener.onTicketSelected(t);
 		} else {
@@ -376,7 +375,7 @@ public class TracClientFragment extends Fragment {
 						pb.dismiss();
 					}
 					if (t2.hasdata()) {
-						listener.putTicket(t2);
+						Tickets.getInstance().putTicket(t2);
 						listener.onTicketSelected(t2);
 					} else {
 						context.runOnUiThread(new Runnable() {

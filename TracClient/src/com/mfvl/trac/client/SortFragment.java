@@ -209,7 +209,7 @@ public class SortFragment extends TracClientFragment {
 		});
 
 		final ProgressDialog pb = startProgressBar(R.string.downloading);
-		tm = listener.getTicketModel();
+		tm = TicketModel.getInstance();
 		if (pb != null && !context.isFinishing()) {
 			pb.dismiss();
 		}
