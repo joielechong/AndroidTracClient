@@ -73,7 +73,7 @@ import com.mfvl.trac.client.util.ColoredArrayAdapter;
 import com.mfvl.trac.client.util.ISO8601;
 import com.mfvl.trac.client.util.tcLog;
 
-public class DetailFragment extends TracClientFragment implements OnGestureListener, View.OnClickListener{
+public class DetailFragment extends TracClientFragment implements OnGestureListener, View.OnClickListener {
 	private class ModVeldMap extends HashMap<String, String> implements Serializable {
 		private static final long serialVersionUID = 191019591050L;
 	}
@@ -193,7 +193,7 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 		if (args != null) {
 			ticknr = args.getInt(Const.CURRENT_TICKET);
 		}
-		if (savedInstanceState != null && savedInstanceState.containsKey(Const.CURRENT_TICKET) ) {
+		if (savedInstanceState != null && savedInstanceState.containsKey(Const.CURRENT_TICKET)) {
 			ticknr = savedInstanceState.getInt(Const.CURRENT_TICKET, -1);
 		}
 
@@ -212,11 +212,11 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 		selectItem = menu.findItem(R.id.dfselect);
 		setSelect(true);
 		// Set up ShareActionProvider's default share intent
-		MenuItem shareItem = menu.findItem(R.id.dfshare);
+		final MenuItem shareItem = menu.findItem(R.id.dfshare);
 		mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
-		mShareActionProvider.setShareIntent(listener.shareTicketIntent(Tickets.getInstance().getTicket(ticknr)));
+		mShareActionProvider.setShareIntent(listener.shareTicketIntent(Tickets.getTicket(ticknr)));
 	}
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View view = inflater.inflate(R.layout.detail_view, container, false);
@@ -237,7 +237,7 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 		if (updButton != null) {
 			updButton.setOnClickListener(this);
 		}
-		
+
 		if (updNotify != null) {
 			updNotify.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 				@Override
@@ -247,32 +247,32 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 			});
 		}
 	}
-	
-	@Override 
+
+	@Override
 	public void onClick(View view) {
-		tcLog.d(getClass().getName(), "onClick view = "+view);
+		tcLog.d(getClass().getName(), "onClick view = " + view);
 		switch (view.getId()) {
-			case R.id.cancel:
+		case R.id.cancel:
 			modVeld.clear();
 			setSelect(true);
 			getFragmentManager().popBackStack();
 			break;
-			
-			case R.id.storebutton:
+
+		case R.id.storebutton:
 			updateTicket();
 			final LinearLayout mv = (LinearLayout) getView().findViewById(R.id.modveld);
 			if (mv != null) {
 				mv.setVisibility(View.GONE);
 			}
 			break;
-			
-			case R.id.cancelpw:
+
+		case R.id.cancelpw:
 			if (pw != null && !context.isFinishing()) {
 				pw.dismiss();
 			}
 			break;
-			
-			case R.id.storepw:
+
+		case R.id.storepw:
 			break;
 
 		}
@@ -289,7 +289,7 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 		super.onStop();
 		gestureDetector = null;
 	}
-	
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -322,7 +322,7 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 	}
 
 	private void _onResume() {
-		_ticket = Tickets.getInstance().getTicket(ticknr);
+		_ticket = Tickets.getTicket(ticknr);
 		if (_ticket == null) {
 			_ticket = new Ticket(ticknr, context, new onTicketCompleteListener() {
 				@Override
@@ -330,7 +330,7 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 					context.runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
-							Tickets.getInstance().putTicket(_ticket);
+							Tickets.putTicket(_ticket);
 							_resume();
 						}
 					});
@@ -403,10 +403,10 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 				public void onClick(DialogInterface dialog, int id) {
 					try {
 						final int newTicket = Integer.parseInt(input.getText().toString());
-//						selectTicket(ticknr);
+						// selectTicket(ticknr);
 						ticknr = newTicket;
-					} catch (Exception e) {
-//						noop kleep old ticketnr
+					} catch (final Exception e) {
+						// noop kleep old ticketnr
 					}
 					_onResume();
 				}
@@ -466,12 +466,12 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 				context.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-                        mShareActionProvider.setShareIntent(listener.shareTicketIntent(t2));
+						mShareActionProvider.setShareIntent(listener.shareTicketIntent(t2));
 						try {
 							((ListView) getView().findViewById(R.id.listofFields)).invalidateViews();
-						} catch (Exception e) {
+						} catch (final Exception e) {
 							// catch all nullpointers
-							tcLog.e(getClass().getName(),"onComplete refresh_ticket",e);
+							tcLog.e(getClass().getName(), "onComplete refresh_ticket", e);
 						}
 						if (pb != null && !context.isFinishing()) {
 							pb.dismiss();
@@ -615,7 +615,7 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 				@Override
 				public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 					final modifiedString t = (modifiedString) ((ListView) parent).getItemAtPosition(position);
-					tcLog.d(this.getClass().getName(),"onItemLongClick position = "+ position);
+					tcLog.d(this.getClass().getName(), "onItemLongClick position = " + position);
 					if (t.length() >= 8 && "bijlage ".equals(t.substring(0, 8))) {
 						return false;
 					} else if (t.length() >= 8 && "comment:".equals(t.substring(0, 8))) {
@@ -640,7 +640,7 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 					final modifiedString t = (modifiedString) ((ListView) parent).getItemAtPosition(position);
-					tcLog.d(this.getClass().getName(), " onItemClick position = "+position);
+					tcLog.d(this.getClass().getName(), " onItemClick position = " + position);
 					if (t.length() >= 8 && "bijlage ".equals(t.substring(0, 8))) {
 						final int d = t.indexOf(":");
 						final int bijlagenr = Integer.parseInt(t.substring(8, d));
@@ -689,9 +689,9 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 
 			try {
 				spinValue
-						.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+				.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 				((LinearLayout) ll.findViewById(R.id.veld)).addView(spinValue);
-			} catch (Exception e) {
+			} catch (final Exception e) {
 			}
 
 			canBut.setOnClickListener(this);

@@ -37,27 +37,20 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.analytics.GoogleAnalytics;
-import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.analytics.HitBuilders;
-
+import com.google.android.gms.analytics.Tracker;
+import com.mfvl.trac.client.util.Credentials;
+import com.mfvl.trac.client.util.tcLog;
 //import com.google.analytics.tracking.android.EasyTracker;
 //import com.google.analytics.tracking.android.Fields;
 //import com.google.analytics.tracking.android.MapBuilder;
-
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
-import com.mfvl.trac.client.util.Credentials;
-import com.mfvl.trac.client.util.tcLog;
 
 public class TracClientFragment extends Fragment {
 	public Ticket _ticket = null;
-	public String _url = null;
-	public String _username = null;
-	public String _password = null;
-	public boolean _sslHack = false;
-	public boolean _sslHostNameHack = false;
 	public TracStart context;
 	private final AdView adView = null;
 	public InterFragmentListener listener = null;
@@ -75,14 +68,6 @@ public class TracClientFragment extends Fragment {
 		tcLog.d(getClass().getName() + ".super", "onAttach ");
 		context = (TracStart) activity;
 		listener = context;
-		final Bundle args = getArguments();
-		if (args != null) {
-			_url = args.getString(Const.CURRENT_URL);
-			_username = args.getString(Const.CURRENT_USERNAME);
-			_password = args.getString(Const.CURRENT_PASSWORD);
-			_sslHack = args.getBoolean(Const.CURRENT_SSLHACK, false);
-			_sslHostNameHack = args.getBoolean(Const.CURRENT_SSLHOSTNAMEHACK, false);
-		}
 	}
 
 	@Override
@@ -91,11 +76,11 @@ public class TracClientFragment extends Fragment {
 		tcLog.d(getClass().getName() + ".super", "onCreate savedInstanceState = "
 				+ (savedInstanceState == null ? "null" : "not null"));
 		if (savedInstanceState != null) {
-			_url = savedInstanceState.getString(Const.CURRENT_URL);
-			_username = savedInstanceState.getString(Const.CURRENT_USERNAME);
-			_password = savedInstanceState.getString(Const.CURRENT_PASSWORD);
-			_sslHack = savedInstanceState.getBoolean(Const.CURRENT_SSLHACK, false);
-			_sslHostNameHack = savedInstanceState.getBoolean(Const.CURRENT_SSLHOSTNAMEHACK, false);
+			LoginInfo.url = savedInstanceState.getString(Const.CURRENT_URL);
+			LoginInfo.username = savedInstanceState.getString(Const.CURRENT_USERNAME);
+			LoginInfo.password = savedInstanceState.getString(Const.CURRENT_PASSWORD);
+			LoginInfo.sslHack = savedInstanceState.getBoolean(Const.CURRENT_SSLHACK, false);
+			LoginInfo.sslHostNameHack = savedInstanceState.getBoolean(Const.CURRENT_SSLHOSTNAMEHACK, false);
 		}
 		Bundle aBundle;
 		try {
@@ -122,7 +107,7 @@ public class TracClientFragment extends Fragment {
 			testDevices[0] = "";
 		}
 
-		//Get a Tracker (should auto-report)
+		// Get a Tracker (should auto-report)
 		((TracClient) context.getApplication()).getTracker(Const.TrackerName.APP_TRACKER);
 	}
 
@@ -142,7 +127,7 @@ public class TracClientFragment extends Fragment {
 
 				final AdRequest.Builder arb = new AdRequest.Builder();
 				if (adView != null && arb != null) {
-					if (Credentials.getInstance().isDebuggable(context)) {
+					if (Credentials.isDebuggable()) {
 						arb.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
 						for (final String t : testDevices) {
 							tcLog.d(getClass().getName() + ".super", "onViewCreated testDevice = " + t);
@@ -158,7 +143,7 @@ public class TracClientFragment extends Fragment {
 							adView.setLayoutParams(ll.getLayoutParams());
 							// tcLog.d(getClass().getName(), "adView size = " +adView.getHeight());
 							ll.addView(adView);
-						} catch (Exception e) {
+						} catch (final Exception e) {
 							listener.setDispAds(false);
 						}
 					}
@@ -184,8 +169,8 @@ public class TracClientFragment extends Fragment {
 							// tcLog.d(getClass().getName(),"OnGlobalLayout r = "+
 							// r);
 							if (heightDiff > 100) { // if more than 100 pixels,
-													// its probably a
-													// keyboard...
+								// its probably a
+								// keyboard...
 								if (adsVisible) {
 									ll.setVisibility(View.GONE);
 									aboveView.setPadding(padLeft, padTop, padRight, 0);
@@ -216,18 +201,18 @@ public class TracClientFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		tcLog.d(getClass().getName() + ".super", "onActivityCreated savedInstanceState = "+ savedInstanceState);
+		tcLog.d(getClass().getName() + ".super", "onActivityCreated savedInstanceState = " + savedInstanceState);
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle savedState) {
 		super.onSaveInstanceState(savedState);
 		tcLog.d(getClass().getName() + ".super", "onSaveInstanceState");
-		savedState.putString(Const.CURRENT_URL, _url);
-		savedState.putString(Const.CURRENT_USERNAME, _username);
-		savedState.putString(Const.CURRENT_PASSWORD, _password);
-		savedState.putBoolean(Const.CURRENT_SSLHACK, _sslHack);
-		savedState.putBoolean(Const.CURRENT_SSLHOSTNAMEHACK, _sslHostNameHack);
+		savedState.putString(Const.CURRENT_URL, LoginInfo.url);
+		savedState.putString(Const.CURRENT_USERNAME, LoginInfo.username);
+		savedState.putString(Const.CURRENT_PASSWORD, LoginInfo.password);
+		savedState.putBoolean(Const.CURRENT_SSLHACK, LoginInfo.sslHack);
+		savedState.putBoolean(Const.CURRENT_SSLHOSTNAMEHACK, LoginInfo.sslHostNameHack);
 		tcLog.d(getClass().getName() + ".super", "onSaveInstanceState = " + savedState);
 	}
 
@@ -235,25 +220,25 @@ public class TracClientFragment extends Fragment {
 	public void onStart() {
 		tcLog.d(getClass().getName() + ".super", "onStart");
 		super.onStart();
-		//Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
-		GoogleAnalytics analytics = GoogleAnalytics.getInstance(context);
+		// Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
+		final GoogleAnalytics analytics = GoogleAnalytics.getInstance(context);
 		analytics.reportActivityStart(context);
 
-       // Get tracker.
-        Tracker t = ((TracClient) context.getApplication()).getTracker(Const.TrackerName.APP_TRACKER);
+		// Get tracker.
+		final Tracker t = ((TracClient) context.getApplication()).getTracker(Const.TrackerName.APP_TRACKER);
 
-        // Set screen name.
-        t.setScreenName(getClass().getSimpleName());
+		// Set screen name.
+		t.setScreenName(getClass().getSimpleName());
 
-        // Send a screen view.
-        t.send(new HitBuilders.AppViewBuilder().build());
+		// Send a screen view.
+		t.send(new HitBuilders.AppViewBuilder().build());
 	}
 
 	@Override
 	public void onStop() {
 		tcLog.d(getClass().getName() + ".super", "onStop");
 		super.onStop();
-		//Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
+		// Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
 		GoogleAnalytics.getInstance(context).reportActivityStop(context);
 	}
 
@@ -282,21 +267,10 @@ public class TracClientFragment extends Fragment {
 		super.onDestroy();
 	}
 
-	final public void resetCache() {
-		tcLog.d(getClass().getName() + ".super", "resetCache");
-		Tickets.getInstance().resetCache();
-	}
-
-	public void setHost(final String url, final String username, final String password, boolean sslHack, boolean sslHostNameHack) {
+	public void setHost() {
 		tcLog.d(getClass().getName() + ".super", "setHost");
-		if (_url != url) {
-			_url = url;
-			_username = username;
-			_password = password;
-			_sslHack = sslHack;
-			_sslHostNameHack = sslHostNameHack;
-			_ticket = null;
-		}
+		_ticket = null;
+		Tickets.setInvalid();
 	}
 
 	public ProgressDialog startProgressBar(String message) {
@@ -362,7 +336,7 @@ public class TracClientFragment extends Fragment {
 
 	protected void selectTicket(int ticknr) {
 		tcLog.d(this.getClass().getName(), "selectTicket = " + ticknr);
-		final Ticket t = Tickets.getInstance().getTicket(ticknr);
+		final Ticket t = Tickets.getTicket(ticknr);
 		if (t != null && t.hasdata()) {
 			listener.onTicketSelected(t);
 		} else {
@@ -375,7 +349,7 @@ public class TracClientFragment extends Fragment {
 						pb.dismiss();
 					}
 					if (t2.hasdata()) {
-						Tickets.getInstance().putTicket(t2);
+						Tickets.putTicket(t2);
 						listener.onTicketSelected(t2);
 					} else {
 						context.runOnUiThread(new Runnable() {

@@ -52,7 +52,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 	public boolean upgrade = false;
 
 	public ProfileDatabaseHelper(Context context) {
-		super(context, Credentials.getInstance().makeDbPath(context, DATABASE_NAME), null, DATABASE_VERSION);
+		super(context, Credentials.makeDbPath(DATABASE_NAME), null, DATABASE_VERSION);
 	}
 
 	public class XMLHandler extends DefaultHandler {
@@ -72,7 +72,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 
 		@Override
 		public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException,
-		RuntimeException {
+				RuntimeException {
 
 			if (localName.equals(_appname) && state == 0) {
 				state++;
@@ -86,8 +86,8 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 				state++;
 				lp = new LoginProfile(attributes.getValue(ProfileDatabaseHelper.URL_ID),
 						attributes.getValue(ProfileDatabaseHelper.USERNAME_ID),
-						attributes.getValue(ProfileDatabaseHelper.PASSWORD_ID), 
-						"1".equals(attributes.getValue(ProfileDatabaseHelper.SSLHACK_ID)));
+						attributes.getValue(ProfileDatabaseHelper.PASSWORD_ID), "1".equals(attributes
+								.getValue(ProfileDatabaseHelper.SSLHACK_ID)));
 				profileName = attributes.getValue(ProfileDatabaseHelper.NAME_ID);
 			}
 		}
@@ -241,7 +241,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 		if (db == null) {
 			this.open();
 		}
-		final String fileName = Credentials.getInstance().makeExtFilePath(appname + ".xml");
+		final String fileName = Credentials.makeExtFilePath(appname + ".xml");
 		final InputStream in = new BufferedInputStream(new FileInputStream(fileName));
 		try {
 
@@ -266,7 +266,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public void writeXML(final String appname) throws Exception {
-		final String fileName = Credentials.getInstance().makeExtFilePath(appname + ".xml");
+		final String fileName = Credentials.makeExtFilePath(appname + ".xml");
 		final OutputStream out = new BufferedOutputStream(new FileOutputStream(fileName));
 
 		String xmlString = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n";

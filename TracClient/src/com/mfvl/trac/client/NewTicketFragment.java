@@ -118,7 +118,7 @@ public class NewTicketFragment extends TracClientFragment {
 		try {
 			View e = view.findViewById(R.id.waarde);
 			final LayoutParams lp = e.getLayoutParams();
-			String[] ignoreFields = getResources().getStringArray(R.array.ignorecreatefields);
+			final String[] ignoreFields = getResources().getStringArray(R.array.ignorecreatefields);
 
 			for (int i = 0; i < tm.count(); i++) {
 				View v = null;
@@ -199,7 +199,7 @@ public class NewTicketFragment extends TracClientFragment {
 								}
 							}
 							velden.put("status", "new");
-							velden.put("reporter", _username);
+							velden.put("reporter", LoginInfo.username);
 							final CheckBox updNotify = (CheckBox) view.findViewById(R.id.updNotify);
 							final boolean notify = updNotify == null ? false : updNotify.isChecked();
 							final Ticket t = new Ticket(velden);
@@ -207,7 +207,7 @@ public class NewTicketFragment extends TracClientFragment {
 							if (newtick < 0) {
 								throw new RuntimeException("Ticket == -1 ontvangen");
 							}
-							Tickets.getInstance().putTicket(t);
+							Tickets.putTicket(t);
 							listener.refreshOverview();
 							context.runOnUiThread(new Runnable() {
 								@Override
