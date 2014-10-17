@@ -1,10 +1,9 @@
 package org.alexd.jsonrpc;
 
 /**
- * Represents an error during JSON-RPC method call. Various reasons can make a
- * JSON-RPC call fail (network not available, non existing method, error during
- * the remote execution ...) You can use the inherited method getCause() to see
- * which Exception has caused a JSONRPCException to be thrown
+ * Represents an error during JSON-RPC method call. Various reasons can make a JSON-RPC call fail (network not available, non
+ * existing method, error during the remote execution ...) You can use the inherited method getCause() to see which Exception has
+ * caused a JSONRPCException to be thrown
  *
  * @author Alexandre
  *

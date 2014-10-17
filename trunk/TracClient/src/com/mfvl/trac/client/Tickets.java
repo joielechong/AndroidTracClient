@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
-import com.mfvl.trac.client.util.Credentials;
 import com.mfvl.trac.client.util.FilterSpec;
 import com.mfvl.trac.client.util.SortSpec;
 import com.mfvl.trac.client.util.tcLog;
@@ -45,25 +44,19 @@ public class Tickets {
 	private static Map<Integer, Ticket> ticketMap = null;
 
 	private static Tickets _instance = null;
-	private static Credentials cred = null;
-	private static TicketModel tm = null;
-
-	private static Thread loadThread = null;
-
-	private static String _url = null;
-	private static String _username = null;
-	private static String _password = null;
-	private static Boolean _sslHack = false;
-	private static Boolean _sslHostNameHack = false;
+	private static String _tag = "";
+	
+	private static boolean valid = false;
 
 	public static final int INVALID_URL = 1;
 	public static final int LIST_NOT_LOADED = 2;
 	public static final int CONTENT_NOT_LOADED = 3;
+	
 
 	private Tickets() {
-		tcLog.d(this.getClass().getName(), "Tickets create");
-		// cred = Credentials.getInstance();
-		// tm = TicketModel.getInstance();
+		_tag = getClass().getName();
+		tcLog.d(_tag, "Tickets create");
+		valid = ticketList != null;
 	}
 
 	public static Tickets getInstance() {
@@ -73,63 +66,31 @@ public class Tickets {
 		return _instance;
 	}
 
-	public void clear() {
+	public static void initList() {
+		ticketList = new ArrayList<Ticket>();
+		valid = true;
+		resetCache();
+	}
+
+	public static void clear() {
 		ticketList = null;
 		tickets = null;
-		tm = TicketModel.getInstance();
-		cred = Credentials.getInstance();
+		TicketModel.getInstance();
 	}
 
-	private boolean equals(Object s1, Object s2) {
-		if (s1 == null && s2 == null) {
-			return true;
-		}
-		if (s1 == null && s2 != null) {
-			return false;
-		}
-		if (s1 != null && s2 == null) {
-			return false;
-		}
-		return s1.equals(s2);
+	private static void loadTicketList() throws TicketLoadException {
 	}
 
-	public void setHost(final String url, final String username, final String password, boolean sslHack, boolean sslHostNameHack) {
-		tcLog.d(this.getClass().getName(), "setHost");
-
-		boolean validList = _url != null;
-
-		try {
-			validList &= equals(url, _url) && equals(username, _username) && equals(password, _password)
-					&& equals(sslHack, _sslHack) && equals(sslHostNameHack, _sslHostNameHack);
-		} catch (final Exception e) {
-			tcLog.e(this.getClass().getName(), "setHost validList", e);
-			validList = false;
-		}
-
-		_url = url;
-		_username = username;
-		_password = password;
-		_sslHack = sslHack;
-		_sslHostNameHack = sslHostNameHack;
-
-		if (!validList) {
-			// clear();
-		}
+	private static void loadTicketContent(final onLoadTicketCompleteListener oc) throws TicketLoadException {
 	}
 
-	private void loadTicketList() throws TicketLoadException {
-	}
-
-	private void loadTicketContent(final onLoadTicketCompleteListener oc) throws TicketLoadException {
-	}
-
-	public void load(final onLoadTicketCompleteListener oc) {
-		if (_url == null) {
-			tcLog.e(getClass().getName(), "URL == null");
+	public static void load(final onLoadTicketCompleteListener oc) {
+		if (LoginInfo.url == null) {
+			tcLog.e(_tag, "URL == null");
 			oc.onError(INVALID_URL);
 		}
 		clear();
-		loadThread = new Thread() {
+		Thread loadThread = new Thread() {
 			@Override
 			public void run() {
 				try {
@@ -155,20 +116,27 @@ public class Tickets {
 		loadThread.start();
 	}
 
-	public Ticket getTicket(int ticknr) {
+	public static Ticket getTicket(int ticknr) {
 		// tcLog.d(getClass().getName(), "getTicket ticknr = "+ticknr+ " "+ticketMap.containsKey(ticknr));
 		return ticketMap.containsKey(ticknr) ? ticketMap.get(ticknr) : null;
 	}
 
-	public void putTicket(Ticket ticket) {
+	public static void putTicket(Ticket ticket) {
 		// tcLog.d(getClass().getName(), "putTicket ticket = "+ticket);
 		ticketMap.put(ticket.getTicketnr(), ticket);
 	}
 
-	public void resetCache() {
+	public static void resetCache() {
 		// tcLog.d(getClass().getName(),"resetCache voor ticketMap = "+ticketMap);
 		ticketMap = new TreeMap<Integer, Ticket>();
 		// tcLog.d(getClass().getName(),"resetCache na ticketMap = "+ticketMap);
 	}
 
+	public static void setInvalid() {
+		valid = false;
+	}
+
+	public static boolean isValid() {
+		return valid;
+	}
 }

@@ -93,12 +93,11 @@ public class RefreshService extends Service {
 									PendingIntent.FLAG_UPDATE_CURRENT);
 
 							final NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(RefreshService.this)
-							.setSmallIcon(R.drawable.traclogo)
-							.setContentTitle(RefreshService.this.getString(R.string.notifmod))
-							.setTicker(RefreshService.this.getString(R.string.foundnew))
-							.setContentText(RefreshService.this.getString(R.string.foundnew))
-							.setSubText(newTickets.toString())
-							.setContentIntent(pendingIntent);
+									.setSmallIcon(R.drawable.traclogo)
+									.setContentTitle(RefreshService.this.getString(R.string.notifmod))
+									.setTicker(RefreshService.this.getString(R.string.foundnew))
+									.setContentText(RefreshService.this.getString(R.string.foundnew))
+									.setSubText(newTickets.toString()).setContentIntent(pendingIntent);
 							final Notification notification = mBuilder.build();
 							notification.flags |= Notification.FLAG_AUTO_CANCEL;
 							mNotificationManager.notify(notifId, notification);

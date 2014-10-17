@@ -31,26 +31,25 @@ import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Looper;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
-import android.os.Process;
 import android.os.Messenger;
+import android.os.Process;
 import android.os.RemoteException;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.os.HandlerThread;
-import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
-
 import com.ipaulpro.afilechooser.utils.FileUtils;
 import com.mfvl.trac.client.util.Credentials;
 import com.mfvl.trac.client.util.FilterSpec;
@@ -71,19 +70,9 @@ interface InterFragmentListener {
 
 	int getNextTicket(int ticket);
 
-	String getPassword();
-
-	boolean getSslHack();
-
-	boolean getSslHostNameHack();
-
 	int getPrevTicket(int ticket);
 
 	int getTicketCount();
-
-	String getUrl();
-
-	String getUsername();
 
 	void onChangeHost();
 
@@ -118,7 +107,7 @@ interface InterFragmentListener {
 	Intent shareTicketIntent(final Ticket t);
 }
 
-public class TracStart extends ActionBarActivity implements InterFragmentListener, OnBackStackChangedListener  {
+public class TracStart extends ActionBarActivity implements InterFragmentListener, OnBackStackChangedListener {
 	// onActivityResult requestcode for filechooser
 	private static final int REQUEST_CODE = 6384;
 	private static final int timerCorr = 60 * 1000 * 2; // 2 minuten
@@ -131,12 +120,6 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	private static final String SortFragmentTag = "Sort_Fragment";
 
 	private boolean debug = false; // disable menuoption at startup
-	private String url;
-	private String username;
-	private String password;
-	private boolean sslHack;
-	private boolean sslHostNameHack;
-	private String profile;
 	private onFileSelectedListener _oc = null;
 	private boolean dispAds;
 	private FragmentManager fm = null;
@@ -183,7 +166,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 				sendMessageToService(Const.MSG_SEND_TICKET_COUNT, count);
 				break;
 			case Const.MSG_REQUEST_NEW_TICKETS:
-				post (new Runnable() {
+				post(new Runnable() {
 					@Override
 					public void run() {
 						final List<Integer> newTickets = getNewTickets(ISO8601.fromUnix(referenceTime));
@@ -261,9 +244,9 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		super.onCreate(savedInstanceState);
 		tcLog.d(getClass().getName(), "onCreate savedInstanceState = " + savedInstanceState);
 
-		//FragmentManager.enableDebugLogging(true);
+		// FragmentManager.enableDebugLogging(true);
 
-		//Get a Tracker (should auto-report)
+		// Get a Tracker (should auto-report)
 		((TracClient) getApplication()).getTracker(Const.TrackerName.APP_TRACKER);
 
 		mHandlerThread = new HandlerThread("IncomingHandler", Process.THREAD_PRIORITY_BACKGROUND);
@@ -271,12 +254,12 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 		// Get the HandlerThread's Looper and use it for our Handler
 		mMessenger = new Messenger(new IncomingHandler(mHandlerThread.getLooper()));
-		
+
 		startService(new Intent(this, RefreshService.class));
 
 		setContentView(R.layout.tracstart);
-		debug |= Credentials.getInstance().isRCVersion(this);
-		Credentials.getInstance().loadCredentials(this);
+		debug |= Credentials.isRCVersion();
+		Credentials.loadCredentials();
 
 		dispAds = true;
 		if (getIntent().hasExtra(Const.ADMOB)) {
@@ -288,14 +271,14 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		urlArg = getIntent().getStringExtra(Const.INTENT_URL);
 		ticketArg = (int) getIntent().getLongExtra(Const.INTENT_TICKET, -1);
 
-		url = Credentials.getInstance().getUrl();
-		username = Credentials.getInstance().getUsername();
-		password = Credentials.getInstance().getPassword();
-		sslHack = Credentials.getInstance().getSslHack();
-		sslHostNameHack = Credentials.getInstance().getSslHostNameHack();
-		profile = Credentials.getInstance().getProfile();
+		LoginInfo.url = Credentials.getUrl();
+		LoginInfo.username = Credentials.getUsername();
+		LoginInfo.password = Credentials.getPassword();
+		LoginInfo.sslHack = Credentials.getSslHack();
+		LoginInfo.sslHostNameHack = Credentials.getSslHostNameHack();
+		LoginInfo.profile = Credentials.getProfile();
 
-		if (Credentials.getInstance().getFirstRun(this)) {
+		if (Credentials.getFirstRun()) {
 			final Intent launchTrac = new Intent(this, TracShowWebPage.class);
 			final String filename = getString(R.string.whatsnewhelpfile);
 			launchTrac.putExtra(Const.HELP_FILE, filename);
@@ -306,7 +289,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		if (urlArg != null) {
 			final String urlArg1 = urlArg + "rpc";
 			final String urlArg2 = urlArg + "login/rpc";
-			if (!(urlArg.equals(url) || urlArg1.equals(url) || urlArg2.equals(url))) {
+			if (!(urlArg.equals(LoginInfo.url) || urlArg1.equals(LoginInfo.url) || urlArg2.equals(LoginInfo.url))) {
 				final ProfileDatabaseHelper pdb = new ProfileDatabaseHelper(this);
 				LoginProfile lp = pdb.findProfile(urlArg2);
 				if (lp == null) {
@@ -318,7 +301,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 				if (lp == null) {
 					final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 					alertDialogBuilder.setTitle(R.string.wrongdb);
-					final String wrongDb = getString(R.string.wrongdbtext1) + url + getString(R.string.wrongdbtext2) + urlArg
+					final String wrongDb = getString(R.string.wrongdbtext1) + LoginInfo.url + getString(R.string.wrongdbtext2) + urlArg
 							+ getString(R.string.wrongdbtext3);
 					alertDialogBuilder.setMessage(wrongDb).setCancelable(false);
 					alertDialogBuilder.setPositiveButton(R.string.oktext, null);
@@ -328,12 +311,12 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 					urlArg = null;
 					ticketArg = -1;
 				} else {
-					url = lp.getUrl();
-					username = lp.getUsername();
-					password = lp.getPassword();
-					sslHack = lp.getSslHack();
-					sslHostNameHack = false; // force dialog to confirm
-					profile = null;
+					LoginInfo.url = lp.getUrl();
+					LoginInfo.username = lp.getUsername();
+					LoginInfo.password = lp.getPassword();
+					LoginInfo.sslHack = lp.getSslHack();
+					LoginInfo.sslHostNameHack = false; // force dialog to confirm
+					LoginInfo.profile = null;
 				}
 			}
 		}
@@ -344,7 +327,6 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		shouldDisplayHomeUp();
 
 		if (savedInstanceState != null) {
-			Credentials.getInstance().reloadCredentials(this);
 			if (fm != null) {
 				restoreFragment(savedInstanceState, ListFragmentTag);
 				restoreFragment(savedInstanceState, LoginFragmentTag);
@@ -353,16 +335,16 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 				restoreFragment(savedInstanceState, UpdFragmentTag);
 				restoreFragment(savedInstanceState, FilterFragmentTag);
 				restoreFragment(savedInstanceState, SortFragmentTag);
-				tcLog.d(getClass().getName(),"onCreate: backstack restored");
+				tcLog.d(getClass().getName(), "onCreate: backstack restored");
 			}
 			initializeList((TicketListFragment) getFragment(ListFragmentTag));
 		} else {
 			final FragmentTransaction ft = fm.beginTransaction();
 			final TicketListFragment ticketListFragment = new TicketListFragment();
 			final Bundle args = makeArgs();
-			args.putString("currentProfile", profile);
-			args.putString("currentFilter", Credentials.getInstance().getFilterString(this));
-			args.putString("currectSortOrder", Credentials.getInstance().getSortString(this));
+			args.putString("currentProfile", LoginInfo.profile);
+			args.putString("currentFilter", Credentials.getFilterString());
+			args.putString("currectSortOrder", Credentials.getSortString());
 			if (urlArg != null) {
 				tcLog.d(this.getClass().getName(), "select Ticket = " + ticketArg);
 				if (ticketListFragment != null) {
@@ -376,7 +358,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 			ft.addToBackStack("onCreateInitBackstack");
 			ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 			ft.commit();
-			tcLog.d(getClass().getName(),"onCreate: backstack initiated");
+			tcLog.d(getClass().getName(), "onCreate: backstack initiated");
 		}
 
 		bindService(new Intent(this, RefreshService.class), mConnection, Context.BIND_AUTO_CREATE);
@@ -439,15 +421,14 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	@Override
 	public void onAttachFragment(final Fragment frag) {
 		tcLog.d(this.getClass().getName(), "onAttachFragment " + frag);
-		Credentials.getInstance().reloadCredentials(this);
 	}
 
 	public void initializeList(final TicketListFragment ticketListFragment) {
 		if (ticketListFragment != null) {
 			tcLog.d(this.getClass().getName(), "initializeList ticketListFragment = " + ticketListFragment);
-			ticketListFragment.setHost(url, username, password, sslHack, sslHostNameHack, profile);
-			setFilter(Credentials.getInstance().getFilterString(this));
-			setSort(Credentials.getInstance().getSortString(this));
+			ticketListFragment.setHost();
+			setFilter(Credentials.getFilterString());
+			setSort(Credentials.getSortString());
 
 			if (urlArg != null) {
 				tcLog.d(this.getClass().getName(), "select Ticket = " + ticketArg);
@@ -470,7 +451,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" + item.getTitle());
+		// tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" + item.getTitle());
 		final int itemId = item.getItemId();
 		if (itemId == R.id.over) {
 			final Intent launchTrac = new Intent(getApplicationContext(), TracShowWebPage.class);
@@ -509,8 +490,6 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		final NewTicketFragment newtickFragment = new NewTicketFragment();
 		// tcLog.d(this.getClass().getName(), "newTickFragment =" +
 		// newtickFragment.toString());
-		final Bundle args = makeArgs();
-		newtickFragment.setArguments(args);
 		final FragmentTransaction ft = fm.beginTransaction();
 		ft.replace(R.id.displayList, newtickFragment, NewFragmentTag);
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -539,25 +518,26 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	public void onLogin(String newUrl, String newUser, String newPass, boolean newHack, boolean newHostNameHack, String newProfile) {
 		tcLog.d(this.getClass().getName(), "onLogin " + newProfile);
 		TicketModel.newInstance();
-		url = newUrl;
-		username = newUser;
-		password = newPass;
-		sslHack = newHack;
-		sslHostNameHack = newHostNameHack;
-		profile = newProfile;
-		TicketListFragment ticketListFragment = (TicketListFragment) getFragment(ListFragmentTag);
+		Tickets.setInvalid();
+		LoginInfo.url = newUrl;
+		LoginInfo.username = newUser;
+		LoginInfo.password = newPass;
+		LoginInfo.sslHack = newHack;
+		LoginInfo.sslHostNameHack = newHostNameHack;
+		LoginInfo.profile = newProfile;
+		final TicketListFragment ticketListFragment = (TicketListFragment) getFragment(ListFragmentTag);
 		if (ticketListFragment != null) {
 			initializeList(ticketListFragment);
 		}
-		}
+	}
 
 	private Bundle makeArgs() {
 		final Bundle args = new Bundle();
-		args.putString(Const.CURRENT_URL, url);
-		args.putString(Const.CURRENT_USERNAME, username);
-		args.putString(Const.CURRENT_PASSWORD, password);
-		args.putBoolean(Const.CURRENT_SSLHACK, sslHack);
-		args.putBoolean(Const.CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
+//		args.putString(Const.CURRENT_URL, LoginInfo.url);
+//		args.putString(Const.CURRENT_USERNAME, LoginInfo.username);
+//		args.putString(Const.CURRENT_PASSWORD, LoginInfo.password);
+//		args.putBoolean(Const.CURRENT_SSLHACK, LoginInfo.sslHack);
+//		args.putBoolean(Const.CURRENT_SSLHOSTNAMEHACK, LoginInfo.sslHostNameHack);
 		return args;
 	}
 
@@ -573,7 +553,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 				filterString += fs.toString();
 			}
 		}
-		Credentials.getInstance().storeFilterString(this, filterString);
+		Credentials.storeFilterString(filterString);
 
 		final TicketListFragment tlf = (TicketListFragment) getFragment(ListFragmentTag);
 		if (tlf != null) {
@@ -586,7 +566,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	@Override
 	public void setFilter(String filterString) {
-		tcLog.d(this.getClass().getName(), "setFilter " + filterString);
+		// tcLog.d(this.getClass().getName(), "setFilter " + filterString);
 		final ArrayList<FilterSpec> filter = new ArrayList<FilterSpec>();
 
 		if (filterString.length() > 0) {
@@ -618,7 +598,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 				sortString += s.toString();
 			}
 		}
-		Credentials.getInstance().storeSortString(this, sortString);
+		Credentials.storeSortString(sortString);
 
 		final TicketListFragment tlf = (TicketListFragment) getFragment(ListFragmentTag);
 		if (tlf != null) {
@@ -631,7 +611,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	@Override
 	public void setSort(String sortString) {
-		tcLog.d(this.getClass().getName(), "setSort " + sortString);
+		// tcLog.d(this.getClass().getName(), "setSort " + sortString);
 		final ArrayList<SortSpec> sl = new ArrayList<SortSpec>();
 		if (sortString.length() > 0) {
 			String[] sort;
@@ -665,10 +645,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	public void onChangeHost() {
 		tcLog.d(this.getClass().getName(), "onChangeHost");
 		final FragmentTransaction ft = fm.beginTransaction();
-		TracLoginFragment tracLoginFragment = (TracLoginFragment) fm.findFragmentByTag(LoginFragmentTag);
-		if (tracLoginFragment == null) {
-			tracLoginFragment = new TracLoginFragment();
-		}
+		final TracLoginFragment tracLoginFragment = new TracLoginFragment();
 		ft.replace(R.id.displayList, tracLoginFragment, LoginFragmentTag);
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 		ft.addToBackStack("onChangeHost");
@@ -755,7 +732,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	public void onStart() {
 		super.onStart();
 		tcLog.d(this.getClass().getName(), "onStart");
-		//Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
+		// Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
 		GoogleAnalytics.getInstance(this).reportActivityStart(this);
 	}
 
@@ -763,15 +740,15 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	public void onStop() {
 		super.onStop();
 		tcLog.d(getClass().getName(), "onStop");
-		//Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
+		// Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
 		GoogleAnalytics.getInstance(this).reportActivityStop(this);
 	}
-	
+
 	@Override
 	public void onBackPressed() {
 		tcLog.d(getClass().getName(), "onBackPressed");
 		final DetailFragment df = (DetailFragment) getFragment(DetailFragmentTag);
-		final boolean callSuper = (df != null ? !df.onBackPressed() : true);
+		final boolean callSuper = df != null ? !df.onBackPressed() : true;
 		if (callSuper) {
 			tcLog.d(getClass().getName(), "super.onBackPressed");
 			super.onBackPressed();
@@ -795,36 +772,6 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	@Override
 	public void setDispAds(boolean b) {
 		dispAds = b;
-	}
-
-	@Override
-	public String getUrl() {
-		// tcLog.d(this.getClass().getName(), "getUrl url = " + url);
-		return url;
-	}
-
-	@Override
-	public String getUsername() {
-		return username;
-	}
-
-	@Override
-	public String getPassword() {
-		return password;
-	}
-
-	@Override
-	public boolean getSslHack() {
-		return sslHack;
-	}
-
-	@Override
-	public boolean getSslHostNameHack() {
-		return sslHack;
-	}
-
-	public String getProfile() {
-		return profile;
 	}
 
 	@Override
@@ -872,9 +819,9 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 		return fm.findFragmentByTag(tag);
 	}
 
-//	private TicketListFragment getTicketListFragment() {
-//		return (TicketListFragment) getFragment(ListFragmentTag);
-//	}
+	// private TicketListFragment getTicketListFragment() {
+	// return (TicketListFragment) getFragment(ListFragmentTag);
+	// }
 
 	@Override
 	public int getTicketCount() {
@@ -922,8 +869,8 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	@Override
 	public void onBackStackChanged() {
-		int depth = fm.getBackStackEntryCount();
-		tcLog.d(getClass().getName(), "onBackStackChanged depth = "+ depth);
+		final int depth = fm.getBackStackEntryCount();
+		tcLog.d(getClass().getName(), "onBackStackChanged depth = " + depth);
 		if (depth == 0) {
 			finish();
 		}

@@ -39,7 +39,7 @@ import com.mfvl.trac.client.util.tcLog;
 interface onTicketCompleteListener {
 	void onComplete(Ticket t);
 }
- 
+
 interface onAttachmentCompleteListener {
 	void onComplete(byte[] data);
 }
@@ -59,11 +59,6 @@ public class Ticket implements Serializable {
 	private JSONArray _attachments;
 	private JSONArray _actions;
 	private int _ticknr;
-	private String _url;
-	private String _username;
-	private String _password;
-	private boolean _sslHack;
-	private boolean _sslHostNameHack;
 	private boolean _hasdata = false;
 	private boolean _isloading = false;
 	private static Semaphore available = new Semaphore(1, true);
@@ -86,24 +81,10 @@ public class Ticket implements Serializable {
 		result = 31 * result + hc(_attachments);
 		result = 31 * result + hc(_actions);
 		result = 31 * result + hc(_ticknr);
-		result = 31 * result + hc(_url);
-		result = 31 * result + hc(_username);
-		result = 31 * result + hc(_password);
-		result = 31 * result + hc(_sslHack);
-		result = 31 * result + hc(_sslHostNameHack);
 		result = 31 * result + hc(_isloading);
 		result = 31 * result + hc(_hasdata);
 
 		return result + 31 * super.hashCode();
-	}
-
-	private void retrieveCredentials(TracStart context) {
-		InterFragmentListener listener = context;
-		_url = listener.getUrl();
-		_username = listener.getUsername();
-		_password = listener.getPassword();
-		_sslHack = listener.getSslHack();
-		_sslHostNameHack = listener.getSslHostNameHack();
 	}
 
 	public Ticket(final JSONObject jo) {
@@ -177,16 +158,13 @@ public class Ticket implements Serializable {
 		tcLog.i(this.getClass().getName(), "loadTicketData ticketnr = " + _ticknr);
 		actionLock.acquireUninterruptibly();
 		_isloading = true;
-		if (_url == null) {
-			retrieveCredentials(context);
-		}
 		new Thread("loadTicketData") {
 			@Override
 			public void run() {
 				available.acquireUninterruptibly();
 				if (req == null) {
-					req = new JSONRPCHttpClient(_url, _sslHack, _sslHostNameHack);
-					req.setCredentials(_username, _password);
+					req = new JSONRPCHttpClient(LoginInfo.url, LoginInfo.sslHack, LoginInfo.sslHostNameHack);
+					req.setCredentials(LoginInfo.username,LoginInfo.password);
 				}
 
 				try {
@@ -238,14 +216,13 @@ public class Ticket implements Serializable {
 	}
 
 	public void getAttachment(final String filename, TracStart context, final onAttachmentCompleteListener oc) {
-		retrieveCredentials(context);
 		final Thread networkThread = new Thread("getAttachment") {
 			@Override
 			public void run() {
 				available.acquireUninterruptibly();
 				if (req == null) {
-					req = new JSONRPCHttpClient(_url, _sslHack, _sslHostNameHack);
-					req.setCredentials(_username, _password);
+					req = new JSONRPCHttpClient(LoginInfo.url, LoginInfo.sslHack, LoginInfo.sslHostNameHack);
+					req.setCredentials(LoginInfo.username, LoginInfo.password);
 				}
 
 				try {
@@ -273,14 +250,13 @@ public class Ticket implements Serializable {
 
 	public void addAttachment(final String filename, final TracStart context, final onTicketCompleteListener oc) {
 		tcLog.i(this.getClass().getName() + ".addAttachment", filename);
-		retrieveCredentials(context);
 		new Thread() {
 			@Override
 			public void run() {
 				available.acquireUninterruptibly();
 				if (req == null) {
-					req = new JSONRPCHttpClient(_url, _sslHack, _sslHostNameHack);
-					req.setCredentials(_username, _password);
+					req = new JSONRPCHttpClient(LoginInfo.url, LoginInfo.sslHack, LoginInfo.sslHostNameHack);
+					req.setCredentials(LoginInfo.username, LoginInfo.password);
 				}
 				final File file = new File(filename);
 				final int bytes = (int) file.length();
@@ -401,10 +377,9 @@ public class Ticket implements Serializable {
 			public void run() {
 				available.acquireUninterruptibly();
 				try {
-					retrieveCredentials(context);
 					if (req == null) {
-						req = new JSONRPCHttpClient(_url, _sslHack, _sslHostNameHack);
-						req.setCredentials(_username, _password);
+						req = new JSONRPCHttpClient(LoginInfo.url, LoginInfo.sslHack, LoginInfo.sslHostNameHack);
+						req.setCredentials(LoginInfo.username, LoginInfo.password);
 					}
 					final int newticknr = req.callInt("ticket.create", s, d, _velden);
 					_ticknr = newticknr;
@@ -437,7 +412,7 @@ public class Ticket implements Serializable {
 
 		return _ticknr;
 	}
-	
+
 	// update is called from within a non UI thread
 
 	public void update(String action, String comment, String veld, String waarde, final boolean notify, final TracStart context,
@@ -450,7 +425,6 @@ public class Ticket implements Serializable {
 		if (action == null) {
 			throw new NullPointerException(context.getString(R.string.noaction));
 		}
-		retrieveCredentials(context);
 		_velden.put("action", action);
 		if (waarde != null && veld != null && !"".equals(veld) && !"".equals(waarde)) {
 			_velden.put(veld, waarde);
@@ -472,10 +446,10 @@ public class Ticket implements Serializable {
 
 		available.acquireUninterruptibly();
 		try {
-			if (_url != null) {
+			if (LoginInfo.url != null) {
 				if (req == null) {
-					req = new JSONRPCHttpClient(_url, _sslHack, _sslHostNameHack);
-					req.setCredentials(_username, _password);
+					req = new JSONRPCHttpClient(LoginInfo.url, LoginInfo.sslHack, LoginInfo.sslHostNameHack);
+					req.setCredentials(LoginInfo.username, LoginInfo.password);
 				}
 				// tcLog.d(this.getClass().getName(), "_velden call = " +
 				// _velden);

@@ -39,7 +39,7 @@ public final class Const {
 	static final String CURRENT_TICKET = "ticknr";
 	static final String CURRENT_SSLHACK = "sslHack";
 	static final String CURRENT_SSLHOSTNAMEHACK = "sslHostNameHack";
-	
+
 	static final String CURRENT_FILTER = "currentFilter";
 	static final String CURRENT_PROFILE = "currentProfile";
 	static final String CURRENT_SORTORDER = "currectSortOrder";
@@ -88,5 +88,5 @@ public final class Const {
 		GLOBAL_TRACKER, // Tracker used by all the apps from a company. eg: roll-up tracking.
 		ECOMMERCE_TRACKER, // Tracker used by all ecommerce transactions from a company.
 	}
- 
+
 }

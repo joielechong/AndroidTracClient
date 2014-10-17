@@ -30,13 +30,11 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-
-import com.google.android.gms.analytics.GoogleAnalytics;
-import com.google.android.gms.analytics.Tracker;
-import com.google.android.gms.analytics.HitBuilders;
-
 import com.mfvl.trac.client.util.Credentials;
 import com.mfvl.trac.client.util.tcLog;
 
@@ -49,12 +47,15 @@ public class TracTitlescreenActivity extends Activity {
 		try {
 			super.onCreate(savedInstanceState);
 			tcLog.setContext(this);
+			Credentials.getInstance(this);
+			LoginInfo.getInstance();
+			Tickets.getInstance();
 			requestWindowFeature(Window.FEATURE_NO_TITLE);
 			getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			setContentView(R.layout.activity_titlescreen);
 
 			final TextView tv = (TextView) findViewById(R.id.version_content);
-			tv.setText(Credentials.getInstance().buildVersion(this));
+			tv.setText(Credentials.buildVersion());
 
 		} catch (final Exception e) {
 			tcLog.toast("crash: " + e.getMessage());
@@ -89,7 +90,7 @@ public class TracTitlescreenActivity extends Activity {
 
 		// Get an Analytics tracker to report app starts &amp; uncaught
 		// exceptions etc.
-		GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+		final GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
 		analytics.reportActivityStart(this);
 
 		final Intent launchTrac = new Intent(getApplicationContext(), TracStart.class);
@@ -119,7 +120,7 @@ public class TracTitlescreenActivity extends Activity {
 					}
 					// Build and send an Event.
 					t.send(new HitBuilders.EventBuilder().setCategory("Startup").setAction("URI start").setLabel(urlstring)
-							.setValue((long) ticket).build());
+							.setValue(ticket).build());
 					launchTrac.putExtra(Const.INTENT_URL, urlstring);
 					launchTrac.putExtra(Const.INTENT_TICKET, (long) ticket);
 				} else {
@@ -150,7 +151,7 @@ public class TracTitlescreenActivity extends Activity {
 		super.onStop();
 		// Get an Analytics tracker to report app starts &amp; uncaught
 		// exceptions etc.
-		GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+		final GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
 		analytics.reportActivityStop(this);
 
 	}

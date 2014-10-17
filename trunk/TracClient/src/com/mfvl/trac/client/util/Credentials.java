@@ -47,33 +47,28 @@ public class Credentials {
 	private static boolean _sslHostNameHack = false;
 	private static String _profile = null;
 	private static SharedPreferences settings = null;
-    private static Credentials _instance = null;
-	
-	private Credentials() {
-	}
-	
-    public static Credentials getInstance()
-    {
-        if (_instance == null)
-        {
-            _instance = new Credentials();
-        }
-        return _instance;
-    }
+	private static Credentials _instance = null;
+	private static Context _context = null;
+	private static String _tag = "";
 
-	private void getSettings(final Context context) {
-		if (settings == null) {
-			settings = context.getSharedPreferences(Const.PREFS_NAME, 0);
+	private Credentials(final Context context) {
+		settings = context.getSharedPreferences(Const.PREFS_NAME, 0);
+		_context = context;
+		_tag = getClass().getName();
+	}
+
+	public static Credentials getInstance(final Context context) {
+		if (_instance == null) {
+			_instance = new Credentials(context);
 		}
+		return _instance;
 	}
 
 	/**
-	 * Load login credentials from shared preferences: server-url, username,
-	 * password and profile
+	 * Load login credentials from shared preferences: server-url, username, password and profile
 	 */
-	public void loadCredentials(final Context context) {
-		// tcLog.d("Credentials", "loadCredentials");
-		getSettings(context);
+	public static void loadCredentials() {
+		// tcLog.d(_tag, "loadCredentials");
 		_url = settings.getString(Const.PREF_URL, "");
 		_username = settings.getString(Const.PREF_USER, "");
 		_password = settings.getString(Const.PREF_PASS, "");
@@ -82,19 +77,11 @@ public class Credentials {
 		_profile = settings.getString(Const.PREF_PROF, null);
 	}
 
-	public  void reloadCredentials(final Context context) {
-		if (settings == null) {
-			loadCredentials(context);
-		}
-	}
-
 	/**
-	 * Store login credentials to shared preferences: server-url, username,
-	 * password and profile
+	 * Store login credentials to shared preferences: server-url, username, password and profile
 	 */
-	public  void storeCredentials(final Context context) {
-		// tcLog.d("Credentials", "storeCredentials");
-		getSettings(context);
+	public static void storeCredentials() {
+		// tcLog.d(_tag, "storeCredentials");
 		final SharedPreferences.Editor editor = settings.edit();
 		editor.putString(Const.PREF_URL, _url);
 		editor.putString(Const.PREF_USER, _username);
@@ -108,54 +95,53 @@ public class Credentials {
 	}
 
 	/** Set login credentials server-url, username, password and profile */
-	public void setCredentials(final String url, final String username, final String password, final String profile) {
-		// tcLog.d("Credentials", "setCredentials");
+	public static void setCredentials(final String url, final String username, final String password, final String profile) {
+		// tcLog.d(_tag, "setCredentials");
 		_url = url;
 		_username = username;
 		_password = password;
 		_profile = profile;
 	}
 
-	public String getUrl() {
+	public static String getUrl() {
 		return _url;
 	}
 
-	public String getUsername() {
+	public static String getUsername() {
 		return _username;
 	}
 
-	public String getPassword() {
+	public static String getPassword() {
 		return _password;
 	}
 
-	public void setSslHack(boolean sslHack) {
+	public static void setSslHack(boolean sslHack) {
 		_sslHack = sslHack;
 	}
 
-	public boolean getSslHack() {
+	public static boolean getSslHack() {
 		return _sslHack;
 	}
 
-	public void setSslHostNameHack(boolean sslHostNameHack) {
+	public static void setSslHostNameHack(boolean sslHostNameHack) {
 		_sslHostNameHack = sslHostNameHack;
 	}
 
-	public boolean getSslHostNameHack() {
+	public static boolean getSslHostNameHack() {
 		return _sslHostNameHack;
 	}
 
-	public void setProfile(String profile) {
+	public static void setProfile(String profile) {
 		_profile = profile;
 	}
 
-	public String getProfile() {
+	public static String getProfile() {
 		return _profile;
 	}
 
-	public boolean getFirstRun(Context context) {
+	public static boolean getFirstRun() {
 		// tcLog.d("Credentials", "getFirstRun");
-		getSettings(context);
-		final String thisRun = buildVersion(context);
+		final String thisRun = buildVersion();
 		final String lastRun = settings.getString(Const.PREF_1ST, "");
 		final SharedPreferences.Editor editor = settings.edit();
 		editor.putString(Const.PREF_1ST, thisRun);
@@ -164,49 +150,43 @@ public class Credentials {
 		return !lastRun.equals(thisRun);
 	}
 
-	public void storeFilterString(Context context, final String filterString) {
+	public static void storeFilterString(final String filterString) {
 		tcLog.d("Credentials", "storeFilterString: " + filterString);
-		getSettings(context);
 		final SharedPreferences.Editor editor = settings.edit();
 		editor.putString(Const.PREF_FILTER, filterString == null ? "" : filterString);
 		editor.commit();
 	}
 
-	public String getFilterString(Context context) {
+	public static String getFilterString() {
 		// tcLog.d("Credentials", "getFilterString");
-		getSettings(context);
 		final String filterString = settings.getString(Const.PREF_FILTER, "max=500&status!=closed");
 		tcLog.d("Credentials", "getFilterString filterString = " + filterString);
 		return filterString;
 	}
 
-	public void removeFilterString(Context context) {
+	public static void removeFilterString() {
 		tcLog.d("Credentials", "removeFilterString");
-		getSettings(context);
 		final SharedPreferences.Editor editor = settings.edit();
 		editor.putString(Const.PREF_FILTER, "max=500&status!=closed");
 		editor.commit();
 	}
 
-	public void storeSortString(Context context, final String sortString) {
+	public static void storeSortString(final String sortString) {
 		tcLog.d("Credentials", "storeSortString: " + sortString);
-		getSettings(context);
 		final SharedPreferences.Editor editor = settings.edit();
 		editor.putString(Const.PREF_SORT, sortString == null ? "" : sortString);
 		editor.commit();
 	}
 
-	public String getSortString(Context context) {
+	public static String getSortString() {
 		// tcLog.d("Credentials", "getSortString");
-		getSettings(context);
 		final String sortString = settings.getString(Const.PREF_SORT, "order=priority&order=modified&desc=1");
 		tcLog.d("Credentials", "getSortString sortString = " + sortString);
 		return sortString;
 	}
 
-	public void removeSortString(Context context) {
-		tcLog.d("Credentials", "removeSortString");
-		getSettings(context);
+	public static void removeSortString() {
+		tcLog.d(_tag, "removeSortString");
 		final SharedPreferences.Editor editor = settings.edit();
 		editor.putString(Const.PREF_SORT, "order=priority&order=modified&desc=1");
 		editor.commit();
@@ -214,11 +194,12 @@ public class Credentials {
 
 	private static final X500Principal DEBUG_DN = new X500Principal("CN=Android Debug,O=Android,C=US");
 
-	public boolean isDebuggable(Context ctx) {
+	public static boolean isDebuggable() {
 		boolean debuggable = false;
 
 		try {
-			final PackageInfo pinfo = ctx.getPackageManager().getPackageInfo(ctx.getPackageName(), PackageManager.GET_SIGNATURES);
+			final PackageInfo pinfo = _context.getPackageManager().getPackageInfo(_context.getPackageName(),
+					PackageManager.GET_SIGNATURES);
 			final Signature signatures[] = pinfo.signatures;
 
 			final CertificateFactory cf = CertificateFactory.getInstance("X.509");
@@ -232,56 +213,53 @@ public class Credentials {
 				}
 			}
 		} catch (final NameNotFoundException e) {
-			tcLog.i(ctx.getClass().getName(), "isDebuggable", e);
+			tcLog.i(_tag, "isDebuggable", e);
 		} catch (final CertificateException e) {
-			tcLog.i(ctx.getClass().getName(), "isDebuggable", e);
+			tcLog.i(_tag, "isDebuggable", e);
 		}
 		return debuggable;
 	}
 
 	@TargetApi(Build.VERSION_CODES.GINGERBREAD)
-	public String buildVersion(Context context) {
-		final PackageManager manager = context.getPackageManager();
+	public static String buildVersion() {
+		final PackageManager manager = _context.getPackageManager();
 		PackageInfo info;
 		if (versie == null) {
 			try {
-				info = manager.getPackageInfo(context.getPackageName(), 0);
+				info = manager.getPackageInfo(_context.getPackageName(), 0);
 				versie = "V" + info.versionName;
 				final int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-				// tcLog.d(context.getClass().getName(),
-				// "buildVersion versie = " +
-				// versie + " api = " + currentapiVersion);
-				if (isDebuggable(context) && currentapiVersion >= android.os.Build.VERSION_CODES.GINGERBREAD) {
+				// tcLog.d(_tag, "buildVersion versie = " + versie + " api = " + currentapiVersion);
+				if (isDebuggable() && currentapiVersion >= android.os.Build.VERSION_CODES.GINGERBREAD) {
 					versie += "/" + info.lastUpdateTime / (1000 * 60);
 				}
 			} catch (final NameNotFoundException e) {
-				tcLog.i(context.getClass().getName(), "buildVersion", e);
+				tcLog.i(_tag, "buildVersion", e);
 				if (versie == null) {
 					versie = "V0.6.x";
 				}
 			}
 		}
-		// tcLog.d(context.getClass().getName(), "buildVersion versie = " +
-		// versie);
+		// tcLog.d(_tag, "buildVersion versie = " + versie);
 		return versie;
 	}
 
-	public boolean isRCVersion(Context context) {
-		buildVersion(context);
+	public static boolean isRCVersion() {
+		buildVersion();
 		if (versie == null) {
 			return false;
 		}
 		return versie.toLowerCase(Locale.US).contains("rc");
 	}
 
-	public String makeDbPath(Context context, String dbname) {
+	public static String makeDbPath(String dbname) {
 		final File extpath = Environment.getExternalStorageDirectory();
 
 		String dbpath = dbname;
 
 		if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
 			final String p1 = extpath.toString() + "/TracClient/" + dbname;
-			if (!isDebuggable(context)) {
+			if (!isDebuggable()) {
 				if (new File(p1).exists()) {
 					dbpath = p1;
 				}
@@ -294,7 +272,7 @@ public class Credentials {
 		return dbpath;
 	}
 
-	public String makeExtFilePath(String filename) throws FileNotFoundException {
+	public static String makeExtFilePath(String filename) throws FileNotFoundException {
 		final File extpath = Environment.getExternalStorageDirectory();
 
 		final String filePath = extpath.toString() + "/TracClient/" + filename;

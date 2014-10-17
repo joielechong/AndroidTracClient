@@ -39,8 +39,8 @@ import android.provider.MediaStore;
 import android.provider.MediaStore.Audio;
 import android.provider.MediaStore.Video;
 
-import com.mfvl.trac.client.R; 				// Changed namespace
-import com.mfvl.trac.client.util.tcLog; 	//Logging buffered for debug purposes
+import com.mfvl.trac.client.R; // Changed namespace
+import com.mfvl.trac.client.util.tcLog; //Logging buffered for debug purposes
 
 /**
  * @version 2009-07-03
@@ -65,8 +65,7 @@ public class FileUtils {
 	 * @return
 	 */
 	/*
-	 * public static boolean isVideo(String filename) { String mimeType =
-	 * getMimeType(filename); if (mimeType != null &&
+	 * public static boolean isVideo(String filename) { String mimeType = getMimeType(filename); if (mimeType != null &&
 	 * mimeType.startsWith("video/")) { return true; } else { return false; } }
 	 */
 
@@ -87,8 +86,7 @@ public class FileUtils {
 	 * Gets the extension of a file name, like ".png" or ".jpg".
 	 *
 	 * @param uri
-	 * @return Extension including the dot("."); "" if there is no extension;
-	 *         null if uri was null.
+	 * @return Extension including the dot("."); "" if there is no extension; null if uri was null.
 	 */
 	public static String getExtension(String uri) {
 		if (uri == null) {

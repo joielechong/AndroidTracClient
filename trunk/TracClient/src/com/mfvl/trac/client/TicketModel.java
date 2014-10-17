@@ -43,12 +43,11 @@ public class TicketModel implements Serializable, Cloneable {
 	private static TicketModel _instance = null;
 
 	private TicketModel() {
-		final Credentials cred = Credentials.getInstance();
-		_url = cred.getUrl();
-		_username = cred.getUsername();
-		_password = cred.getPassword();
-		_sslHack = cred.getSslHack();
-		_sslHostNameHack = cred.getSslHostNameHack();
+		_url = Credentials.getUrl();
+		_username = Credentials.getUsername();
+		_password = Credentials.getPassword();
+		_sslHack = Credentials.getSslHack();
+		_sslHostNameHack = Credentials.getSslHostNameHack();
 		_count = 0;
 
 		_velden = new HashMap<String, TicketModelVeld>();
@@ -83,19 +82,19 @@ public class TicketModel implements Serializable, Cloneable {
 		};
 		networkThread.start();
 	}
-	
+
 	public static TicketModel getInstance() {
 		if (_instance == null) {
-			_instance = new TicketModel();			
+			_instance = new TicketModel();
 		}
- 		tcLog.d(_instance.getClass().getName(), "TicketModel getInstance" );
-       return _instance;
+		tcLog.d(_instance.getClass().getName(), "TicketModel getInstance");
+		return _instance;
 	}
-	
+
 	public static TicketModel newInstance() {
 		_instance = new TicketModel();
-		tcLog.d(_instance.getClass().getName(), "TicketModel newInstance" );
-        return _instance;
+		tcLog.d(_instance.getClass().getName(), "TicketModel newInstance");
+		return _instance;
 	}
 
 	@Override
