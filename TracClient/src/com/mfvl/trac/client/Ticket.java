@@ -26,7 +26,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.Semaphore;
 
 import org.alexd.jsonrpc.JSONRPCException;
-import org.alexd.jsonrpc.JSONRPCHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -64,7 +63,7 @@ public class Ticket implements Serializable {
 	private static Semaphore available = new Semaphore(1, true);
 	private final Semaphore actionLock = new Semaphore(1, true);
 	private String rpcerror = null;
-	/* static */private JSONRPCHttpClient req = null;
+	/* static */private TCJSONRPCHttpClient req = null;
 
 	private int hc(Object o) {
 		return o == null ? 0 : o.hashCode();
@@ -162,10 +161,7 @@ public class Ticket implements Serializable {
 			@Override
 			public void run() {
 				available.acquireUninterruptibly();
-				if (req == null) {
-					req = new JSONRPCHttpClient(LoginInfo.url, LoginInfo.sslHack, LoginInfo.sslHostNameHack);
-					req.setCredentials(LoginInfo.username,LoginInfo.password);
-				}
+				req = TCJSONRPCHttpClient.getInstance();
 
 				try {
 					final JSONArray mc = new JSONArray();
@@ -220,10 +216,7 @@ public class Ticket implements Serializable {
 			@Override
 			public void run() {
 				available.acquireUninterruptibly();
-				if (req == null) {
-					req = new JSONRPCHttpClient(LoginInfo.url, LoginInfo.sslHack, LoginInfo.sslHostNameHack);
-					req.setCredentials(LoginInfo.username, LoginInfo.password);
-				}
+				req = TCJSONRPCHttpClient.getInstance();
 
 				try {
 					final JSONObject data = req.callJSONObject("ticket.getAttachment", _ticknr, filename);
@@ -254,10 +247,7 @@ public class Ticket implements Serializable {
 			@Override
 			public void run() {
 				available.acquireUninterruptibly();
-				if (req == null) {
-					req = new JSONRPCHttpClient(LoginInfo.url, LoginInfo.sslHack, LoginInfo.sslHostNameHack);
-					req.setCredentials(LoginInfo.username, LoginInfo.password);
-				}
+				req = TCJSONRPCHttpClient.getInstance();
 				final File file = new File(filename);
 				final int bytes = (int) file.length();
 				final byte[] data = new byte[bytes];
@@ -377,10 +367,7 @@ public class Ticket implements Serializable {
 			public void run() {
 				available.acquireUninterruptibly();
 				try {
-					if (req == null) {
-						req = new JSONRPCHttpClient(LoginInfo.url, LoginInfo.sslHack, LoginInfo.sslHostNameHack);
-						req.setCredentials(LoginInfo.username, LoginInfo.password);
-					}
+					req = TCJSONRPCHttpClient.getInstance();
 					final int newticknr = req.callInt("ticket.create", s, d, _velden);
 					_ticknr = newticknr;
 					actionLock.release();
@@ -447,10 +434,7 @@ public class Ticket implements Serializable {
 		available.acquireUninterruptibly();
 		try {
 			if (LoginInfo.url != null) {
-				if (req == null) {
-					req = new JSONRPCHttpClient(LoginInfo.url, LoginInfo.sslHack, LoginInfo.sslHostNameHack);
-					req.setCredentials(LoginInfo.username, LoginInfo.password);
-				}
+				req = TCJSONRPCHttpClient.getInstance();
 				// tcLog.d(this.getClass().getName(), "_velden call = " +
 				// _velden);
 				req.callJSONArray("ticket.update", _ticknr, cmt, _velden, notify);

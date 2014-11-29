@@ -30,16 +30,17 @@ import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.mfvl.trac.client.util.Credentials;
+import com.mfvl.trac.client.util.tcLog;
 
 public class TracShowWebPage extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " +
-		// savedInstanceState);
+		tcLog.d(getClass().getName(), "onCreate savedInstanceState = " + savedInstanceState);
 		super.onCreate(savedInstanceState);
+		MyTracker.getInstance(this);
 		// Get a Tracker (should auto-report)
-		final Tracker t = ((TracClient) getApplication()).getTracker(Const.TrackerName.APP_TRACKER);
+		final Tracker t = MyTracker.getTracker(Const.TrackerName.APP_TRACKER);
 		t.setScreenName(getClass().getName());
 		final Intent i = this.getIntent();
 		final boolean toonVersie = i.getBooleanExtra(Const.HELP_VERSION, true);
@@ -47,7 +48,7 @@ public class TracShowWebPage extends Activity {
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.trac_about);
 		final String filename = "file:///android_asset/" + i.getStringExtra(Const.HELP_FILE) + ".html";
-		// tcLog.d(this.getClass().getName(), filename + " " + toonVersie);
+		tcLog.d(getClass().getName(), filename + " " + toonVersie);
 		final TextView tv = (TextView) findViewById(R.id.about_version_text);
 		final TextView tv1 = (TextView) findViewById(R.id.v1);
 		final TextView tv2 = (TextView) findViewById(R.id.v2);
@@ -56,27 +57,27 @@ public class TracShowWebPage extends Activity {
 			tv1.setVisibility(View.GONE);
 			tv2.setVisibility(View.GONE);
 		} else {
-			final String versie = Credentials.buildVersion();
-			tv.setText(versie);
+			tv.setText(Credentials.buildVersion());
 		}
 		// Build and send an Event.
 		t.send(new HitBuilders.EventBuilder().setCategory("Normal").setAction("WebView").setLabel(filename).build());
 		final WebView wv = (WebView) findViewById(R.id.webfile);
-		wv.getSettings().setJavaScriptEnabled(true);
+		// wv.getSettings().setJavaScriptEnabled(true);
 		wv.setWebViewClient(new WebViewClient());
 		wv.loadUrl(filename);
+		tcLog.d(getClass().getName(), "webview = " + wv);
 	}
 
 	@Override
 	public void onStart() {
-		// tcLog.d(this.getClass().getName(), "onStart");
+		tcLog.d(this.getClass().getName(), "onStart");
 		super.onStart();
 		GoogleAnalytics.getInstance(this).reportActivityStart(this);
 	}
 
 	@Override
 	public void onStop() {
-		// tcLog.d(this.getClass().getName(), "onStop");
+		tcLog.d(this.getClass().getName(), "onStop");
 		super.onStop();
 		GoogleAnalytics.getInstance(this).reportActivityStop(this);
 	}

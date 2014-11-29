@@ -20,7 +20,6 @@ package com.mfvl.trac.client;
 //  'login' to TRAC site by sending a system.APIVersion method
 //
 
-import org.alexd.jsonrpc.JSONRPCHttpClient;
 import org.json.JSONArray;
 
 import android.app.AlertDialog;
@@ -214,6 +213,8 @@ public class TracLoginFragment extends TracClientFragment {
 								verButton.setEnabled(true);
 								okButton.setEnabled(false);
 								storButton.setEnabled(false);
+								credWarn.setVisibility(View.GONE);
+								credWarnTxt.setVisibility(View.GONE);
 							} else {
 								final AlertDialog.Builder alert = new AlertDialog.Builder(context);
 
@@ -330,8 +331,8 @@ public class TracLoginFragment extends TracClientFragment {
 
 					@Override
 					public void run() {
-						final JSONRPCHttpClient req = new JSONRPCHttpClient(url, sslHack, sslHostNameHack);
-						req.setCredentials(username, password);
+						final TCJSONRPCHttpClient req = TCJSONRPCHttpClient.getInstance(url, sslHack, sslHostNameHack, username,
+								password);
 
 						final String command = "system.getAPIVersion";
 						try {
@@ -353,46 +354,45 @@ public class TracLoginFragment extends TracClientFragment {
 										alertDialogBuilder.setCancelable(false);
 										alertDialogBuilder.setPositiveButton(R.string.oktext,
 												new DialogInterface.OnClickListener() {
+											@Override
+											public void onClick(DialogInterface dialog, int id) {
+												final ProgressDialog pb1 = startProgressBar(R.string.checking);
+												new Thread() {
 													@Override
-													public void onClick(DialogInterface dialog, int id) {
-														final ProgressDialog pb1 = startProgressBar(R.string.checking);
-														new Thread() {
-															@Override
-															public void run() {
-																final JSONRPCHttpClient req1 = new JSONRPCHttpClient(url, sslHack,
-																		true);
-																req1.setCredentials(username, password);
-																try {
-																	final JSONArray retval1 = req1.callJSONArray(command);
-																	tcLog.d(this.getClass().getName(), retval1.toString());
-																	setValidMessage();
-																	sslHostNameHack = true;
-																} catch (final Exception e1) {
-																	tcLog.d(getClass().getName(), "Exception during verify 2", e1);
-																	tcLog.toast("==" + e1.getMessage() + "==");
-																	if ("NOJSON".equals(e1.getMessage())) {
-																		setNoJSONMessage();
-																	} else {
-																		setInvalidMessage(e1.getMessage());
-																		sslHostNameHack = false;
-																	}
-																} finally {
-																	if (pb1 != null && !context.isFinishing()) {
-																		pb1.dismiss();
-																	}
-																}
+													public void run() {
+														final TCJSONRPCHttpClient req1 = TCJSONRPCHttpClient.getInstance(
+																		url, sslHack, true, username, password);
+														try {
+															final JSONArray retval1 = req1.callJSONArray(command);
+															tcLog.d(this.getClass().getName(), retval1.toString());
+															setValidMessage();
+															sslHostNameHack = true;
+														} catch (final Exception e1) {
+															tcLog.d(getClass().getName(), "Exception during verify 2", e1);
+															tcLog.toast("==" + e1.getMessage() + "==");
+															if ("NOJSON".equals(e1.getMessage())) {
+																setNoJSONMessage();
+															} else {
+																setInvalidMessage(e1.getMessage());
+																sslHostNameHack = false;
 															}
-														}.start();
+														} finally {
+															if (pb1 != null && !context.isFinishing()) {
+																pb1.dismiss();
+															}
+														}
 													}
-												});
+												}.start();
+											}
+										});
 										alertDialogBuilder.setNegativeButton(R.string.cancel,
 												new DialogInterface.OnClickListener() {
-													@Override
-													public void onClick(DialogInterface dialog, int id) {
-														setInvalidMessage(e.getMessage());
-														sslHostNameHack = false;
-													}
-												});
+											@Override
+											public void onClick(DialogInterface dialog, int id) {
+												setInvalidMessage(e.getMessage());
+												sslHostNameHack = false;
+											}
+										});
 										final AlertDialog alertDialog = alertDialogBuilder.create();
 										alertDialog.show();
 									}

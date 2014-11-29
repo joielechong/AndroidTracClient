@@ -45,13 +45,12 @@ public class Tickets {
 
 	private static Tickets _instance = null;
 	private static String _tag = "";
-	
+
 	private static boolean valid = false;
 
 	public static final int INVALID_URL = 1;
 	public static final int LIST_NOT_LOADED = 2;
 	public static final int CONTENT_NOT_LOADED = 3;
-	
 
 	private Tickets() {
 		_tag = getClass().getName();
@@ -90,7 +89,7 @@ public class Tickets {
 			oc.onError(INVALID_URL);
 		}
 		clear();
-		Thread loadThread = new Thread() {
+		final Thread loadThread = new Thread() {
 			@Override
 			public void run() {
 				try {
@@ -139,4 +138,42 @@ public class Tickets {
 	public static boolean isValid() {
 		return valid;
 	}
+
+	public static int getNextTicket(int ticket) {
+		return getNeighTicket(ticket, 1);
+	}
+
+	public static int getPrevTicket(int ticket) {
+		return getNeighTicket(ticket, -1);
+	}
+
+	private static int getNeighTicket(int ticknr, int dir) {
+		tcLog.d(_tag, "getNeighTicket ticknr = " + ticknr + ", dir = " + dir);
+		Ticket t = Tickets.getTicket(ticknr);
+		// tcLog.d(_tag, "t = " + t);
+		if (t == null) {
+			return -1;
+		} else {
+			final int pos = ticketList.indexOf(t);
+			final int newpos = pos + dir;
+			// tcLog.d(_tag,"pos = "+pos+", newpos = "+newpos+", count = "+ticketList.size());
+			if (pos < 0 || newpos < 0 || newpos >= ticketList.size()) {
+				return -1;
+			} else {
+				t = ticketList.get(newpos);
+				tcLog.d(_tag, "new ticket = " + t);
+				return t != null && t.hasdata() ? t.getTicketnr() : ticknr;
+			}
+		}
+	}
+
+	public static int getTicketCount() {
+		try {
+			return ticketList.size();
+		} catch (final Exception e) {
+			tcLog.e(_tag, "getTicketCount Exception", e);
+			return -1;
+		}
+	}
+
 }

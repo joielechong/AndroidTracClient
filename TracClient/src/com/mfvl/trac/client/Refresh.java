@@ -66,13 +66,15 @@ public class Refresh extends Activity {
 		// tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " +
 		// (savedInstanceState == null ? "null" : "not null"));
 
-		((TracClient) getApplication()).getTracker(Const.TrackerName.APP_TRACKER);
+		MyTracker.getInstance(this);
+		MyTracker.getTracker(Const.TrackerName.APP_TRACKER);
 
 		try {
 			final String action = getIntent().getAction().toUpperCase();
 
 			if (action != null) {
-				final Tracker t = ((TracClient) getApplication()).getTracker(Const.TrackerName.APP_TRACKER);
+				MyTracker.getInstance(this);
+				final Tracker t = MyTracker.getTracker(Const.TrackerName.APP_TRACKER);
 				// Build and send an Event.
 				t.send(new HitBuilders.EventBuilder().setCategory("Normal").setAction("Refresh").setLabel(action).build());
 				if (action.equalsIgnoreCase(RefreshService.refreshAction)) {

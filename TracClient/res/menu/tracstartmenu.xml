@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:myapp="http://schemas.android.com/apk/res-auto" >
+    xmlns:support="http://schemas.android.com/apk/res-auto" >
 
     <item
         android:id="@+id/help"
@@ -8,14 +8,14 @@
         android:menuCategory="container"
         android:orderInCategory="9997"
         android:title="@string/help"
-        myapp:showAsAction="ifRoom"/>
+        support:showAsAction="ifRoom"/>
     <item
         android:id="@+id/over"
         android:icon="@android:drawable/ic_menu_info_details"
         android:menuCategory="container"
         android:orderInCategory="9998"
         android:title="@string/about_button"
-        myapp:showAsAction="ifRoom"/>
+        support:showAsAction="ifRoom"/>
     <item
         android:id="@+id/debug"
         android:enabled="false"
