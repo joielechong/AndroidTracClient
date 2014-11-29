@@ -24,7 +24,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.os.Build;
@@ -37,6 +36,7 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
+import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -44,10 +44,6 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.mfvl.trac.client.util.Credentials;
 import com.mfvl.trac.client.util.tcLog;
-//import com.google.analytics.tracking.android.EasyTracker;
-//import com.google.analytics.tracking.android.Fields;
-//import com.google.analytics.tracking.android.MapBuilder;
-import com.google.android.gms.ads.AdRequest;
 
 public class TracClientFragment extends Fragment {
 	public Ticket _ticket = null;
@@ -73,8 +69,7 @@ public class TracClientFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		tcLog.d(getClass().getName() + ".super", "onCreate savedInstanceState = "
-				+ (savedInstanceState == null ? "null" : "not null"));
+		tcLog.d(getClass().getName() + ".super", "onCreate savedInstanceState = " + savedInstanceState);
 		if (savedInstanceState != null) {
 			LoginInfo.url = savedInstanceState.getString(Const.CURRENT_URL);
 			LoginInfo.username = savedInstanceState.getString(Const.CURRENT_USERNAME);
@@ -84,9 +79,7 @@ public class TracClientFragment extends Fragment {
 		}
 		Bundle aBundle;
 		try {
-			final ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(),
-					PackageManager.GET_META_DATA);
-			aBundle = ai.metaData;
+			aBundle = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA).metaData;
 			if (aBundle == null) {
 				listener.setDispAds(false);
 			} else {
@@ -107,8 +100,9 @@ public class TracClientFragment extends Fragment {
 			testDevices[0] = "";
 		}
 
+		MyTracker.getInstance(context);
 		// Get a Tracker (should auto-report)
-		((TracClient) context.getApplication()).getTracker(Const.TrackerName.APP_TRACKER);
+		MyTracker.getTracker(Const.TrackerName.APP_TRACKER);
 	}
 
 	@Override
@@ -224,8 +218,9 @@ public class TracClientFragment extends Fragment {
 		final GoogleAnalytics analytics = GoogleAnalytics.getInstance(context);
 		analytics.reportActivityStart(context);
 
+		MyTracker.getInstance(context);
 		// Get tracker.
-		final Tracker t = ((TracClient) context.getApplication()).getTracker(Const.TrackerName.APP_TRACKER);
+		final Tracker t = MyTracker.getTracker(Const.TrackerName.APP_TRACKER);
 
 		// Set screen name.
 		t.setScreenName(getClass().getSimpleName());

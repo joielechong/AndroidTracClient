@@ -89,7 +89,7 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 
 	}
 
-	public JSONRPCHttpClient(final String uri, final boolean sslHack, boolean sslHostNameHack) {
+	public JSONRPCHttpClient(final String uri, final boolean sslHack, final boolean sslHostNameHack) {
 		try {
 			serviceUri = uri;
 			final HttpClientBuilder hcb = HttpClientBuilder.create();
@@ -144,6 +144,9 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 		if (username != null && !"".equals(username)) {
 			_username = username;
 			_password = password;
+		} else {
+			_username = null;
+			_password = null;
 		}
 	}
 

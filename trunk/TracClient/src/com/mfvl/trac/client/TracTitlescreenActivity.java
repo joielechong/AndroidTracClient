@@ -44,9 +44,11 @@ public class TracTitlescreenActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		tcLog.setContext(this);
+		tcLog.i(getClass().getName(), "onCreate");
+		MyTracker.getInstance(this);
 		try {
 			super.onCreate(savedInstanceState);
-			tcLog.setContext(this);
 			Credentials.getInstance(this);
 			LoginInfo.getInstance();
 			Tickets.getInstance();
@@ -56,18 +58,19 @@ public class TracTitlescreenActivity extends Activity {
 
 			final TextView tv = (TextView) findViewById(R.id.version_content);
 			tv.setText(Credentials.buildVersion());
-
+			MyTracker.getInstance(this);
+			// Get a Tracker (should auto-report)
+			t = MyTracker.getTracker(Const.TrackerName.APP_TRACKER);
+			t.setScreenName(getClass().getName());
 		} catch (final Exception e) {
 			tcLog.toast("crash: " + e.getMessage());
+			tcLog.e(getClass().getName(), "crash", e);
 		}
-		// Get a Tracker (should auto-report)
-		t = ((TracClient) getApplication()).getTracker(Const.TrackerName.APP_TRACKER);
-		t.setScreenName(getClass().getName());
 	}
 
 	@Override
 	public void onStart() {
-		// tcLog.i(getClass().getName(), "onStart");
+		tcLog.i(getClass().getName(), "onStart");
 		super.onStart();
 
 		boolean adMobAvailable = false;
@@ -147,7 +150,7 @@ public class TracTitlescreenActivity extends Activity {
 
 	@Override
 	public void onStop() {
-		// tcLog.i(getClass().getName(), "onStop");
+		tcLog.i(getClass().getName(), "onStop");
 		super.onStop();
 		// Get an Analytics tracker to report app starts &amp; uncaught
 		// exceptions etc.

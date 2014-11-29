@@ -689,7 +689,7 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 
 			try {
 				spinValue
-				.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+						.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 				((LinearLayout) ll.findViewById(R.id.veld)).addView(spinValue);
 			} catch (final Exception e) {
 			}
@@ -911,9 +911,9 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 		final int newTicket;
 		// tcLog.d(getClass().getName(),"onFling e1 = "+e1+", e2 = "+e2);
 		if (e1.getX() - e2.getX() > LARGE_MOVE) {
-			newTicket = listener.getNextTicket(_ticket.getTicketnr());
+			newTicket = Tickets.getNextTicket(_ticket.getTicketnr());
 		} else if (e2.getX() - e1.getX() > LARGE_MOVE) {
-			newTicket = listener.getPrevTicket(_ticket.getTicketnr());
+			newTicket = Tickets.getPrevTicket(_ticket.getTicketnr());
 		} else {
 			newTicket = -1;
 		}

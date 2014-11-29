@@ -22,32 +22,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.alexd.jsonrpc.JSONRPCHttpClient;
 import org.json.JSONArray;
 
-import com.mfvl.trac.client.util.Credentials;
 import com.mfvl.trac.client.util.tcLog;
 
 public class TicketModel implements Serializable, Cloneable {
 	private static final long serialVersionUID = 4307815225424930343L;
 	private static Map<String, TicketModelVeld> _velden;
 	private static Map<Integer, String> _volgorde;
-	private static String _url;
-	private static String _username;
-	private static String _password;
-	private static boolean _sslHack;
-	private static boolean _sslHostNameHack;
 	private static int _count;
 	private static boolean loading;
 	private static Thread networkThread = null;
 	private static TicketModel _instance = null;
 
 	private TicketModel() {
-		_url = Credentials.getUrl();
-		_username = Credentials.getUsername();
-		_password = Credentials.getPassword();
-		_sslHack = Credentials.getSslHack();
-		_sslHostNameHack = Credentials.getSslHostNameHack();
 		_count = 0;
 
 		_velden = new HashMap<String, TicketModelVeld>();
@@ -58,9 +46,8 @@ public class TicketModel implements Serializable, Cloneable {
 		networkThread = new Thread() {
 			@Override
 			public void run() {
-				tcLog.d(getClass().getName(), "TicketModel _url = " + _url);
-				final JSONRPCHttpClient req = new JSONRPCHttpClient(_url, _sslHack, _sslHostNameHack);
-				req.setCredentials(_username, _password);
+				tcLog.d(getClass().getName(), "TicketModel url = " + LoginInfo.url);
+				final TCJSONRPCHttpClient req = TCJSONRPCHttpClient.getInstance();
 
 				try {
 					final JSONArray v = req.callJSONArray("ticket.getTicketFields");
@@ -155,14 +142,9 @@ public class TicketModel implements Serializable, Cloneable {
 		int result = 17;
 
 		// Include a hash for each field.
-		result = 31 * result + (_sslHack ? 1 : 0);
-		result = 31 * result + (_sslHostNameHack ? 1 : 0);
 		result = 31 * result + _count;
 		result = 31 * result + hc(_velden);
 		result = 31 * result + hc(_volgorde);
-		result = 31 * result + hc(_url);
-		result = 31 * result + hc(_username);
-		result = 31 * result + hc(_password);
 		return result + super.hashCode();
 	}
 }

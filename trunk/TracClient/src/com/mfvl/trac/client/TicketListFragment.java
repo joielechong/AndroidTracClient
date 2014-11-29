@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.alexd.jsonrpc.JSONRPCException;
-import org.alexd.jsonrpc.JSONRPCHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -496,9 +495,6 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 	private void setScroll() {
 		if (listView != null) {
 			listView.setSelection(scrollPosition);
-			// listView.setSelection(scrollPosition == 0 ? 0 : scrollPosition +
-			// 1);
-			// tcLog.d(getClass().getName(),"setScroll scrollPosition = "+scrollPosition);
 		}
 	}
 
@@ -549,6 +545,11 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 		super.onCreateOptionsMenu(menu, inflater);
 		final MenuItem shareItem = menu.findItem(R.id.tlshare);
 		mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
+		if (mShareActionProvider == null) {
+			tcLog.d(getClass().getName(), "onCreateOptionsMenu create new shareActionProvider");
+			mShareActionProvider = new ShareActionProvider(this.getActivity());
+			MenuItemCompat.setActionProvider(shareItem, mShareActionProvider);
+		}
 		final Intent sl = shareList();
 		tcLog.d(getClass().getName(), "shareItem = " + shareItem + " " + mShareActionProvider + " " + sl);
 		mShareActionProvider.setShareIntent(sl);
@@ -563,6 +564,9 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 		} else if (itemId == R.id.tlrefresh) {
 			sendMessage(MSG_RELOAD);
 			doRefresh();
+		} else if (itemId == R.id.tlshare) {
+			// final Intent sl = shareList();
+			// startActivity(sl);
 		} else if (itemId == R.id.help) {
 			final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
 			final String filename = context.getString(R.string.helplistfile);
@@ -672,8 +676,8 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 							}
 						}
 						tcLog.d(logTag, "reqString = " + reqString);
-						final JSONRPCHttpClient req = new JSONRPCHttpClient(LoginInfo.url, LoginInfo.sslHack, LoginInfo.sslHostNameHack);
-						req.setCredentials(LoginInfo.username, LoginInfo.password);
+						final TCJSONRPCHttpClient req = TCJSONRPCHttpClient.getInstance();
+
 						final String rs = reqString;
 						try {
 							if (reqString.length() == 0) {
@@ -711,7 +715,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 										final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
 										alertDialogBuilder.setTitle(titleString);
 										alertDialogBuilder.setMessage(messString).setCancelable(false)
-												.setPositiveButton(R.string.oktext, null);
+										.setPositiveButton(R.string.oktext, null);
 										final AlertDialog alertDialog = alertDialogBuilder.create();
 										if (!context.isFinishing()) {
 											alertDialog.show();
@@ -730,12 +734,12 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 									final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
 									alertDialogBuilder.setTitle(R.string.connerr);
 									alertDialogBuilder.setMessage("regString = " + rs + "\n" + e.getMessage()).setCancelable(false)
-											.setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
-												@Override
-												public void onClick(DialogInterface dialog, int id) {
-													listener.onChangeHost();
-												}
-											});
+									.setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
+										@Override
+										public void onClick(DialogInterface dialog, int id) {
+											listener.onChangeHost();
+										}
+									});
 									final AlertDialog alertDialog = alertDialogBuilder.create();
 									if (!context.isFinishing()) {
 										alertDialog.show();
@@ -845,9 +849,8 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 						throw new TicketLoadException("loadTicketContent interrupt1 detected");
 					}
 
-					tcLog.d(logTag, "loadTicketContent JSONRPCHttpClient " + LoginInfo.url + " " + LoginInfo.sslHack);
-					final JSONRPCHttpClient req = new JSONRPCHttpClient(LoginInfo.url, LoginInfo.sslHack, LoginInfo.sslHostNameHack);
-					req.setCredentials(LoginInfo.username, LoginInfo.password);
+					tcLog.d(logTag, "loadTicketContent TCJSONRPCHttpClient " + LoginInfo.url + " " + LoginInfo.sslHack);
+					final TCJSONRPCHttpClient req = TCJSONRPCHttpClient.getInstance();
 					for (int j = 0; j < count; j += ticketGroupCount) {
 						final JSONArray mc = new JSONArray();
 						for (int i = j; i < (j + ticketGroupCount < count ? j + ticketGroupCount : count); i++) {
@@ -1030,18 +1033,8 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 		Tickets.sortList = sort;
 	}
 
-	public int getTicketCount() {
-		try {
-			return dataAdapter.getCount();
-		} catch (final Exception e) {
-			tcLog.e(this.getClass().getName(), "getTicketCount Exception", e);
-			return -1;
-		}
-	}
-
 	public List<Integer> getNewTickets(final String isoTijd) {
-		final JSONRPCHttpClient req = new JSONRPCHttpClient(LoginInfo.url, LoginInfo.sslHack, LoginInfo.sslHostNameHack);
-		req.setCredentials(LoginInfo.username, LoginInfo.password);
+		final TCJSONRPCHttpClient req = TCJSONRPCHttpClient.getInstance();
 		try {
 			final JSONArray datum = new JSONArray();
 			datum.put("datetime");
@@ -1070,34 +1063,7 @@ public class TicketListFragment extends TracClientFragment implements OnItemClic
 		}
 	}
 
-	private int getNeighTicket(int ticknr, int dir) {
-		tcLog.d(getClass().getName(), "getNeighTicket ticknr = " + ticknr + ", dir = " + dir);
-		Ticket t = Tickets.getTicket(ticknr);
-		tcLog.d(getClass().getName(), "t = " + t);
-		if (t == null) {
-			return -1;
-		} else {
-			final int pos = dataAdapter.getPosition(t);
-			final int newpos = pos + dir;
-			// tcLog.d(getClass().getName(),"pos = "+pos+", newpos = "+newpos+", count = "+dataAdapter.getCount());
-			if (pos < 0 || newpos < 0 || newpos >= dataAdapter.getCount()) {
-				return -1;
-			} else {
-				t = dataAdapter.getItem(newpos);
-				tcLog.d(getClass().getName(), "new ticket = " + t);
-				return t != null && t.hasdata() ? t.getTicketnr() : ticknr;
-			}
-		}
-	}
-
-	public int getNextTicket(int ticket) {
-		return getNeighTicket(ticket, 1);
-	}
-
-	public int getPrevTicket(int ticket) {
-		return getNeighTicket(ticket, -1);
-	}
-
+	@Override
 	public void setHost() {
 		tcLog.d(this.getClass().getName(), "setHost");
 		super.setHost();

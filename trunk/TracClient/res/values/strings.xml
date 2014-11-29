@@ -5,7 +5,7 @@
     <string name="app_name" translatable="false">TracClient</string>
     <string name="about_button">About TracClient</string>
     <string name="Back">Back</string>
-    <string name="tracUrl" translatable="false">TRAC url</string>
+    <string name="tracUrl">TRAC url</string>
     <string name="tracUrlHint" translatable="false">http://host/trac/login/rpc</string>
     <string name="tracUser">Username</string>
     <string name="tracUserHint">Username</string>
@@ -31,7 +31,7 @@
     <string name="newtick">Create new ticket</string>
     <string name="store">Store ticket</string>
     <string name="storerr">Error during create ticket</string>
-    <string name="oktext" translatable="false">OK</string>
+    <string name="oktext">OK</string>
     <string name="storerrdesc">Cannot store ticket</string>
     <string name="storok">Ticket created</string>
     <string name="storokdesc">Ticket created, id =</string>
@@ -51,7 +51,6 @@
     <string name="zoekfilter">Enter search string</string>
     <string name="zoek">Search</string>
     <string name="title_text" translatable="false">TRAC\nCLIENT</string>
-    <string name="version_text" translatable="false">V.unknown</string>
     <string name="storefilter">Save filter</string>
     <string name="storesort">Save sort order</string>
     <string name="moveup">move up</string>

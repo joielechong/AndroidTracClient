@@ -72,7 +72,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 
 		@Override
 		public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException,
-				RuntimeException {
+		RuntimeException {
 
 			if (localName.equals(_appname) && state == 0) {
 				state++;
