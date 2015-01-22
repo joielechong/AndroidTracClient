@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
-        android:paddingBottom="50dp" >
+        android:paddingBottom="@dimen/adview_padding" >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -49,13 +49,14 @@
                         android:id="@+id/actionblock"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true" />
+ 						android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_toRightOf="@+id/actionblock"
+                        android:layout_alignParentEnd="true"
+						android:layout_alignParentRight="true"
                         android:orientation="vertical" >
 
                         <TextView
@@ -64,6 +65,7 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="4dp"
                             android:paddingLeft="10dp"
+							android:paddingRight="10dp"
                             android:textAppearance="?android:attr/textAppearanceMedium" />
 
                         <EditText
@@ -73,6 +75,7 @@
                             android:layout_margin="4dp"
                             android:inputType="text"
                             android:paddingLeft="10dp"
+							android:paddingRight="10dp"
                             android:textAppearance="?android:attr/textAppearanceMedium" />
 
                         <Spinner
@@ -80,6 +83,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_margin="4dp"
+							android:paddingRight="10dp"
                             android:paddingLeft="10dp" />
                     </LinearLayout>
                 </RelativeLayout>
@@ -128,14 +132,18 @@
                     android:id="@+id/canbutton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+ 					android:layout_alignParentLeft="true"
+                    android:layout_toLeftOf="@+id/storebutton"
+                    android:layout_toStartOf="@+id/storebutton"
                     android:text="@string/cancel" />
 
                 <Button
                     android:id="@+id/storebutton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+ 					android:layout_alignParentRight="true"
                     android:text="@string/storeupd" />
             </RelativeLayout>
         </LinearLayout>

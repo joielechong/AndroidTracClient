@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:orientation="vertical"
-        android:paddingBottom="50dp" >
+        android:paddingBottom="@dimen/adview_padding" >
 
         <TextView
             android:id="@+id/ticknr"
@@ -21,7 +21,7 @@
             android:clickable="true"
             android:text="@string/ophalen"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="20sp" />
+            android:textSize="@dimen/list_textsize" />
 
         <LinearLayout
             android:id="@+id/modveld"
@@ -39,14 +39,19 @@
                     android:id="@+id/cancel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
+ 					android:layout_alignParentStart="true"
+ 					android:layout_alignParentLeft="true"
+					android:layout_toLeftOf="@+id/storebutton"
+					android:layout_toStartOf="@+id/storebutton"
+					android:maxLines="1"
                     android:text="@string/cancel" />
 
                 <Button
                     android:id="@+id/storebutton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
+ 					android:layout_alignParentRight="true"
+ 					android:layout_alignParentEnd="true"
                     android:text="@string/updtick" />
             </RelativeLayout>
 
@@ -62,7 +67,7 @@
             android:id="@+id/listofFields"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:textSize="20sp" />
+            android:textSize="@dimen/list_textsize"  />
     </LinearLayout>
 
     <LinearLayout

@@ -323,8 +323,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" +
-		// item);
+		// tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" + item);
 		final int itemId = item.getItemId();
 		if (itemId == R.id.help) {
 			final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);

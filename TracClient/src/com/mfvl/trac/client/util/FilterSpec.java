@@ -18,24 +18,23 @@ package com.mfvl.trac.client.util;
 
 import java.io.Serializable;
 
-public class FilterSpec extends Object implements Serializable, Cloneable {
+public class FilterSpec extends Spec implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 552288154328397222L;
-	private String _veld;
 	private String _operator;
 	private String _waarde;
 	private String _newwaarde;
 	private Boolean _edited = false;
 
 	public FilterSpec(String veld, String operator, String waarde) {
-		_veld = veld;
+		super(veld);
 		_operator = operator;
 		_waarde = waarde;
 		_newwaarde = waarde;
 	}
 
 	public FilterSpec(String string, String[] operators) {
-		_veld = null;
+		super(null);
 		_operator = null;
 		_waarde = null;
 		for (int i = operators.length - 1; i >= 0; i--) {
@@ -49,10 +48,6 @@ public class FilterSpec extends Object implements Serializable, Cloneable {
 				i = 0;
 			}
 		}
-	}
-
-	public String veld() {
-		return _veld;
 	}
 
 	public void setOperator(String o) {
@@ -97,22 +92,12 @@ public class FilterSpec extends Object implements Serializable, Cloneable {
 	}
 
 	@Override
-	public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
-
-	private int hc(Object o) {
-		return o == null ? 0 : o.hashCode();
-	}
-
-	@Override
 	public int hashCode() {
 		// Start with a non-zero constant.
 		int result = 23;
 
 		// Include a hash for each field.
 		result = 37 * result + hc(_edited);
-		result = 37 * result + hc(_veld);
 		result = 37 * result + hc(_operator);
 		result = 37 * result + hc(_waarde);
 		result = 37 * result + hc(_newwaarde);

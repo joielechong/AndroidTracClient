@@ -26,7 +26,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
 
-import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.mfvl.trac.client.util.Credentials;
@@ -38,10 +37,6 @@ public class TracShowWebPage extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		tcLog.d(getClass().getName(), "onCreate savedInstanceState = " + savedInstanceState);
 		super.onCreate(savedInstanceState);
-		MyTracker.getInstance(this);
-		// Get a Tracker (should auto-report)
-		final Tracker t = MyTracker.getTracker(Const.TrackerName.APP_TRACKER);
-		t.setScreenName(getClass().getName());
 		final Intent i = this.getIntent();
 		final boolean toonVersie = i.getBooleanExtra(Const.HELP_VERSION, true);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -49,18 +44,20 @@ public class TracShowWebPage extends Activity {
 		setContentView(R.layout.trac_about);
 		final String filename = "file:///android_asset/" + i.getStringExtra(Const.HELP_FILE) + ".html";
 		tcLog.d(getClass().getName(), filename + " " + toonVersie);
-		final TextView tv = (TextView) findViewById(R.id.about_version_text);
-		final TextView tv1 = (TextView) findViewById(R.id.v1);
-		final TextView tv2 = (TextView) findViewById(R.id.v2);
+		final View tv = findViewById(R.id.versionblock);
 		if (!toonVersie) {
 			tv.setVisibility(View.GONE);
-			tv1.setVisibility(View.GONE);
-			tv2.setVisibility(View.GONE);
 		} else {
-			tv.setText(Credentials.buildVersion());
+			final TextView tv1 = (TextView) findViewById(R.id.about_version_text);
+			tv1.setText(Credentials.buildVersion());
 		}
-		// Build and send an Event.
-		t.send(new HitBuilders.EventBuilder().setCategory("Normal").setAction("WebView").setLabel(filename).build());
+		if (Const.doAnalytics) {
+			MyTracker.getInstance(TracShowWebPage.this);
+			// Get a Tracker (should auto-report)
+			final Tracker t = MyTracker.getTracker(getClass().getName());
+			// Build and send an Event.
+			t.send(new HitBuilders.EventBuilder().setCategory("Normal").setAction("WebView").setLabel(filename).build());
+		}
 		final WebView wv = (WebView) findViewById(R.id.webfile);
 		// wv.getSettings().setJavaScriptEnabled(true);
 		wv.setWebViewClient(new WebViewClient());
@@ -72,14 +69,18 @@ public class TracShowWebPage extends Activity {
 	public void onStart() {
 		tcLog.d(this.getClass().getName(), "onStart");
 		super.onStart();
-		GoogleAnalytics.getInstance(this).reportActivityStart(this);
+		if (Const.doAnalytics) {
+			MyTracker.reportActivityStart(TracShowWebPage.this);
+		}
 	}
 
 	@Override
 	public void onStop() {
 		tcLog.d(this.getClass().getName(), "onStop");
 		super.onStop();
-		GoogleAnalytics.getInstance(this).reportActivityStop(this);
+		if (Const.doAnalytics) {
+			MyTracker.reportActivityStop(TracShowWebPage.this);
+		}
 	}
 
 }

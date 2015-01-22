@@ -30,40 +30,41 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 
-import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.mfvl.trac.client.util.Credentials;
 import com.mfvl.trac.client.util.tcLog;
+import android.content.pm.PackageManager;
 
 public class TracTitlescreenActivity extends Activity {
 
-	Tracker t;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 		tcLog.setContext(this);
 		tcLog.i(getClass().getName(), "onCreate");
-		MyTracker.getInstance(this);
+		Credentials.getInstance(this);
+		Tickets.getInstance();
 		try {
-			super.onCreate(savedInstanceState);
-			Credentials.getInstance(this);
-			LoginInfo.getInstance();
-			Tickets.getInstance();
+			Const.doAnalytics = Credentials.metaDataGetBoolean("com.mfvl.trac.client.useAnalytics");
+		} catch (final Exception e) {
+			tcLog.e(getClass().getName(), "getApplicationInfo", e);
+		}
+		tcLog.i(getClass().getName(),"doAnalytics = "+Const.doAnalytics);
+		try {
 			requestWindowFeature(Window.FEATURE_NO_TITLE);
 			getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			setContentView(R.layout.activity_titlescreen);
-
 			final TextView tv = (TextView) findViewById(R.id.version_content);
 			tv.setText(Credentials.buildVersion());
-			MyTracker.getInstance(this);
-			// Get a Tracker (should auto-report)
-			t = MyTracker.getTracker(Const.TrackerName.APP_TRACKER);
-			t.setScreenName(getClass().getName());
+			if (Const.doAnalytics) {
+				// Get a Tracker (should auto-report)
+				MyTracker.getInstance(this);
+				Tracker t = MyTracker.getTracker(getClass().getName());
+			}
 		} catch (final Exception e) {
-			tcLog.toast("crash: " + e.getMessage());
 			tcLog.e(getClass().getName(), "crash", e);
 		}
 	}
@@ -91,11 +92,12 @@ public class TracTitlescreenActivity extends Activity {
 			tcLog.e(getClass().getName(), "Exception while determining Google Play Services", e);
 		}
 
-		// Get an Analytics tracker to report app starts &amp; uncaught
-		// exceptions etc.
-		final GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
-		analytics.reportActivityStart(this);
-
+		if (Const.doAnalytics) {
+			// Get an Analytics tracker to report app starts &amp; uncaught
+			// exceptions etc.
+			MyTracker.reportActivityStart(this);
+		}
+		
 		final Intent launchTrac = new Intent(getApplicationContext(), TracStart.class);
 
 		// adMobAvailable=false;
@@ -107,8 +109,7 @@ public class TracTitlescreenActivity extends Activity {
 		// Integer ticket = -1;
 		if (Intent.ACTION_VIEW.equals(intent.getAction())) {
 			final String contentString = intent.getDataString();
-			// tcLog.d(getClass().getName(), "View intent data = " +
-			// contentString);
+			// tcLog.d(getClass().getName(), "View intent data = " + contentString);
 			if (contentString != null) {
 				final Uri uri = Uri.parse(contentString.replace("trac.client.mfvl.com/", ""));
 				final List<String> segments = uri.getPathSegments();
@@ -121,9 +122,14 @@ public class TracTitlescreenActivity extends Activity {
 					for (final String segment : segments.subList(0, count - 2)) {
 						urlstring += segment + "/";
 					}
-					// Build and send an Event.
-					t.send(new HitBuilders.EventBuilder().setCategory("Startup").setAction("URI start").setLabel(urlstring)
-							.setValue(ticket).build());
+					if (Const.doAnalytics) {
+						// Build and send an Event.
+                        MyTracker.getInstance(this);
+                        Tracker t = MyTracker.getTracker(getClass().getName());
+						if (t != null) {
+							t.send(new HitBuilders.EventBuilder().setCategory("Startup").setAction("URI start").setLabel(urlstring).setValue(ticket).build());
+						}
+					}
 					launchTrac.putExtra(Const.INTENT_URL, urlstring);
 					launchTrac.putExtra(Const.INTENT_TICKET, (long) ticket);
 				} else {
@@ -152,10 +158,9 @@ public class TracTitlescreenActivity extends Activity {
 	public void onStop() {
 		tcLog.i(getClass().getName(), "onStop");
 		super.onStop();
-		// Get an Analytics tracker to report app starts &amp; uncaught
-		// exceptions etc.
-		final GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
-		analytics.reportActivityStop(this);
-
+		if (Const.doAnalytics) {
+			// Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
+			MyTracker.reportActivityStop(this);
+		}
 	}
 }

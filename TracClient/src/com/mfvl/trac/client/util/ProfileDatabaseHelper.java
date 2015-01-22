@@ -38,6 +38,10 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.content.res.TypedArray;
+import android.content.res.Resources;
+
+import com.mfvl.trac.client.R;
 
 public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 	private static final String DATABASE_NAME = "profile.db";
@@ -50,10 +54,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 	public static final String SSLHACK_ID = "sslhack";
 	public SQLiteDatabase db = null;
 	public boolean upgrade = false;
-
-	public ProfileDatabaseHelper(Context context) {
-		super(context, Credentials.makeDbPath(DATABASE_NAME), null, DATABASE_VERSION);
-	}
+	private Context _context;
 
 	public class XMLHandler extends DefaultHandler {
 
@@ -106,6 +107,11 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 		}
 	}
 
+	public ProfileDatabaseHelper(Context context) {
+		super(context, Credentials.makeDbPath(DATABASE_NAME), null, DATABASE_VERSION);
+		_context = context;
+	}
+
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		final String CREATE_PROFILE_TABLE = "CREATE TABLE " + TABLE_NAME + "(" + NAME_ID + " TEXT PRIMARY KEY," + URL_ID + " TEXT,"
@@ -128,10 +134,19 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 	public void open() {
 		db = this.getWritableDatabase();
 		if (upgrade) {
-			final LoginProfile ex1 = new LoginProfile("http://van-loon.xs4all.nl/TracClient/rpc", "", "", false);
-			final LoginProfile ex2 = new LoginProfile("https://van-loon.xs4all.nl/TracClient/login/rpc", "demo", "demo", true);
-			addProfile("TracClient-RO", ex1);
-			addProfile("TracClient-login", ex2);
+			Resources res = _context.getResources();
+			TypedArray ta = res.obtainTypedArray(R.array.profiles);
+			for (int i=0;i<ta.length();++i) {
+				int resId = ta.getResourceId(i,0);
+				String[] values = res.getStringArray(resId);
+				addProfile(values[0],new LoginProfile(values[1],values[2],values[3],values[4]=="true"));
+//				tcLog.d(getClass().getName(),"i = "+i+" values = "+Arrays.asList(values));
+			}
+			ta.recycle();
+/*
+			addProfile("TracClient-RO", new LoginProfile("http://van-loon.xs4all.nl/TracClient/rpc", "", "", false));
+			addProfile("TracClient-login", new LoginProfile("https://van-loon.xs4all.nl/TracClient/login/rpc", "demo", "demo", true));
+*/
 			upgrade = false;
 		}
 	}
@@ -243,26 +258,13 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 		}
 		final String fileName = Credentials.makeExtFilePath(appname + ".xml");
 		final InputStream in = new BufferedInputStream(new FileInputStream(fileName));
-		try {
+		final XMLReader xmlR = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
 
-			/**
-			 * Create a new instance of the SAX parser
-			 **/
-			final SAXParserFactory saxPF = SAXParserFactory.newInstance();
-			final SAXParser saxP = saxPF.newSAXParser();
-			final XMLReader xmlR = saxP.getXMLReader();
-
-			/**
-			 * Create the Handler to handle each of the XML tags.
-			 **/
-			final XMLHandler myXMLHandler = new XMLHandler(appname, this);
-			xmlR.setContentHandler(myXMLHandler);
-			xmlR.parse(new InputSource(in));
-
-		} catch (final Exception e) {
-			System.out.println(e);
-		}
-
+		/**
+		 * Create the Handler to handle each of the XML tags.
+		 **/
+		xmlR.setContentHandler(new XMLHandler(appname, this));
+		xmlR.parse(new InputSource(in));
 	}
 
 	public void writeXML(final String appname) throws Exception {

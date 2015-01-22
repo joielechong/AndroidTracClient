@@ -23,6 +23,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,7 +58,7 @@ public class SortFragment extends TracClientFragment {
 			View v = convertView;
 			if (v == null) {
 				final LayoutInflater vi = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				v = vi.inflate(R.layout.sort_spec, null);
+				v = vi.inflate(R.layout.sort_spec, parent, false);
 			}
 			final ImageButton sortup = (ImageButton) v.findViewById(R.id.sortup);
 			final ImageButton sortdown = (ImageButton) v.findViewById(R.id.sortdown);
@@ -228,12 +230,19 @@ public class SortFragment extends TracClientFragment {
 					// tcLog.d(this.getClass().getName(), "addButton " + veld);
 					final SortSpec o = new SortSpec(veld);
 					sortAdapter.add(o);
-					sortAdapter.notifyDataSetChanged();
+					// sortAdapter.notifyDataSetChanged();
 				}
 			});
 		}
 
 	}
+
+//	@Override
+//	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//		tcLog.d(getClass().getName(), "onCreateOptionsMenu");
+//		// inflater.inflate(R.menu.ticketlistmenu, menu);
+//		super.onCreateOptionsMenu(menu, inflater);
+//	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {

@@ -65,52 +65,13 @@ public class NewTicketFragment extends TracClientFragment {
 		if (pb != null && !context.isFinishing()) {
 			pb.dismiss();
 		}
-		createTicket(view);
 		return view;
 	}
-
+	
 	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-		// tcLog.d(this.getClass().getName(),"onActivityCreated savedInstanceState = "+
-		// (savedInstanceState == null ? "null" : "not null"));
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" + item.getTitle());
-		final int itemId = item.getItemId();
-		if (itemId == R.id.help) {
-			final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
-			final String filename = context.getString(R.string.newhelpfile);
-			launchTrac.putExtra(Const.HELP_FILE, filename);
-			launchTrac.putExtra(Const.HELP_VERSION, false);
-			startActivity(launchTrac);
-		} else {
-			return super.onOptionsItemSelected(item);
-		}
-		return true;
-	}
-
-	private void makeRow(TableLayout tl, final String veldnaam, View tv2, final int id) {
-		if (veldnaam != null) {
-			final TableRow tr1 = new TableRow(context);
-			tr1.setId(id + 100);
-			final TextView tv1 = new TextView(context, null, android.R.attr.textAppearanceMedium);
-			tv1.setId(id + 200);
-			tr1.addView(tv1);
-			tv1.setText(veldnaam);
-			tl.addView(tr1);
-		}
-		final TableRow tr2 = new TableRow(context);
-
-		tv2.setId(id + 300);
-		tr2.addView(tv2);
-		tl.addView(tr2);
-	}
-
-	public void createTicket(final View view) {
-		// tcLog.d(this.getClass().getName(), "createTicket");
+	public void onViewCreated(final View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		tcLog.d(this.getClass().getName(), "onViewCreated view = "+ view+" sis = "+savedInstanceState);
 		final Button backButton = (Button) view.findViewById(R.id.backbutton);
 		final Button storButton = (Button) view.findViewById(R.id.storebutton);
 		final TableLayout tl = (TableLayout) view.findViewById(R.id.newTickTable);
@@ -199,7 +160,7 @@ public class NewTicketFragment extends TracClientFragment {
 								}
 							}
 							velden.put("status", "new");
-							velden.put("reporter", LoginInfo.username);
+							velden.put("reporter", Tickets.username);
 							final CheckBox updNotify = (CheckBox) view.findViewById(R.id.updNotify);
 							final boolean notify = updNotify == null ? false : updNotify.isChecked();
 							final Ticket t = new Ticket(velden);
@@ -250,5 +211,38 @@ public class NewTicketFragment extends TracClientFragment {
 
 			}
 		});
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" + item.getTitle());
+		final int itemId = item.getItemId();
+		if (itemId == R.id.help) {
+			final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
+			final String filename = context.getString(R.string.newhelpfile);
+			launchTrac.putExtra(Const.HELP_FILE, filename);
+			launchTrac.putExtra(Const.HELP_VERSION, false);
+			startActivity(launchTrac);
+		} else {
+			return super.onOptionsItemSelected(item);
+		}
+		return true;
+	}
+
+	private void makeRow(TableLayout tl, final String veldnaam, View tv2, final int id) {
+		if (veldnaam != null) {
+			final TableRow tr1 = new TableRow(context);
+			tr1.setId(id + 100);
+			final TextView tv1 = new TextView(context, null, android.R.attr.textAppearanceMedium);
+			tv1.setId(id + 200);
+			tr1.addView(tv1);
+			tv1.setText(veldnaam);
+			tl.addView(tr1);
+		}
+		final TableRow tr2 = new TableRow(context);
+
+		tv2.setId(id + 300);
+		tr2.addView(tv2);
+		tl.addView(tr2);
 	}
 }

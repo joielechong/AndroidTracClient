@@ -17,6 +17,7 @@
 package com.ipaulpro.afilechooser.utils;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import android.net.Uri;
@@ -32,7 +33,7 @@ public class MimeTypes {
 
 	public void put(String type, String extension) {
 		// Convert extensions to lower case letters for easier comparison
-		extension = extension.toLowerCase();
+		extension = extension.toLowerCase(Locale.US);
 
 		mMimeTypes.put(type, extension);
 	}
@@ -55,7 +56,7 @@ public class MimeTypes {
 		}
 
 		// Convert extensions to lower case letters for easier comparison
-		extension = extension.toLowerCase();
+		extension = extension.toLowerCase(Locale.US);
 
 		String mimetype = mMimeTypes.get(extension);
 

@@ -23,15 +23,20 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
 import com.mfvl.trac.client.TracStart;
+import com.mfvl.trac.client.R;
 
 public class ColoredArrayAdapter<T> extends ArrayAdapter<T> {
 
 	private final List<T> items;
-	private final int[] colors = new int[] { 0x00000000, 0x30111111 };
+	private static int[] colors = null;
 
 	public ColoredArrayAdapter(TracStart context, int resource, List<T> list) {
 		super(context, resource, list);
 		items = list;
+
+		if (colors == null) {
+			colors = context.getResources().getIntArray(R.array.list_col);
+		}
 	}
 
 	@Override

@@ -23,7 +23,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class TicketModelVeld {
+public class TicketModelVeld extends TcObject {
 
 	private String _name;
 	private String _label;
@@ -42,10 +42,6 @@ public class TicketModelVeld {
 		_value = value;
 		_optional = false;
 		_options = null;
-	}
-
-	private int hc(Object o) {
-		return o == null ? 0 : o.hashCode();
 	}
 
 	@Override

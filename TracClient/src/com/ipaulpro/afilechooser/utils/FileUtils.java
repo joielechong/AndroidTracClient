@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
@@ -380,7 +381,7 @@ public class FileUtils {
 		@Override
 		public int compare(File f1, File f2) {
 			// Sort alphabetically by lower case, which is much cleaner
-			return f1.getName().toLowerCase().compareTo(f2.getName().toLowerCase());
+			return f1.getName().toLowerCase(Locale.US).compareTo(f2.getName().toLowerCase(Locale.US));
 		}
 	};
 

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="timerStart">60000</integer> <!-- 1*60*1000 1 min. -->
+    <integer name="timerPeriod">300000</integer> <!-- 5*60*1000 5 min. -->
+	<integer name="waitAnalytics">500</integer> <!-- time to wait for startup of Google Analytics -->
+	
+	<integer name="large_move">90</integer>
+	<integer name="extra_large_move">360</integer>
+	<integer name="fast_move">3000</integer>
+	
+</resources>

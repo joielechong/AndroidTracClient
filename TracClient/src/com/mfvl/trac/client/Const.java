@@ -17,18 +17,20 @@
 package com.mfvl.trac.client;
 
 public final class Const {
-
+	
 	/*
 	 * Constanten voor communicatie met de service
-	 */
-	static final int MSG_START_TIMER = 1;
-	static final int MSG_REQUEST_TICKET_COUNT = 2;
-	static final int MSG_SEND_TICKET_COUNT = 3;
-	static final int MSG_REQUEST_NEW_TICKETS = 4;
-	static final int MSG_SEND_NEW_TICKETS = 5;
-	static final int MSG_REQUEST_REFRESH = 6;
-	static final int MSG_STOP_TIMER = 7;
-	static final int MSG_REMOVE_NOTIFICATION = 8;
+	*/
+	
+	enum ServiceMsg { MSG_START_TIMER, 
+			MSG_REQUEST_TICKET_COUNT, 
+			MSG_SEND_TICKET_COUNT, 
+			MSG_REQUEST_NEW_TICKETS, 
+			MSG_SEND_NEW_TICKETS, 
+			MSG_REQUEST_REFRESH, 
+			MSG_STOP_TIMER, 
+			MSG_REMOVE_NOTIFICATION}
+	
 
 	/*
 	 * Constanten voor opslaan van variablen
@@ -82,11 +84,6 @@ public final class Const {
 	static final int UPARROW = android.R.drawable.arrow_up_float;
 	static final int DOWNARROW = android.R.drawable.arrow_down_float;
 	final static String mimeUnknown = "application/unknown";
-
-	public enum TrackerName {
-		APP_TRACKER, // Tracker used only in this app.
-		GLOBAL_TRACKER, // Tracker used by all the apps from a company. eg: roll-up tracking.
-		ECOMMERCE_TRACKER, // Tracker used by all ecommerce transactions from a company.
-	}
-
+	
+	public static  boolean doAnalytics = false;
 }

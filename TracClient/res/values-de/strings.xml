@@ -23,6 +23,7 @@
 	<string name="nodatadesc">Inhalt des Tickets ist noch nicht geladen</string>
 	<string name="connerr">Verbindungsfehler</string>
 	<string name="newtick">Neues Ticket</string>
+    <string name="oktext">OK</string>
 	<string name="store">Ticket Shop</string>
 	<string name="storerr">Fehler beim Erstellen des Tickets</string>
 	<string name="storerrdesc">Ticket kann nicht gespeichert werden</string>
@@ -52,7 +53,6 @@
 	<string name="help">Hilfe</string>
 	<string name="Add">Hinzufügen</string>
 	<string name="sslHack">Selbstsignierte Zertifikate akzeptieren</string>
-	<string name="sslHack1">Problematische Zertifikate akzeptieren</string>
 	<string-array name="filter_names">
 		<item>ist gleich</item>
 		<item>ist nicht gleich</item>

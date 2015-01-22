@@ -35,13 +35,13 @@ import android.os.Messenger;
 import android.os.Process;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
-
+import android.content.res.Resources;
 import com.mfvl.trac.client.util.tcLog;
 
 public class RefreshService extends Service {
 
-	private static final int timerStart = 1 * 60 * 1000; // 5 minuten
-	private static final int timerPeriod = 5 * 60 * 1000; // 5 minuten
+	private int timerStart;
+	private int timerPeriod;
 	public static final String refreshAction = "LIST_REFRESH";
 	private Timer monitorTimer = null;
 	private static final int notifId = 1234;
@@ -51,37 +51,42 @@ public class RefreshService extends Service {
 	private Messenger mMessenger = null;
 	private Messenger receiver = null;
 
+	static Const.ServiceMsg[] sm = Const.ServiceMsg.values();
+	
 	private final class ServiceHandler extends Handler {
 		public ServiceHandler(Looper looper) {
 			super(looper);
 			// tcLog.d(getClass().getName(), "ServiceHandler");
+			Resources res = getResources();
+			timerStart = res.getInteger(R.integer.timerStart);
+			timerPeriod = res.getInteger(R.integer.timerPeriod);
 		}
 
 		@Override
 		public void handleMessage(final Message msg) {
 			// tcLog.d(this.getClass().getName(), "handleMessage msg = " + msg);
 			final NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-			switch (msg.what) {
-			case Const.MSG_START_TIMER:
+			switch (sm[msg.what]) {
+			case MSG_START_TIMER:
 				stopTimer();
 				startTimer(msg);
 				receiver = msg.replyTo;
 				break;
-			case Const.MSG_STOP_TIMER:
+			case MSG_STOP_TIMER:
 				stopTimer();
 				break;
-			case Const.MSG_REQUEST_REFRESH:
-				sendMessageToUI(Const.MSG_REQUEST_REFRESH);
+			case MSG_REQUEST_REFRESH:
+				sendMessageToUI(Const.ServiceMsg.MSG_REQUEST_REFRESH.ordinal());
 				break;
-			case Const.MSG_REMOVE_NOTIFICATION:
+			case MSG_REMOVE_NOTIFICATION:
 				mNotificationManager.cancel(notifId);
 				break;
-			case Const.MSG_SEND_TICKET_COUNT:
+			case MSG_SEND_TICKET_COUNT:
 				if (msg.arg1 > 0) {
-					sendMessageToUI(Const.MSG_REQUEST_NEW_TICKETS);
+					sendMessageToUI(Const.ServiceMsg.MSG_REQUEST_NEW_TICKETS.ordinal());
 				}
 				break;
-			case Const.MSG_SEND_NEW_TICKETS:
+			case MSG_SEND_NEW_TICKETS:
 				@SuppressWarnings("unchecked")
 				final List<Integer> newTickets = (List<Integer>) msg.obj;
 				if (newTickets != null) {
@@ -185,7 +190,7 @@ public class RefreshService extends Service {
 			@Override
 			public void run() {
 				// tcLog.d(this.getClass().getName(), "timertask started");
-				sendMessageToUI(Const.MSG_REQUEST_TICKET_COUNT);
+				sendMessageToUI(Const.ServiceMsg.MSG_REQUEST_TICKET_COUNT.ordinal());
 			}
 		}, timerStart, timerPeriod);
 	}

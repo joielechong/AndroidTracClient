@@ -18,7 +18,9 @@ package com.mfvl.trac.client.util;
 
 import java.io.Serializable;
 
-public class LoginProfile extends Object implements Serializable, Cloneable {
+import com.mfvl.trac.client.TcObject;
+
+public class LoginProfile extends TcObject implements Serializable, Cloneable {
 	private static final long serialVersionUID = 7810597433987080395L;
 
 	private final String _url;
@@ -52,10 +54,6 @@ public class LoginProfile extends Object implements Serializable, Cloneable {
 	@Override
 	public String toString() {
 		return "url: " + _url + " username: " + _username + " password: " + _password + " sslHack: " + _sslHack;
-	}
-
-	private int hc(Object o) {
-		return o == null ? 0 : o.hashCode();
 	}
 
 	@Override

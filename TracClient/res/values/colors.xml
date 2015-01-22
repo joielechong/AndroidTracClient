@@ -1,5 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+	<color name="popup_back">#ffdddddd</color>
 
-    <color name="black_overlay">#66000000</color>
-
+    <color name="list_col1">#00000000</color>
+    <color name="list_col2">#30111111</color>
+	
+	<array name="list_col">
+		<item>@color/list_col1</item>
+		<item>@color/list_col2</item>
+	</array>
 </resources>

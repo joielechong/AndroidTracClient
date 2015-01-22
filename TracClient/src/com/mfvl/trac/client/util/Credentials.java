@@ -90,8 +90,8 @@ public class Credentials {
 		editor.putBoolean(Const.PREF_HNH, _sslHostNameHack);
 		editor.putString(Const.PREF_PROF, _profile);
 
-		// Commit the edits!
-		editor.commit();
+		// apply the edits!
+		editor.apply();
 	}
 
 	/** Set login credentials server-url, username, password and profile */
@@ -145,7 +145,7 @@ public class Credentials {
 		final String lastRun = settings.getString(Const.PREF_1ST, "");
 		final SharedPreferences.Editor editor = settings.edit();
 		editor.putString(Const.PREF_1ST, thisRun);
-		editor.commit();
+		editor.apply();
 
 		return !lastRun.equals(thisRun);
 	}
@@ -154,7 +154,7 @@ public class Credentials {
 		tcLog.d("Credentials", "storeFilterString: " + filterString);
 		final SharedPreferences.Editor editor = settings.edit();
 		editor.putString(Const.PREF_FILTER, filterString == null ? "" : filterString);
-		editor.commit();
+		editor.apply();
 	}
 
 	public static String getFilterString() {
@@ -168,14 +168,14 @@ public class Credentials {
 		tcLog.d("Credentials", "removeFilterString");
 		final SharedPreferences.Editor editor = settings.edit();
 		editor.putString(Const.PREF_FILTER, "max=500&status!=closed");
-		editor.commit();
+		editor.apply();
 	}
 
 	public static void storeSortString(final String sortString) {
 		tcLog.d("Credentials", "storeSortString: " + sortString);
 		final SharedPreferences.Editor editor = settings.edit();
 		editor.putString(Const.PREF_SORT, sortString == null ? "" : sortString);
-		editor.commit();
+		editor.apply();
 	}
 
 	public static String getSortString() {
@@ -189,7 +189,7 @@ public class Credentials {
 		tcLog.d(_tag, "removeSortString");
 		final SharedPreferences.Editor editor = settings.edit();
 		editor.putString(Const.PREF_SORT, "order=priority&order=modified&desc=1");
-		editor.commit();
+		editor.apply();
 	}
 
 	private static final X500Principal DEBUG_DN = new X500Principal("CN=Android Debug,O=Android,C=US");
@@ -222,11 +222,10 @@ public class Credentials {
 
 	@TargetApi(Build.VERSION_CODES.GINGERBREAD)
 	public static String buildVersion() {
-		final PackageManager manager = _context.getPackageManager();
 		PackageInfo info;
 		if (versie == null) {
 			try {
-				info = manager.getPackageInfo(_context.getPackageName(), 0);
+				info = _context.getPackageManager().getPackageInfo(_context.getPackageName(), 0);
 				versie = "V" + info.versionName;
 				final int currentapiVersion = android.os.Build.VERSION.SDK_INT;
 				// tcLog.d(_tag, "buildVersion versie = " + versie + " api = " + currentapiVersion);
@@ -281,5 +280,13 @@ public class Credentials {
 			throw new FileNotFoundException(filePath);
 		}
 		return filePath;
+	}
+	
+	public static Boolean metaDataGetBoolean (String metaId) throws NameNotFoundException {
+		return (_context != null ?_context.getPackageManager().getApplicationInfo(_context.getPackageName(), PackageManager.GET_META_DATA).metaData.getBoolean(metaId) : null);
+	}
+	
+	public static String metaDataGetString (String metaId) throws NameNotFoundException {
+		return (_context != null ?_context.getPackageManager().getApplicationInfo(_context.getPackageName(), PackageManager.GET_META_DATA).metaData.getString(metaId) : null);
 	}
 }

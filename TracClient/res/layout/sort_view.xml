@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:orientation="vertical"
-        android:paddingBottom="50dp" >
+        android:paddingBottom="@dimen/adview_padding" >
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -23,14 +23,18 @@
                 android:id="@+id/backbutton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
+ 				android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+				android:layout_toLeftOf="@+id/storebutton"
+				android:layout_toStartOf="@+id/storebutton"
                 android:text="@string/Back" />
 
             <Button
                 android:id="@+id/storebutton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
+ 				android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
                 android:layout_centerHorizontal="false"
                 android:text="@string/storesort" />
         </RelativeLayout>
@@ -51,12 +55,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/sort"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <ListView
             android:id="@+id/sortlist"

@@ -45,7 +45,7 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 	/**
 	 * HttpClient to issue the HTTP/POST request
 	 */
-	private CloseableHttpClient httpClient;
+	protected CloseableHttpClient httpClient;
 	/**
 	 * Service URI
 	 */
@@ -53,17 +53,6 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 
 	// HTTP 1.0
 	private static final ProtocolVersion PROTOCOL_VERSION = new ProtocolVersion("HTTP", 1, 1);
-
-	/**
-	 * Construct a JsonRPCClient with the given service uri
-	 *
-	 * @param uri
-	 *            uri of the service
-	 */
-
-	public JSONRPCHttpClient(final String uri) {
-		this(uri, false, false);
-	}
 
 	protected class MyTrustSelfSignedStrategy implements TrustStrategy {
 
@@ -87,6 +76,17 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 			return true;
 		}
 
+	}
+
+	/**
+	 * Construct a JsonRPCClient with the given service uri
+	 *
+	 * @param uri
+	 *            uri of the service
+	 */
+
+	public JSONRPCHttpClient(final String uri) {
+		this(uri, false, false);
 	}
 
 	public JSONRPCHttpClient(final String uri, final boolean sslHack, final boolean sslHostNameHack) {
@@ -160,7 +160,10 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 			int statusCode = 0;
 			HttpResponse response;
 			String actualUri = serviceUri;
+			boolean retry;
+			int retrycount = 0;
 			do {
+				retry = false;
 				final Uri u = Uri.parse(actualUri);
 				final HttpClientContext httpContext = HttpClientContext.create();
 				if (_username != null) {
@@ -189,18 +192,32 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 				}
 				request.setEntity(entity);
 				request.setProtocolVersion(PROTOCOL_VERSION);
+				response = null; 
 
 				// Execute the request and try to decode the JSON Response
-				response = httpClient.execute(request, httpContext);
-				statusCode = response.getStatusLine().getStatusCode();
-				if (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
-					final Header headers[] = response.getHeaders("Location");
-					if (_debug) {
-						tcLog.i(getClass().getName(), "Headers: " + Arrays.asList(headers));
+				try {
+					response = httpClient.execute(request, httpContext);
+					statusCode = response.getStatusLine().getStatusCode();
+					if (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
+						final Header headers[] = response.getHeaders("Location");
+						if (_debug) {
+							tcLog.i(getClass().getName(), "Headers: " + Arrays.asList(headers));
+						}
+						actualUri = headers[0].getValue();
 					}
-					actualUri = headers[0].getValue();
+					retry |= (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY);
+				} catch (SSLException e) {
+					// Catch 1st 3 times
+					tcLog.d(getClass().getName(), "SSLException in 	JSONRPCHTTPClient.doJSONRequest", e);
+					retry |= (retrycount++ < 3);
+					if (!retry) {
+						throw(e);
+					}
 				}
-			} while (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY);
+			} while (retry);
+			
+			// response cannot be null here, if it is it is correct to throw an exception :-)
+			
 			String responseString = EntityUtils.toString(response.getEntity());
 			lastResponse = responseString;
 
@@ -225,7 +242,7 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 		} catch (final JSONRPCException e) {
 			tcLog.e(getClass().getName(), "JSONRPCException in JSONRPCHTTPClient.doJSONRequest", e);
 			throw e;
-		} catch (final SSLException e) {
+		} catch (final SSLException e) { // 4th time
 			tcLog.d(getClass().getName(), "SSLException in JSONRPCHTTPClient.doJSONRequest", e);
 			throw new JSONRPCException(e.getMessage());
 		} catch (final JSONException e) {
@@ -236,7 +253,8 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 				final int titelstart = lastResponse.indexOf("<title");
 				final int titeleind = lastResponse.indexOf("</title>");
 				if (titelstart == -1 || titeleind == -1) {
-					tcLog.toast(lastResponse.substring(0, 20) + "==");
+//					tcLog.toast(lastResponse.substring(0, 20) + "==");
+					tcLog.i(getClass().getName(), "lastResonse = "+lastResponse.substring(0, 20) + "==");
 					if ("No protocol matching".equals(lastResponse.substring(0, 20))) {
 						throw new JSONRPCException("NOJSON");
 					} else {

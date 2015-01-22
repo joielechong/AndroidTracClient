@@ -25,6 +25,7 @@
     <string name="nodatadesc">Gegevens van dit ticket zijn nog niet geladen</string>
     <string name="connerr">Verbindingsfout</string>
     <string name="newtick">Maak nieuw ticket aan</string>
+    <string name="oktext">OK</string>
     <string name="store">Sla ticket op</string>
     <string name="storerr">Fout tijdens creeeren van ticket</string>
     <string name="storerrdesc">Kan ticket niet opslaan</string>
@@ -54,7 +55,6 @@
     <string name="help">Help</string>
     <string name="Add">Voeg toe</string>
     <string name="sslHack">Accepteer Self Signed Certificaten</string>
-    <string name="sslHack1">Accepteer Problematische Certificaten</string>
 
     <string-array name="filter_names">
         <item>is gelijk aan</item>

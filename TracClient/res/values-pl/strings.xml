@@ -22,6 +22,7 @@
 	<string name="nodatadesc">Dane tego biletu nie zostały jeszcze załadowane</string>
 	<string name="connerr">Błąd połączenia</string>
 	<string name="newtick">Stwórz nowy bilet</string>
+    <string name="oktext">OK</string>
 	<string name="store">Zachowaj bilet</string>
 	<string name="storerr">Wystąpił błąd podczas tworzenia biletu</string>
 	<string name="storerrdesc">Nie można zachować biletu</string>
@@ -51,17 +52,6 @@
 	<string name="help">Pomoc</string>
 	<string name="Add">Dodaj</string>
 	<string name="sslHack">Akceptuj Certyfikaty z Podpisem Własnym (SSC)</string>
-	<string name="sslHack1">Akceptuj Certyfikaty Problematyczne</string>
-	<string-array name="filter_names">
-		<item>jest równe</item>
-		<item>nie jest równe</item>
-		<item>zawiera</item>
-		<item>nie zawiera</item>
-		<item>zaczyna się od</item>
-		<item>nie zaczyna się od</item>
-		<item>kończy się na</item>
-		<item>nie kończy się na</item>
-	</string-array>
 	<string name="select">Wybierz</string>
 	<string name="getlist">Ładuj Listę Biletów</string>
 	<string name="storeprofile">Zapisz profil</string>
@@ -106,4 +96,16 @@
 	<string name="unsaved">Czy opuścić ekran i zapisać wprowadzone zmiany?</string>
 	<string name="nee">Nie</string>
 	<string name="ja">Tak</string>
+	
+		<string-array name="filter_names">
+		<item>jest równe</item>
+		<item>nie jest równe</item>
+		<item>zawiera</item>
+		<item>nie zawiera</item>
+		<item>zaczyna się od</item>
+		<item>nie zaczyna się od</item>
+		<item>kończy się na</item>
+		<item>nie kończy się na</item>
+	</string-array>
+
 </resources>

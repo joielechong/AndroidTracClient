@@ -23,6 +23,7 @@
     <string name="nodatadesc">Les données de ce billet n\'est pas encore chargé</string>
     <string name="connerr">Erreur de connexion</string>
     <string name="newtick">Créer un nouveau billet</string>
+    <string name="oktext">OK</string>
     <string name="store">billet de magasin</string>
     <string name="storerr">Erreur créer pendant billet</string>
     <string name="storerrdesc">Vous ne pouvez pas stocker billet</string>
@@ -52,7 +53,6 @@
     <string name="help">Aide</string>
     <string name="Add">Ajouter</string>
     <string name="sslHack">Accepter auto-signé Certificats</string>
-    <string name="sslHack1">Accepter problématiques Certificats</string>
 
     <string-array name="filter_names">
         <item>est égal à</item>

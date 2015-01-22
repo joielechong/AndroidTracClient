@@ -18,56 +18,63 @@ package com.mfvl.trac.client;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
 
 import org.json.JSONArray;
 
+import android.support.v4.util.ArrayMap;
+
 import com.mfvl.trac.client.util.tcLog;
 
-public class TicketModel implements Serializable, Cloneable {
+public class TicketModel extends TcObject implements Serializable {
 	private static final long serialVersionUID = 4307815225424930343L;
-	private static Map<String, TicketModelVeld> _velden;
-	private static Map<Integer, String> _volgorde;
-	private static int _count;
+	private static ArrayMap<String, TicketModelVeld> _velden;
+	private static ArrayMap<Integer, String> _volgorde;
+	private static int fieldCount;
 	private static boolean loading;
 	private static Thread networkThread = null;
 	private static TicketModel _instance = null;
 
+	@Override
+	public int hashCode() {
+		return 31 * (17 + fieldCount + hc(_velden) + hc(_volgorde)) + super.hashCode();
+	}
+
 	private TicketModel() {
-		_count = 0;
-
-		_velden = new HashMap<String, TicketModelVeld>();
-		_velden.clear();
-		_volgorde = new TreeMap<Integer, String>();
-		_volgorde.clear();
+		fieldCount = 0;
 		loading = true;
-		networkThread = new Thread() {
-			@Override
-			public void run() {
-				tcLog.d(getClass().getName(), "TicketModel url = " + LoginInfo.url);
-				final TCJSONRPCHttpClient req = TCJSONRPCHttpClient.getInstance();
+		_velden = new ArrayMap<String, TicketModelVeld>();
+		_velden.clear();
+		_volgorde = new ArrayMap<Integer, String>();
+		_volgorde.clear();
 
-				try {
-					final JSONArray v = req.callJSONArray("ticket.getTicketFields");
-					_count = v.length();
-					for (int i = 0; i < _count; i++) {
-						final String key = v.getJSONObject(i).getString("name");
-						_velden.put(key, new TicketModelVeld(v.getJSONObject(i)));
-						_volgorde.put(i, key);
+		if (Tickets.url != null) {
+			networkThread = new Thread() {
+				@Override
+				public void run() {
+					tcLog.d(getClass().getName(), "TicketModel url = " + Tickets.url);
+					try {
+						final JSONArray v = TracHttpClient.getModel();
+						fieldCount = v.length();
+						for (int i = 0; i < fieldCount; i++) {
+							final String key = v.getJSONObject(i).getString("name");
+							_velden.put(key, new TicketModelVeld(v.getJSONObject(i)));
+							_volgorde.put(i, key);
+						}
+						_velden.put("max", new TicketModelVeld("max", "max", "500"));
+						_volgorde.put(fieldCount, "max");
+						_velden.put("page", new TicketModelVeld("page", "page", "0"));
+						_volgorde.put(fieldCount + 1, "page");
+					} catch (final Exception e) {
+						tcLog.i(getClass().getName(), "TicketModel exception", e);
+					} finally {
+						loading = false;
 					}
-					_velden.put("max", new TicketModelVeld("max", "max", "500"));
-					_volgorde.put(_count, "max");
-					_velden.put("page", new TicketModelVeld("page", "page", "0"));
-					_volgorde.put(_count + 1, "page");
-				} catch (final Exception e) {
-					tcLog.i(getClass().getName(), "TicketModel exception", e);
 				}
-				loading = false;
-			}
-		};
-		networkThread.start();
+			};
+			networkThread.start();
+		} else {
+			tcLog.e(getClass().getName(), "TicketModel called with url == null");
+		}
 	}
 
 	public static TicketModel getInstance() {
@@ -88,7 +95,7 @@ public class TicketModel implements Serializable, Cloneable {
 	public String toString() {
 		wacht();
 		String s = "";
-		for (int i = 0; i < _count; i++) {
+		for (int i = 0; i < fieldCount; i++) {
 			s += _velden.get(_volgorde.get(i)) + "\n";
 		}
 		return s;
@@ -98,9 +105,9 @@ public class TicketModel implements Serializable, Cloneable {
 		final ArrayList<String> v = new ArrayList<String>();
 
 		wacht();
-		if (_count > 0) {
+		if (fieldCount > 0) {
 			v.add("id");
-			for (int i = 0; i < _count + 2; i++) {
+			for (int i = 0; i < fieldCount + 2; i++) {
 				v.add(_velden.get(_volgorde.get(i)).name());
 			}
 		}
@@ -109,7 +116,7 @@ public class TicketModel implements Serializable, Cloneable {
 
 	public int count() {
 		wacht();
-		return _count;
+		return fieldCount;
 	}
 
 	private void wacht() {
@@ -129,22 +136,6 @@ public class TicketModel implements Serializable, Cloneable {
 	}
 
 	TicketModelVeld getVeld(final int i) {
-		return i < 0 || i >= _count ? null : getVeld(_volgorde.get(i));
-	}
-
-	private int hc(Object o) {
-		return o == null ? 0 : o.hashCode();
-	}
-
-	@Override
-	public int hashCode() {
-		// Start with a non-zero constant.
-		int result = 17;
-
-		// Include a hash for each field.
-		result = 31 * result + _count;
-		result = 31 * result + hc(_velden);
-		result = 31 * result + hc(_volgorde);
-		return result + super.hashCode();
+		return i < 0 || i >= fieldCount ? null : getVeld(_volgorde.get(i));
 	}
 }
