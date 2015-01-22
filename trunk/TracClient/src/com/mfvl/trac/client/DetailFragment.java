@@ -42,7 +42,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.widget.ShareActionProvider;
 import android.text.InputType;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
@@ -159,8 +158,6 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 		}
 	}
 
-	protected static final int LARGE_MOVE = 90;
-
 	private File path = null;
 	private int ticknr = -1;
 	private boolean showEmptyFields = false;
@@ -174,7 +171,6 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 	private String[] isStatusUpd;
 	private MenuItem selectItem;
 	private GestureDetector gestureDetector = null;
-	private ShareActionProvider mShareActionProvider;
 
 	private void setSelect(final boolean value) {
 		tcLog.d(this.getClass().getName(), "setSelect " + value);
@@ -211,16 +207,11 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 		super.onCreateOptionsMenu(menu, inflater);
 		selectItem = menu.findItem(R.id.dfselect);
 		setSelect(true);
-		// Set up ShareActionProvider's default share intent
-		final MenuItem shareItem = menu.findItem(R.id.dfshare);
-		mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
-		mShareActionProvider.setShareIntent(listener.shareTicketIntent(Tickets.getTicket(ticknr)));
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		final View view = inflater.inflate(R.layout.detail_view, container, false);
-		return view;
+		return inflater.inflate(R.layout.detail_view, container, false);
 	}
 
 	@Override
@@ -279,14 +270,8 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 	}
 
 	@Override
-	public void onStart() {
-		super.onStart();
-		gestureDetector = new GestureDetector(context, this);
-	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
+	public void onPause() {
+		super.onPause();
 		gestureDetector = null;
 	}
 
@@ -314,6 +299,7 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 	@Override
 	public void onResume() {
 		super.onResume();
+		gestureDetector = new GestureDetector(context, this);
 		if (ticknr != -1) {
 			_onResume();
 		} else {
@@ -406,7 +392,7 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 						// selectTicket(ticknr);
 						ticknr = newTicket;
 					} catch (final Exception e) {
-						// noop kleep old ticketnr
+						// noop keep old ticketnr
 					}
 					_onResume();
 				}
@@ -446,6 +432,11 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 			if (_ticket != null) {
 				refresh_ticket();
 			}
+		} else if (item.getItemId() == R.id.dfshare) {
+			if (_ticket != null) {
+				listener.shareTicket(_ticket);
+				return true;
+			}
 		} else if (item.getItemId() == R.id.dfempty) {
 			item.setChecked(!item.isChecked());
 			showEmptyFields = item.isChecked();
@@ -466,7 +457,6 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 				context.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						mShareActionProvider.setShareIntent(listener.shareTicketIntent(t2));
 						try {
 							((ListView) getView().findViewById(R.id.listofFields)).invalidateViews();
 						} catch (final Exception e) {
@@ -497,13 +487,7 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 			savedState.putSerializable(Const.MODVELD, modVeld);
 		}
 		savedState.putBoolean(Const.EMPTYFIELDS, showEmptyFields);
-		tcLog.d(getClass().getName(), "onSaveInstanceState = " + savedState);
-	}
-
-	@Override
-	public void onDestroyView() {
-		// tcLog.d(this.getClass().getName(), "onDestroyView");
-		super.onDestroyView();
+//		tcLog.d(getClass().getName(), "onSaveInstanceState = " + savedState);
 	}
 
 	private String toonTijd(final JSONObject v) {
@@ -672,12 +656,10 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 			final TicketModelVeld tmv = tm.getVeld(veld);
 			final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-			final RelativeLayout ll = (RelativeLayout) inflater.inflate(tmv.options() == null ? R.layout.field_spec1
-					: R.layout.field_spec2, null, false);
+			final RelativeLayout ll = (RelativeLayout) inflater.inflate(tmv.options() == null ? R.layout.field_spec1 : R.layout.field_spec2, null, false);
 			((TextView) ll.findViewById(R.id.veldnaam)).setText(veld);
 			final EditText et = (EditText) ll.findViewById(R.id.veldwaarde);
-			final Spinner spinValue = tmv.options() == null ? null : makeDialogComboSpin(getActivity(), veld, tmv.options(),
-					tmv.optional(), waarde);
+			final Spinner spinValue = tmv.options() == null ? null : makeDialogComboSpin(getActivity(), veld, tmv.options(),tmv.optional(), waarde);
 			final Button canBut = (Button) ll.findViewById(R.id.cancelpw);
 			final Button storBut = (Button) ll.findViewById(R.id.storepw);
 			final ListView parent = (ListView) getView().findViewById(R.id.listofFields);
@@ -686,10 +668,9 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 				et.setText(waarde);
 				et.requestFocus();
 			}
-
+			
 			try {
-				spinValue
-						.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+				spinValue.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 				((LinearLayout) ll.findViewById(R.id.veld)).addView(spinValue);
 			} catch (final Exception e) {
 			}
@@ -739,7 +720,7 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 			pw = new PopupWindow(getActivity());
 			pw.setFocusable(true);
 			pw.setContentView(ll);
-			final Drawable drw = new ColorDrawable(0xffdddddd);
+			final Drawable drw = new ColorDrawable(context.getResources().getInteger(R.color.popup_back));
 			drw.setAlpha(220);
 			pw.setBackgroundDrawable(drw);
 			pw.setWidth(getView().getWidth() * 9 / 10);
@@ -787,7 +768,7 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 				try {
 					final String filename = _ticket.getAttachmentFile(bijlagenr - 1);
 					final String mimeType = getMimeType(filename);
-					_ticket.getAttachment(filename, context, new onAttachmentCompleteListener() {
+					_ticket.getAttachment(filename, new onAttachmentCompleteListener() {
 						@Override
 						public void onComplete(final byte[] filedata) {
 							// tcLog.d(this.getClass().getName(),"onComplete filedata = "
@@ -908,23 +889,28 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 
 	@Override
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-		final int newTicket;
+		int newTicket = -1;
 		// tcLog.d(getClass().getName(),"onFling e1 = "+e1+", e2 = "+e2);
-		if (e1.getX() - e2.getX() > LARGE_MOVE) {
+		
+		if (velocityY > fast_move &&(e2.getY() - e1.getY() > extra_large_move)) {
+			refresh_ticket();
+			return true;
+		}
+		
+		if (e1.getX() - e2.getX() > large_move) {
 			newTicket = Tickets.getNextTicket(_ticket.getTicketnr());
-		} else if (e2.getX() - e1.getX() > LARGE_MOVE) {
+		} else if (e2.getX() - e1.getX() > large_move) {
 			newTicket = Tickets.getPrevTicket(_ticket.getTicketnr());
-		} else {
-			newTicket = -1;
 		}
 		if (newTicket >= 0 && modVeld.isEmpty()) {
 			ticknr = newTicket;
 			_onResume();
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	public boolean dispatchTouchEvent(MotionEvent ev) {
-		return gestureDetector != null ? gestureDetector.onTouchEvent(ev) : false;
+		return gestureDetector != null && gestureDetector.onTouchEvent(ev) ;
 	}
 }

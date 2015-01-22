@@ -29,11 +29,9 @@ import org.alexd.jsonrpc.JSONRPCException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import android.util.Base64;
-
 import com.mfvl.trac.client.util.ISO8601;
 import com.mfvl.trac.client.util.tcLog;
+import android.util.Base64;
 
 interface onTicketCompleteListener {
 	void onComplete(Ticket t);
@@ -43,7 +41,7 @@ interface onAttachmentCompleteListener {
 	void onComplete(byte[] data);
 }
 
-public class Ticket implements Serializable {
+public class Ticket extends TcObject implements Serializable {
 	/**
 	 *
 	 */
@@ -63,11 +61,7 @@ public class Ticket implements Serializable {
 	private static Semaphore available = new Semaphore(1, true);
 	private final Semaphore actionLock = new Semaphore(1, true);
 	private String rpcerror = null;
-	/* static */private TCJSONRPCHttpClient req = null;
-
-	private int hc(Object o) {
-		return o == null ? 0 : o.hashCode();
-	}
+	/* static */private TracHttpClient req = null;
 
 	@Override
 	public int hashCode() {
@@ -86,11 +80,11 @@ public class Ticket implements Serializable {
 		return result + 31 * super.hashCode();
 	}
 
-	public Ticket(final JSONObject jo) {
-		tcLog.d(getClass().getName(), "Ticket = " + jo);
+	public Ticket(final JSONObject velden) {
+		tcLog.d(getClass().getName(), "Ticket = " + velden);
 
 		_ticknr = -1;
-		_velden = jo;
+		_velden = velden;
 		_history = null;
 		_attachments = null;
 		_actions = null;
@@ -161,7 +155,7 @@ public class Ticket implements Serializable {
 			@Override
 			public void run() {
 				available.acquireUninterruptibly();
-				req = TCJSONRPCHttpClient.getInstance();
+				req = TracHttpClient.getInstance();
 
 				try {
 					final JSONArray mc = new JSONArray();
@@ -211,23 +205,19 @@ public class Ticket implements Serializable {
 		}.start();
 	}
 
-	public void getAttachment(final String filename, TracStart context, final onAttachmentCompleteListener oc) {
+	public void getAttachment(final String filename, final onAttachmentCompleteListener oc) {
 		final Thread networkThread = new Thread("getAttachment") {
 			@Override
 			public void run() {
 				available.acquireUninterruptibly();
-				req = TCJSONRPCHttpClient.getInstance();
-
-				try {
-					final JSONObject data = req.callJSONObject("ticket.getAttachment", _ticknr, filename);
-					final String b64 = data.getJSONArray("__jsonclass__").getString(1);
-					if (oc != null) {
-						oc.onComplete(Base64.decode(b64, Base64.DEFAULT));
+				if (oc != null) {
+					try {
+						oc.onComplete(TracHttpClient.getAttachment(_ticknr,filename));
+					} catch (final Exception e) {
+						tcLog.e(getClass().getName() + "getAttachment", e.toString());
+					} finally {
+						available.release();
 					}
-				} catch (final Exception e) {
-					tcLog.i(this.getClass().getName() + "getAttachment", e.toString());
-				} finally {
-					available.release();
 				}
 			}
 		};
@@ -247,7 +237,7 @@ public class Ticket implements Serializable {
 			@Override
 			public void run() {
 				available.acquireUninterruptibly();
-				req = TCJSONRPCHttpClient.getInstance();
+				req = TracHttpClient.getInstance();
 				final File file = new File(filename);
 				final int bytes = (int) file.length();
 				final byte[] data = new byte[bytes];
@@ -367,8 +357,7 @@ public class Ticket implements Serializable {
 			public void run() {
 				available.acquireUninterruptibly();
 				try {
-					req = TCJSONRPCHttpClient.getInstance();
-					final int newticknr = req.callInt("ticket.create", s, d, _velden);
+					final int newticknr = TracHttpClient.createTicket(s, d, _velden);
 					_ticknr = newticknr;
 					actionLock.release();
 					loadTicketData(context, null);
@@ -433,11 +422,8 @@ public class Ticket implements Serializable {
 
 		available.acquireUninterruptibly();
 		try {
-			if (LoginInfo.url != null) {
-				req = TCJSONRPCHttpClient.getInstance();
-				// tcLog.d(this.getClass().getName(), "_velden call = " +
-				// _velden);
-				req.callJSONArray("ticket.update", _ticknr, cmt, _velden, notify);
+			if (Tickets.url != null) {
+				TracHttpClient.updateTicket(_ticknr, cmt, _velden, notify);
 				actionLock.release();
 				loadTicketData(context, null);
 			}

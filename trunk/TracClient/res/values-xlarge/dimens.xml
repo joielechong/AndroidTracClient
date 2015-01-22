@@ -15,10 +15,7 @@
  * limitations under the License.
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Default screen margins, per the Android Design guidelines. -->
-    <!-- dimen name="activity_horizontal_margin">16dp</dimen -->
-    <!-- dimen name="activity_vertical_margin">16dp</dimen -->
-    <dimen name="adview_padding">50dp</dimen>
-    <dimen name="list_textsize">20sp</dimen>
+    <dimen name="adview_padding">75dp</dimen>
+	<dimen name="list_textsize">25sp</dimen>
 
 </resources>

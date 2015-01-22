@@ -52,17 +52,6 @@
         <string name="help">Помощь</string>
         <string name="Add">Добавить</string>
         <string name="sslHack">Принять собственные сертификаты</string>
-        <string name="sslHack1">Принять проблемах с сертификатами</string>
-        <string-array name="filter_names">
-                <item>равно</item>
-                <item>не равно</item>
-                <item>содержит</item>
-                <item>не содержит</item>
-                <item>начинается с</item>
-                <item>не начинается с</item>
-                <item>заканчивается на</item>
-                <item>не заканчивается на</item>
-        </string-array>
         <string name="select">Выбрать</string>
         <string name="storeprofile">Сохранить профиль</string>
         <string name="profiletext">Введите название профиля, под которым он будет сохранен</string>
@@ -110,4 +99,15 @@
         <string name="hostnametext">Имя хоста верификация не удалась при попытке подключиться к серверу. \nCообщение = </string>
         <string name="hostnameign">\nИгнорировать проверку?</string>
         <string name="noJSON">Нет поддержки JSON на TRAC-сервер</string>
+
+        <string-array name="filter_names">
+                <item>равно</item>
+                <item>не равно</item>
+                <item>содержит</item>
+                <item>не содержит</item>
+                <item>начинается с</item>
+                <item>не начинается с</item>
+                <item>заканчивается на</item>
+                <item>не заканчивается на</item>
+        </string-array>
 </resources>

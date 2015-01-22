@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
 
-    <string-array name="fieldsnotmodified">
+    <string-array name="fieldsnotmodified" translatable="false">
         <item>time</item>
         <item>changetime</item>
         <item>modified</item>
@@ -9,7 +9,7 @@
         <item>id</item>
         <item>ticket</item>
     </string-array>
-    <string-array name="fieldsstatusupdate">
+    <string-array name="fieldsstatusupdate" translatable="false">
         <item>owner</item>
         <item>status</item>
         <item>action</item>
@@ -19,7 +19,7 @@
 	
 <!-- These are not the internal field names but the displaylabels -->
 	
-	<string-array name="ignorecreatefields">
+	<string-array name="ignorecreatefields" translatable="false">
         <item>Owner</item>
         <item>Status</item>
         <item>Resolution</item>

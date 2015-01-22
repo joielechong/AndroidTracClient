@@ -12,12 +12,13 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:orientation="vertical"
-        android:paddingBottom="50dp" >
+        android:paddingBottom="@dimen/adview_padding" >
 
         <EditText
             android:id="@+id/search_box"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:drawableStart="@android:drawable/ic_menu_search"
             android:drawableLeft="@android:drawable/ic_menu_search"
             android:hint="@string/zoekfilter"
             android:inputType="text"
@@ -31,7 +32,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+ 				android:layout_alignParentLeft="true"
+				android:layout_toLeftOf="@+id/listProgress"
+				android:layout_toStartOf="@+id/listProgress"
                 android:text="@string/list_heading"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -39,7 +43,8 @@
                 android:id="@+id/listProgress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
+ 				android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
         </RelativeLayout>
 
@@ -47,7 +52,7 @@
             android:id="@+id/listOfTickets"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:textSize="20sp" />
+            android:textSize="@dimen/list_textsize" />
     </LinearLayout>
 
     <LinearLayout

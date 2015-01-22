@@ -11,6 +11,8 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
         android:layout_weight="1"
         android:contentDescription="@string/moveup"
         android:src="@android:drawable/arrow_up_float" />
@@ -21,6 +23,8 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
         android:layout_weight="1"
         android:contentDescription="@string/movedown"
         android:src="@android:drawable/arrow_down_float" />
@@ -31,6 +35,8 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
         android:layout_weight="8"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -40,6 +46,8 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="8dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="8dp"
         android:layout_weight="1"
         android:contentDescription="@string/direction" />
 
@@ -49,6 +57,8 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
         android:layout_weight="1"
         android:contentDescription="@string/sortdel"
         android:src="@android:drawable/ic_menu_delete" />

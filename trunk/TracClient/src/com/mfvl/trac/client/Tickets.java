@@ -34,7 +34,14 @@ interface onLoadTicketCompleteListener {
 	void onError(int code);
 }
 
-public class Tickets {
+public class Tickets extends TcObject {
+
+	public static String url = null;
+	public static String username = null;
+	public static String password = null;
+	public static String profile = null;
+	public static boolean sslHack = false;
+	public static boolean sslHostNameHack = false;
 
 	public static ArrayList<Ticket> ticketList = null;
 	public static ArrayList<SortSpec> sortList = null;
@@ -66,14 +73,17 @@ public class Tickets {
 	}
 
 	public static void initList() {
+		getInstance();
 		ticketList = new ArrayList<Ticket>();
 		valid = true;
 		resetCache();
 	}
 
 	public static void clear() {
+		getInstance();
 		ticketList = null;
 		tickets = null;
+		ticketMap = null;
 		TicketModel.getInstance();
 	}
 
@@ -84,7 +94,8 @@ public class Tickets {
 	}
 
 	public static void load(final onLoadTicketCompleteListener oc) {
-		if (LoginInfo.url == null) {
+		getInstance();
+		if (url == null) {
 			tcLog.e(_tag, "URL == null");
 			oc.onError(INVALID_URL);
 		}
@@ -116,26 +127,31 @@ public class Tickets {
 	}
 
 	public static Ticket getTicket(int ticknr) {
+		getInstance();
 		// tcLog.d(getClass().getName(), "getTicket ticknr = "+ticknr+ " "+ticketMap.containsKey(ticknr));
 		return ticketMap.containsKey(ticknr) ? ticketMap.get(ticknr) : null;
 	}
 
 	public static void putTicket(Ticket ticket) {
+		getInstance();
 		// tcLog.d(getClass().getName(), "putTicket ticket = "+ticket);
 		ticketMap.put(ticket.getTicketnr(), ticket);
 	}
 
 	public static void resetCache() {
+		getInstance();
 		// tcLog.d(getClass().getName(),"resetCache voor ticketMap = "+ticketMap);
 		ticketMap = new TreeMap<Integer, Ticket>();
 		// tcLog.d(getClass().getName(),"resetCache na ticketMap = "+ticketMap);
 	}
 
 	public static void setInvalid() {
+		getInstance();
 		valid = false;
 	}
 
 	public static boolean isValid() {
+		getInstance();
 		return valid;
 	}
 
@@ -148,6 +164,7 @@ public class Tickets {
 	}
 
 	private static int getNeighTicket(int ticknr, int dir) {
+		getInstance();
 		tcLog.d(_tag, "getNeighTicket ticknr = " + ticknr + ", dir = " + dir);
 		Ticket t = Tickets.getTicket(ticknr);
 		// tcLog.d(_tag, "t = " + t);
@@ -168,6 +185,7 @@ public class Tickets {
 	}
 
 	public static int getTicketCount() {
+		getInstance();
 		try {
 			return ticketList.size();
 		} catch (final Exception e) {

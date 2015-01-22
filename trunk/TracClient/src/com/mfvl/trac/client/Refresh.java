@@ -43,7 +43,7 @@ public class Refresh extends Activity {
 			// + className + " service = " + service);
 			mService = new Messenger(service);
 			try {
-				final Message msg = Message.obtain(null, Const.MSG_REQUEST_REFRESH);
+				final Message msg = Message.obtain(null, Const.ServiceMsg.MSG_REQUEST_REFRESH.ordinal());
 				msg.replyTo = null;
 				mService.send(msg);
 			} catch (final RemoteException e) {
@@ -66,24 +66,23 @@ public class Refresh extends Activity {
 		// tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " +
 		// (savedInstanceState == null ? "null" : "not null"));
 
-		MyTracker.getInstance(this);
-		MyTracker.getTracker(Const.TrackerName.APP_TRACKER);
-
 		try {
 			final String action = getIntent().getAction().toUpperCase();
 
 			if (action != null) {
-				MyTracker.getInstance(this);
-				final Tracker t = MyTracker.getTracker(Const.TrackerName.APP_TRACKER);
-				// Build and send an Event.
-				t.send(new HitBuilders.EventBuilder().setCategory("Normal").setAction("Refresh").setLabel(action).build());
+				if (Const.doAnalytics) {
+					MyTracker.getInstance(Refresh.this);
+					final Tracker t = MyTracker.getTracker(getClass().getName());
+					// Build and send an Event.
+					t.send(new HitBuilders.EventBuilder().setCategory("Normal").setAction("Refresh").setLabel(action).build());
+				}
 				if (action.equalsIgnoreCase(RefreshService.refreshAction)) {
 					bindService(new Intent(this, RefreshService.class), mConnection, Context.BIND_AUTO_CREATE);
-					// tcLog.i(this.getClass().getName(), "Refresh sent");
+					// tcLog.i(getClass().getName(), "Refresh sent");
 				}
 			}
 		} catch (final Exception e) {
-			tcLog.e(this.getClass().getName(), "Problem consuming action from intent", e);
+			tcLog.e(getClass().getName(), "Problem consuming action from intent", e);
 		}
 		finish();
 	}

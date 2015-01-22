@@ -39,16 +39,17 @@ import android.widget.Spinner;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.mfvl.trac.client.util.Credentials;
 import com.mfvl.trac.client.util.tcLog;
 
-public class TracClientFragment extends Fragment {
+public class TracClientFragment extends Fragment implements OnGlobalLayoutListener {
 	public Ticket _ticket = null;
 	public TracStart context;
-	private final AdView adView = null;
+	private AdView adView = null;
+	private View aboveView;
+	private LinearLayout adViewContainer = null;
 	public InterFragmentListener listener = null;
 	private boolean adsVisible = true;
 	private int padTop;
@@ -57,6 +58,9 @@ public class TracClientFragment extends Fragment {
 	private int padLeft;
 	private String adUnitId;
 	private String[] testDevices;
+	protected int large_move;
+	protected int extra_large_move;
+	protected int fast_move;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -64,6 +68,9 @@ public class TracClientFragment extends Fragment {
 		tcLog.d(getClass().getName() + ".super", "onAttach ");
 		context = (TracStart) activity;
 		listener = context;
+		large_move = context.getResources().getInteger(R.integer.large_move);
+		extra_large_move = context.getResources().getInteger(R.integer.extra_large_move);
+		fast_move = context.getResources().getInteger(R.integer.fast_move);
 	}
 
 	@Override
@@ -71,51 +78,46 @@ public class TracClientFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 		tcLog.d(getClass().getName() + ".super", "onCreate savedInstanceState = " + savedInstanceState);
 		if (savedInstanceState != null) {
-			LoginInfo.url = savedInstanceState.getString(Const.CURRENT_URL);
-			LoginInfo.username = savedInstanceState.getString(Const.CURRENT_USERNAME);
-			LoginInfo.password = savedInstanceState.getString(Const.CURRENT_PASSWORD);
-			LoginInfo.sslHack = savedInstanceState.getBoolean(Const.CURRENT_SSLHACK, false);
-			LoginInfo.sslHostNameHack = savedInstanceState.getBoolean(Const.CURRENT_SSLHOSTNAMEHACK, false);
+			Tickets.url = savedInstanceState.getString(Const.CURRENT_URL);
+			Tickets.username = savedInstanceState.getString(Const.CURRENT_USERNAME);
+			Tickets.password = savedInstanceState.getString(Const.CURRENT_PASSWORD);
+			Tickets.sslHack = savedInstanceState.getBoolean(Const.CURRENT_SSLHACK, false);
+			Tickets.sslHostNameHack = savedInstanceState.getBoolean(Const.CURRENT_SSLHOSTNAMEHACK, false);
 		}
-		Bundle aBundle;
 		try {
-			aBundle = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA).metaData;
-			if (aBundle == null) {
-				listener.setDispAds(false);
-			} else {
-				adUnitId = aBundle.getString("com.mfvl.trac.client.adUnitId");
-				final String t = aBundle.getString("com.mfvl.trac.client.testDevices");
-				try {
-					testDevices = t.split("\\,");
-				} catch (final IllegalArgumentException e) {
-					testDevices = new String[1];
-					testDevices[0] = t;
-				}
+			adUnitId = Credentials.metaDataGetString("com.mfvl.trac.client.adUnitId");
+			final String t = Credentials.metaDataGetString("com.mfvl.trac.client.testDevices");
+			try {
+				testDevices = t.split("\\,");
+			} catch (final IllegalArgumentException e) {
+				testDevices = new String[1];
+				testDevices[0] = t;
 			}
 		} catch (final Exception e) {
-			aBundle = null;
 			listener.setDispAds(false);
 			adUnitId = "";
 			testDevices = new String[1];
 			testDevices[0] = "";
 		}
 
-		MyTracker.getInstance(context);
-		// Get a Tracker (should auto-report)
-		MyTracker.getTracker(Const.TrackerName.APP_TRACKER);
+		if (Const.doAnalytics) {
+			// Get a Tracker (should auto-report)
+			MyTracker.getInstance(context);
+		}
 	}
 
 	@Override
 	public void onViewCreated(final View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		tcLog.d(getClass().getName() + ".super", "onViewCreated");
+		aboveView = view.findViewById(R.id.aboveAdBlock);
+		adViewContainer = (LinearLayout) view.findViewById(R.id.adBlock);
+
 		final View activityRootView = view.findViewById(R.id.updateTop);
-		final View aboveView = view.findViewById(R.id.aboveAdBlock);
-		final LinearLayout ll = (LinearLayout) view.findViewById(R.id.adBlock);
 
 		if (listener != null && listener.dispAds()) {
-			if (ll != null) {
-				final AdView adView = new AdView(context);
+			if (adViewContainer != null) {
+				adView = new AdView(context);
 				adView.setAdUnitId(adUnitId);
 				adView.setAdSize(AdSize.BANNER);
 
@@ -134,9 +136,9 @@ public class TracClientFragment extends Fragment {
 					if (adRequest != null) {
 						try {
 							adView.loadAd(adRequest);
-							adView.setLayoutParams(ll.getLayoutParams());
+							adView.setLayoutParams(adViewContainer.getLayoutParams());
 							// tcLog.d(getClass().getName(), "adView size = " +adView.getHeight());
-							ll.addView(adView);
+							adViewContainer.addView(adView);
 						} catch (final Exception e) {
 							listener.setDispAds(false);
 						}
@@ -148,65 +150,55 @@ public class TracClientFragment extends Fragment {
 					padBot = aboveView.getPaddingBottom();
 					padLeft = aboveView.getPaddingLeft();
 					adsVisible = true;
-					activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
-						@Override
-						public void onGlobalLayout() {
-							final ActionBar ab = context.getSupportActionBar();
-							final Rect r = new Rect();
-							// r will be populated with the coordinates of your
-							// view that area still visible.
-							activityRootView.getWindowVisibleDisplayFrame(r);
-
-							final int heightDiff = activityRootView.getRootView().getHeight() - (r.bottom - r.top);
-							// tcLog.d(getClass().getName(),"OnGlobalLayout heightDiff = "+
-							// heightDiff);
-							// tcLog.d(getClass().getName(),"OnGlobalLayout r = "+
-							// r);
-							if (heightDiff > 100) { // if more than 100 pixels,
-								// its probably a
-								// keyboard...
-								if (adsVisible) {
-									ll.setVisibility(View.GONE);
-									aboveView.setPadding(padLeft, padTop, padRight, 0);
-									adsVisible = false;
-								}
-								ab.hide();
-							} else {
-								if (!adsVisible) {
-									ll.setVisibility(View.VISIBLE);
-									aboveView.setPadding(padLeft, padTop, padRight, padBot);
-									adsVisible = true;
-								}
-								ab.show();
-							}
-						}
-					});
+					activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(this);
 				}
 			}
 		} else {
-			final View above = getView().findViewById(R.id.aboveAdBlock);
-			if (above != null) {
-				above.setPadding(0, 0, 0, 0);
+			if (aboveView != null) {
+				aboveView.setPadding(0, 0, 0, 0);
 			}
 		}
-
 	}
 
 	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-		tcLog.d(getClass().getName() + ".super", "onActivityCreated savedInstanceState = " + savedInstanceState);
-	}
+	public void onGlobalLayout() {
+		final View view = getView();
+                if (view != null) {
+                        final View activityRootView = view.findViewById(R.id.updateTop);
+                        final ActionBar ab = context.getSupportActionBar();
+                        final Rect r = new Rect();
+                        // r will be populated with the coordinates of your view that area still visible.
+                        activityRootView.getWindowVisibleDisplayFrame(r);
+
+                        final int heightDiff = activityRootView.getRootView().getHeight() - (r.bottom - r.top);
+                        if (heightDiff > 100) { // if more than 100 pixels,
+                                // its probably a keyboard...
+                                if (adsVisible) {
+                                        adViewContainer.setVisibility(View.GONE);
+                                        aboveView.setPadding(padLeft, padTop, padRight, 0);
+                                        adsVisible = false;
+                                }
+                                ab.hide();
+                        } else {
+                                if (!adsVisible) {
+                                        adViewContainer.setVisibility(View.VISIBLE);
+                                        aboveView.setPadding(padLeft, padTop, padRight, padBot);
+                                        adsVisible = true;
+                                }
+                                ab.show();
+                        }
+                }
+        }
 
 	@Override
 	public void onSaveInstanceState(Bundle savedState) {
 		super.onSaveInstanceState(savedState);
 		tcLog.d(getClass().getName() + ".super", "onSaveInstanceState");
-		savedState.putString(Const.CURRENT_URL, LoginInfo.url);
-		savedState.putString(Const.CURRENT_USERNAME, LoginInfo.username);
-		savedState.putString(Const.CURRENT_PASSWORD, LoginInfo.password);
-		savedState.putBoolean(Const.CURRENT_SSLHACK, LoginInfo.sslHack);
-		savedState.putBoolean(Const.CURRENT_SSLHOSTNAMEHACK, LoginInfo.sslHostNameHack);
+		savedState.putString(Const.CURRENT_URL, Tickets.url);
+		savedState.putString(Const.CURRENT_USERNAME, Tickets.username);
+		savedState.putString(Const.CURRENT_PASSWORD, Tickets.password);
+		savedState.putBoolean(Const.CURRENT_SSLHACK, Tickets.sslHack);
+		savedState.putBoolean(Const.CURRENT_SSLHOSTNAMEHACK, Tickets.sslHostNameHack);
 		tcLog.d(getClass().getName() + ".super", "onSaveInstanceState = " + savedState);
 	}
 
@@ -214,28 +206,30 @@ public class TracClientFragment extends Fragment {
 	public void onStart() {
 		tcLog.d(getClass().getName() + ".super", "onStart");
 		super.onStart();
-		// Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
-		final GoogleAnalytics analytics = GoogleAnalytics.getInstance(context);
-		analytics.reportActivityStart(context);
+         
+		if (Const.doAnalytics) {
+			// Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
+			MyTracker.getInstance(context);
+			// Get tracker.
+			final Tracker t = MyTracker.getTracker(getClass().getName());
+			MyTracker.reportActivityStart(context);
 
-		MyTracker.getInstance(context);
-		// Get tracker.
-		final Tracker t = MyTracker.getTracker(Const.TrackerName.APP_TRACKER);
-
-		// Set screen name.
-		t.setScreenName(getClass().getSimpleName());
-
-		// Send a screen view.
-		t.send(new HitBuilders.AppViewBuilder().build());
-	}
+			if (t != null) {
+				// Send a screen view.
+				t.send(new HitBuilders.AppViewBuilder().build());
+			}
+		}
+    }
 
 	@Override
 	public void onStop() {
 		tcLog.d(getClass().getName() + ".super", "onStop");
 		super.onStop();
-		// Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
-		GoogleAnalytics.getInstance(context).reportActivityStop(context);
-	}
+		if (Const.doAnalytics) {
+			// Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
+			MyTracker.reportActivityStop(context);
+		}
+    }
 
 	@Override
 	public void onPause() {
@@ -256,9 +250,10 @@ public class TracClientFragment extends Fragment {
 	@Override
 	public void onDestroy() {
 		tcLog.d(getClass().getName() + ".super", "onDestroy");
-		if (adView != null) {
+		if (getView() != null && adView != null) {
 			adView.destroy();
 		}
+		adView = null;
 		super.onDestroy();
 	}
 
@@ -351,13 +346,13 @@ public class TracClientFragment extends Fragment {
 
 							@Override
 							public void run() {
-								final AlertDialog.Builder noTicketDialogBuilder = new AlertDialog.Builder(context);
-								noTicketDialogBuilder.setTitle(R.string.notfound);
-								noTicketDialogBuilder.setMessage(R.string.ticketnotfound);
-								noTicketDialogBuilder.setCancelable(false);
-								noTicketDialogBuilder.setPositiveButton(R.string.oktext, null);
-								final AlertDialog noTicketDialog = noTicketDialogBuilder.create();
-								noTicketDialog.show();
+							new AlertDialog.Builder(context)
+												.setTitle(R.string.notfound)
+												.setMessage(R.string.ticketnotfound)
+												.setCancelable(false)
+												.setPositiveButton(R.string.oktext, null)
+												.create()
+												.show();
 							}
 						});
 					}
@@ -365,5 +360,4 @@ public class TracClientFragment extends Fragment {
 			});
 		}
 	}
-
 }

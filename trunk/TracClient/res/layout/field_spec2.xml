@@ -19,7 +19,7 @@
             android:id="@+id/veldnaam"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
+            android:textSize="@dimen/list_textsize" 
             android:textStyle="bold" >
         </TextView>
     </LinearLayout>
@@ -34,14 +34,18 @@
             android:id="@+id/cancelpw"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
+ 			android:layout_alignParentLeft="true"
+			android:layout_alignParentStart="true"
+			android:layout_toLeftOf="@+id/storepw"
+			android:layout_toStartOf="@+id/storepw"
             android:text="@string/cancel" />
 
         <Button
             android:id="@+id/storepw"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
+ 			android:layout_alignParentRight="true"
+ 			android:layout_alignParentEnd="true"
             android:text="@string/oktext" />
     </RelativeLayout>
 

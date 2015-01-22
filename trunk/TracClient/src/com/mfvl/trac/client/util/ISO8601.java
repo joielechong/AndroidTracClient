@@ -25,6 +25,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 //import android.annotation.SuppressLint;
@@ -33,18 +34,16 @@ public final class ISO8601 {
 	/**
 	 * Transform Calendar to ISO 8601 string.
 	 */
-	// @SuppressLint("SimpleDateFormat")
 	public static String fromCalendar(final Calendar calendar) {
 		final Date date = calendar.getTime();
-		final String formatted = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(date);
+		final String formatted = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ",Locale.US).format(date);
 		return formatted.substring(0, 22) + ":" + formatted.substring(22);
 	}
 
-	// @SuppressLint("SimpleDateFormat")
 	public static String fromUnix(final long tijd) {
 		final Date date = new Date();
 		date.setTime(tijd);
-		final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss",Locale.US);
 		sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 		return sdf.format(date);
 	}
@@ -59,7 +58,6 @@ public final class ISO8601 {
 	/**
 	 * Transform ISO 8601 string to Calendar.
 	 */
-	// @SuppressLint("SimpleDateFormat")
 	public static Calendar toCalendar(final String iso8601string) throws ParseException {
 		final Calendar calendar = Calendar.getInstance();
 		String s = iso8601string.replace("Z", "+00:00");
@@ -68,7 +66,7 @@ public final class ISO8601 {
 		} catch (final IndexOutOfBoundsException e) {
 			throw new ParseException("Invalid length", 0);
 		}
-		final Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(s);
+		final Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ",Locale.US).parse(s);
 		calendar.setTime(date);
 		return calendar;
 	}
