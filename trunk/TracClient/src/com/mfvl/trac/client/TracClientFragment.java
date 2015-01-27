@@ -325,7 +325,7 @@ public class TracClientFragment extends Fragment implements OnGlobalLayoutListen
 	}
 
 	protected void selectTicket(int ticknr) {
-		tcLog.d(this.getClass().getName(), "selectTicket = " + ticknr);
+		tcLog.d(getClass().getName(), "selectTicket = " + ticknr);
 		final Ticket t = Tickets.getTicket(ticknr);
 		if (t != null && t.hasdata()) {
 			listener.onTicketSelected(t);

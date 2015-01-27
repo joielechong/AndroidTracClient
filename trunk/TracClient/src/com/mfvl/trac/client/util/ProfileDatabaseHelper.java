@@ -143,10 +143,6 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 //				tcLog.d(getClass().getName(),"i = "+i+" values = "+Arrays.asList(values));
 			}
 			ta.recycle();
-/*
-			addProfile("TracClient-RO", new LoginProfile("http://van-loon.xs4all.nl/TracClient/rpc", "", "", false));
-			addProfile("TracClient-login", new LoginProfile("https://van-loon.xs4all.nl/TracClient/login/rpc", "demo", "demo", true));
-*/
 			upgrade = false;
 		}
 	}

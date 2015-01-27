@@ -85,5 +85,5 @@ public final class Const {
 	static final int DOWNARROW = android.R.drawable.arrow_down_float;
 	final static String mimeUnknown = "application/unknown";
 	
-	public static  boolean doAnalytics = false;
+	public static  boolean doAnalytics = true;
 }
