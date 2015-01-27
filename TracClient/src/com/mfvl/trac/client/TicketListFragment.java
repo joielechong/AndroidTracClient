@@ -102,7 +102,7 @@ public class TicketListFragment extends TracClientFragment implements OnGestureL
 
 		public TicketListHandler(Looper looper) {
 			super(looper);
-			tcLog.d(this.getClass().getName(), HandlerName);
+			tcLog.d(getClass().getName(), HandlerName);
 			loadTicketListRun = new Runnable() {
 				@Override
 				public void run() {
@@ -133,19 +133,19 @@ public class TicketListFragment extends TracClientFragment implements OnGestureL
 		}
 
 		public void mySendEmptyMessage(int message) {
-			tcLog.d(this.getClass().getName(), "mySendEmptyMessage message = " + message);
+			tcLog.d(getClass().getName(), "mySendEmptyMessage message = " + message);
 			sendEmptyMessage(message);
 		}
 
 		public void myRemoveMessages(int message) {
-			tcLog.d(this.getClass().getName(), "myRemoveMessages message = " + message);
+			tcLog.d(getClass().getName(), "myRemoveMessages message = " + message);
 			removeMessages(message);
 		}
 
 		@Override
 		public void handleMessage(final Message msg) {
 
-			tcLog.d(this.getClass().getName(), "handleMessage msg = " + msg);
+			tcLog.d(getClass().getName(), "handleMessage msg = " + msg);
 			switch (msg.what) {
 			case MSG_INIT:
 				break;
@@ -183,7 +183,7 @@ public class TicketListFragment extends TracClientFragment implements OnGestureL
 				myRemoveMessages(MSG_LOADLIST);
 				removeCallbacks(loadTicketListRun);
 				if (loadListThread != null && loadListThread.isAlive()) {
-					// tcLog.d(this.getClass().getName(), "killLoadListThread");
+					// tcLog.d(getClass().getName(), "killLoadListThread");
 					loadListThread.interrupt();
 				}
 				loadListLock = false;
@@ -193,7 +193,7 @@ public class TicketListFragment extends TracClientFragment implements OnGestureL
 				myRemoveMessages(MSG_LOADLIST);
 				removeCallbacks(loadTicketListRun);
 				if (loadListThread != null && loadListThread.isAlive()) {
-					tcLog.d(this.getClass().getName(), "killLoadListThread");
+					tcLog.d(getClass().getName(), "killLoadListThread");
 					loadListThread.interrupt();
 				}
 				// post(loadTicketListRun);
@@ -204,7 +204,7 @@ public class TicketListFragment extends TracClientFragment implements OnGestureL
 				myRemoveMessages(MSG_LOADCONT);
 				removeCallbacks(loadTicketContentRun);
 				if (loadContentThread != null && loadContentThread.isAlive()) {
-					tcLog.d(this.getClass().getName(), "killLoadContentThread");
+					tcLog.d(getClass().getName(), "killLoadContentThread");
 					loadContentThread.interrupt();
 				}
 				break;
@@ -258,7 +258,7 @@ public class TicketListFragment extends TracClientFragment implements OnGestureL
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		tcLog.d(this.getClass().getName(), "onAttach");
+		tcLog.d(getClass().getName(), "onAttach");
 		Tickets.resetCache();
 		final Bundle args = this.getArguments();
 		if (args != null) {
@@ -282,8 +282,8 @@ public class TicketListFragment extends TracClientFragment implements OnGestureL
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " + savedInstanceState);
-		tcLog.d(this.getClass().getName(), "onCreate url = " + Tickets.url);
+		tcLog.d(getClass().getName(), "onCreate savedInstanceState = " + savedInstanceState);
+		tcLog.d(getClass().getName(), "onCreate url = " + Tickets.url);
 		setHasOptionsMenu(true);
 
 		newDataAdapter();
@@ -297,7 +297,7 @@ public class TicketListFragment extends TracClientFragment implements OnGestureL
 	}
 
 	private void sendMessage(int message) {
-		tcLog.d(this.getClass().getName(), "sendMessage message = " + message);
+		tcLog.d(getClass().getName(), "sendMessage message = " + message);
 		if (mMessenger != null) {
 			try {
 				final Message msg = Message.obtain();
@@ -305,17 +305,17 @@ public class TicketListFragment extends TracClientFragment implements OnGestureL
 				msg.arg1 = -1;
 				msg.arg2 = -1;
 				msg.replyTo = null;
-				tcLog.d(this.getClass().getName(), "sendMessage msg = " + msg);
+				tcLog.d(getClass().getName(), "sendMessage msg = " + msg);
 				mMessenger.send(msg);
 			} catch (final RemoteException e) {
-				tcLog.e(this.getClass().getName(), "sendMessage failed", e);
+				tcLog.e(getClass().getName(), "sendMessage failed", e);
 			}
 		}
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		tcLog.d(this.getClass().getName(), "onCreateView savedInstanceState = " + savedInstanceState);
+		tcLog.d(getClass().getName(), "onCreateView savedInstanceState = " + savedInstanceState);
 		final View view = inflater.inflate(R.layout.list_view, container, false);
 		listView = (ListView) view.findViewById(R.id.listOfTickets);
 		registerForContextMenu(listView);
@@ -351,7 +351,7 @@ public class TicketListFragment extends TracClientFragment implements OnGestureL
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		// tcLog.d(this.getClass().getName(), "onItemClick");
+		// tcLog.d(getClass().getName(), "onItemClick");
 		switch (parent.getId()) {
 		case R.id.listOfTickets:
 			final Ticket t = (Ticket) ((ListView) parent).getItemAtPosition(position);
@@ -374,7 +374,7 @@ public class TicketListFragment extends TracClientFragment implements OnGestureL
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		tcLog.d(this.getClass().getName(), "onActivityCreated savedInstanceState = " + savedInstanceState);
+		tcLog.d(getClass().getName(), "onActivityCreated savedInstanceState = " + savedInstanceState);
 		final boolean saveRefreshOnRestart = refreshOnRestart;
                 if (Tickets.url == null) {
                         listener.onChangeHost();
@@ -426,7 +426,7 @@ public class TicketListFragment extends TracClientFragment implements OnGestureL
 	@Override
 	public void onResume() {
 		super.onResume();
-		tcLog.d(this.getClass().getName(), "onResume");
+		tcLog.d(getClass().getName(), "onResume");
 		gestureDetector = new GestureDetector(context, this);
 		if (refreshOnRestart) {
 			sendMessage(MSG_RELOAD);
@@ -454,7 +454,7 @@ public class TicketListFragment extends TracClientFragment implements OnGestureL
 
 	@Override
 	public void onPause() {
-		tcLog.d(this.getClass().getName(), "onPause");
+		tcLog.d(getClass().getName(), "onPause");
 		super.onPause();
 		scrollPosition = listView.getFirstVisiblePosition();
 		// tcLog.d(getClass().getName(),"onPause scrollPosition <= "+scrollPosition);
@@ -463,7 +463,7 @@ public class TicketListFragment extends TracClientFragment implements OnGestureL
 
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-		tcLog.d(this.getClass().getName(), "onCreateContextMenu");
+		tcLog.d(getClass().getName(), "onCreateContextMenu");
 		super.onCreateContextMenu(menu, v, menuInfo);
 		if (v.getId() == R.id.listOfTickets) {
 			final MenuInflater inflater = context.getMenuInflater();
@@ -473,7 +473,7 @@ public class TicketListFragment extends TracClientFragment implements OnGestureL
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		tcLog.d(this.getClass().getName(), "onContextItemSelected");
+		tcLog.d(getClass().getName(), "onContextItemSelected");
 		final AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 		final Ticket t = (Ticket) listView.getItemAtPosition(info.position);
 		if (t.hasdata()) {
@@ -500,7 +500,7 @@ public class TicketListFragment extends TracClientFragment implements OnGestureL
 	}
 
 	private void zetZoeken() {
-		tcLog.d(this.getClass().getName(), "zetZoeken");
+		tcLog.d(getClass().getName(), "zetZoeken");
 		final View v = getView();
 		if (v != null) {
 			final EditText filterText = (EditText) v.findViewById(R.id.search_box);
@@ -519,7 +519,7 @@ public class TicketListFragment extends TracClientFragment implements OnGestureL
 
 	@Override
 	public void onDestroyView() {
-		tcLog.d(this.getClass().getName(), "onDestroyView");
+		tcLog.d(getClass().getName(), "onDestroyView");
 		if (filterText != null && zoeken) {
 			filterText.removeTextChangedListener(filterTextWatcher);
 		}
@@ -534,7 +534,7 @@ public class TicketListFragment extends TracClientFragment implements OnGestureL
 
 	@Override
 	public void onDestroy() {
-		tcLog.d(this.getClass().getName(), "onDestroy");
+		tcLog.d(getClass().getName(), "onDestroy");
 		sendMessage(MSG_QUIT);
 		super.onDestroy();
 	}
@@ -548,7 +548,7 @@ public class TicketListFragment extends TracClientFragment implements OnGestureL
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" + item.getTitle());
+		tcLog.d(getClass().getName(), "onOptionsItemSelected item=" + item.getTitle());
 		final int itemId = item.getItemId();
 		if (itemId == R.id.tlnieuw) {
 			listener.onNewTicket();
@@ -626,7 +626,7 @@ public class TicketListFragment extends TracClientFragment implements OnGestureL
 			scrollPosition = listView.getFirstVisiblePosition();
 		}
 		savedState.putInt(SCROLLPOSITIONNAME, scrollPosition);
-		tcLog.d(this.getClass().getName(), "onSaveInstanceState = " + savedState);
+		tcLog.d(getClass().getName(), "onSaveInstanceState = " + savedState);
 	}
 
 	private String joinList(Object list[], final String sep) {
@@ -643,7 +643,7 @@ public class TicketListFragment extends TracClientFragment implements OnGestureL
 	}
 
 	private void loadTicketList(final onCompleteListener oc) {
-		tcLog.d(this.getClass().getName(), "loadTicketList url=" + Tickets.url + " count = " + dataAdapter.getCount());
+		tcLog.d(getClass().getName(), "loadTicketList url=" + Tickets.url + " count = " + dataAdapter.getCount());
 		if (Tickets.url != null) {
 			final ProgressDialog pb = startProgressBar(context.getString(R.string.getlist)
 					+ (SelectedProfile == null ? "" : "\n" + SelectedProfile));
@@ -802,12 +802,12 @@ public class TicketListFragment extends TracClientFragment implements OnGestureL
 	}
 
 	private void loadTicketContent(final onCompleteListener oc) {
-		tcLog.d(this.getClass().getName(), "loadTicketContent started ");
+		tcLog.d(getClass().getName(), "loadTicketContent started ");
 		new Thread() {
 			@Override
 			public void run() {
 				final long tid = this.getId();
-				final String logTag = this.getClass().getName() + "." + tid;
+				final String logTag = getClass().getName() + "." + tid;
 				try {
 					tcLog.d(logTag, "loadTicketContent thread = " + this);
 					loadContentThread = this;
@@ -978,7 +978,7 @@ public class TicketListFragment extends TracClientFragment implements OnGestureL
 	}
 
 	public void forceRefresh() {
-		tcLog.d(this.getClass().getName(), "forceRefresh");
+		tcLog.d(getClass().getName(), "forceRefresh");
 		refreshOnRestart = true;
 	}
 
@@ -994,20 +994,19 @@ public class TicketListFragment extends TracClientFragment implements OnGestureL
 				tcLog.i(getClass().getName(), "shareList exception", e);
 			}
 		}
-		final Intent sendIntent = new Intent();
-		sendIntent.setAction(Intent.ACTION_SEND);
+		final Intent sendIntent = new Intent(Intent.ACTION_SEND);
 		sendIntent.putExtra(Intent.EXTRA_TEXT, lijst);
 		sendIntent.setType("text/plain");
 		startActivity(sendIntent);
 	}
 
 	public void setFilter(ArrayList<FilterSpec> filter) {
-		tcLog.d(this.getClass().getName(), "setFilter " + filter);
+		tcLog.d(getClass().getName(), "setFilter " + filter);
 		Tickets.filterList = filter;
 	}
 
 	public void setSort(ArrayList<SortSpec> sort) {
-		tcLog.d(this.getClass().getName(), "setSort " + sort);
+		tcLog.d(getClass().getName(), "setSort " + sort);
 		Tickets.sortList = sort;
 	}
 
@@ -1030,20 +1029,20 @@ public class TicketListFragment extends TracClientFragment implements OnGestureL
 			}
 			return l;
 		} catch (final JSONException e) {
-			tcLog.e(this.getClass().getName(), "getNewTickets JSONException", e);
+			tcLog.e(getClass().getName(), "getNewTickets JSONException", e);
 			return null;
 		} catch (final JSONRPCException e) {
-			tcLog.e(this.getClass().getName(), "getNewTickets JSONRPCException", e);
+			tcLog.e(getClass().getName(), "getNewTickets JSONRPCException", e);
 			return null;
 		} catch (final Exception e) {
-			tcLog.e(this.getClass().getName(), "getNewTickets Exception", e);
+			tcLog.e(getClass().getName(), "getNewTickets Exception", e);
 			return null;
 		}
 	}
 
 	@Override
 	public void setHost() {
-		tcLog.d(this.getClass().getName(), "setHost");
+		tcLog.d(getClass().getName(), "setHost");
 		super.setHost();
 		SelectedProfile = Tickets.profile;
 		Tickets.resetCache();

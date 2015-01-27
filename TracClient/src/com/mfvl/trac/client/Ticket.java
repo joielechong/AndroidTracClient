@@ -105,7 +105,7 @@ public class Ticket extends TcObject implements Serializable {
 		_hasdata = velden != null;
 	}
 
-	public Ticket(final int ticknr, TracStart context, onTicketCompleteListener oc) {
+	public Ticket(final int ticknr, TracStart context, onTicketCompleteListener oc) { 
 		tcLog.i(this.getClass().getName(), "Ticket ticketnr = " + ticknr);
 		_ticknr = ticknr;
 		loadTicketData(context, oc);

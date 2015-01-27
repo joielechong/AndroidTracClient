@@ -45,6 +45,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.mfvl.trac.client.util.tcLog;
+import com.mfvl.trac.client.Ticket;
 
 public class UpdateTicketFragment extends TracClientFragment {
 	private String currentActionName = null;
@@ -56,7 +57,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		final Bundle args = getArguments();
-		// tcLog.d(this.getClass().getName(), "onAttach ");
+		// tcLog.d(getClass().getName(), "onAttach ");
 		if (args != null) {
 			ticknr = args.getInt(Const.CURRENT_TICKET);
 		}
@@ -65,13 +66,13 @@ public class UpdateTicketFragment extends TracClientFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " + savedInstanceState );
+		// tcLog.d(getClass().getName(), "onCreate savedInstanceState = " + savedInstanceState );
 		setHasOptionsMenu(true);
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		// tcLog.d(this.getClass().getName(),
+		// tcLog.d(getClass().getName(),
 		// "onCreateView savedInstanceState = " + (savedInstanceState == null ?
 		// "null" : "not null"));
 		final View view = inflater.inflate(R.layout.update_view, container, false);
@@ -85,7 +86,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 		tv.setText(text);
 
 		_actions = _ticket.getActions();
-		tcLog.d(this.getClass().getName(), "actions = " + _actions);
+		tcLog.d(getClass().getName(), "actions = " + _actions);
 		final RadioGroup rg = (RadioGroup) view.findViewById(R.id.actionblock);
 		try {
 			for (int i = 0; i < _actions.length(); i++) {
@@ -99,7 +100,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 				final Spinner optiesSpin = (Spinner) view.findViewById(R.id.opties);
 				final EditText optieval = (EditText) view.findViewById(R.id.optieval);
 				final JSONArray inputfields = actie.getJSONArray(3);
-				// tcLog.d(this.getClass().getName(), "inputfields = " +
+				// tcLog.d(getClass().getName(), "inputfields = " +
 				// inputfields);
 				rb.setId(i);
 				if (i == 0) {
@@ -182,7 +183,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 		final int spinPosition;
 
 		super.onActivityCreated(savedInstanceState);
-		tcLog.d(this.getClass().getName(), "onActivityCreated savedInstanceState = " + savedInstanceState);
+		tcLog.d(getClass().getName(), "onActivityCreated savedInstanceState = " + savedInstanceState);
 		if (savedInstanceState != null) {
 			if (savedInstanceState.containsKey(Const.CURRENT_TICKET)) {
 				ticknr = savedInstanceState.getInt(Const.CURRENT_TICKET);
@@ -323,7 +324,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" + item);
+		// tcLog.d(getClass().getName(), "onOptionsItemSelected item=" + item);
 		final int itemId = item.getItemId();
 		if (itemId == R.id.help) {
 			final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
@@ -360,7 +361,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 				}
 			}
 			sissaved = true;
-			tcLog.d(this.getClass().getName(), "onSaveInstanceState, savedState = " + savedState);
+			tcLog.d(getClass().getName(), "onSaveInstanceState, savedState = " + savedState);
 		}
 	}
 }

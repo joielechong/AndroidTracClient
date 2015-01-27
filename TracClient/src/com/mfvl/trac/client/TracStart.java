@@ -140,7 +140,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	private final ServiceConnection mConnection = new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName className, IBinder service) {
-			// tcLog.d(this.getClass().getName(),
+			// tcLog.d(getClass().getName(),
 			// "onServiceConnected className = " + className + " service = " +
 			// service);
 			sendMessageToService(Const.ServiceMsg.MSG_START_TIMER);
@@ -149,7 +149,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 		@Override
 		public void onServiceDisconnected(ComponentName className) {
-			// tcLog.d(this.getClass().getName(),
+			// tcLog.d(getClass().getName(),
 			// "onServiceDisconnected className = " + className);
 			mService = null;
 		}
@@ -165,7 +165,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 		@Override
 		public void handleMessage(Message msg) {
-			// tcLog.d(this.getClass().getName(), "handleMessage msg = " + msg);
+			// tcLog.d(getClass().getName(), "handleMessage msg = " + msg);
 			switch (sm[msg.what]) {
 			case MSG_REQUEST_TICKET_COUNT:
 				final int count = Tickets.getTicketCount();
@@ -181,7 +181,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 				});
 				break;
 			case MSG_REQUEST_REFRESH:
-				// tcLog.d(this.getClass().getName(),
+				// tcLog.d(getClass().getName(),
 				// "handleMessage msg = REFRESH");
 				refreshOverview();
 				break;
@@ -192,24 +192,24 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	}
 
 	private void sendMessageToService(Const.ServiceMsg message) {
-		// tcLog.d(this.getClass().getName(), "sendMessageToService message = "
+		// tcLog.d(getClass().getName(), "sendMessageToService message = "
 		// + message);
 		if (mIsBound && mService != null) {
 			try {
 				final Message msg = Message.obtain();
 				msg.what = message.ordinal();
 				msg.replyTo = mMessenger;
-				// tcLog.d(this.getClass().getName(),
+				// tcLog.d(getClass().getName(),
 				// "sendMessageToService msg = " + msg);
 				mService.send(msg);
 			} catch (final RemoteException e) {
-				tcLog.e(this.getClass().getName(), "sendMessageToService failed", e);
+				tcLog.e(getClass().getName(), "sendMessageToService failed", e);
 			}
 		}
 	}
 
 	private void sendMessageToService(Const.ServiceMsg message, int value) {
-		// tcLog.d(this.getClass().getName(), "sendMessageToService message = "
+		// tcLog.d(getClass().getName(), "sendMessageToService message = "
 		// + message);
 		if (mIsBound && mService != null) {
 			try {
@@ -217,11 +217,11 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 				msg.what = message.ordinal();
 				msg.arg1 = value;
 				msg.replyTo = mMessenger;
-				// tcLog.d(this.getClass().getName(),
+				// tcLog.d(getClass().getName(),
 				// "sendMessageToService msg = " + msg);
 				mService.send(msg);
 			} catch (final RemoteException e) {
-				tcLog.e(this.getClass().getName(), "sendMessageToService failed", e);
+				tcLog.e(getClass().getName(), "sendMessageToService failed", e);
 			}
 		}
 	}
@@ -235,7 +235,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 				msg.obj = value;
 				mService.send(msg);
 			} catch (final RemoteException e) {
-				tcLog.e(this.getClass().getName(), "sendMessageToService Object failed", e);
+				tcLog.e(getClass().getName(), "sendMessageToService Object failed", e);
 			}
 		}
 	}
@@ -350,7 +350,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
                                 args.putString("currentFilter", Credentials.getFilterString());
                                 args.putString("currectSortOrder", Credentials.getSortString());
                                 if (urlArg != null) {
-                                        tcLog.d(this.getClass().getName(), "select Ticket = " + ticketArg);
+                                        tcLog.d(getClass().getName(), "select Ticket = " + ticketArg);
                                         if (ticketListFragment != null) {
                                                 args.putInt("TicketArg", ticketArg);
                                         }
@@ -453,7 +453,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	@Override
 	public void onAttachFragment(final Fragment frag) {
-		tcLog.d(this.getClass().getName(), "onAttachFragment " + frag);
+		tcLog.d(getClass().getName(), "onAttachFragment " + frag);
 		Credentials.getInstance(this);
 		if (ListFragmentTag.equals(frag.getTag())) {
 			initializeList((TicketListFragment)frag);
@@ -462,13 +462,13 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	public void initializeList(final TicketListFragment ticketListFragment) {
 		if (ticketListFragment != null) {
-			tcLog.d(this.getClass().getName(), "initializeList ticketListFragment = " + ticketListFragment);
+			tcLog.d(getClass().getName(), "initializeList ticketListFragment = " + ticketListFragment);
 			ticketListFragment.setHost();
 			setFilter(Credentials.getFilterString());
 			setSort(Credentials.getSortString());
 
 			if (urlArg != null) {
-				tcLog.d(this.getClass().getName(), "select Ticket = " + ticketArg);
+				tcLog.d(getClass().getName(), "select Ticket = " + ticketArg);
 				if (ticketListFragment != null) {
 					ticketListFragment.selectTicket(ticketArg);
 				}
@@ -480,7 +480,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		tcLog.d(this.getClass().getName(), "onCreateOptionsMenu");
+		tcLog.d(getClass().getName(), "onCreateOptionsMenu");
 		final MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.tracstartmenu, menu);
 
@@ -496,7 +496,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		tcLog.d(this.getClass().getName(), "onPrepareOptionsMenu");
+		tcLog.d(getClass().getName(), "onPrepareOptionsMenu");
 		final MenuItem item = menu.findItem(R.id.debug);
 		item.setVisible(debug).setEnabled(debug);
 		if (debug) {
@@ -509,7 +509,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" + item.getTitle());
+		tcLog.d(getClass().getName(), "onOptionsItemSelected item=" + item.getTitle());
 		final int itemId = item.getItemId();
 		if (itemId == R.id.over) {
 			final Intent launchTrac = new Intent(getApplicationContext(), TracShowWebPage.class);
@@ -525,12 +525,12 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	@Override
 	public void onTicketSelected(Ticket ticket) {
-		tcLog.d(this.getClass().getName(), "onTicketSelected Ticket: " + ticket.getTicketnr());
+		tcLog.d(getClass().getName(), "onTicketSelected Ticket: " + ticket.getTicketnr());
 		final DetailFragment detailFragment = new DetailFragment();
 		final Bundle args = makeArgs();
 		args.putInt(Const.CURRENT_TICKET, ticket.getTicketnr());
 		detailFragment.setArguments(args);
-		// tcLog.d(this.getClass().getName(), "detailFragment =" +
+		// tcLog.d(getClass().getName(), "detailFragment =" +
 		// detailFragment.toString());
 		final FragmentTransaction ft = fm.beginTransaction();
 		ft.replace(R.id.displayList, detailFragment, DetailFragmentTag);
@@ -541,10 +541,10 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	@Override
 	public void onNewTicket() {
-		tcLog.d(this.getClass().getName(), "onNewTicket ");
+		tcLog.d(getClass().getName(), "onNewTicket ");
 
 		final NewTicketFragment newtickFragment = new NewTicketFragment();
-		// tcLog.d(this.getClass().getName(), "newTickFragment =" +
+		// tcLog.d(getClass().getName(), "newTickFragment =" +
 		// newtickFragment.toString());
 		final FragmentTransaction ft = fm.beginTransaction();
 		ft.replace(R.id.displayList, newtickFragment, NewFragmentTag);
@@ -555,13 +555,13 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	@Override
 	public void onUpdateTicket(Ticket ticket) {
-		tcLog.d(this.getClass().getName(), "onUpdateTicket ticket = " + ticket);
+		tcLog.d(getClass().getName(), "onUpdateTicket ticket = " + ticket);
 
 		final UpdateTicketFragment updtickFragment = new UpdateTicketFragment();
 		final Bundle args = makeArgs();
 		args.putInt(Const.CURRENT_TICKET, ticket.getTicketnr());
 		updtickFragment.setArguments(args);
-		// tcLog.d(this.getClass().getName(), "updtickFragment = " +
+		// tcLog.d(getClass().getName(), "updtickFragment = " +
 		// updtickFragment.toString());
 		final FragmentTransaction ft = fm.beginTransaction();
 		ft.replace(R.id.displayList, updtickFragment, UpdFragmentTag);
@@ -572,7 +572,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	@Override
 	public void onLogin(String newUrl, String newUser, String newPass, boolean newHack, boolean newHostNameHack, String newProfile) {
-		tcLog.d(this.getClass().getName(), "onLogin " + newProfile);
+		tcLog.d(getClass().getName(), "onLogin " + newProfile);
 		Tickets.url = newUrl;
 		Tickets.username = newUser;
 		Tickets.password = newPass;
@@ -613,7 +613,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	@Override
 	public void setFilter(ArrayList<FilterSpec> filter) {
-		tcLog.d(this.getClass().getName(), "setFilter " + filter);
+		tcLog.d(getClass().getName(), "setFilter " + filter);
 		String filterString = "";
 		if (filter != null) {
 			for (final FilterSpec fs : filter) {
@@ -636,7 +636,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	@Override
 	public void setFilter(String filterString) {
-		// tcLog.d(this.getClass().getName(), "setFilter " + filterString);
+		// tcLog.d(getClass().getName(), "setFilter " + filterString);
 		final ArrayList<FilterSpec> filter = new ArrayList<FilterSpec>();
 
 		if (filterString.length() > 0) {
@@ -657,7 +657,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	@Override
 	public void setSort(ArrayList<SortSpec> sort) {
-		tcLog.d(this.getClass().getName(), "setSort " + sort);
+		tcLog.d(getClass().getName(), "setSort " + sort);
 
 		String sortString = "";
 		if (sort != null) {
@@ -681,7 +681,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	@Override
 	public void setSort(String sortString) {
-		// tcLog.d(this.getClass().getName(), "setSort " + sortString);
+		// tcLog.d(getClass().getName(), "setSort " + sortString);
 		final ArrayList<SortSpec> sl = new ArrayList<SortSpec>();
 		if (sortString.length() > 0) {
 			String[] sort;
@@ -713,7 +713,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	@Override
 	public void onChangeHost() {
-		tcLog.d(this.getClass().getName(), "onChangeHost");
+		tcLog.d(getClass().getName(), "onChangeHost");
 		final FragmentTransaction ft = fm.beginTransaction();
 		final TracLoginFragment tracLoginFragment = new TracLoginFragment();
 		ft.replace(R.id.displayList, tracLoginFragment, LoginFragmentTag);
@@ -724,7 +724,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	@Override
 	public void onFilterSelected(ArrayList<FilterSpec> filterList) {
-		tcLog.d(this.getClass().getName(), "onFilterSelected");
+		tcLog.d(getClass().getName(), "onFilterSelected");
 		final FragmentTransaction ft = fm.beginTransaction();
 		final FilterFragment filterFragment = new FilterFragment();
 		ft.replace(R.id.displayList, filterFragment, FilterFragmentTag);
@@ -736,7 +736,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	@Override
 	public void onSortSelected(ArrayList<SortSpec> sortList) {
-		tcLog.d(this.getClass().getName(), "onSortSelected");
+		tcLog.d(getClass().getName(), "onSortSelected");
 		final FragmentTransaction ft = fm.beginTransaction();
 		final SortFragment sortFragment = new SortFragment();
 		ft.replace(R.id.displayList, sortFragment, SortFragmentTag);
@@ -748,7 +748,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	@Override
 	public void onChooserSelected(onFileSelectedListener oc) {
-		tcLog.d(this.getClass().getName(), "onChooserSelected");
+		tcLog.d(getClass().getName(), "onChooserSelected");
 		// save callback
 		_oc = oc;
 		// Use the GET_CONTENT intent from the utility class
@@ -764,7 +764,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		tcLog.d(this.getClass().getName(), "onActivityResult requestcode = " + requestCode);
+		tcLog.d(getClass().getName(), "onActivityResult requestcode = " + requestCode);
 		switch (requestCode) {
 		case REQUEST_CODE:
 			// If the file selection was successful
@@ -776,7 +776,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 					try {
 						// Create a file instance from the URI
 						final File file = FileUtils.getFile(uri);
-						tcLog.d(this.getClass().getName(), "File Selected: " + file.getAbsolutePath());
+						tcLog.d(getClass().getName(), "File Selected: " + file.getAbsolutePath());
 						if (_oc != null) {
 							_oc.onSelected(file.getAbsolutePath());
 						}
@@ -793,7 +793,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	@Override
 	public void onStart() {
 		super.onStart();
-		tcLog.d(this.getClass().getName(), "onStart");
+		tcLog.d(getClass().getName(), "onStart");
 		if (Const.doAnalytics) {
 			MyTracker.reportActivityStart(this);
 		}
@@ -843,8 +843,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	@Override
 	public void shareTicket(final Ticket _ticket) {
 		if (_ticket != null && _ticket.hasdata()) {
-			final Intent sendIntent = new Intent();
-			sendIntent.setAction(Intent.ACTION_SEND);
+			final Intent sendIntent = new Intent(Intent.ACTION_SEND);
 			sendIntent.putExtra(Intent.EXTRA_TEXT, _ticket.toText());
 			sendIntent.setType("text/plain");
 			startActivity(sendIntent);
@@ -854,7 +853,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	@Override
 	public void refreshOverview() {
 		final TicketListFragment ticketListFragment = (TicketListFragment) getFragment(ListFragmentTag);
-//		tcLog.d(this.getClass().getName(), "refreshOverview ticketListFragment = " + ticketListFragment);
+//		tcLog.d(getClass().getName(), "refreshOverview ticketListFragment = " + ticketListFragment);
 		if (ticketListFragment != null) {
 			ticketListFragment.forceRefresh();
 			setReferenceTime();
@@ -864,7 +863,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@Override
 	public void enableDebug() {
-//		tcLog.d(this.getClass().getName(), "enableDebug");
+//		tcLog.d(getClass().getName(), "enableDebug");
 		debug = true;
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
 			invalidateOptionsMenu();
@@ -873,8 +872,7 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 	}
 
 	private Intent shareDebug() {
-		final Intent sendIntent = new Intent();
-		sendIntent.setAction(Intent.ACTION_SEND);
+		final Intent sendIntent = new Intent(Intent.ACTION_SEND);
 		sendIntent.putExtra(Intent.EXTRA_TEXT, tcLog.getDebug());
 		sendIntent.setType("text/plain");
 		return sendIntent;
@@ -886,13 +884,13 @@ public class TracStart extends ActionBarActivity implements InterFragmentListene
 
 	private List<Integer> getNewTickets(final String isoTijd) {
 		final TicketListFragment ticketListFragment = (TicketListFragment) getFragment(ListFragmentTag);
-//		tcLog.d(this.getClass().getName(), "getNewTickets ticketListFragment = " + ticketListFragment);
+//		tcLog.d(getClass().getName(), "getNewTickets ticketListFragment = " + ticketListFragment);
 		return ticketListFragment != null ? ticketListFragment.getNewTickets(isoTijd) : null;
 	}
 
 	@Override
 	public void setReferenceTime() {
-		// tcLog.d(this.getClass().getName(), "setReferenceTime");
+		// tcLog.d(getClass().getName(), "setReferenceTime");
 		referenceTime = System.currentTimeMillis() - timerCorr;
 		sendMessageToService(Const.ServiceMsg.MSG_REMOVE_NOTIFICATION);
 		sendMessageToService(Const.ServiceMsg.MSG_STOP_TIMER);
