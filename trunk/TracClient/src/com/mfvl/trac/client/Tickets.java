@@ -20,18 +20,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
-import com.mfvl.trac.client.util.FilterSpec;
-import com.mfvl.trac.client.util.SortSpec;
-import com.mfvl.trac.client.util.tcLog;
-
-interface onLoadTicketCompleteListener {
-	void onListComplete(int count);
-
-	void onContentLoaded(int progress);
-
-	void onContentComplete(int count);
-
-	void onError(int code);
+interface onTicketsChanged {
+	void onChanged();
 }
 
 public class Tickets extends TcObject {
@@ -52,6 +42,10 @@ public class Tickets extends TcObject {
 
 	private static Tickets _instance = null;
 	private static String _tag = "";
+	private static int ticketGroupCount;
+	private static int ticketContentCount;
+	
+	private static onTicketsChanged saveTc = null;
 
 	private static boolean valid = false;
 
@@ -74,7 +68,9 @@ public class Tickets extends TcObject {
 
 	public static void initList() {
 		getInstance();
+		tcLog.d(_tag, "Tickets initList");
 		ticketList = new ArrayList<Ticket>();
+		ticketContentCount = 0;
 		valid = true;
 		resetCache();
 	}
@@ -84,65 +80,60 @@ public class Tickets extends TcObject {
 		ticketList = null;
 		tickets = null;
 		ticketMap = null;
+		ticketContentCount = 0;
 		TicketModel.getInstance();
 	}
-
-	private static void loadTicketList() throws TicketLoadException {
+	
+	public static void setOnChanged(onTicketsChanged tc) {
+		saveTc = tc;
 	}
-
-	private static void loadTicketContent(final onLoadTicketCompleteListener oc) throws TicketLoadException {
-	}
-
-	public static void load(final onLoadTicketCompleteListener oc) {
-		getInstance();
-		if (url == null) {
-			tcLog.e(_tag, "URL == null");
-			oc.onError(INVALID_URL);
+	
+	public static void notifyChange() {
+		if (saveTc != null) {
+			saveTc.onChanged();
 		}
-		clear();
-		final Thread loadThread = new Thread() {
-			@Override
-			public void run() {
-				try {
-					loadTicketList();
-					oc.onListComplete(0);
-				} catch (final TicketLoadException e) {
-					tcLog.e(getClass().getName(), "load problem loading list", e);
-					tickets = null;
-					ticketList = null;
-					oc.onError(LIST_NOT_LOADED);
-				}
-				try {
-					loadTicketContent(oc);
-					oc.onContentComplete(0);
-				} catch (final TicketLoadException e) {
-					tcLog.e(getClass().getName(), "load problem loading content", e);
-					tickets = null;
-					ticketList = null;
-					oc.onError(CONTENT_NOT_LOADED);
-				}
-			}
-		};
-		loadThread.start();
 	}
+	
 
-	public static Ticket getTicket(int ticknr) {
+	public static Ticket getTicket(final int ticknr) {
 		getInstance();
-		// tcLog.d(getClass().getName(), "getTicket ticknr = "+ticknr+ " "+ticketMap.containsKey(ticknr));
+//		tcLog.d(_tag, "getTicket ticknr = "+ticknr+ " "+ticketMap.containsKey(ticknr));
 		return ticketMap.containsKey(ticknr) ? ticketMap.get(ticknr) : null;
 	}
 
 	public static void putTicket(Ticket ticket) {
 		getInstance();
-		// tcLog.d(getClass().getName(), "putTicket ticket = "+ticket);
+//		tcLog.d(getClass().getName(), "putTicket ticket = "+ticket);
 		ticketMap.put(ticket.getTicketnr(), ticket);
+	}
+	
+	public static void setTicketGroupCount(final int v) {
+		getInstance();
+		ticketGroupCount = v;
+	}
+
+	public static void setTicketContentCount(final int v) {
+		getInstance();
+		ticketContentCount = v;
+	}
+	
+	public static void incTicketContentCount() {
+		ticketContentCount++;
+	}
+	
+	public static int getTicketGroupCount() {
+		return ticketGroupCount;
+	}
+
+	public static int getTicketContentCount() {
+		return ticketContentCount;
 	}
 
 	public static void resetCache() {
 		getInstance();
-		// tcLog.d(getClass().getName(),"resetCache voor ticketMap = "+ticketMap);
+		// tcLog.d(_tag,"resetCache voor ticketMap = "+ticketMap);
 		ticketMap = new TreeMap<Integer, Ticket>();
-		// tcLog.d(getClass().getName(),"resetCache na ticketMap = "+ticketMap);
+		// tcLog.d(_tag,"resetCache na ticketMap = "+ticketMap);
 	}
 
 	public static void setInvalid() {
@@ -155,15 +146,15 @@ public class Tickets extends TcObject {
 		return valid;
 	}
 
-	public static int getNextTicket(int ticket) {
+	public static int getNextTicket(final int ticket) {
 		return getNeighTicket(ticket, 1);
 	}
 
-	public static int getPrevTicket(int ticket) {
+	public static int getPrevTicket(final int ticket) {
 		return getNeighTicket(ticket, -1);
 	}
 
-	private static int getNeighTicket(int ticknr, int dir) {
+	private static int getNeighTicket(final int ticknr, final int dir) {
 		getInstance();
 		tcLog.d(_tag, "getNeighTicket ticknr = " + ticknr + ", dir = " + dir);
 		Ticket t = Tickets.getTicket(ticknr);
@@ -190,7 +181,7 @@ public class Tickets extends TcObject {
 			return ticketList.size();
 		} catch (final Exception e) {
 			tcLog.e(_tag, "getTicketCount Exception", e);
-			return -1;
+			return 0;
 		}
 	}
 

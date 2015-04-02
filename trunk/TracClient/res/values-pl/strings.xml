@@ -20,7 +20,6 @@
 	<string name="nieuw">Nowy bilet</string>
 	<string name="nodata">Brak danych</string>
 	<string name="nodatadesc">Dane tego biletu nie zostały jeszcze załadowane</string>
-	<string name="connerr">Błąd połączenia</string>
 	<string name="newtick">Stwórz nowy bilet</string>
     <string name="oktext">OK</string>
 	<string name="store">Zachowaj bilet</string>
@@ -83,7 +82,6 @@
 	<string name="foundnew">Znaleziono nowe lub edytowane bilety:</string>
 	<string name="notifmod">Znaleziono edytowane bilety</string>
 	<string name="tracLogin">Zaloguj się na serwer TRAC</string>
-	<string name="nopermission">Brak uprawnień do zakładania biletów na serwerze. Sprawdź czy TICKET_VIEW jest odpowiednio skonfigurowane dla użytkownika.</string>
 	<string name="notickets">Nie znaleziono biletów</string>
 	<string name="nocomment">Nie można edytować komentarza</string>
 	<string name="notpossible">Nie można wykonać akcji</string>

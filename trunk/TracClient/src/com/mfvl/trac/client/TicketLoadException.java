@@ -16,7 +16,9 @@
 
 package com.mfvl.trac.client;
 
-public class TicketLoadException extends Exception {
+import java.lang.RuntimeException;
+
+public class TicketLoadException extends RuntimeException {
 	private static final long serialVersionUID = 7847222445437027235L;
 
 	public TicketLoadException(String s) {

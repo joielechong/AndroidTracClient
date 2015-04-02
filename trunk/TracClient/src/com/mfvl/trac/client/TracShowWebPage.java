@@ -26,11 +26,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
-import com.mfvl.trac.client.util.Credentials;
-import com.mfvl.trac.client.util.tcLog;
-
 public class TracShowWebPage extends Activity {
 
 	@Override
@@ -52,22 +47,22 @@ public class TracShowWebPage extends Activity {
 			tv1.setText(Credentials.buildVersion());
 		}
 		if (Const.doAnalytics) {
-			MyTracker.getInstance(TracShowWebPage.this);
-			// Get a Tracker (should auto-report)
-			final Tracker t = MyTracker.getTracker(getClass().getName());
-			// Build and send an Event.
-			t.send(new HitBuilders.EventBuilder().setCategory("Normal").setAction("WebView").setLabel(filename).build());
+			MyTracker.report("Normal","WebView",filename);
 		}
 		final WebView wv = (WebView) findViewById(R.id.webfile);
 		// wv.getSettings().setJavaScriptEnabled(true);
 		wv.setWebViewClient(new WebViewClient());
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+			final int webzoom = getResources().getInteger(R.integer.webzoom);
+			wv.getSettings().setTextZoom(webzoom);
+		}
 		wv.loadUrl(filename);
 		tcLog.d(getClass().getName(), "webview = " + wv);
 	}
 
 	@Override
 	public void onStart() {
-		tcLog.d(this.getClass().getName(), "onStart");
+		tcLog.d(getClass().getName(), "onStart");
 		super.onStart();
 		if (Const.doAnalytics) {
 			MyTracker.reportActivityStart(TracShowWebPage.this);
@@ -76,7 +71,7 @@ public class TracShowWebPage extends Activity {
 
 	@Override
 	public void onStop() {
-		tcLog.d(this.getClass().getName(), "onStop");
+		tcLog.d(getClass().getName(), "onStop");
 		super.onStop();
 		if (Const.doAnalytics) {
 			MyTracker.reportActivityStop(TracShowWebPage.this);

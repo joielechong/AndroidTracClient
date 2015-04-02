@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.mfvl.trac.client.util;
+package com.mfvl.trac.client;
 
 /**
  * Helper class for handling ISO 8601 strings of the following format:

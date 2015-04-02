@@ -46,9 +46,6 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.mfvl.trac.client.util.FilterSpec;
-import com.mfvl.trac.client.util.tcLog;
-
 public class FilterFragment extends TracClientFragment {
 	private TicketModel tm;
 
@@ -79,16 +76,16 @@ public class FilterFragment extends TracClientFragment {
 			p = position >= items.size() || position < 0 ? 0 : position;
 
 			final FilterSpec o = items.get(p);
-			final TicketModelVeld tmv = tm.getVeld(o.veld());
+			final TicketModelVeld tmv = tm.getVeld(o.getVeld());
 
 			// tcLog.d(this.getClass().getName(), "getView pos=" + position +
 			// " " + o + " " + tmv);
 
-			final int resid = o.isEdit() ? tmv.options() == null ? R.layout.filter_spec2 : R.layout.filter_spec3
+			final int resid = o.getEdit() ? tmv.options() == null ? R.layout.filter_spec2 : R.layout.filter_spec3
 					: R.layout.filter_spec1;
 			final int curid = convertView == null ? -1 : convertView.getId();
 			// tcLog.d(this.getClass().getName(),"getView pos = " + position +
-			// " curid = " + curid + " resid=" + resid + " veld = " + o.veld());
+			// " curid = " + curid + " resid=" + resid + " veld = " + o.getVeld());
 			if (curid != resid) {
 				final LayoutInflater vi = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				v = vi.inflate(resid, null);
@@ -125,8 +122,8 @@ public class FilterFragment extends TracClientFragment {
 			};
 
 			if (o != null) {
-				if (o.isEdit()) {
-					tt.setText(o.veld());
+				if (o.getEdit()) {
+					tt.setText(o.getVeld());
 					tt.setOnClickListener(stopEdit);
 				} else {
 					tt.setText(o.toString());
@@ -138,7 +135,7 @@ public class FilterFragment extends TracClientFragment {
 				final ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item,
 						operatornames);
 				spin.setAdapter(spinAdapter);
-				spin.setSelection(operators.indexOf(o.operator()));
+				spin.setSelection(operators.indexOf(o.getOperator()));
 				spin.setOnItemSelectedListener(new OnItemSelectedListener() {
 					@Override
 					public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -152,7 +149,7 @@ public class FilterFragment extends TracClientFragment {
 			}
 
 			if (et != null) {
-				et.setText(o.waarde());
+				et.setText(o.getWaarde());
 				et.requestFocus();
 				et.addTextChangedListener(new TextWatcher() {
 
@@ -279,8 +276,8 @@ public class FilterFragment extends TracClientFragment {
 			public void onClick(View v1) {
 				final ArrayList<FilterSpec> items = filterAdapter.items;
 				for (int i = items.size() - 1; i >= 0; i--) {
-					if (items.get(i).operator() == null || items.get(i).operator().equals("") || items.get(i).waarde() == null
-							|| items.get(i).waarde().equals("")) {
+					if (items.get(i).getOperator() == null || items.get(i).getOperator().equals("") || items.get(i).getWaarde() == null
+							|| items.get(i).getWaarde().equals("")) {
 						items.remove(i);
 					} else {
 						items.get(i).setEdit(false);
@@ -331,10 +328,10 @@ public class FilterFragment extends TracClientFragment {
 	}
 
 	private LinearLayout makeCheckBoxes(final FilterSpec o) {
-		final String veldnaam = o.veld();
+		final String veldnaam = o.getVeld();
 		final List<Object> waardes = tm.getVeld(veldnaam).options();
-		final String w = o.waarde();
-		final String op = o.operator();
+		final String w = o.getWaarde();
+		final String op = o.getOperator();
 		final boolean omgekeerd = op != null && op.equals("!=");
 
 		// tcLog.d(this.getClass().getName(), "makeCheckBoxes " + veldnaam + " "

@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package com.mfvl.trac.client.util;
+package com.mfvl.trac.client;
 
 import java.io.Serializable;
-
-import com.mfvl.trac.client.TcObject;
 
 abstract public class Spec extends TcObject implements Serializable, Cloneable {
 	private static final long serialVersionUID = -4398082467476637503L;
@@ -28,7 +26,7 @@ abstract public class Spec extends TcObject implements Serializable, Cloneable {
 		_veld = veld;
 	}
 
-	public String veld() {
+	public String getVeld() {
 		return _veld;
 	}
 

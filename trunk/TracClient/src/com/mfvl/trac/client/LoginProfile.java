@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package com.mfvl.trac.client.util;
+package com.mfvl.trac.client;
 
 import java.io.Serializable;
-
-import com.mfvl.trac.client.TcObject;
 
 public class LoginProfile extends TcObject implements Serializable, Cloneable {
 	private static final long serialVersionUID = 7810597433987080395L;

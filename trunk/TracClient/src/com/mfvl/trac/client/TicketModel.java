@@ -23,8 +23,6 @@ import org.json.JSONArray;
 
 import android.support.v4.util.ArrayMap;
 
-import com.mfvl.trac.client.util.tcLog;
-
 public class TicketModel extends TcObject implements Serializable {
 	private static final long serialVersionUID = 4307815225424930343L;
 	private static ArrayMap<String, TicketModelVeld> _velden;
@@ -33,25 +31,33 @@ public class TicketModel extends TcObject implements Serializable {
 	private static boolean loading;
 	private static Thread networkThread = null;
 	private static TicketModel _instance = null;
+	private static boolean hasData;
+	private static String tag = "**TicketModel**";
 
 	@Override
 	public int hashCode() {
 		return 31 * (17 + fieldCount + hc(_velden) + hc(_volgorde)) + super.hashCode();
 	}
-
+	
 	private TicketModel() {
+		tag = getClass().getName();
+		tcLog.d(tag, "TicketModel constructor");
 		fieldCount = 0;
-		loading = true;
+		loading = false;
+		hasData = false;
 		_velden = new ArrayMap<String, TicketModelVeld>();
 		_velden.clear();
 		_volgorde = new ArrayMap<Integer, String>();
 		_volgorde.clear();
+	}
 
+	private void loadModelData() {
 		if (Tickets.url != null) {
+			loading = true;
 			networkThread = new Thread() {
 				@Override
 				public void run() {
-					tcLog.d(getClass().getName(), "TicketModel url = " + Tickets.url);
+					tcLog.d(tag, "TicketModel url = " + Tickets.url);
 					try {
 						final JSONArray v = TracHttpClient.getModel();
 						fieldCount = v.length();
@@ -64,8 +70,9 @@ public class TicketModel extends TcObject implements Serializable {
 						_volgorde.put(fieldCount, "max");
 						_velden.put("page", new TicketModelVeld("page", "page", "0"));
 						_volgorde.put(fieldCount + 1, "page");
+						hasData = true;
 					} catch (final Exception e) {
-						tcLog.i(getClass().getName(), "TicketModel exception", e);
+						tcLog.e(tag, "TicketModel exception", e);
 					} finally {
 						loading = false;
 					}
@@ -73,21 +80,37 @@ public class TicketModel extends TcObject implements Serializable {
 			};
 			networkThread.start();
 		} else {
-			tcLog.e(getClass().getName(), "TicketModel called with url == null");
+			tcLog.e(tag, "TicketModel called with url == null");
 		}
 	}
 
 	public static TicketModel getInstance() {
-		if (_instance == null) {
+		tcLog.d(tag, "TicketModel getInstance");
+		if (_instance == null ) {
 			_instance = new TicketModel();
 		}
-		tcLog.d(_instance.getClass().getName(), "TicketModel getInstance");
+		if (!hasData) {
+			_instance.loadModelData();
+		}
 		return _instance;
 	}
 
 	public static TicketModel newInstance() {
-		_instance = new TicketModel();
-		tcLog.d(_instance.getClass().getName(), "TicketModel newInstance");
+		tcLog.d(tag, "TicketModel newInstance");
+		if (_instance == null ) {
+			_instance = new TicketModel();
+		} else {
+			fieldCount = 0;
+			loading = false;
+			hasData = false;
+			_velden = new ArrayMap<String, TicketModelVeld>();
+			_velden.clear();
+			_volgorde = new ArrayMap<Integer, String>();
+			_volgorde.clear();
+		}
+		if (!hasData) {
+			_instance.loadModelData();
+		}
 		return _instance;
 	}
 
@@ -124,7 +147,7 @@ public class TicketModel extends TcObject implements Serializable {
 			try {
 				networkThread.join();
 			} catch (final Exception e) {
-				tcLog.i(getClass().getName(), "exception in wacht", e);
+				tcLog.i(tag, "exception in wacht", e);
 			}
 		}
 		loading = false;

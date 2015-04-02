@@ -27,7 +27,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
@@ -36,7 +35,6 @@ import android.os.Process;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
 import android.content.res.Resources;
-import com.mfvl.trac.client.util.tcLog;
 
 public class RefreshService extends Service {
 
@@ -46,13 +44,11 @@ public class RefreshService extends Service {
 	private Timer monitorTimer = null;
 	private static final int notifId = 1234;
 
-	private HandlerThread mHandlerThread = null;
+	private MyHandlerThread mHandlerThread = null;
 	private ServiceHandler mServiceHandler;
 	private Messenger mMessenger = null;
 	private Messenger receiver = null;
 
-	static Const.ServiceMsg[] sm = Const.ServiceMsg.values();
-	
 	private final class ServiceHandler extends Handler {
 		public ServiceHandler(Looper looper) {
 			super(looper);
@@ -66,27 +62,27 @@ public class RefreshService extends Service {
 		public void handleMessage(final Message msg) {
 			// tcLog.d(this.getClass().getName(), "handleMessage msg = " + msg);
 			final NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-			switch (sm[msg.what]) {
-			case MSG_START_TIMER:
+			switch (msg.what) {
+			case Const.MSG_START_TIMER:
 				stopTimer();
 				startTimer(msg);
 				receiver = msg.replyTo;
 				break;
-			case MSG_STOP_TIMER:
+			case Const.MSG_STOP_TIMER:
 				stopTimer();
 				break;
-			case MSG_REQUEST_REFRESH:
-				sendMessageToUI(Const.ServiceMsg.MSG_REQUEST_REFRESH.ordinal());
+			case Const.MSG_REQUEST_REFRESH:
+				sendMessageToUI(Const.MSG_REQUEST_REFRESH);
 				break;
-			case MSG_REMOVE_NOTIFICATION:
+			case Const.MSG_REMOVE_NOTIFICATION:
 				mNotificationManager.cancel(notifId);
 				break;
-			case MSG_SEND_TICKET_COUNT:
+			case Const.MSG_SEND_TICKET_COUNT:
 				if (msg.arg1 > 0) {
-					sendMessageToUI(Const.ServiceMsg.MSG_REQUEST_NEW_TICKETS.ordinal());
+					sendMessageToUI(Const.MSG_REQUEST_NEW_TICKETS);
 				}
 				break;
-			case MSG_SEND_NEW_TICKETS:
+			case Const.MSG_SEND_NEW_TICKETS:
 				@SuppressWarnings("unchecked")
 				final List<Integer> newTickets = (List<Integer>) msg.obj;
 				if (newTickets != null) {
@@ -138,7 +134,7 @@ public class RefreshService extends Service {
 		// main thread, which we don't want to block. We also make it
 		// background priority so CPU-intensive work will not disrupt our UI.
 		// tcLog.d(this.getClass().getName(), "onCreate");
-		mHandlerThread = new HandlerThread("ServiceHandler", Process.THREAD_PRIORITY_BACKGROUND);
+		mHandlerThread = new MyHandlerThread("ServiceHandler", Process.THREAD_PRIORITY_BACKGROUND);
 		mHandlerThread.start();
 
 		// Get the HandlerThread's Looper and use it for our Handler
@@ -177,9 +173,9 @@ public class RefreshService extends Service {
 	public void onDestroy() {
 		// tcLog.d(this.getClass().getName(), "onDestroy");
 		stopTimer();
+		mHandlerThread.quitSafely();
 		final NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		mNotificationManager.cancel(notifId);
-		mHandlerThread.quit();
 		super.onDestroy();
 	}
 
@@ -190,7 +186,7 @@ public class RefreshService extends Service {
 			@Override
 			public void run() {
 				// tcLog.d(this.getClass().getName(), "timertask started");
-				sendMessageToUI(Const.ServiceMsg.MSG_REQUEST_TICKET_COUNT.ordinal());
+				sendMessageToUI(Const.MSG_REQUEST_TICKET_COUNT);
 			}
 		}, timerStart, timerPeriod);
 	}

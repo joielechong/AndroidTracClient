@@ -30,13 +30,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.mfvl.trac.client.util.Credentials;
-import com.mfvl.trac.client.util.tcLog;
-import android.content.pm.PackageManager;
 
 public class TracTitlescreenActivity extends Activity {
 
@@ -62,7 +57,6 @@ public class TracTitlescreenActivity extends Activity {
 			if (Const.doAnalytics) {
 				// Get a Tracker (should auto-report)
 				MyTracker.getInstance(this);
-				Tracker t = MyTracker.getTracker(getClass().getName());
 			}
 		} catch (final Exception e) {
 			tcLog.e(getClass().getName(), "crash", e);
@@ -123,12 +117,7 @@ public class TracTitlescreenActivity extends Activity {
 						urlstring += segment + "/";
 					}
 					if (Const.doAnalytics) {
-						// Build and send an Event.
-                        MyTracker.getInstance(this);
-                        Tracker t = MyTracker.getTracker(getClass().getName());
-						if (t != null) {
-							t.send(new HitBuilders.EventBuilder().setCategory("Startup").setAction("URI start").setLabel(urlstring).setValue(ticket).build());
-						}
+                        MyTracker.report("Startup","URI start",urlstring);
 					}
 					launchTrac.putExtra(Const.INTENT_URL, urlstring);
 					launchTrac.putExtra(Const.INTENT_TICKET, (long) ticket);

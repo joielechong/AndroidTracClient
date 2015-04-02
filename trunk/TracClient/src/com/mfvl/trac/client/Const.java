@@ -22,14 +22,14 @@ public final class Const {
 	 * Constanten voor communicatie met de service
 	*/
 	
-	enum ServiceMsg { MSG_START_TIMER, 
-			MSG_REQUEST_TICKET_COUNT, 
-			MSG_SEND_TICKET_COUNT, 
-			MSG_REQUEST_NEW_TICKETS, 
-			MSG_SEND_NEW_TICKETS, 
-			MSG_REQUEST_REFRESH, 
-			MSG_STOP_TIMER, 
-			MSG_REMOVE_NOTIFICATION}
+	static final int MSG_START_TIMER  = 1; 
+	static final int MSG_REQUEST_TICKET_COUNT = 2;
+	static final int MSG_SEND_TICKET_COUNT  = 3;
+	static final int MSG_REQUEST_NEW_TICKETS = 4;
+	static final int MSG_SEND_NEW_TICKETS = 5;
+	static final int MSG_REQUEST_REFRESH = 6;
+	static final int MSG_STOP_TIMER = 7;
+	static final int MSG_REMOVE_NOTIFICATION = 8;
 	
 
 	/*
@@ -63,27 +63,28 @@ public final class Const {
 
 	static final String EMPTYFIELDS = "emptyfields";
 	static final String MODVELD = "modveld";
+
 	/*
 	 * Shared preferences
 	 */
 
-	public static final String PREFS_NAME = "Trac";
-	public final static String PREF_URL = "tracUrl";
-	public final static String PREF_USER = "tracUsername";
-	public final static String PREF_PASS = "tracPassword";
-	public final static String PREF_HACK = "sslHack";
-	public final static String PREF_HNH = "sslHostNameHack";
-	public final static String PREF_PROF = "profile";
-	public final static String PREF_1ST = "firstRun";
-	public final static String PREF_FILTER = "filterstring";
-	public final static String PREF_SORT = "sortString";
+	static final String PREFS_NAME = "Trac";
+	static final String PREF_URL = "tracUrl";
+	static final String PREF_USER = "tracUsername";
+	static final String PREF_PASS = "tracPassword";
+	static final String PREF_HACK = "sslHack";
+	static final String PREF_HNH = "sslHostNameHack";
+	static final String PREF_PROF = "profile";
+	static final String PREF_1ST = "firstRun";
+	static final String PREF_FILTER = "filterstring";
+	static final String PREF_SORT = "sortString";
 
 	/*
 	 * Overige constanten
 	 */
 	static final int UPARROW = android.R.drawable.arrow_up_float;
 	static final int DOWNARROW = android.R.drawable.arrow_down_float;
-	final static String mimeUnknown = "application/unknown";
+	static final String mimeUnknown = "application/unknown";
 	
-	public static  boolean doAnalytics = true;
+	static boolean doAnalytics = true;
 }

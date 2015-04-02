@@ -21,7 +21,6 @@
     <string name="nieuw">Nouveau ticket</string>
     <string name="nodata">Pas de données</string>
     <string name="nodatadesc">Les données de ce billet n\'est pas encore chargé</string>
-    <string name="connerr">Erreur de connexion</string>
     <string name="newtick">Créer un nouveau billet</string>
     <string name="oktext">OK</string>
     <string name="store">billet de magasin</string>
@@ -96,7 +95,6 @@
     <string name="foundnew">Modification ou de nouveaux billets trouvés:</string>
     <string name="notifmod">Billets modifiés trouvés</string>
     <string name="tracLogin">Connectez-vous au serveur de TRAC</string>
-    <string name="nopermission">Aucune autorisation d\'interroger des billets sur le serveur. Assurez-vous que TICKET_VIEW est défini pour l\'utilisateur configuré.</string>
     <string name="notickets">Pas de billets trouvé</string>
     <string name="nocomment">Vous ne pouvez pas modifier commentaire</string>
     <string name="notpossible">Pas possible</string>

@@ -21,7 +21,6 @@
 	<string name="nieuw">Neues Ticket</string>
 	<string name="nodata">Keine Daten</string>
 	<string name="nodatadesc">Inhalt des Tickets ist noch nicht geladen</string>
-	<string name="connerr">Verbindungsfehler</string>
 	<string name="newtick">Neues Ticket</string>
     <string name="oktext">OK</string>
 	<string name="store">Ticket Shop</string>
@@ -94,7 +93,6 @@
 	<string name="foundnew">Geänderte oder neue Tickets gefunden:</string>
 	<string name="notifmod">Geänderte Tickets gefunden</string>
 	<string name="tracLogin">Login bei TRAC-Server</string>
-	<string name="nopermission">Keine Berechtigung um Tickets auf dem Server abfragen. Stellen Sie sicher, dass dem konfigurierte Benutzer TICKET_VIEW zugeteilt ist.</string>
 	<string name="notickets">Keine Tickets gefunden</string>
 	<string name="nocomment">Kann Kommentar nicht ändern</string>
 	<string name="notpossible">Nicht möglich</string>

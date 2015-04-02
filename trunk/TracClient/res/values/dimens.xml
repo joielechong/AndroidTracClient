@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
- * Copyright (C) 2012 Paul Burke
+ * Copyright (C) 2013,2014 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,11 @@
  * limitations under the License.
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Default screen margins, per the Android Design guidelines. -->
-    <!-- dimen name="activity_horizontal_margin">16dp</dimen -->
-    <!-- dimen name="activity_vertical_margin">16dp</dimen -->
     <dimen name="adview_padding">50dp</dimen>
-    <dimen name="list_textsize">20sp</dimen>
-
+    <dimen name="list_textsize">18sp</dimen>
+	
+	<dimen name="help_textsize">25sp</dimen>
+	<dimen name="helphdr_textsize">50sp</dimen>
+	
+	<integer name="webzoom">120</integer> <!-- zoom factor to be used on webpages -->
 </resources>

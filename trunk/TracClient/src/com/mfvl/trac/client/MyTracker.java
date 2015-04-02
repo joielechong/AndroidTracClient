@@ -1,17 +1,13 @@
 package com.mfvl.trac.client;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
-import com.mfvl.trac.client.util.Credentials;
-import com.mfvl.trac.client.util.tcLog;
+import com.google.android.gms.analytics.HitBuilders;
 
 public class MyTracker {
-	// The following line should be changed to include the correct property id.
 	private static Tracker mTracker = null;
 	private static MyTracker _instance = null;
 	private static GoogleAnalytics analytics = null;
@@ -72,6 +68,12 @@ public class MyTracker {
 			mTracker.setScreenName(screenName);
 		}
 		return mTracker;
+	}
+	
+	static void report(String cat, String action, String label) {
+		if (mTracker != null) {
+			mTracker.send(new HitBuilders.EventBuilder().setCategory(cat).setAction(action).setLabel(label).build());
+		}
 	}
 
 	public static void reportActivityStart(final Activity acContext) {
