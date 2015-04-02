@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
-
     <!-- NL versie -->
     <string name="about_button">Over TracClient</string>
     <string name="Back">Terug</string>
@@ -23,7 +22,6 @@
     <string name="nieuw">Nieuw ticket</string>
     <string name="nodata">Geen gegevens</string>
     <string name="nodatadesc">Gegevens van dit ticket zijn nog niet geladen</string>
-    <string name="connerr">Verbindingsfout</string>
     <string name="newtick">Maak nieuw ticket aan</string>
     <string name="oktext">OK</string>
     <string name="store">Sla ticket op</string>
@@ -98,7 +96,6 @@
     <string name="foundnew">Gewijzigde of nieuwe tickets gevonden:</string>
     <string name="notifmod">Gewijzigde tickets gevonden</string>
     <string name="tracLogin">Inloggen TRAC</string>
-    <string name="nopermission">Geen authorisatie om tickets op te vragen. Is TICKET_VIEW aan voor de geconfigureerde gebruiker?</string>
     <string name="notickets">Geen tickets gevonden</string>
     <string name="nocomment">Kan geen commentaren wijzigen</string>
     <string name="notpossible">Niet mogelijk</string>

@@ -41,7 +41,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v4.view.MenuItemCompat;
 import android.text.InputType;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
@@ -67,10 +66,6 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-
-import com.mfvl.trac.client.util.ColoredArrayAdapter;
-import com.mfvl.trac.client.util.ISO8601;
-import com.mfvl.trac.client.util.tcLog;
 
 public class DetailFragment extends TracClientFragment implements OnGestureListener, View.OnClickListener {
 	private class ModVeldMap extends HashMap<String, String> implements Serializable {
@@ -376,31 +371,26 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 			launchTrac.putExtra(Const.HELP_VERSION, false);
 			startActivity(launchTrac);
 		} else if (item.getItemId() == R.id.dfselect) {
-			final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-			alertDialogBuilder.setTitle(R.string.chooseticket);
-			alertDialogBuilder.setMessage(R.string.chooseticknr);
-			final EditText input = new EditText(context);
-			input.setInputType(InputType.TYPE_CLASS_NUMBER);
-			alertDialogBuilder.setView(input);
-
-			alertDialogBuilder.setCancelable(false);
-			alertDialogBuilder.setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int id) {
-					try {
-						final int newTicket = Integer.parseInt(input.getText().toString());
-						// selectTicket(ticknr);
-						ticknr = newTicket;
-					} catch (final Exception e) {
-						// noop keep old ticketnr
-					}
-					_onResume();
-				}
-			});
-			alertDialogBuilder.setNegativeButton(R.string.cancel, null);
-			final AlertDialog alertDialog = alertDialogBuilder.create();
 			if (!context.isFinishing()) {
-				alertDialog.show();
+				final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+				alertDialogBuilder.setTitle(R.string.chooseticket).setMessage(R.string.chooseticknr);
+				final EditText input = new EditText(context);
+				input.setInputType(InputType.TYPE_CLASS_NUMBER);
+				alertDialogBuilder.setView(input).setCancelable(false).setNegativeButton(R.string.cancel, null)
+					.setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int id) {
+						try {
+							final int newTicket = Integer.parseInt(input.getText().toString());
+							// selectTicket(ticknr);
+							ticknr = newTicket;
+						} catch (final Exception e) {
+							// noop keep old ticketnr
+						}
+						_onResume();
+					}
+				});
+				alertDialogBuilder.create().show();
 			}
 		} else if (item.getItemId() == R.id.dfattach) {
 			if (_ticket != null) {
@@ -899,7 +889,7 @@ public class DetailFragment extends TracClientFragment implements OnGestureListe
 		
 		if (e1.getX() - e2.getX() > large_move) {
 			newTicket = Tickets.getNextTicket(_ticket.getTicketnr());
-		} else if (e2.getX() - e1.getX() > large_move) {
+		} else if (e1.getX() > drawer_border && (e2.getX() - e1.getX() > large_move)) {
 			newTicket = Tickets.getPrevTicket(_ticket.getTicketnr());
 		}
 		if (newTicket >= 0 && modVeld.isEmpty()) {

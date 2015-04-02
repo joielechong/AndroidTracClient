@@ -38,8 +38,6 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.mfvl.trac.client.util.tcLog;
-
 public class NewTicketFragment extends TracClientFragment {
 	private final static int EXTRA = 1000;
 	private TicketModel tm;

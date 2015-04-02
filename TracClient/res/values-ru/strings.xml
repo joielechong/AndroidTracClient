@@ -20,7 +20,6 @@
         <string name="nieuw">Новый тикет</string>
         <string name="nodata">Нет данных</string>
         <string name="nodatadesc">Данные для тикета ещё не загружены</string>
-        <string name="connerr">Ошибка соединения</string>
         <string name="newtick">Создать новый тикет</string>
         <string name="store">Разместить тикет</string>
         <string name="storerr">Ошибка во время создания тикета</string>
@@ -82,7 +81,6 @@
         <string name="foundnew">Найденные новые или изменённые тикеты:</string>
         <string name="notifmod">Найдены изменённые тикеты</string>
         <string name="tracLogin">Залогиньтесь на TRAC сервере</string>
-        <string name="nopermission">Нет доступа для запроса тикетов на сервере. Убедитесь, что TICKET_VIEW выбрано для данного пользователя.</string>
         <string name="notickets">Тикеты не найдены</string>
         <string name="nocomment">Невозможно изменить комментарий</string>
         <string name="notpossible">Не возможно</string>

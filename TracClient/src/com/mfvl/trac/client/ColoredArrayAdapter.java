@@ -14,29 +14,24 @@
  * limitations under the License.
  */
 
-package com.mfvl.trac.client.util;
+package com.mfvl.trac.client;
 
 import java.util.List;
 
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-
-import com.mfvl.trac.client.TracStart;
-import com.mfvl.trac.client.R;
+import android.content.Context;
 
 public class ColoredArrayAdapter<T> extends ArrayAdapter<T> {
 
 	private final List<T> items;
-	private static int[] colors = null;
+	Context context = null;
 
 	public ColoredArrayAdapter(TracStart context, int resource, List<T> list) {
 		super(context, resource, list);
 		items = list;
-
-		if (colors == null) {
-			colors = context.getResources().getIntArray(R.array.list_col);
-		}
+		this.context = context;
 	}
 
 	@Override
@@ -47,9 +42,6 @@ public class ColoredArrayAdapter<T> extends ArrayAdapter<T> {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		final View view = super.getView(position, convertView, parent);
-		final int colorPos = position % colors.length;
-		view.setBackgroundColor(colors[colorPos]);
-		return view;
+		return ColoredLines.getView(context,super.getView(position, convertView, parent),position,convertView,parent);
 	}
 }

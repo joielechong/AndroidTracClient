@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.mfvl.trac.client.util;
+package com.mfvl.trac.client;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -23,7 +23,6 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.Attributes;
@@ -41,8 +40,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.content.res.TypedArray;
 import android.content.res.Resources;
 
-import com.mfvl.trac.client.R;
-
 public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 	private static final String DATABASE_NAME = "profile.db";
 	private static final int DATABASE_VERSION = 2;
@@ -59,7 +56,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 	public class XMLHandler extends DefaultHandler {
 
 		String _appname = null;
-		int state = -1;
+		private int state = -1;
 		private String profileName;
 		private LoginProfile lp;
 		private final ProfileDatabaseHelper _pdb;
@@ -132,7 +129,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public void open() {
-		db = this.getWritableDatabase();
+		db = getWritableDatabase();
 		if (upgrade) {
 			Resources res = _context.getResources();
 			TypedArray ta = res.obtainTypedArray(R.array.profiles);
@@ -154,14 +151,14 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 
 	public void beginTransaction() {
 		if (db == null) {
-			this.open();
+			open();
 		}
 		db.beginTransaction();
 	}
 
 	public void endTransaction() {
 		if (db == null) {
-			this.open();
+			open();
 		}
 		db.setTransactionSuccessful();
 		db.endTransaction();
@@ -176,7 +173,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 		values.put(SSLHACK_ID, profile.getSslHack());
 
 		if (db == null) {
-			this.open();
+			open();
 		}
 		try {
 			db.insertOrThrow(TABLE_NAME, null, values);
@@ -187,7 +184,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 
 	public Cursor getProfiles() {
 		if (db == null) {
-			this.open();
+			open();
 		}
 		final Cursor c = db.rawQuery("SELECT rowid as _id,name from " + TABLE_NAME + " ORDER BY name", null);
 		return c;
@@ -195,7 +192,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 
 	public Cursor getAllProfiles() {
 		if (db == null) {
-			this.open();
+			open();
 		}
 		final Cursor c = db.rawQuery("SELECT " + NAME_ID + "," + URL_ID + "," + USERNAME_ID + "," + PASSWORD_ID + "," + SSLHACK_ID
 				+ " from " + TABLE_NAME + " WHERE " + NAME_ID + " !=''", null);
@@ -206,7 +203,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 		LoginProfile profile = null;
 
 		if (db == null) {
-			this.open();
+			open();
 		}
 		final Cursor c = db.query(TABLE_NAME, new String[] { URL_ID, USERNAME_ID, PASSWORD_ID, SSLHACK_ID }, NAME_ID + "=?",
 				new String[] { name }, null, null, null);
@@ -221,7 +218,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 		LoginProfile profile = null;
 
 		if (db == null) {
-			this.open();
+			open();
 		}
 		final Cursor c = db.query(TABLE_NAME, new String[] { URL_ID, USERNAME_ID, PASSWORD_ID, SSLHACK_ID }, URL_ID + "=?",
 				new String[] { url }, null, null, null);
@@ -234,7 +231,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 
 	public void delProfile(String name) {
 		if (db == null) {
-			this.open();
+			open();
 		}
 		final String values[] = new String[] { name };
 		db.delete(TABLE_NAME, "name=?", values);
@@ -242,7 +239,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 
 	public int delProfiles() {
 		if (db == null) {
-			this.open();
+			open();
 		}
 		final String values[] = new String[] { "" };
 		return db.delete(TABLE_NAME, "name!=?", values);
@@ -250,7 +247,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 
 	public void readXML(final String appname) throws Exception {
 		if (db == null) {
-			this.open();
+			open();
 		}
 		final String fileName = Credentials.makeExtFilePath(appname + ".xml");
 		final InputStream in = new BufferedInputStream(new FileInputStream(fileName));

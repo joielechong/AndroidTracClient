@@ -28,10 +28,6 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
-import com.mfvl.trac.client.util.tcLog;
-
 public class Refresh extends Activity {
 
 	Messenger mService = null;
@@ -43,7 +39,7 @@ public class Refresh extends Activity {
 			// + className + " service = " + service);
 			mService = new Messenger(service);
 			try {
-				final Message msg = Message.obtain(null, Const.ServiceMsg.MSG_REQUEST_REFRESH.ordinal());
+				final Message msg = Message.obtain(null, Const.MSG_REQUEST_REFRESH);
 				msg.replyTo = null;
 				mService.send(msg);
 			} catch (final RemoteException e) {
@@ -71,10 +67,7 @@ public class Refresh extends Activity {
 
 			if (action != null) {
 				if (Const.doAnalytics) {
-					MyTracker.getInstance(Refresh.this);
-					final Tracker t = MyTracker.getTracker(getClass().getName());
-					// Build and send an Event.
-					t.send(new HitBuilders.EventBuilder().setCategory("Normal").setAction("Refresh").setLabel(action).build());
+					MyTracker.report("Normal","Refresh",action);
 				}
 				if (action.equalsIgnoreCase(RefreshService.refreshAction)) {
 					bindService(new Intent(this, RefreshService.class), mConnection, Context.BIND_AUTO_CREATE);

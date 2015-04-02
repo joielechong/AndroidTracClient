@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.mfvl.trac.client.util;
+package com.mfvl.trac.client;
 
 import java.io.Serializable;
 
@@ -54,7 +54,7 @@ public class FilterSpec extends Spec implements Serializable, Cloneable {
 		_operator = o;
 	}
 
-	public String operator() {
+	public String getOperator() {
 		return _operator;
 	}
 
@@ -66,7 +66,7 @@ public class FilterSpec extends Spec implements Serializable, Cloneable {
 		}
 	}
 
-	public String waarde() {
+	public String getWaarde() {
 		return _edited ? _newwaarde : _waarde;
 	}
 
@@ -82,7 +82,7 @@ public class FilterSpec extends Spec implements Serializable, Cloneable {
 		}
 	}
 
-	public boolean isEdit() {
+	public boolean getEdit() {
 		return _edited;
 	}
 

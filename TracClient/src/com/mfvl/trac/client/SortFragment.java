@@ -23,8 +23,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,9 +32,6 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
-
-import com.mfvl.trac.client.util.SortSpec;
-import com.mfvl.trac.client.util.tcLog;
 
 public class SortFragment extends TracClientFragment {
 
@@ -69,10 +64,10 @@ public class SortFragment extends TracClientFragment {
 
 			if (o != null) {
 				if (tt != null) {
-					tt.setText(o.veld());
+					tt.setText(o.getVeld());
 				}
 				if (direc != null) {
-					direc.setImageResource(o.richting() ? Const.UPARROW : Const.DOWNARROW);
+					direc.setImageResource(o.getRichting() ? Const.UPARROW : Const.DOWNARROW);
 					direc.setOnClickListener(new ImageButton.OnClickListener() {
 						@Override
 						public void onClick(View dv) {
@@ -200,7 +195,7 @@ public class SortFragment extends TracClientFragment {
 			public void onClick(View v1) {
 				final ArrayList<SortSpec> outputSpec = sortAdapter.items;
 				for (int i = outputSpec.size() - 1; i >= 0; i--) {
-					if (outputSpec.get(i).richting() == null) {
+					if (outputSpec.get(i).getRichting() == null) {
 						outputSpec.remove(i);
 					}
 				}

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.mfvl.trac.client.util;
+package com.mfvl.trac.client;
 
 import java.io.Serializable;
 
@@ -46,7 +46,7 @@ public class SortSpec extends Spec implements Cloneable, Serializable {
 		return _richting;
 	}
 
-	public Boolean richting() {
+	public Boolean getRichting() {
 		return _richting;
 	}
 

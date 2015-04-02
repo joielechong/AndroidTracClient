@@ -60,14 +60,12 @@ public class TracHttpClient extends JSONRPCHttpClient {
 		}
 
 		if (reload) {
-			_instance = new TracHttpClient(Tickets.url, Tickets.sslHack, Tickets.sslHostNameHack, Tickets.username,
-					Tickets.password);
+			_instance = new TracHttpClient(Tickets.url, Tickets.sslHack, Tickets.sslHostNameHack, Tickets.username, Tickets.password);
 		}
 		return _instance;
 	}
 
-	static public TracHttpClient getInstance(final String uri, final boolean sslHack, final boolean sslHostNameHack,
-		final String username, final String password) {
+	static public TracHttpClient getInstance(final String uri, final boolean sslHack, final boolean sslHostNameHack, final String username, final String password) {
 		_instance = new TracHttpClient(uri, sslHack, sslHostNameHack, username, password);
 		return _instance;
 	}

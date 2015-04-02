@@ -31,7 +31,7 @@ import ch.boye.httpclientandroidlib.impl.client.HttpClientBuilder;
 import ch.boye.httpclientandroidlib.impl.client.TargetAuthenticationStrategy;
 import ch.boye.httpclientandroidlib.util.EntityUtils;
 
-import com.mfvl.trac.client.util.tcLog;
+import com.mfvl.trac.client.tcLog;
 
 /**
  * Implementation of JSON-RPC over HTTP/POST

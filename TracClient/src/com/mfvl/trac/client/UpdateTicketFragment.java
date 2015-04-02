@@ -44,9 +44,6 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.mfvl.trac.client.util.tcLog;
-import com.mfvl.trac.client.Ticket;
-
 public class UpdateTicketFragment extends TracClientFragment {
 	private String currentActionName = null;
 	private JSONArray _actions = null;
@@ -112,6 +109,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 					optieval.setText(null);
 				}
 				rb.setText(actie.getString(0));
+				//rb.setTextSize(context.getResources().getDimensionPixelSize(R.dimen.list_textsize));
 				rb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 					@Override
 					public void onCheckedChanged(CompoundButton v1, boolean isChecked) {
@@ -278,7 +276,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 										if (!sissaved) {
 											final FragmentManager fm = getFragmentManager();
 											if (fm != null) {
-												getFragmentManager().popBackStackImmediate();
+												fm.popBackStackImmediate();
 											}
 										}
 									}

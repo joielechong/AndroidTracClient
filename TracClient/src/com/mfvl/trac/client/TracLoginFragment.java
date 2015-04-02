@@ -45,15 +45,9 @@ import android.widget.CheckedTextView;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-
-import com.mfvl.trac.client.util.Credentials;
-import com.mfvl.trac.client.util.LoginProfile;
-import com.mfvl.trac.client.util.ProfileDatabaseHelper;
-import com.mfvl.trac.client.util.tcLog;
 
 public class TracLoginFragment extends TracClientFragment {
 	/** server url */
@@ -233,6 +227,22 @@ public class TracLoginFragment extends TracClientFragment {
 		sslHackBox.setChecked(sslHack);
 		checkHackBox(url);
 	}
+	
+	private void report(final String label) {
+		if (Const.doAnalytics) {
+			MyTracker.report("Normal","Verification",label);
+		}		
+	}
+	
+	private Bundle verifyHost(final String url, final boolean sslHack,final boolean sslHostNameHack, final String username, final String password) {
+		final Bundle cv = new Bundle();
+		cv.putString(Const.CURRENT_URL,url);
+		cv.putString(Const.CURRENT_USERNAME,username);
+		cv.putString(Const.CURRENT_PASSWORD,password);
+		cv.putBoolean(Const.CURRENT_SSLHACK,sslHack);
+		cv.putBoolean(Const.CURRENT_SSLHOSTNAMEHACK,sslHostNameHack);
+		return context.getContentResolver().call(TicketProvider.AUTH_URI,TicketProvider.VERIFY_HOST,null,cv);
+	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -320,23 +330,26 @@ public class TracLoginFragment extends TracClientFragment {
 				sslHostNameHack = false; // force check on hostname first
 				final ProgressDialog pb = startProgressBar(R.string.checking);
 				new Thread() {
-
 					@Override
 					public void run() {
-						try {
-							final String TracVersion = TracHttpClient.verifyHost(url, sslHack, sslHostNameHack, username, password);
+						Bundle b = verifyHost(url, sslHack, sslHostNameHack, username, password);
+						final String TracVersion = b.getString(TicketProvider.RESULT);
+						if (TracVersion != null) {
 							tcLog.d(this.getClass().getName(), TracVersion);
 							setValidMessage();
-						} catch (final Exception e) {
-							tcLog.d(getClass().getName(), "Exception during verify 1", e);
-							tcLog.toast("==" + e.getMessage() + "==");
-							if (e.getMessage().startsWith("hostname in certificate didn't match:")) {
+							report("Success");
+						} else {
+							final String errmsg = b.getString(TicketProvider.ERROR);
+							tcLog.d(getClass().getName(), "Exception during verify 1 "+errmsg);
+							tcLog.toast("==" + errmsg + "==");
+							if (errmsg.startsWith("hostname in certificate didn't match:")) {
+								report("Fail Hostname");
 								context.runOnUiThread(new Runnable() {
 									@Override
 									public void run() {
 										final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
 										alertDialogBuilder.setTitle(R.string.hostnametitle);
-										final String msg = context.getString(R.string.hostnametext) + e.getMessage()
+										final String msg = context.getString(R.string.hostnametext) + errmsg
 												+ context.getString(R.string.hostnameign);
 										alertDialogBuilder.setMessage(msg);
 										alertDialogBuilder.setCancelable(false);
@@ -348,26 +361,28 @@ public class TracLoginFragment extends TracClientFragment {
 												new Thread() {
 													@Override
 													public void run() {
-
-														try {
-															final String TracVersion1 = TracHttpClient.verifyHost(url,
-																	sslHack, true, username, password);
+														final Bundle b1 = verifyHost(url, sslHack, true, username, password);
+														final String TracVersion1 = b1.getString(TicketProvider.RESULT);
+														if (TracVersion1 != null) {
 															tcLog.d(this.getClass().getName(), TracVersion1);
 															setValidMessage();
 															sslHostNameHack = true;
-														} catch (final Exception e1) {
-															tcLog.d(getClass().getName(), "Exception during verify 2", e1);
-//															tcLog.toast("==" + e1.getMessage() + "==");
-															if ("NOJSON".equals(e1.getMessage())) {
+															report("Success Hostname");
+														} else {
+															final String errmsg1 = b1.getString(TicketProvider.ERROR);
+															tcLog.d(getClass().getName(), "Exception during verify 2 "+errmsg1);
+//															tcLog.toast("==" + errmsg1 + "==");
+															if ("NOJSON".equals(errmsg1)) {
 																setNoJSONMessage();
+																report("Fail Hostname NOJSON");
 															} else {
-																setInvalidMessage(e1.getMessage());
+																setInvalidMessage(errmsg1);
 																sslHostNameHack = false;
+																report("Fail Invalidmessage Hostname");
 															}
-														} finally {
-															if (pb1 != null && !context.isFinishing()) {
-																pb1.dismiss();
-															}
+														}
+														if (pb1 != null && !context.isFinishing()) {
+															pb1.dismiss();
 														}
 													}
 												}.start();
@@ -377,24 +392,26 @@ public class TracLoginFragment extends TracClientFragment {
 												new DialogInterface.OnClickListener() {
 											@Override
 											public void onClick(DialogInterface dialog, int id) {
-												setInvalidMessage(e.getMessage());
+												setInvalidMessage(errmsg);
 												sslHostNameHack = false;
+												report("Fail UserCancel Hostname");
 											}
 										});
 										final AlertDialog alertDialog = alertDialogBuilder.create();
 										alertDialog.show();
 									}
 								});
-							} else if ("NOJSON".equals(e.getMessage())) {
+							} else if ("NOJSON".equals(errmsg)) {
 								setNoJSONMessage();
+								report("Fail NOJSON");
 							} else {
-								setInvalidMessage(e.getMessage());
+								setInvalidMessage(errmsg);
 								sslHostNameHack = false;
+								report("Fail Invalidmessage");
 							}
-						} finally {
-							if (pb != null && !context.isFinishing()) {
-								pb.dismiss();
-							}
+						}
+						if (pb != null && !context.isFinishing()) {
+							pb.dismiss();
 						}
 					}
 				}.start();

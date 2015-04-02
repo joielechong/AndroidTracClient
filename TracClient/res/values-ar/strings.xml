@@ -23,7 +23,6 @@
     <string name="nieuw">تذكرة جديدة</string>
     <string name="nodata">لا يوجد بيانات</string>
     <string name="nodatadesc">لم يتم تحميل بيانات هذه التذكرة</string>
-    <string name="connerr">خطأ في الإتصال</string>
     <string name="newtick">عمل تذكرة جديدة</string>
     <string name="store">تخزين التذكرة</string>
     <string name="storerr">حدث خطأ أثناء عمل التذكرة</string>
@@ -100,7 +99,6 @@
     <string name="foundnew">تم إيجاد تذكرة جديدة أو معدلة</string>
     <string name="notifmod">تم إيجاد تذكرة معدلة</string>
     <string name="tracLogin">تسجيل الدخول لخادم "المتابعة"</string>
-    <string name="nopermission">معد للمستخدم المكون TICKET_VIEW لا يوجد تصريح للإستفسار عن التذاكر على الخادم . تأكد من أن</string>
     <string name="notickets">لا يوجد تذكرة</string>
     <string name="nocomment">لا يمكن تغيير التعليق</string>
     <string name="notpossible">غير ممكن</string>

@@ -24,7 +24,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
@@ -41,8 +40,6 @@ import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.mfvl.trac.client.util.Credentials;
-import com.mfvl.trac.client.util.tcLog;
 
 public class TracClientFragment extends Fragment implements OnGlobalLayoutListener {
 	public Ticket _ticket = null;
@@ -61,6 +58,7 @@ public class TracClientFragment extends Fragment implements OnGlobalLayoutListen
 	protected int large_move;
 	protected int extra_large_move;
 	protected int fast_move;
+	protected int drawer_border;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -71,6 +69,7 @@ public class TracClientFragment extends Fragment implements OnGlobalLayoutListen
 		large_move = context.getResources().getInteger(R.integer.large_move);
 		extra_large_move = context.getResources().getInteger(R.integer.extra_large_move);
 		fast_move = context.getResources().getInteger(R.integer.fast_move);
+		drawer_border = context.getResources().getInteger(R.integer.drawer_border);
 	}
 
 	@Override
@@ -89,11 +88,12 @@ public class TracClientFragment extends Fragment implements OnGlobalLayoutListen
 			final String t = Credentials.metaDataGetString("com.mfvl.trac.client.testDevices");
 			try {
 				testDevices = t.split("\\,");
-			} catch (final IllegalArgumentException e) {
+			} catch (final IllegalArgumentException e) { // only 1
 				testDevices = new String[1];
 				testDevices[0] = t;
 			}
 		} catch (final Exception e) {
+			tcLog.e(getClass().getName(),"Problem retrieving Admod information",e);
 			listener.setDispAds(false);
 			adUnitId = "";
 			testDevices = new String[1];
@@ -115,16 +115,16 @@ public class TracClientFragment extends Fragment implements OnGlobalLayoutListen
 
 		final View activityRootView = view.findViewById(R.id.updateTop);
 
-		if (listener != null && listener.dispAds()) {
+		if (listener != null && listener.getDispAds()) {
 			if (adViewContainer != null) {
 				adView = new AdView(context);
 				adView.setAdUnitId(adUnitId);
-				adView.setAdSize(AdSize.BANNER);
+				adView.setAdSize(AdSize.SMART_BANNER);
 
 				final AdRequest.Builder arb = new AdRequest.Builder();
 				if (adView != null && arb != null) {
+					arb.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
 					if (Credentials.isDebuggable()) {
-						arb.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
 						for (final String t : testDevices) {
 							tcLog.d(getClass().getName() + ".super", "onViewCreated testDevice = " + t);
 							arb.addTestDevice(t);
@@ -163,32 +163,32 @@ public class TracClientFragment extends Fragment implements OnGlobalLayoutListen
 	@Override
 	public void onGlobalLayout() {
 		final View view = getView();
-                if (view != null) {
-                        final View activityRootView = view.findViewById(R.id.updateTop);
-                        final ActionBar ab = context.getSupportActionBar();
-                        final Rect r = new Rect();
-                        // r will be populated with the coordinates of your view that area still visible.
-                        activityRootView.getWindowVisibleDisplayFrame(r);
+        if (view != null) {
+            final View activityRootView = view.findViewById(R.id.updateTop);
+            final ActionBar ab = context.getSupportActionBar();
+            final Rect r = new Rect();
+            // r will be populated with the coordinates of your view that area still visible.
+            activityRootView.getWindowVisibleDisplayFrame(r);
 
-                        final int heightDiff = activityRootView.getRootView().getHeight() - (r.bottom - r.top);
-                        if (heightDiff > 100) { // if more than 100 pixels,
-                                // its probably a keyboard...
-                                if (adsVisible) {
-                                        adViewContainer.setVisibility(View.GONE);
-                                        aboveView.setPadding(padLeft, padTop, padRight, 0);
-                                        adsVisible = false;
-                                }
-                                ab.hide();
-                        } else {
-                                if (!adsVisible) {
-                                        adViewContainer.setVisibility(View.VISIBLE);
-                                        aboveView.setPadding(padLeft, padTop, padRight, padBot);
-                                        adsVisible = true;
-                                }
-                                ab.show();
-                        }
+            final int heightDiff = activityRootView.getRootView().getHeight() - (r.bottom - r.top);
+            if (heightDiff > 100) { // if more than 100 pixels,
+                // its probably a keyboard...
+                if (adsVisible) {
+                    adViewContainer.setVisibility(View.GONE);
+                    aboveView.setPadding(padLeft, padTop, padRight, 0);
+                    adsVisible = false;
                 }
+				ab.hide();
+			} else {
+				if (!adsVisible) {
+					adViewContainer.setVisibility(View.VISIBLE);
+					aboveView.setPadding(padLeft, padTop, padRight, padBot);
+					adsVisible = true;
+				}
+				ab.show();
+			}
         }
+    }
 
 	@Override
 	public void onSaveInstanceState(Bundle savedState) {
@@ -216,7 +216,7 @@ public class TracClientFragment extends Fragment implements OnGlobalLayoutListen
 
 			if (t != null) {
 				// Send a screen view.
-				t.send(new HitBuilders.AppViewBuilder().build());
+				t.send(new HitBuilders.ScreenViewBuilder().build());
 			}
 		}
     }

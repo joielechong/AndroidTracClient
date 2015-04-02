@@ -29,8 +29,6 @@ import org.alexd.jsonrpc.JSONRPCException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import com.mfvl.trac.client.util.ISO8601;
-import com.mfvl.trac.client.util.tcLog;
 import android.util.Base64;
 
 interface onTicketCompleteListener {
@@ -135,18 +133,6 @@ public class Ticket extends TcObject implements Serializable {
 		}
 	}
 
-	private JSONObject makeComplexCall(String id, String method, Object... params) throws JSONException {
-		final JSONObject call = new JSONObject();
-		call.put("method", method);
-		call.put("id", id);
-		final JSONArray args = new JSONArray();
-		for (final Object o : params) {
-			args.put(o);
-		}
-		call.put("params", args);
-		return call;
-	}
-
 	private void loadTicketData(TracStart context, final onTicketCompleteListener oc) {
 		tcLog.i(this.getClass().getName(), "loadTicketData ticketnr = " + _ticknr);
 		actionLock.acquireUninterruptibly();
@@ -159,10 +145,10 @@ public class Ticket extends TcObject implements Serializable {
 
 				try {
 					final JSONArray mc = new JSONArray();
-					mc.put(makeComplexCall(TICKET_GET, "ticket.get", _ticknr));
-					mc.put(makeComplexCall(TICKET_CHANGE, "ticket.changeLog", _ticknr));
-					mc.put(makeComplexCall(TICKET_ATTACH, "ticket.listAttachments", _ticknr));
-					mc.put(makeComplexCall(TICKET_ACTION, "ticket.getActions", _ticknr));
+					mc.put(new TracJSONObject().makeComplexCall(TICKET_GET, "ticket.get", _ticknr));
+					mc.put(new TracJSONObject().makeComplexCall(TICKET_CHANGE, "ticket.changeLog", _ticknr));
+					mc.put(new TracJSONObject().makeComplexCall(TICKET_ATTACH, "ticket.listAttachments", _ticknr));
+					mc.put(new TracJSONObject().makeComplexCall(TICKET_ACTION, "ticket.getActions", _ticknr));
 					final JSONArray mcresult = req.callJSONArray("system.multicall", mc);
 					_hasdata = false;
 					_velden = null;

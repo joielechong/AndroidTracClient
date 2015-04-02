@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.mfvl.trac.client.util;
+package com.mfvl.trac.client;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -35,8 +35,6 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
 import android.os.Build;
 import android.os.Environment;
-
-import com.mfvl.trac.client.Const;
 
 public class Credentials {
 	private static String versie = null;

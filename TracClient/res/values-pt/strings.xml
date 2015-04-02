@@ -21,7 +21,6 @@
     <string name="nieuw">Bilhete novo</string>
     <string name="nodata">Sem informações</string>
     <string name="nodatadesc">As informações desse bilhete ainda não estão disponíveis</string>
-    <string name="connerr">Erro de conexão</string>
     <string name="newtick">Criar bilhete novo</string>
     <string name="oktext">OK</string>
     <string name="store">Armazenar bilhete</string>
@@ -96,7 +95,6 @@
     <string name="foundnew">Modificado ou novos bilhetes encontrados:</string>
     <string name="notifmod">Bilhetes modificados encontrados</string>
     <string name="tracLogin">Logar no servidor TRAC</string>
-    <string name="nopermission">Sem permissão para consultar bilhetes no servidor. Certifique-se de que TICKET_VIEW esteja ajustada para o usuário configurado.</string>
     <string name="notickets">Nenhum bilhete encontrado</string>
     <string name="nocomment">Impossível modificar comentário</string>
     <string name="notpossible">Impossível</string>
