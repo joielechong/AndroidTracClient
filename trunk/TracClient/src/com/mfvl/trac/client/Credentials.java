@@ -16,6 +16,7 @@
 
 package com.mfvl.trac.client;
 
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -36,255 +37,284 @@ import android.content.pm.Signature;
 import android.os.Build;
 import android.os.Environment;
 
+
 public class Credentials {
-	private static String versie = null;
-	private static String _url = "";
-	private static String _username = "";
-	private static String _password = "";
-	private static boolean _sslHack = false;
-	private static boolean _sslHostNameHack = false;
-	private static String _profile = null;
-	private static SharedPreferences settings = null;
-	private static Credentials _instance = null;
-	private static Context _context = null;
-	private static String _tag = "";
+    private static String versie = null;
+    private static String _url = "";
+    private static String _username = "";
+    private static String _password = "";
+    private static boolean _sslHack = false;
+    private static boolean _sslHostNameHack = false;
+    private static String _profile = null;
+    private static SharedPreferences settings = null;
+    private static Credentials _instance = null;
+    private static Context _context = null;
+    private static String _tag = "";
 
-	private Credentials(final Context context) {
-		settings = context.getSharedPreferences(Const.PREFS_NAME, 0);
-		_context = context;
-		_tag = getClass().getName();
-	}
+    private Credentials(final Context context) {
+        settings = context.getSharedPreferences(Const.PREFS_NAME, 0);
+        _context = context;
+        _tag = getClass().getName();
+		buildVersion();
+    }
 
-	public static Credentials getInstance(final Context context) {
-		if (_instance == null) {
-			_instance = new Credentials(context);
-		}
-		return _instance;
-	}
+    public static Credentials getInstance(final Context context) {
+        if (_instance == null) {
+            _instance = new Credentials(context);
+			_instance.loadCredentials();
+        }
+        return _instance;
+    }
 
-	/**
-	 * Load login credentials from shared preferences: server-url, username, password and profile
-	 */
-	public static void loadCredentials() {
-		// tcLog.d(_tag, "loadCredentials");
-		_url = settings.getString(Const.PREF_URL, "");
-		_username = settings.getString(Const.PREF_USER, "");
-		_password = settings.getString(Const.PREF_PASS, "");
-		_sslHack = settings.getBoolean(Const.PREF_HACK, false);
-		_sslHostNameHack = settings.getBoolean(Const.PREF_HNH, false);
-		_profile = settings.getString(Const.PREF_PROF, null);
-	}
+    /**
+     * Load login credentials from shared preferences: server-url, username, password and profile
+     */
+    public static void loadCredentials() {
+        // tcLog.d(_tag, "loadCredentials");
+        _url = settings.getString(Const.PREF_URL, "");
+        _username = settings.getString(Const.PREF_USER, "");
+        _password = settings.getString(Const.PREF_PASS, "");
+        _sslHack = settings.getBoolean(Const.PREF_HACK, false);
+        _sslHostNameHack = settings.getBoolean(Const.PREF_HNH, false);
+        _profile = settings.getString(Const.PREF_PROF, null);
+    }
 
-	/**
-	 * Store login credentials to shared preferences: server-url, username, password and profile
-	 */
-	public static void storeCredentials() {
-		// tcLog.d(_tag, "storeCredentials");
-		final SharedPreferences.Editor editor = settings.edit();
-		editor.putString(Const.PREF_URL, _url);
-		editor.putString(Const.PREF_USER, _username);
-		editor.putString(Const.PREF_PASS, _password);
-		editor.putBoolean(Const.PREF_HACK, _sslHack);
-		editor.putBoolean(Const.PREF_HNH, _sslHostNameHack);
-		editor.putString(Const.PREF_PROF, _profile);
+    /**
+     * Store login credentials to shared preferences: server-url, username, password and profile
+     */
+    public static void storeCredentials() {
+        // tcLog.d(_tag, "storeCredentials");
+        final SharedPreferences.Editor editor = settings.edit();
 
-		// apply the edits!
-		editor.apply();
-	}
+        editor.putString(Const.PREF_URL, _url);
+        editor.putString(Const.PREF_USER, _username);
+        editor.putString(Const.PREF_PASS, _password);
+        editor.putBoolean(Const.PREF_HACK, _sslHack);
+        editor.putBoolean(Const.PREF_HNH, _sslHostNameHack);
+        editor.putString(Const.PREF_PROF, _profile);
 
-	/** Set login credentials server-url, username, password and profile */
-	public static void setCredentials(final String url, final String username, final String password, final String profile) {
-		// tcLog.d(_tag, "setCredentials");
-		_url = url;
-		_username = username;
-		_password = password;
-		_profile = profile;
-	}
+        // apply the edits!
+        editor.apply();
+    }
 
-	public static String getUrl() {
-		return _url;
-	}
+    /** Set login credentials server-url, username, password and profile */
+    public static void setCredentials(final String url, final String username, final String password, final String profile) {
+        // tcLog.d(_tag, "setCredentials");
+        _url = url;
+        _username = username;
+        _password = password;
+        _profile = profile;
+    }
 
-	public static String getUsername() {
-		return _username;
-	}
+    public static String getUrl() {
+        return _url;
+    }
 
-	public static String getPassword() {
-		return _password;
-	}
+    public static String getUsername() {
+        return _username;
+    }
 
-	public static void setSslHack(boolean sslHack) {
-		_sslHack = sslHack;
-	}
+    public static String getPassword() {
+        return _password;
+    }
 
-	public static boolean getSslHack() {
-		return _sslHack;
-	}
+    public static void setSslHack(boolean sslHack) {
+        _sslHack = sslHack;
+    }
 
-	public static void setSslHostNameHack(boolean sslHostNameHack) {
-		_sslHostNameHack = sslHostNameHack;
-	}
+    public static boolean getSslHack() {
+        return _sslHack;
+    }
 
-	public static boolean getSslHostNameHack() {
-		return _sslHostNameHack;
-	}
+    public static void setSslHostNameHack(boolean sslHostNameHack) {
+        _sslHostNameHack = sslHostNameHack;
+    }
 
-	public static void setProfile(String profile) {
-		_profile = profile;
-	}
+    public static boolean getSslHostNameHack() {
+        return _sslHostNameHack;
+    }
 
-	public static String getProfile() {
-		return _profile;
-	}
+    public static void setProfile(String profile) {
+        _profile = profile;
+    }
 
-	public static boolean getFirstRun() {
-		// tcLog.d("Credentials", "getFirstRun");
-		final String thisRun = buildVersion();
-		final String lastRun = settings.getString(Const.PREF_1ST, "");
-		final SharedPreferences.Editor editor = settings.edit();
-		editor.putString(Const.PREF_1ST, thisRun);
-		editor.apply();
+    public static String getProfile() {
+        return _profile;
+    }
 
-		return !lastRun.equals(thisRun);
-	}
+    public static boolean checkDisclaimer() {
+        tcLog.d("Credentials", "checkDisclaimer");
+        final String thisRun = Const.DisclaimerVersion;
+        final String lastRun = settings.getString(Const.PREF_DISCLAIM, "");
+		
+//        final SharedPreferences.Editor editor = settings.edit();
+//        editor.putString(Const.PREF_DISCLAIM, Const.DisclaimerVersion);
+//        editor.apply();
 
-	public static void storeFilterString(final String filterString) {
-		tcLog.d("Credentials", "storeFilterString: " + filterString);
-		final SharedPreferences.Editor editor = settings.edit();
-		editor.putString(Const.PREF_FILTER, filterString == null ? "" : filterString);
-		editor.apply();
-	}
+        return !lastRun.equals(thisRun);
+    }
 
-	public static String getFilterString() {
-		// tcLog.d("Credentials", "getFilterString");
-		final String filterString = settings.getString(Const.PREF_FILTER, "max=500&status!=closed");
-		tcLog.d("Credentials", "getFilterString filterString = " + filterString);
-		return filterString;
-	}
+    public static boolean getFirstRun() {
+        // tcLog.d("Credentials", "getFirstRun");
+        final String thisRun = versie;
+        final String lastRun = settings.getString(Const.PREF_1ST, "");
+		
+        final SharedPreferences.Editor editor = settings.edit();
+        editor.putString(Const.PREF_1ST, thisRun);
+        editor.apply();
 
-	public static void removeFilterString() {
-		tcLog.d("Credentials", "removeFilterString");
-		final SharedPreferences.Editor editor = settings.edit();
-		editor.putString(Const.PREF_FILTER, "max=500&status!=closed");
-		editor.apply();
-	}
+        return !lastRun.equals(thisRun);
+    }
 
-	public static void storeSortString(final String sortString) {
-		tcLog.d("Credentials", "storeSortString: " + sortString);
-		final SharedPreferences.Editor editor = settings.edit();
-		editor.putString(Const.PREF_SORT, sortString == null ? "" : sortString);
-		editor.apply();
-	}
+    public static void storeFilterString(final String filterString) {
+        tcLog.d("Credentials", "storeFilterString: " + filterString);
+        final SharedPreferences.Editor editor = settings.edit();
 
-	public static String getSortString() {
-		// tcLog.d("Credentials", "getSortString");
-		final String sortString = settings.getString(Const.PREF_SORT, "order=priority&order=modified&desc=1");
-		tcLog.d("Credentials", "getSortString sortString = " + sortString);
-		return sortString;
-	}
+        editor.putString(Const.PREF_FILTER, filterString == null ? "" : filterString);
+        editor.apply();
+    }
 
-	public static void removeSortString() {
-		tcLog.d(_tag, "removeSortString");
-		final SharedPreferences.Editor editor = settings.edit();
-		editor.putString(Const.PREF_SORT, "order=priority&order=modified&desc=1");
-		editor.apply();
-	}
+    public static String getFilterString() {
+        // tcLog.d("Credentials", "getFilterString");
+        final String filterString = settings.getString(Const.PREF_FILTER, "max=500&status!=closed");
 
-	private static final X500Principal DEBUG_DN = new X500Principal("CN=Android Debug,O=Android,C=US");
+        tcLog.d("Credentials", "getFilterString filterString = " + filterString);
+        return filterString;
+    }
 
-	public static boolean isDebuggable() {
-		boolean debuggable = false;
+    public static void removeFilterString() {
+        tcLog.d("Credentials", "removeFilterString");
+        final SharedPreferences.Editor editor = settings.edit();
 
-		try {
-			final PackageInfo pinfo = _context.getPackageManager().getPackageInfo(_context.getPackageName(),
-					PackageManager.GET_SIGNATURES);
-			final Signature signatures[] = pinfo.signatures;
+        editor.putString(Const.PREF_FILTER, "max=500&status!=closed");
+        editor.apply();
+    }
 
-			final CertificateFactory cf = CertificateFactory.getInstance("X.509");
+    public static void storeSortString(final String sortString) {
+        tcLog.d("Credentials", "storeSortString: " + sortString);
+        final SharedPreferences.Editor editor = settings.edit();
 
-			for (final Signature signature : signatures) {
-				final ByteArrayInputStream stream = new ByteArrayInputStream(signature.toByteArray());
-				final X509Certificate cert = (X509Certificate) cf.generateCertificate(stream);
-				debuggable = cert.getSubjectX500Principal().equals(DEBUG_DN);
-				if (debuggable) {
-					break;
-				}
-			}
-		} catch (final NameNotFoundException e) {
-			tcLog.i(_tag, "isDebuggable", e);
-		} catch (final CertificateException e) {
-			tcLog.i(_tag, "isDebuggable", e);
-		}
-		return debuggable;
-	}
+        editor.putString(Const.PREF_SORT, sortString == null ? "" : sortString);
+        editor.apply();
+    }
 
-	@TargetApi(Build.VERSION_CODES.GINGERBREAD)
-	public static String buildVersion() {
-		PackageInfo info;
-		if (versie == null) {
-			try {
-				info = _context.getPackageManager().getPackageInfo(_context.getPackageName(), 0);
-				versie = "V" + info.versionName;
-				final int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-				// tcLog.d(_tag, "buildVersion versie = " + versie + " api = " + currentapiVersion);
-				if (isDebuggable() && currentapiVersion >= android.os.Build.VERSION_CODES.GINGERBREAD) {
-					versie += "/" + info.lastUpdateTime / (1000 * 60);
-				}
-			} catch (final NameNotFoundException e) {
-				tcLog.i(_tag, "buildVersion", e);
-				if (versie == null) {
-					versie = "V0.6.x";
-				}
-			}
-		}
-		// tcLog.d(_tag, "buildVersion versie = " + versie);
+    public static String getSortString() {
+        // tcLog.d("Credentials", "getSortString");
+        final String sortString = settings.getString(Const.PREF_SORT, "order=priority&order=modified&desc=1");
+
+        tcLog.d("Credentials", "getSortString sortString = " + sortString);
+        return sortString;
+    }
+
+    public static void removeSortString() {
+        tcLog.d(_tag, "removeSortString");
+        final SharedPreferences.Editor editor = settings.edit();
+
+        editor.putString(Const.PREF_SORT, "order=priority&order=modified&desc=1");
+        editor.apply();
+    }
+
+    private static final X500Principal DEBUG_DN = new X500Principal("CN=Android Debug,O=Android,C=US");
+
+    public static boolean isDebuggable() {
+        boolean debuggable = false;
+
+        try {
+            final PackageInfo pinfo = _context.getPackageManager().getPackageInfo(_context.getPackageName(),
+                    PackageManager.GET_SIGNATURES);
+            final Signature signatures[] = pinfo.signatures;
+
+            final CertificateFactory cf = CertificateFactory.getInstance("X.509");
+
+            for (final Signature signature : signatures) {
+                final ByteArrayInputStream stream = new ByteArrayInputStream(signature.toByteArray());
+                final X509Certificate cert = (X509Certificate) cf.generateCertificate(stream);
+
+                debuggable = cert.getSubjectX500Principal().equals(DEBUG_DN);
+                if (debuggable) {
+                    break;
+                }
+            }
+        } catch (final NameNotFoundException e) {
+            tcLog.i(_tag, "isDebuggable", e);
+        } catch (final CertificateException e) {
+            tcLog.i(_tag, "isDebuggable", e);
+        }
+        return debuggable;
+    }
+
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
+    private static String buildVersion() {
+        PackageInfo info;
+
+        if (versie == null) {
+            try {
+                info = _context.getPackageManager().getPackageInfo(_context.getPackageName(), 0);
+                versie = "V" + info.versionName;
+                final int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+
+                // tcLog.d(_tag, "buildVersion versie = " + versie + " api = " + currentapiVersion);
+                if (isDebuggable() && currentapiVersion >= android.os.Build.VERSION_CODES.GINGERBREAD) {
+                    versie += "/" + info.lastUpdateTime / (1000 * 60);
+                }
+            } catch (final NameNotFoundException e) {
+                tcLog.i(_tag, "buildVersion", e);
+                if (versie == null) {
+                    versie = "V0.6.x";
+                }
+            }
+        }
+        // tcLog.d(_tag, "buildVersion versie = " + versie);
+        return versie;
+    }
+	
+	public static String getVersion() {
 		return versie;
 	}
 
-	public static boolean isRCVersion() {
-		buildVersion();
-		if (versie == null) {
-			return false;
-		}
-		return versie.toLowerCase(Locale.US).contains("rc");
-	}
+    public static boolean isRCVersion() {
+		return (versie != null) && (versie.toLowerCase(Locale.US).contains("rc"));
+    }
 
-	public static String makeDbPath(String dbname) {
-		final File extpath = Environment.getExternalStorageDirectory();
+    public static String makeDbPath(String dbname) {
+        final File extpath = Environment.getExternalStorageDirectory();
 
-		String dbpath = dbname;
+        String dbpath = dbname;
 
-		if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-			final String p1 = extpath.toString() + "/TracClient/" + dbname;
-			if (!isDebuggable()) {
-				if (new File(p1).exists()) {
-					dbpath = p1;
-				}
-			} else {
-				dbpath = p1;
-			}
-		}
-		// tcLog.d(context.getClass().getName(), "makeDbPath dbpath = " +
-		// dbpath);
-		return dbpath;
-	}
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+            final String p1 = extpath.toString() + "/TracClient/" + dbname;
 
-	public static String makeExtFilePath(String filename) throws FileNotFoundException {
-		final File extpath = Environment.getExternalStorageDirectory();
+            if (!isDebuggable()) {
+                if (new File(p1).exists()) {
+                    dbpath = p1;
+                }
+            } else {
+                dbpath = p1;
+            }
+        }
+        // tcLog.d(context.getClass().getName(), "makeDbPath dbpath = " +
+        // dbpath);
+        return dbpath;
+    }
 
-		final String filePath = extpath.toString() + "/TracClient/" + filename;
+    public static String makeExtFilePath(String filename) throws FileNotFoundException {
+        final File extpath = Environment.getExternalStorageDirectory();
 
-		if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-			throw new FileNotFoundException(filePath);
-		}
-		return filePath;
-	}
+        final String filePath = extpath.toString() + "/TracClient/" + filename;
+
+        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            throw new FileNotFoundException(filePath);
+        }
+        return filePath;
+    }
 	
-	public static Boolean metaDataGetBoolean (String metaId) throws NameNotFoundException {
-		return (_context != null ?_context.getPackageManager().getApplicationInfo(_context.getPackageName(), PackageManager.GET_META_DATA).metaData.getBoolean(metaId) : null);
-	}
+    public static Boolean metaDataGetBoolean(String metaId) throws NameNotFoundException {
+        return (_context != null
+                ? _context.getPackageManager().getApplicationInfo(_context.getPackageName(), PackageManager.GET_META_DATA).metaData.getBoolean(metaId): null);
+    }
 	
-	public static String metaDataGetString (String metaId) throws NameNotFoundException {
-		return (_context != null ?_context.getPackageManager().getApplicationInfo(_context.getPackageName(), PackageManager.GET_META_DATA).metaData.getString(metaId) : null);
-	}
+    public static String metaDataGetString(String metaId) throws NameNotFoundException {
+        return (_context != null
+                ? _context.getPackageManager().getApplicationInfo(_context.getPackageName(), PackageManager.GET_META_DATA).metaData.getString(metaId): null);
+    }
 }

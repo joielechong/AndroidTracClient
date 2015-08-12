@@ -16,91 +16,81 @@
 
 package com.mfvl.trac.client;
 
+
 import java.io.Serializable;
+
 
 public class FilterSpec extends Spec implements Serializable, Cloneable {
 
-	private static final long serialVersionUID = 552288154328397222L;
-	private String _operator;
-	private String _waarde;
-	private String _newwaarde;
-	private Boolean _edited = false;
+    private static final long serialVersionUID = 552288154328397222L;
+    private String _operator;
+    private String _waarde;
+    private String _newwaarde;
+    private Boolean _edited = false;
 
-	public FilterSpec(String veld, String operator, String waarde) {
-		super(veld);
-		_operator = operator;
-		_waarde = waarde;
-		_newwaarde = waarde;
-	}
+    public FilterSpec(final String veld, final String operator, final String waarde) {
+        super(veld);
+        _operator = operator;
+        _waarde = waarde;
+        _newwaarde = waarde;
+    }
 
-	public FilterSpec(String string, String[] operators) {
-		super(null);
-		_operator = null;
-		_waarde = null;
-		for (int i = operators.length - 1; i >= 0; i--) {
-			final String op = operators[i];
-			final int index = string.indexOf(op);
-			if (index > 0) {
-				_veld = string.substring(0, index);
-				_operator = op;
-				_waarde = string.substring(index + op.length());
-				_newwaarde = _waarde;
-				i = 0;
-			}
-		}
-	}
+    public FilterSpec(final String string, final String[] operators) {
+        super(null);
+        _operator = null;
+        _waarde = null;
+        for (int i = operators.length - 1; i >= 0; i--) {
+            final String op = operators[i];
+            final int index = string.indexOf(op);
 
-	public void setOperator(String o) {
-		_operator = o;
-	}
+            if (index > 0) {
+                _veld = string.substring(0, index);
+                _operator = op;
+                _waarde = string.substring(index + op.length());
+                _newwaarde = _waarde;
+                i = 0;
+            }
+        }
+    }
 
-	public String getOperator() {
-		return _operator;
-	}
+    public void setOperator(final String o) {
+        _operator = o;
+    }
 
-	public void setWaarde(String w) {
-		if (_edited) {
-			_newwaarde = w;
-		} else {
-			_waarde = w;
-		}
-	}
+    public String getOperator() {
+        return _operator;
+    }
 
-	public String getWaarde() {
-		return _edited ? _newwaarde : _waarde;
-	}
+    public void setWaarde(final String w) {
+        if (_edited) {
+            _newwaarde = w;
+        } else {
+            _waarde = w;
+        }
+    }
 
-	public void setEdit(boolean edited) {
-		// tcLog.i(this.getClass().getName(), "setEdit veld = " + _veld + " edited = " + edited);
-		if (edited != _edited) {
-			_edited = edited;
-			if (_edited) {
-				_newwaarde = _waarde;
-			} else {
-				_waarde = _newwaarde;
-			}
-		}
-	}
+    public String getWaarde() {
+        return _edited ? _newwaarde : _waarde;
+    }
 
-	public boolean getEdit() {
-		return _edited;
-	}
+    public void setEdit(final boolean edited) {
+        // tcLog.i(this.getClass().getName(), "setEdit veld = " + _veld + " edited = " + edited);
+        if (edited != _edited) {
+            _edited = edited;
+            if (_edited) {
+                _newwaarde = _waarde;
+            } else {
+                _waarde = _newwaarde;
+            }
+        }
+    }
 
-	@Override
-	public String toString() {
-		return _edited ? _veld : _veld + (_operator != null ? _operator : "") + (_waarde != null ? _waarde : "");
-	}
+    public boolean getEdit() {
+        return _edited;
+    }
 
-	@Override
-	public int hashCode() {
-		// Start with a non-zero constant.
-		int result = 23;
-
-		// Include a hash for each field.
-		result = 37 * result + hc(_edited);
-		result = 37 * result + hc(_operator);
-		result = 37 * result + hc(_waarde);
-		result = 37 * result + hc(_newwaarde);
-		return 37 * result + super.hashCode();
-	}
+    @Override
+    public String toString() {
+        return _edited ? _veld : _veld + (_operator != null ? _operator : "") + (_waarde != null ? _waarde : "");
+    }
 }

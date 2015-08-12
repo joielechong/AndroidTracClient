@@ -1,6 +1,5 @@
 <resources>
         <string name="about_button">О приложении TracClient</string>
-        <string name="Back">Назад</string>
         <string name="tracUser">Имя пользователя</string>
         <string name="tracUserHint">Имя пользователя</string>
         <string name="tracPw">Пароль</string>
@@ -20,6 +19,7 @@
         <string name="nieuw">Новый тикет</string>
         <string name="nodata">Нет данных</string>
         <string name="nodatadesc">Данные для тикета ещё не загружены</string>
+        <string name="connerr">Ошибка соединения</string>
         <string name="newtick">Создать новый тикет</string>
         <string name="store">Разместить тикет</string>
         <string name="storerr">Ошибка во время создания тикета</string>
@@ -44,10 +44,6 @@
         <string name="zoek">Поиск</string>
         <string name="storefilter">Сохранить фильтр</string>
         <string name="storesort">Сохранить порядок сортировки</string>
-        <string name="moveup">перейти вверх</string>
-        <string name="movedown">перейти вниз</string>
-        <string name="direction">выбрать направление</string>
-        <string name="sortdel">удалить сортировку</string>
         <string name="help">Помощь</string>
         <string name="Add">Добавить</string>
         <string name="sslHack">Принять собственные сертификаты</string>

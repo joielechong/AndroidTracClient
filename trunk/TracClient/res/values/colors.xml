@@ -14,15 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 
+ * default colors for all versions
 -->
 <resources>
 	<color name="popup_back">#ffdddddd</color>
 	<color name="help_back">#0099cc</color>
 	<color name="help_text">#33b5e5</color>
 
-    <color name="list_col1">#00000000</color>
-    <color name="list_col2">#30111111</color>
-	
+	<color name="list_col1">#00000000</color>
+	<color name="list_col2">#30111111</color>
+
+	<color name="popup_selected">#ff0000</color>
+	<color name="popup_unselected">#000000</color>
+
+	<color name="swipe_blue">#bee5d9</color>
+	<color name="swipe_green">#00bf20</color>
+	<color name="swipe_orange">#fd7214</color>
+	<color name="swipe_red">#ed2d26</color>
+
+
 	<array name="list_col">
 		<item>@color/list_col1</item>
 		<item>@color/list_col2</item>

@@ -16,6 +16,10 @@
 
 package com.mfvl.trac.client;
 
+
+import android.annotation.TargetApi;
+import android.os.Build;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,56 +30,63 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
 
+
 public class TracShowWebPage extends Activity {
+	private static String _tag;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		tcLog.d(getClass().getName(), "onCreate savedInstanceState = " + savedInstanceState);
-		super.onCreate(savedInstanceState);
-		final Intent i = this.getIntent();
-		final boolean toonVersie = i.getBooleanExtra(Const.HELP_VERSION, true);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		setContentView(R.layout.trac_about);
-		final String filename = "file:///android_asset/" + i.getStringExtra(Const.HELP_FILE) + ".html";
-		tcLog.d(getClass().getName(), filename + " " + toonVersie);
-		final View tv = findViewById(R.id.versionblock);
-		if (!toonVersie) {
-			tv.setVisibility(View.GONE);
-		} else {
-			final TextView tv1 = (TextView) findViewById(R.id.about_version_text);
-			tv1.setText(Credentials.buildVersion());
-		}
-		if (Const.doAnalytics) {
-			MyTracker.report("Normal","WebView",filename);
-		}
-		final WebView wv = (WebView) findViewById(R.id.webfile);
-		// wv.getSettings().setJavaScriptEnabled(true);
-		wv.setWebViewClient(new WebViewClient());
-		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
-			final int webzoom = getResources().getInteger(R.integer.webzoom);
-			wv.getSettings().setTextZoom(webzoom);
-		}
-		wv.loadUrl(filename);
-		tcLog.d(getClass().getName(), "webview = " + wv);
-	}
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+		_tag = getClass().getName();
+        tcLog.d(_tag, "onCreate savedInstanceState = " + savedInstanceState);
+        final Intent i = this.getIntent();
+        final boolean toonVersie = i.getBooleanExtra(Const.HELP_VERSION, true);
 
-	@Override
-	public void onStart() {
-		tcLog.d(getClass().getName(), "onStart");
-		super.onStart();
-		if (Const.doAnalytics) {
-			MyTracker.reportActivityStart(TracShowWebPage.this);
-		}
-	}
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        setContentView(R.layout.trac_about);
+        final String filename = "file:///android_asset/" + i.getStringExtra(Const.HELP_FILE) + ".html";
 
-	@Override
-	public void onStop() {
-		tcLog.d(getClass().getName(), "onStop");
-		super.onStop();
-		if (Const.doAnalytics) {
-			MyTracker.reportActivityStop(TracShowWebPage.this);
-		}
-	}
+        tcLog.d(_tag, filename + " " + toonVersie);
+        final View tv = findViewById(R.id.versionblock);
 
+        if (!toonVersie) {
+            tv.setVisibility(View.GONE);
+        } else {
+            final TextView tv1 = (TextView) findViewById(R.id.about_version_text);
+
+            tv1.setText(Credentials.getVersion());
+        }
+        MyTracker.report("Normal", "WebView", filename);
+        final WebView wv = (WebView) findViewById(R.id.webfile);
+
+        // wv.getSettings().setJavaScriptEnabled(true);
+        wv.setWebViewClient(new WebViewClient());
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+			setWebZoom_ics(wv);
+		}
+
+        wv.loadUrl(filename);
+        //tcLog.d(_tag, "webview = " + wv);
+    }
+	
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+    private void setWebZoom_ics(final WebView wv) {
+        final int webzoom = getResources().getInteger(R.integer.webzoom);
+        wv.getSettings().setTextZoom(webzoom);
+    }
+    
+    @Override
+    public void onStart() {
+        //tcLog.d(_tag, "onStart");
+        super.onStart();
+        MyTracker.reportActivityStart(this);
+    }
+    
+    @Override
+    public void onStop() {
+        //tcLog.d(_tag, "onStop");
+        super.onStop();
+        MyTracker.reportActivityStop(this);
+    }
 }

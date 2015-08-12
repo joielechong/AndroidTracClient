@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!--
  * Copyright (C) 2013,2014 Michiel van Loon
  *
@@ -14,23 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 
+ * extension for v14+
 -->
 <resources>
-	<string-array name="Drawer">
-		<item>@string/newtick</item>		
-		<item>@string/changehost</item>		
-		<item>@string/filter</item>		
-		<item>@string/sort</item>		
-		<item>@string/tlrefresh</item>		
-		<item>@string/dfrefresh</item>		
-	</string-array>
-	
-	<integer-array name="DrawerIds">
-		<item>@id/tlnieuw</item>
-		<item>@id/tlchangehost</item>
-		<item>@id/tlfilter</item>
-		<item>@id/tlsort</item>
-		<item>@id/tlrefresh</item>
-		<item>@id/dfrefresh</item>
-	</integer-array>
+	<color name="swipe_blue">@android:color/holo_blue_bright</color>
+	<color name="swipe_green">@android:color/holo_green_light</color>
+	<color name="swipe_orange">@android:color/holo_orange_light</color>
+	<color name="swipe_red">@android:color/holo_red_light</color>
 </resources>

@@ -1,7 +1,6 @@
 <resources>
 
     <string name="about_button">Sobre o Trac Client</string>
-    <string name="Back">Voltar</string>
     <string name="tracUser">Nome de utilizador</string>
     <string name="tracUserHint">Nome de usuário</string>
     <string name="tracPw">Senha</string>
@@ -21,6 +20,7 @@
     <string name="nieuw">Bilhete novo</string>
     <string name="nodata">Sem informações</string>
     <string name="nodatadesc">As informações desse bilhete ainda não estão disponíveis</string>
+    <string name="connerr">Erro de conexão</string>
     <string name="newtick">Criar bilhete novo</string>
     <string name="oktext">OK</string>
     <string name="store">Armazenar bilhete</string>
@@ -45,10 +45,6 @@
     <string name="zoek">Buscar</string>
     <string name="storefilter">Salvar filtro</string>
     <string name="storesort">Salvar ordem de classificação</string>
-    <string name="moveup">mover acima</string>
-    <string name="movedown">mover abaixo</string>
-    <string name="direction">determinar direção</string>
-    <string name="sortdel">remover classificação</string>
     <string name="help">Ajuda</string>
     <string name="Add">Adicionar</string>
     <string name="sslHack">Aceitar Certificados Próprios Assinados</string>

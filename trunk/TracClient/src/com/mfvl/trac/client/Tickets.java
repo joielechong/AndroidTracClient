@@ -16,173 +16,150 @@
 
 package com.mfvl.trac.client;
 
+
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
-interface onTicketsChanged {
-	void onChanged();
+
+interface OnTicketsChangeListener {
+    void onTicketsChanged();
 }
 
-public class Tickets extends TcObject {
 
-	public static String url = null;
-	public static String username = null;
-	public static String password = null;
-	public static String profile = null;
-	public static boolean sslHack = false;
-	public static boolean sslHostNameHack = false;
+public class Tickets {
 
-	public static ArrayList<Ticket> ticketList = null;
-	public static ArrayList<SortSpec> sortList = null;
-	public static ArrayList<FilterSpec> filterList = null;
-	public static int tickets[] = null;
+    public ArrayList<Ticket> ticketList = null;
+    public int tickets[] = null;
 
-	private static Map<Integer, Ticket> ticketMap = null;
+    private static Map<Integer, Ticket> ticketMap = null;
 
-	private static Tickets _instance = null;
-	private static String _tag = "";
-	private static int ticketGroupCount;
-	private static int ticketContentCount;
+    private Tickets _instance = null;
+    private String _tag = "";
+    private int ticketGroupCount;
+    private int ticketContentCount;
 	
-	private static onTicketsChanged saveTc = null;
+    private OnTicketsChangeListener saveTc = null;
 
-	private static boolean valid = false;
+    private boolean valid = false;
 
-	public static final int INVALID_URL = 1;
-	public static final int LIST_NOT_LOADED = 2;
-	public static final int CONTENT_NOT_LOADED = 3;
+    public static final int INVALID_URL = 1;
+    public static final int LIST_NOT_LOADED = 2;
+    public static final int CONTENT_NOT_LOADED = 3;
 
-	private Tickets() {
-		_tag = getClass().getName();
-		tcLog.d(_tag, "Tickets create");
-		valid = ticketList != null;
-	}
+    public Tickets() {
+        _tag = getClass().getName();
+        tcLog.d(_tag, "Tickets create");
+		initList();
+        valid = ticketList != null;
+    }
 
-	public static Tickets getInstance() {
-		if (_instance == null) {
-			_instance = new Tickets();
-		}
-		return _instance;
-	}
-
-	public static void initList() {
-		getInstance();
-		tcLog.d(_tag, "Tickets initList");
-		ticketList = new ArrayList<Ticket>();
-		ticketContentCount = 0;
-		valid = true;
-		resetCache();
-	}
-
-	public static void clear() {
-		getInstance();
-		ticketList = null;
+    public void initList() {
+        tcLog.d(_tag, "initList");
+        ticketList = new ArrayList<Ticket>();
 		tickets = null;
-		ticketMap = null;
-		ticketContentCount = 0;
-		TicketModel.getInstance();
+        ticketContentCount = 0;
+        valid = true;
+    }
+
+    public void resetCache() {
+        // tcLog.d(_tag,"resetCache voor ticketMap = "+ticketMap);
+        ticketMap = new TreeMap<Integer, Ticket>();
+        // tcLog.d(_tag,"resetCache na ticketMap = "+ticketMap);
+    }
+
+    public void setOnTicketsChangeListener(OnTicketsChangeListener tc) {
+        saveTc = tc;
+    }
+	
+    public void notifyChange() {
+        tcLog.d(_tag, "notifyChange");
+        try {
+            saveTc.onTicketsChanged();
+        } catch (Exception e) {}
+		
+    }
+	
+    public Ticket getTicket(final int ticknr) {
+        // tcLog.d(_tag, "getTicket ticknr = "+ticknr+ " "+ticketMap.containsKey(ticknr));
+        return ticketMap.containsKey(ticknr) ? ticketMap.get(ticknr) : null;
+    }
+
+    public void putTicket(Ticket ticket) {
+        // tcLog.d(getClass().getName(), "putTicket ticket = "+ticket);
+        ticketMap.put(ticket.getTicketnr(), ticket);
+    }
+	
+	public void addTicket(Ticket ticket) {
+		ticketList.add(ticket);
+		putTicket(ticket);
 	}
 	
-	public static void setOnChanged(onTicketsChanged tc) {
-		saveTc = tc;
-	}
+    public void setTicketGroupCount(final int v) {
+        ticketGroupCount = v;
+    }
+
+    public void setTicketContentCount(final int v) {
+        ticketContentCount = v;
+    }
 	
-	public static void notifyChange() {
-		if (saveTc != null) {
-			saveTc.onChanged();
-		}
-	}
+    public void incTicketContentCount() {
+        ticketContentCount++;
+    }
 	
+    public int getTicketGroupCount() {
+        return ticketGroupCount;
+    }
 
-	public static Ticket getTicket(final int ticknr) {
-		getInstance();
-//		tcLog.d(_tag, "getTicket ticknr = "+ticknr+ " "+ticketMap.containsKey(ticknr));
-		return ticketMap.containsKey(ticknr) ? ticketMap.get(ticknr) : null;
-	}
+    public int getTicketContentCount() {
+        return ticketContentCount;
+    }
 
-	public static void putTicket(Ticket ticket) {
-		getInstance();
-//		tcLog.d(getClass().getName(), "putTicket ticket = "+ticket);
-		ticketMap.put(ticket.getTicketnr(), ticket);
-	}
-	
-	public static void setTicketGroupCount(final int v) {
-		getInstance();
-		ticketGroupCount = v;
-	}
+    public void setInvalid() {
+        valid = false;
+    }
 
-	public static void setTicketContentCount(final int v) {
-		getInstance();
-		ticketContentCount = v;
-	}
-	
-	public static void incTicketContentCount() {
-		ticketContentCount++;
-	}
-	
-	public static int getTicketGroupCount() {
-		return ticketGroupCount;
-	}
+    public boolean isValid() {
+        return valid;
+    }
 
-	public static int getTicketContentCount() {
-		return ticketContentCount;
-	}
+    public int getNextTicket(final int ticket) {
+        return getNeighTicket(ticket, 1);
+    }
 
-	public static void resetCache() {
-		getInstance();
-		// tcLog.d(_tag,"resetCache voor ticketMap = "+ticketMap);
-		ticketMap = new TreeMap<Integer, Ticket>();
-		// tcLog.d(_tag,"resetCache na ticketMap = "+ticketMap);
-	}
+    public int getPrevTicket(final int ticket) {
+        return getNeighTicket(ticket, -1);
+    }
 
-	public static void setInvalid() {
-		getInstance();
-		valid = false;
-	}
+    private int getNeighTicket(final int ticknr, final int dir) {
+        tcLog.d(_tag, "getNeighTicket ticknr = " + ticknr + ", dir = " + dir);
+        Ticket t = getTicket(ticknr);
 
-	public static boolean isValid() {
-		getInstance();
-		return valid;
-	}
+        // tcLog.d(_tag, "t = " + t);
+        if (t == null) {
+            return -1;
+        } else {
+            final int pos = ticketList.indexOf(t);
+            final int newpos = pos + dir;
 
-	public static int getNextTicket(final int ticket) {
-		return getNeighTicket(ticket, 1);
-	}
+            // tcLog.d(_tag,"pos = "+pos+", newpos = "+newpos+", count = "+ticketList.size());
+            if (pos < 0 || newpos < 0 || newpos >= ticketList.size()) {
+                return -1;
+            } else {
+                t = ticketList.get(newpos);
+                tcLog.d(_tag, "new ticket = " + t);
+                return t != null && t.hasdata() ? t.getTicketnr() : ticknr;
+            }
+        }
+    }
 
-	public static int getPrevTicket(final int ticket) {
-		return getNeighTicket(ticket, -1);
-	}
-
-	private static int getNeighTicket(final int ticknr, final int dir) {
-		getInstance();
-		tcLog.d(_tag, "getNeighTicket ticknr = " + ticknr + ", dir = " + dir);
-		Ticket t = Tickets.getTicket(ticknr);
-		// tcLog.d(_tag, "t = " + t);
-		if (t == null) {
-			return -1;
-		} else {
-			final int pos = ticketList.indexOf(t);
-			final int newpos = pos + dir;
-			// tcLog.d(_tag,"pos = "+pos+", newpos = "+newpos+", count = "+ticketList.size());
-			if (pos < 0 || newpos < 0 || newpos >= ticketList.size()) {
-				return -1;
-			} else {
-				t = ticketList.get(newpos);
-				tcLog.d(_tag, "new ticket = " + t);
-				return t != null && t.hasdata() ? t.getTicketnr() : ticknr;
-			}
-		}
-	}
-
-	public static int getTicketCount() {
-		getInstance();
-		try {
-			return ticketList.size();
-		} catch (final Exception e) {
-			tcLog.e(_tag, "getTicketCount Exception", e);
-			return 0;
-		}
-	}
+    public int getTicketCount() {
+        try {
+            return ticketList.size();
+        } catch (final Exception e) {
+//            tcLog.d(_tag, "getTicketCount Exception", e);
+            return 0;
+        }
+    }
 
 }

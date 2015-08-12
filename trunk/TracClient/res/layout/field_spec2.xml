@@ -19,10 +19,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingBottom="16dp"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    android:paddingTop="16dp" >
+    android:padding="16dp" >
 
     <LinearLayout
         android:id="@+id/veld"
@@ -40,29 +37,22 @@
         </TextView>
     </LinearLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_alignParentBottom="true"
         android:orientation="horizontal" >
 
         <Button
             android:id="@+id/cancelpw"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
- 			android:layout_alignParentLeft="true"
-			android:layout_alignParentStart="true"
-			android:layout_toLeftOf="@+id/storepw"
-			android:layout_toStartOf="@+id/storepw"
+			style="@style/NormalButton"
             android:text="@string/cancel" />
 
         <Button
             android:id="@+id/storepw"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
- 			android:layout_alignParentRight="true"
- 			android:layout_alignParentEnd="true"
+			style="@style/NormalButton"
             android:text="@string/oktext" />
-    </RelativeLayout>
+    </LinearLayout>
 
 </RelativeLayout>

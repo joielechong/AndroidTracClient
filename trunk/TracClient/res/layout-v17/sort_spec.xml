@@ -25,8 +25,8 @@
         android:id="@+id/sortup"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
         android:layout_weight="1"
         android:src="@android:drawable/arrow_up_float" />
 
@@ -34,8 +34,8 @@
         android:id="@+id/sortdown"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
         android:layout_weight="1"
         android:src="@android:drawable/arrow_down_float" />
 
@@ -43,8 +43,8 @@
         android:id="@+id/sortfield"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
         android:layout_weight="8"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -52,16 +52,16 @@
         android:id="@+id/sortdirec"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="8dp"
         android:layout_weight="1" />
 
     <ImageButton
         android:id="@+id/sortdel"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
         android:layout_weight="1"
         android:src="@android:drawable/ic_menu_delete" />
 

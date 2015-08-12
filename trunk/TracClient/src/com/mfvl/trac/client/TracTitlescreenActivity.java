@@ -16,6 +16,7 @@
 
 package com.mfvl.trac.client;
 
+
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -26,130 +27,172 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
+
 public class TracTitlescreenActivity extends Activity {
+	private static String _tag;
+	
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+		_tag = getClass().getName();
+        tcLog.setContext(this);
+        tcLog.i(_tag, "onCreate");
+        Credentials.getInstance(this);
+        boolean doAnalytics = Const.doAnalytics;
+        try {
+			doAnalytics &= Credentials.metaDataGetBoolean("com.mfvl.trac.client.useAnalytics");
+        } catch (final Exception e) {
+            tcLog.e(_tag, "getApplicationInfo", e);
+        }
+        tcLog.i(_tag, "doAnalytics = " + doAnalytics);
+		MyTracker.setDoAnalytics(doAnalytics);
+        try {
+            requestWindowFeature(Window.FEATURE_NO_TITLE);
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            setContentView(R.layout.activity_titlescreen);
+            final TextView tv = (TextView) findViewById(R.id.version_content);
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		tcLog.setContext(this);
-		tcLog.i(getClass().getName(), "onCreate");
-		Credentials.getInstance(this);
-		Tickets.getInstance();
-		try {
-			Const.doAnalytics = Credentials.metaDataGetBoolean("com.mfvl.trac.client.useAnalytics");
-		} catch (final Exception e) {
-			tcLog.e(getClass().getName(), "getApplicationInfo", e);
-		}
-		tcLog.i(getClass().getName(),"doAnalytics = "+Const.doAnalytics);
-		try {
-			requestWindowFeature(Window.FEATURE_NO_TITLE);
-			getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-			setContentView(R.layout.activity_titlescreen);
-			final TextView tv = (TextView) findViewById(R.id.version_content);
-			tv.setText(Credentials.buildVersion());
-			if (Const.doAnalytics) {
-				// Get a Tracker (should auto-report)
-				MyTracker.getInstance(this);
-			}
-		} catch (final Exception e) {
-			tcLog.e(getClass().getName(), "crash", e);
-		}
-	}
+            tv.setText(Credentials.getVersion());
+            // Get a Tracker (should auto-report)
+            MyTracker.getInstance(this);
+        } catch (final Exception e) {
+            tcLog.e(_tag, "crash", e);
+        }
+    }
 
-	@Override
-	public void onStart() {
-		tcLog.i(getClass().getName(), "onStart");
-		super.onStart();
+    @Override
+    public void onStart() {
+        tcLog.i(_tag, "onStart");
+        super.onStart();
 
-		boolean adMobAvailable = false;
-		try {
-			final int isAvailable = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-			tcLog.d(getClass().getName(), "Google Play Services available? : " + isAvailable);
-			if (isAvailable == ConnectionResult.SUCCESS) {
-				adMobAvailable = true;
-			} else {
-				if (GooglePlayServicesUtil.isUserRecoverableError(isAvailable)) {
-					final Dialog dialog = GooglePlayServicesUtil.getErrorDialog(isAvailable, this, 123456);
-					dialog.show();
-				} else {
-					tcLog.d(getClass().getName(), "Hoe kom je hier");
-				}
-			}
-		} catch (final Exception e) {
-			tcLog.e(getClass().getName(), "Exception while determining Google Play Services", e);
-		}
+        boolean adMobAvailable = false;
+        getContentResolver().insert(TicketProvider.RESET_QUERY_URI, null);
 
-		if (Const.doAnalytics) {
-			// Get an Analytics tracker to report app starts &amp; uncaught
-			// exceptions etc.
-			MyTracker.reportActivityStart(this);
-		}
+        try {
+            final int isAvailable = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+
+            tcLog.d(_tag, "Google Play Services available? : " + isAvailable);
+            if (isAvailable == ConnectionResult.SUCCESS) {
+                adMobAvailable = true;
+            } else {
+                if (GooglePlayServicesUtil.isUserRecoverableError(isAvailable)) {
+                    final Dialog dialog = GooglePlayServicesUtil.getErrorDialog(isAvailable, this, 123456);
+
+                    dialog.show();
+                } else {
+                    tcLog.d(_tag, "Hoe kom je hier");
+                }
+            }
+        } catch (final Exception e) {
+            tcLog.e(_tag, "Exception while determining Google Play Services", e);
+        }
+
+        // Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
+        MyTracker.reportActivityStart(this);
 		
-		final Intent launchTrac = new Intent(getApplicationContext(), TracStart.class);
+        final Intent launchTrac = new Intent(getApplicationContext(), TracStart.class);
 
-		// adMobAvailable=false;
-		launchTrac.putExtra(Const.ADMOB, adMobAvailable);
+        // adMobAvailable=false;
+        launchTrac.putExtra(Const.ADMOB, adMobAvailable);
 
-		String urlstring = null;
+        String urlstring = null;
 
-		final Intent intent = getIntent();
-		// Integer ticket = -1;
-		if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-			final String contentString = intent.getDataString();
-			// tcLog.d(getClass().getName(), "View intent data = " + contentString);
-			if (contentString != null) {
-				final Uri uri = Uri.parse(contentString.replace("trac.client.mfvl.com/", ""));
-				final List<String> segments = uri.getPathSegments();
-				final String u = uri.getScheme() + "://" + uri.getHost() + "/";
-				urlstring = u.replace("tracclient://", "http://").replace("tracclients://", "https://");
-				final int count = segments.size();
-				final String mustBeTicket = segments.get(count - 2);
-				if ("ticket".equals(mustBeTicket)) {
-					final int ticket = Integer.parseInt(segments.get(count - 1));
-					for (final String segment : segments.subList(0, count - 2)) {
-						urlstring += segment + "/";
-					}
-					if (Const.doAnalytics) {
-                        MyTracker.report("Startup","URI start",urlstring);
-					}
-					launchTrac.putExtra(Const.INTENT_URL, urlstring);
-					launchTrac.putExtra(Const.INTENT_TICKET, (long) ticket);
-				} else {
-					tcLog.w(getClass().getName(), "View intent bad Url");
-					urlstring = null;
+        final Intent intent = getIntent();
+
+        // Integer ticket = -1;
+        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+            final String contentString = intent.getDataString();
+
+            // tcLog.d(_tag, "View intent data = " + contentString);
+            if (contentString != null) {
+                final Uri uri = Uri.parse(contentString.replace("trac.client.mfvl.com/", ""));
+                final List<String> segments = uri.getPathSegments();
+                final String u = uri.getScheme() + "://" + uri.getHost() + "/";
+
+                urlstring = u.replace("tracclient://", "http://").replace("tracclients://", "https://");
+                final int count = segments.size();
+                final String mustBeTicket = segments.get(count - 2);
+
+                if ("ticket".equals(mustBeTicket)) {
+                    final int ticket = Integer.parseInt(segments.get(count - 1));
+
+                    for (final String segment : segments.subList(0, count - 2)) {
+                        urlstring += segment + "/";
+                    }
+                    MyTracker.report("Startup", "URI start", urlstring);
+                    launchTrac.putExtra(Const.INTENT_URL, urlstring);
+                    launchTrac.putExtra(Const.INTENT_TICKET, (long) ticket);
+                } else {
+                    tcLog.w(_tag, "View intent bad Url");
+                    urlstring = null;
+                }
+            }
+        }
+        final Handler handler = new Handler();
+        final Timer t = new Timer();
+/*		
+		if (Credentials.checkDisclaimer()) {
+			final Dialog dialog = new Dialog(this);
+			dialog.setContentView(R.layout.disclaimer);
+			Button okButton = (Button) dialog.findViewById(R.id.okBut);
+			okButton.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					dialog.dismiss();
+					startActivity(launchTrac);
+					finish();
 				}
-			}
+			});
+			
+			t.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					handler.post(new Runnable() {
+						@Override
+						public void run() {
+							handler.post(new Runnable() {
+								@Override
+								public void run() {
+									dialog.show();
+								}
+							});
+						}
+					});
+				}
+			}, 3000);
+		} else {
+*/
+			t.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					handler.post(new Runnable() {
+						@Override
+						public void run() {
+							startActivity(launchTrac);
+							finish();
+						}
+					});
+				}
+			}, 3000);
+/*
 		}
-		final Handler handler = new Handler();
-		final Timer t = new Timer();
-		t.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				handler.post(new Runnable() {
-					@Override
-					public void run() {
-						startActivity(launchTrac);
-						finish();
-					}
-				});
-			}
-		}, 3000);
+*/
 	}
 
-	@Override
-	public void onStop() {
-		tcLog.i(getClass().getName(), "onStop");
-		super.onStop();
-		if (Const.doAnalytics) {
-			// Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
-			MyTracker.reportActivityStop(this);
-		}
-	}
+    @Override
+    public void onStop() {
+        tcLog.i(_tag, "onStop");
+        super.onStop();
+        // Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
+        MyTracker.reportActivityStop(this);
+    }
 }

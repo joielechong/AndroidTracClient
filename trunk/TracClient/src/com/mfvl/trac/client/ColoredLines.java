@@ -16,30 +16,33 @@
 
 package com.mfvl.trac.client;
 
+import java.util.Arrays;
+
 import android.view.View;
 import android.view.ViewGroup;
 import android.content.Context;
 
+
 public class ColoredLines {
-	private static int[] colors = null;
-	private static ColoredLines instance = null;
+    private static int[] colors = null;
+    private static ColoredLines instance = null;
 	
-	private ColoredLines(Context context) {
-		if (colors == null) {
-			colors = context.getResources().getIntArray(R.array.list_col);
-		}
-	}
+    private ColoredLines(Context context) {
+        if (colors == null) {
+            colors = context.getResources().getIntArray(R.array.list_col);
+        }
+    }
 	
-	private static ColoredLines getInstance(Context context) {
-		if (instance == null) {
-			instance = new ColoredLines(context);
-		}
-		return instance;
-	}
+    private static ColoredLines getInstance(Context context) {
+        if (instance == null) {
+            instance = new ColoredLines(context);
+        }
+        return instance;
+    }
 	
-	public static View getView(Context context,View view,int position, View convertView, ViewGroup parent) {
-		getInstance(context);
-		view.setBackgroundColor(colors[position % colors.length]);
-		return view;
-	}
+    public static View getView(Context context, View view, int position, View convertView, ViewGroup parent) {
+        getInstance(context);
+        view.setBackgroundColor(colors[position % colors.length]);
+        return view;
+    }
 }

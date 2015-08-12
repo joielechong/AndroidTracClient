@@ -16,24 +16,27 @@
 
 package com.mfvl.trac.client;
 
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
 public class TracJSONObject extends JSONObject {
 
-	TracJSONObject() {
-		super();
-	}
+    TracJSONObject() {
+        super();
+    }
 	
-	public JSONObject makeComplexCall(String id, String method, Object... params) throws JSONException {
-		this.put("method", method);
-		this.put("id", id);
-		final JSONArray args = new JSONArray();
-		for (final Object o : params) {
-			args.put(o);
-		}
-		this.put("params", args);
-		return this;
-	}
+    public JSONObject makeComplexCall(String id, String method, Object... params) throws JSONException {
+        this.put("method", method);
+        this.put("id", id);
+        final JSONArray args = new JSONArray();
+
+        for (final Object o : params) {
+            args.put(o);
+        }
+        this.put("params", args);
+        return this;
+    }
 }

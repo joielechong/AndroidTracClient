@@ -16,6 +16,7 @@
 
 package com.mfvl.trac.client;
 
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ComponentName;
@@ -26,68 +27,70 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
-import android.os.RemoteException;
 
-public class Refresh extends Activity {
 
-	Messenger mService = null;
+public class Refresh extends Activity implements ServiceConnection {
 
-	private final ServiceConnection mConnection = new ServiceConnection() {
-		@Override
-		public void onServiceConnected(ComponentName className, IBinder service) {
-			// tcLog.d(this.getClass().getName(),"onServiceConnected className = "
-			// + className + " service = " + service);
-			mService = new Messenger(service);
-			try {
-				final Message msg = Message.obtain(null, Const.MSG_REQUEST_REFRESH);
-				msg.replyTo = null;
-				mService.send(msg);
-			} catch (final RemoteException e) {
-				tcLog.e(this.getClass().getName(), "Problem connecting", e);
-			}
-		}
+    Messenger mService = null;
 
-		@Override
-		public void onServiceDisconnected(ComponentName className) {
-			// tcLog.d(this.getClass().getName(),
-			// "onServiceDisconnected className = " + className);
-			mService = null;
-		}
-	};
+/*
+ * Implementing ServiceConnection 
+ *
+ */
+    @Override
+    public void onServiceConnected(ComponentName className, IBinder service) {
+        tcLog.d(this.getClass().getName(),"onServiceConnected className = " + className + " service = " + service);
+        mService = new Messenger(service);
+        try {
+            final Message msg = Message.obtain(null, TracStart.MSG_REQUEST_REFRESH);
 
-	@SuppressLint("DefaultLocale")
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		// tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " +
-		// (savedInstanceState == null ? "null" : "not null"));
+			msg.replyTo = null;
+            mService.send(msg);
+        } catch (final Exception e) {
+            tcLog.e(getClass().getName(), "Problem connecting", e);
+        }
+    }
 
-		try {
-			final String action = getIntent().getAction().toUpperCase();
+    @Override
+    public void onServiceDisconnected(ComponentName className) {
+        tcLog.d(getClass().getName(),"onServiceDisconnected className = " + className);
+        mService = null;
+    }
 
-			if (action != null) {
-				if (Const.doAnalytics) {
-					MyTracker.report("Normal","Refresh",action);
-				}
-				if (action.equalsIgnoreCase(RefreshService.refreshAction)) {
-					bindService(new Intent(this, RefreshService.class), mConnection, Context.BIND_AUTO_CREATE);
-					// tcLog.i(getClass().getName(), "Refresh sent");
-				}
-			}
-		} catch (final Exception e) {
-			tcLog.e(getClass().getName(), "Problem consuming action from intent", e);
-		}
-		finish();
-	}
+/*
+ * Implementing Activity 
+ *
+ */
+    @SuppressLint("DefaultLocale")
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        tcLog.d(getClass().getName(), "onCreate savedInstanceState = " + savedInstanceState);
 
-	@Override
-	public void onDestroy() {
-		// tcLog.d(this.getClass().getName(), "onDestroy");
-		super.onDestroy();
-		try {
-			unbindService(mConnection);
-		} catch (final Throwable t) {
-			tcLog.e(this.getClass().getName(), "Failed to unbind from the service", t);
-		}
-	}
+        try {
+            final String action = getIntent().getAction();
+
+            if (action != null) {
+                MyTracker.report("Normal", "Refresh", action);
+                if (action.equalsIgnoreCase(RefreshService.refreshAction)) {
+                    bindService(new Intent(this, RefreshService.class), this, Context.BIND_AUTO_CREATE);
+                    // tcLog.i(getClass().getName(), "Refresh sent");
+                }
+            }
+        } catch (final Exception e) {
+            tcLog.e(getClass().getName(), "Problem consuming action from intent", e);
+        }
+        finish();
+    }
+
+    @Override
+    public void onDestroy() {
+        tcLog.d(this.getClass().getName(), "onDestroy");
+        super.onDestroy();
+        try {
+            unbindService(this);
+        } catch (final Throwable t) {
+            tcLog.e(getClass().getName(), "Failed to unbind from the service", t);
+        }
+    }
 }

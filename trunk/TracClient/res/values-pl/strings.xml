@@ -1,6 +1,5 @@
 <resources>
 	<string name="about_button">O TracClient</string>
-	<string name="Back">Powrót</string>
 	<string name="tracUser">Nazwa użytkownika</string>
 	<string name="tracUserHint">Nazwa Użytkownika</string>
 	<string name="tracPw">Hasło</string>
@@ -20,6 +19,7 @@
 	<string name="nieuw">Nowy bilet</string>
 	<string name="nodata">Brak danych</string>
 	<string name="nodatadesc">Dane tego biletu nie zostały jeszcze załadowane</string>
+	<string name="connerr">Błąd połączenia</string>
 	<string name="newtick">Stwórz nowy bilet</string>
     <string name="oktext">OK</string>
 	<string name="store">Zachowaj bilet</string>
@@ -44,10 +44,6 @@
 	<string name="zoek">Wyszukaj</string>
 	<string name="storefilter">Zapisz filtr</string>
 	<string name="storesort">Zapisz kolejność sortowania</string>
-	<string name="moveup">przesuń w górę</string>
-	<string name="movedown">przesuń w dół</string>
-	<string name="direction">ustaw kierunek</string>
-	<string name="sortdel">usuń sortowanie</string>
 	<string name="help">Pomoc</string>
 	<string name="Add">Dodaj</string>
 	<string name="sslHack">Akceptuj Certyfikaty z Podpisem Własnym (SSC)</string>

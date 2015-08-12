@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
- * Copyright (C) 2013,2014 Michiel van Loon
+ * Copyright (C) 2012 Paul Burke
+ *               2015 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,26 +14,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-
 -->
-<LinearLayout 
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:orientation="vertical"
-	android:gravity="center"
-	android:background="@color/help_back" >
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-	<TextView
-		style="@style/TitleScreenText.Big"
-		android:text="@string/title_text" />
-
-	<TextView
-		style="@style/TitleScreenText"
-		android:id="@+id/version_content" />
-
-	<TextView
-		style="@style/TitleScreenText"
-		android:text="@string/auteur" />
-
-</LinearLayout>
+  <style name="ButtonBarBase" parent="@style/Theme.AppCompat">
+    <item name="android:paddingStart">2dp</item>
+    <item name="android:paddingEnd">2dp</item>
+  </style>
+  
+</resources>

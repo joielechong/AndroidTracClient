@@ -16,27 +16,24 @@
 
 package com.mfvl.trac.client;
 
+
 import java.io.Serializable;
 
-abstract public class Spec extends TcObject implements Serializable, Cloneable {
-	private static final long serialVersionUID = -4398082467476637503L;
-	protected String _veld;
+
+abstract public class Spec implements Serializable, Cloneable {
+    private static final long serialVersionUID = -4398082467476637503L;
+    protected String _veld;
 	
-	public Spec(String veld) {
-		_veld = veld;
-	}
+    public Spec(String veld) {
+        _veld = veld;
+    }
 
-	public String getVeld() {
-		return _veld;
-	}
+    public String getVeld() {
+        return _veld;
+    }
 
-	@Override
-	public int hashCode() {
-		return 19 * (29 + hc(_veld)) + super.hashCode();
-	}
-
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 }
