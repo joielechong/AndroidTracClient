@@ -16,6 +16,7 @@
 
 package com.mfvl.trac.client;
 
+
 import java.util.List;
 
 import android.view.View;
@@ -23,25 +24,26 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.content.Context;
 
+
 public class ColoredArrayAdapter<T> extends ArrayAdapter<T> {
 
-	private final List<T> items;
-	Context context = null;
+    private final List<T> items;
+    Context context = null;
 
-	public ColoredArrayAdapter(TracStart context, int resource, List<T> list) {
-		super(context, resource, list);
-		items = list;
-		this.context = context;
-	}
+    public ColoredArrayAdapter(TracStart context, int resource, List<T> list) {
+        super(context, resource, list);
+        items = list;
+        this.context = context;
+    }
 
-	@Override
-	public void clear() {
-		items.clear();
-		super.clear();
-	}
+    @Override
+    public void clear() {
+        items.clear();
+        super.clear();
+    }
 
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		return ColoredLines.getView(context,super.getView(position, convertView, parent),position,convertView,parent);
-	}
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        return ColoredLines.getView(context, super.getView(position, convertView, parent), position, convertView, parent);
+    }
 }

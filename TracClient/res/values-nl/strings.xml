@@ -2,7 +2,6 @@
 <resources>
     <!-- NL versie -->
     <string name="about_button">Over TracClient</string>
-    <string name="Back">Terug</string>
     <string name="tracUser">Gebruikersnaam</string>
     <string name="tracUserHint">Gebruikersnaam</string>
     <string name="tracPw">Wachtwoord</string>
@@ -22,6 +21,7 @@
     <string name="nieuw">Nieuw ticket</string>
     <string name="nodata">Geen gegevens</string>
     <string name="nodatadesc">Gegevens van dit ticket zijn nog niet geladen</string>
+    <string name="connerr">Verbindingsfout</string>
     <string name="newtick">Maak nieuw ticket aan</string>
     <string name="oktext">OK</string>
     <string name="store">Sla ticket op</string>
@@ -46,10 +46,6 @@
     <string name="zoek">Zoek</string>
     <string name="storefilter">Sla filter op</string>
     <string name="storesort">Sla sortering op</string>
-    <string name="moveup">omhoog</string>
-    <string name="movedown">omlaag</string>
-    <string name="direction">zet richting</string>
-    <string name="sortdel">verwijder</string>
     <string name="help">Help</string>
     <string name="Add">Voeg toe</string>
     <string name="sslHack">Accepteer Self Signed Certificaten</string>
@@ -112,5 +108,5 @@
 	<string name="hostnametext">Hostnaam verificatie is gefaald tijdens het verbinding opzetten met de server.\nMelding = "</string>
 	<string name="hostnameign">\nDe verificatie negeren?"</string>
 	<string name="noJSON">"Geen JSON ondersteuning op de TRAC-server"</string>
-
+	<string name="unknownError">Onbekende fout opgetreden</string>
 </resources>

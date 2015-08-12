@@ -1,125 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.mfvl.trac.client"
-    android:installLocation="auto"
-    android:versionCode="87"
-    android:versionName="0.6.2-rc2" >
+<manifest 
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	package="com.mfvl.trac.client"
+	android:installLocation="auto"
+	android:versionCode="90"
+	android:versionName="0.6.2-rc4" >
 
-    <uses-sdk
-        android:minSdkVersion="9"
-        android:targetSdkVersion="22" />
+	<uses-sdk
+		android:minSdkVersion="9"
+		android:targetSdkVersion="22" />
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-	<uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
-    <application
-        android:allowBackup="true"
-        android:icon="@drawable/traclogo"
-        android:label="@string/app_name"
-        android:restoreNeedsApplication="false"
-	android:supportsRtl="false"
-        android:theme="@style/AppTheme" >
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
-        <meta-data
-            android:name="com.mfvl.trac.client.adUnitId"
-            android:value="ca-app-pub-3154118785616242/7091928539" />
-        <meta-data
-            android:name="com.mfvl.trac.client.testDevices"
-            android:value="9A306D880ED517968FD50C3A2340839E" />
-        <meta-data
-            android:name="com.mfvl.trac.client.useAnalytics"
-            android:value="true" />
-        <meta-data
-            android:name="com.mfvl.trac.client.propertyId"
-            android:value="UA-44748801-1" />
+	<application
+		android:allowBackup="true"
+		android:icon="@drawable/traclogo"
+		android:label="@string/app_name"
+		android:restoreNeedsApplication="false"
+		android:supportsRtl="false"
+		android:theme="@style/AppTheme"
+		tools:ignore="UnusedAttribute" >
 
-        <!-- Google Analytics Version v4 needs this value for easy tracking -->
-        <meta-data
-            android:name="com.google.android.gms.analytics.globalConfigResource"
-            android:resource="@xml/global_analytics" />
+		<!-- Google Analytics Version v4 needs this value for easy tracking -->
+		<meta-data
+			android:name="com.google.android.gms.analytics.globalConfigResource"
+			android:resource="@xml/global_analytics" />
+		<meta-data
+			android:name="com.google.android.gms.version"
+			android:value="@integer/google_play_services_version" />
+		<meta-data
+			android:name="com.mfvl.trac.client.adUnitId"
+			android:value="ca-app-pub-3154118785616242/7091928539" />
+		<meta-data
+			android:name="com.mfvl.trac.client.propertyId"
+			android:value="UA-44748801-1" />
+		<meta-data
+			android:name="com.mfvl.trac.client.testDevices"
+			android:value="9A306D880ED517968FD50C3A2340839E" />
+		<meta-data
+			android:name="com.mfvl.trac.client.useAnalytics"
+			android:value="true" />
 
-        <activity
-            android:name=".TracTitlescreenActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/app_name"
-            android:theme="@style/FullscreenTheme" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+		<activity
+			android:name=".TracTitlescreenActivity"
+			android:configChanges="orientation|keyboardHidden|screenSize"
+			android:label="@string/app_name"
+			android:theme="@style/FullscreenTheme" >
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+			<!-- Test for URL scheme -->
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.BROWSABLE" />
+				<data android:host="trac.client.mfvl.com" />
+				<data android:pathPrefix="/" />
+				<data android:scheme="https" />
+				<data android:scheme="http" />
+			</intent-filter>
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.BROWSABLE" />
+				<data android:scheme="tracclients" />
+				<data android:scheme="tracclient" />
+			</intent-filter>
+			<!-- End Test for URL scheme -->
+		</activity>
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            <!-- Test for URL scheme -->
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
+		<activity
+			android:name=".TracStart"
+			android:label="@string/app_name"
+			android:theme="@style/MyStyle" >
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+		</activity>
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
+		<activity
+			android:name=".Refresh"
+			android:label="@string/app_name"
+			android:theme="@android:style/Theme.NoDisplay" >
+			<intent-filter>
+				<action android:name="com.mfvl.trac.client.RefreshService.refreshAction" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+		</activity>
 
-                <data android:host="trac.client.mfvl.com" />
-                <data android:pathPrefix="" />
-                <data android:scheme="https" />
-                <data android:scheme="http" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
+		<activity
+			android:name=".TracShowWebPage"
+			android:label="@string/app_name"
+			android:theme="@style/FullscreenTheme" >
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+		</activity>
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
+		<activity
+			android:name="com.google.android.gms.ads.AdActivity"
+			android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+			android:theme="@android:style/Theme.Translucent" />
 
-                <data android:scheme="tracclients" />
-                <data android:scheme="tracclient" />
-            </intent-filter>
-            <!-- End Test for URL scheme -->
-        </activity>
-        <activity
-            android:name=".TracStart"
-            android:label="@string/app_name"
-            android:theme="@style/MyStyle" >
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
+		<service
+			android:name=".RefreshService"
+			android:exported="false" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".Refresh"
-            android:label="@string/app_name"
-            android:theme="@android:style/Theme.NoDisplay" >
-            <intent-filter>
-                <action android:name="com.mfvl.trac.client.RefreshService.refreshAction" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".TracShowWebPage"
-            android:label="@string/app_name"
-            android:theme="@style/FullscreenTheme" >
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name="com.google.android.gms.ads.AdActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
-            android:theme="@android:style/Theme.Translucent" />
-
-        <service
-            android:name=".RefreshService"
-            android:exported="false" />
-			
 		<provider
 			android:name=".TicketProvider"
 			android:authorities="com.mfvl.trac.client.provider.TicketProvider" 
 			android:enabled="true"
-			/>
-    </application>
+			android:exported="false" />
+
+		<receiver 
+			android:name="com.google.android.gms.analytics.AnalyticsReceiver"
+			tools:ignore="MissingRegistered"
+			android:enabled="true">
+			<intent-filter>
+				<action android:name="com.google.android.gms.analytics.ANALYTICS_DISPATCH" />
+			</intent-filter>
+		</receiver>
+
+		<service 
+			android:name="com.google.android.gms.analytics.AnalyticsService"
+			tools:ignore="MissingRegistered"
+			android:enabled="true"
+			android:exported="false" />
+
+	</application>
 
 </manifest>

@@ -16,16 +16,18 @@
 
 package com.mfvl.trac.client;
 
+
 import java.lang.RuntimeException;
 
+
 public class TicketLoadException extends RuntimeException {
-	private static final long serialVersionUID = 7847222445437027235L;
+    private static final long serialVersionUID = 7847222445437027235L;
 
-	public TicketLoadException(String s) {
-		super(s);
-	}
+    public TicketLoadException(String s) {
+        super(s);
+    }
 
-	public TicketLoadException(String s, Throwable e) {
-		super(s, e);
-	}
+    public TicketLoadException(String s, Throwable e) {
+        super(s, e);
+    }
 }

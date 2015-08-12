@@ -16,76 +16,160 @@
 
 package com.mfvl.trac.client;
 
+
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.View;
 import android.view.ViewGroup;
 import android.database.Cursor;
 import android.database.CursorWrapper;
+import android.annotation.SuppressLint;
 import android.content.Context;
 
-public class TicketListAdapter extends SimpleCursorAdapter {
-	private CursorWrapper cursor;
-	public static String[] fields = new String[] {TicketCursor.STR_FIELD_TICKET};
-	public static int[] adapres = new int[] {R.id.ticket_list};
-	Context context;
 
-	public TicketListAdapter(TracStart context, int resource, TicketCursor c) {
-		super(context, resource, c,fields,adapres,0);
-		tcLog.d(getClass().getName(), "TicketListAdapter construction "+c);
-		cursor = new CursorWrapper(c);
-		this.context=context;
+public class TicketListAdapter extends SimpleCursorAdapter implements OnTicketsChangeListener {
+    private CursorWrapper cursor;
+    public static String[] fields = new String[] { TicketCursor.STR_FIELD_TICKET};
+    public static int[] adapres = new int[] { R.id.ticket_list};
+	private Tickets ticketList = null;
+    Context context;
+
+    public TicketListAdapter(TracStart context, int resource, TicketCursor c) {
+        super(context, resource, c, fields, adapres, FLAG_REGISTER_CONTENT_OBSERVER);
+        tcLog.d(getClass().getName(), "TicketListAdapter construction " + c);
+		if (c == null) {
+			cursor = null;
+		} else {
+			cursor = new CursorWrapper(c);
+		}
+        this.context = context;
+		try {
+			ticketList = c.getTicketList();
+		} catch (Exception e) {
+			ticketList = null;
+		}
+    }
+	
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        tcLog.d(getClass().getName(), "getView position = " + position + " "+ convertView + " "+ parent);
+        return ColoredLines.getView(context, super.getView(position, convertView, parent), position, convertView, parent);
+    }
+	
+	@Override
+	public Cursor getCursor() {
+		Cursor c = super.getCursor();
+        if (!(c instanceof CursorWrapper)) {
+            return c;
+        } else {
+            return ((CursorWrapper)c).getWrappedCursor();
+        }
 	}
 
+    public void changeCursor(Cursor c) {
+        tcLog.d(getClass().getName(), "changeCursor " + c);
+        // super.changeCursorAndColumns(c,fields,adapres);
+        super.changeCursor(c);
+        if (!(c instanceof CursorWrapper)) {
+            cursor = new CursorWrapper(c);
+        } else {
+            cursor = (CursorWrapper) c;
+        }
+		setTicketList(c);
+    }
+	
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		return ColoredLines.getView(context,super.getView(position, convertView, parent),position, convertView, parent);
+	public void onTicketsChanged() {
+		tcLog.d(getClass().getName(), "onTicketsChanged ticketList = "+ticketList);
+		if (ticketList != null) {
+			tcLog.d(getClass().getName(), "onTicketsChanged ticketList.ticketList = "+ticketList.ticketList);
+		}
+		this.notifyDataSetChanged();
+		//TODO
 	}
 	
-	public void changeCursor(Cursor c) {
-		tcLog.d(getClass().getName(), "changeCursor "+c);
-//		super.changeCursorAndColumns(c,fields,adapres);
-		super.changeCursor(c);
-		if (! (c instanceof CursorWrapper)) {
-			cursor = new CursorWrapper(c);
-		} else {
-			cursor = (CursorWrapper)c;
+	private void registerTicketListChangeListener(Tickets t) {
+		tcLog.d(getClass().getName(), "registerTicketListChangeListener ticketList = " + t);
+		if (t != null) {
+			t.setOnTicketsChangeListener(this);
 		}
 	}
 	
-	@Override
-	public Cursor swapCursor(Cursor c) {
-		Cursor c1 = super.swapCursor(c);
-		tcLog.d(getClass().getName(), "swapCursor new = "+c+ " old = "+c1);
-		return c1;
-	}
-		
-	public boolean moveToFirst() {
-		tcLog.d(getClass().getName(), "moveToFirst "+cursor);
-		boolean b =cursor.moveToFirst();
-		tcLog.d(getClass().getName(), "_id = "+cursor.getLong(0));
-		return b;
-	}
-		
-	public boolean moveToNext() {
-		tcLog.d(getClass().getName(), "moveToNext "+cursor);
-		return cursor.moveToNext();
-	}
-		
-	public boolean isAfterLast() {
-		tcLog.d(getClass().getName(), "isAfterLast "+cursor);
-		return cursor.isAfterLast();
+	private void unregisterTicketListChangeListener(Tickets t) {
+		tcLog.d(getClass().getName(), "unregisterTicketListChangeListener ticketList = " + t);
+		if (t != null) {
+			t.setOnTicketsChangeListener(null);
+		}
 	}
 	
-	@Override
-	public boolean hasStableIds() {
-		tcLog.d(getClass().getName(), "hasStableIds");
-		return true;
+	private void setTicketList(Cursor c) {
+		tcLog.d(getClass().getName(), "setTicketList cursor = " + c);
+		tcLog.d(getClass().getName(), "setTicketList old ticketList = " + ticketList);
+		Tickets oldTicketList = ticketList;
+		if (c == null) {
+			unregisterTicketListChangeListener(oldTicketList);
+			ticketList = null;
+		} else {
+			Cursor cursor = c;
+			if (c instanceof CursorWrapper) {
+				cursor = ((CursorWrapper)c).getWrappedCursor();
+			}
+			if (!(cursor instanceof TicketCursor)) {
+				tcLog.e(getClass().getName(),"setTicketList cursor is not oftype TicketCursor: "+cursor);
+			} else {
+				ticketList = ((TicketCursor)cursor).getTicketList();
+				if (ticketList == null || !ticketList.equals(oldTicketList)) {
+					unregisterTicketListChangeListener(oldTicketList);
+					registerTicketListChangeListener(ticketList);
+				}
+			}
+			tcLog.d(getClass().getName(), "setTicketList c = "+c+" cursor = "+cursor);
+			tcLog.d(getClass().getName(), "setTicketList new ticketList = " + ticketList);
+		}
 	}
 	
+    @SuppressLint("NewApi")
 	@Override
-	public void onContentChanged() {
-		tcLog.d(getClass().getName(), "onContentChanged");
-		super.onContentChanged();
+    public Cursor swapCursor(Cursor c) {
+        Cursor c1 = super.swapCursor(c);
+
+        tcLog.d(getClass().getName(), "swapCursor new = " + c + " old = " + c1);
+		setTicketList(c);
+        return c1;
+    }
+		
+    @Override
+    public boolean hasStableIds() {
+//        tcLog.d(getClass().getName(), "hasStableIds");
+        return true;
+    }
+	
+    @Override
+    public void onContentChanged() {
+        tcLog.d(getClass().getName(), "onContentChanged");
+        super.onContentChanged();
+    }
+	
+    @Override
+    public Object getItem(int position) {
+        tcLog.d(getClass().getName(), "getItem " + position);
+		try {
+			Object o = ticketList.ticketList.get(position);
+			tcLog.d(getClass().getName(), "getItem o = " + o);
+			return o;
+		} catch (Exception e) {
+			return null;
+		}
+    }
+	
+	public int getNextTicket(int pos) {
+		return ticketList.getNextTicket(pos);
 	}
 
+	public int getPrevTicket(int pos) {
+		return ticketList.getPrevTicket(pos);
+	}
+
+	public Ticket getTicket(int i) {
+		return ticketList.getTicket(i);
+	}
 }

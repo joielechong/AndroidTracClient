@@ -16,54 +16,43 @@
 
 package com.mfvl.trac.client;
 
+
 import java.io.Serializable;
 
-public class LoginProfile extends TcObject implements Serializable, Cloneable {
-	private static final long serialVersionUID = 7810597433987080395L;
 
-	private final String _url;
-	private final String _username;
-	private final String _password;
-	private final boolean _sslHack;
+public class LoginProfile implements Serializable, Cloneable {
+    private static final long serialVersionUID = 7810597433987080395L;
 
-	public LoginProfile(String url, String username, String password, boolean sslHack) {
-		_url = url;
-		_username = username;
-		_password = password;
-		_sslHack = sslHack;
-	}
+    private final String _url;
+    private final String _username;
+    private final String _password;
+    private final boolean _sslHack;
 
-	public String getUrl() {
-		return _url;
-	}
+    public LoginProfile(String url, String username, String password, boolean sslHack) {
+        _url = url;
+        _username = username;
+        _password = password;
+        _sslHack = sslHack;
+    }
 
-	public String getUsername() {
-		return _username;
-	}
+    public String getUrl() {
+        return _url;
+    }
 
-	public String getPassword() {
-		return _password;
-	}
+    public String getUsername() {
+        return _username;
+    }
 
-	public boolean getSslHack() {
-		return _sslHack;
-	}
+    public String getPassword() {
+        return _password;
+    }
 
-	@Override
-	public String toString() {
-		return "url: " + _url + " username: " + _username + " password: " + _password + " sslHack: " + _sslHack;
-	}
+    public boolean getSslHack() {
+        return _sslHack;
+    }
 
-	@Override
-	public int hashCode() {
-		// Start with a non-zero constant.
-		int result = 17;
-
-		// Include a hash for each field.
-		result = 31 * result + hc(_sslHack);
-		result = 31 * result + hc(_url);
-		result = 31 * result + hc(_username);
-		result = 31 * result + hc(_password);
-		return 31 * result + super.hashCode();
-	}
+    @Override
+    public String toString() {
+        return "url: " + _url + " username: " + _username + " password: " + _password + " sslHack: " + _sslHack;
+    }
 }

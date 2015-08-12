@@ -79,7 +79,7 @@
                         android:id="@+id/trac_URL"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="24dp"
+                        android:layout_marginStart="24dp"
                         android:ellipsize="none"
                         android:hint="@string/tracUrlHint"
                         android:inputType="textUri" />
@@ -108,7 +108,7 @@
                         android:id="@+id/trac_User"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="12dp"
+                        android:layout_marginStart="12dp"
                         android:ellipsize="none"
                         android:hint="@string/tracUserHint"
                         android:inputType="text" />
@@ -129,7 +129,7 @@
                         android:id="@+id/trac_Pw"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="12dp"
+                        android:layout_marginStart="12dp"
                         android:ellipsize="none"
                         android:hint="@string/tracPwHint"
                         android:inputType="textPassword" />
@@ -151,7 +151,7 @@
 
                 <Button
                     android:id="@+id/verBut"
-                    android:layout_width="wrap_content"
+                   android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/vertext" />
 
@@ -163,7 +163,7 @@
 					android:layout_marginTop="3dp"
                     android:text="@string/validCred"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-					android:drawableLeft="@drawable/ic_warn"
+					android:drawableStart="@drawable/ic_warn"
                     android:visibility="gone" />
  
                 <TextView

@@ -16,52 +16,44 @@
 
 package com.mfvl.trac.client;
 
+
 import java.io.Serializable;
+
 
 public class SortSpec extends Spec implements Cloneable, Serializable {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = -3435259758425014514L;
-	private Boolean _richting; // true = asc false = desc
+    /**
+     *
+     */
+    private static final long serialVersionUID = -3435259758425014514L;
+    private Boolean _richting; // true = asc false = desc
 
-	public SortSpec(String veld, Boolean richting) {
-		super(veld);
-		_richting = richting;
-	}
+    public SortSpec(String veld, Boolean richting) {
+        super(veld);
+        _richting = richting;
+    }
 
-	public SortSpec(String veld) {
-		this(veld, true);
-	}
+    public SortSpec(String veld) {
+        this(veld, true);
+    }
 
-	public void setRichting(Boolean r) {
-		_richting = r;
-	}
+    public void setRichting(Boolean r) {
+        _richting = r;
+    }
 
-	public Boolean flip() {
-		if (_richting != null) {
-			_richting = !_richting;
-		}
-		return _richting;
-	}
+    public Boolean flip() {
+        if (_richting != null) {
+            _richting = !_richting;
+        }
+        return _richting;
+    }
 
-	public Boolean getRichting() {
-		return _richting;
-	}
+    public Boolean getRichting() {
+        return _richting;
+    }
 
-	@Override
-	public String toString() {
-		return "order=" + _veld + (_richting ? "" : "&desc=1");
-	}
-
-	@Override
-	public int hashCode() {
-		// Start with a non-zero constant.
-		int result = 19;
-
-		// Include a hash for each field.
-		result = 29 * result + hc(_richting);
-		return 29 * result + super.hashCode();
-	}
+    @Override
+    public String toString() {
+        return "order=" + _veld + (_richting ? "" : "&desc=1");
+    }
 }

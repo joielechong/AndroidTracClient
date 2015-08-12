@@ -15,24 +15,14 @@
  * limitations under the License.
 
 -->
-<LinearLayout 
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:orientation="vertical"
-	android:gravity="center"
-	android:background="@color/help_back" >
-
-	<TextView
-		style="@style/TitleScreenText.Big"
-		android:text="@string/title_text" />
-
-	<TextView
-		style="@style/TitleScreenText"
-		android:id="@+id/version_content" />
-
-	<TextView
-		style="@style/TitleScreenText"
-		android:text="@string/auteur" />
-
-</LinearLayout>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/text1"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceListItemSmall"
+    android:gravity="center_vertical"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:textColor="@color/help_back"
+    android:background="@color/popup_back"
+    android:minHeight="?android:attr/listPreferredItemHeightSmall"/>

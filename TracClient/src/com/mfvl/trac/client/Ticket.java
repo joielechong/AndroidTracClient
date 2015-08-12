@@ -16,6 +16,7 @@
 
 package com.mfvl.trac.client;
 
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -31,457 +32,457 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import android.util.Base64;
 
+/*
 interface onTicketCompleteListener {
-	void onComplete(Ticket t);
+    void onComplete(Ticket t);
 }
-
+*/
 interface onAttachmentCompleteListener {
-	void onComplete(byte[] data);
+    void onComplete(byte[] data);
 }
 
-public class Ticket extends TcObject implements Serializable {
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = -3915928655754922097L;
-	public final static String TICKET_GET = "GET";
-	public final static String TICKET_CHANGE = "CHANGE";
-	public final static String TICKET_ATTACH = "ATTACH";
-	public final static String TICKET_ACTION = "ACTION";
 
-	private JSONObject _velden;
-	private JSONArray _history;
-	private JSONArray _attachments;
-	private JSONArray _actions;
-	private int _ticknr;
-	private boolean _hasdata = false;
-	private boolean _isloading = false;
-	private static Semaphore available = new Semaphore(1, true);
-	private final Semaphore actionLock = new Semaphore(1, true);
-	private String rpcerror = null;
-	/* static */private TracHttpClient req = null;
+public class Ticket implements Serializable {
 
-	@Override
-	public int hashCode() {
-		// Start with a non-zero constant.
-		int result = 17;
+    /**
+     *
+     */
+    private static final long serialVersionUID = -3915928655754922097L;
+    public final static String TICKET_GET = "GET";
+    public final static String TICKET_CHANGE = "CHANGE";
+    public final static String TICKET_ATTACH = "ATTACH";
+    public final static String TICKET_ACTION = "ACTION";
 
-		// Include a hash for each field.
-		result = 31 * result + hc(_velden);
-		result = 31 * result + hc(_history);
-		result = 31 * result + hc(_attachments);
-		result = 31 * result + hc(_actions);
-		result = 31 * result + hc(_ticknr);
-		result = 31 * result + hc(_isloading);
-		result = 31 * result + hc(_hasdata);
+    private JSONObject _velden;
+    private JSONArray _history;
+    private JSONArray _attachments;
+    private JSONArray _actions;
+    private int _ticknr;
+    private boolean _hasdata = false;
+    private boolean _isloading = false;
+    private static Semaphore available = new Semaphore(1, true);
+    private final Semaphore actionLock = new Semaphore(1, true);
+    private String rpcerror = null;
 
-		return result + 31 * super.hashCode();
+    /* static */private TracHttpClient req = null;
+
+	
+    public Ticket(final JSONObject velden) {
+        tcLog.d(getClass().getName(), "Ticket = " + velden);
+
+        _ticknr = -1;
+        _velden = velden;
+        _history = null;
+        _attachments = null;
+        _actions = null;
+        actionLock.acquireUninterruptibly();
+        _hasdata = true;
+    }
+
+	public Ticket(final int ticknr) {
+        _ticknr = ticknr;
+        _velden = null;
+        _history = null;
+        _attachments = null;
+        _actions = null;
+        actionLock.acquireUninterruptibly();
+        _hasdata = false;
+	}
+/*	
+    private void refresh(TracStart context, onTicketCompleteListener oc) {
+        tcLog.i(this.getClass().getName(), "refresh Ticketnr = " + _ticknr);
+        actionLock.release();
+        available.release();
+        loadTicketData(context, oc);
+    }
+*/
+    public int getTicketnr() {
+        return _ticknr;
+    }
+	
+	public JSONObject getVelden() {
+		return _velden;
 	}
 
-	public Ticket(final JSONObject velden) {
-		tcLog.d(getClass().getName(), "Ticket = " + velden);
+    @Override
+    public String toString() {
+        if (_velden == null) {
+            return _ticknr + "";
+        }
+        try {
+            return _ticknr + (_attachments.length() > 0 ? "+" : "") + " - " + _velden.getString("status") + " - "
+                    + _velden.getString("summary");
+        } catch (final JSONException e) {
+            return _ticknr + "";
+        }
+    }
+/*
+    private void loadTicketData_x(TracStart context, final onTicketCompleteListener oc) {
+        tcLog.i(this.getClass().getName(), "loadTicketData ticketnr = " + _ticknr);
+        actionLock.acquireUninterruptibly();
+        _isloading = true;
+        new Thread("loadTicketData") {
+            @Override
+            public void run() {
+                available.acquireUninterruptibly();
+                req = TracHttpClient.getInstance();
 
-		_ticknr = -1;
-		_velden = velden;
-		_history = null;
-		_attachments = null;
-		_actions = null;
-		actionLock.acquireUninterruptibly();
-		_hasdata = true;
-	}
+                try {
+                    final JSONArray mc = new JSONArray();
 
-	public Ticket(final int ticknr, final JSONObject velden, final JSONArray history, final JSONArray attachments,
-			final JSONArray actions) {
-		_ticknr = ticknr;
-		_velden = velden;
-		_history = history;
-		_attachments = attachments;
-		_actions = actions;
-		if (actions == null) {
-			actionLock.acquireUninterruptibly();
-		}
-		_hasdata = velden != null;
-	}
+                    mc.put(new TracJSONObject().makeComplexCall(TICKET_GET, "ticket.get", _ticknr));
+                    mc.put(new TracJSONObject().makeComplexCall(TICKET_CHANGE, "ticket.changeLog", _ticknr));
+                    mc.put(new TracJSONObject().makeComplexCall(TICKET_ATTACH, "ticket.listAttachments", _ticknr));
+                    mc.put(new TracJSONObject().makeComplexCall(TICKET_ACTION, "ticket.getActions", _ticknr));
+                    final JSONArray mcresult = req.callJSONArray("system.multicall", mc);
 
-	public Ticket(final int ticknr, TracStart context, onTicketCompleteListener oc) { 
-		tcLog.i(this.getClass().getName(), "Ticket ticketnr = " + ticknr);
-		_ticknr = ticknr;
-		loadTicketData(context, oc);
-	}
+                    _hasdata = false;
+                    _velden = null;
+                    _history = null;
+                    _attachments = null;
+                    _actions = null;
+                    for (int i = 0; i < mcresult.length(); i++) {
+                        try {
+                            final JSONObject res = mcresult.getJSONObject(i);
+                            final String id = res.getString("id");
+                            final JSONArray result = res.getJSONArray("result");
 
-	public void refresh(TracStart context, onTicketCompleteListener oc) {
-		tcLog.i(this.getClass().getName(), "refresh Ticketnr = " + _ticknr);
-		actionLock.release();
-		available.release();
-		loadTicketData(context, oc);
-	}
+                            if (id.equals(TICKET_GET)) {
+                                _velden = result.getJSONObject(3);
+                            } else if (id.equals(TICKET_CHANGE)) {
+                                _history = result;
+                            } else if (id.equals(TICKET_ATTACH)) {
+                                _attachments = result;
+                            } else if (id.equals(TICKET_ACTION)) {
+                                _actions = result;
+                                actionLock.release();
+                            } else {
+                                tcLog.i(this.getClass().getName(), "loadTicketData, unexpected response = " + result);
+                            }
+                        } catch (final Exception e1) {
+                            tcLog.e(getClass().getName(), "loadTicketData error while reading response", e1);
+                        }
+                    }
+                    _hasdata = _velden != null && _history != null && _actions != null;
+                    _isloading = false;
+                    if (oc != null) {
+                        available.release();
+                        oc.onComplete(Ticket.this);
+                    }
+                } catch (final Exception e) {
+                    tcLog.i(getClass().getName(), "loadTicketData exception", e);
+                } finally {
+                    available.release();
+                }
+            }
+        }.start();
+    }
 
-	public int getTicketnr() {
-		return _ticknr;
-	}
+    public void getAttachment(final String filename, final onAttachmentCompleteListener oc) {
+        final Thread networkThread = new Thread("getAttachment") {
+            @Override
+            public void run() {
+                available.acquireUninterruptibly();
+                if (oc != null) {
+                    try {
+                        oc.onComplete(TracHttpClient.getAttachment(_ticknr, filename));
+                    } catch (final Exception e) {
+                        tcLog.e(getClass().getName() + "getAttachment", e.toString());
+                    } finally {
+                        available.release();
+                    }
+                }
+            }
+        };
 
-	@Override
-	public String toString() {
-		if (_velden == null) {
-			return _ticknr + "";
-		}
-		try {
-			return _ticknr + (_attachments.length() > 0 ? "+" : "") + " - " + _velden.getString("status") + " - "
-					+ _velden.getString("summary");
-		} catch (final JSONException e) {
-			return _ticknr + "";
-		}
-	}
+        networkThread.start();
+        try {
+            networkThread.join();
+            if (rpcerror != null) {
+                throw new RuntimeException(rpcerror);
+            }
+        } catch (final Exception e) {}
+    }
 
-	private void loadTicketData(TracStart context, final onTicketCompleteListener oc) {
-		tcLog.i(this.getClass().getName(), "loadTicketData ticketnr = " + _ticknr);
-		actionLock.acquireUninterruptibly();
-		_isloading = true;
-		new Thread("loadTicketData") {
-			@Override
-			public void run() {
-				available.acquireUninterruptibly();
-				req = TracHttpClient.getInstance();
+    public void addAttachment(final String filename, final TracStart context, final onTicketCompleteListener oc) {
+        tcLog.i(this.getClass().getName() + ".addAttachment", filename);
+        new Thread() {
+            @Override
+            public void run() {
+                available.acquireUninterruptibly();
+                req = TracHttpClient.getInstance();
+                final File file = new File(filename);
+                final int bytes = (int) file.length();
+                final byte[] data = new byte[bytes];
 
-				try {
-					final JSONArray mc = new JSONArray();
-					mc.put(new TracJSONObject().makeComplexCall(TICKET_GET, "ticket.get", _ticknr));
-					mc.put(new TracJSONObject().makeComplexCall(TICKET_CHANGE, "ticket.changeLog", _ticknr));
-					mc.put(new TracJSONObject().makeComplexCall(TICKET_ATTACH, "ticket.listAttachments", _ticknr));
-					mc.put(new TracJSONObject().makeComplexCall(TICKET_ACTION, "ticket.getActions", _ticknr));
-					final JSONArray mcresult = req.callJSONArray("system.multicall", mc);
-					_hasdata = false;
-					_velden = null;
-					_history = null;
-					_attachments = null;
-					_actions = null;
-					for (int i = 0; i < mcresult.length(); i++) {
-						try {
-							final JSONObject res = mcresult.getJSONObject(i);
-							final String id = res.getString("id");
-							final JSONArray result = res.getJSONArray("result");
-							if (id.equals(TICKET_GET)) {
-								_velden = result.getJSONObject(3);
-							} else if (id.equals(TICKET_CHANGE)) {
-								_history = result;
-							} else if (id.equals(TICKET_ATTACH)) {
-								_attachments = result;
-							} else if (id.equals(TICKET_ACTION)) {
-								_actions = result;
-								actionLock.release();
-							} else {
-								tcLog.i(this.getClass().getName(), "loadTicketData, unexpected response = " + result);
-							}
-						} catch (final Exception e1) {
-							tcLog.e(getClass().getName(), "loadTicketData error while reading response", e1);
-						}
-					}
-					_hasdata = _velden != null && _history != null && _actions != null;
-					_isloading = false;
-					if (oc != null) {
-						available.release();
-						oc.onComplete(Ticket.this);
-					}
-				} catch (final Exception e) {
-					tcLog.i(getClass().getName(), "loadTicketData exception", e);
-				} finally {
-					available.release();
-				}
-			}
-		}.start();
-	}
+                try {
+                    final InputStream is = new FileInputStream(file);
 
-	public void getAttachment(final String filename, final onAttachmentCompleteListener oc) {
-		final Thread networkThread = new Thread("getAttachment") {
-			@Override
-			public void run() {
-				available.acquireUninterruptibly();
-				if (oc != null) {
-					try {
-						oc.onComplete(TracHttpClient.getAttachment(_ticknr,filename));
-					} catch (final Exception e) {
-						tcLog.e(getClass().getName() + "getAttachment", e.toString());
-					} finally {
-						available.release();
-					}
-				}
-			}
-		};
-		networkThread.start();
-		try {
-			networkThread.join();
-			if (rpcerror != null) {
-				throw new RuntimeException(rpcerror);
-			}
-		} catch (final Exception e) {
-		}
-	}
+                    is.read(data);
+                    is.close();
+                    final String b64 = Base64.encodeToString(data, Base64.DEFAULT);
+                    final JSONArray ar = new JSONArray();
 
-	public void addAttachment(final String filename, final TracStart context, final onTicketCompleteListener oc) {
-		tcLog.i(this.getClass().getName() + ".addAttachment", filename);
-		new Thread() {
-			@Override
-			public void run() {
-				available.acquireUninterruptibly();
-				req = TracHttpClient.getInstance();
-				final File file = new File(filename);
-				final int bytes = (int) file.length();
-				final byte[] data = new byte[bytes];
-				try {
-					final InputStream is = new FileInputStream(file);
-					is.read(data);
-					is.close();
-					final String b64 = Base64.encodeToString(data, Base64.DEFAULT);
-					final JSONArray ar = new JSONArray();
-					ar.put(_ticknr);
-					ar.put(file.getName());
-					ar.put("");
-					final JSONArray ar1 = new JSONArray();
-					ar1.put("binary");
-					ar1.put(b64);
-					final JSONObject ob = new JSONObject();
-					ob.put("__jsonclass__", ar1);
-					ar.put(ob);
-					ar.put(true);
-					final String retfile = req.callString("ticket.putAttachment", ar);
-					tcLog.i(this.getClass().getName() + ".putAttachment", retfile);
-					actionLock.release();
-					context.runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							loadTicketData(context, null);
-							if (oc != null) {
-								oc.onComplete(Ticket.this);
-							}
-						}
-					});
-				} catch (final Exception e) {
-					tcLog.i(this.getClass().getName() + ".addAttachment", e.toString());
-				} finally {
-					actionLock.release();
-					available.release();
-				}
-			}
-		}.start();
-	}
+                    ar.put(_ticknr);
+                    ar.put(file.getName());
+                    ar.put("");
+                    final JSONArray ar1 = new JSONArray();
 
-	public String getString(final String veld) throws JSONException {
-		try {
-			return _velden.getString(veld);
-		} catch (final NullPointerException e) {
-			return "";
-		}
-	}
+                    ar1.put("binary");
+                    ar1.put(b64);
+                    final JSONObject ob = new JSONObject();
 
-	public JSONObject getJSONObject(final String veld) throws JSONException {
-		return _velden.getJSONObject(veld);
-	}
+                    ob.put("__jsonclass__", ar1);
+                    ar.put(ob);
+                    ar.put(true);
+                    final String retfile = req.callString("ticket.putAttachment", ar);
 
-	public JSONArray getFields() {
-		return _velden.names();
-	}
+                    tcLog.i(this.getClass().getName() + ".putAttachment", retfile);
+                    actionLock.release();
+                    context.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            loadTicketData(context, null);
+                            if (oc != null) {
+                                oc.onComplete(Ticket.this);
+                            }
+                        }
+                    });
+                } catch (final Exception e) {
+                    tcLog.i(this.getClass().getName() + ".addAttachment", e.toString());
+                } finally {
+                    actionLock.release();
+                    available.release();
+                }
+            }
+        }.start();
+    }
+*/
+    public String getString(final String veld) throws JSONException {
+        try {
+            return _velden.getString(veld);
+        } catch (final NullPointerException e) {
+            return "";
+        }
+    }
 
-	public void setFields(JSONObject velden) {
-		_velden = velden;
-		_hasdata = true;
-	}
+    public JSONObject getJSONObject(final String veld) throws JSONException {
+        return _velden.getJSONObject(veld);
+    }
 
-	public JSONArray getHistory() {
-		return _history;
-	}
+    public JSONArray getFields() {
+        return _velden.names();
+    }
 
-	public void setHistory(JSONArray history) {
-		_history = history;
-	}
+    public void setFields(JSONObject velden) {
+        _velden = velden;
+        _hasdata = true;
+    }
 
-	public JSONArray getActions() {
-		actionLock.acquireUninterruptibly();
-		try {
-			return _actions;
-		} finally {
-			actionLock.release();
-		}
-	}
+    public JSONArray getHistory() {
+        return _history;
+    }
 
-	public void setActions(JSONArray actions) {
-		_actions = actions;
-		actionLock.release();
-	}
+    public void setHistory(JSONArray history) {
+        _history = history;
+    }
 
-	public JSONArray getAttachments() {
-		return _attachments;
-	}
+    public JSONArray getActions() {
+        actionLock.acquireUninterruptibly();
+        try {
+            return _actions;
+        } finally {
+            actionLock.release();
+        }
+    }
 
-	public void setAttachments(JSONArray attachments) {
-		_attachments = attachments;
-	}
+    public void setActions(JSONArray actions) {
+        _actions = actions;
+        actionLock.release();
+    }
 
-	public String getAttachmentFile(int nr) throws JSONException {
-		return _attachments.getJSONArray(nr).getString(0);
-	}
+    public JSONArray getAttachments() {
+        return _attachments;
+    }
 
-	public boolean hasdata() {
-		return _hasdata;
-	}
+    public void setAttachments(JSONArray attachments) {
+        _attachments = attachments;
+    }
 
-	public boolean isloading() {
-		return _isloading;
-	}
+    public String getAttachmentFile(int nr) throws JSONException {
+        return _attachments.getJSONArray(nr).getString(0);
+    }
 
-	public int create(final TracStart context, final boolean notify) throws Exception {
-		if (_ticknr != -1) {
-			throw new RuntimeException("Aanroep met niet -1");
-		}
-		tcLog.i(this.getClass().getName(), "create: " + _velden.toString());
-		final String s = _velden.getString("summary");
-		final String d = _velden.getString("description");
-		_velden.remove("summary");
-		_velden.remove("description");
+    public boolean hasdata() {
+        return _hasdata;
+    }
 
-		final Thread networkThread = new Thread() {
-			@Override
-			public void run() {
-				available.acquireUninterruptibly();
-				try {
-					final int newticknr = TracHttpClient.createTicket(s, d, _velden);
-					_ticknr = newticknr;
-					actionLock.release();
-					loadTicketData(context, null);
-				} catch (final JSONRPCException e) {
-					try {
-						final JSONObject o = new JSONObject(e.getMessage());
-						rpcerror = o.getString("message");
-					} catch (final JSONException e1) {
-						tcLog.e(getClass().getName(), "create failed", e1);
-						rpcerror = context.getString(R.string.invalidJson);
-					}
-				}
-				available.release();
-			}
-		};
-		networkThread.start();
-		try {
-			networkThread.join();
-			if (rpcerror != null) {
-				throw new RuntimeException(rpcerror);
-			}
-		} catch (final Exception e) {
-			throw e;
-		}
-		if (_ticknr == -1) {
-			throw new RuntimeException(context.getString(R.string.noticketUnk));
-		}
+    public boolean isloading() {
+        return _isloading;
+    }
+/*
+    public int create(final TracStart context, final boolean notify) throws Exception {
+        if (_ticknr != -1) {
+            throw new RuntimeException("Call create ticket not -1");
+        }
+        tcLog.i(this.getClass().getName(), "create: " + _velden.toString());
+        final String s = _velden.getString("summary");
+        final String d = _velden.getString("description");
 
-		return _ticknr;
-	}
+        _velden.remove("summary");
+        _velden.remove("description");
 
-	// update is called from within a non UI thread
+        final Thread networkThread = new Thread() {
+            @Override
+            public void run() {
+                available.acquireUninterruptibly();
+                try {
+                    final int newticknr = TracHttpClient.createTicket(s, d, _velden);
 
-	public void update(String action, String comment, String veld, String waarde, final boolean notify, final TracStart context,
-			Map<String, String> modVeld) throws Exception {
-		tcLog.d(this.getClass().getName(), "update: " + action + " '" + comment + "' '" + veld + "' '" + waarde + "' " + modVeld);
-		// tcLog.d(this.getClass().getName(), "_velden voor = " + _velden);
-		if (_ticknr == -1) {
-			throw new IllegalArgumentException(context.getString(R.string.invtick) + " " + _ticknr);
-		}
-		if (action == null) {
-			throw new NullPointerException(context.getString(R.string.noaction));
-		}
-		_velden.put("action", action);
-		if (waarde != null && veld != null && !"".equals(veld) && !"".equals(waarde)) {
-			_velden.put(veld, waarde);
-		}
-		if (modVeld != null) {
-			final Iterator<Entry<String, String>> i = modVeld.entrySet().iterator();
-			while (i.hasNext()) {
-				final Entry<String, String> e = i.next();
-				// tcLog.d(getClass().getName(), e.toString());
-				final String v = e.getKey();
-				final String w = e.getValue();
-				_velden.put(v, w);
-			}
-		}
+                    _ticknr = newticknr;
+                    actionLock.release();
+                    loadTicketData(context, null);
+                } catch (final JSONRPCException e) {
+                    try {
+                        final JSONObject o = new JSONObject(e.getMessage());
 
-		final String cmt = comment == null ? "" : comment;
-		_velden.remove("changetime");
-		_velden.remove("time");
+                        rpcerror = o.getString("message");
+                    } catch (final JSONException e1) {
+                        tcLog.e(getClass().getName(), "create failed", e1);
+                        rpcerror = context.getString(R.string.invalidJson);
+                    }
+                }
+                available.release();
+            }
+        };
 
-		available.acquireUninterruptibly();
-		try {
-			if (Tickets.url != null) {
-				TracHttpClient.updateTicket(_ticknr, cmt, _velden, notify);
-				actionLock.release();
-				loadTicketData(context, null);
-			}
-		} catch (final JSONRPCException e) {
-			tcLog.e(getClass().getName(), "JSONRPCException", e);
-			rpcerror = e.getMessage();
-		} finally {
-			available.release();
-		}
+        networkThread.start();
+        try {
+            networkThread.join();
+            if (rpcerror != null) {
+                throw new RuntimeException(rpcerror);
+            }
+        } catch (final Exception e) {
+            throw e;
+        }
+        if (_ticknr == -1) {
+            throw new RuntimeException(context.getString(R.string.noticketUnk));
+        }
 
-		if (rpcerror != null) {
-			throw new RuntimeException(rpcerror);
-		}
-	}
+        return _ticknr;
+    }
+*/
+    // update is called from within a non UI thread
+/*
+    public void update(String action, String comment, String veld, String waarde, final boolean notify, final TracStart context,Map<String, String> modVeld) throws Exception {
+        tcLog.d(this.getClass().getName(), "update: " + action + " '" + comment + "' '" + veld + "' '" + waarde + "' " + modVeld);
+        // tcLog.d(this.getClass().getName(), "_velden voor = " + _velden);
+        if (_ticknr == -1) {
+            throw new IllegalArgumentException(context.getString(R.string.invtick) + " " + _ticknr);
+        }
+        if (action == null) {
+            throw new NullPointerException(context.getString(R.string.noaction));
+        }
+        _velden.put("action", action);
+        if (waarde != null && veld != null && !"".equals(veld) && !"".equals(waarde)) {
+            _velden.put(veld, waarde);
+        }
+        if (modVeld != null) {
+            final Iterator<Entry<String, String>> i = modVeld.entrySet().iterator();
 
-	private String toonTijd(final JSONObject v) {
-		try {
-			return ISO8601.toCalendar(v.getJSONArray("__jsonclass__").getString(1) + "Z").getTime().toString();
-		} catch (final Exception e) {
-			tcLog.e(this.getClass().getName(), e.toString());
-			return "";
-		}
-	}
+            while (i.hasNext()) {
+                final Entry<String, String> e = i.next();
+                // tcLog.d(getClass().getName(), e.toString());
+                final String v = e.getKey();
+                final String w = e.getValue();
 
-	public String toText() {
-		String tekst = "Ticket: " + _ticknr;
+                _velden.put(v, w);
+            }
+        }
 
-		try {
-			final JSONArray fields = _velden.names();
-			tekst += " " + _velden.getString("summary") + "\n\n";
-			final int count = fields.length();
-			for (int i = 0; i < count; i++) {
-				String veld = "veld " + i;
-				try {
-					veld = fields.getString(i);
-					if ("summary".equals(veld) || "_ts".equals(veld)) {
-						// skip
-					} else if ("time".equals(veld) || "changetime".equals(veld)) {
-						tekst += veld + ":\t" + toonTijd(_velden.getJSONObject(veld)) + "\n";
-					} else if (_velden.getString(veld).length() > 0) {
-						tekst += veld + ":\t" + _velden.getString(veld) + "\n";
-					}
+        final String cmt = comment == null ? "" : comment;
 
-				} catch (final Exception e) {
+        _velden.remove("changetime");
+        _velden.remove("time");
 
-				}
-			}
-		} catch (final JSONException e) {
-			tcLog.e(getClass().getName(), "toText velden failed", e);
-		}
-		for (int j = 0; j < _history.length(); j++) {
-			JSONArray cmt;
-			try {
-				cmt = _history.getJSONArray(j);
-				if ("comment".equals(cmt.getString(2)) && cmt.getString(4).length() > 0) {
-					tekst += "comment: " + toonTijd(cmt.getJSONObject(0)) + " - " + cmt.getString(1) + " - " + cmt.getString(4)
-							+ "\n";
-				}
-			} catch (final JSONException e) {
-				tcLog.e(getClass().getName(), "toText history failed", e);
-			}
-		}
-		for (int j = 0; j < _attachments.length(); j++) {
-			JSONArray bijlage;
-			try {
-				bijlage = _attachments.getJSONArray(j);
-				tekst += "bijlage " + (j + 1) + ": " + toonTijd(bijlage.getJSONObject(3)) + " - " + bijlage.getString(4) + " - "
-						+ bijlage.getString(0) + " - " + bijlage.getString(1) + "\n";
-			} catch (final JSONException e) {
-				tcLog.e(getClass().getName(), "toText atachment failed", e);
-			}
-		}
-		return tekst;
-	}
+        available.acquireUninterruptibly();
+        try {
+            if (Tickets.url != null) {
+                TracHttpClient.updateTicket(_ticknr, cmt, _velden, notify);
+                actionLock.release();
+                loadTicketData(context, null);
+            }
+        } catch (final JSONRPCException e) {
+            tcLog.e(getClass().getName(), "JSONRPCException", e);
+            rpcerror = e.getMessage();
+        } finally {
+            available.release();
+        }
+
+        if (rpcerror != null) {
+            throw new RuntimeException(rpcerror);
+        }
+    }
+*/
+    private String toonTijd(final JSONObject v) {
+        try {
+            return ISO8601.toCalendar(v.getJSONArray("__jsonclass__").getString(1) + "Z").getTime().toString();
+        } catch (final Exception e) {
+            tcLog.e(this.getClass().getName(), e.toString());
+            return "";
+        }
+    }
+
+    public String toText() {
+        String tekst = "Ticket: " + _ticknr;
+
+        try {
+            final JSONArray fields = _velden.names();
+
+            tekst += " " + _velden.getString("summary") + "\n\n";
+            final int count = fields.length();
+
+            for (int i = 0; i < count; i++) {
+                String veld = "veld " + i;
+
+                try {
+                    veld = fields.getString(i);
+                    if ("summary".equals(veld) || "_ts".equals(veld)) {// skip
+                    } else if ("time".equals(veld) || "changetime".equals(veld)) {
+                        tekst += veld + ":\t" + toonTijd(_velden.getJSONObject(veld)) + "\n";
+                    } else if (_velden.getString(veld).length() > 0) {
+                        tekst += veld + ":\t" + _velden.getString(veld) + "\n";
+                    }
+
+                } catch (final Exception e) {}
+            }
+        } catch (final JSONException e) {
+            tcLog.e(getClass().getName(), "toText velden failed", e);
+        }
+        for (int j = 0; j < _history.length(); j++) {
+            JSONArray cmt;
+
+            try {
+                cmt = _history.getJSONArray(j);
+                if ("comment".equals(cmt.getString(2)) && cmt.getString(4).length() > 0) {
+                    tekst += "comment: " + toonTijd(cmt.getJSONObject(0)) + " - " + cmt.getString(1) + " - " + cmt.getString(4)
+                            + "\n";
+                }
+            } catch (final JSONException e) {
+                tcLog.e(getClass().getName(), "toText history failed", e);
+            }
+        }
+        for (int j = 0; j < _attachments.length(); j++) {
+            JSONArray bijlage;
+
+            try {
+                bijlage = _attachments.getJSONArray(j);
+                tekst += "bijlage " + (j + 1) + ": " + toonTijd(bijlage.getJSONObject(3)) + " - " + bijlage.getString(4) + " - "
+                        + bijlage.getString(0) + " - " + bijlage.getString(1) + "\n";
+            } catch (final JSONException e) {
+                tcLog.e(getClass().getName(), "toText atachment failed", e);
+            }
+        }
+        return tekst;
+    }
 }

@@ -1,8 +1,7 @@
-<resources>
+<resources  xmlns:tools="http://schemas.android.com/tools" tools:ignore="ExtraTranslation">
 
     <string name="app_name">متابع الزبائن</string>
     <string name="about_button">عن متابع الزبائن</string>
-    <string name="Back">رجوع</string>
     <string name="tracUrl">رابط المتابعة</string>
     <string name="tracUser">إسم المستخدم</string>
     <string name="tracUserHint">إسم المستخدم</string>
@@ -23,6 +22,7 @@
     <string name="nieuw">تذكرة جديدة</string>
     <string name="nodata">لا يوجد بيانات</string>
     <string name="nodatadesc">لم يتم تحميل بيانات هذه التذكرة</string>
+    <string name="connerr">خطأ في الإتصال</string>
     <string name="newtick">عمل تذكرة جديدة</string>
     <string name="store">تخزين التذكرة</string>
     <string name="storerr">حدث خطأ أثناء عمل التذكرة</string>
@@ -48,10 +48,6 @@
     <string name="title_text">متابعة الزبون</string>
     <string name="storefilter">حفظ التصنيف</string>
     <string name="storesort">حفظ نظام الترتيب</string>
-    <string name="moveup">تحريك للأعلى</string>
-    <string name="movedown">تحريك للأسفل</string>
-    <string name="direction">تعيين الإتجاه</string>
-    <string name="sortdel">حذف الترتيب</string>
     <string name="help">مساعدة</string>
     <string name="Add">إضافة</string>
     <string name="auteur">ميشيل فان لون</string>

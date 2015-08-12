@@ -1,7 +1,6 @@
 <resources>
 
 	<string name="about_button">Über TracClient</string>
-	<string name="Back">Zurück</string>
 	<string name="tracUser">Benutzername</string>
 	<string name="tracUserHint">Benutzername</string>
 	<string name="tracPw">Passwort</string>
@@ -21,6 +20,7 @@
 	<string name="nieuw">Neues Ticket</string>
 	<string name="nodata">Keine Daten</string>
 	<string name="nodatadesc">Inhalt des Tickets ist noch nicht geladen</string>
+	<string name="connerr">Verbindungsfehler</string>
 	<string name="newtick">Neues Ticket</string>
     <string name="oktext">OK</string>
 	<string name="store">Ticket Shop</string>
@@ -45,10 +45,6 @@
 	<string name="zoek">Suche</string>
 	<string name="storefilter">Filter speichern</string>
 	<string name="storesort">Speichern Sie die Sortierreihenfolge</string>
-	<string name="moveup">Verschiebe hoch</string>
-	<string name="movedown">Verschiebe runter</string>
-	<string name="direction">Setze Richtung</string>
-	<string name="sortdel">Sortierung entfernen</string>
 	<string name="help">Hilfe</string>
 	<string name="Add">Hinzufügen</string>
 	<string name="sslHack">Selbstsignierte Zertifikate akzeptieren</string>

@@ -17,11 +17,13 @@
 package com.mfvl.trac.client;
 
 import android.content.ContentProvider;
-import android.content.UriMatcher;
 import android.content.ContentValues;
+import android.content.Intent;
+import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
 import org.json.JSONArray;
@@ -29,369 +31,594 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.alexd.jsonrpc.JSONRPCException;
 
+
 public class TicketProvider extends ContentProvider {
-	public static final String SET_CONFIG = "setConfig";
-	public static final String GET_CONFIG = "getConfig";
-	public static final String CLEAR_CONFIG = "clearConfig";
-	public static final String VERIFY_HOST = "verifyHost";
-	public static final String RESULT = "rv";
-	public static final String ERROR = "error";
-	
-	
-	public static final String AUTHORITY = "com.mfvl.trac.client.provider.TicketProvider";
-	public static final String URI = "content://"+AUTHORITY;
-	private static final String LIST_QUERY_PATH = "ticket/query";
-	private static final String TICKET_QUERY_PATH = "ticket/get/#";
-	private static final String QUERY_CHANGES_PATH = "ticket/getRecentChanges/#";
-	
-	public static final Uri AUTH_URI = Uri.parse(URI);
-	public static final Uri LIST_QUERY_URI = Uri.withAppendedPath(AUTH_URI, LIST_QUERY_PATH);
-	public static final Uri TICKET_QUERY_URI = Uri.withAppendedPath(AUTH_URI, TICKET_QUERY_PATH);
-	public static final Uri QUERY_CHANGES_URI = Uri.withAppendedPath(AUTH_URI, QUERY_CHANGES_PATH);
-	
-	public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/"+AUTHORITY ;
-	public static final String CONTENT_TYPE = "vnd.android.cursor.dir/"+AUTHORITY ;
-	
-    private static final int LIST_TICKETS= 1;
-    private static final int GET_TICKET = 2;
-	private static final int GET_CHANGES = 3;
-
-    private static final UriMatcher sURIMatcher;
-	private String currentUrl;
-	private String currentName;
-	private String currentPass;
-	private boolean currentSslHack;
-	private boolean currentSslHostNameHack;
-	
-	private TracHttpClient hClient = null; // if null than not connected to host
-	private TicketCursor cTickets = null;
-	
-	private static final int MAXPERMITS = 1;
-	private static Semaphore accessAllowed = new Semaphore(MAXPERMITS, true);	
-
-    static
-    {
-		sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        sURIMatcher.addURI(AUTHORITY, LIST_QUERY_PATH, LIST_TICKETS);
-        sURIMatcher.addURI(AUTHORITY, TICKET_QUERY_PATH, GET_TICKET);
-        sURIMatcher.addURI(AUTHORITY, QUERY_CHANGES_PATH, GET_CHANGES);
-    }	
-	
-	@Override
-	public boolean onCreate() {
-		tcLog.d(getClass().getName(),"onCreate");
-		clearConfig();
-		return true;
-	}
-	
-	private boolean equalBundles(Bundle one, Bundle two) {
-		if(one.size() != two.size()) {
-			return false;
-		}
-		Set<String> setOne = one.keySet();
-		Object valueOne;
-		Object valueTwo;
-
-		for(String key : setOne) {
-			if (!two.containsKey(key)) {
-				return false;
-			}
-			valueOne = one.get(key);
-			valueTwo = two.get(key);
-			if(valueOne instanceof Bundle && valueTwo instanceof Bundle && !equalBundles((Bundle) valueOne, (Bundle) valueTwo)) {
-				return false;
-			} else if(valueOne == null) {
-				if (valueTwo != null) {
-					return false;
-				}
-			} else if(!valueOne.equals(valueTwo)) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	private void initCursor() {
-		accessAllowed.acquireUninterruptibly(MAXPERMITS);
-		new Thread() {
-			@Override
-			public void run() {
-				tcLog.d(getClass().getName()+".initCursor.run "+this,"starting thread");
-				hClient = TracHttpClient.getInstance(currentUrl,currentSslHack,currentSslHostNameHack,currentName,currentPass);
-				TicketModel.getInstance();
-				cTickets = new TicketCursor();
-				tcLog.d(getClass().getName()+".initCursor.run "+this,"hClient = "+hClient+" cTickets = "+cTickets);
-				accessAllowed.release(MAXPERMITS);
-				tcLog.d(getClass().getName()+".initCursor.run "+this,"columns = "+cTickets.getColumnNames());
-			}
-		}.start();
-	}
-
-	private Bundle setConfig(final Bundle values) {
-		final Bundle b = getConfig();
-		if (!equalBundles(values,b)) {
-			currentUrl = values.getString(Const.CURRENT_URL);
-			currentName = values.getString(Const.CURRENT_USERNAME);
-			currentPass = values.getString(Const.CURRENT_PASSWORD);
-			currentSslHack = values.getBoolean(Const.CURRENT_SSLHACK);
-			currentSslHostNameHack = values.getBoolean(Const.CURRENT_SSLHOSTNAMEHACK);
-			hClient=null;
-			cTickets = null;
-			initCursor();
-		}
-		return getConfig();
-	}
-	
-	private Bundle clearConfig() {
-		currentUrl = null;
-		currentName = null;
-		currentPass = null;
-		currentSslHack = false;
-		currentSslHostNameHack = false;
-		hClient = null;
-		cTickets = null;
-		return null;
-	}
-	
-	private Bundle getConfig() {
-		Bundle b = new Bundle();
-		b.putString(Const.CURRENT_URL,currentUrl);
-		b.putString(Const.CURRENT_USERNAME,currentName);
-		b.putString(Const.CURRENT_PASSWORD,currentPass);
-		b.putBoolean(Const.CURRENT_SSLHACK,currentSslHack);
-		b.putBoolean(Const.CURRENT_SSLHOSTNAMEHACK,currentSslHostNameHack);
-		return b;
-	}
-	
-	private Bundle verifyHost(final Bundle values) {
-		Bundle b = new Bundle();
-		try {
-			String rv = TracHttpClient.verifyHost(values.getString(Const.CURRENT_URL),
-				values.getBoolean(Const.CURRENT_SSLHACK),
-				values.getBoolean(Const.CURRENT_SSLHOSTNAMEHACK),
-				values.getString(Const.CURRENT_USERNAME),
-				values.getString(Const.CURRENT_PASSWORD));
-			b.putString(RESULT,rv);
-		} catch (Exception e) {
-			b.putString(ERROR,e.getMessage());
-		}
-		return b;
-	}
-	
-	@Override
-	public Bundle call(final String method,final String arg,final Bundle values) {
-		tcLog.d(getClass().getName(),"call entry "+method+" "+arg+" "+values);
-		Bundle b = null;
-		if (SET_CONFIG.equals(method)) {
-			b = setConfig(values);
-		} else if (GET_CONFIG.equals(method)) {
-			b = getConfig();
-		} else if (VERIFY_HOST.equals(method)) {
-			b = verifyHost(values);
-		}
-		tcLog.d(getClass().getName(),"call exit "+b);
-		return b;
-	}
-	
-	@Override
-	public  String getType(Uri uri) {
-		tcLog.d(getClass().getName(),"getType + "+uri+ " " + sURIMatcher.match(uri));
-		switch (sURIMatcher.match(uri)) {
-			case LIST_TICKETS:
-			case GET_CHANGES:
-			return CONTENT_TYPE;
-			
-			case GET_TICKET:
-			return CONTENT_ITEM_TYPE;
-
-			default:
-		}
-		return null;
-	}
-	
-	@Override
-	public Uri insert(Uri uri, ContentValues values) {
-		tcLog.d(getClass().getName(),"insert + "+uri+" "+values+ " " + sURIMatcher.match(uri));
-		return null;
-	}
-	
-	@Override
-	public int delete(Uri uri, String selection, String[] selectionArgs) {
-		tcLog.d(getClass().getName(),"delete + "+uri+ " "+ selection+" " +selectionArgs);
-		return 0;
-	}
-	
-	@Override
-	public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs){
-		tcLog.d(getClass().getName(),"update + "+uri+ " " + values+ " "+ selection+" " +selectionArgs+ " " + sURIMatcher.match(uri));
-		return 0;
-	}
-
-	private void buildCall(JSONArray mc, int ticknr) throws JSONException {
-		mc.put(new TracJSONObject().makeComplexCall(Ticket.TICKET_GET + "_" + ticknr, "ticket.get", ticknr));
-		mc.put(new TracJSONObject().makeComplexCall(Ticket.TICKET_CHANGE + "_" + ticknr, "ticket.changeLog", ticknr));
-		mc.put(new TracJSONObject().makeComplexCall(Ticket.TICKET_ATTACH + "_" + ticknr, "ticket.listAttachments", ticknr));
-		mc.put(new TracJSONObject().makeComplexCall(Ticket.TICKET_ACTION + "_" + ticknr, "ticket.getActions", ticknr));
-	}
-
-	private void loadTicketContent(final Uri uri,final String[] projection) throws TicketLoadException {
-		tcLog.d(getClass().getName(),"loadTicketContent");
-		int count = Tickets.getTicketCount();
-		for (int j = 0; j < count; j += Tickets.getTicketGroupCount()) {
-			final JSONArray mc = new JSONArray();
-			for (int i = j; i < (j + Tickets.getTicketGroupCount() < count ? j + Tickets.getTicketGroupCount() : count); i++) {
-				try {
-					buildCall(mc, Tickets.tickets[i]);
-				} catch (final Exception e) {
-					throw new TicketLoadException("loadTicketContent Exception during buildCall");
-				}
-			}
-			try {
-				final JSONArray mcresult = TracHttpClient.getInstance().callJSONArray("system.multicall", mc);
-				// tcLog.d(getClass().getName(), "mcresult = " + mcresult);
-				Ticket t = null;
-				for (int k = 0; k < mcresult.length(); k++) {
-					try {
-						final JSONObject res = mcresult.getJSONObject(k);
-						final String id = res.getString("id");
-						final JSONArray result = res.getJSONArray("result");
-						final int startpos = id.indexOf("_") + 1;
-						final int thisTicket = Integer.parseInt(id.substring(startpos));
-						if (t == null || t.getTicketnr() != thisTicket) {
-							t = Tickets.getTicket(thisTicket);
-						}
-						if (t != null) {
-							if (id.equals(Ticket.TICKET_GET + "_" + thisTicket)) {
-								final JSONObject v = result.getJSONObject(3);
-								t.setFields(v);
-								Tickets.incTicketContentCount();
-							} else if (id.equals(Ticket.TICKET_CHANGE + "_" + thisTicket)) {
-								final JSONArray h = result;
-								t.setHistory(h);
-							} else if (id.equals(Ticket.TICKET_ATTACH + "_" + thisTicket)) {
-								final JSONArray at = result;
-								t.setAttachments(at);
-							} else if (id.equals(Ticket.TICKET_ACTION + "_" + thisTicket)) {
-								final JSONArray ac = result;
-								t.setActions(ac);
-							} else {
-								tcLog.d(getClass().getName(), "loadTickets, onverwachte respons = " + result);
-							}
-						}
-					} catch (final Exception e1) {
-						throw new TicketLoadException(
-								"loadTicketContent Exception thrown innerloop j=" + j + " k=" + k, e1);
-					}
-				}
-				Tickets.notifyChange();
-			} catch (final TicketLoadException e) {
-				throw new TicketLoadException("loadTicketContent TicketLoadException thrown outerloop j=" + j, e);
-			} catch (final Exception e) {
-				throw new TicketLoadException("loadTicketContent Exception thrown outerloop j=" + j, e);
-			}
-			tcLog.d(getClass().getName(), "loadTicketContent loop " + Tickets.getTicketContentCount());
-			Tickets.notifyChange();
-		}
-	}
-	
-	private void loadTickets(final Uri uri,final String[] projection, String reqString) {
-		tcLog.d(getClass().getName(),"loadTickets  "+uri+ " "+ projection+ " "+ reqString);
-		if (cTickets ==null || cTickets.getCount() != 0) {
-			initCursor();
-		}
-		cTickets.setNotificationUri(getContext().getContentResolver(),uri);
-
-		TracHttpClient.getInstance();
-		if (reqString.length() == 0) {
-			reqString = "max=0";
-		}
-		final String rs = reqString;
-		tcLog.d(getClass().getName(),"loadTickets reqString = "+reqString);
-		Thread t = new Thread() {
-			@Override
-			public void run() {
-				try {
-					tcLog.d(getClass().getName(),"loadTickets start thread reqString = "+rs);
-					final JSONArray jsonTicketlist = TracHttpClient.Query(rs);
-					tcLog.d(getClass().getName(), jsonTicketlist.toString());
-					final int count = jsonTicketlist.length();
-					Tickets.tickets = new int[count];
-					for (int i = 0; i < count; i++) {
-						try {
-							Tickets.tickets[i] = jsonTicketlist.getInt(i);
-							final Ticket t = new Ticket(Tickets.tickets[i], null, null, null, null);
-							Tickets.ticketList.add(i,t);
-							Tickets.putTicket(t);
-						} catch (JSONException e) {
-							Tickets.tickets[i] = -1;
-							Tickets.ticketList.add(Tickets.tickets[i],null);				}
-					}
-					tcLog.d(getClass().getName(), "loadTicketList ticketlist loaded");
-					new Thread() {
-						@Override
-						public void run() {
-							try {
-								loadTicketContent(uri,projection);
-							} catch (Exception e) {
-								tcLog.e(getClass().getName(),"Exception in ticketContentLoad",e);
-							} finally {
-								tcLog.d(getClass().getName(),"loadTickets-thread before accsessAllowed permits = "+accessAllowed.availablePermits());
-								accessAllowed.release(1);
-								tcLog.d(getClass().getName(),"loadTickets-thread after accsessAllowed permits = "+accessAllowed.availablePermits());
-							}
-						}
-					}.start();
-				} catch (JSONRPCException e) {
-					tcLog.d(getClass().getName(),"loadTickets-thread before accsessAllowed permits = "+accessAllowed.availablePermits());
-					accessAllowed.release(1);
-					tcLog.d(getClass().getName(),"loadTickets-thread after accsessAllowed permits = "+accessAllowed.availablePermits());
-				}		
-			}
-		};
-		t.start();
-		try {
-			t.join();
-		} catch (Exception e) {
-			tcLog.d(getClass().getName(),"loadTickets before accsessAllowed permits = "+accessAllowed.availablePermits());
-			accessAllowed.release(1);
-			tcLog.d(getClass().getName(),"loadTickets after accsessAllowed permits = "+accessAllowed.availablePermits());
-		}
-	}
-	
-	private String joinList(Object list[], final String sep) {
-		String reqString = "";
-		for (final Object fs : list) {
-			if (fs != null) {
-				if (reqString.length() > 0) {
-					reqString += sep;
-				}
-				reqString += fs.toString();
-			}
-		}
-		return reqString;
-	}
-
-	@Override
-	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-		tcLog.d(getClass().getName(),"query + entry "+uri+ " "+ projection+ " "+ selection+" " +selectionArgs+" "+sortOrder+ " " + sURIMatcher.match(uri));
-		switch (sURIMatcher.match(uri)) {
-			case LIST_TICKETS:
-			tcLog.d(getClass().getName(),"query before accsessAllowed permits = "+accessAllowed.availablePermits());
-			accessAllowed.acquireUninterruptibly(1);
-			tcLog.d(getClass().getName(),"query after accsessAllowed permits = "+accessAllowed.availablePermits());
-			loadTickets(uri,projection,joinList(new String[] {selection,sortOrder}, "&"));
-			break;
-			
-			case GET_CHANGES:
-			break;
-			
-			case GET_TICKET:
-			break;
-
-			default:
-		}
 		
-		tcLog.d(getClass().getName(),"query + exit "+cTickets);
-		return cTickets;
+    public static final String SET_CONFIG = "setConfig";
+    public static final String GET_CONFIG = "getConfig";
+    public static final String VERIFY_HOST = "verifyHost";
+    public static final String RESULT = "rv";
+    public static final String ERROR = "error";
+
+    public static final String AUTHORITY = "com.mfvl.trac.client.provider.TicketProvider";
+    public static final String URI = "content://" + AUTHORITY;
+    private static final String LIST_QUERY_PATH = "tickets";
+	private static final String GET_QUERY_PATH = "ticket/";
+    private static final String QUERY_CHANGES_PATH = "ticket/getRecentChanges/";
+    private static final String CONFIG_QUERY_PATH = "config";
+    private static final String VERIFY_QUERY_PATH = "verify";
+    private static final String RESET_QUERY_PATH = "reset";
+    
+    public static final Uri AUTH_URI = Uri.parse(URI);
+    public static final Uri LIST_QUERY_URI = Uri.withAppendedPath(AUTH_URI, LIST_QUERY_PATH);
+    public static final Uri GET_QUERY_URI = Uri.withAppendedPath(AUTH_URI, GET_QUERY_PATH);
+    public static final Uri QUERY_CHANGES_URI = Uri.withAppendedPath(AUTH_URI, QUERY_CHANGES_PATH);
+    public static final Uri CONFIG_QUERY_URI = Uri.withAppendedPath(AUTH_URI, CONFIG_QUERY_PATH);
+    public static final Uri VERIFY_QUERY_URI = Uri.withAppendedPath(AUTH_URI, VERIFY_QUERY_PATH);
+    public static final Uri RESET_QUERY_URI = Uri.withAppendedPath(AUTH_URI, RESET_QUERY_PATH);
+    
+    public static final String DIR_CONTENT_TYPE = "vnd.android.cursor.dir/" + AUTHORITY;
+    public static final String ITEM_CONTENT_TYPE = "vnd.android.cursor.item/" + AUTHORITY;
+    
+    private static final int LIST_TICKETS = 1;
+    private static final int GET_CHANGES = 3;
+    private static final int CONFIG = 4;
+    private static final int VERIFY = 5;
+	private static final int GET_TICKET = 6;
+	private static final int RESET = 7;
+ 
+    private static final UriMatcher sURIMatcher;
+	
+	private TracHttpClient tracClient = null;
+    private String currentUrl;
+    private String currentName;
+    private String currentPass;
+    private boolean currentSslHack;
+    private boolean currentSslHostNameHack;
+	private Uri currentUri = null;
+	private String[] currentProjection = null;
+	private String currentReqString = null;
+
+	private Tickets ticketList = null;
+    
+//    private TicketCursor cTickets = null;
+    
+    private static final int MAXPERMITS = 1;
+    private static Semaphore accessAllowed = new Semaphore(MAXPERMITS, true);	
+	
+    static {
+        sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+        sURIMatcher.addURI(AUTHORITY, LIST_QUERY_PATH, LIST_TICKETS);
+        sURIMatcher.addURI(AUTHORITY, GET_QUERY_PATH+"#", GET_TICKET);
+        sURIMatcher.addURI(AUTHORITY, QUERY_CHANGES_PATH+"*", GET_CHANGES);
+        sURIMatcher.addURI(AUTHORITY, CONFIG_QUERY_PATH, CONFIG);
+        sURIMatcher.addURI(AUTHORITY, VERIFY_QUERY_PATH, VERIFY);
+        sURIMatcher.addURI(AUTHORITY, RESET_QUERY_PATH, RESET);
+    }	
+    
+    @Override
+    public boolean onCreate() {
+        tcLog.d(getClass().getName(), "onCreate");
+        clearConfig();
+        return true;
+    }
+    
+    @Override
+    public String getType(Uri uri) {
+        tcLog.d(getClass().getName(), "getType + " + uri + " " + sURIMatcher.match(uri));
+        switch (sURIMatcher.match(uri)) {
+			case LIST_TICKETS:
+			case GET_CHANGES:
+            return DIR_CONTENT_TYPE;
+			
+			case GET_TICKET:
+			return ITEM_CONTENT_TYPE;
+        }
+        return null;
+    }
+
+    @Override
+    public Uri insert(Uri uri, ContentValues values) {
+		Uri newUri = null;
+        tcLog.d(getClass().getName(), "insert + " + uri + " " + values + " " + sURIMatcher.match(uri));
+        switch (sURIMatcher.match(uri)) {
+	    
+			case CONFIG:
+            setConfig(cv2b(values));
+            newUri = uri;
+			break;
+			
+			case RESET:
+			ticketList = null;
+			clearConfig();
+			break;
+
+			case VERIFY:
+            JSONObject b = verifyHost(cv2b(values));
+            newUri = Uri.withAppendedPath(uri, b.toString());
+            break;
+			
+			case GET_TICKET:
+			int ticknr = Integer.parseInt(uri.getLastPathSegment());
+			String s = values.getAsString("summary");
+			String d = values.getAsString("description");
+			try {
+				JSONObject _velden = new JSONObject(values.getAsString("velden"));
+				final int newticknr = tracClient.createTicket(s, d, _velden);
+				reloadTicketData(new Ticket(newticknr));
+				newUri = Uri.withAppendedPath(GET_QUERY_URI,""+newticknr);
+			} catch (final Exception e) {
+				try {
+					final JSONObject o = new JSONObject(e.getMessage());
+					popup_message(R.string.storerr,R.string.storerrdesc,o.getString("message"));
+				} catch (final JSONException e1) {
+					tcLog.e(getClass().getName(), "create failed", e1);
+					popup_message(R.string.storerr,R.string.invalidJson,e1.getMessage());
+				}
+			}
+			notifyChange(newUri);
+			break;
+        }
+        return newUri;
+    }
+    
+    @Override
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
+        tcLog.d(getClass().getName(), "delete + " + uri + " " + selection + " " + selectionArgs);
+        return 0;
+    }
+	
+    
+    @Override
+    public int update(Uri uri, final ContentValues cv, final String selection, final String[] selectionArgs) {
+        tcLog.d(getClass().getName(),
+                "update + " + uri + " " + cv + " " + selection + " " + selectionArgs + " " + sURIMatcher.match(uri));
+        switch (sURIMatcher.match(uri)) {
+	    
+			case GET_TICKET:
+			final int ticknr = Integer.parseInt(uri.getLastPathSegment());
+			final String cmt = cv.getAsString("comment");
+			final boolean notify = cv.getAsBoolean("notify");
+			Thread t = new Thread() {
+				@Override
+				public void run() {
+					try {
+						JSONObject _velden = new JSONObject(cv.getAsString("velden"));
+						JSONArray retTick = tracClient.updateTicket(ticknr, cmt, _velden, notify); // TODO zou nieuwe ticket retourneren en is volgende dus niet nodig
+						reloadTicketData(new Ticket(ticknr));
+					} catch (final Exception e) {
+						tcLog.e(getClass().getName(), "JSONRPCException", e);
+						popup_message(R.string.storerr,R.string.storerrdesc,e.getMessage());
+					}
+			}};
+			t.start();
+			try {
+				t.join();
+			} catch (Exception e) {
+				tcLog.e(getClass().getName(),"Exception during join in update",e);
+			}
+			notifyChange(uri);
+			return 1;
+		}
+        return 0;
+    }
+	
+    @Override
+    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        tcLog.d(getClass().getName(),
+                "query + entry " + uri + " " + projection + " " + selection + " " + selectionArgs + " " + sortOrder + " "
+                + sURIMatcher.match(uri));
+        switch (sURIMatcher.match(uri)) {
+			case LIST_TICKETS:
+            accessAllowed.acquireUninterruptibly(1);
+            return loadTickets(uri, projection, joinList(new String[] { selection, sortOrder}, "&"));
+			
+			case GET_CHANGES:
+			return getChanges(uri.getLastPathSegment());
+			
+			case GET_TICKET:
+			return getSingleTicket(uri.getLastPathSegment());
+	    
+        default:
+			return null;
+        }
+	
+    }
+	
+	/**
+	  *  Internal methods
+	  *
+	  */
+	  
+	private Cursor getSingleTicket(final String ticknrstr) {
+		tcLog.d(getClass().getName(),"getSingleTicket ticknr = "+ticknrstr);
+		if (ticketList != null) {
+			int ticknr = Integer.parseInt(ticknrstr);
+			Ticket t = ticketList.getTicket(ticknr);
+			if (t != null) {
+				final Tickets tl = new Tickets();
+				tl.addTicket(t);
+				final Semaphore active = new Semaphore(1, true);	
+				active.acquireUninterruptibly ();
+				new Thread() {
+					@Override
+					public void run() {
+						try {
+							loadTicketContent(null,tl);
+						} catch (Exception e) {
+							tcLog.e(getClass().getName(), "Exception in ticketContentLoad", e);
+						} finally {
+							active.release(1);
+						}
+					}
+				}.start();
+				active.acquireUninterruptibly ();
+				active.release();
+				return new TicketCursor(tl);
+			}
+		}
+		return null;
 	}
+	
+	private Cursor getChanges(final String isoTijd) {
+		tcLog.d(getClass().getName(),"getChanges ticknr = "+isoTijd);
+
+        try {
+            final JSONArray datum = new JSONArray();
+
+            datum.put("datetime");
+            datum.put(isoTijd);
+            final JSONObject ob = new JSONObject();
+
+            ob.put("__jsonclass__", datum);
+            final JSONArray param = new JSONArray();
+
+            param.put(ob);
+            final JSONArray jsonTicketlist = tracClient.callJSONArray("ticket.getRecentChanges", param);
+			
+			Tickets t = new Tickets();
+			
+			if (jsonTicketlist.length() > 0) {
+				for (int i = 0;i<jsonTicketlist.length();i++) {
+					int ticknr = jsonTicketlist.getInt(i);
+					t.addTicket(new Ticket(ticknr));
+				}
+				loadTicketContent(null,t);
+			}
+            return new TicketCursor(t);
+		} catch (Exception e) {
+			tcLog.d(getClass().getName(),"getChanges exception",e);
+		}
+
+		return null;
+	}
+
+
+	private void popup_warning(int messString, String addit) {
+		popup_message(R.string.warning,messString,addit);
+	}
+	
+	private void popup_message(int tile,int messString,String addit) {
+		/* 
+			Since we are in a Content Provider we only have an Application context. This means we cannot do a runOnUIthread call here.
+			For that reason we send a Broadcast within the app to the receiver in TracStart. There the popup will be serviced.
+		*/
+        Intent intent = new Intent(TracStart.PROVIDER_MESSAGE);
+        intent.putExtra("message", messString );
+ 		intent.putExtra("additonal",addit);
+		LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
+	}
+    
+    private void buildCall(JSONArray mc, int ticknr) throws JSONException {
+        mc.put(new TracJSONObject().makeComplexCall(Ticket.TICKET_GET + "_" + ticknr, "ticket.get", ticknr));
+        mc.put(new TracJSONObject().makeComplexCall(Ticket.TICKET_CHANGE + "_" + ticknr, "ticket.changeLog", ticknr));
+        mc.put(new TracJSONObject().makeComplexCall(Ticket.TICKET_ATTACH + "_" + ticknr, "ticket.listAttachments", ticknr));
+        mc.put(new TracJSONObject().makeComplexCall(Ticket.TICKET_ACTION + "_" + ticknr, "ticket.getActions", ticknr));
+    }
+	
+	private void notifyChange(Uri uri) {
+        tcLog.d(getClass().getName(), "notifyChange uri = "+uri);
+		if (uri != null) {
+			getContext().getContentResolver().notifyChange(uri, null);
+		}
+	}
+ 
+    private void loadTicketContent(Uri uri,Tickets tl) throws TicketLoadException {
+        tcLog.d(getClass().getName(), "loadTicketContent uri = "+uri);
+        int count = tl.getTicketCount();
+        tcLog.d(getClass().getName(), "loadTicketContent count = "+count+ " "+ tl);
+		
+
+        for (int j = 0; j < count; j += Const.ticketGroupCount) {
+            final JSONArray mc = new JSONArray();
+
+            for (int i = j; i < (j + Const.ticketGroupCount < count ? j + Const.ticketGroupCount : count); i++) {
+                try {
+                    buildCall(mc, tl.ticketList.get(i).getTicketnr());
+                } catch (final Exception e) {
+                    throw new TicketLoadException("loadTicketContent Exception during buildCall",e);
+                }
+            }
+            try {
+                final JSONArray mcresult = tracClient.callJSONArray("system.multicall", mc);
+                // tcLog.d(getClass().getName(), "mcresult = " + mcresult);
+                Ticket t = null;
+
+                for (int k = 0; k < mcresult.length(); k++) {
+                    try {
+                        final JSONObject res = mcresult.getJSONObject(k);
+                        final String id = res.getString("id");
+                        final JSONArray result = res.getJSONArray("result");
+                        final int startpos = id.indexOf("_") + 1;
+                        final int thisTicket = Integer.parseInt(id.substring(startpos));
+
+                        if (t == null || t.getTicketnr() != thisTicket) {
+//							if (t != null) {
+//								notifyChange(Uri.withAppendedPath(GET_QUERY_URI,""+t.getTicketnr()));
+//							}
+                            t = tl.getTicket(thisTicket);
+                        }
+                        if (t != null) {
+                            if (id.equals(Ticket.TICKET_GET + "_" + thisTicket)) {
+                                final JSONObject v = result.getJSONObject(3);
+
+                                t.setFields(v);
+                                tl.incTicketContentCount();
+                            } else if (id.equals(Ticket.TICKET_CHANGE + "_" + thisTicket)) {
+                                final JSONArray h = result;
+
+                                t.setHistory(h);
+                            } else if (id.equals(Ticket.TICKET_ATTACH + "_" + thisTicket)) {
+                                final JSONArray at = result;
+
+                                t.setAttachments(at);
+                            } else if (id.equals(Ticket.TICKET_ACTION + "_" + thisTicket)) {
+                                final JSONArray ac = result;
+
+                                t.setActions(ac);
+                            } else {
+                                tcLog.d(getClass().getName(), "loadTickets, unexpected response = " + result);
+                            }
+                        }
+                    } catch (final Exception e1) {
+                        throw new TicketLoadException("loadTicketContent Exception thrown innerloop j=" + j + " k=" + k, e1);
+                    }
+                }
+//				notifyChange(Uri.withAppendedPath(GET_QUERY_URI,""+t.getTicketnr()));
+            } catch (final TicketLoadException e) {
+                throw new TicketLoadException("loadTicketContent TicketLoadException thrown outerloop j=" + j, e);
+            } catch (final Exception e) {
+                throw new TicketLoadException("loadTicketContent Exception thrown outerloop j=" + j, e);
+            }  finally {
+				tcLog.d(getClass().getName(), "loadTicketContent loop " + tl.getTicketContentCount());
+				notifyChange(uri);
+//				tl.notifyChange();
+			}
+        }
+//		getContext().getContentResolver().unregisterContentObserver(myObserver);
+    }
+	
+    private Cursor loadTickets(final Uri uri, final String[] projection, String reqString) {
+		
+        tcLog.d(getClass().getName(), "loadTickets  " + uri + " " + projection + " " + reqString);
+
+		TicketCursor cTickets = new TicketCursor(ticketList);
+//		cTickets.setNotificationUri(getContext().getContentResolver(), Uri.withAppendedPath(GET_QUERY_URI,"#"));
+		
+		if (!uri.equals(currentUri) || ! projection.equals(currentProjection) || !reqString.equals(currentReqString)) {
+			initCursor(cTickets);
+			accessAllowed.acquireUninterruptibly(1); // initCursor claims all so  we know it is ready when we get the lock
+			accessAllowed.release(1); // No further need
+	 
+			if (reqString.length() == 0) {
+				reqString = "max=0";
+			}
+			final String rs = reqString;
+
+			tcLog.d(getClass().getName(), "loadTickets reqString = " + reqString);
+			Thread t = new Thread() {
+				@Override
+				public void run() {
+					try {
+						tcLog.d(getClass().getName(), "loadTickets start thread reqString = " + rs);
+						final JSONArray jsonTicketlist = tracClient.Query(rs);
+
+						tcLog.d(getClass().getName(), jsonTicketlist.toString());
+						final int count = jsonTicketlist.length();
+
+						ticketList.tickets = new int[count];
+						if (count > 0) {
+							for (int i = 0; i < count; i++) {
+								try {
+									ticketList.tickets[i] = jsonTicketlist.getInt(i);
+									final Ticket t = new Ticket(ticketList.tickets[i]);
+
+									ticketList.ticketList.add(i, t);
+									ticketList.putTicket(t);
+//									cTickets.setNotificationUri(getContext().getContentResolver(), Uri.withAppendedPath(GET_QUERY_URI,""+ticketList.tickets[i]));
+								} catch (JSONException e) {
+									ticketList.tickets[i] = -1;
+									ticketList.ticketList.add(ticketList.tickets[i], null);
+								}
+							}
+							tcLog.d(getClass().getName(), "loadTicketList ticketlist loaded");
+							new Thread() {
+								@Override
+								public void run() {
+									try {
+										loadTicketContent(uri,ticketList);
+									} catch (Exception e) {
+										tcLog.e(getClass().getName(), "Exception in ticketContentLoad", e);
+									} finally {
+										accessAllowed.release(1);
+										tcLog.d(getClass().getName(), "loadTicketList content loaded");
+									}
+								}
+							}.start();
+						}
+					} catch (JSONRPCException e) {
+						popup_warning(R.string.connerr,e.getMessage());
+						accessAllowed.release(1);
+					}		
+				}
+			};
+
+			t.start();
+			try {
+				t.join();
+	//			tcLog.e(getClass().getName(), "In main thread again count = "+ticketList.getTicketCount()+" errmsg = "+loadTicketErrorMsg);
+				if (ticketList.getTicketCount() == 0) {
+					popup_warning(R.string.notickets,null);
+					accessAllowed.release(1);
+				}
+			} catch (Exception e) {
+				accessAllowed.release(1);
+			}
+		}
+		return cTickets;
+    }
+    
+    private String joinList(Object list[], final String sep) {
+        String reqString = "";
+
+        for (final Object fs : list) {
+            if (fs != null) {
+                if (reqString.length() > 0) {
+                    reqString += sep;
+                }
+                reqString += fs.toString();
+            }
+        }
+        return reqString;
+    }
+    
+    private boolean equalBundles(Bundle one, Bundle two) {
+        if (one.size() != two.size()) {
+            return false;
+        }
+        Set<String> setOne = one.keySet();
+        Object valueOne;
+        Object valueTwo;
+	
+        for (String key : setOne) {
+            if (!two.containsKey(key)) {
+                return false;
+            }
+            valueOne = one.get(key);
+            valueTwo = two.get(key);
+            if (valueOne instanceof Bundle && valueTwo instanceof Bundle && !equalBundles((Bundle) valueOne, (Bundle) valueTwo)) {
+                return false;
+            } else if (valueOne == null) {
+                if (valueTwo != null) {
+                    return false;
+                }
+            } else if (!valueOne.equals(valueTwo)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private void initCursor(final Cursor cTickets) {
+        accessAllowed.acquireUninterruptibly(MAXPERMITS);
+        new Thread() {
+            @Override
+            public void run() {
+                tcLog.d(getClass().getName() + ".initCursor.run " + this, "starting thread");
+				tracClient = new TracHttpClient(currentUrl, currentSslHack, currentSslHostNameHack, currentName, currentPass);
+                TicketModel.getInstance(tracClient);
+                accessAllowed.release(MAXPERMITS);
+            }
+        }.start();
+    }
+    
+    private void cv2bs(ContentValues cv, Bundle b, String f) {
+        if (cv.containsKey(f)) {
+            b.putString(f, cv.getAsString(f));
+        }	
+    }
+    
+    private void cv2bb(ContentValues cv, Bundle b, String f) {
+        if (cv.containsKey(f)) {
+            b.putBoolean(f, cv.getAsBoolean(f));
+        }	
+    }
+
+    private Bundle cv2b(final ContentValues cv) {
+        final Bundle values = new Bundle();
+
+        cv2bs(cv, values, Const.CURRENT_URL);
+        cv2bs(cv, values, Const.CURRENT_USERNAME);
+        cv2bs(cv, values, Const.CURRENT_PASSWORD);
+        cv2bb(cv, values, Const.CURRENT_SSLHACK);
+        cv2bb(cv, values, Const.CURRENT_SSLHOSTNAMEHACK);
+        return values;
+    }
+    
+    private Bundle setConfig(final Bundle values) {
+        final Bundle b = getConfig();
+
+        if (!equalBundles(values, b) || ticketList == null) {
+            currentUrl = values.getString(Const.CURRENT_URL);
+            currentName = values.getString(Const.CURRENT_USERNAME);
+            currentPass = values.getString(Const.CURRENT_PASSWORD);
+            currentSslHack = values.getBoolean(Const.CURRENT_SSLHACK);
+            currentSslHostNameHack = values.getBoolean(Const.CURRENT_SSLHOSTNAMEHACK);
+			ticketList = new Tickets();
+			ticketList.resetCache();
+ //           initCursor();
+        }
+        accessAllowed.release(MAXPERMITS);
+        return getConfig();
+    }
+    
+    private Bundle clearConfig() {
+        currentUrl = null;
+        currentName = null;
+        currentPass = null;
+        currentSslHack = false;
+        currentSslHostNameHack = false;
+		
+		currentUri = null;
+		currentProjection = null;
+		currentReqString = null;
+    
+       return null;
+    }
+    
+    private Bundle getConfig() {
+        Bundle b = new Bundle();
+
+        b.putString(Const.CURRENT_URL, currentUrl);
+        b.putString(Const.CURRENT_USERNAME, currentName);
+        b.putString(Const.CURRENT_PASSWORD, currentPass);
+        b.putBoolean(Const.CURRENT_SSLHACK, currentSslHack);
+        b.putBoolean(Const.CURRENT_SSLHOSTNAMEHACK, currentSslHostNameHack);
+        return b;
+    }
+    
+    private JSONObject verifyHost(final Bundle values) {
+        JSONObject b = new JSONObject();
+
+        try {
+			TracHttpClient verifyClient = new TracHttpClient(values.getString(Const.CURRENT_URL), values.getBoolean(Const.CURRENT_SSLHACK),
+                    values.getBoolean(Const.CURRENT_SSLHOSTNAMEHACK), values.getString(Const.CURRENT_USERNAME),
+                    values.getString(Const.CURRENT_PASSWORD));
+            String rv = verifyClient.verifyHost();
+
+            b.put(RESULT, rv);
+        } catch (Exception e) {
+            try {
+                b.put(ERROR, e.getMessage());
+            } catch (JSONException e1) {}
+        }
+        return b;
+    }
+
+	private void reloadTicketData(Ticket t) {
+		Tickets tl = new Tickets();
+		tl.addTicket(t);
+		loadTicketContent(null,tl);
+	}
+
 }

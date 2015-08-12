@@ -22,8 +22,7 @@
         android:id="@+id/tlnieuw"
         android:icon="@android:drawable/ic_menu_add"
         android:menuCategory="container"
-        android:title="@string/nieuw"
-        support:showAsAction="ifRoom"/>
+        android:title="@string/nieuw"/>
     <item
         android:id="@+id/tlchangehost"
         android:menuCategory="container"
