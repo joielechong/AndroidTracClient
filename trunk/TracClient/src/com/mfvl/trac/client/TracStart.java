@@ -46,6 +46,7 @@ import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.database.Cursor;
+import android.database.CursorWrapper;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -118,6 +119,8 @@ interface InterFragmentListener {
 	void updateTicket(Ticket t,String action, String comment, String veld, String waarde, final boolean notify, Map<String, String> modVeld) throws Exception;
 	int createTicket(Ticket t , boolean notify) throws Exception;
 	void setActionProvider(Menu menu,int resid);
+	Intent shareList();
+	void listViewCreated();
 }
 
 public class TracStart extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, InterFragmentListener, OnBackStackChangedListener {
@@ -140,8 +143,10 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
 	static final int MSG_SET_SORT = 23;
 	static final int MSG_SET_FILTER = 24;
 	static final int MSG_SHOW_DIALOG = 25;
+	static final int MSG_DISPLAY_TICKET = 26;
 	
 	public static final String PROVIDER_MESSAGE = "TracClientProviderMessage";
+	public static final String DATACHANGED_MESSAGE = "TracClientDataChangedMessage";
     private static final int REQUEST_CODE = 6384;
 
 	public static String[] mDrawerTitles = null;
@@ -194,6 +199,8 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
     private MyHandlerThread mHandlerThread = null;
     private Messenger mMessenger = null;
 	
+	private boolean changesLoaderStarted = false;
+	private boolean ticketLoaderStarted = false;
 	private boolean loaderStarted = false;
 	
 	private TicketListAdapter dataAdapter = null;
@@ -215,6 +222,9 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
 	private static final int CHANGES_LOADER = 2;
 	private static final int TICKET_LOADER = 3;
 	
+	private boolean hasTicketsLoadingBar = false;
+	private Boolean ticketsLoading = false;
+	
     @Override
     public Loader<Cursor> onCreateLoader(int loaderID, Bundle bundle) {
         tcLog.d(getClass().getName(), "onCreateLoader " + loaderID + " " + bundle);
@@ -225,6 +235,7 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
          */
         switch (loaderID) {
 			case LIST_LOADER:
+			hasTicketsLoadingBar = false;
 			uri = TicketProvider.LIST_QUERY_URI;
             // Returns a new CursorLoader
 			try {
@@ -232,9 +243,13 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
 			} catch (Exception e) {
 				tcLog.e(getClass().getName(),"onCreateLoader LIST_LOADER cannot contact TicketListFragment");
 			}
-			if (ListFragmentTag.equals(getTopFragment())) {
-				startProgressBar(getString(R.string.getlist) + (profile == null ? "" : "\n" + profile));
+			synchronized(this) {
+				if (ListFragmentTag.equals(getTopFragment())) {
+					startProgressBar(getString(R.string.getlist) + (profile == null ? "" : "\n" + profile));
+					hasTicketsLoadingBar = true;
+				}
 			}
+			ticketsLoading = true;
             return new CursorLoader(this, uri, fields, joinList(filterList.toArray(), "&"), null, joinList(sortList.toArray(), "&"));
 			
 			case CHANGES_LOADER:
@@ -245,6 +260,7 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
 			case TICKET_LOADER:
 			int ticknr = bundle.getInt(BUNDLE_TICKET);
 			uri = Uri.withAppendedPath(TicketProvider.GET_QUERY_URI,""+ticknr);
+			startProgressBar(getString(R.string.downloading)+" "+ticknr);
 			return new CursorLoader(this,uri,fields,null,null,null);
 			
 				
@@ -255,12 +271,24 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
     }
 	
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        tcLog.d(getClass().getName(), "onLoadFinished " + loader + " " + loader.getId() + " " + cursor);
+    public void onLoadFinished(Loader<Cursor> loader, Cursor c) {
+		TicketCursor cursor;
+        tcLog.d(getClass().getName(), "onLoadFinished " + loader + " " + loader.getId() + " " + c);
+		if (c instanceof CursorWrapper) {
+			cursor = (TicketCursor)((CursorWrapper)c).getWrappedCursor();
+		} else {
+			cursor = (TicketCursor)c;
+		}
 		
 		switch (loader.getId()) {
 			case LIST_LOADER:
-			stopProgressBar();
+			synchronized(this) {
+				if (hasTicketsLoadingBar) {
+					stopProgressBar();
+					hasTicketsLoadingBar = false;
+				}
+				ticketsLoading = false;
+			}
 			dataAdapter.changeCursor(cursor);
 			try {
 				getTicketListFragment().dataHasChanged();
@@ -279,9 +307,16 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
 			break;
 			
 			case TICKET_LOADER:
+			stopProgressBar();
 			if (cursor != null) {
 				cursor.moveToFirst();
-				Ticket t = (Ticket)((TicketCursor)cursor).getTicket(1);  // wat doe ik hier mee TODO
+				Ticket t = (Ticket)cursor.getTicket(1);
+				if (t.hasdata()) {
+					tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_DISPLAY_TICKET,t));
+				} else {
+					showAlertBox(R.string.notfound,R.string.ticketnotfound,null);
+				}
+//				onTicketSelected(t);
 				cursor.close();
 			}
 			break;
@@ -390,6 +425,10 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
 				
 				case MSG_SHOW_DIALOG:
 				showAlertBox(msg.arg1, msg.arg2, (String) msg.obj);
+				break;
+				
+				case MSG_DISPLAY_TICKET:
+				onTicketSelected((Ticket)msg.obj);
 				break;
 
 				default:
@@ -686,7 +725,9 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
 		
         setConfigProvider();
 //		setContentObserver();
-		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,new IntentFilter(PROVIDER_MESSAGE));
+		LocalBroadcastManager.getInstance(this).registerReceiver(mProviderMessageReceiver,new IntentFilter(PROVIDER_MESSAGE));
+		LocalBroadcastManager.getInstance(this).registerReceiver(mDataChangedMessageReceiver,new IntentFilter(DATACHANGED_MESSAGE));
+		
         getSupportLoaderManager().initLoader(LIST_LOADER, null, this);
 
         fm = getSupportFragmentManager();
@@ -879,6 +920,19 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
             }
         }
     }
+	
+	@Override
+	public void listViewCreated() {
+		tcLog.d(getClass().getName(), "listViewCreated: ticketsLoading = "+ticketsLoading + " hasTicketsLoadingBar = "+hasTicketsLoadingBar);
+		synchronized (this) {
+			if (ticketsLoading) {
+				if (!hasTicketsLoadingBar) {
+					startProgressBar(getString(R.string.getlist) + (profile == null ? "" : "\n" + profile));
+					hasTicketsLoadingBar = true;
+				}
+			}
+		}
+	}
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -977,7 +1031,7 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
             mShareActionProvider = new ShareActionProvider(this);
             MenuItemCompat.setActionProvider(item, mShareActionProvider);
         }
-		
+	
 	}
 
     @Override
@@ -1002,7 +1056,8 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
             mIsBound = false;
         }
         // stopService(new Intent(this, RefreshService.class));
-		LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(mProviderMessageReceiver);
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(mDataChangedMessageReceiver);
         super.onDestroy();
     }
 
@@ -1109,8 +1164,11 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
 		}
 	}
 	
+	
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+		ShareActionProvider debugShare = null;
+		
         tcLog.d(getClass().getName(), "onPrepareOptionsMenu");
         // If the nav drawer is open, hide action items related to the content view
 		
@@ -1120,28 +1178,19 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
 		Intent i = null;
 	
         final MenuItem itemDebug = menu.findItem(R.id.debug);
-        final MenuItem itemList = menu.findItem(R.id.tlshare);
 
-		ShareActionProvider mShareActionProvider =  null;
         itemDebug.setVisible(debug).setEnabled(debug);
         if (debug) {
            i = shareDebug();
 
-			mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(itemDebug);
-            tcLog.d(getClass().getName(), "item = " + itemDebug + " " + mShareActionProvider + " " + i);
-			if (mShareActionProvider != null && i != null) {
-				mShareActionProvider.setShareIntent(i);
+			debugShare = (ShareActionProvider) MenuItemCompat.getActionProvider(itemDebug);
+            tcLog.d(getClass().getName(), "item = " + itemDebug + " " + debugShare + " " + i);
+			if (debugShare != null && i != null) {
+				debugShare.setShareIntent(i);
 			}
         }
-		if (itemList != null) {
-			mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(itemList);
-			i = shareList();
-			tcLog.d(getClass().getName(), "item = " + itemList + " " + mShareActionProvider + " " + i);
-			if (mShareActionProvider != null && i != null) {
-				mShareActionProvider.setShareIntent(i);
-			}
-		}
-        return true;
+		
+       return true;
     }
 
     @Override
@@ -1195,19 +1244,24 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
 
     @Override
     public void onTicketSelected(Ticket ticket) {
-        tcLog.d(getClass().getName(), "onTicketSelected Ticket: " + ticket.getTicketnr());
-        final DetailFragment detailFragment = new DetailFragment();
+		boolean isTop = (DetailFragmentTag.equals(getTopFragment()));
+        tcLog.d(getClass().getName(), "onTicketSelected Ticket: " + ticket+"isTop = "+ isTop);
+		
+		DetailFragment detailFragment = new DetailFragment();
         final Bundle args = makeArgs();
-
         args.putInt(Const.CURRENT_TICKET, ticket.getTicketnr());
         detailFragment.setArguments(args);
+	
         // tcLog.d(getClass().getName(), "detailFragment =" +
         // detailFragment.toString());
         final FragmentTransaction ft = fm.beginTransaction();
 
         ft.replace(R.id.displayList, detailFragment, DetailFragmentTag);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        ft.addToBackStack(DetailFragmentTag);
+		if (!isTop) {
+			ft.addToBackStack(DetailFragmentTag);
+		}
+		
         ft.commit();
     }
 
@@ -1361,7 +1415,7 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
         dispAds = b;
     }
 
-    private Intent shareList() {
+    public Intent shareList() {
         tcLog.d(getClass().getName(), "shareList");
         String lijst = "";
 		
@@ -1409,10 +1463,9 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
 	}
 
     private Fragment getFragment(final String tag) {
-        return getSupportFragmentManager().findFragmentByTag(tag);
+        return fm.findFragmentByTag(tag);
     }
 
-	private boolean changesLoaderStarted = false;
     public void getNewTickets(final String isoTijd) {
         tcLog.d(getClass().getName(), "getNewTickets tijd = "+isoTijd) ;
 		
@@ -1478,21 +1531,24 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
 	@Override
 	public Ticket getTicket(int i) {
 		Ticket t = dataAdapter.getTicket(i);
-		if (t != null) {
+        tcLog.d(getClass().getName(), "getTicket i = "+i+ " ticket = "+ t);
+		if (t != null && t.hasdata()) {
 			return t;
 		}
 		
-		Bundle args = new Bundle();
-		args.putInt(BUNDLE_TICKET,i);
-		getSupportLoaderManager().initLoader(TICKET_LOADER,args,this);
-		return null;  // TODO
+		return refreshTicket(i);
 	}
 	
 	@Override
 	public Ticket refreshTicket(int i) {
 		Bundle args = new Bundle();
 		args.putInt(BUNDLE_TICKET,i);
-		getSupportLoaderManager().initLoader(TICKET_LOADER,args,this);
+		if (ticketLoaderStarted) {
+			getSupportLoaderManager().restartLoader(TICKET_LOADER,args,this);
+		} else {
+			getSupportLoaderManager().initLoader(TICKET_LOADER,args,this);
+			ticketLoaderStarted = true;
+		}
 		return null;  // TODO
 	}
 	
@@ -1582,13 +1638,28 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
 		return dataAdapter.getPrevTicket(i);
 	}
 
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver mProviderMessageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context c,Intent i) {
+			tcLog.d(this.getClass().getName(), "Receive PROVIDER_MESSAGE");
 			int title = i.getIntExtra("title",R.string.warning);
 			int message = i.getIntExtra("message",R.string.unknownError);
 			String addit = i.getStringExtra("additional");
 			showAlertBox(title,message,addit);
+		}
+    };
+	
+    private BroadcastReceiver mDataChangedMessageReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context c,Intent i) {
+			tcLog.d(this.getClass().getName(), "Receive DATACHANGED_MESSAGE");
+			View v = findViewById(R.id.displayList);
+			v.invalidate();
+			try {
+				getTicketListFragment().dataHasChanged();
+			} catch (Exception e) {
+				tcLog.e(getClass().getName(),"mDataChangedMessageReceiver cannot contact TicketListFragment");
+			}			
 		}
     };
 	

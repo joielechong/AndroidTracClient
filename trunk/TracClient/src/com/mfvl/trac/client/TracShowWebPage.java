@@ -47,8 +47,8 @@ public class TracShowWebPage extends Activity {
         setContentView(R.layout.trac_about);
         final String filename = "file:///android_asset/" + i.getStringExtra(Const.HELP_FILE) + ".html";
 
-        tcLog.d(_tag, filename + " " + toonVersie);
         final View tv = findViewById(R.id.versionblock);
+        tcLog.d(_tag, filename + " " + toonVersie+" "+tv);
 
         if (!toonVersie) {
             tv.setVisibility(View.GONE);
@@ -57,6 +57,7 @@ public class TracShowWebPage extends Activity {
 
             tv1.setText(Credentials.getVersion());
         }
+
         MyTracker.report("Normal", "WebView", filename);
         final WebView wv = (WebView) findViewById(R.id.webfile);
 

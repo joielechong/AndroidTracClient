@@ -452,29 +452,29 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 			showHelp();
         } else if (item.getItemId() == R.id.dfselect) {
             if (!context.isFinishing()) {
-                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
 
-                alertDialogBuilder.setTitle(R.string.chooseticket).setMessage(R.string.chooseticknr);
                 final EditText input = new EditText(context);
-
                 input.setInputType(InputType.TYPE_CLASS_NUMBER);
-                alertDialogBuilder.setView(input)
+				
+                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+                alertDialogBuilder.setTitle(R.string.chooseticket)
+					.setMessage(R.string.chooseticknr)
+					.setView(input)
 					.setCancelable(false)
 					.setNegativeButton(R.string.cancel, null)
 					.setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        try {
-                            final int newTicket = Integer.parseInt(input.getText().toString());
-
-                            // selectTicket(ticknr);
-                            ticknr = newTicket;
-                        } catch (final Exception e) {// noop keep old ticketnr
-                        }
-                        display_and_refresh_ticket();
-                    }
-                });
-                alertDialogBuilder.create().show();
+						@Override
+						public void onClick(DialogInterface dialog, int id) {
+							try {
+								final int newTicket = Integer.parseInt(input.getText().toString());
+								// selectTicket(ticknr);
+								ticknr = newTicket;
+							} catch (final Exception e) {// noop keep old ticketnr
+							}
+							display_and_refresh_ticket();
+						}
+					})
+					.show();
             }
         } else if (item.getItemId() == R.id.dfattach) {
             if (_ticket != null) {

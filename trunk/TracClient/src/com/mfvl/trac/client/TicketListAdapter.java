@@ -51,7 +51,7 @@ public class TicketListAdapter extends SimpleCursorAdapter implements OnTicketsC
 	
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        tcLog.d(getClass().getName(), "getView position = " + position + " "+ convertView + " "+ parent);
+        //tcLog.d(getClass().getName(), "getView position = " + position + " "+ convertView + " "+ parent);
         return ColoredLines.getView(context, super.getView(position, convertView, parent), position, convertView, parent);
     }
 	
@@ -170,6 +170,7 @@ public class TicketListAdapter extends SimpleCursorAdapter implements OnTicketsC
 	}
 
 	public Ticket getTicket(int i) {
+        tcLog.d(getClass().getName(), "getTicket i = " + i);
 		return ticketList.getTicket(i);
 	}
 }

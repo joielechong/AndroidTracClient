@@ -66,6 +66,7 @@ public final class Const {
     static final String PREF_FILTER = "filterstring";
     static final String PREF_SORT = "sortString";
     static final String PREF_DISCLAIM = "disclaimer";
+    static final String PREF_COOKIEINFORM = "CookieInform";
 	
 	static final String DisclaimerVersion = "1.0";
 

@@ -54,11 +54,6 @@ public class TicketCursor extends AbstractCursor {
 		super.close();
 	}
 	
-	public void setNotificationUri(ContentResolver cr, Uri uri) {
-		tcLog.d(getClass().getName(),"setNotificationUri "+cr+" "+uri);
-		super.setNotificationUri(cr,uri);
-	}
-
 	public Tickets getTicketList() {
 		return ticketList;
 	}
@@ -79,7 +74,7 @@ public class TicketCursor extends AbstractCursor {
 	
     @Override
     public int getCount() {
-        tcLog.d(getClass().getName(),"getCount -->"+ ticketList.getTicketCount()+" "+this);
+        // tcLog.d(getClass().getName(),"getCount -->"+ ticketList.getTicketCount()+" "+this);
         return ticketList.getTicketCount();
     }
 
@@ -97,7 +92,7 @@ public class TicketCursor extends AbstractCursor {
 
     @Override
     public int getInt(int column) throws IllegalArgumentException {
-        tcLog.d(getClass().getName(),"getInt "+ column+" "+getPosition());
+        // tcLog.d(getClass().getName(),"getInt "+ column+" "+getPosition());
         if (column != FIELD_ID) {
             throw new IllegalArgumentException("No int field");
         }
@@ -106,7 +101,7 @@ public class TicketCursor extends AbstractCursor {
 	
     @Override
     public long getLong(int column) throws IllegalArgumentException {
-        tcLog.d(getClass().getName(),"getLong "+ column+" "+getPosition());
+        // tcLog.d(getClass().getName(),"getLong "+ column+" "+getPosition());
         if (column != FIELD_ID) {
             throw new IllegalArgumentException("No long field");
         }
@@ -124,7 +119,7 @@ public class TicketCursor extends AbstractCursor {
 
     @Override
     public String getString(int column) {
-        tcLog.d(getClass().getName(),"getString "+ column+" "+getPosition());
+        // tcLog.d(getClass().getName(),"getString "+ column+" "+getPosition());
         Ticket t = ticketList.ticketList.get(this.getPosition());
         String retval = null;
 
@@ -143,12 +138,12 @@ public class TicketCursor extends AbstractCursor {
     }
 
 	public Ticket getTicket(int column) throws IllegalArgumentException {
-        tcLog.d(getClass().getName(),"getTicket "+ column+" "+getPosition());
+        // tcLog.d(getClass().getName(),"getTicket "+ column+" "+getPosition());
         if (column != FIELD_TICKET) {
             throw new IllegalArgumentException("No Ticket field");
         }
         Ticket t = ticketList.ticketList.get(this.getPosition());
-        tcLog.d(getClass().getName(),"getTicket ticket = "+t);
+//        tcLog.d(getClass().getName(),"getTicket ticket = "+t);
 		return t;
 	}
 	
