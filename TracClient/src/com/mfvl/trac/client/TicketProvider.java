@@ -235,9 +235,9 @@ public class TicketProvider extends ContentProvider {
 		if (ticketList != null) {
 			int ticknr = Integer.parseInt(ticknrstr);
 			Ticket t = ticketList.getTicket(ticknr);
-			if (t != null) {
-				final Tickets tl = new Tickets();
-				tl.addTicket(t);
+			final Tickets tl = new Tickets();
+			if (t == null || !t.hasdata()) {
+				tl.addTicket(new Ticket(ticknr));
 				final Semaphore active = new Semaphore(1, true);	
 				active.acquireUninterruptibly ();
 				new Thread() {
@@ -254,8 +254,18 @@ public class TicketProvider extends ContentProvider {
 				}.start();
 				active.acquireUninterruptibly ();
 				active.release();
-				return new TicketCursor(tl);
+				Ticket t1 = tl.getTicket(ticknr);
+				if (t1== null) {
+					return null;
+				}
+				if (!t1.hasdata()) {
+					tl.delTicket(ticknr);
+					return null;
+				}
+			} else {
+				tl.addTicket(t);
 			}
+			return new TicketCursor(tl);
 		}
 		return null;
 	}
@@ -293,17 +303,22 @@ public class TicketProvider extends ContentProvider {
 		return null;
 	}
 
+	private void notify_datachanged() {
+        Intent intent = new Intent(TracStart.DATACHANGED_MESSAGE);
+		LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
+	}
 
 	private void popup_warning(int messString, String addit) {
 		popup_message(R.string.warning,messString,addit);
 	}
 	
-	private void popup_message(int tile,int messString,String addit) {
+	private void popup_message(int title,int messString,String addit) {
 		/* 
 			Since we are in a Content Provider we only have an Application context. This means we cannot do a runOnUIthread call here.
 			For that reason we send a Broadcast within the app to the receiver in TracStart. There the popup will be serviced.
 		*/
         Intent intent = new Intent(TracStart.PROVIDER_MESSAGE);
+        intent.putExtra("title", title );
         intent.putExtra("message", messString );
  		intent.putExtra("additonal",addit);
 		LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
@@ -385,12 +400,14 @@ public class TicketProvider extends ContentProvider {
                     }
                 }
 //				notifyChange(Uri.withAppendedPath(GET_QUERY_URI,""+t.getTicketnr()));
+				notify_datachanged();
             } catch (final TicketLoadException e) {
                 throw new TicketLoadException("loadTicketContent TicketLoadException thrown outerloop j=" + j, e);
             } catch (final Exception e) {
                 throw new TicketLoadException("loadTicketContent Exception thrown outerloop j=" + j, e);
             }  finally {
 				tcLog.d(getClass().getName(), "loadTicketContent loop " + tl.getTicketContentCount());
+				notify_datachanged();
 				notifyChange(uri);
 //				tl.notifyChange();
 			}

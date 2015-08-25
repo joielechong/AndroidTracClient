@@ -109,4 +109,6 @@
 	<string name="hostnameign">\nDe verificatie negeren?"</string>
 	<string name="noJSON">"Geen JSON ondersteuning op de TRAC-server"</string>
 	<string name="unknownError">Onbekende fout opgetreden</string>
+	<string name="cookies">Cookies</string>
+	<string name="cookieInform">We gebruiken apparaat-ID\'s om content en advertenties te personaliseren, om functies voor social media te bieden en om ons websiteverkeer te analyseren. We delen deze ID\'s en andere informatie ook met onze partners voor social media, adverteren en analyse.</string>
 </resources>

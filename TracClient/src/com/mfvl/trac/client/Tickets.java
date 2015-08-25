@@ -95,6 +95,14 @@ public class Tickets {
 		putTicket(ticket);
 	}
 	
+	public void delTicket(int ticknr) {
+		tcLog.d(getClass().getName(), "delTicket ticknr = "+ticknr);
+		if (ticketMap.containsKey(ticknr)) {
+			Ticket removed = ticketMap.remove(ticknr);
+			tcLog.d(getClass().getName(), "delTicket removed = "+removed);
+		}
+	}
+	
     public void setTicketGroupCount(final int v) {
         ticketGroupCount = v;
     }

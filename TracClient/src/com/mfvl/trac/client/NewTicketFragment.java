@@ -68,6 +68,7 @@ public class NewTicketFragment extends TracClientFragment implements View.OnClic
         tcLog.d(this.getClass().getName(), "onViewCreated view = " + view + " sis = " + savedInstanceState);
         final Button storButton = (Button) view.findViewById(R.id.storebutton);
         final TableLayout tl = (TableLayout) view.findViewById(R.id.newTickTable);
+		LayoutInflater inflater = LayoutInflater.from(context);
 
         try {
             View e = view.findViewById(R.id.waarde);
@@ -84,6 +85,8 @@ public class NewTicketFragment extends TracClientFragment implements View.OnClic
                 } else if (veld.options() != null) {
                     v = makeComboSpin(context, veldnaam, veld.options(), veld.optional(), veld.value());
                 } else {
+					v = (EditText) inflater.inflate((veldnaam.equals("Description") ? R.layout.descrfield: R.layout.stdfield), null, false);
+/*					
                     v = new EditText(context);
                     ((EditText) v).setTextAppearance(context, android.R.attr.textAppearanceMedium);
                     ((EditText) v).setMinLines(1);
@@ -97,6 +100,7 @@ public class NewTicketFragment extends TracClientFragment implements View.OnClic
                         ((EditText) v).setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
                     }
                     ((EditText) v).setEms(10);
+*/
                     extra = EXTRA;
                 }
                 if (v != null) {

@@ -65,7 +65,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 	protected Handler tracStartHandler;
 
     @Override
-    public void onAttach(Activity activity) {
+    public void onAttach(Context activity) {
         super.onAttach(activity);
         tcLog.d(getClass().getName() + ".super", "onAttach ");
         context = (TracStart) activity;
@@ -257,8 +257,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
         }
     }
 
-    private Spinner _makeComboSpin(Context context, final String veldnaam, List<Object> waardes, boolean optional, Object w,
-            boolean dialogWanted) {
+    private Spinner _makeComboSpin(Context context, final String veldnaam, List<Object> waardes, boolean optional, Object w, boolean dialogWanted) {
         final List<Object> spinValues = new ArrayList<Object>();
 
         if (optional) {
@@ -272,12 +271,11 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
         }
 
         final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<Object>(context, android.R.layout.simple_spinner_item, spinValues);
-
         spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         final Spinner valSpinner = makeDialogSpinner(context, dialogWanted);
 
         valSpinner.setAdapter(spinAdapter);
-        if (waardes != null && w != null && !w.equals("")) {
+        if (waardes != null && w != null && !"".equals(w)) {
             valSpinner.setSelection(waardes.indexOf(w) + (optional ? 1 : 0), true);
         }
         return valSpinner;
@@ -292,29 +290,13 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
     }
 
     protected void selectTicket(int ticknr) {
-        tcLog.d(getClass().getName(), "selectTicket = " + ticknr);
+        tcLog.d(getClass().getName()+".super", "selectTicket = " + ticknr);
         final Ticket t = listener.getTicket(ticknr);
-		listener.onTicketSelected(t);
-/*
-        if (t != null && t.hasdata()) {
-            listener.onTicketSelected(t);
-        } else {
-            listener.startProgressBar(R.string.downloading);
-            new Ticket(ticknr, context, this);
-        }
-		*/
+		if (t != null  && t.hasdata()) {
+			listener.onTicketSelected(t);
+		}
     }
-/*
-    public void onComplete(Ticket t2) {
-		listener.stopProgressBar();
-		if (t2.hasdata()) {
-			listener.putTicket(t2);
-			listener.onTicketSelected(t2);
-		} else {
-			showAlertBox(R.string.notfound,R.string.ticketnotfound,"");
-        }
-    }
-*/	
+	
 	public static void hideSoftKeyboard(Activity activity) {
 		InputMethodManager inputMethodManager = (InputMethodManager)  activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
 		inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);

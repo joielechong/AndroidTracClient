@@ -23,43 +23,44 @@
     android:gravity="top"
     android:orientation="vertical" >
 			
-		<LinearLayout
-			android:layout_width="match_parent"
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center_horizontal"
+		android:id="@+id/versionblock"
+		android:orientation="vertical" >
+		
+		<TextView
+			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:gravity="center_horizontal"
-			android:id="@+id/versionblock"
-			android:orientation="vertical" >
-			
-			<TextView
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:gravity="center_horizontal"
-				android:text="@string/title_text"
-				android:textColor="@color/help_text"
-				android:textSize="@dimen/helphdr_textsize"
-				android:textStyle="bold" />
- 
-			<TextView
-				android:id="@+id/about_version_text"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:gravity="center_horizontal"
-				android:textColor="@color/help_text"
-				android:textSize="@dimen/help_textsize"
-				android:textStyle="bold" />
+			android:text="@string/title_text"
+			android:textColor="@color/help_text"
+			android:textSize="@dimen/helphdr_textsize"
+			android:textStyle="bold" />
 
-			<TextView
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:gravity="center_horizontal"
-				android:text="@string/auteur"
-				android:textColor="@color/help_text"
-				android:textSize="@dimen/help_textsize"
-				android:textStyle="bold" />
-		</LinearLayout>
-		
-        <WebView
-            android:id="@+id/webfile"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+		<TextView
+			android:id="@+id/about_version_text"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:gravity="center_horizontal"
+			android:textColor="@color/help_text"
+			android:textSize="@dimen/help_textsize"
+			android:textStyle="bold" />
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:gravity="center_horizontal"
+			android:text="@string/auteur"
+			android:textColor="@color/help_text"
+			android:textSize="@dimen/help_textsize"
+			android:textStyle="bold" />
+			
+	</LinearLayout>
+	
+	<WebView
+		android:id="@+id/webfile"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content" />
 </LinearLayout>

@@ -16,7 +16,6 @@
 
 package com.mfvl.trac.client;
 
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -84,17 +83,14 @@ public class Credentials {
      */
     public static void storeCredentials() {
         // tcLog.d(_tag, "storeCredentials");
-        final SharedPreferences.Editor editor = settings.edit();
-
-        editor.putString(Const.PREF_URL, _url);
-        editor.putString(Const.PREF_USER, _username);
-        editor.putString(Const.PREF_PASS, _password);
-        editor.putBoolean(Const.PREF_HACK, _sslHack);
-        editor.putBoolean(Const.PREF_HNH, _sslHostNameHack);
-        editor.putString(Const.PREF_PROF, _profile);
-
-        // apply the edits!
-        editor.apply();
+        settings.edit()
+			.putString(Const.PREF_URL, _url)
+			.putString(Const.PREF_USER, _username)
+			.putString(Const.PREF_PASS, _password)
+			.putBoolean(Const.PREF_HACK, _sslHack)
+			.putBoolean(Const.PREF_HNH, _sslHostNameHack)
+			.putString(Const.PREF_PROF, _profile)
+			.apply();
     }
 
     /** Set login credentials server-url, username, password and profile */
@@ -145,12 +141,10 @@ public class Credentials {
     public static boolean checkDisclaimer() {
         tcLog.d("Credentials", "checkDisclaimer");
         final String thisRun = Const.DisclaimerVersion;
+//        final String lastRun = thisRun;
         final String lastRun = settings.getString(Const.PREF_DISCLAIM, "");
-		
-//        final SharedPreferences.Editor editor = settings.edit();
-//        editor.putString(Const.PREF_DISCLAIM, Const.DisclaimerVersion);
-//        editor.apply();
-
+//        settings.edit().putString(Const.PREF_DISCLAIM, Const.DisclaimerVersion).apply();
+	
         return !lastRun.equals(thisRun);
     }
 
@@ -158,20 +152,23 @@ public class Credentials {
         // tcLog.d("Credentials", "getFirstRun");
         final String thisRun = versie;
         final String lastRun = settings.getString(Const.PREF_1ST, "");
-		
-        final SharedPreferences.Editor editor = settings.edit();
-        editor.putString(Const.PREF_1ST, thisRun);
-        editor.apply();
-
+        settings.edit().putString(Const.PREF_1ST, thisRun).apply();
         return !lastRun.equals(thisRun);
     }
 
+    public static boolean getCookieInform() {
+        tcLog.d("Credentials", "getCookieInform");
+		return settings.getBoolean(Const.PREF_COOKIEINFORM,true);
+	}
+	
+	public static void setCookieInform(boolean val) {
+        tcLog.d("Credentials", "getCookieInform");
+		settings.edit().putBoolean(Const.PREF_COOKIEINFORM, val).apply();
+	}
+
     public static void storeFilterString(final String filterString) {
         tcLog.d("Credentials", "storeFilterString: " + filterString);
-        final SharedPreferences.Editor editor = settings.edit();
-
-        editor.putString(Const.PREF_FILTER, filterString == null ? "" : filterString);
-        editor.apply();
+        settings.edit().putString(Const.PREF_FILTER, filterString == null ? "" : filterString).apply();
     }
 
     public static String getFilterString() {
@@ -184,18 +181,12 @@ public class Credentials {
 
     public static void removeFilterString() {
         tcLog.d("Credentials", "removeFilterString");
-        final SharedPreferences.Editor editor = settings.edit();
-
-        editor.putString(Const.PREF_FILTER, "max=500&status!=closed");
-        editor.apply();
+		storeFilterString("max=500&status!=closed");
     }
 
     public static void storeSortString(final String sortString) {
         tcLog.d("Credentials", "storeSortString: " + sortString);
-        final SharedPreferences.Editor editor = settings.edit();
-
-        editor.putString(Const.PREF_SORT, sortString == null ? "" : sortString);
-        editor.apply();
+        settings.edit().putString(Const.PREF_SORT, sortString == null ? "" : sortString).apply();
     }
 
     public static String getSortString() {
@@ -208,10 +199,7 @@ public class Credentials {
 
     public static void removeSortString() {
         tcLog.d(_tag, "removeSortString");
-        final SharedPreferences.Editor editor = settings.edit();
-
-        editor.putString(Const.PREF_SORT, "order=priority&order=modified&desc=1");
-        editor.apply();
+        storeSortString("order=priority&order=modified&desc=1");
     }
 
     private static final X500Principal DEBUG_DN = new X500Principal("CN=Android Debug,O=Android,C=US");

@@ -24,7 +24,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import android.app.Activity;
-import android.content.Intent;
+import android.content.Context;
+import android.content.Intent; 
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
@@ -52,7 +53,7 @@ public class UpdateTicketFragment extends TracClientFragment implements View.OnC
 	private static String _tag;
 
     @Override
-    public void onAttach(Activity activity) {
+    public void onAttach(Context activity) {
         super.onAttach(activity);
  		_tag = getClass().getName();
        final Bundle args = getArguments();

@@ -22,11 +22,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Activity;
-import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -39,6 +40,9 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 
 public class TracTitlescreenActivity extends Activity {
 	private static String _tag;
+	private int timerVal = 3000;
+	private Intent launchTrac = null; 
+	private Handler handler = null;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,9 +89,7 @@ public class TracTitlescreenActivity extends Activity {
                 adMobAvailable = true;
             } else {
                 if (GooglePlayServicesUtil.isUserRecoverableError(isAvailable)) {
-                    final Dialog dialog = GooglePlayServicesUtil.getErrorDialog(isAvailable, this, 123456);
-
-                    dialog.show();
+                    GooglePlayServicesUtil.getErrorDialog(isAvailable, this, 123456).show();
                 } else {
                     tcLog.d(_tag, "Hoe kom je hier");
                 }
@@ -99,7 +101,7 @@ public class TracTitlescreenActivity extends Activity {
         // Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
         MyTracker.reportActivityStart(this);
 		
-        final Intent launchTrac = new Intent(getApplicationContext(), TracStart.class);
+        launchTrac = new Intent(getApplicationContext(), TracStart.class);
 
         // adMobAvailable=false;
         launchTrac.putExtra(Const.ADMOB, adMobAvailable);
@@ -137,55 +139,8 @@ public class TracTitlescreenActivity extends Activity {
                 }
             }
         }
-        final Handler handler = new Handler();
-        final Timer t = new Timer();
-/*		
-		if (Credentials.checkDisclaimer()) {
-			final Dialog dialog = new Dialog(this);
-			dialog.setContentView(R.layout.disclaimer);
-			Button okButton = (Button) dialog.findViewById(R.id.okBut);
-			okButton.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					dialog.dismiss();
-					startActivity(launchTrac);
-					finish();
-				}
-			});
-			
-			t.schedule(new TimerTask() {
-				@Override
-				public void run() {
-					handler.post(new Runnable() {
-						@Override
-						public void run() {
-							handler.post(new Runnable() {
-								@Override
-								public void run() {
-									dialog.show();
-								}
-							});
-						}
-					});
-				}
-			}, 3000);
-		} else {
-*/
-			t.schedule(new TimerTask() {
-				@Override
-				public void run() {
-					handler.post(new Runnable() {
-						@Override
-						public void run() {
-							startActivity(launchTrac);
-							finish();
-						}
-					});
-				}
-			}, 3000);
-/*
-		}
-*/
+        handler = new Handler();
+		cookieInform();
 	}
 
     @Override
@@ -195,4 +150,69 @@ public class TracTitlescreenActivity extends Activity {
         // Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
         MyTracker.reportActivityStop(this);
     }
+	
+	private void cookieInform() {
+		handler.post(new Runnable() {
+			@Override
+			public void run() {
+				tcLog.d(_tag, "cookieInform");
+				if (Credentials.getCookieInform()) {
+					new AlertDialog.Builder(TracTitlescreenActivity.this)
+						.setTitle(R.string.cookies)
+						.setMessage(R.string.cookieInform)
+						.setNeutralButton(R.string.oktext, new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+		//						Credentials.setCookieInform(true);
+								dialog.dismiss();
+								timerVal = 1;
+								showDisclaimer();
+							}
+						}).show();
+				} else {
+					showDisclaimer();
+				}
+			}
+		});
+	}
+	
+	private void showDisclaimer() {
+		handler.post(new Runnable() {
+			@Override
+			public void run() {
+				tcLog.d(_tag, "showDisclaimer");
+				if (Credentials.checkDisclaimer()) {
+					new AlertDialog.Builder(TracTitlescreenActivity.this)
+						.setTitle("Discliamer")
+						.setMessage("Dit is een disclaimer")
+						.setNeutralButton(R.string.oktext, new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								dialog.dismiss();
+								startApp();
+							}
+						}).show();
+				} else {
+					startApp();
+				}
+			}
+		});
+	}
+	
+	private void startApp() {
+        tcLog.d(_tag, "startApp");
+        final Timer t = new Timer();
+		t.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				handler.post(new Runnable() {
+					@Override
+					public void run() {
+						startActivity(launchTrac);
+						finish();
+					}
+				});
+			}
+		}, timerVal);
+	}
 }

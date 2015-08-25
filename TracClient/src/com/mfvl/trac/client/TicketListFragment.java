@@ -29,7 +29,9 @@ import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.ShareActionProvider;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -78,9 +80,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 				@Override
 				public void run() {
 					tcLog.d(getClass().getName(), "TicketDataSetObserver.onChanged.run");
-					if (hs != null) {
-						hs.setText(listener.getTicketContentCount() + "/" + listener.getTicketCount());
-					}
+					setStatus(listener.getTicketContentCount() + "/" + listener.getTicketCount());
 //					dataAdapter.notifyDataSetChanged();
 					listView.invalidate();
 				}
@@ -96,7 +96,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 	TicketDataSetObserver ticketDataSetObserver = new TicketDataSetObserver();
 	
     @Override
-    public void onAttach(Activity activity) {
+    public void onAttach(Context activity) {
         super.onAttach(activity);
         tcLog.d(getClass().getName(), "onAttach");
         final Bundle args = this.getArguments();
@@ -144,6 +144,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
             R.color.swipe_green, 
             R.color.swipe_orange, 
             R.color.swipe_red);
+		listener.listViewCreated();
 	}
 
     @Override
@@ -247,12 +248,29 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
         super.onCreateOptionsMenu(menu, inflater);
     }
 	
+ 	private ShareActionProvider listShare = null;
+	
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         tcLog.d(getClass().getName(), "onPrepareOptionsMenu");
         super.onPrepareOptionsMenu(menu);
 		listener.setActionProvider(menu,R.id.tlshare);
-    }
+		final MenuItem itemList = menu.findItem(R.id.tlshare);
+		if (itemList != null) {
+			tcLog.d(getClass().getName(), "item = " + itemList);
+			listShare = (ShareActionProvider) MenuItemCompat.getActionProvider(itemList);
+			updateShareActionProvider();
+		}
+	}
+	
+	private void updateShareActionProvider() {
+        tcLog.d(getClass().getName(), "updateShareActionProvider");
+		Intent i = listener.shareList();
+		tcLog.d(getClass().getName(), "SAP = " + listShare + " " + i);
+		if (listShare != null && i != null) {
+			listShare.setShareIntent(i);
+		}
+     }
 	
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -262,29 +280,25 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 		if (itemId == R.id.help) {
 			showHelp();
 		} else if (itemId == R.id.tlselect) {
-            final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-
-            alertDialogBuilder.setTitle(R.string.chooseticket);
-            alertDialogBuilder.setMessage(R.string.chooseticknr);
             final EditText input = new EditText(context);
-
             input.setInputType(InputType.TYPE_CLASS_NUMBER);
-            alertDialogBuilder.setView(input);
-
-            alertDialogBuilder.setCancelable(false);
-            alertDialogBuilder.setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int id) {
-                    final int ticknr = Integer.parseInt(input.getText().toString());
-
-                    selectTicket(ticknr);
-                }
-            });
-            alertDialogBuilder.setNegativeButton(R.string.cancel, null);
-            final AlertDialog alertDialog = alertDialogBuilder.create();
-
+			
             if (!context.isFinishing()) {
-                alertDialog.show();
+				final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+				alertDialogBuilder.setTitle(R.string.chooseticket)
+					.setMessage(R.string.chooseticknr)
+					.setView(input)
+					.setCancelable(false)
+					.setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int id) {
+							final int ticknr = Integer.parseInt(input.getText().toString());
+
+							selectTicket(ticknr);
+						}
+					})
+					.setNegativeButton(R.string.cancel, null)
+					.show();
             }
 //        } else if (itemId == R.id.tlshare) {
 //            shareList();
@@ -321,22 +335,35 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 		}
         tcLog.d(getClass().getName(), "onSaveInstanceState = " + savedState);
     }
+	
+	private void setStatus(final String s) {
+		try {
+			hs.setText(s);
+		} catch (Exception e) {
+		}
+	}
+
+	private void setStatus(final int s) {
+		try {
+			hs.setText(s);
+		} catch (Exception e) {		}
+	}
 
 	public void dataHasChanged() {
-        tcLog.d(getClass().getName(), "dataHasChanged hs = " + hs);
-        if (hs != null) {
-            hs.setText(listener.getTicketContentCount() + "/" + listener.getTicketCount());
-        }
-		getView().invalidate();
-        setScroll();
+		try {
+			tcLog.d(getClass().getName(), "dataHasChanged hs = " + hs);
+			setStatus(listener.getTicketContentCount() + "/" + listener.getTicketCount());
+			updateShareActionProvider();
+			listView.invalidate();
+			listView.invalidateViews();
+			setScroll();
+		} catch (Exception e) {}
 	}
 	
 	public void startLoading() {
         tcLog.d(getClass().getName(), "startLoading hs = " + hs);
-        if (hs != null) {
-            hs.setText(R.string.ophalen);
-        }
-	}
+        setStatus(R.string.ophalen);
+ 	}
 
 	// AbsListView.OnScrollListener
 	
