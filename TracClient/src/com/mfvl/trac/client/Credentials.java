@@ -54,7 +54,8 @@ public class Credentials {
         settings = context.getSharedPreferences(Const.PREFS_NAME, 0);
         _context = context;
         _tag = getClass().getName();
-		buildVersion();
+//		buildVersion();
+		versie = context.getString(R.string.appversion);
     }
 
     public static Credentials getInstance(final Context context) {
@@ -231,6 +232,7 @@ public class Credentials {
         return debuggable;
     }
 
+/*
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     private static String buildVersion() {
         PackageInfo info;
@@ -255,7 +257,7 @@ public class Credentials {
         // tcLog.d(_tag, "buildVersion versie = " + versie);
         return versie;
     }
-	
+*/	
 	public static String getVersion() {
 		return versie;
 	}

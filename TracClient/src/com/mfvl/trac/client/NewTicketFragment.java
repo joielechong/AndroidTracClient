@@ -86,21 +86,6 @@ public class NewTicketFragment extends TracClientFragment implements View.OnClic
                     v = makeComboSpin(context, veldnaam, veld.options(), veld.optional(), veld.value());
                 } else {
 					v = (EditText) inflater.inflate((veldnaam.equals("Description") ? R.layout.descrfield: R.layout.stdfield), null, false);
-/*					
-                    v = new EditText(context);
-                    ((EditText) v).setTextAppearance(context, android.R.attr.textAppearanceMedium);
-                    ((EditText) v).setMinLines(1);
-                    if (veldnaam.equals("Description")) {
-                        ((EditText) v).setMaxLines(10);
-                        ((EditText) v).setInputType(
-                                InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
-                                | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-                    } else {
-                        ((EditText) v).setMaxLines(1);
-                        ((EditText) v).setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
-                    }
-                    ((EditText) v).setEms(10);
-*/
                     extra = EXTRA;
                 }
                 if (v != null) {
