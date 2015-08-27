@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
- * Copyright (C) 2012 Paul Burke
- *               2015 Michiel van Loon
+ * Copyright (C) 2013,2014 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +13,16 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
--->
-<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-  <style name="ButtonBarBase">
-    <item name="android:paddingStart">2dp</item>
-    <item name="android:paddingEnd">2dp</item>
-  </style>
-  
-</resources>
+-->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/text1"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceListItemSmall"
+    android:gravity="center_vertical"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:textColor="@color/help_back"
+    android:background="@color/popup_back"
+    android:minHeight="?android:attr/listPreferredItemHeightSmall"/>

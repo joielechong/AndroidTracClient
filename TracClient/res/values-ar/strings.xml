@@ -1,10 +1,7 @@
 <resources  xmlns:tools="http://schemas.android.com/tools" tools:ignore="ExtraTranslation">
 
-    <string name="app_name">متابع الزبائن</string>
     <string name="about_button">عن متابع الزبائن</string>
-    <string name="tracUrl">رابط المتابعة</string>
     <string name="tracUser">إسم المستخدم</string>
-    <string name="tracUserHint">إسم المستخدم</string>
     <string name="tracPw">كلمة المرور</string>
     <string name="tracPwHint">كلمة المرور</string>
     <string name="bewaren">تخزين بيانات الإعتماد</string>
@@ -45,12 +42,10 @@
     <string name="noaction">لا يوجد إجراء متوفر</string>
     <string name="zoekfilter">أدخل عبارة البحث</string>
     <string name="zoek">بحث</string>
-    <string name="title_text">متابعة الزبون</string>
     <string name="storefilter">حفظ التصنيف</string>
     <string name="storesort">حفظ نظام الترتيب</string>
     <string name="help">مساعدة</string>
     <string name="Add">إضافة</string>
-    <string name="auteur">ميشيل فان لون</string>
     <string name="sslHack">قبول الشهادة الموقعة ذاتيا</string>
 
     <string-array name="filter_names">

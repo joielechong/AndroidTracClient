@@ -17,10 +17,7 @@
 -->
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="en">
 
-	<string name="app_name" translatable="false">TracClient</string>
 	<string name="about_button">About TracClient</string>
-	<string name="tracUrl" translatable="false">TRAC url</string>
-	<string name="tracUrlHint" translatable="false">http://host/trac/login/rpc</string>
 	<string name="tracUser">Username</string>
 	<string name="tracUserHint">Username</string>
 	<string name="tracPw">Password</string>
@@ -37,7 +34,6 @@
 	<string name="sort">Sort</string>
 	<string name="changehost">Select another Trac host</string>
 	<string name="updateticket">Modify status of ticket</string>
-	<string name="warning" translatable="false">!</string>
 	<string name="nieuw">New ticket</string>
 	<string name="nodata">No data</string>
 	<string name="nodatadesc">Data of this ticket is not yet loaded</string>
@@ -64,12 +60,10 @@
 	<string name="noaction">No action supplied</string>
 	<string name="zoekfilter">Enter search string</string>
 	<string name="zoek">Search</string>
-	<string name="title_text" translatable="false">TRAC\nCLIENT</string>
 	<string name="storefilter">Save filter</string>
 	<string name="storesort">Save sort order</string>
 	<string name="help">Help</string>
 	<string name="Add">Add</string>
-	<string name="auteur" translatable="false">Michiel van Loon</string>
 	<string name="sslHack">Accept Self Signed Certificates</string>
 	<string name="select">Select</string>
 	<string name="getlist">Fetching Ticketlist</string>
@@ -121,7 +115,6 @@
 	<string name="unknownError">Unknown error occurred</string>
 	<string name="cookies">Cookies</string>
 	<string name="cookieInform">We use device IDs to personalize content and ads, to provide features for social media and to analyze our website traffic. We share these IDs and other information, with our partners for social media, advertising and analysis.</string>
-
 	<string name="drawer_open">Drawer open</string>
 	<string name="drawer_close">Drawer close</string>
 

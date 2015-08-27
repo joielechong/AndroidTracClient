@@ -24,12 +24,11 @@ package com.mfvl.trac.client;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.widget.CursorAdapter;
-import android.support.v4.widget.SimpleCursorAdapter;
+import android.widget.CursorAdapter;
+import android.widget.SimpleCursorAdapter;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -105,11 +104,11 @@ public class TracLoginFragment extends TracClientFragment implements View.OnClic
         tcLog.d(_tag, "onCreate savedInstanceState = " + savedInstanceState);
         setHasOptionsMenu(true);
         if (savedInstanceState == null) {
-            url = context.url;
-            username = context.username;
-            password = context.password;
-            sslHack = context.sslHack;
-            sslHostNameHack = context.sslHostNameHack;
+            url = listener.getUrl();
+            username = listener.getUsername();
+            password = listener.getPassword();
+            sslHack = listener.getSslHack();
+            sslHostNameHack = listener.getSslHostNameHack();
         }
     }
     
@@ -155,11 +154,11 @@ public class TracLoginFragment extends TracClientFragment implements View.OnClic
         if (url == null) {
             if (savedInstanceState == null) {
                 // tcLog.d(_tag, "onViewCreated use Activity");
-                url = context.url;
-                username = context.username;
-                password = context.password;
-                sslHack = context.sslHack;
-                sslHostNameHack = context.sslHostNameHack;
+				url = listener.getUrl();
+				username = listener.getUsername();
+				password = listener.getPassword();
+				sslHack = listener.getSslHack();
+				sslHostNameHack = listener.getSslHostNameHack();
             } else {
                 // tcLog.d(_tag, "onViewCreated use savedInstanceState");
                 url = savedInstanceState.getString(Const.NEW_URL);
@@ -279,11 +278,11 @@ public class TracLoginFragment extends TracClientFragment implements View.OnClic
         if (url == null) {
             if (savedInstanceState == null) {
                 // tcLog.d(_tag, "onActivityCreated use Activity");
-                url = context.url;
-                username = context.username;
-                password = context.password;
-                sslHack = context.sslHack;
-                sslHostNameHack = context.sslHostNameHack;
+				url = listener.getUrl();
+				username = listener.getUsername();
+				password = listener.getPassword();
+				sslHack = listener.getSslHack();
+				sslHostNameHack = listener.getSslHostNameHack();
             } else {
                 // tcLog.d(_tag, "onActivityCreated use savedInstanceState");
                 url = savedInstanceState.getString(Const.NEW_URL);
@@ -508,14 +507,8 @@ public class TracLoginFragment extends TracClientFragment implements View.OnClic
         checkHackBox(urlView.getText().toString());
     }
 	
-	@Override 
 	public void showHelp() {
-        final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
-        final String filename = context.getString(R.string.loginhelpfile);
-
-        launchTrac.putExtra(Const.HELP_FILE, filename);
-        launchTrac.putExtra(Const.HELP_VERSION, false);
-        startActivity(launchTrac);
+		showHelpFile(R.string.loginhelpfile);
 	}
     
     @Override

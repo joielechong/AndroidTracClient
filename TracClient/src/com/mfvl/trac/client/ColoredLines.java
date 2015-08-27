@@ -16,7 +16,6 @@
 
 package com.mfvl.trac.client;
 
-import java.util.Arrays;
 
 import android.view.View;
 import android.view.ViewGroup;

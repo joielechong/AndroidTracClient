@@ -40,9 +40,8 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.ShareActionProvider;
+import android.widget.ShareActionProvider;
 import android.text.InputType;
 import android.view.GestureDetector;
 import android.view.Gravity;
@@ -269,7 +268,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 			break;
 			
 			case R.id.cancelpw:
-			if (pw != null && !context.isFinishing()) {
+			if (pw != null && !listener.isFinishing()) {
 				pw.dismiss();
 			}
 			break;
@@ -408,7 +407,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 		listener.setActionProvider(menu,R.id.dfshare);
         final MenuItem itemDetail = menu.findItem(R.id.dfshare);
 		if (itemDetail != null) {
-			ShareActionProvider mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(itemDetail);
+			ShareActionProvider mShareActionProvider = (ShareActionProvider) itemDetail.getActionProvider();
 			Intent i = shareTicket(_ticket);
 			tcLog.d(getClass().getName(), "item = " + itemDetail + " " + mShareActionProvider + " " + i);
 			if (mShareActionProvider != null && i != null) {
@@ -428,14 +427,8 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 		return null;
     }
 
-	@Override
 	public void showHelp() {
-		final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
-		final String filename = context.getString(R.string.helpdetailfile);
-
-		launchTrac.putExtra(Const.HELP_FILE, filename);
-		launchTrac.putExtra(Const.HELP_VERSION, false);
-		startActivity(launchTrac);
+		showHelpFile(R.string.helpdetailfile);
 	}
 
     @Override
@@ -451,7 +444,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
         } else if (item.getItemId() == R.id.help) {
 			showHelp();
         } else if (item.getItemId() == R.id.dfselect) {
-            if (!context.isFinishing()) {
+            if (!listener.isFinishing()) {
 
                 final EditText input = new EditText(context);
                 input.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -792,7 +785,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
                     if (mv != null && !modVeld.isEmpty()) {
                         mv.setVisibility(View.VISIBLE);
                     }
-                    if (pw != null && !context.isFinishing()) {
+                    if (pw != null && !listener.isFinishing()) {
                         pw.dismiss();
                     }
                 }
@@ -814,7 +807,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
     public boolean onBackPressed() {
         tcLog.d(this.getClass().getName(), "onBackPressed");
 		try {
-            if (pw.isShowing() && !context.isFinishing()) {
+            if (pw.isShowing() && !listener.isFinishing()) {
                 pw.dismiss();
                 return true;
             }

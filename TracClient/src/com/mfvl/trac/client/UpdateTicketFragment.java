@@ -25,9 +25,7 @@ import org.json.JSONException;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent; 
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -51,10 +49,8 @@ public class UpdateTicketFragment extends TracClientFragment implements View.OnC
     private int ticknr;
     private Boolean sissaved = false;
 	private static String _tag;
-
-    @Override
-    public void onAttach(Context activity) {
-        super.onAttach(activity);
+	
+	private void onMyAttach(Context activity) {
  		_tag = getClass().getName();
        final Bundle args = getArguments();
 
@@ -62,7 +58,19 @@ public class UpdateTicketFragment extends TracClientFragment implements View.OnC
         if (args != null) {
             ticknr = args.getInt(Const.CURRENT_TICKET);
         }
+	}
+
+    @Override
+    public void onAttach(Context activity) {
+        super.onAttach(activity);
+		onMyAttach(activity);
     }
+	
+    @Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		onMyAttach(activity);
+	}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -325,14 +333,8 @@ public class UpdateTicketFragment extends TracClientFragment implements View.OnC
         }
     }
 
-	@Override 
 	public void showHelp() {
-        final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
-        final String filename = context.getString(R.string.updatehelpfile);
-
-        launchTrac.putExtra(Const.HELP_FILE, filename);
-        launchTrac.putExtra(Const.HELP_VERSION, false);
-        startActivity(launchTrac);
+		showHelpFile(R.string.updatehelpfile);
 	}
 
     @Override

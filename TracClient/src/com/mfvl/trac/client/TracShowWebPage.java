@@ -16,16 +16,12 @@
 
 package com.mfvl.trac.client;
 
-
-import android.annotation.TargetApi;
-import android.os.Build;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
+//import android.view.Window;
+//import android.view.WindowManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
@@ -42,8 +38,8 @@ public class TracShowWebPage extends Activity {
         final Intent i = this.getIntent();
         final boolean toonVersie = i.getBooleanExtra(Const.HELP_VERSION, true);
 
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.trac_about);
         final String filename = "file:///android_asset/" + i.getStringExtra(Const.HELP_FILE) + ".html";
 
@@ -60,23 +56,13 @@ public class TracShowWebPage extends Activity {
 
         MyTracker.report("Normal", "WebView", filename);
         final WebView wv = (WebView) findViewById(R.id.webfile);
-
         // wv.getSettings().setJavaScriptEnabled(true);
         wv.setWebViewClient(new WebViewClient());
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-			setWebZoom_ics(wv);
-		}
-
+        wv.getSettings().setTextZoom(getResources().getInteger(R.integer.webzoom));
         wv.loadUrl(filename);
         //tcLog.d(_tag, "webview = " + wv);
     }
 	
-    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    private void setWebZoom_ics(final WebView wv) {
-        final int webzoom = getResources().getInteger(R.integer.webzoom);
-        wv.getSettings().setTextZoom(webzoom);
-    }
-    
     @Override
     public void onStart() {
         //tcLog.d(_tag, "onStart");
