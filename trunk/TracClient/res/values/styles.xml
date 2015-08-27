@@ -16,30 +16,38 @@
  * limitations under the License.
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-
-  <!-- Application theme. -->
-  <style name="AppTheme" parent="AppBaseTheme">
-    <!-- All customizations that are NOT specific to a particular API-level can go here. -->
-  </style>
-  
   <!--
       Base application theme, dependent on API level. This theme is replaced
       by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
   -->
-  <style name="AppBaseTheme" parent="@style/Theme.AppCompat">
+  <style name="AppBaseTheme" parent="android:Theme.Holo.Light">
     <!--
         Theme customizations available in newer API levels can go in
         res/values-vXX/styles.xml, while customizations related to
         backward-compatibility can go here.
     -->
+  </style> 
+ 
+  <!-- Application theme. -->
+  <style name="AppTheme" parent="@style/AppBaseTheme">
+    <!-- All customizations that are NOT specific to a particular API-level can go here. -->
   </style>
   
-  <style name="FullscreenTheme" parent="@style/Theme.AppCompat">
+
+  <style name="FullscreenThemeBase" parent="android:Theme.Holo.Light.NoActionBar.Fullscreen">
+	<item name="android:alertDialogTheme">@style/AlertDialogStyle</item>
+  </style>
+  
+  <style name="AlertDialogStyle" parent="android:style/Theme.DeviceDefault.Dialog.Alert">
+
+  </style>
+
+  <style name="FullscreenTheme" parent="@style/FullscreenThemeBase">
     <item name="android:windowContentOverlay">@null</item>
     <item name="android:background">@color/help_back</item>
     <item name="android:windowBackground">@null</item>
-    <item name="buttonBarStyle">@style/ButtonBar</item>
-    <item name="buttonBarButtonStyle">@style/ButtonBarButton</item>
+    <item name="android:buttonBarStyle">@style/ButtonBar</item>
+    <item name="android:buttonBarButtonStyle">@style/ButtonBarButton</item>
   </style>
 
   <style name="TitleScreenText" parent="android:Widget.TextView">
@@ -55,7 +63,7 @@
 	<item name="android:textSize">50sp</item>
   </style>
   
-  <style name="ButtonBarBase" parent="@style/Theme.AppCompat">
+  <style name="ButtonBarBase">
     <item name="android:paddingLeft">2dp</item>
     <item name="android:paddingRight">2dp</item>
   </style>
@@ -65,7 +73,7 @@
     <item name="android:paddingBottom">0dp</item>
     <item name="android:background">@android:drawable/bottom_bar</item>
   </style>
-  
+
   <style name="ButtonBarButton" />
   
   <style name="NormalButton" parent="android:Widget.Button">
@@ -74,14 +82,11 @@
 	<item name="android:layout_weight">1</item>
   </style>
   
-  <style name="MyStyle" parent="@style/Theme.AppCompat.Light.DarkActionBar">
-    <!--
-	Here local modifications of the style
-    -->
+  <style name="TracClientHelpStyle" parent="@style/FullscreenTheme">
+    <item name="android:background">@color/help_back</item>
   </style>
   
-  <style name="TracClientHelpStyle" parent="@style/AppTheme">
-    <item name="android:background">@color/help_back</item>
+  <style name="MyStyle" parent="android:Theme.Holo.Light.DarkActionBar">
   </style>
   
 </resources>

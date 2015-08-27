@@ -26,14 +26,12 @@ import java.util.Locale;
 
 import javax.security.auth.x500.X500Principal;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
-import android.os.Build;
 import android.os.Environment;
 
 
@@ -54,8 +52,7 @@ public class Credentials {
         settings = context.getSharedPreferences(Const.PREFS_NAME, 0);
         _context = context;
         _tag = getClass().getName();
-//		buildVersion();
-		versie = context.getString(R.string.appversion);
+		versie = context.getString(R.string.app_version);
     }
 
     public static Credentials getInstance(final Context context) {
@@ -232,32 +229,6 @@ public class Credentials {
         return debuggable;
     }
 
-/*
-    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
-    private static String buildVersion() {
-        PackageInfo info;
-
-        if (versie == null) {
-            try {
-                info = _context.getPackageManager().getPackageInfo(_context.getPackageName(), 0);
-                versie = "V" + info.versionName;
-                final int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-
-                // tcLog.d(_tag, "buildVersion versie = " + versie + " api = " + currentapiVersion);
-                if (isDebuggable() && currentapiVersion >= android.os.Build.VERSION_CODES.GINGERBREAD) {
-                    versie += "/" + info.lastUpdateTime / (1000 * 60);
-                }
-            } catch (final NameNotFoundException e) {
-                tcLog.i(_tag, "buildVersion", e);
-                if (versie == null) {
-                    versie = "V0.6.x";
-                }
-            }
-        }
-        // tcLog.d(_tag, "buildVersion versie = " + versie);
-        return versie;
-    }
-*/	
 	public static String getVersion() {
 		return versie;
 	}

@@ -17,13 +17,12 @@
 package com.mfvl.trac.client;
 
 
-import android.support.v4.widget.SimpleCursorAdapter;
-import android.view.View;
-import android.view.ViewGroup;
 import android.database.Cursor;
 import android.database.CursorWrapper;
-import android.annotation.SuppressLint;
 import android.content.Context;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.SimpleCursorAdapter;
 
 
 public class TicketListAdapter extends SimpleCursorAdapter implements OnTicketsChangeListener {
@@ -127,7 +126,6 @@ public class TicketListAdapter extends SimpleCursorAdapter implements OnTicketsC
 		}
 	}
 	
-    @SuppressLint("NewApi")
 	@Override
     public Cursor swapCursor(Cursor c) {
         Cursor c1 = super.swapCursor(c);

@@ -18,8 +18,6 @@ package com.mfvl.trac.client;
 
 
 import android.database.AbstractCursor;
-import android.content.ContentResolver;
-import android.net.Uri;
 
 
 public class TicketCursor extends AbstractCursor {

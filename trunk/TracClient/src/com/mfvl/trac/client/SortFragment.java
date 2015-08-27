@@ -20,7 +20,6 @@ package com.mfvl.trac.client;
 import java.util.ArrayList;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -236,14 +235,8 @@ public class SortFragment extends TracClientFragment implements View.OnClickList
     // super.onCreateOptionsMenu(menu, inflater);
     // }
 
-	@Override
 	public void showHelp() {
-        final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
-        final String filename = context.getString(R.string.sorthelpfile);
-
-        launchTrac.putExtra(Const.HELP_FILE, filename);
-        launchTrac.putExtra(Const.HELP_VERSION, false);
-        startActivity(launchTrac);
+		showHelpFile(R.string.sorthelpfile);
 	}
 	
     @Override

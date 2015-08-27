@@ -27,11 +27,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AlertDialog;
+import android.app.AlertDialog;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -60,8 +57,8 @@ public class TracTitlescreenActivity extends Activity {
         tcLog.i(_tag, "doAnalytics = " + doAnalytics);
 		MyTracker.setDoAnalytics(doAnalytics);
         try {
-            requestWindowFeature(Window.FEATURE_NO_TITLE);
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//            requestWindowFeature(Window.FEATURE_NO_TITLE);
+//            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
             setContentView(R.layout.activity_titlescreen);
             final TextView tv = (TextView) findViewById(R.id.version_content);
 
@@ -160,7 +157,7 @@ public class TracTitlescreenActivity extends Activity {
 					new AlertDialog.Builder(TracTitlescreenActivity.this)
 						.setTitle(R.string.cookies)
 						.setMessage(R.string.cookieInform)
-						.setNeutralButton(R.string.oktext, new DialogInterface.OnClickListener() {
+						.setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
 		//						Credentials.setCookieInform(true);
@@ -185,10 +182,11 @@ public class TracTitlescreenActivity extends Activity {
 					new AlertDialog.Builder(TracTitlescreenActivity.this)
 						.setTitle("Discliamer")
 						.setMessage("Dit is een disclaimer")
-						.setNeutralButton(R.string.oktext, new DialogInterface.OnClickListener() {
+						.setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
 								dialog.dismiss();
+								timerVal = 1;
 								startApp();
 							}
 						}).show();

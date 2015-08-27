@@ -15,8 +15,7 @@
  * limitations under the License.
 
 -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:support="http://schemas.android.com/apk/res-auto" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
         android:id="@+id/tlnieuw"
@@ -32,21 +31,21 @@
         android:icon="@android:drawable/ic_popup_sync"
         android:menuCategory="container"
         android:title="@string/tlrefresh"
-        support:showAsAction="ifRoom"/>
+        android:showAsAction="ifRoom"/>
     <item
         android:id="@+id/tlshare"
         android:icon="@android:drawable/ic_menu_share"
         android:menuCategory="container"
         android:title="@string/tlshare"
-        support:actionProviderClass="android.support.v7.widget.ShareActionProvider"
-        support:showAsAction="ifRoom"/>
+        android:actionProviderClass="android.widget.ShareActionProvider"
+        android:showAsAction="ifRoom"/>
     <item
         android:id="@+id/tlzoek"
         android:icon="@android:drawable/ic_menu_search"
         android:menuCategory="container"
         android:title="@string/zoek"
         android:visibility="gone"
-        support:showAsAction="ifRoom"/>
+        android:showAsAction="ifRoom"/>
     <item
         android:id="@+id/tlfilter"
         android:menuCategory="container"

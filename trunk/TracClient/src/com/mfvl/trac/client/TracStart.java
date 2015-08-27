@@ -16,23 +16,18 @@
 
 package com.mfvl.trac.client;
 
-import org.alexd.jsonrpc.JSONRPCException;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import android.annotation.TargetApi;
-
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
@@ -44,7 +39,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.net.Uri;
-import android.os.Build;
 import android.database.Cursor;
 import android.database.CursorWrapper;
 import android.os.Bundle;
@@ -56,23 +50,18 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.Process;
 import android.os.RemoteException;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentManager.OnBackStackChangedListener;
+import android.app.FragmentTransaction;
+import android.app.LoaderManager;
+import android.content.CursorLoader;
+import android.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
+import android.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.ShareActionProvider;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -80,7 +69,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.PopupMenu;
-
+import android.widget.ShareActionProvider;
 
 interface onFileSelectedListener {
     void onSelected(final String f);
@@ -121,9 +110,15 @@ interface InterFragmentListener {
 	void setActionProvider(Menu menu,int resid);
 	Intent shareList();
 	void listViewCreated();
+	String getUsername();
+	String getPassword();
+	String getUrl();
+	boolean getSslHack();
+	boolean getSslHostNameHack();
+	boolean isFinishing();
 }
 
-public class TracStart extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, InterFragmentListener, OnBackStackChangedListener {
+public class TracStart extends Activity implements LoaderManager.LoaderCallbacks<Cursor>, InterFragmentListener, OnBackStackChangedListener {
     // onActivityResult requestcode for filechooser
 
     /*
@@ -156,11 +151,11 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
     public ArrayList<FilterSpec> filterList = null;
 
     private String profile = null;
-    public String url = null;
-    public String username = null;
-    public String password = null;
-    public boolean sslHack = false;
-    public boolean sslHostNameHack = false;
+    private String url = null;
+    private String username = null;
+    private String password = null;
+    private boolean sslHack = false;
+    private boolean sslHostNameHack = false;
 
     private DrawerLayout mDrawerLayout = null;
     private ActionBarDrawerToggle mDrawerToggle = null;
@@ -311,6 +306,7 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
 			if (cursor != null) {
 				cursor.moveToFirst();
 				Ticket t = (Ticket)cursor.getTicket(1);
+				//tcLog.d(getClass().getName(),"onLoadFinished ticket = "+t);
 				if (t.hasdata()) {
 					tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_DISPLAY_TICKET,t));
 				} else {
@@ -318,6 +314,8 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
 				}
 //				onTicketSelected(t);
 				cursor.close();
+			} else {
+				showAlertBox(R.string.notfound,R.string.ticketnotfound,null);
 			}
 			break;
 
@@ -486,7 +484,6 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
         }
     }
 
-	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @SuppressWarnings("rawtypes")
         @Override
@@ -497,7 +494,6 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
     }
 	
 	/** Swaps fragments in the main content view */
-	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 	private void selectItem(int position) {
 				
 		switch (mDrawerIds[position]) {
@@ -558,9 +554,8 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
         startActivity(launchTrac);
 	}
 	
-	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     private void setupDrawer() {
-		ActionBar ab = getSupportActionBar();
+		ActionBar ab = getActionBar();
 		if (mDrawerTitles == null || mDrawerIds == null) {
 			PopupMenu p = new PopupMenu(this,findViewById(R.id.left_drawer));
 			p.inflate(R.menu.drawermenu);
@@ -728,9 +723,9 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
 		LocalBroadcastManager.getInstance(this).registerReceiver(mProviderMessageReceiver,new IntentFilter(PROVIDER_MESSAGE));
 		LocalBroadcastManager.getInstance(this).registerReceiver(mDataChangedMessageReceiver,new IntentFilter(DATACHANGED_MESSAGE));
 		
-        getSupportLoaderManager().initLoader(LIST_LOADER, null, this);
+        getLoaderManager().initLoader(LIST_LOADER, null, this);
 
-        fm = getSupportFragmentManager();
+        fm = getFragmentManager();
         fm.addOnBackStackChangedListener(this);
         // Handle when activity is recreated like on orientation Change
         shouldDisplayHomeUp();
@@ -858,7 +853,7 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
         final boolean canBack = fm.getBackStackEntryCount() > 1;
 
         tcLog.d(getClass().getName(), "shouldDisplayHomeUp canBack = " + canBack);
-        final ActionBar ab = getSupportActionBar();
+        final ActionBar ab = getActionBar();
 
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(canBack);
@@ -866,8 +861,8 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
     }
 
     @Override
-    public boolean onSupportNavigateUp() {
-        tcLog.d(getClass().getName(), "onSupportNavigateUp entry count = " + fm.getBackStackEntryCount());
+    public boolean onNavigateUp() {
+        tcLog.d(getClass().getName(), "onNavigateUp entry count = " + fm.getBackStackEntryCount());
         // This method is called when the up button is pressed. Just the pop back stack.
         fm.popBackStack();
         return true;
@@ -1025,24 +1020,28 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
 	
 	public void setActionProvider(Menu menu,int resid) {
         final MenuItem item = menu.findItem(resid);
-        ShareActionProvider mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+        ShareActionProvider mShareActionProvider = (ShareActionProvider)item.getActionProvider();
         if (mShareActionProvider == null) {
             tcLog.d(getClass().getName(), "onCreateOptionsMenu create new shareActionProvider item = "+item);
             mShareActionProvider = new ShareActionProvider(this);
-            MenuItemCompat.setActionProvider(item, mShareActionProvider);
-        }
-	
+            item.setActionProvider(mShareActionProvider);
+       }
+//		mShareActionProvider.setOnShareTargetSelectedListener(new ShareActionProvider.OnShareTargetSelectedListener() {
+//			@Override
+//			public boolean onShareTargetSelected(ShareActionProvider source, Intent intent) {
+//				tcLog.d(getClass().getName(),"onShareTargetSelected source = "+source+" intent = "+intent);
+//				return false;
+//			}
+//		});
+		mShareActionProvider.setShareHistoryFileName("custom_share_history"+resid+".xml");
+		
 	}
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         tcLog.d(getClass().getName(), "onCreateOptionsMenu");
-        final MenuInflater inflater = getMenuInflater();
-
-        inflater.inflate(R.menu.tracstartmenu, menu);
-		
+        getMenuInflater().inflate(R.menu.tracstartmenu, menu);
 		setActionProvider(menu,R.id.debug);
-
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -1154,26 +1153,16 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
         return true;
     }
 	
-	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-	private void onPrepareOptionsMenu_ICS(Menu menu) {
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        tcLog.d(getClass().getName(), "onPrepareOptionsMenu");
+        // If the nav drawer is open, hide action items related to the content view
+		
         boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
 		for(int i=0;i<mDrawerIds.length;i++) {
 			try {
 				menu.findItem(mDrawerIds[i]).setVisible(!drawerOpen);
 			} catch(Exception e) {}
-		}
-	}
-	
-	
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-		ShareActionProvider debugShare = null;
-		
-        tcLog.d(getClass().getName(), "onPrepareOptionsMenu");
-        // If the nav drawer is open, hide action items related to the content view
-		
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-			onPrepareOptionsMenu_ICS(menu);
 		}
 		Intent i = null;
 	
@@ -1183,7 +1172,7 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
         if (debug) {
            i = shareDebug();
 
-			debugShare = (ShareActionProvider) MenuItemCompat.getActionProvider(itemDebug);
+			ShareActionProvider debugShare = (ShareActionProvider)itemDebug.getActionProvider();
             tcLog.d(getClass().getName(), "item = " + itemDebug + " " + debugShare + " " + i);
 			if (debugShare != null && i != null) {
 				debugShare.setShareIntent(i);
@@ -1404,7 +1393,7 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
 			public void run() {
 				tcLog.d(getClass().getName(), "refreshOverview in UiThread");
 				dataAdapter.notifyDataSetChanged();
-				getSupportLoaderManager().restartLoader(LIST_LOADER, null, TracStart.this);
+				getLoaderManager().restartLoader(LIST_LOADER, null, TracStart.this);
 				setReferenceTime();
 			}
 		});
@@ -1440,14 +1429,11 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
 		}
     }
 	
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     public void enableDebug() {
         // tcLog.d(getClass().getName(), "enableDebug");
         debug = true;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
-            invalidateOptionsMenu();
-        }
+        invalidateOptionsMenu();
         tcLog.toast("Debug enabled");
     }
 
@@ -1472,9 +1458,9 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
 		Bundle args = new Bundle();
 		args.putString(BUNDLE_ISOTIJD,isoTijd);
 		if (changesLoaderStarted) {
-			getSupportLoaderManager().restartLoader(CHANGES_LOADER,args,this);
+			getLoaderManager().restartLoader(CHANGES_LOADER,args,this);
 		} else {
-			getSupportLoaderManager().initLoader(CHANGES_LOADER,args,this);
+			getLoaderManager().initLoader(CHANGES_LOADER,args,this);
 			changesLoaderStarted = true;
 		}
     }
@@ -1544,9 +1530,9 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
 		Bundle args = new Bundle();
 		args.putInt(BUNDLE_TICKET,i);
 		if (ticketLoaderStarted) {
-			getSupportLoaderManager().restartLoader(TICKET_LOADER,args,this);
+			getLoaderManager().restartLoader(TICKET_LOADER,args,this);
 		} else {
-			getSupportLoaderManager().initLoader(TICKET_LOADER,args,this);
+			getLoaderManager().initLoader(TICKET_LOADER,args,this);
 			ticketLoaderStarted = true;
 		}
 		return null;  // TODO
@@ -1662,5 +1648,25 @@ public class TracStart extends AppCompatActivity implements LoaderManager.Loader
 			}			
 		}
     };
+	
+	public String getUsername() {
+		return username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+	
+	public String getUrl() {
+		return url;
+	}
+	
+	public boolean getSslHack() {
+		return sslHack;
+	}
+	
+	public boolean getSslHostNameHack() {
+		return sslHostNameHack;
+	}
 	
 }

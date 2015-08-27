@@ -20,16 +20,14 @@ package com.mfvl.trac.client;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Rect;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
+import android.app.Fragment;
+import android.app.ActionBar;
 import android.view.inputmethod.InputMethodManager;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
@@ -44,8 +42,6 @@ import com.google.android.gms.ads.AdView;
 
 abstract public class TracClientFragment extends Fragment implements OnGlobalLayoutListener {
  
-	abstract public void showHelp();
-	
     public Ticket _ticket = null;
     public TracStart context;
     private AdView adView = null;
@@ -63,19 +59,31 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
     protected int extra_large_move;
     protected int drawer_border;
 	protected Handler tracStartHandler;
-
-    @Override
-    public void onAttach(Context activity) {
-        super.onAttach(activity);
-        tcLog.d(getClass().getName() + ".super", "onAttach ");
+	
+	private void onMyAttach(Context activity) {
         context = (TracStart) activity;
         listener = (InterFragmentListener) activity;
+		tcLog.d(getClass().getName(),"activity = "+activity+" "+context+" "+listener);
  		tracStartHandler = context.getHandler();
 		large_move = context.getResources().getInteger(R.integer.large_move);
         extra_large_move = context.getResources().getInteger(R.integer.extra_large_move);
         drawer_border = context.getResources().getInteger(R.integer.drawer_border);
+	}
+
+    @Override
+    public void onAttach(Context activity) {
+        super.onAttach(activity);
+        tcLog.d(getClass().getName() + ".super", "onAttach(C) ");
+		onMyAttach(activity);
     }
 	
+    @Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+        tcLog.d(getClass().getName() + ".super", "onAttach(A) ");
+		onMyAttach(activity);
+	}
+
 	protected void sendMessageToHandler(int msg) {
         tcLog.d(getClass().getName() + ".super", "sendMessageToHandler msg = " + msg);
 		tracStartHandler.sendMessage(tracStartHandler.obtainMessage(msg));
@@ -177,7 +185,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 
         if (view != null) {
             final View activityRootView = view.findViewById(R.id.updateTop);
-            final ActionBar ab = context.getSupportActionBar();
+            final ActionBar ab = context.getActionBar();
             final Rect r = new Rect();
 
             // r will be populated with the coordinates of your view that area still visible.
@@ -248,9 +256,8 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
         super.onDestroy();
     }
 
-   @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private Spinner makeDialogSpinner(Context context, boolean dialogWanted) {
-        if (dialogWanted && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+        if (dialogWanted) {
             return new Spinner(context, Spinner.MODE_DIALOG);
         } else {
             return new Spinner(context);
@@ -301,4 +308,17 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 		InputMethodManager inputMethodManager = (InputMethodManager)  activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
 		inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
 	}
+
+	abstract public void showHelp();
+	
+	public void showHelpFile(int resId) {
+        tcLog.d(getClass().getName()+".super", "showHelp");
+        final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
+        final String filename = context.getString(resId);
+
+        launchTrac.putExtra(Const.HELP_FILE, filename);
+        launchTrac.putExtra(Const.HELP_VERSION, false);
+        startActivity(launchTrac);
+	}
+	
 }

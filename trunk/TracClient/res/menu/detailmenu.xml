@@ -15,15 +15,14 @@
  * limitations under the License.
 
 -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:support="http://schemas.android.com/apk/res-auto" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
         android:id="@+id/dfrefresh"
         android:icon="@android:drawable/ic_popup_sync"
         android:menuCategory="container"
         android:title="@string/dfrefresh"
-        support:showAsAction="ifRoom"/>
+        android:showAsAction="ifRoom"/>
     <item
         android:id="@+id/dfempty"
         android:checkable="true"
@@ -35,20 +34,20 @@
         android:icon="@android:drawable/ic_menu_share"
         android:menuCategory="container"
         android:title="@string/dfshare"
-        support:actionProviderClass="android.support.v7.widget.ShareActionProvider"
-        support:showAsAction="ifRoom"/>
+        android:actionProviderClass="android.widget.ShareActionProvider"
+        android:showAsAction="ifRoom"/>
     <item
         android:id="@+id/dfattach"
         android:icon="@drawable/content_new_attachment"
         android:menuCategory="container"
         android:title="@string/attach"
-        support:showAsAction="ifRoom"/>
+        android:showAsAction="ifRoom"/>
     <item
         android:id="@+id/dfupdate"
         android:icon="@android:drawable/ic_menu_edit"
         android:menuCategory="container"
         android:title="@string/updateticket"
-        support:showAsAction="ifRoom"/>
+        android:showAsAction="ifRoom"/>
     <item
         android:id="@+id/dfselect"
         android:menuCategory="container"

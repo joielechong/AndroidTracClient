@@ -22,7 +22,6 @@ import java.util.Date;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 

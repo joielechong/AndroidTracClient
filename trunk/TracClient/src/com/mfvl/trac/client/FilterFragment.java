@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.List;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.Editable;
@@ -302,14 +301,8 @@ public class FilterFragment extends TracClientFragment {
         }
     }
 	
-	@Override
 	public void showHelp() {
-		final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
-		final String filename = context.getString(R.string.filterhelpfile);
-
-		launchTrac.putExtra(Const.HELP_FILE, filename);
-		launchTrac.putExtra(Const.HELP_VERSION, false);
-		startActivity(launchTrac);
+		showHelpFile(R.string.filterhelpfile);
 	}
 
     @Override

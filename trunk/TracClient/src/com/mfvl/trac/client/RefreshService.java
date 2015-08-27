@@ -34,7 +34,6 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.Process;
 import android.os.RemoteException;
-import android.support.v4.app.NotificationCompat;
 import android.content.res.Resources;
 
 
@@ -104,7 +103,13 @@ public class RefreshService extends Service {
                         launchIntent.setAction(refreshAction);
                         final PendingIntent pendingIntent = PendingIntent.getActivity(RefreshService.this, -1, launchIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-                        final NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(RefreshService.this).setSmallIcon(R.drawable.traclogo).setContentTitle(RefreshService.this.getString(R.string.notifmod)).setTicker(RefreshService.this.getString(R.string.foundnew)).setContentText(RefreshService.this.getString(R.string.foundnew)).setSubText(newTickets.toString()).setContentIntent(pendingIntent);
+                        final Notification.Builder mBuilder = new Notification.Builder(RefreshService.this)
+							.setSmallIcon(R.drawable.traclogo)
+							.setContentTitle(RefreshService.this.getString(R.string.notifmod))
+							.setTicker(RefreshService.this.getString(R.string.foundnew))
+							.setContentText(RefreshService.this.getString(R.string.foundnew))
+							.setSubText(newTickets.toString())
+							.setContentIntent(pendingIntent);
                         final Notification notification = mBuilder.build();
 
                         notification.flags |= Notification.FLAG_AUTO_CANCEL;
