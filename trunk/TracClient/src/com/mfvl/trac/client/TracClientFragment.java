@@ -63,8 +63,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 	private void onMyAttach(Context activity) {
         context = (TracStart) activity;
         listener = (InterFragmentListener) activity;
-		tcLog.d(getClass().getName(),"activity = "+activity+" "+context+" "+listener);
- 		tracStartHandler = context.getHandler();
+ 		tracStartHandler = listener.getHandler();
 		large_move = context.getResources().getInteger(R.integer.large_move);
         extra_large_move = context.getResources().getInteger(R.integer.extra_large_move);
         drawer_border = context.getResources().getInteger(R.integer.drawer_border);
@@ -95,7 +94,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 	}
 
 	protected void showAlertBox(final int titleres, final int message, final String addit){
-			tracStartHandler.sendMessage(tracStartHandler.obtainMessage(TracStart.MSG_SHOW_DIALOG,titleres,message,addit));
+		tracStartHandler.sendMessage(tracStartHandler.obtainMessage(TracStart.MSG_SHOW_DIALOG,titleres,message,addit));
 	}
 	
     @Override
@@ -313,7 +312,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 	
 	public void showHelpFile(int resId) {
         tcLog.d(getClass().getName()+".super", "showHelp");
-        final Intent launchTrac = new Intent(context.getApplicationContext(), TracShowWebPage.class);
+        final Intent launchTrac = new Intent(context, TracShowWebPage.class);
         final String filename = context.getString(resId);
 
         launchTrac.putExtra(Const.HELP_FILE, filename);

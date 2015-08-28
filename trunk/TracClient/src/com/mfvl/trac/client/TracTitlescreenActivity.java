@@ -57,8 +57,6 @@ public class TracTitlescreenActivity extends Activity {
         tcLog.i(_tag, "doAnalytics = " + doAnalytics);
 		MyTracker.setDoAnalytics(doAnalytics);
         try {
-//            requestWindowFeature(Window.FEATURE_NO_TITLE);
-//            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
             setContentView(R.layout.activity_titlescreen);
             final TextView tv = (TextView) findViewById(R.id.version_content);
 

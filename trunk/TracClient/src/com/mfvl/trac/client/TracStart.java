@@ -72,7 +72,7 @@ import android.widget.PopupMenu;
 import android.widget.ShareActionProvider;
 
 interface onFileSelectedListener {
-    void onSelected(final String f);
+    void onFileSelected(final String f);
 }
 
 
@@ -116,6 +116,7 @@ interface InterFragmentListener {
 	boolean getSslHack();
 	boolean getSslHostNameHack();
 	boolean isFinishing();
+	Handler getHandler();
 }
 
 public class TracStart extends Activity implements LoaderManager.LoaderCallbacks<Cursor>, InterFragmentListener, OnBackStackChangedListener {
@@ -946,7 +947,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 
                         tcLog.d(getClass().getName(), "File Selected: " + file.getAbsolutePath());
                         if (_oc != null) {
-                            _oc.onSelected(file.getAbsolutePath());
+                            _oc.onFileSelected(file.getAbsolutePath());
                         }
                     } catch (final Exception e) {
                         tcLog.d(getClass().getName(), "on ActivityResult: File select error", e);
@@ -1026,13 +1027,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
             mShareActionProvider = new ShareActionProvider(this);
             item.setActionProvider(mShareActionProvider);
        }
-//		mShareActionProvider.setOnShareTargetSelectedListener(new ShareActionProvider.OnShareTargetSelectedListener() {
-//			@Override
-//			public boolean onShareTargetSelected(ShareActionProvider source, Intent intent) {
-//				tcLog.d(getClass().getName(),"onShareTargetSelected source = "+source+" intent = "+intent);
-//				return false;
-//			}
-//		});
 		mShareActionProvider.setShareHistoryFileName("custom_share_history"+resid+".xml");
 		
 	}
