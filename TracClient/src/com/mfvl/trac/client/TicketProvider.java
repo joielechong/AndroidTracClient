@@ -234,36 +234,31 @@ public class TicketProvider extends ContentProvider {
 		tcLog.d(getClass().getName(),"getSingleTicket ticknr = "+ticknrstr);
 		if (ticketList != null) {
 			int ticknr = Integer.parseInt(ticknrstr);
-			Ticket t = ticketList.getTicket(ticknr);
 			final Tickets tl = new Tickets();
-			if (t == null || !t.hasdata()) {
-				tl.addTicket(new Ticket(ticknr));
-				final Semaphore active = new Semaphore(1, true);	
-				active.acquireUninterruptibly ();
-				new Thread() {
-					@Override
-					public void run() {
-						try {
-							loadTicketContent(null,tl);
-						} catch (Exception e) {
-							tcLog.e(getClass().getName(), "Exception in ticketContentLoad", e);
-						} finally {
-							active.release(1);
-						}
+			tl.addTicket(new Ticket(ticknr));
+			final Semaphore active = new Semaphore(1, true);	
+			active.acquireUninterruptibly ();
+			new Thread() {
+				@Override
+				public void run() {
+					try {
+						loadTicketContent(null,tl);
+					} catch (Exception e) {
+						tcLog.e(getClass().getName(), "Exception in ticketContentLoad", e);
+					} finally {
+						active.release(1);
 					}
-				}.start();
-				active.acquireUninterruptibly ();
-				active.release();
-				Ticket t1 = tl.getTicket(ticknr);
-				if (t1== null) {
-					return null;
 				}
-				if (!t1.hasdata()) {
-					tl.delTicket(ticknr);
-					return null;
-				}
-			} else {
-				tl.addTicket(t);
+			}.start();
+			active.acquireUninterruptibly ();
+			active.release();
+			Ticket t1 = tl.getTicket(ticknr);
+			if (t1== null) {
+				return null;
+			}
+			if (!t1.hasdata()) {
+				tl.delTicket(ticknr);
+				return null;
 			}
 			return new TicketCursor(tl);
 		}
@@ -400,7 +395,6 @@ public class TicketProvider extends ContentProvider {
                     }
                 }
 //				notifyChange(Uri.withAppendedPath(GET_QUERY_URI,""+t.getTicketnr()));
-				notify_datachanged();
             } catch (final TicketLoadException e) {
                 throw new TicketLoadException("loadTicketContent TicketLoadException thrown outerloop j=" + j, e);
             } catch (final Exception e) {
@@ -412,7 +406,6 @@ public class TicketProvider extends ContentProvider {
 //				tl.notifyChange();
 			}
         }
-//		getContext().getContentResolver().unregisterContentObserver(myObserver);
     }
 	
     private Cursor loadTickets(final Uri uri, final String[] projection, String reqString) {

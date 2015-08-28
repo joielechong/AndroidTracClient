@@ -16,77 +16,60 @@
  * limitations under the License.
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-  <!--
-      Base application theme, dependent on API level. This theme is replaced
-      by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
-  -->
-  <style name="AppBaseTheme" parent="android:Theme.Holo.Light">
-    <!--
-        Theme customizations available in newer API levels can go in
-        res/values-vXX/styles.xml, while customizations related to
-        backward-compatibility can go here.
-    -->
-  </style> 
- 
-  <!-- Application theme. -->
-  <style name="AppTheme" parent="@style/AppBaseTheme">
-    <!-- All customizations that are NOT specific to a particular API-level can go here. -->
-  </style>
-  
+	<style name="AppBaseTheme" parent="android:Theme.Holo.Light" />
 
-  <style name="FullscreenThemeBase" parent="android:Theme.Holo.Light.NoActionBar.Fullscreen">
-	<item name="android:alertDialogTheme">@style/AlertDialogStyle</item>
-  </style>
-  
-  <style name="AlertDialogStyle" parent="android:style/Theme.DeviceDefault.Dialog.Alert">
+	<style name="AppTheme" parent="@style/AppBaseTheme" />
 
-  </style>
+	<style name="FullscreenThemeBase" parent="android:Theme.Holo.Light.NoActionBar.Fullscreen" />
 
-  <style name="FullscreenTheme" parent="@style/FullscreenThemeBase">
-    <item name="android:windowContentOverlay">@null</item>
-    <item name="android:background">@color/help_back</item>
-    <item name="android:windowBackground">@null</item>
-    <item name="android:buttonBarStyle">@style/ButtonBar</item>
-    <item name="android:buttonBarButtonStyle">@style/ButtonBarButton</item>
-  </style>
+	<style name="FullscreenThemeBase.1">
+		<item name="android:alertDialogTheme">@style/AlertDialogStyle</item>
+	</style>
 
-  <style name="TitleScreenText" parent="android:Widget.TextView">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">@color/help_text</item>
-	<item name="android:gravity">center</item>
-	<item name="android:textSize">25sp</item>
-	<item name="android:textStyle">bold</item>
-  </style>
-  
-  <style name="TitleScreenText.Big">
-	<item name="android:textSize">50sp</item>
-  </style>
-  
-  <style name="ButtonBarBase">
-    <item name="android:paddingLeft">2dp</item>
-    <item name="android:paddingRight">2dp</item>
-  </style>
-  
-  <style name="ButtonBar" parrent="@style/ButtonBarBase">
-    <item name="android:paddingTop">5dp</item>
-    <item name="android:paddingBottom">0dp</item>
-    <item name="android:background">@android:drawable/bottom_bar</item>
-  </style>
+	<style name="AlertDialogStyle" parent="android:style/Theme.DeviceDefault.Dialog.Alert" />
 
-  <style name="ButtonBarButton" />
-  
-  <style name="NormalButton" parent="android:Widget.Button">
-	<item name="android:layout_width">0dip</item>
-	<item name="android:layout_height">wrap_content</item>
-	<item name="android:layout_weight">1</item>
-  </style>
-  
-  <style name="TracClientHelpStyle" parent="@style/FullscreenTheme">
-    <item name="android:background">@color/help_back</item>
-  </style>
-  
-  <style name="MyStyle" parent="android:Theme.Holo.Light.DarkActionBar">
-  </style>
-  
+	<style name="FullscreenTheme" parent="@style/FullscreenThemeBase">
+		<item name="android:windowContentOverlay">@null</item>
+		<item name="android:background">@color/help_back</item>
+		<item name="android:windowBackground">@null</item>
+		<item name="android:buttonBarStyle">@style/ButtonBar</item>
+		<item name="android:buttonBarButtonStyle">@style/ButtonBarButton</item>
+	</style>
+
+	<style name="TitleScreenText" parent="android:Widget.TextView">
+		<item name="android:layout_width">match_parent</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:textColor">@color/help_text</item>
+		<item name="android:gravity">center</item>
+		<item name="android:textSize">25sp</item>
+		<item name="android:textStyle">bold</item>
+	</style>
+
+	<style name="TitleScreenText.Big">
+		<item name="android:textSize">50sp</item>
+	</style>
+
+	<style name="ButtonBarBase" parent="android:Holo.ButtonBar" />
+
+	<style name="ButtonBarBase.1">
+		<item name="android:paddingLeft">2dp</item>
+		<item name="android:paddingRight">2dp</item>
+	</style>
+
+	<style name="ButtonBar" parrent="@style/ButtonBarBase.1">
+		<item name="android:paddingTop">5dp</item>
+		<item name="android:paddingBottom">0dp</item>
+		<item name="android:background">@android:drawable/bottom_bar</item>
+	</style>
+
+	<style name="ButtonBarButton" parent="android:Holo.Light.SegmentedButton" />
+
+	<style name="NormalButton" parent="android:Widget.Button">
+		<item name="android:layout_width">0dip</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:layout_weight">1</item>
+	</style>
+
+	<style name="MyStyle" parent="android:Theme.Holo.Light.DarkActionBar" />
+
 </resources>

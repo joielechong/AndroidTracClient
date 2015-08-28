@@ -68,7 +68,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 
-public class DetailFragment extends TracClientFragment implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener, CompoundButton.OnCheckedChangeListener, GestureDetector.OnGestureListener {
+public class DetailFragment extends TracClientFragment implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener, CompoundButton.OnCheckedChangeListener, GestureDetector.OnGestureListener, onFileSelectedListener {
     private class ModVeldMap extends HashMap<String, String> implements Serializable {
         private static final long serialVersionUID = 191019591050L;
     }
@@ -471,35 +471,10 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
             }
         } else if (item.getItemId() == R.id.dfattach) {
             if (_ticket != null) {
-                listener.onChooserSelected(new onFileSelectedListener() {
-                    @Override
-                    public void onSelected(final String filename) {
-                        // tcLog.d(this.getClass().getName(),"onChooserSelected ticket = "
-                        // + _ticket + " filename = " + filename);
-/*
-                        listener.startProgressBar(R.string.uploading);
-
-                        new Thread("addAttachment") {
-                            @Override
-                            public void run() {
-                                _ticket.addAttachment(filename, context, new onTicketCompleteListener() {
-                                    @Override
-                                    public void onComplete(Ticket t2) {
-                                        refresh_ticket();
-										listener.stopProgressBar();
-                                    }
-                                });
-
-                            }
-                        }.start();
-*/
-                    }
-                });
+                listener.onChooserSelected(this);
             }
         } else if (item.getItemId() == R.id.dfrefresh) {
              refresh_ticket();
-//        } else if (item.getItemId() == R.id.dfshare) {
-//            listener.shareTicket(_ticket);
         } else if (item.getItemId() == R.id.dfempty) {
             item.setChecked(!item.isChecked());
             showEmptyFields = item.isChecked();
@@ -509,6 +484,29 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
         }
         return true;
     }
+
+	@Override
+	public void onFileSelected(final String filename) {
+		tcLog.d(this.getClass().getName(),"onFileSelected ticket = " + _ticket + " filename = " + filename);
+/*
+		listener.startProgressBar(R.string.uploading);
+
+		new Thread("addAttachment") {
+			@Override
+			public void run() {
+				_ticket.addAttachment(filename, context, new onTicketCompleteListener() {
+					@Override
+					public void onComplete(Ticket t2) {
+						refresh_ticket();
+						listener.stopProgressBar();
+					}
+				});
+
+			}
+		}.start();
+*/
+	}
+	
 
     public void refresh_ticket() {
 		if (_ticket != null) {
@@ -833,6 +831,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 				return true;
 			}
 		}
+        tcLog.d(this.getClass().getName(), "onBackPressed returned false");
 		return false;
     }
 

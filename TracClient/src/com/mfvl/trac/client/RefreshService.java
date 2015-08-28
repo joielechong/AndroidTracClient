@@ -110,7 +110,7 @@ public class RefreshService extends Service {
 							.setContentText(RefreshService.this.getString(R.string.foundnew))
 							.setSubText(newTickets.toString())
 							.setContentIntent(pendingIntent);
-                        final Notification notification = mBuilder.build();
+                        final Notification notification = mBuilder.getNotification();
 
                         notification.flags |= Notification.FLAG_AUTO_CANCEL;
                         mNotificationManager.notify(notifId, notification);
