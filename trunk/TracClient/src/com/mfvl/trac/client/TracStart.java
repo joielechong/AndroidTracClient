@@ -198,7 +198,9 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	private boolean changesLoaderStarted = false;
 	private boolean ticketLoaderStarted = false;
 	private boolean loaderStarted = false;
-	
+	private boolean hasTicketsLoadingBar = false;
+	private Boolean ticketsLoading = false;
+		
 	private TicketListAdapter dataAdapter = null;
 	
     private String joinList(Object list[], final String sep) {
@@ -218,13 +220,9 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	private static final int CHANGES_LOADER = 2;
 	private static final int TICKET_LOADER = 3;
 	
-	private boolean hasTicketsLoadingBar = false;
-	private Boolean ticketsLoading = false;
-	
     @Override
     public Loader<Cursor> onCreateLoader(int loaderID, Bundle bundle) {
         tcLog.d(getClass().getName(), "onCreateLoader " + loaderID + " " + bundle);
-		Uri uri;
 
         /*
          * Takes action based on the ID of the Loader that's being created
@@ -232,7 +230,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         switch (loaderID) {
 			case LIST_LOADER:
 			hasTicketsLoadingBar = false;
-			uri = TicketProvider.LIST_QUERY_URI;
             // Returns a new CursorLoader
 			try {
 				getTicketListFragment().startLoading();
@@ -246,18 +243,16 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 				}
 			}
 			ticketsLoading = true;
-            return new CursorLoader(this, uri, fields, joinList(filterList.toArray(), "&"), null, joinList(sortList.toArray(), "&"));
+            return new CursorLoader(this, TicketProvider.LIST_QUERY_URI, fields, joinList(filterList.toArray(), "&"), null, joinList(sortList.toArray(), "&"));
 			
 			case CHANGES_LOADER:
 			String isoTijd = bundle.getString(BUNDLE_ISOTIJD);
-			uri = Uri.withAppendedPath(TicketProvider.QUERY_CHANGES_URI,isoTijd);
-			return new CursorLoader(this,uri,fields,null,null,null);
+			return new CursorLoader(this,Uri.withAppendedPath(TicketProvider.QUERY_CHANGES_URI,isoTijd),fields,null,null,null);
 			
 			case TICKET_LOADER:
 			int ticknr = bundle.getInt(BUNDLE_TICKET);
-			uri = Uri.withAppendedPath(TicketProvider.GET_QUERY_URI,""+ticknr);
 			startProgressBar(getString(R.string.downloading)+" "+ticknr);
-			return new CursorLoader(this,uri,fields,null,null,null);
+			return new CursorLoader(this,Uri.withAppendedPath(TicketProvider.GET_QUERY_URI,""+ticknr),fields,null,null,null);
 			
 				
         default:
@@ -270,12 +265,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     public void onLoadFinished(Loader<Cursor> loader, Cursor c) {
 		TicketCursor cursor;
         tcLog.d(getClass().getName(), "onLoadFinished " + loader + " " + loader.getId() + " " + c);
-		if (c instanceof CursorWrapper) {
-			cursor = (TicketCursor)((CursorWrapper)c).getWrappedCursor();
-		} else {
-			cursor = (TicketCursor)c;
-		}
-		
 		switch (loader.getId()) {
 			case LIST_LOADER:
 			synchronized(this) {
@@ -285,7 +274,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 				}
 				ticketsLoading = false;
 			}
-			dataAdapter.changeCursor(cursor);
+			dataAdapter.swapCursor(c);
 			try {
 				getTicketListFragment().dataHasChanged();
 			} catch (Exception e) {
@@ -295,37 +284,38 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 			
 			case CHANGES_LOADER:
 			List<Integer> newTickets = new ArrayList<Integer>();
-			for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-				newTickets.add(cursor.getInt(0));
+			for(c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+				newTickets.add(c.getInt(0));
 			}
 			sendMessageToService(MSG_SEND_NEW_TICKETS, newTickets);
-			cursor.close();
 			break;
 			
 			case TICKET_LOADER:
 			stopProgressBar();
-			if (cursor != null) {
-				cursor.moveToFirst();
-				Ticket t = (Ticket)cursor.getTicket(1);
-				//tcLog.d(getClass().getName(),"onLoadFinished ticket = "+t);
-				if (t.hasdata()) {
-					tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_DISPLAY_TICKET,t));
-				} else {
-					showAlertBox(R.string.notfound,R.string.ticketnotfound,null);
-				}
-//				onTicketSelected(t);
-				cursor.close();
+			if (c != null && c.moveToFirst()) {
+				tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_DISPLAY_TICKET,getTicket(c.getInt(0))));
 			} else {
 				showAlertBox(R.string.notfound,R.string.ticketnotfound,null);
+				getLoaderManager().destroyLoader(TICKET_LOADER);
 			}
 			break;
-
 		}
     }		
 	
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         tcLog.d(getClass().getName(), "onLoaderReset " + loader + " " + loader.getId());
+		switch (loader.getId()) {
+			case LIST_LOADER:
+			dataAdapter.swapCursor(null);
+			hasTicketsLoadingBar = false;
+			ticketsLoading = false;
+			break;
+			
+			case TICKET_LOADER:
+			ticketLoaderStarted = false;
+			break;
+		}
     }
 	
     private final ServiceConnection mConnection = new ServiceConnection() {

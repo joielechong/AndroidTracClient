@@ -16,7 +16,6 @@
 
 package com.mfvl.trac.client;
 
-
 import android.database.Cursor;
 import android.database.CursorWrapper;
 import android.content.Context;
@@ -24,8 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SimpleCursorAdapter;
 
-
-public class TicketListAdapter extends SimpleCursorAdapter implements OnTicketsChangeListener {
+public class TicketListAdapter extends SimpleCursorAdapter /* implements OnTicketsChangeListener */ {
     private CursorWrapper cursor;
     public static String[] fields = new String[] { TicketCursor.STR_FIELD_TICKET};
     public static int[] adapres = new int[] { R.id.ticket_list};
@@ -33,14 +31,12 @@ public class TicketListAdapter extends SimpleCursorAdapter implements OnTicketsC
     Context context;
 
     public TicketListAdapter(TracStart context, int resource, TicketCursor c) {
-        super(context, resource, c, fields, adapres, FLAG_REGISTER_CONTENT_OBSERVER);
+        super(context, resource, c, fields, adapres, 0);
         tcLog.d(getClass().getName(), "TicketListAdapter construction " + c);
-		if (c == null) {
-			cursor = null;
-		} else {
-			cursor = new CursorWrapper(c);
-		}
         this.context = context;
+
+		cursor = (c == null ? null : new CursorWrapper(c));
+
 		try {
 			ticketList = c.getTicketList();
 		} catch (Exception e) {
@@ -57,32 +53,24 @@ public class TicketListAdapter extends SimpleCursorAdapter implements OnTicketsC
 	@Override
 	public Cursor getCursor() {
 		Cursor c = super.getCursor();
-        if (!(c instanceof CursorWrapper)) {
-            return c;
-        } else {
-            return ((CursorWrapper)c).getWrappedCursor();
-        }
-	}
+        return (c instanceof CursorWrapper ?((CursorWrapper)c).getWrappedCursor() : c);
+	  }
 
     public void changeCursor(Cursor c) {
         tcLog.d(getClass().getName(), "changeCursor " + c);
         // super.changeCursorAndColumns(c,fields,adapres);
         super.changeCursor(c);
-        if (!(c instanceof CursorWrapper)) {
-            cursor = new CursorWrapper(c);
-        } else {
-            cursor = (CursorWrapper) c;
-        }
+        cursor = (c instanceof CursorWrapper ? (CursorWrapper) c : new CursorWrapper(c));
 		setTicketList(c);
     }
-	
+/*	
 	@Override
 	public void onTicketsChanged() {
 		tcLog.d(getClass().getName(), "onTicketsChanged ticketList = "+ticketList);
 		if (ticketList != null) {
 			tcLog.d(getClass().getName(), "onTicketsChanged ticketList.ticketList = "+ticketList.ticketList);
+			this.notifyDataSetChanged();
 		}
-		this.notifyDataSetChanged();
 		//TODO
 	}
 	
@@ -99,13 +87,13 @@ public class TicketListAdapter extends SimpleCursorAdapter implements OnTicketsC
 			t.setOnTicketsChangeListener(null);
 		}
 	}
-	
+*/	
 	private void setTicketList(Cursor c) {
-		tcLog.d(getClass().getName(), "setTicketList cursor = " + c);
-		tcLog.d(getClass().getName(), "setTicketList old ticketList = " + ticketList);
+//		tcLog.d(getClass().getName(), "setTicketList cursor = " + c);
+//		tcLog.d(getClass().getName(), "setTicketList old ticketList = " + ticketList);
 		Tickets oldTicketList = ticketList;
 		if (c == null) {
-			unregisterTicketListChangeListener(oldTicketList);
+//			unregisterTicketListChangeListener(oldTicketList);
 			ticketList = null;
 		} else {
 			Cursor cursor = c;
@@ -113,16 +101,16 @@ public class TicketListAdapter extends SimpleCursorAdapter implements OnTicketsC
 				cursor = ((CursorWrapper)c).getWrappedCursor();
 			}
 			if (!(cursor instanceof TicketCursor)) {
-				tcLog.e(getClass().getName(),"setTicketList cursor is not oftype TicketCursor: "+cursor);
+//				tcLog.e(getClass().getName(),"setTicketList cursor is not oftype TicketCursor: "+cursor);
 			} else {
 				ticketList = ((TicketCursor)cursor).getTicketList();
 				if (ticketList == null || !ticketList.equals(oldTicketList)) {
-					unregisterTicketListChangeListener(oldTicketList);
-					registerTicketListChangeListener(ticketList);
+//					unregisterTicketListChangeListener(oldTicketList);
+//					registerTicketListChangeListener(ticketList);
 				}
 			}
-			tcLog.d(getClass().getName(), "setTicketList c = "+c+" cursor = "+cursor);
-			tcLog.d(getClass().getName(), "setTicketList new ticketList = " + ticketList);
+//			tcLog.d(getClass().getName(), "setTicketList c = "+c+" cursor = "+cursor);
+//			tcLog.d(getClass().getName(), "setTicketList new ticketList = " + ticketList);
 		}
 	}
 	

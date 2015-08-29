@@ -38,7 +38,6 @@
 			android:hint="@string/zoekfilter"
 			android:inputType="text"
 			android:textSize="@dimen/list_textsize"
-			android:textAppearance="?android:attr/textAppearanceMedium"
 			android:visibility="gone" />
 
 		<RelativeLayout
@@ -51,16 +50,14 @@
 				android:layout_alignParentLeft="true"
 				android:layout_toLeftOf="@+id/listProgress"
 				android:text="@string/list_heading"
-				android:textSize="@dimen/list_textsize"
-				android:textAppearance="?android:attr/textAppearanceMedium" />
+				android:textSize="@dimen/list_textsize" />
 
 			<TextView
 				android:id="@+id/listProgress"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_alignParentRight="true"
-				android:textSize="@dimen/list_textsize"
-				android:textAppearance="?android:attr/textAppearanceMedium" />
+				android:textSize="@dimen/list_textsize" />
 
 		</RelativeLayout>
 
@@ -80,11 +77,6 @@
 
 	</LinearLayout>
 
-	<LinearLayout
-		android:id="@+id/adBlock"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_alignParentBottom="true"
-		android:orientation="vertical" />
+    <LinearLayout style="@style/AdBlockStyle" />
 
 </RelativeLayout>

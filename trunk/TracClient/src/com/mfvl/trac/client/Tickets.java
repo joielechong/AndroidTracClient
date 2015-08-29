@@ -21,11 +21,11 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
-
+/*
 interface OnTicketsChangeListener {
     void onTicketsChanged();
 }
-
+*/
 
 public class Tickets {
 
@@ -39,7 +39,7 @@ public class Tickets {
     private int ticketGroupCount;
     private int ticketContentCount;
 	
-    private OnTicketsChangeListener saveTc = null;
+//    private OnTicketsChangeListener saveTc = null;
 
     private boolean valid = false;
 
@@ -68,17 +68,17 @@ public class Tickets {
         // tcLog.d(_tag,"resetCache na ticketMap = "+ticketMap);
     }
 
-    public void setOnTicketsChangeListener(OnTicketsChangeListener tc) {
-        saveTc = tc;
-    }
+//    public void setOnTicketsChangeListener(OnTicketsChangeListener tc) {
+//        saveTc = tc;
+//    }
 	
-    public void notifyChange() {
-        tcLog.d(_tag, "notifyChange");
-        try {
-            saveTc.onTicketsChanged();
-        } catch (Exception e) {}
-		
-    }
+//    public void notifyChange() {
+//        tcLog.d(_tag, "notifyChange");
+//        try {
+//            saveTc.onTicketsChanged();
+//        } catch (Exception e) {}
+//		
+//    }
 	
     public Ticket getTicket(final int ticknr) {
         // tcLog.d(_tag, "getTicket ticknr = "+ticknr+ " "+ticketMap.containsKey(ticknr));
@@ -99,6 +99,7 @@ public class Tickets {
 		tcLog.d(getClass().getName(), "delTicket ticknr = "+ticknr);
 		if (ticketMap.containsKey(ticknr)) {
 			Ticket removed = ticketMap.remove(ticknr);
+			ticketList.remove(removed);
 			tcLog.d(getClass().getName(), "delTicket removed = "+removed);
 		}
 	}

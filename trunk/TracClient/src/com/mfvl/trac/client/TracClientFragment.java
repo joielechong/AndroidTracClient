@@ -20,14 +20,14 @@ package com.mfvl.trac.client;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.ActionBar;
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
-import android.app.Fragment;
-import android.app.ActionBar;
 import android.view.inputmethod.InputMethodManager;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
@@ -59,6 +59,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
     protected int extra_large_move;
     protected int drawer_border;
 	protected Handler tracStartHandler;
+	protected View activityRootView;
 	
 	private void onMyAttach(Context activity) {
         context = (TracStart) activity;
@@ -130,7 +131,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
         aboveView = view.findViewById(R.id.aboveAdBlock);
         adViewContainer = (LinearLayout) view.findViewById(R.id.adBlock);
 
-        final View activityRootView = view.findViewById(R.id.updateTop);
+        activityRootView = view.findViewById(R.id.updateTop);
 
         if (listener != null && listener.getDispAds()) {
             if (adViewContainer != null) {
@@ -183,7 +184,6 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
         final View view = getView();
 
         if (view != null) {
-            final View activityRootView = view.findViewById(R.id.updateTop);
             final ActionBar ab = context.getActionBar();
             final Rect r = new Rect();
 

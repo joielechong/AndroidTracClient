@@ -184,27 +184,14 @@
                     <Button
                         android:id="@+id/storebutton"
 						style="@style/NormalButton"
-                        android:layout_marginBottom="3dp"
-                        android:layout_marginTop="3dp"
                         android:text="@string/storeprofile" />
 
-                    <Button
-                        android:id="@+id/okBut"
-						style="@style/NormalButton"
-                        android:layout_marginBottom="3dp"
-                        android:layout_marginTop="3dp"
-                        android:text="@string/oktext" />
+                    <Button style="@style/OkButton" />
 				</LinearLayout>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
 
-    <LinearLayout
-        android:id="@+id/adBlock"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="vertical" >
-    </LinearLayout>
+    <LinearLayout style="@style/AdBlockStyle" />
 
 </RelativeLayout>

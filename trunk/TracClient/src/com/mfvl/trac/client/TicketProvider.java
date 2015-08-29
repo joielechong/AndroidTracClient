@@ -48,6 +48,7 @@ public class TicketProvider extends ContentProvider {
     private static final String CONFIG_QUERY_PATH = "config";
     private static final String VERIFY_QUERY_PATH = "verify";
     private static final String RESET_QUERY_PATH = "reset";
+	private static final String ATTACHMENT_QUERY_PATH = "attachment/";
     
     public static final Uri AUTH_URI = Uri.parse(URI);
     public static final Uri LIST_QUERY_URI = Uri.withAppendedPath(AUTH_URI, LIST_QUERY_PATH);
@@ -56,6 +57,7 @@ public class TicketProvider extends ContentProvider {
     public static final Uri CONFIG_QUERY_URI = Uri.withAppendedPath(AUTH_URI, CONFIG_QUERY_PATH);
     public static final Uri VERIFY_QUERY_URI = Uri.withAppendedPath(AUTH_URI, VERIFY_QUERY_PATH);
     public static final Uri RESET_QUERY_URI = Uri.withAppendedPath(AUTH_URI, RESET_QUERY_PATH);
+    public static final Uri ATTACHMENT_QUERY_URI = Uri.withAppendedPath(AUTH_URI, ATTACHMENT_QUERY_PATH);
     
     public static final String DIR_CONTENT_TYPE = "vnd.android.cursor.dir/" + AUTHORITY;
     public static final String ITEM_CONTENT_TYPE = "vnd.android.cursor.item/" + AUTHORITY;
@@ -66,6 +68,8 @@ public class TicketProvider extends ContentProvider {
     private static final int VERIFY = 5;
 	private static final int GET_TICKET = 6;
 	private static final int RESET = 7;
+	private static final int GET_ATTACHMENT = 8;
+	private static final int PUT_ATTACHMENT = 9;
  
     private static final UriMatcher sURIMatcher;
 	
@@ -94,6 +98,8 @@ public class TicketProvider extends ContentProvider {
         sURIMatcher.addURI(AUTHORITY, CONFIG_QUERY_PATH, CONFIG);
         sURIMatcher.addURI(AUTHORITY, VERIFY_QUERY_PATH, VERIFY);
         sURIMatcher.addURI(AUTHORITY, RESET_QUERY_PATH, RESET);
+        sURIMatcher.addURI(AUTHORITY, ATTACHMENT_QUERY_PATH+"#/#", GET_ATTACHMENT);
+        sURIMatcher.addURI(AUTHORITY, ATTACHMENT_QUERY_PATH+"#", PUT_ATTACHMENT);
     }	
     
     @Override
@@ -113,6 +119,10 @@ public class TicketProvider extends ContentProvider {
 			
 			case GET_TICKET:
 			return ITEM_CONTENT_TYPE;
+			
+			case GET_ATTACHMENT:
+			case PUT_ATTACHMENT:
+			return null;
         }
         return null;
     }
@@ -199,6 +209,9 @@ public class TicketProvider extends ContentProvider {
 			}
 			notifyChange(uri);
 			return 1;
+			
+			case PUT_ATTACHMENT:
+			return 0;
 		}
         return 0;
     }
@@ -208,6 +221,12 @@ public class TicketProvider extends ContentProvider {
         tcLog.d(getClass().getName(),
                 "query + entry " + uri + " " + projection + " " + selection + " " + selectionArgs + " " + sortOrder + " "
                 + sURIMatcher.match(uri));
+//		try {
+//			throw new Exception("Debug");
+//		} catch (Exception e) {
+//			tcLog.d(getClass().getName(),"Debug exception",e);
+//		}
+				
         switch (sURIMatcher.match(uri)) {
 			case LIST_TICKETS:
             accessAllowed.acquireUninterruptibly(1);
@@ -218,6 +237,9 @@ public class TicketProvider extends ContentProvider {
 			
 			case GET_TICKET:
 			return getSingleTicket(uri.getLastPathSegment());
+			
+			case GET_ATTACHMENT:
+			return null;
 	    
         default:
 			return null;
@@ -258,7 +280,6 @@ public class TicketProvider extends ContentProvider {
 			}
 			if (!t1.hasdata()) {
 				tl.delTicket(ticknr);
-				return null;
 			}
 			return new TicketCursor(tl);
 		}
@@ -413,7 +434,6 @@ public class TicketProvider extends ContentProvider {
         tcLog.d(getClass().getName(), "loadTickets  " + uri + " " + projection + " " + reqString);
 
 		TicketCursor cTickets = new TicketCursor(ticketList);
-//		cTickets.setNotificationUri(getContext().getContentResolver(), Uri.withAppendedPath(GET_QUERY_URI,"#"));
 		
 		if (!uri.equals(currentUri) || ! projection.equals(currentProjection) || !reqString.equals(currentReqString)) {
 			initCursor(cTickets);
@@ -472,11 +492,11 @@ public class TicketProvider extends ContentProvider {
 					}		
 				}
 			};
-
 			t.start();
+
 			try {
 				t.join();
-	//			tcLog.e(getClass().getName(), "In main thread again count = "+ticketList.getTicketCount()+" errmsg = "+loadTicketErrorMsg);
+//				tcLog.e(getClass().getName(), "In main thread again count = "+ticketList.getTicketCount()+" errmsg = "+loadTicketErrorMsg);
 				if (ticketList.getTicketCount() == 0) {
 					popup_warning(R.string.notickets,null);
 					accessAllowed.release(1);
