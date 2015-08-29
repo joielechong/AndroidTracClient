@@ -139,10 +139,7 @@
 				android:layout_gravity="center"
                 android:orientation="horizontal" >
 
-                <Button
-					android:id="@+id/canBut"
-					style="@style/NormalButton"
-                    android:text="@string/cancel" />
+                <Button	style="@style/CancelButton" />
 
                 <Button
 					android:id="@+id/storeBut"
@@ -152,12 +149,6 @@
         </LinearLayout>
     </ScrollView>
 
-    <LinearLayout
-        android:id="@+id/adBlock"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="vertical" >
-    </LinearLayout>
+    <LinearLayout style="@style/AdBlockStyle" />
 
 </RelativeLayout>

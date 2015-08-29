@@ -16,7 +16,6 @@
 
 package com.mfvl.trac.client;
 
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -239,7 +238,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 
 	@Override 
 	public void onRefresh() {
-		tcLog.d(this.getClass().getName(), "onRefresh");
+//		tcLog.d(this.getClass().getName(), "onRefresh");
  		refresh_ticket();
 		swipeLayout.setRefreshing(false);
 	}
@@ -255,7 +254,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 			case R.id.canBut:
 			modVeld.clear();
 			setSelect(true);
-			getFragmentManager().popBackStack();
+//			getFragmentManager().popBackStack();
 			break;
 			
 			case R.id.updBut:
@@ -461,10 +460,9 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 							try {
 								final int newTicket = Integer.parseInt(input.getText().toString());
 								// selectTicket(ticknr);
-								ticknr = newTicket;
+								listener.getTicket(newTicket);
 							} catch (final Exception e) {// noop keep old ticketnr
 							}
-							display_and_refresh_ticket();
 						}
 					})
 					.show();
@@ -511,42 +509,19 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
     public void refresh_ticket() {
 		if (_ticket != null) {
 			listener.refreshTicket(_ticket.getTicketnr());
-/*			
-			listener.startProgressBar(R.string.updating);
-
-			_ticket.refresh(context, new onTicketCompleteListener() {
-				@Override
-				public void onComplete(final Ticket t2) {
-					context.runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							try {
-								((ListView) getView().findViewById(R.id.listofFields)).invalidateViews();
-							} catch (final Exception e) {
-								// c1atch all nullpointers
-								tcLog.e(getClass().getName(), "onComplete refresh_ticket", e);
-							}
-							listener.stopProgressBar();
-						}
-					});
-				};
-			});
-*/
-			}
+		}
 	}
 
     @Override
     public void onSaveInstanceState(Bundle savedState) {
         super.onSaveInstanceState(savedState);
-        tcLog.d(getClass().getName(), "onSaveInstanceState _ticket = " + _ticket);
+        tcLog.d(getClass().getName(), "onSaveInstanceState _ticket = " + _ticket+ " "+ modVeld);
         if (_ticket != null) {
             savedState.putInt(Const.CURRENT_TICKET, _ticket.getTicketnr());
         } else if (ticknr != -1) {
-            tcLog.d(getClass().getName(), "onSaveInstanceState ticknr = " + ticknr);
             savedState.putInt(Const.CURRENT_TICKET, ticknr);
         }
         if (!modVeld.isEmpty()) {
-            tcLog.d(getClass().getName(), "onSaveInstanceState modVeld = " + modVeld);
             savedState.putSerializable(Const.MODVELD, modVeld);
         }
         savedState.putBoolean(Const.EMPTYFIELDS, showEmptyFields);
@@ -730,7 +705,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
                     : makeDialogComboSpin(getActivity(), veld, tmv.options(), tmv.optional(), waarde);
             final Button canBut = (Button) ll.findViewById(R.id.cancelpw);
 			canBut.setOnClickListener(this);
-            final Button storBut = (Button) ll.findViewById(R.id.storepw);
+            final Button storBut = (Button) ll.findViewById(R.id.okBut);
             final ListView parent = (ListView) getView().findViewById(R.id.listofFields);
 
             if (et != null) {

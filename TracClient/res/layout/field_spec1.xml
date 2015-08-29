@@ -53,13 +53,9 @@
 
         <Button
             android:id="@+id/cancelpw"
-			style="@style/NormalButton"
-            android:text="@string/cancel" />
+			style="@style/CancelButton" />
 
-        <Button
-            android:id="@+id/storepw"
- 			style="@style/NormalButton"
-            android:text="@string/oktext" />
+        <Button style="@style/OkButton" />
     </LinearLayout>
 
 </RelativeLayout>

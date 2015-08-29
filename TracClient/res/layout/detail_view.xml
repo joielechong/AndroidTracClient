@@ -19,7 +19,6 @@
             android:layout_height="wrap_content"
             android:clickable="true"
             android:text="@string/ophalen"
-            android:textAppearance="?android:attr/textAppearanceMedium"
             android:textSize="@dimen/list_textsize" />
 
         <LinearLayout
@@ -35,10 +34,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal" >
 
-                <Button
-					style="@style/NormalButton"
-					android:id="@+id/canBut"
-                    android:text="@string/cancel" />
+				<Button	style="@style/CancelButton" />
 
                 <Button
                     android:id="@+id/updBut"
@@ -67,11 +63,6 @@
 		</android.support.v4.widget.SwipeRefreshLayout>
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/adBlock"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="vertical" />
+    <LinearLayout style="@style/AdBlockStyle" />
 
 </RelativeLayout>
