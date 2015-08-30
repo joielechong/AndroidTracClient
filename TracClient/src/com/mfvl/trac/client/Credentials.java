@@ -238,35 +238,45 @@ public class Credentials {
     }
 
     public static String makeDbPath(String dbname) {
-        final File extpath = Environment.getExternalStorageDirectory();
 
         String dbpath = dbname;
 
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            final String p1 = extpath.toString() + "/TracClient/" + dbname;
+			final File extPath = Environment.getExternalStorageDirectory();
+			final File dirPath = new File(extPath,"TracClient");
+			//tcLog.d(_tag,"makeDbPath dirpath = "+dirPath);
+			final File filePath = new File(dirPath,dbname);
+            final String p1 = filePath.toString();
 
-            if (!isDebuggable()) {
+            if (!isDebuggable() && !isRCVersion()) {
                 if (new File(p1).exists()) {
                     dbpath = p1;
                 }
             } else {
-                dbpath = p1;
+				dirPath.mkdirs();
+				dbpath = p1;
             }
         }
-        // tcLog.d(context.getClass().getName(), "makeDbPath dbpath = " +
-        // dbpath);
+        tcLog.d(_tag, "makeDbPath dbpath = " + dbpath);
         return dbpath;
     }
 
     public static String makeExtFilePath(String filename) throws FileNotFoundException {
-        final File extpath = Environment.getExternalStorageDirectory();
-
-        final String filePath = extpath.toString() + "/TracClient/" + filename;
-
+		//tcLog.d(_tag,"makeExtFilePath filename = "+filename);
+        final File extPath = Environment.getExternalStorageDirectory();
+		//tcLog.d(_tag,"makeExtFilePath extpath = "+extPath);
+        final File dirPath = new File(extPath,"TracClient");
+		//tcLog.d(_tag,"makeExtFilePath dirpath = "+dirPath);
+		dirPath.mkdirs();
+		if (!dirPath.isDirectory()) {
+            throw new FileNotFoundException("Not a directory: "+dirPath.toString());
+		}
+        final File filePath = new File(dirPath,filename);
+		//tcLog.d(_tag,"makeExtFilePath filepath = "+filePath);
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            throw new FileNotFoundException(filePath);
+            throw new FileNotFoundException(filePath.toString());
         }
-        return filePath;
+        return filePath.toString();
     }
 	
     public static Boolean metaDataGetBoolean(String metaId) throws NameNotFoundException {
