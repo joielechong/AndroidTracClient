@@ -286,8 +286,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        // tcLog.d(getClass().getName(), "onActivityCreated");
-        // tcLog.d(getClass().getName(), "savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+        tcLog.d(getClass().getName(), "onActivityCreated savedInstanceState = " + savedInstanceState);
 
         if (savedInstanceState != null) {
             showEmptyFields = savedInstanceState.getBoolean(Const.EMPTYFIELDS, false);
@@ -400,6 +399,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
         final MenuItem item = menu.findItem(R.id.dfempty);
 
         if (item != null) {
+			tcLog.d(getClass().getName(), "showEmptyFields = "+showEmptyFields);
             item.setChecked(showEmptyFields);
         }
         setSelect(modVeld.isEmpty());
@@ -476,7 +476,8 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
         } else if (item.getItemId() == R.id.dfempty) {
             item.setChecked(!item.isChecked());
             showEmptyFields = item.isChecked();
-            refresh_ticket();
+ 			tcLog.d(getClass().getName(), "showEmptyFields = "+showEmptyFields);
+            displayTicket();
         } else {
             return super.onOptionsItemSelected(item);
         }
@@ -590,6 +591,8 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
                 try {
                     veld = fields.get(i);
                     modifiedString ms = null;
+					
+					tcLog.d(getClass().getName(), "showEmptyFields = "+showEmptyFields);
 
                     if ("summary".equals(veld) || "_ts".equals(veld) || "max".equals(veld) || "page".equals(veld)
                             || "id".equals(veld)) {// skip

@@ -528,6 +528,7 @@ public class TracLoginFragment extends TracClientFragment implements View.OnClic
                 a.swapCursor(pdb.getProfiles());
                 loginSpinner.postInvalidate();
             } catch (final Exception e) {
+				tcLog.e(getClass().getName(),"Export failed",e);
 				showAlertBox(R.string.failed,0,e.getMessage());
             }
         } else if (itemId == R.id.importprofiles) {

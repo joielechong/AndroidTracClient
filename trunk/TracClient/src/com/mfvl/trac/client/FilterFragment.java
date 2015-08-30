@@ -203,8 +203,7 @@ public class FilterFragment extends TracClientFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " +
-        // (savedInstanceState == null ? "null" : "not null"));
+        // tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " +savedInstanceState);
         setHasOptionsMenu(true);
     }
 
@@ -221,9 +220,8 @@ public class FilterFragment extends TracClientFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        // tcLog.d(this.getClass().getName(),"onActivityCreated savedInstanceState = "
-        // + (savedInstanceState == null ? "null" : "not null"));
-        tcLog.d(this.getClass().getName(), "onActivityCreated on entry inputSpec = " + inputSpec);
+        // tcLog.d(this.getClass().getName(),"onActivityCreated savedInstanceState = " savedInstanceState);
+//        tcLog.d(this.getClass().getName(), "onActivityCreated on entry inputSpec = " + inputSpec);
 
         tm = listener.getTicketModel();
         final View view = getView();
@@ -253,8 +251,8 @@ public class FilterFragment extends TracClientFragment {
             }
         }
 
-        tcLog.d(getClass().getName(), "onActivityCreated on exit inputSpec = " + inputSpec);
-        tcLog.d(getClass().getName(), "onActivityCreated on exit outputSpec = " + outputSpec);
+//        tcLog.d(getClass().getName(), "onActivityCreated on exit inputSpec = " + inputSpec);
+//        tcLog.d(getClass().getName(), "onActivityCreated on exit outputSpec = " + outputSpec);
 
         filterAdapter = new FilterAdapter(context, android.R.layout.simple_list_item_1, outputSpec);
         lv.setAdapter(filterAdapter);

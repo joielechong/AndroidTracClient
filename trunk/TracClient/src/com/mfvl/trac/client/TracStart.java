@@ -898,9 +898,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 
             if (urlArg != null) {
                 tcLog.d(getClass().getName(), "select Ticket = " + ticketArg);
-                if (ticketListFragment != null) {
-                    ticketListFragment.selectTicket(ticketArg);
-                }
+                ticketListFragment.selectTicket(ticketArg);
                 urlArg = null;
                 ticketArg = -1;
             }
@@ -1082,19 +1080,16 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
             ft.replace(R.id.displayList, ticketListFragment, ListFragmentTag);
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
             ft.addToBackStack(ListFragmentTag);
-        } else {
-            initializeList(ticketListFragment);
-            refreshOverview();
         }
         ft.commit();
+        refreshOverview();
     }
 
     private void onNewTicket() {
         tcLog.d(getClass().getName(), "onNewTicket ");
 
         final NewTicketFragment newtickFragment = new NewTicketFragment();
-        // tcLog.d(getClass().getName(), "newTickFragment =" +
-        // newtickFragment.toString());
+        // tcLog.d(getClass().getName(), "newTickFragment =" +  newtickFragment.toString());
         final FragmentTransaction ft = fm.beginTransaction();
 
         ft.replace(R.id.displayList, newtickFragment, NewFragmentTag);
