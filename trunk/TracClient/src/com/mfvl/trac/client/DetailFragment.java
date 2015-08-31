@@ -767,15 +767,10 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
                 }
             });
 
-            pw = new PopupWindow(getActivity());
-            pw.setFocusable(true);
-            pw.setContentView(ll);
+            pw = new PopupWindow(ll,getView().getWidth() * 9 / 10,getView().getHeight() * 4 / 5,true);
             final Drawable drw = new ColorDrawable(context.getResources().getInteger(R.color.popup_back));
-
             drw.setAlpha(220);
             pw.setBackgroundDrawable(drw);
-            pw.setWidth(getView().getWidth() * 9 / 10);
-            pw.setHeight(getView().getHeight() * 4 / 5);
             pw.showAtLocation(parent, Gravity.CENTER, 0, 0);
         }
     }
@@ -794,7 +789,8 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 					public void run() {
 						final AlertDialog.Builder alert = new AlertDialog.Builder(context);
 
-						alert.setTitle(R.string.warning)
+						alert
+							.setTitle(R.string.warning)
 							.setMessage(R.string.unsaved)
 							.setPositiveButton(R.string.ja, new DialogInterface.OnClickListener() {
 								@Override
@@ -809,7 +805,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 				return true;
 			}
 		}
-        tcLog.d(this.getClass().getName(), "onBackPressed returned false");
+        tcLog.d(getClass().getName(), "onBackPressed returned false");
 		return false;
     }
 
@@ -877,8 +873,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 			listener.updateTicket(_ticket,"leave", "", null, null, sendNotification,  modVeld);
 		} catch (final Exception e) {
 			tcLog.e(getClass().getName(), "Exception during update", e);
-			final String message = e.getMessage();
-			showAlertBox(R.string.storerr,R.string.storerrdesc,message);
+			showAlertBox(R.string.storerr,R.string.storerrdesc,e.getMessage());
 		}
 /*
         new Thread() {

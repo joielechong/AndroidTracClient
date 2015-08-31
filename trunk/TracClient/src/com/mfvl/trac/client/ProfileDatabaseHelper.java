@@ -153,39 +153,38 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void open() {
-        db = getWritableDatabase();
-        if (upgrade) {
-            Resources res = _context.getResources();
-            TypedArray ta = res.obtainTypedArray(R.array.profiles);
+		if (db == null) {
+			db = getWritableDatabase();
+			if (upgrade) {
+				Resources res = _context.getResources();
+				TypedArray ta = res.obtainTypedArray(R.array.profiles);
 
-            for (int i = 0; i < ta.length(); ++i) {
-                int resId = ta.getResourceId(i, 0);
-                String[] values = res.getStringArray(resId);
+				for (int i = 0; i < ta.length(); ++i) {
+					int resId = ta.getResourceId(i, 0);
+					String[] values = res.getStringArray(resId);
 
-                addProfile(values[0], new LoginProfile(values[1], values[2], values[3], values[4] == "true"));
-                // tcLog.d(getClass().getName(),"i = "+i+" values = "+Arrays.asList(values));
-            }
-            ta.recycle();
-            upgrade = false;
-        }
+					addProfile(values[0], new LoginProfile(values[1], values[2], values[3], values[4] == "true"));
+					// tcLog.d(getClass().getName(),"i = "+i+" values = "+Arrays.asList(values));
+				}
+				ta.recycle();
+				upgrade = false;
+			}
+		}
     }
 
     @Override
     public void close() {
         db.close();
+		db = null;
     }
 
     public void beginTransaction() {
-        if (db == null) {
-            open();
-        }
+        open();
         db.beginTransaction();
     }
 
     public void endTransaction() {
-        if (db == null) {
-            open();
-        }
+        open();
         db.setTransactionSuccessful();
         db.endTransaction();
     }
@@ -199,9 +198,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
         values.put(PASSWORD_ID, profile.getPassword());
         values.put(SSLHACK_ID, profile.getSslHack());
 
-        if (db == null) {
-            open();
-        }
+        open();
         try {
             db.insertOrThrow(TABLE_NAME, null, values);
         } catch (final SQLException e) {
@@ -210,18 +207,14 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Cursor getProfiles() {
-        if (db == null) {
-            open();
-        }
+        open();
         final Cursor c = db.rawQuery("SELECT rowid as _id,name from " + TABLE_NAME + " ORDER BY name", null);
 
         return c;
     }
 
     public Cursor getAllProfiles() {
-        if (db == null) {
-            open();
-        }
+        open();
         final Cursor c = db.rawQuery(
                 "SELECT " + NAME_ID + "," + URL_ID + "," + USERNAME_ID + "," + PASSWORD_ID + "," + SSLHACK_ID + " from "
                 + TABLE_NAME + " WHERE " + NAME_ID + " !=''",
@@ -233,9 +226,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
     public LoginProfile getProfile(String name) {
         LoginProfile profile = null;
 
-        if (db == null) {
-            open();
-        }
+        open();
         final Cursor c = db.query(TABLE_NAME, new String[] { URL_ID, USERNAME_ID, PASSWORD_ID, SSLHACK_ID }, NAME_ID + "=?",
                 new String[] { name }, null, null, null);
 
@@ -250,9 +241,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
     public LoginProfile findProfile(String url) {
         LoginProfile profile = null;
 
-        if (db == null) {
-            open();
-        }
+        open();
         final Cursor c = db.query(TABLE_NAME, new String[] { URL_ID, USERNAME_ID, PASSWORD_ID, SSLHACK_ID }, URL_ID + "=?",
                 new String[] { url }, null, null, null);
 
@@ -265,27 +254,21 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void delProfile(String name) {
-        if (db == null) {
-            open();
-        }
+        open();
         final String values[] = new String[] { name };
 
         db.delete(TABLE_NAME, "name=?", values);
     }
 
     public int delProfiles() {
-        if (db == null) {
-            open();
-        }
+        open();
         final String values[] = new String[] { "" };
 
         return db.delete(TABLE_NAME, "name!=?", values);
     }
 
     public void readXML(final String appname) throws Exception {
-        if (db == null) {
-            open();
-        }
+        open();
         final String fileName = Credentials.makeExtFilePath(appname + ".xml");
         final InputStream in = new BufferedInputStream(new FileInputStream(fileName));
         final XMLReader xmlR = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
