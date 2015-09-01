@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="id" name="adBlock" />
+    <item type="id" name="okBut" />
+    <item type="id" name="canBut" />
+	<item type="id" name="swipe_container" />
+	<item type="id" name="veldnaam" />
+</resources>

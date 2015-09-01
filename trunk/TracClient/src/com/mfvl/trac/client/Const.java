@@ -29,10 +29,6 @@ public final class Const {
     static final String CURRENT_SSLHACK = "sslHack";
     static final String CURRENT_SSLHOSTNAMEHACK = "sslHostNameHack";
 
-    static final String CURRENT_FILTER = "currentFilter";
-    static final String CURRENT_PROFILE = "currentProfile";
-    static final String CURRENT_SORTORDER = "currectSortOrder";
-
     static final String NEW_URL = "newURL";
     static final String NEW_USERNAME = "newUsername";
     static final String NEW_PASSWORD = "newPassword";

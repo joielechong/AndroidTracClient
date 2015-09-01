@@ -23,10 +23,8 @@
 
     <LinearLayout
         android:id="@+id/aboveAdBlock"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+		style="@style/ButtonHolder"
         android:layout_alignParentTop="true"
-        android:orientation="vertical"
         android:paddingBottom="@dimen/adview_padding" >
 
         <RelativeLayout

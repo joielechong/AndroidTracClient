@@ -506,6 +506,10 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 */
 	}
 	
+	public void setTicket(int newTicket) {
+		ticknr = newTicket;
+		display_and_refresh_ticket();
+	}
 
     public void refresh_ticket() {
 		if (_ticket != null) {
@@ -941,8 +945,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
             newTicket =listener.getPrevTicket(_ticket.getTicketnr());
         }
         if (newTicket >= 0 && modVeld.isEmpty()) {
-            ticknr = newTicket;
-            display_and_refresh_ticket();
+			setTicket(newTicket);
             return true;
         }
         return false;

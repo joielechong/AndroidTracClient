@@ -31,41 +31,31 @@
 		android:paddingBottom="@dimen/adview_padding" >
 
 		<EditText
-			android:id="@+id/search_box"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:drawableLeft="@android:drawable/ic_menu_search"
-			android:hint="@string/zoekfilter"
-			android:inputType="text"
-			android:textSize="@dimen/list_textsize"
-			android:visibility="gone" />
+			style="@style/ListSearchBox"
+			android:id="@+id/search_box" />
 
 		<RelativeLayout
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content" >
 
 			<TextView
+				style="@style/ListProgress"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_alignParentLeft="true"
-				android:layout_toLeftOf="@+id/listProgress"
 				android:text="@string/list_heading"
 				android:textSize="@dimen/list_textsize" />
 
 			<TextView
+				style="@style/NextToListProgress"
 				android:id="@+id/listProgress"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_alignParentRight="true"
 				android:textSize="@dimen/list_textsize" />
 
 		</RelativeLayout>
 
 		<android.support.v4.widget.SwipeRefreshLayout
-			xmlns:android="http://schemas.android.com/apk/res/android"
-			android:id="@+id/swipe_container"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent">
+			style="@style/SwipeContainer">
 
 			<ListView
 				android:id="@+id/listOfTickets"
