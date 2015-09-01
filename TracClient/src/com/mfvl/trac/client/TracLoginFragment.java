@@ -272,8 +272,7 @@ public class TracLoginFragment extends TracClientFragment implements View.OnClic
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        tcLog.d(_tag,
-                "onActivityCreated savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+        tcLog.d(_tag,"onActivityCreated savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 	
         if (url == null) {
             if (savedInstanceState == null) {

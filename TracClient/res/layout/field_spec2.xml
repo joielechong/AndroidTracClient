@@ -28,22 +28,10 @@
         android:layout_alignParentTop="true"
         android:orientation="vertical" >
 
-        <TextView
-            android:id="@+id/veldnaam"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/list_textsize" 
-            android:textStyle="bold" >
-        </TextView>
+        <TextView style="@style/FieldName"/>
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_alignParentBottom="true"
-        android:orientation="horizontal" >
-
+    <LinearLayout style="@style/ButtonHolder">
         <Button
             android:id="@+id/cancelpw"
 			style="@style/CancelButton" />

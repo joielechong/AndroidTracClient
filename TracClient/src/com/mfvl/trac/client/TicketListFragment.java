@@ -88,7 +88,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 	TicketDataSetObserver ticketDataSetObserver = new TicketDataSetObserver();
 	
 	private void onMyAttach(Context activity) {
-        final Bundle args = this.getArguments();
+        final Bundle args = getArguments();
 
         if (args != null) {
             if (args.containsKey("TicketArg")) {

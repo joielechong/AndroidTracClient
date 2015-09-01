@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * v21+
+ * v21+ material style
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
   <style name="AppBaseTheme" parent="android:Theme.Material.Light" />

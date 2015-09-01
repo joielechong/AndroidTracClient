@@ -21,12 +21,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
-/*
-interface OnTicketsChangeListener {
-    void onTicketsChanged();
-}
-*/
-
 public class Tickets {
 
     public ArrayList<Ticket> ticketList = null;
@@ -38,9 +32,6 @@ public class Tickets {
     private String _tag = "";
     private int ticketGroupCount;
     private int ticketContentCount;
-	
-//    private OnTicketsChangeListener saveTc = null;
-
     private boolean valid = false;
 
     public static final int INVALID_URL = 1;
@@ -68,18 +59,6 @@ public class Tickets {
         // tcLog.d(_tag,"resetCache na ticketMap = "+ticketMap);
     }
 
-//    public void setOnTicketsChangeListener(OnTicketsChangeListener tc) {
-//        saveTc = tc;
-//    }
-	
-//    public void notifyChange() {
-//        tcLog.d(_tag, "notifyChange");
-//        try {
-//            saveTc.onTicketsChanged();
-//        } catch (Exception e) {}
-//		
-//    }
-	
     public Ticket getTicket(final int ticknr) {
         // tcLog.d(_tag, "getTicket ticknr = "+ticknr+ " "+ticketMap.containsKey(ticknr));
         return ticketMap.containsKey(ticknr) ? ticketMap.get(ticknr) : null;
