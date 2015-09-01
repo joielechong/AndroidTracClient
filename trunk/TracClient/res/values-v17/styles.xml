@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * v17+
+ * v17+  RTL differences
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -24,4 +24,51 @@
     <item name="android:paddingEnd">2dp</item>
   </style>
   
+	<style name="TextWarn">
+		<item name="android:drawableStart">@drawable/ic_warn</item>
+	</style>
+	
+	<style name="EditL12">
+		<item name="android:layout_marginStart">12dp</item>
+	</style>
+
+	<style name="EditL24">
+		<item name="android:layout_marginStart">24dp</item>
+	</style>
+
+	<style name="DrawerBase">
+		<item name="android:paddingStart">16dp</item>
+		<item name="android:paddingEnd">16dp</item>
+	</style>
+
+	<style name="SortSpecImageButtonBase">
+		<item name="android:layout_marginStart">4dp</item>
+		<item name="android:layout_marginEnd">4dp</item>
+	</style>
+	
+	<style name="SortSpecImageButtonBase8" parent="SortSpecImageButtonBase">
+		<item name="android:layout_marginEnd">8dp</item>
+	</style>
+	
+	<style name="ActionBlockBase">
+		<item name="android:layout_alignParentStart">true</item>
+	</style>
+	
+	<style name="OptionsBlockBase">
+		<item name="android:layout_toEndOf">@id/actionblock</item>
+	</style>
+	
+	<style name="ListSearchBoxBase">
+		<item name="android:drawableStart">@android:drawable/ic_menu_search</item>
+	</style>
+	
+	<style name="ListProgress">
+		<item name="android:layout_alignParentStart">true</item>
+		<item name="android:layout_toStartOf">@id/listProgress</item>
+	</style>
+	
+	<style name="NextToListProgress">
+		<item name="android:layout_alignParentEnd">true</item>
+	</style>
+	
 </resources>
