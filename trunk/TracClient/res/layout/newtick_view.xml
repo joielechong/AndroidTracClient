@@ -26,8 +26,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical" >
 
-        <LinearLayout style="@style/ButtonHolder"
-            android:layout_alignParentTop="true">
+        <LinearLayout style="@style/ButtonHolder">
 
             <Button
                 android:id="@+id/storebutton"
@@ -94,11 +93,8 @@
                     </TableRow>
                 </TableLayout>
 
-                <CheckBox
+                <CheckBox style="@style/CheckBox"
                     android:id="@+id/updNotify"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:checked="false"
                     android:text="@string/notify" />
             </LinearLayout>
         </ScrollView>

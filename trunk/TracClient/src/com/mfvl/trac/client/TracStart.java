@@ -109,6 +109,7 @@ interface InterFragmentListener {
 	int createTicket(Ticket t , boolean notify) throws Exception;
 	void setActionProvider(Menu menu,int resid);
 	Intent shareList();
+	Intent shareTicket(final Ticket ticket);
 	void listViewCreated();
 	String getUsername();
 	String getPassword();
@@ -1415,6 +1416,17 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 		}
     }
 	
+	public Intent shareTicket(final Ticket ticket) {
+        if (ticket != null && ticket.hasdata()) {
+            final Intent sendIntent = new Intent(Intent.ACTION_SEND);
+
+            sendIntent.putExtra(Intent.EXTRA_TEXT, ticket.toText());
+            sendIntent.setType("text/plain");
+            return sendIntent;
+        }
+		return null;
+    }
+
     @Override
     public void enableDebug() {
         // tcLog.d(getClass().getName(), "enableDebug");

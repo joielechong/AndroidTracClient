@@ -32,6 +32,7 @@ public class TracHttpClient extends JSONRPCHttpClient {
     final static String TICKET_UPDATE = "ticket.update";
     final static String TICKET_GETTICKETFIELDS = "ticket.getTicketFields";
     final static String TICKET_GETATTACHMENT = "ticket.getAttachment";
+	final static String TICKET_PUTATTACHMENT = "ticket.putAttachment";
     final static String SYSTEM_GETAPIVERSION = "system.getAPIVersion";
 
     final static String _JSONCLASS = "__jsonclass__";

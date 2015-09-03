@@ -43,12 +43,8 @@ import android.widget.ListView;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
 
-public class TicketListFragment extends TracClientFragment implements SwipeRefreshLayout.OnRefreshListener, 
-				AdapterView.OnItemClickListener, 
-				AbsListView.OnScrollListener, 
-				TextWatcher {
+public class TicketListFragment extends TracClientFragment implements SwipeRefreshLayout.OnRefreshListener, AdapterView.OnItemClickListener, AbsListView.OnScrollListener, TextWatcher {
 	
-
     private static final String ZOEKENNAME = "zoeken";
     private static final String ZOEKTEXTNAME = "filtertext";
     private static final String SCROLLPOSITIONNAME = "scrollPosition";
@@ -63,6 +59,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
     private boolean scrolling = false;
     private boolean hasScrolled = false;
 	
+ 	private ShareActionProvider listShare = null;	
 	private SwipeRefreshLayout swipeLayout;
 	
 	private class TicketDataSetObserver extends DataSetObserver  {
@@ -73,7 +70,6 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 				public void run() {
 					tcLog.d(getClass().getName(), "TicketDataSetObserver.onChanged.run");
 					setStatus(listener.getTicketContentCount() + "/" + listener.getTicketCount());
-//					dataAdapter.notifyDataSetChanged();
 					listView.invalidate();
 				}
 			});
@@ -83,8 +79,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 		public void onInvalidated() {
 		}
 	}
-
-		
+	
 	TicketDataSetObserver ticketDataSetObserver = new TicketDataSetObserver();
 	
 	private void onMyAttach(Context activity) {
@@ -124,7 +119,6 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
         final View view = inflater.inflate(R.layout.list_view, container, false);
 
 		dataAdapter = listener.getAdapter();
-//        Tickets.setOnTicketsChangeListener(this);
 		
         listView = (ListView) view.findViewById(R.id.listOfTickets);
         registerForContextMenu(listView);
@@ -194,22 +188,35 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-        tcLog.d(getClass().getName(), "onCreateContextMenu");
+        tcLog.d(getClass().getName(), "onCreateContextMenu menu = "+menu+" view = "+v+"menuInfo = "+menuInfo);
         super.onCreateContextMenu(menu, v, menuInfo);
         if (v.getId() == R.id.listOfTickets) {
             final MenuInflater inflater = context.getMenuInflater();
-
             inflater.inflate(R.menu.listcontextmenu, menu);
-        }
+/*
+			final Ticket t = (Ticket) listView.getItemAtPosition(((AdapterContextMenuInfo)menuInfo).position);
+
+			final MenuItem itemDetail = menu.findItem(R.id.dfshare);
+			if (itemDetail != null) {
+				tcLog.d(getClass().getName(), "item = " + itemDetail);
+				listener.setActionProvider(menu,R.id.dfshare);
+				ShareActionProvider detailShare = (ShareActionProvider) itemDetail.getActionProvider();
+				detailShare.setShareHistoryFileName("custom_share_history_detail_popup.xml");
+				Intent i = listener.shareTicket(t);
+				tcLog.d(getClass().getName(), "SAP = " + detailShare + " " + i);
+				detailShare.setShareIntent(i);
+			}
+*/
+		}
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        tcLog.d(getClass().getName(), "onContextItemSelected");
+        tcLog.d(getClass().getName(), "onContextItemSelected item = "+item);
         final AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
         final Ticket t = (Ticket) listView.getItemAtPosition(info.position);
 
-        if (t.hasdata()) {
+        if (t!= null && t.hasdata()) {
             switch (item.getItemId()) {
             case R.id.select:
                 listener.onTicketSelected(t);
@@ -219,9 +226,12 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
                 listener.onUpdateTicket(t);
                 return true;
 
-//            case R.id.dfshare:
-//                listener.shareTicket(t);
-//                return true;
+            case R.id.dfshare:
+                Intent i = listener.shareTicket(t);
+				if (i != null) {
+					startActivity(i);
+				}
+                return true;
 
             default:
             }
@@ -251,8 +261,6 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
         super.onCreateOptionsMenu(menu, inflater);
     }
 	
- 	private ShareActionProvider listShare = null;
-	
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         tcLog.d(getClass().getName(), "onPrepareOptionsMenu");
@@ -272,6 +280,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 		tcLog.d(getClass().getName(), "SAP = " + listShare + " " + i);
 		if (listShare != null && i != null) {
 			listShare.setShareIntent(i);
+			listShare.setShareHistoryFileName("custom_share_history_list.xml");
 		}
      }
 	

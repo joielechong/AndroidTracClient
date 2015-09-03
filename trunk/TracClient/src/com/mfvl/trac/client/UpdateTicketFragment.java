@@ -318,6 +318,7 @@ public class UpdateTicketFragment extends TracClientFragment implements View.OnC
 	*/
 
 	public void leaveFragment(View v) {
+        tcLog.d(_tag, "leaveFragment v = " + v);
         synchronized (sissaved) {
             if (!sissaved) {
                 getFragmentManager().popBackStack();

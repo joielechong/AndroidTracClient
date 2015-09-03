@@ -407,25 +407,15 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
         final MenuItem itemDetail = menu.findItem(R.id.dfshare);
 		if (itemDetail != null) {
 			ShareActionProvider mShareActionProvider = (ShareActionProvider) itemDetail.getActionProvider();
-			Intent i = shareTicket(_ticket);
+			Intent i = listener.shareTicket(_ticket);
 			tcLog.d(getClass().getName(), "item = " + itemDetail + " " + mShareActionProvider + " " + i);
-			if (mShareActionProvider != null && i != null) {
+			if (mShareActionProvider != null) {
 				mShareActionProvider.setShareIntent(i);
 			}
+			mShareActionProvider.setShareHistoryFileName("custom_share_history_detail.xml");
 		}
     }
 	
-	private  Intent shareTicket(final Ticket ticket) {
-        if (ticket != null && ticket.hasdata()) {
-            final Intent sendIntent = new Intent(Intent.ACTION_SEND);
-
-            sendIntent.putExtra(Intent.EXTRA_TEXT, ticket.toText());
-            sendIntent.setType("text/plain");
-            return sendIntent;
-        }
-		return null;
-    }
-
 	public void showHelp() {
 		showHelpFile(R.string.helpdetailfile);
 	}

@@ -19,6 +19,7 @@ package com.mfvl.trac.client;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.concurrent.Semaphore;
 
 import org.json.JSONArray;
 
@@ -31,11 +32,11 @@ public class TicketModel implements Serializable {
     private static ArrayMap<Integer, String> _volgorde;
     private static int fieldCount;
     private static boolean loading;
-    private static Thread networkThread = null;
     private static TicketModel _instance = null;
     private static boolean _hasData;
     private static String tag = "**TicketModel**";
 	private static TracHttpClient _tracClient = null;
+	private static Semaphore active = new Semaphore(1, true);	
 	
     private TicketModel(TracHttpClient tracClient) {
         tag = getClass().getName();
@@ -52,8 +53,9 @@ public class TicketModel implements Serializable {
 
     private void loadModelData() {
         if (_tracClient != null) {
-            loading = true;
-            networkThread = new Thread() {
+			loading = true;
+			active.acquireUninterruptibly ();
+            new Thread() {
                 @Override
                 public void run() {
                     tcLog.d(tag, "TicketModel tracClient = " + _tracClient);
@@ -75,11 +77,11 @@ public class TicketModel implements Serializable {
                     } catch (final Exception e) {
                         tcLog.e(tag, "TicketModel exception", e);
                     } finally {
-                        loading = false;
+						active.release(1);
+						loading = false;
                     }
                 }
-            };
-            networkThread.start();
+            }.start();
         } else {
             tcLog.e(tag, "TicketModel called with url == null");
         }
@@ -132,11 +134,9 @@ public class TicketModel implements Serializable {
 
     private void wacht() {
         if (loading) {
-            try {
-                networkThread.join();
-            } catch (final Exception e) {
-                tcLog.i(tag, "exception in wacht", e);
-            }
+			active.acquireUninterruptibly ();
+			active.release();
+			loading = false;
         }
         loading = false;
     }
