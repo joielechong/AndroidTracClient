@@ -24,7 +24,6 @@ import java.util.TreeMap;
 public class Tickets {
 
     public ArrayList<Ticket> ticketList = null;
-    public int tickets[] = null;
 
     private static Map<Integer, Ticket> ticketMap = null;
 
@@ -33,10 +32,6 @@ public class Tickets {
     private int ticketGroupCount;
     private int ticketContentCount;
     private boolean valid = false;
-
-    public static final int INVALID_URL = 1;
-    public static final int LIST_NOT_LOADED = 2;
-    public static final int CONTENT_NOT_LOADED = 3;
 
     public Tickets() {
         _tag = getClass().getName();
@@ -48,7 +43,6 @@ public class Tickets {
     public void initList() {
         tcLog.d(_tag, "initList");
         ticketList = new ArrayList<Ticket>();
-		tickets = null;
         ticketContentCount = 0;
         valid = true;
     }

@@ -36,7 +36,6 @@ public class TicketModelVeld {
     private boolean _optional;
     private int _order;
     private boolean _custom;
-    private boolean _canChange = false;
 
     public TicketModelVeld(String name, String label, String value) {
         _name = name;
@@ -135,22 +134,6 @@ public class TicketModelVeld {
 
     public boolean optional() {
         return _optional;
-    }
-
-    public int order() {
-        return _order;
-    }
-
-    public boolean custom() {
-        return _custom;
-    }
-
-    public boolean canChange() {
-        return _canChange;
-    }
-
-    public void setChange(boolean c) {
-        _canChange = c;
     }
 
 }

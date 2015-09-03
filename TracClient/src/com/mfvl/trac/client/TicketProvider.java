@@ -70,7 +70,16 @@ public class TicketProvider extends ContentProvider {
 	private static final int RESET = 7;
 	private static final int GET_ATTACHMENT = 8;
 	private static final int PUT_ATTACHMENT = 9;
- 
+	
+    private final static String TICKET_GET = "GET";
+    private final static String TICKET_CHANGE = "CHANGE";
+    private final static String TICKET_ATTACH = "ATTACH";
+    private final static String TICKET_ACTION = "ACTION";
+
+    public static final int INVALID_URL = 1;
+    public static final int LIST_NOT_LOADED = 2;
+    public static final int CONTENT_NOT_LOADED = 3;
+
     private static final UriMatcher sURIMatcher;
 	
 	private TracHttpClient tracClient = null;
@@ -84,7 +93,7 @@ public class TicketProvider extends ContentProvider {
 	private String currentReqString = null;
 
 	private Tickets ticketList = null;
-    
+
 //    private TicketCursor cTickets = null;
     
     private static final int MAXPERMITS = 1;
@@ -340,11 +349,12 @@ public class TicketProvider extends ContentProvider {
 		LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
 	}
     
-    private void buildCall(JSONArray mc, int ticknr) throws JSONException {
-        mc.put(new TracJSONObject().makeComplexCall(Ticket.TICKET_GET + "_" + ticknr, "ticket.get", ticknr));
-        mc.put(new TracJSONObject().makeComplexCall(Ticket.TICKET_CHANGE + "_" + ticknr, "ticket.changeLog", ticknr));
-        mc.put(new TracJSONObject().makeComplexCall(Ticket.TICKET_ATTACH + "_" + ticknr, "ticket.listAttachments", ticknr));
-        mc.put(new TracJSONObject().makeComplexCall(Ticket.TICKET_ACTION + "_" + ticknr, "ticket.getActions", ticknr));
+    private void buildCall(JSONArray multiCall, int ticknr) throws JSONException {
+        multiCall
+			.put(new TracJSONObject().makeComplexCall(TICKET_GET + "_" + ticknr, "ticket.get", ticknr))
+			.put(new TracJSONObject().makeComplexCall(TICKET_CHANGE + "_" + ticknr, "ticket.changeLog", ticknr))
+			.put(new TracJSONObject().makeComplexCall(TICKET_ATTACH + "_" + ticknr, "ticket.listAttachments", ticknr))
+			.put(new TracJSONObject().makeComplexCall(TICKET_ACTION + "_" + ticknr, "ticket.getActions", ticknr));
     }
 	
 	private void notifyChange(Uri uri) {
@@ -384,29 +394,18 @@ public class TicketProvider extends ContentProvider {
                         final int thisTicket = Integer.parseInt(id.substring(startpos));
 
                         if (t == null || t.getTicketnr() != thisTicket) {
-//							if (t != null) {
-//								notifyChange(Uri.withAppendedPath(GET_QUERY_URI,""+t.getTicketnr()));
-//							}
                             t = tl.getTicket(thisTicket);
                         }
                         if (t != null) {
-                            if (id.equals(Ticket.TICKET_GET + "_" + thisTicket)) {
-                                final JSONObject v = result.getJSONObject(3);
-
-                                t.setFields(v);
+                            if (id.equals(TICKET_GET + "_" + thisTicket)) {
+                                t.setFields(result.getJSONObject(3));
                                 tl.incTicketContentCount();
-                            } else if (id.equals(Ticket.TICKET_CHANGE + "_" + thisTicket)) {
-                                final JSONArray h = result;
-
-                                t.setHistory(h);
-                            } else if (id.equals(Ticket.TICKET_ATTACH + "_" + thisTicket)) {
-                                final JSONArray at = result;
-
-                                t.setAttachments(at);
-                            } else if (id.equals(Ticket.TICKET_ACTION + "_" + thisTicket)) {
-                                final JSONArray ac = result;
-
-                                t.setActions(ac);
+                            } else if (id.equals(TICKET_CHANGE + "_" + thisTicket)) {
+                                t.setHistory(result);
+                            } else if (id.equals(TICKET_ATTACH + "_" + thisTicket)) {
+                                t.setAttachments(result);
+                            } else if (id.equals(TICKET_ACTION + "_" + thisTicket)) {
+                                t.setActions(result);
                             } else {
                                 tcLog.d(getClass().getName(), "loadTickets, unexpected response = " + result);
                             }
@@ -415,7 +414,6 @@ public class TicketProvider extends ContentProvider {
                         throw new TicketLoadException("loadTicketContent Exception thrown innerloop j=" + j + " k=" + k, e1);
                     }
                 }
-//				notifyChange(Uri.withAppendedPath(GET_QUERY_URI,""+t.getTicketnr()));
             } catch (final TicketLoadException e) {
                 throw new TicketLoadException("loadTicketContent TicketLoadException thrown outerloop j=" + j, e);
             } catch (final Exception e) {
@@ -456,19 +454,18 @@ public class TicketProvider extends ContentProvider {
 						tcLog.d(getClass().getName(), jsonTicketlist.toString());
 						final int count = jsonTicketlist.length();
 
-						ticketList.tickets = new int[count];
 						if (count > 0) {
+							int tickets[] = new int[count];
 							for (int i = 0; i < count; i++) {
+								Ticket t = null;
 								try {
-									ticketList.tickets[i] = jsonTicketlist.getInt(i);
-									final Ticket t = new Ticket(ticketList.tickets[i]);
-
-									ticketList.ticketList.add(i, t);
+									tickets[i] = jsonTicketlist.getInt(i);
+									t = new Ticket(tickets[i]); 
 									ticketList.putTicket(t);
-//									cTickets.setNotificationUri(getContext().getContentResolver(), Uri.withAppendedPath(GET_QUERY_URI,""+ticketList.tickets[i]));
 								} catch (JSONException e) {
-									ticketList.tickets[i] = -1;
-									ticketList.ticketList.add(ticketList.tickets[i], null);
+									tickets[i] = -1;
+								} finally {
+									ticketList.ticketList.add(i, t);
 								}
 							}
 							tcLog.d(getClass().getName(), "loadTicketList ticketlist loaded");

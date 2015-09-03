@@ -85,11 +85,8 @@
                         android:inputType="textUri" />
                 </LinearLayout>
 
-                <CheckBox
+                <CheckBox style="@style/CheckBox"
                     android:id="@+id/sslHack"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:checked="false"
                     android:text="@string/sslHack"
                     android:visibility="gone" />
 
@@ -136,10 +133,8 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <CheckBox
+            <CheckBox style="@style/CheckBox"
                 android:id="@+id/bewaren"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:checked="true"
                 android:text="@string/bewaren" />
 
@@ -189,7 +184,6 @@
     </ScrollView>
 
     <LinearLayout style="@style/AdBlockStyle">
-		android:id="@+id/adBlock"
 	</LinearLayout>
 
 </RelativeLayout>

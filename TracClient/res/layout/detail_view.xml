@@ -42,11 +42,8 @@
                     android:text="@string/updtick" />
             </LinearLayout>
 
-            <CheckBox
+            <CheckBox style="@style/CheckBox"
                 android:id="@+id/updNotify"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:checked="false"
                 android:text="@string/notify" />
         </LinearLayout>
 

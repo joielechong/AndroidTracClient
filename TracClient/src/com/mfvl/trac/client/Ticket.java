@@ -48,10 +48,6 @@ public class Ticket implements Serializable {
      *
      */
     private static final long serialVersionUID = -3915928655754922097L;
-    public final static String TICKET_GET = "GET";
-    public final static String TICKET_CHANGE = "CHANGE";
-    public final static String TICKET_ATTACH = "ATTACH";
-    public final static String TICKET_ACTION = "ACTION";
 
     private JSONObject _velden;
     private JSONArray _history;
