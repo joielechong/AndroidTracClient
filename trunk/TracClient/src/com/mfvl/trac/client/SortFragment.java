@@ -69,11 +69,11 @@ public class SortFragment extends TracClientFragment implements View.OnClickList
                     tt.setText(o.getVeld());
                 }
                 if (direc != null) {
-                    direc.setImageResource(o.getRichting() ? Const.UPARROW : Const.DOWNARROW);
+                    direc.setImageResource(o.getRichting() ? R.drawable.upArrow : R.drawable.downArrow);
                     direc.setOnClickListener(new ImageButton.OnClickListener() {
                         @Override
                         public void onClick(View dv) {
-                            direc.setImageResource(o.flip() ? Const.UPARROW : Const.DOWNARROW);
+                            direc.setImageResource(o.flip() ? R.drawable.upArrow : R.drawable.downArrow);
                         }
                     });
                 }

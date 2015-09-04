@@ -44,6 +44,10 @@ import android.widget.TextView;
 
 
 public class UpdateTicketFragment extends TracClientFragment implements View.OnClickListener {
+    private static final String UPDATE_CURRENT_BUTTON = "currentButton";
+    private static final String UPDATE_SPIN_POSITION = "spinPosition";
+    private static final String UPDATE_OPTION_VAL = "optionVal";
+
     private String currentActionName = null;
     private JSONArray _actions = null;
     private int ticknr;
@@ -203,9 +207,9 @@ public class UpdateTicketFragment extends TracClientFragment implements View.OnC
             if (savedInstanceState.containsKey(Const.CURRENT_TICKET)) {
                 ticknr = savedInstanceState.getInt(Const.CURRENT_TICKET);
             }
-            optionVal = (savedInstanceState.containsKey(Const.UPDATE_OPTION_VAL) ?savedInstanceState.getString(Const.UPDATE_OPTION_VAL) : null);
-            spinPosition = (savedInstanceState.containsKey(Const.UPDATE_SPIN_POSITION) ?savedInstanceState.getInt(Const.UPDATE_SPIN_POSITION) : 0);
-			button = (savedInstanceState.containsKey(Const.UPDATE_CURRENT_BUTTON) ? savedInstanceState.getInt(Const.UPDATE_CURRENT_BUTTON) :0);
+            optionVal = (savedInstanceState.containsKey(UPDATE_OPTION_VAL) ?savedInstanceState.getString(UPDATE_OPTION_VAL) : null);
+            spinPosition = (savedInstanceState.containsKey(UPDATE_SPIN_POSITION) ?savedInstanceState.getInt(UPDATE_SPIN_POSITION) : 0);
+			button = (savedInstanceState.containsKey(UPDATE_CURRENT_BUTTON) ? savedInstanceState.getInt(UPDATE_CURRENT_BUTTON) :0);
         } else {
             button = 0;
             optionVal = null;
@@ -364,17 +368,17 @@ public class UpdateTicketFragment extends TracClientFragment implements View.OnC
                 final RadioGroup rg = (RadioGroup) view.findViewById(R.id.actionblock);
 
                 if (rg != null) {
-                    savedState.putInt(Const.UPDATE_CURRENT_BUTTON, rg.getCheckedRadioButtonId());
+                    savedState.putInt(UPDATE_CURRENT_BUTTON, rg.getCheckedRadioButtonId());
                 }
                 final Spinner optiesSpin = (Spinner) view.findViewById(R.id.opties);
 
                 if (optiesSpin != null) {
-                    savedState.putInt(Const.UPDATE_SPIN_POSITION, optiesSpin.getSelectedItemPosition());
+                    savedState.putInt(UPDATE_SPIN_POSITION, optiesSpin.getSelectedItemPosition());
                 }
                 final EditText optieVal = (EditText) view.findViewById(R.id.optieval);
 
                 if (optieVal != null) {
-                    savedState.putString(Const.UPDATE_OPTION_VAL, optieVal.getText().toString());
+                    savedState.putString(UPDATE_OPTION_VAL, optieVal.getText().toString());
                 }
             }
             sissaved = true;

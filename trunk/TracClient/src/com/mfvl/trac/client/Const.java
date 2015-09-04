@@ -29,23 +29,13 @@ public final class Const {
     static final String CURRENT_SSLHACK = "sslHack";
     static final String CURRENT_SSLHOSTNAMEHACK = "sslHostNameHack";
 
-    static final String NEW_URL = "newURL";
-    static final String NEW_USERNAME = "newUsername";
-    static final String NEW_PASSWORD = "newPassword";
-
     static final String ADMOB = "Admob";
-    static final String UPDATE_CURRENT_BUTTON = "currentButton";
-    static final String UPDATE_SPIN_POSITION = "spinPosition";
-    static final String UPDATE_OPTION_VAL = "optionVal";
 
     static final String INTENT_URL = "url";
     static final String INTENT_TICKET = "ticket";
 
     static final String HELP_FILE = "file";
     static final String HELP_VERSION = "version";
-
-    static final String EMPTYFIELDS = "emptyfields";
-    static final String MODVELD = "modveld";
 
     /*
      * Shared preferences
@@ -69,8 +59,6 @@ public final class Const {
     /*
      * Overige constanten
      */
-    static final int UPARROW = android.R.drawable.arrow_up_float;
-    static final int DOWNARROW = android.R.drawable.arrow_down_float;
     static final String mimeUnknown = "application/unknown";
 	
     static final boolean doAnalytics = true;

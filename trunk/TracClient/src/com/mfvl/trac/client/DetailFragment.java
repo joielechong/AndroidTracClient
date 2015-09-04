@@ -68,6 +68,10 @@ import android.widget.TextView;
 
 
 public class DetailFragment extends TracClientFragment implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener, CompoundButton.OnCheckedChangeListener, GestureDetector.OnGestureListener, onFileSelectedListener {
+
+    private static final String EMPTYFIELDS = "emptyfields";
+    private static final String MODVELD = "modveld";
+
     private class ModVeldMap extends HashMap<String, String> implements Serializable {
         private static final long serialVersionUID = 191019591050L;
     }
@@ -289,11 +293,11 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
         tcLog.d(getClass().getName(), "onActivityCreated savedInstanceState = " + savedInstanceState);
 
         if (savedInstanceState != null) {
-            showEmptyFields = savedInstanceState.getBoolean(Const.EMPTYFIELDS, false);
+            showEmptyFields = savedInstanceState.getBoolean(EMPTYFIELDS, false);
             if (savedInstanceState.containsKey(Const.CURRENT_TICKET)) {
                 // tcLog.d(getClass().getName(),"onActivityCreated start Loading");
-                if (savedInstanceState.containsKey(Const.MODVELD)) {
-                    modVeld = (ModVeldMap) savedInstanceState.getSerializable(Const.MODVELD);
+                if (savedInstanceState.containsKey(MODVELD)) {
+                    modVeld = (ModVeldMap) savedInstanceState.getSerializable(MODVELD);
                 }
                 setSelect(modVeld.isEmpty());
                 ticknr = savedInstanceState.getInt(Const.CURRENT_TICKET, -1);
@@ -517,9 +521,9 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
             savedState.putInt(Const.CURRENT_TICKET, ticknr);
         }
         if (!modVeld.isEmpty()) {
-            savedState.putSerializable(Const.MODVELD, modVeld);
+            savedState.putSerializable(MODVELD, modVeld);
         }
-        savedState.putBoolean(Const.EMPTYFIELDS, showEmptyFields);
+        savedState.putBoolean(EMPTYFIELDS, showEmptyFields);
         // tcLog.d(getClass().getName(), "onSaveInstanceState = " + savedState);
     }
 
