@@ -55,6 +55,10 @@ import org.json.JSONObject;
 
 public class TracLoginFragment extends TracClientFragment implements View.OnClickListener {
 
+    private static final String NEW_URL = "newURL";
+    private static final String NEW_USERNAME = "newUsername";
+    private static final String NEW_PASSWORD = "newPassword";
+
     /** server url */
     private String url = null;
 
@@ -161,9 +165,9 @@ public class TracLoginFragment extends TracClientFragment implements View.OnClic
 				sslHostNameHack = listener.getSslHostNameHack();
             } else {
                 // tcLog.d(_tag, "onViewCreated use savedInstanceState");
-                url = savedInstanceState.getString(Const.NEW_URL);
-                username = savedInstanceState.getString(Const.NEW_USERNAME);
-                password = savedInstanceState.getString(Const.NEW_PASSWORD);
+                url = savedInstanceState.getString(NEW_URL);
+                username = savedInstanceState.getString(NEW_USERNAME);
+                password = savedInstanceState.getString(NEW_PASSWORD);
                 sslHack = savedInstanceState.getBoolean(Const.CURRENT_SSLHACK);
                 sslHostNameHack = savedInstanceState.getBoolean(Const.CURRENT_SSLHOSTNAMEHACK);
                 bewaren = savedInstanceState.getBoolean(bewaarText);
@@ -284,9 +288,9 @@ public class TracLoginFragment extends TracClientFragment implements View.OnClic
 				sslHostNameHack = listener.getSslHostNameHack();
             } else {
                 // tcLog.d(_tag, "onActivityCreated use savedInstanceState");
-                url = savedInstanceState.getString(Const.NEW_URL);
-                username = savedInstanceState.getString(Const.NEW_USERNAME);
-                password = savedInstanceState.getString(Const.NEW_PASSWORD);
+                url = savedInstanceState.getString(NEW_URL);
+                username = savedInstanceState.getString(NEW_USERNAME);
+                password = savedInstanceState.getString(NEW_PASSWORD);
                 sslHack = savedInstanceState.getBoolean(Const.CURRENT_SSLHACK);
                 sslHostNameHack = savedInstanceState.getBoolean(Const.CURRENT_SSLHOSTNAMEHACK);
                 bewaren = savedInstanceState.getBoolean(bewaarText);
@@ -569,13 +573,13 @@ public class TracLoginFragment extends TracClientFragment implements View.OnClic
     public void onSaveInstanceState(Bundle savedState) {
         super.onSaveInstanceState(savedState);
         try {
-            savedState.putString(Const.NEW_URL, urlView.getText().toString());
+            savedState.putString(NEW_URL, urlView.getText().toString());
         } catch (final Exception e) {}
         try {
-            savedState.putString(Const.NEW_USERNAME, userView.getText().toString());
+            savedState.putString(NEW_USERNAME, userView.getText().toString());
         } catch (final Exception e) {}
         try {
-            savedState.putString(Const.NEW_PASSWORD, pwView.getText().toString());
+            savedState.putString(NEW_PASSWORD, pwView.getText().toString());
         } catch (final Exception e) {}
         savedState.putBoolean(Const.CURRENT_SSLHACK, sslHackBox.isChecked());
         savedState.putBoolean(Const.CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
