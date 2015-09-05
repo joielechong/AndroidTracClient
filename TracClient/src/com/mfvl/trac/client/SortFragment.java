@@ -19,6 +19,7 @@ package com.mfvl.trac.client;
 
 import java.util.ArrayList;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -133,6 +134,33 @@ public class SortFragment extends TracClientFragment implements View.OnClickList
     private ArrayList<SortSpec> inputSpec = null;
     private SortAdapter sortAdapter = null;
 
+	@SuppressWarnings("unchecked")
+	private void onMyAttach(Context activity) {
+		inputSpec = null;
+			
+        final Bundle args = getArguments();		
+        if (args != null) {
+            if (args.containsKey(Const.SORTLISTNAME)) {
+				inputSpec = (ArrayList<SortSpec>)args.getSerializable(Const.SORTLISTNAME);
+            }
+        }
+        tcLog.d(getClass().getName(), "onMyAttach inputSpec = "+inputSpec);
+	}
+	
+    @Override
+    public void onAttach(Context activity) {
+        super.onAttach(activity);
+        tcLog.d(getClass().getName(), "onAttach(C)");
+		onMyAttach(activity);
+    }
+	
+    @Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+        tcLog.d(getClass().getName(), "onAttach(A)");
+		onMyAttach(activity);
+	}
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -183,7 +211,7 @@ public class SortFragment extends TracClientFragment implements View.OnClickList
         tl.setAdapter(sortAdapter);
 
         final Button storButton = (Button) view.findViewById(R.id.storebutton);
-        final Button addButton = (Button) view.findViewById(R.id.addbutton);
+        final ImageButton addButton = (ImageButton) view.findViewById(R.id.addbutton);
         final Spinner addSpinner = (Spinner) view.findViewById(R.id.addspin);
 
         storButton.setOnClickListener(this);
@@ -250,11 +278,6 @@ public class SortFragment extends TracClientFragment implements View.OnClickList
         } else {
             return super.onOptionsItemSelected(item);
         }
-    }
-
-    public void setList(ArrayList<SortSpec> l) {
-        // tcLog.d(this.getClass().getName(), "setList l = " + l);
-        inputSpec = l;
     }
 
     @Override
