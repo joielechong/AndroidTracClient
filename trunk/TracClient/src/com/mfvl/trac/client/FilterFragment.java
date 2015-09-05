@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -52,6 +53,9 @@ public class FilterFragment extends TracClientFragment {
     private final static String inputSpecText = "inputSpec";
     private final static String outputSpecText = "outputSpec";
 
+    private ArrayList<FilterSpec> inputSpec;
+    private FilterAdapter filterAdapter;
+
     private class FilterAdapter extends ArrayAdapter<FilterSpec> {
 
         private final ArrayList<FilterSpec> items;
@@ -63,7 +67,7 @@ public class FilterFragment extends TracClientFragment {
 
         @Override
         public View getView(final int position, View convertView, final ViewGroup parent) {
-            tcLog.d(getClass().getName(), "getView pos=" + position + " " + convertView + " " + parent);
+//            tcLog.d(getClass().getName(), "getView pos=" + position + " " + convertView + " " + parent);
 
             final Resources res = context.getResources();
             final ArrayList<String> operators = new ArrayList<String>(Arrays.asList(res.getStringArray(R.array.filter2_choice)));
@@ -78,14 +82,14 @@ public class FilterFragment extends TracClientFragment {
             final FilterSpec o = items.get(p);
             final TicketModelVeld tmv = tm.getVeld(o.getVeld());
 
-            tcLog.d(getClass().getName(), "getView pos=" + position +" " + o + " " + tmv);
+//            tcLog.d(getClass().getName(), "getView pos=" + position +" " + o + " " + tmv);
 
             final int resid = o.getEdit()
                     ? tmv.options() == null ? R.layout.filter_spec2 : R.layout.filter_spec3
                     : R.layout.filter_spec1;
             final int curid = convertView == null ? -1 : convertView.getId();
 
-            tcLog.d(getClass().getName(),"getView pos = " + position + " curid = " + curid + " resid=" + resid + " veld = " + o.getVeld());
+//            tcLog.d(getClass().getName(),"getView pos = " + position + " curid = " + curid + " resid=" + resid + " veld = " + o.getVeld());
             if (curid != resid) {
                 final LayoutInflater vi = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -194,19 +198,44 @@ public class FilterFragment extends TracClientFragment {
         }
     }
 
-    private ArrayList<FilterSpec> inputSpec;
-    private FilterAdapter filterAdapter;
-
+	@SuppressWarnings("unchecked")
+	private void onMyAttach(Context activity) {
+		inputSpec = null;
+			
+        final Bundle args = getArguments();		
+        if (args != null) {
+            if (args.containsKey(Const.FILTERLISTNAME)) {
+				inputSpec = (ArrayList<FilterSpec>)args.getSerializable(Const.FILTERLISTNAME);
+            }
+        }
+        tcLog.d(getClass().getName(), "onMyAttach inputSpec = "+inputSpec);
+	}
+	
+    @Override
+    public void onAttach(Context activity) {
+        super.onAttach(activity);
+        tcLog.d(getClass().getName(), "onAttach(C)");
+		onMyAttach(activity);
+    }
+	
+    @Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+        tcLog.d(getClass().getName(), "onAttach(A)");
+		onMyAttach(activity);
+	}
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         tcLog.d(getClass().getName(), "onCreate savedInstanceState = " +savedInstanceState);
         setHasOptionsMenu(true);
+        tm = listener.getTicketModel();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        tcLog.d(this.getClass().getName(),"onCreateView savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+        tcLog.d(this.getClass().getName(),"onCreateView savedInstanceState = " + savedInstanceState);
         final View view = inflater.inflate(R.layout.filter_view, container, false);
 
         return view;
@@ -219,7 +248,6 @@ public class FilterFragment extends TracClientFragment {
         tcLog.d(getClass().getName(),"onActivityCreated savedInstanceState = " + savedInstanceState);
 		tcLog.d(getClass().getName(), "onActivityCreated on entry inputSpec = " + inputSpec);
 
-        tm = listener.getTicketModel();
         final View view = getView();
         final ListView lv = (ListView) view.findViewById(R.id.filterlist);
         ArrayList<FilterSpec> outputSpec = null;
@@ -310,11 +338,6 @@ public class FilterFragment extends TracClientFragment {
             return super.onOptionsItemSelected(item);
         }
         return true;
-    }
-
-    public void setList(ArrayList<FilterSpec> l) {
-        tcLog.d(this.getClass().getName(), "setList l = " + l);
-        inputSpec = l;
     }
 
     private LinearLayout makeCheckBoxes(final FilterSpec o) {

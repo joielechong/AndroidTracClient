@@ -172,8 +172,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     private static final String FilterFragmentTag = "Filter_Fragment";
     private static final String SortFragmentTag = "Sort_Fragment";
 
-    private static final String SORTLISTNAME = "sortlist";
-    private static final String FILTERLISTNAME = "filterlist";
     private static final String TICKETLISTNAME = "ticketlistInt";
 
 	static final String BUNDLE_ISOTIJD = "ISOTIJD";
@@ -622,7 +620,8 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 		myObserver = new TicketObserver(new Handler(mHandlerThread.getLooper()));
 		getContentResolver().registerContentObserver(TicketProvider.GET_QUERY_URI,true,myObserver);
 	}
-	
+
+	@SuppressWarnings("unchecked")	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -678,8 +677,8 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
             password = savedInstanceState.getString(Const.CURRENT_PASSWORD);
             sslHack = savedInstanceState.getBoolean(Const.CURRENT_SSLHACK, false);
             sslHostNameHack = savedInstanceState.getBoolean(Const.CURRENT_SSLHOSTNAMEHACK, false);
-			filterList = (ArrayList<FilterSpec>)savedInstanceState.getSerializable(FILTERLISTNAME);
-			sortList = (ArrayList<SortSpec>)savedInstanceState.getSerializable(FILTERLISTNAME);
+			filterList = (ArrayList<FilterSpec>)savedInstanceState.getSerializable(Const.FILTERLISTNAME);
+			sortList = (ArrayList<SortSpec>)savedInstanceState.getSerializable(Const.SORTLISTNAME);
         }
 		
         if (Credentials.getFirstRun()) {
@@ -1057,15 +1056,19 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     }
 
     private void onFilterSelected(ArrayList<FilterSpec> filterList) {
-        tcLog.d(getClass().getName(), "onFilterSelected");
+        tcLog.d(getClass().getName(), "onFilterSelected filterList = "+ filterList);
+		
         final FragmentTransaction ft = fm.beginTransaction();
         final FilterFragment filterFragment = new FilterFragment();
 
+		final Bundle args = makeArgs();
+		args.putSerializable(Const.FILTERLISTNAME, filterList);
+		filterFragment.setArguments(args);
+		
         ft.replace(R.id.displayList, filterFragment, FilterFragmentTag);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.addToBackStack(FilterFragmentTag);
         ft.commit();
-        filterFragment.setList(filterList);
     }
 	
     @Override
@@ -1173,8 +1176,8 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putBoolean("Admob", dispAds);
-        savedInstanceState.putSerializable(SORTLISTNAME, sortList);
-        savedInstanceState.putSerializable(FILTERLISTNAME, filterList);
+        savedInstanceState.putSerializable(Const.SORTLISTNAME, sortList);
+        savedInstanceState.putSerializable(Const.FILTERLISTNAME, filterList);
         savedInstanceState.putString(Const.CURRENT_URL, url);
         savedInstanceState.putString(Const.CURRENT_USERNAME, username);
         savedInstanceState.putString(Const.CURRENT_PASSWORD, password);
@@ -1197,11 +1200,14 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         final FragmentTransaction ft = fm.beginTransaction();
         final SortFragment sortFragment = new SortFragment();
 
+		final Bundle args = makeArgs();
+		args.putSerializable(Const.SORTLISTNAME, sortList);
+		sortFragment.setArguments(args);
+
         ft.replace(R.id.displayList, sortFragment, SortFragmentTag);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.addToBackStack(SortFragmentTag);
         ft.commit();
-        sortFragment.setList(sortList);
     }
 
     @Override

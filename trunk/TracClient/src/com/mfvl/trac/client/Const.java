@@ -30,6 +30,8 @@ public final class Const {
     static final String CURRENT_SSLHOSTNAMEHACK = "sslHostNameHack";
 
     static final String ADMOB = "Admob";
+    static final String FILTERLISTNAME = "filterlist";
+    static final String SORTLISTNAME = "sortlist";
 
     static final String INTENT_URL = "url";
     static final String INTENT_TICKET = "ticket";

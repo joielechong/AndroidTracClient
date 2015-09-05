@@ -23,38 +23,37 @@
 
     <LinearLayout
         android:id="@+id/aboveAdBlock"
-		style="@style/ButtonHolder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:layout_alignParentTop="true"
         android:paddingBottom="@dimen/adview_padding" >
 
-        <RelativeLayout
+		<Button
+			android:id="@+id/storebutton"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_horizontal"
+			android:text="@string/storesort" />
+
+		<LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal" >
 
-            <Button
-                android:id="@+id/storebutton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:text="@string/storesort" />
-        </RelativeLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" >
-
-            <Button
-                android:id="@+id/addbutton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/Add" />
-
             <Spinner
                 android:id="@+id/addspin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="22" />
+
+            <ImageButton
+                android:id="@+id/addbutton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+				android:layout_gravity="center|fill"
+                android:layout_weight="3"
+				android:src="@drawable/plus" />
         </LinearLayout>
 
         <ListView
