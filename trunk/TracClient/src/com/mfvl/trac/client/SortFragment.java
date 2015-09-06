@@ -211,7 +211,7 @@ public class SortFragment extends TracClientFragment implements View.OnClickList
         tl.setAdapter(sortAdapter);
 
         final Button storButton = (Button) view.findViewById(R.id.storebutton);
-        final ImageButton addButton = (ImageButton) view.findViewById(R.id.addbutton);
+        final Button addButton = (Button) view.findViewById(R.id.addbutton);
         final Spinner addSpinner = (Spinner) view.findViewById(R.id.addspin);
 
         storButton.setOnClickListener(this);

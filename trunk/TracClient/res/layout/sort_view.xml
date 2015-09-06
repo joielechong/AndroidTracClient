@@ -45,15 +45,14 @@
                 android:id="@+id/addspin"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="22" />
+                android:layout_weight="19" />
 
-            <ImageButton
+            <Button
                 android:id="@+id/addbutton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-				android:layout_gravity="center|fill"
-                android:layout_weight="3"
-				android:src="@drawable/plus" />
+                android:layout_weight="5"
+                android:text="@string/Add" />
         </LinearLayout>
 
         <ListView
