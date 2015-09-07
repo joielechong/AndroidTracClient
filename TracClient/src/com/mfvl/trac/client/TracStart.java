@@ -529,7 +529,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 			case R.id.help: 
 			try {
 				String fragmentTag = getTopFragment();
-				TracClientFragment currentFragment = (TracClientFragment)fm.findFragmentByTag(fragmentTag);	
+				TracClientFragment currentFragment = (TracClientFragment)getFragmentManager().findFragmentByTag(fragmentTag);	
 				currentFragment.showHelp();
 			} catch (Exception e) {}
 			break;
@@ -543,8 +543,8 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	
 	private String getTopFragment() {
 		try {
-			int bs = fm.getBackStackEntryCount();
-			String fragmentTag = fm.getBackStackEntryAt(bs - 1).getName();
+			int bs = getFragmentManager().getBackStackEntryCount();
+			String fragmentTag = getFragmentManager().getBackStackEntryAt(bs - 1).getName();
 			return fragmentTag;
 		} catch (Exception e) {
 			return null;
@@ -728,24 +728,21 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 		LocalBroadcastManager.getInstance(this).registerReceiver(mProviderMessageReceiver,new IntentFilter(PROVIDER_MESSAGE));
 		LocalBroadcastManager.getInstance(this).registerReceiver(mDataChangedMessageReceiver,new IntentFilter(DATACHANGED_MESSAGE));
 		
-        fm = getFragmentManager();
-        fm.addOnBackStackChangedListener(this);
+        getFragmentManager().addOnBackStackChangedListener(this);
         // Handle when activity is recreated like on orientation Change
         shouldDisplayHomeUp();
 
         if (savedInstanceState != null) {
-            if (fm != null) {
-                restoreFragment(savedInstanceState, ListFragmentTag);
-                restoreFragment(savedInstanceState, LoginFragmentTag);
-                restoreFragment(savedInstanceState, DetailFragmentTag);
-                restoreFragment(savedInstanceState, NewFragmentTag);
-                restoreFragment(savedInstanceState, UpdFragmentTag);
-                restoreFragment(savedInstanceState, FilterFragmentTag);
-                restoreFragment(savedInstanceState, SortFragmentTag);
-                tcLog.d(getClass().getName(), "onCreate: backstack restored");
-            }
+            restoreFragment(savedInstanceState, ListFragmentTag);
+            restoreFragment(savedInstanceState, LoginFragmentTag);
+            restoreFragment(savedInstanceState, DetailFragmentTag);
+            restoreFragment(savedInstanceState, NewFragmentTag);
+            restoreFragment(savedInstanceState, UpdFragmentTag);
+            restoreFragment(savedInstanceState, FilterFragmentTag);
+            restoreFragment(savedInstanceState, SortFragmentTag);
+            tcLog.d(getClass().getName(), "onCreate: backstack restored");
         } else {
-            final FragmentTransaction ft = fm.beginTransaction();
+            final FragmentTransaction ft = getFragmentManager().beginTransaction();
 
             if (url != null && url.length() > 0) {
 				startListLoader();
@@ -842,7 +839,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     private void restoreFragment(Bundle savedInstanceState, final String tag) {
         if (savedInstanceState.containsKey(tag)) {
             try {
-                fm.getFragment(savedInstanceState, tag);
+                getFragmentManager().getFragment(savedInstanceState, tag);
             } catch (final Exception e) {}
         }
     }
@@ -852,7 +849,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
             final Fragment f = getFragment(tag);
 
             if (f != null) {
-                fm.putFragment(savedInstanceState, tag, f);
+                getFragmentManager().putFragment(savedInstanceState, tag, f);
             }
         } catch (final Exception e) {// Exception if fragment not on stack can be ignored
         }
@@ -860,7 +857,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 
     public void shouldDisplayHomeUp() {
         // Enable Up button only if there are entries in the back stack
-        final boolean canBack = fm.getBackStackEntryCount() > 1;
+        final boolean canBack = getFragmentManager().getBackStackEntryCount() > 1;
 
         tcLog.d(getClass().getName(), "shouldDisplayHomeUp canBack = " + canBack);
         final ActionBar ab = getActionBar();
@@ -872,9 +869,9 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 
     @Override
     public boolean onNavigateUp() {
-        tcLog.d(getClass().getName(), "onNavigateUp entry count = " + fm.getBackStackEntryCount());
+        tcLog.d(getClass().getName(), "onNavigateUp entry count = " + getFragmentManager().getBackStackEntryCount());
         // This method is called when the up button is pressed. Just the pop back stack.
-        fm.popBackStack();
+        getFragmentManager().popBackStack();
         return true;
     }
 
@@ -980,7 +977,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 
     @Override
     public void onBackStackChanged() {
-        final int depth = fm.getBackStackEntryCount();
+        final int depth = getFragmentManager().getBackStackEntryCount();
 
         // tcLog.d(getClass().getName(), "onBackStackChanged depth = " + depth);
         if (depth == 0 && !doNotFinish) {
@@ -992,7 +989,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 
     private void onChangeHost() {
         tcLog.d(getClass().getName(), "onChangeHost");
-        final FragmentTransaction ft = fm.beginTransaction();
+        final FragmentTransaction ft = getFragmentManager().beginTransaction();
         final TracLoginFragment tracLoginFragment = new TracLoginFragment();
 
         ft.replace(R.id.displayList, tracLoginFragment, LoginFragmentTag);
@@ -1058,7 +1055,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     private void onFilterSelected(ArrayList<FilterSpec> filterList) {
         tcLog.d(getClass().getName(), "onFilterSelected filterList = "+ filterList);
 		
-        final FragmentTransaction ft = fm.beginTransaction();
+        final FragmentTransaction ft = getFragmentManager().beginTransaction();
         final FilterFragment filterFragment = new FilterFragment();
 
 		final Bundle args = makeArgs();
@@ -1082,9 +1079,9 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         profile = newProfile;
         setConfigProvider();
         TicketListFragment ticketListFragment = (TicketListFragment) getFragment(ListFragmentTag);
-        final FragmentTransaction ft = fm.beginTransaction();
+        final FragmentTransaction ft = getFragmentManager().beginTransaction();
 
-        fm.popBackStack();
+        getFragmentManager().popBackStack();
         if (ticketListFragment == null) {
             ticketListFragment = new TicketListFragment();
             doNotFinish = true;
@@ -1101,7 +1098,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 
         final NewTicketFragment newtickFragment = new NewTicketFragment();
         // tcLog.d(getClass().getName(), "newTickFragment =" +  newtickFragment.toString());
-        final FragmentTransaction ft = fm.beginTransaction();
+        final FragmentTransaction ft = getFragmentManager().beginTransaction();
 
         ft.replace(R.id.displayList, newtickFragment, NewFragmentTag);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -1183,21 +1180,19 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         savedInstanceState.putString(Const.CURRENT_PASSWORD, password);
         savedInstanceState.putBoolean(Const.CURRENT_SSLHACK, sslHack);
         savedInstanceState.putBoolean(Const.CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
-        if (fm != null) {
-            saveFragment(savedInstanceState, ListFragmentTag);
-            saveFragment(savedInstanceState, LoginFragmentTag);
-            saveFragment(savedInstanceState, DetailFragmentTag);
-            saveFragment(savedInstanceState, NewFragmentTag);
-            saveFragment(savedInstanceState, UpdFragmentTag);
-            saveFragment(savedInstanceState, FilterFragmentTag);
-            saveFragment(savedInstanceState, SortFragmentTag);
-        }
+        saveFragment(savedInstanceState, ListFragmentTag);
+        saveFragment(savedInstanceState, LoginFragmentTag);
+        saveFragment(savedInstanceState, DetailFragmentTag);
+        saveFragment(savedInstanceState, NewFragmentTag);
+        saveFragment(savedInstanceState, UpdFragmentTag);
+        saveFragment(savedInstanceState, FilterFragmentTag);
+        saveFragment(savedInstanceState, SortFragmentTag);
         tcLog.d(getClass().getName(), "onSaveInstanceState savedInstanceState = " + savedInstanceState);
     }
 
     private void onSortSelected(ArrayList<SortSpec> sortList) {
         tcLog.d(getClass().getName(), "onSortSelected");
-        final FragmentTransaction ft = fm.beginTransaction();
+        final FragmentTransaction ft = getFragmentManager().beginTransaction();
         final SortFragment sortFragment = new SortFragment();
 
 		final Bundle args = makeArgs();
@@ -1236,7 +1231,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	
         // tcLog.d(getClass().getName(), "detailFragment =" +
         // detailFragment.toString());
-        final FragmentTransaction ft = fm.beginTransaction();
+        final FragmentTransaction ft = getFragmentManager().beginTransaction();
 
         ft.replace(R.id.displayList, detailFragment, DetailFragmentTag);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -1257,7 +1252,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         args.putInt(Const.CURRENT_TICKET, ticket.getTicketnr());
         updtickFragment.setArguments(args);
         // tcLog.d(getClass().getName(), "updtickFragment = " + updtickFragment.toString());
-        final FragmentTransaction ft = fm.beginTransaction();
+        final FragmentTransaction ft = getFragmentManager().beginTransaction();
 
         ft.replace(R.id.displayList, updtickFragment, UpdFragmentTag);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -1453,7 +1448,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	}
 
     private Fragment getFragment(final String tag) {
-        return fm.findFragmentByTag(tag);
+        return getFragmentManager().findFragmentByTag(tag);
     }
 
     public void getNewTickets(final String isoTijd) {
