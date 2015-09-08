@@ -33,7 +33,6 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-
 public class SortFragment extends TracClientFragment implements View.OnClickListener {
 
     private class SortAdapter extends ArrayAdapter<SortSpec> {
@@ -133,7 +132,7 @@ public class SortFragment extends TracClientFragment implements View.OnClickList
     private TicketModel tm;
     private ArrayList<SortSpec> inputSpec = null;
     private SortAdapter sortAdapter = null;
-
+	
 	@SuppressWarnings("unchecked")
 	private void onMyAttach(Context activity) {
 		inputSpec = null;
@@ -211,8 +210,10 @@ public class SortFragment extends TracClientFragment implements View.OnClickList
         tl.setAdapter(sortAdapter);
 
         final Button storButton = (Button) view.findViewById(R.id.storebutton);
-        final Button addButton = (Button) view.findViewById(R.id.addbutton);
+        final ImageButton addButton = (ImageButton) view.findViewById(R.id.addbutton);
+//        final Button addButton = (Button) view.findViewById(R.id.addbutton);
         final Spinner addSpinner = (Spinner) view.findViewById(R.id.addspin);
+		getScreensize(addSpinner,addButton);
 
         storButton.setOnClickListener(this);
 

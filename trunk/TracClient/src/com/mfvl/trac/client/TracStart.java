@@ -654,14 +654,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 		
         debug |= Credentials.isRCVersion();
 
-        dispAds = true;
-		if (savedInstanceState != null) {
-            dispAds = savedInstanceState.getBoolean(Const.ADMOB, true);
-        } else if (getIntent().hasExtra(Const.ADMOB)) {
-            dispAds = getIntent().getBooleanExtra(Const.ADMOB, true);
-		}
-		
-
         url = Credentials.getUrl();
         username = Credentials.getUsername();
         password = Credentials.getPassword();
@@ -671,7 +663,9 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 		setFilter(Credentials.getFilterString());
 		setSort(Credentials.getSortString());
 
-        if (savedInstanceState != null) {
+        dispAds = true;
+		if (savedInstanceState != null) {
+            dispAds = savedInstanceState.getBoolean(Const.ADMOB, true);
             url = savedInstanceState.getString(Const.CURRENT_URL);
             username = savedInstanceState.getString(Const.CURRENT_USERNAME);
             password = savedInstanceState.getString(Const.CURRENT_PASSWORD);
@@ -679,7 +673,15 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
             sslHostNameHack = savedInstanceState.getBoolean(Const.CURRENT_SSLHOSTNAMEHACK, false);
 			filterList = (ArrayList<FilterSpec>)savedInstanceState.getSerializable(Const.FILTERLISTNAME);
 			sortList = (ArrayList<SortSpec>)savedInstanceState.getSerializable(Const.SORTLISTNAME);
-        }
+        } else if (getIntent().hasExtra(Const.ADMOB)) {
+            dispAds = getIntent().getBooleanExtra(Const.ADMOB, true);
+			
+			// only at first start
+			urlArg = getIntent().getStringExtra(Const.INTENT_URL);
+			ticketArg = (int) getIntent().getLongExtra(Const.INTENT_TICKET, -1);
+		}
+		
+
 		
         if (Credentials.getFirstRun()) {
             final Intent launchTrac = new Intent(this, TracShowWebPage.class);
@@ -690,8 +692,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
             startActivity(launchTrac);
         }
 
-        urlArg = getIntent().getStringExtra(Const.INTENT_URL);
-        ticketArg = (int) getIntent().getLongExtra(Const.INTENT_TICKET, -1);
 
         if (urlArg != null) {
             final String urlArg1 = urlArg + "rpc";
