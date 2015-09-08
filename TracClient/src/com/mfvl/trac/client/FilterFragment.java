@@ -282,8 +282,10 @@ public class FilterFragment extends TracClientFragment {
         lv.setAdapter(filterAdapter);
 
         final Button storButton = (Button) view.findViewById(R.id.storebutton);
-        final Button addButton = (Button) view.findViewById(R.id.addbutton);
+        final ImageButton addButton = (ImageButton) view.findViewById(R.id.addbutton);
+//        final Button addButton = (Button) view.findViewById(R.id.addbutton);
         final Spinner addSpinner = (Spinner) view.findViewById(R.id.addspin);
+		getScreensize(addSpinner,addButton);
 
         storButton.setOnClickListener(new View.OnClickListener() {
             @Override

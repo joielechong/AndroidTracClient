@@ -94,8 +94,6 @@ public class TicketProvider extends ContentProvider {
 
 	private Tickets ticketList = null;
 
-//    private TicketCursor cTickets = null;
-    
     private static final int MAXPERMITS = 1;
     private static Semaphore accessAllowed = new Semaphore(MAXPERMITS, true);	
 	
@@ -433,7 +431,9 @@ public class TicketProvider extends ContentProvider {
 
 		TicketCursor cTickets = new TicketCursor(ticketList);
 		
-		if (!uri.equals(currentUri) || ! projection.equals(currentProjection) || !reqString.equals(currentReqString)) {
+		if (uri.equals(currentUri) && projection.equals(currentProjection) && reqString.equals(currentReqString)) {
+			// no change so only connect current list to cursor
+		} else {
 			initCursor(cTickets);
 			accessAllowed.acquireUninterruptibly(1); // initCursor claims all so  we know it is ready when we get the lock
 			accessAllowed.release(1); // No further need
