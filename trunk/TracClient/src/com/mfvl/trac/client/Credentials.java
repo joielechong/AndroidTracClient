@@ -139,12 +139,14 @@ public class Credentials {
     public static boolean checkDisclaimer() {
         tcLog.d("Credentials", "checkDisclaimer");
         final String thisRun = Const.DisclaimerVersion;
-//        final String lastRun = thisRun;
         final String lastRun = settings.getString(Const.PREF_DISCLAIM, "");
-//        settings.edit().putString(Const.PREF_DISCLAIM, Const.DisclaimerVersion).apply();
 	
         return !lastRun.equals(thisRun);
     }
+	
+	public static void setDisclaimer() {
+		settings.edit().putString(Const.PREF_DISCLAIM, Const.DisclaimerVersion).apply();
+	}
 
     public static boolean getFirstRun() {
         // tcLog.d("Credentials", "getFirstRun");

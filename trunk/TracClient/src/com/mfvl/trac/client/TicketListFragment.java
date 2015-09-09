@@ -289,9 +289,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
         tcLog.d(getClass().getName(), "onOptionsItemSelected item=" + item.getTitle());
         final int itemId = item.getItemId();
 
-		if (itemId == R.id.help) {
-			showHelp();
-		} else if (itemId == R.id.tlselect) {
+		if (itemId == R.id.tlselect) {
             final EditText input = new EditText(context);
             input.setInputType(InputType.TYPE_CLASS_NUMBER);
 			

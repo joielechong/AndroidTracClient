@@ -41,12 +41,12 @@
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:textColor">@color/help_text</item>
 		<item name="android:gravity">center</item>
-		<item name="android:textSize">25sp</item>
+		<item name="android:textSize">@dimen/help_textsize</item>
 		<item name="android:textStyle">bold</item>
 	</style>
 
 	<style name="TitleScreenText.Big">
-		<item name="android:textSize">50sp</item>
+		<item name="android:textSize">@dimen/helphdr_textsize</item>
 	</style>
 
 	<style name="ButtonBarBase" parent="android:Holo.ButtonBar" />
@@ -209,6 +209,22 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:checked">false</item>
+	</style>
+	
+	<style name="TextViewButton">
+		<item name="android:layout_width">wrap_content</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:textColor">@color/help_text</item>
+		<item name="android:paddingLeft">8dp</item>
+        <item name="android:textSize">@dimen/helpsml_textsize</item>
+		<item name="android:paddingRight">8dp</item>
+		<item name="android:clickable">true</item>
+	</style>
+	
+	<style name="AboutText" parent="TitleScreenText">
+        <item name="android:textSize">@dimen/helpsml_textsize</item>
+		<item name="android:textColor">@color/about_text</item>
+		<item name="android:gravity">left</item>
 	</style>
 	
 </resources>

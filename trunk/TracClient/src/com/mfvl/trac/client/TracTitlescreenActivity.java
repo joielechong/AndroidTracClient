@@ -135,7 +135,8 @@ public class TracTitlescreenActivity extends Activity {
             }
         }
         handler = new Handler();
-		cookieInform();
+		startApp();
+//		cookieInform();
 	}
 
     @Override
@@ -145,7 +146,7 @@ public class TracTitlescreenActivity extends Activity {
         // Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
         MyTracker.reportActivityStop(this);
     }
-	
+/*	
 	private void cookieInform() {
 		handler.post(new Runnable() {
 			@Override
@@ -185,6 +186,7 @@ public class TracTitlescreenActivity extends Activity {
 							public void onClick(DialogInterface dialog, int which) {
 								dialog.dismiss();
 								timerVal = 1;
+								// Credentials.setDisclaimer();
 								startApp();
 							}
 						}).show();
@@ -194,6 +196,7 @@ public class TracTitlescreenActivity extends Activity {
 			}
 		});
 	}
+*/
 	
 	private void startApp() {
         tcLog.d(_tag, "startApp");

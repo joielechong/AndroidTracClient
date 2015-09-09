@@ -56,10 +56,44 @@
 			android:textSize="@dimen/help_textsize"
 			android:textStyle="bold" />
 			
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:id="@+id/keuzeblock"
+			android:orientation="horizontal" >
+			
+			<Button style="@style/TextViewButton"
+				android:id="@+id/showchanges"
+				android:text="@string/showchanges"
+				android:onClick="showWebpage"
+				android:visibility="gone" />
+			<Button style="@style/TextViewButton"
+				android:id="@+id/showcookies"
+				android:onClick="showCookies"
+				android:text="@string/cookies"
+				android:visibility="gone" />
+			<Button style="@style/TextViewButton"
+				android:id="@+id/showdisclaimer"
+				android:onClick="showDisclaimer"
+				android:text="@string/showdisclaimer"
+				android:visibility="gone" />
+		</LinearLayout>
+			
 	</LinearLayout>
 	
 	<WebView
 		android:id="@+id/webfile"
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content" />
+		android:layout_height="wrap_content"
+		android:visibility="gone" />
+
+	<ScrollView
+		android:id="@+id/scrollAbout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+		android:visibility="gone" >
+
+		<TextView style="@style/AboutText"
+			android:id="@+id/textAbout" />
+	</ScrollView>
 </LinearLayout>

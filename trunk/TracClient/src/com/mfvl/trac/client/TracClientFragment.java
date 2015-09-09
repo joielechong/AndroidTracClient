@@ -31,6 +31,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.view.inputmethod.InputMethodManager;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
@@ -247,6 +248,19 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
         if (adView != null) {
             adView.resume();
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // tcLog.d(_tag, "onOptionsItemSelected item=" + item);
+        final int itemId = item.getItemId();
+
+        if (itemId == R.id.help) {
+			showHelp();
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+        return true;
     }
 
     @Override

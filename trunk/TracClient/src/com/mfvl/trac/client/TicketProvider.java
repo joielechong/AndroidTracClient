@@ -431,9 +431,7 @@ public class TicketProvider extends ContentProvider {
 
 		TicketCursor cTickets = new TicketCursor(ticketList);
 		
-		if (uri.equals(currentUri) && projection.equals(currentProjection) && reqString.equals(currentReqString)) {
-			// no change so only connect current list to cursor
-		} else {
+		if (!uri.equals(currentUri) || !projection.equals(currentProjection) || !reqString.equals(currentReqString)) {
 			initCursor(cTickets);
 			accessAllowed.acquireUninterruptibly(1); // initCursor claims all so  we know it is ready when we get the lock
 			accessAllowed.release(1); // No further need

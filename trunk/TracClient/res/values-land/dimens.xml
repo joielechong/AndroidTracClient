@@ -20,6 +20,7 @@
 	
 	<dimen name="help_textsize">20sp</dimen>
 	<dimen name="helphdr_textsize">35sp</dimen>
+	<dimen name="helpsml_textsize">14sp</dimen>	
 	
 	<integer name="webzoom">110</integer> <!-- zoom factor to be used on webpages -->
 </resources>

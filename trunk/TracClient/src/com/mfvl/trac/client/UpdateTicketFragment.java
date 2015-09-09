@@ -27,7 +27,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -341,19 +340,6 @@ public class UpdateTicketFragment extends TracClientFragment implements View.OnC
 	public void showHelp() {
 		showHelpFile(R.string.updatehelpfile);
 	}
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // tcLog.d(_tag, "onOptionsItemSelected item=" + item);
-        final int itemId = item.getItemId();
-
-        if (itemId == R.id.help) {
-			showHelp();
-        } else {
-            return super.onOptionsItemSelected(item);
-        }
-        return true;
-    }
 
     @Override
     public void onSaveInstanceState(Bundle savedState) {
