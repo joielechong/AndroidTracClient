@@ -23,7 +23,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -168,22 +167,18 @@ public class SortFragment extends TracClientFragment implements View.OnClickList
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // tcLog.d(this.getClass().getName(),
-        // "onCreateView savedInstanceState = " + (savedInstanceState == null ?
-        // "null" : "not null"));
-        final View view = inflater.inflate(R.layout.sort_view, container, false);
-
-        return view;
+        // tcLog.d(this.getClass().getName(), "onCreateView savedInstanceState = " + savedInstanceState);
+        return inflater.inflate(R.layout.sort_view, container, false);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        tcLog.d(getClass().getName(), "onActivityCreated savedInstanceState = " + savedInstanceState );
         ArrayList<SortSpec> outputSpec = null;
 
-        super.onActivityCreated(savedInstanceState);
-        tcLog.d(getClass().getName(), "onActivityCreated savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
-        if (savedInstanceState != null) {
+		if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(inputSpecText)) {
                 inputSpec = (ArrayList<SortSpec>) savedInstanceState.getSerializable(inputSpecText);
             }
@@ -211,7 +206,6 @@ public class SortFragment extends TracClientFragment implements View.OnClickList
 
         final Button storButton = (Button) view.findViewById(R.id.storebutton);
         final ImageButton addButton = (ImageButton) view.findViewById(R.id.addbutton);
-//        final Button addButton = (Button) view.findViewById(R.id.addbutton);
         final Spinner addSpinner = (Spinner) view.findViewById(R.id.addspin);
 		getScreensize(addSpinner,addButton);
 
@@ -268,19 +262,6 @@ public class SortFragment extends TracClientFragment implements View.OnClickList
 		showHelpFile(R.string.sorthelpfile);
 	}
 	
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" + item);
-        final int itemId = item.getItemId();
-
-        if (itemId == R.id.help) {
-			showHelp();
-           return true;
-        } else {
-            return super.onOptionsItemSelected(item);
-        }
-    }
-
     @Override
     public void onSaveInstanceState(Bundle savedState) {
         super.onSaveInstanceState(savedState);

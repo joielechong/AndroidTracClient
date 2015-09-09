@@ -20,6 +20,7 @@
   <color name="popup_back">#ffdddddd</color>
   <color name="help_back">#0099cc</color>
   <color name="help_text">#33b5e5</color>
+  <color name="about_text">#77e5e5</color>
   
   <color name="list_col1">#00000000</color>
   <color name="list_col2">#30111111</color>

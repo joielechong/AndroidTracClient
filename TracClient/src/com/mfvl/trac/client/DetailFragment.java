@@ -434,8 +434,6 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
                 listener.onUpdateTicket(_ticket);
                 didUpdate = true;
             }
-        } else if (item.getItemId() == R.id.help) {
-			showHelp();
         } else if (item.getItemId() == R.id.dfselect) {
             if (!listener.isFinishing()) {
 

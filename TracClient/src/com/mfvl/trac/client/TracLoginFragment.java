@@ -519,9 +519,7 @@ public class TracLoginFragment extends TracClientFragment implements View.OnClic
         // tcLog.d(_tag, "onOptionsItemSelected item=" + item.getTitle());
         final int itemId = item.getItemId();
 
-        if (itemId == R.id.help) {
-			showHelp();
-        } else if (itemId == R.id.exportprofiles) {
+        if (itemId == R.id.exportprofiles) {
             try {
                 pdb.open();
                 pdb.writeXML(context.getString(R.string.app_name));

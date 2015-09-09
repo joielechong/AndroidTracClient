@@ -29,7 +29,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -283,7 +282,6 @@ public class FilterFragment extends TracClientFragment {
 
         final Button storButton = (Button) view.findViewById(R.id.storebutton);
         final ImageButton addButton = (ImageButton) view.findViewById(R.id.addbutton);
-//        final Button addButton = (Button) view.findViewById(R.id.addbutton);
         final Spinner addSpinner = (Spinner) view.findViewById(R.id.addspin);
 		getScreensize(addSpinner,addButton);
 
@@ -328,19 +326,6 @@ public class FilterFragment extends TracClientFragment {
 	public void showHelp() {
 		showHelpFile(R.string.filterhelpfile);
 	}
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" + item);
-        final int itemId = item.getItemId();
-
-        if (itemId == R.id.help) {
-			showHelp();
-        } else {
-            return super.onOptionsItemSelected(item);
-        }
-        return true;
-    }
 
     private LinearLayout makeCheckBoxes(final FilterSpec o) {
         final String veldnaam = o.getVeld();

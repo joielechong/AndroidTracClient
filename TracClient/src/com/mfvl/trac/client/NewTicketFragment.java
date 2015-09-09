@@ -23,7 +23,6 @@ import org.json.JSONObject;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -36,20 +35,20 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 
-public class NewTicketFragment extends TracClientFragment implements View.OnClickListener {
+public class NewTicketFragment extends TracClientFragment {
     private final static int EXTRA = 1000;
     private TicketModel tm;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+        // tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " + savedInstanceState);
         setHasOptionsMenu(true);
     }
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // tcLog.d(this.getClass().getName(),"onCreateView savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+        // tcLog.d(this.getClass().getName(),"onCreateView savedInstanceState = " + savedInstanceState);
         if (container == null) {
             return null;
         }
@@ -77,30 +76,27 @@ public class NewTicketFragment extends TracClientFragment implements View.OnClic
                 final String veldnaam = veld.label();
                 int extra = 0;
 				
-                if (Arrays.asList(ignoreFields).contains(veldnaam)) {// ignore these fields so v stays null
-                } else if (veld.options() != null) {
-                    v = makeComboSpin(context, veldnaam, veld.options(), veld.optional(), veld.value());
-                } else {
-                    v = (EditText) inflater.inflate((veldnaam.equals("Description") ? R.layout.descrfield: R.layout.stdfield), null, false);
-                    extra = EXTRA;
-                }
-                if (v != null) {
+                if (!Arrays.asList(ignoreFields).contains(veldnaam)) {
+					if (veld.options() != null) {
+						v = makeComboSpin(context, veldnaam, veld.options(), veld.optional(), veld.value());
+					} else {
+						v = (EditText) inflater.inflate((veldnaam.equals("Description") ? R.layout.descrfield: R.layout.stdfield), null, false);
+						extra = EXTRA;
+					}
                     v.setLayoutParams(lp);
                     makeRow(tl, veldnaam, v, i + extra);
                 }
             }
             e.setVisibility(View.GONE);
-            e = view.findViewById(R.id.veld);
-            e.setVisibility(View.GONE);
+            view.findViewById(R.id.veld).setVisibility(View.GONE);
         } catch (final Exception e) {
             tcLog.e(getClass().getName(), "Exception in createTicket", e);
         } finally {
             view.invalidate();
         }
-        storButton.setOnClickListener(this);
     }
     
-    public void storeTicket() {
+    public void storeTicket(View dummy) {
         final JSONObject velden = new JSONObject();
         final View view = getView();
         final TableLayout tl = (TableLayout) view.findViewById(R.id.newTickTable);
@@ -164,30 +160,8 @@ public class NewTicketFragment extends TracClientFragment implements View.OnClic
         }.start();
     }
     
-    @Override
-    public void onClick(View v) {
-		switch (v.getId()) {
-		case R.id.storebutton:
-			storeTicket();
-			break;
-		default:
-		}
-    }
-    
     public void showHelp() {
 		showHelpFile(R.string.newhelpfile);
-    }
-    
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // tcLog.d(this.getClass().getName(), "onOptionsItemSelected item=" + item.getTitle());
-		
-        if (item.getItemId() == R.id.help) {
-            showHelp();
-        } else {
-            return super.onOptionsItemSelected(item);
-        }
-        return true;
     }
     
     private void makeRow(TableLayout tl, final String veldnaam, View tv2, final int id) {
