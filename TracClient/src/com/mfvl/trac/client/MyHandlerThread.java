@@ -22,19 +22,15 @@ import android.os.HandlerThread;
 
 
 public class MyHandlerThread extends HandlerThread {
-	
-    private String _name;
-	
+
     MyHandlerThread(String name) {
         super(name);
-        _name = name;
     }
 		
     MyHandlerThread(String name, int priority) {
         super(name, priority);
-        _name = name;
     }
-		
+
     @SuppressLint("NewApi")
     public boolean tcQuitSafely() {
         // QuitSafely if older than 18 then fall through to quit
@@ -46,7 +42,7 @@ public class MyHandlerThread extends HandlerThread {
         try {
             super.run();
         } catch (Exception e) {
-            tcLog.e(getClass().getName() + "." + getThreadId(), "Exception in HandlerThread Run - " + _name, e);
+            tcLog.e(getClass().getName() + "." + getThreadId(), "Exception in HandlerThread Run - " +getName(), e);
         }
     }
 }

@@ -162,6 +162,7 @@ public class SortFragment extends TracClientFragment implements View.OnClickList
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+		helpFile = R.string.sorthelpfile;
         setHasOptionsMenu(true);
     }
 
@@ -251,17 +252,6 @@ public class SortFragment extends TracClientFragment implements View.OnClickList
 		}
 	}
 
-    // @Override
-    // public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-    // tcLog.d(getClass().getName(), "onCreateOptionsMenu");
-    // // inflater.inflate(R.menu.ticketlistmenu, menu);
-    // super.onCreateOptionsMenu(menu, inflater);
-    // }
-
-	public void showHelp() {
-		showHelpFile(R.string.sorthelpfile);
-	}
-	
     @Override
     public void onSaveInstanceState(Bundle savedState) {
         super.onSaveInstanceState(savedState);

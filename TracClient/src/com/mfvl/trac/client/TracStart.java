@@ -526,14 +526,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
             onChangeHost();
 			break;
 			
-			case R.id.help: 
-			try {
-				String fragmentTag = getTopFragment();
-				TracClientFragment currentFragment = (TracClientFragment)getFragmentManager().findFragmentByTag(fragmentTag);	
-				currentFragment.showHelp();
-			} catch (Exception e) {}
-			break;
-			
 			default:
             tcLog.toast(getClass().getName() + " selectItem: position = " + position + " mDrawerId = " + mDrawerIds[position]);
 		}
@@ -684,9 +676,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 			}
 			if (Credentials.getFirstRun()) {
 				final Intent launchTrac = new Intent(this, TracShowWebPage.class);
-				final String filename = getString(R.string.whatsnewhelpfile);
-
-				launchTrac.putExtra(Const.HELP_FILE, filename);
+				launchTrac.putExtra(Const.HELP_FILE, getString(R.string.whatsnewhelpfile));
 				launchTrac.putExtra(Const.HELP_VERSION, false);
 				startActivity(launchTrac);
 			}

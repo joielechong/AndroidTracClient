@@ -65,6 +65,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
     protected int drawer_border;
 	protected Handler tracStartHandler;
 	protected View activityRootView;
+	protected int helpFile = -1;
 	
 	private void onMyAttach(Context activity) {
         context = (TracStart) activity;
@@ -252,11 +253,15 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // tcLog.d(_tag, "onOptionsItemSelected item=" + item);
+        tcLog.d(getClass().getName() + ".super", "onOptionsItemSelected item=" + item+ " "+ helpFile);
         final int itemId = item.getItemId();
 
-        if (itemId == R.id.help) {
-			showHelp();
+        if (itemId == R.id.help && helpFile != -1) {
+			final Intent launchTrac = new Intent(context, TracShowWebPage.class);
+			final String filename = context.getString(helpFile);
+			launchTrac.putExtra(Const.HELP_FILE, filename);
+			launchTrac.putExtra(Const.HELP_VERSION, false);
+			startActivity(launchTrac);
         } else {
             return super.onOptionsItemSelected(item);
         }
@@ -326,18 +331,6 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 		inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
 	}
 
-	abstract public void showHelp();
-	
-	public void showHelpFile(int resId) {
-        tcLog.d(getClass().getName()+".super", "showHelp");
-        final Intent launchTrac = new Intent(context, TracShowWebPage.class);
-        final String filename = context.getString(resId);
-
-        launchTrac.putExtra(Const.HELP_FILE, filename);
-        launchTrac.putExtra(Const.HELP_VERSION, false);
-        startActivity(launchTrac);
-	}
-	
 	protected void getScreensize(View spin,View but) {
 		DisplayMetrics metrics = new DisplayMetrics();
 		context.getWindowManager().getDefaultDisplay().getMetrics(metrics);

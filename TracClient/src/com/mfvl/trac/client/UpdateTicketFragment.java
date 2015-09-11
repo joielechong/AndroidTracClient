@@ -42,7 +42,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 
-public class UpdateTicketFragment extends TracClientFragment implements View.OnClickListener {
+public class UpdateTicketFragment extends TracClientFragment {
     private static final String UPDATE_CURRENT_BUTTON = "currentButton";
     private static final String UPDATE_SPIN_POSITION = "spinPosition";
     private static final String UPDATE_OPTION_VAL = "optionVal";
@@ -100,12 +100,6 @@ public class UpdateTicketFragment extends TracClientFragment implements View.OnC
         _actions = _ticket.getActions();
         tcLog.d(_tag, "actions = " + _actions);
         final RadioGroup rg = (RadioGroup) view.findViewById(R.id.actionblock);
-		
-		final Button canBut = (Button) view.findViewById(R.id.canBut);
-		canBut.setOnClickListener(this);
-		
-		final Button storeBut = (Button) view.findViewById(R.id.storeBut);
-		storeBut.setOnClickListener(this);
 		
         try {
             for (int i = 0; i < _actions.length(); i++) {
@@ -215,38 +209,8 @@ public class UpdateTicketFragment extends TracClientFragment implements View.OnC
             spinPosition = 0;
         }
         _ticket = listener.getTicket(ticknr);
-//       if (_ticket != null) {
-            displayView(button, spinPosition, optionVal);
-/*
-        } else {
-            _ticket = new Ticket(ticknr, context, new onTicketCompleteListener() {
-                @Override
-                public void onComplete(Ticket ticket) {
-                    context.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.putTicket(_ticket);
-                            displayView(button, spinPosition, optionVal);
-                        }
-                    });
-                }
-            });
-        }
-*/
+        displayView(button, spinPosition, optionVal);
     }
-	
-	@Override
-	public void onClick(View v) {
-		switch (v.getId()) {
-			case R.id.canBut:
-			leaveFragment(v);
-			break;
-			
-			case R.id.storeBut:
-			storeUpdate(v);
-			break;
-		}
-	}
 	
 	/**
 	 * storeUpdate - called when the Store button is pressed
@@ -279,41 +243,12 @@ public class UpdateTicketFragment extends TracClientFragment implements View.OnC
 		try {
 			final boolean notify = updNotify == null ? false : updNotify.isChecked();
 			listener.updateTicket(_ticket,action, comment, currentActionName, waarde, notify, null);
-			} catch (final Exception e) {
-				tcLog.e(getClass().getName(), "update failed", e);
-				showAlertBox(R.string.storerr,R.string.storerrdesc,e.getMessage());
-			} finally {
-				listener.stopProgressBar();
-			}
-/*
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-
-                    context.runOnUiThread(new Runnable() {
-                        @Override
-                         public void run() {
-							listener.refreshOverview();
-                            synchronized (sissaved) {
-                                if (!sissaved) {
-									try {
-										getFragmentManager().popBackStack();
-									} catch (Exception e) {
-									}
-                                }
-                            }
-                        }
-                    });
-                } catch (final Exception e) {
-					tcLog.e(getClass().getName(), "update failed", e);
-					showAlertBox(R.string.storerr,R.string.storerrdesc,e.getMessage());
-                } finally {
-					listener.stopProgressBar();
-                }
-            }
-        }.start();
-*/
+		} catch (final Exception e) {
+			tcLog.e(getClass().getName(), "update failed", e);
+			showAlertBox(R.string.storerr,R.string.storerrdesc,e.getMessage());
+		} finally {
+			listener.stopProgressBar();
+		}
 	}
 
 	/**
@@ -332,14 +267,11 @@ public class UpdateTicketFragment extends TracClientFragment implements View.OnC
     @Override
     public void onResume() {
         super.onResume();
+		helpFile = R.string.updatehelpfile;
         synchronized (sissaved) {
             sissaved = false;
         }
     }
-
-	public void showHelp() {
-		showHelpFile(R.string.updatehelpfile);
-	}
 
     @Override
     public void onSaveInstanceState(Bundle savedState) {

@@ -16,7 +16,6 @@
 
 package com.mfvl.trac.client;
 
-
 import java.io.Serializable;
 
 

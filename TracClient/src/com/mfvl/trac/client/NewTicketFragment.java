@@ -43,6 +43,7 @@ public class NewTicketFragment extends TracClientFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " + savedInstanceState);
+		helpFile = R.string.newhelpfile;
         setHasOptionsMenu(true);
     }
     
@@ -158,10 +159,6 @@ public class NewTicketFragment extends TracClientFragment {
                 }
             }
         }.start();
-    }
-    
-    public void showHelp() {
-		showHelpFile(R.string.newhelpfile);
     }
     
     private void makeRow(TableLayout tl, final String veldnaam, View tv2, final int id) {
