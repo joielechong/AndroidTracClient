@@ -308,6 +308,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
     @Override
     public void onResume() {
         super.onResume();
+		helpFile = R.string.helpdetailfile;
         gestureDetector = new GestureDetector(context, this);
         if (ticknr != -1) {
 			display_and_refresh_ticket();
@@ -420,10 +421,6 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 		}
     }
 	
-	public void showHelp() {
-		showHelpFile(R.string.helpdetailfile);
-	}
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // tcLog.d(getClass().getName(), "onOptionsItemSelected " +

@@ -53,7 +53,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
-public class TracLoginFragment extends TracClientFragment implements View.OnClickListener {
+public class TracLoginFragment extends TracClientFragment {
 
     private static final String NEW_URL = "newURL";
     private static final String NEW_USERNAME = "newUsername";
@@ -107,20 +107,6 @@ public class TracLoginFragment extends TracClientFragment implements View.OnClic
 		_tag = getClass().getName();
         tcLog.d(_tag, "onCreate savedInstanceState = " + savedInstanceState);
         setHasOptionsMenu(true);
-        if (savedInstanceState == null) {
-            url = listener.getUrl();
-            username = listener.getUsername();
-            password = listener.getPassword();
-            sslHack = listener.getSslHack();
-            sslHostNameHack = listener.getSslHostNameHack();
-        }
-    }
-    
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        tcLog.d(_tag, "onCreateOptionsMenu");
-        inflater.inflate(R.menu.tracloginmenu, menu);
-        super.onCreateOptionsMenu(menu, inflater);
     }
     
     @Override
@@ -144,38 +130,13 @@ public class TracLoginFragment extends TracClientFragment implements View.OnClic
         pwView = (EditText) view.findViewById(R.id.trac_Pw);
         bewaarBox = (CheckBox) view.findViewById(R.id.bewaren);
         okButton = (Button) view.findViewById(R.id.okBut);
-		okButton.setOnClickListener(this);
         verButton = (Button) view.findViewById(R.id.verBut);
-		verButton.setOnClickListener(this);
         storButton = (Button) view.findViewById(R.id.storebutton);
-		storButton.setOnClickListener(this);
         credWarn = (TextView) view.findViewById(R.id.connWarn);
         credWarnSts = (TextView) view.findViewById(R.id.connWarnSts);
         sslHackBox = (CheckBox) view.findViewById(R.id.sslHack);
         loadProfileBox = (LinearLayout) view.findViewById(R.id.loadprofile);
         loginSpinner = (Spinner) view.findViewById(R.id.loginspinner);
-	
-        if (url == null) {
-            if (savedInstanceState == null) {
-                // tcLog.d(_tag, "onViewCreated use Activity");
-				url = listener.getUrl();
-				username = listener.getUsername();
-				password = listener.getPassword();
-				sslHack = listener.getSslHack();
-				sslHostNameHack = listener.getSslHostNameHack();
-            } else {
-                // tcLog.d(_tag, "onViewCreated use savedInstanceState");
-                url = savedInstanceState.getString(NEW_URL);
-                username = savedInstanceState.getString(NEW_USERNAME);
-                password = savedInstanceState.getString(NEW_PASSWORD);
-                sslHack = savedInstanceState.getBoolean(Const.CURRENT_SSLHACK);
-                sslHostNameHack = savedInstanceState.getBoolean(Const.CURRENT_SSLHOSTNAMEHACK);
-                bewaren = savedInstanceState.getBoolean(bewaarText);
-                bewaarBox.setChecked(bewaren);
-            }
-            // } else {
-            // tcLog.d(_tag, "onViewCreated use current values");
-        }
 	
         pdb = new ProfileDatabaseHelper(context);
         pdb.open();
@@ -236,15 +197,13 @@ public class TracLoginFragment extends TracClientFragment implements View.OnClic
             });
         }
 	
-        urlView.setText(url);
-        userView.setText(username);
-        pwView.setText(password);
-        sslHackBox.setChecked(sslHack);
-        checkHackBox(url);
     }
     
-    private void report(final String label) {
-        MyTracker.report("Normal", "Verification", label);
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        tcLog.d(_tag, "onCreateOptionsMenu");
+        inflater.inflate(R.menu.tracloginmenu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
     
     private JSONObject verifyHost(final String url, final boolean sslHack, final boolean sslHostNameHack, final String username, final String password) {
@@ -269,8 +228,6 @@ public class TracLoginFragment extends TracClientFragment implements View.OnClic
             } catch (JSONException e1) {}
         }
         return j;
-        // return cv;
-        // return context.getContentResolver().call(TicketProvider.AUTH_URI,TicketProvider.VERIFY_HOST,null,cv);
     }
     
     @Override
@@ -296,8 +253,6 @@ public class TracLoginFragment extends TracClientFragment implements View.OnClic
                 bewaren = savedInstanceState.getBoolean(bewaarText);
                 bewaarBox.setChecked(bewaren);
             }
-            // } else {
-            // tcLog.d(_tag, "onActivityCreated use current values");
         }
 	
         urlView.setText(url);
@@ -305,15 +260,10 @@ public class TracLoginFragment extends TracClientFragment implements View.OnClic
         pwView.setText(password);
         sslHackBox.setChecked(sslHack);
         checkHackBox(url);
-        if (url == null || url.length() == 0) {
-            verButton.setEnabled(false);
-            okButton.setEnabled(false);
-            storButton.setEnabled(false);
-        } else {
-            verButton.setEnabled(true);
-            okButton.setEnabled(true);
-            storButton.setEnabled(true);
-        }
+		boolean buttonsOn = !(url == null || url.length() == 0);
+		verButton.setEnabled(buttonsOn);
+		okButton.setEnabled(buttonsOn);
+		storButton.setEnabled(buttonsOn);
 	
         checkHackBox(urlView.getText().toString());
 	
@@ -328,24 +278,6 @@ public class TracLoginFragment extends TracClientFragment implements View.OnClic
         });
 	
     }
-	
-	public void onClick(View v) {
-		switch (v.getId()) {
-			case R.id.okBut:
-			performLogin(v);
-			break;
-			
-			case R.id.verBut:
-			performVerify(v);
-			break;
-			
-			case R.id.storebutton:
-			storeProfile(v);
-			break;
-			
-			default:
-		}
-	}
 
     public void performVerify(View v) {
         url = urlView.getText().toString();
@@ -362,7 +294,7 @@ public class TracLoginFragment extends TracClientFragment implements View.OnClic
 				try {
 					final String TracVersion = (String) j.get(TicketProvider.RESULT);
 
-					tcLog.d(this.getClass().getName(), TracVersion);
+					tcLog.d(getClass().getName(), TracVersion);
 					setValidMessage("Success");
 				} catch (JSONException e) {
 					try {
@@ -371,7 +303,6 @@ public class TracLoginFragment extends TracClientFragment implements View.OnClic
 						tcLog.d(getClass().getName(), "Exception during verify 1 " + errmsg);
 						tcLog.toast("==" + errmsg + "==");
 						if (errmsg.startsWith("hostname in certificate didn't match:")) {
-							report("Fail Hostname");
 							context.runOnUiThread(new Runnable() {
 								@Override
 								public void run() {
@@ -380,9 +311,9 @@ public class TracLoginFragment extends TracClientFragment implements View.OnClic
 									alertDialogBuilder.setTitle(R.string.hostnametitle);
 									final String msg = context.getString(R.string.hostnametext) + errmsg + context.getString(R.string.hostnameign);
 
-									alertDialogBuilder.setMessage(msg);
-									alertDialogBuilder.setCancelable(false);
-									alertDialogBuilder.setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
+									alertDialogBuilder.setMessage(msg)
+										.setCancelable(false)
+										.setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
 										@Override
 										public void onClick(DialogInterface dialog, int id) {
 											listener.startProgressBar(R.string.checking);
@@ -395,7 +326,7 @@ public class TracLoginFragment extends TracClientFragment implements View.OnClic
 													try {
 														final String TracVersion1 = (String) j1.get(TicketProvider.RESULT);
 
-														tcLog.d(this.getClass().getName(), TracVersion1);
+														tcLog.d(getClass().getName(), TracVersion1);
 														setValidMessage("Success Hostname");
 														sslHostNameHack = true;
 													} catch (JSONException e1) {
@@ -507,13 +438,10 @@ public class TracLoginFragment extends TracClientFragment implements View.OnClic
     public void onResume() {
         tcLog.d(_tag, "onResume");
         super.onResume();
+		helpFile = R.string.loginhelpfile;
         checkHackBox(urlView.getText().toString());
     }
 	
-	public void showHelp() {
-		showHelpFile(R.string.loginhelpfile);
-	}
-    
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // tcLog.d(_tag, "onOptionsItemSelected item=" + item.getTitle());
@@ -645,7 +573,6 @@ public class TracLoginFragment extends TracClientFragment implements View.OnClic
                 sslHostNameHack = false; // force check on hostname first
             }
         });
-		report(message);
     }
     
     private void setInvalidMessage(final String m1,final String m2) {
@@ -664,7 +591,6 @@ public class TracLoginFragment extends TracClientFragment implements View.OnClic
                 sslHostNameHack = false; // force check on hostname first
             }
         });
-		report(m2);
     }
     
     private void setValidMessage(final String message) {
@@ -679,6 +605,5 @@ public class TracLoginFragment extends TracClientFragment implements View.OnClic
                 storButton.setEnabled(true);
             }
         });
-		report(message);
     }
 }

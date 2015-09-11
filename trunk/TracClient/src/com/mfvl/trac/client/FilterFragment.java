@@ -251,6 +251,7 @@ public class FilterFragment extends TracClientFragment {
         final ListView lv = (ListView) view.findViewById(R.id.filterlist);
         ArrayList<FilterSpec> outputSpec = null;
 
+		helpFile = R.string.filterhelpfile;
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(inputSpecText)) {
                 inputSpec = (ArrayList<FilterSpec>) savedInstanceState.getSerializable(inputSpecText);
@@ -323,10 +324,6 @@ public class FilterFragment extends TracClientFragment {
         }
     }
 	
-	public void showHelp() {
-		showHelpFile(R.string.filterhelpfile);
-	}
-
     private LinearLayout makeCheckBoxes(final FilterSpec o) {
         final String veldnaam = o.getVeld();
         final List<Object> waardes = tm.getVeld(veldnaam).options();

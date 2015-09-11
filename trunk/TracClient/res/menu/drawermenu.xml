@@ -34,10 +34,6 @@
 		android:title="@string/sort"/>
 
 	<item
-		android:id="@+id/help"
-		android:title="@string/help" />
-
-	<item
 		android:id="@+id/over"
 		android:title="@string/about_button"/>
 		

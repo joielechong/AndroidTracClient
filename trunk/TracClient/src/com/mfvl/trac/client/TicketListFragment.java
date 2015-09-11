@@ -170,6 +170,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
     public void onResume() {
         super.onResume();
         tcLog.d(getClass().getName(), "onResume");
+		helpFile = R.string.helplistfile;
 		dataAdapter = listener.getAdapter();
 		dataAdapter.registerDataSetObserver(ticketDataSetObserver);
         zetZoeken();
@@ -437,12 +438,6 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
             }
         }
     }
-	
-	// TracClientFragment
-
-	public void showHelp() {
-		showHelpFile(R.string.helplistfile);
-	}
 
 	//SwipeRefreshLayout.OnRefreshListener
 	

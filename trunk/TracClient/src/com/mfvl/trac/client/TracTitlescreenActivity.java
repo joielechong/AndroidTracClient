@@ -22,12 +22,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.app.AlertDialog;
 import android.view.View;
 import android.widget.TextView;
 
@@ -146,58 +144,6 @@ public class TracTitlescreenActivity extends Activity {
         // Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
         MyTracker.reportActivityStop(this);
     }
-/*	
-	private void cookieInform() {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				tcLog.d(_tag, "cookieInform");
-				if (Credentials.getCookieInform()) {
-					new AlertDialog.Builder(TracTitlescreenActivity.this)
-						.setTitle(R.string.cookies)
-						.setMessage(R.string.cookieInform)
-						.setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-		//						Credentials.setCookieInform(true);
-								dialog.dismiss();
-								timerVal = 1;
-								showDisclaimer();
-							}
-						}).show();
-				} else {
-					showDisclaimer();
-				}
-			}
-		});
-	}
-	
-	private void showDisclaimer() {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				tcLog.d(_tag, "showDisclaimer");
-				if (Credentials.checkDisclaimer()) {
-					new AlertDialog.Builder(TracTitlescreenActivity.this)
-						.setTitle("Discliamer")
-						.setMessage("Dit is een disclaimer")
-						.setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								dialog.dismiss();
-								timerVal = 1;
-								// Credentials.setDisclaimer();
-								startApp();
-							}
-						}).show();
-				} else {
-					startApp();
-				}
-			}
-		});
-	}
-*/
-	
 	private void startApp() {
         tcLog.d(_tag, "startApp");
         final Timer t = new Timer();
