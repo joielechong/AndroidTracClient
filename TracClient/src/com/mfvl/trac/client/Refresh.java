@@ -71,7 +71,6 @@ public class Refresh extends Activity implements ServiceConnection {
             final String action = getIntent().getAction();
 
             if (action != null) {
-                MyTracker.report("Normal", "Refresh", action);
                 if (action.equalsIgnoreCase(RefreshService.refreshAction)) {
                     bindService(new Intent(this, RefreshService.class), this, Context.BIND_AUTO_CREATE);
                     // tcLog.i(getClass().getName(), "Refresh sent");

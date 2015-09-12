@@ -72,16 +72,6 @@ public class MyTracker {
 		doAnalytics = newDoAnalytics;
 	}
 	
-    static void report(String cat, String action, String label) {
-        if (doAnalytics && mTracker != null) {
-            mTracker.send(new HitBuilders.EventBuilder()
-				.setCategory(cat)
-				.setAction(action)
-				.setLabel(label)
-				.build());
-        }
-    }
-	
 	static void hitScreen(final String screenName) {
         if (doAnalytics && mTracker != null) {
             mTracker.setScreenName(screenName);
