@@ -77,7 +77,6 @@ public class TracShowWebPage extends Activity {
     }
 	
 	public void showWebpage(View view) {
-        MyTracker.report("Normal", "WebView", filename);
 		wv.setVisibility(View.VISIBLE);
 		sv.setVisibility(View.GONE);
         // wv.getSettings().setJavaScriptEnabled(true);
@@ -87,7 +86,6 @@ public class TracShowWebPage extends Activity {
 	}
 	
 	public void showDisclaimer(View view) {
-        MyTracker.report("Normal", "Disclaimer", "");
 		sv.setVisibility(View.VISIBLE);
 		wv.setVisibility(View.GONE);
 		cv.setText(R.string.disclaimer);
@@ -95,7 +93,6 @@ public class TracShowWebPage extends Activity {
 	}
 	
 	public void showCookies(View view) {
-        MyTracker.report("Normal", "Cookies", "");
 		sv.setVisibility(View.VISIBLE);
 		wv.setVisibility(View.GONE);
 		cv.setText(R.string.cookieInform);

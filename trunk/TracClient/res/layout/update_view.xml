@@ -128,7 +128,6 @@
                 <Button	style="@style/CancelButton" 
 					android:onClick="leaveFragment" />
                 <Button
-					android:id="@+id/storeBut"
 					style="@style/NormalButton"
  					android:onClick="storeUpdate"
                     android:text="@string/storeupd" />

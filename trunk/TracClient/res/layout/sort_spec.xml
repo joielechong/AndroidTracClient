@@ -24,11 +24,13 @@
     <ImageButton
  		style="@style/SortSpecImageButton"
         android:id="@+id/sortup"
+		android:onClick="sortUp"
         android:src="@android:drawable/arrow_up_float" />
 
     <ImageButton
 		style="@style/SortSpecImageButton"
         android:id="@+id/sortdown"
+		android:onClick="sortDown"
         android:src="@android:drawable/arrow_down_float" />
 
     <TextView
@@ -42,11 +44,12 @@
 
     <ImageButton
  		style="@style/SortSpecImageButton8"
+		android:onClick="sortDirect"
         android:id="@+id/sortdirec" />
 
     <ImageButton
  		style="@style/SortSpecImageButton"
-        android:id="@+id/sortdel"
+		android:onClick="delSortItem"
         android:src="@android:drawable/ic_menu_delete" />
 
 </LinearLayout>

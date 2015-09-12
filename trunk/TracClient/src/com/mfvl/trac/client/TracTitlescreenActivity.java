@@ -123,7 +123,6 @@ public class TracTitlescreenActivity extends Activity {
                     for (final String segment : segments.subList(0, count - 2)) {
                         urlstring += segment + "/";
                     }
-                    MyTracker.report("Startup", "URI start", urlstring);
                     launchTrac.putExtra(Const.INTENT_URL, urlstring);
                     launchTrac.putExtra(Const.INTENT_TICKET, (long) ticket);
                 } else {
