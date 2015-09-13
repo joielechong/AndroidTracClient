@@ -16,7 +16,7 @@
 
 package com.mfvl.trac.client;
 
-
+import android.annotation.SuppressLint;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,6 +76,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
         drawer_border = context.getResources().getInteger(R.integer.drawer_border);
 	}
 
+	@SuppressLint("NewApi")
     @Override
     public void onAttach(Context activity) {
         super.onAttach(activity);
@@ -83,6 +84,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 		onMyAttach(activity);
     }
 	
+	@SuppressLint("deprecated")
     @Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
@@ -331,6 +333,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 		inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
 	}
 
+	@SuppressLint("deprecated")
 	protected void getScreensize(View spin,View but) {
 		DisplayMetrics metrics = new DisplayMetrics();
 		context.getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -341,4 +344,4 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 		but.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, drawable.getIntrinsicWidth()));
 	}
 
-	}
+}

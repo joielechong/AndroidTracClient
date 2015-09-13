@@ -31,6 +31,7 @@
 
 		<Button
 			android:id="@+id/storebutton"
+			android:onClick="storeFilter"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_gravity="center_horizontal"
@@ -49,6 +50,7 @@
 
             <ImageButton
                 android:id="@+id/addbutton"
+				android:onClick="addFilterItem"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="5"

@@ -16,7 +16,7 @@
 
 package com.mfvl.trac.client;
 
-
+import android.annotation.SuppressLint; 
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -60,6 +60,7 @@ public class RefreshService extends Service {
             timerPeriod = res.getInteger(R.integer.timerPeriod);
         }
 
+		@SuppressLint("deprecated")
         @Override
         public void handleMessage(final Message msg) {
             //tcLog.d(this.getClass().getName(), "handleMessage msg = " + msg);

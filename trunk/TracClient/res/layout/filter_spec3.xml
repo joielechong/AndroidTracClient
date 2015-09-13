@@ -41,7 +41,7 @@
             android:src="@android:drawable/arrow_up_float" />
 
         <ImageButton
-            android:id="@+id/delfilter"
+			android:onClick="delFilterItem"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
