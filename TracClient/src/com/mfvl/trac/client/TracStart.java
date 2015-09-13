@@ -1659,6 +1659,18 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 		return sslHostNameHack;
 	}
 	
+	public void addFilterItem(View v) {
+		((FilterFragment)getFragment(FilterFragmentTag)).addItem(v);
+	}
+	
+	public void delFilterItem(View v) {
+		((FilterFragment)getFragment(FilterFragmentTag)).delItem(v);
+	}
+	
+	public void storeFilter(View v) {
+		((FilterFragment)getFragment(FilterFragmentTag)).storeFilter(v);
+	}
+	
 	public void delSortItem(View v) {
 		((SortFragment)getFragment(SortFragmentTag)).delItem(v);
 	}		

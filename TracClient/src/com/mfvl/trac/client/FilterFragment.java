@@ -16,7 +16,6 @@
 
 package com.mfvl.trac.client;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -45,7 +44,6 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-
 public class FilterFragment extends TracClientFragment {
     private TicketModel tm;
 
@@ -54,7 +52,8 @@ public class FilterFragment extends TracClientFragment {
 
     private ArrayList<FilterSpec> inputSpec;
     private FilterAdapter filterAdapter;
-
+	private Spinner addSpinner;
+	
     private class FilterAdapter extends ArrayAdapter<FilterSpec> {
 
         private final ArrayList<FilterSpec> items;
@@ -74,21 +73,17 @@ public class FilterFragment extends TracClientFragment {
             final ListView listView = (ListView) parent;
 
             View v = convertView;
-            int p;
+            int p = (position >= items.size() || position < 0 ? 0 : position);
 
-            p = position >= items.size() || position < 0 ? 0 : position;
+            final FilterSpec filterItem = items.get(p);
+            final TicketModelVeld tmv = tm.getVeld(filterItem.getVeld());
 
-            final FilterSpec o = items.get(p);
-            final TicketModelVeld tmv = tm.getVeld(o.getVeld());
+//            tcLog.d(getClass().getName(), "getView pos=" + position +" " + filterItem + " " + tmv);
 
-//            tcLog.d(getClass().getName(), "getView pos=" + position +" " + o + " " + tmv);
-
-            final int resid = o.getEdit()
-                    ? tmv.options() == null ? R.layout.filter_spec2 : R.layout.filter_spec3
-                    : R.layout.filter_spec1;
+            final int resid = (filterItem.getEdit() ? (tmv.options() == null ? R.layout.filter_spec2 : R.layout.filter_spec3) : R.layout.filter_spec1);
             final int curid = convertView == null ? -1 : convertView.getId();
 
-//            tcLog.d(getClass().getName(),"getView pos = " + position + " curid = " + curid + " resid=" + resid + " veld = " + o.getVeld());
+//            tcLog.d(getClass().getName(),"getView pos = " + position + " curid = " + curid + " resid=" + resid + " veld = " + filterItem.getVeld());
             if (curid != resid) {
                 final LayoutInflater vi = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -96,12 +91,12 @@ public class FilterFragment extends TracClientFragment {
                 v.setId(resid); // hack hack
                 listView.requestLayout();
             }
+			v.setTag(filterItem);
 
             listView.invalidate();
             final TextView tt = (TextView) v.findViewById(R.id.filternaam);
             final ImageButton filterEdit = (ImageButton) v.findViewById(R.id.editfilter);
             final ImageButton filterSave = (ImageButton) v.findViewById(R.id.savefilter);
-            final ImageButton filterDel = (ImageButton) v.findViewById(R.id.delfilter);
             final Spinner spin = (Spinner) v.findViewById(R.id.filter_choice_spin);
             final EditText et = (EditText) v.findViewById(R.id.filtervaltext);
             final LinearLayout filterCheck = (LinearLayout) v.findViewById(R.id.filtercheck);
@@ -109,7 +104,7 @@ public class FilterFragment extends TracClientFragment {
             final View.OnClickListener startEdit = new View.OnClickListener() {
                 @Override
                 public void onClick(View v1) {
-                    o.setEdit(true);
+                    filterItem.setEdit(true);
                     listView.invalidateViews();
                 }
             };
@@ -117,20 +112,20 @@ public class FilterFragment extends TracClientFragment {
             final View.OnClickListener stopEdit = new View.OnClickListener() {
                 @Override
                 public void onClick(View v1) {
-                    o.setEdit(false);
+                    filterItem.setEdit(false);
                     if (spin != null) {
-                        o.setOperator(operators.get(spin.getSelectedItemPosition()));
+                        filterItem.setOperator(operators.get(spin.getSelectedItemPosition()));
                     }
                     listView.invalidateViews();
                 }
             };
 
-            if (o != null) {
-                if (o.getEdit()) {
-                    tt.setText(o.getVeld());
+            if (filterItem != null) {
+                if (filterItem.getEdit()) {
+                    tt.setText(filterItem.getVeld());
                     tt.setOnClickListener(stopEdit);
                 } else {
-                    tt.setText(o.toString());
+                    tt.setText(filterItem.toString());
                     tt.setOnClickListener(startEdit);
                 }
             }
@@ -140,11 +135,11 @@ public class FilterFragment extends TracClientFragment {
                         operatornames);
 
                 spin.setAdapter(spinAdapter);
-                spin.setSelection(operators.indexOf(o.getOperator()));
+                spin.setSelection(operators.indexOf(filterItem.getOperator()));
                 spin.setOnItemSelectedListener(new OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        o.setOperator(operators.get(position));
+                        filterItem.setOperator(operators.get(position));
                     }
 
                     @Override
@@ -153,7 +148,7 @@ public class FilterFragment extends TracClientFragment {
             }
 
             if (et != null) {
-                et.setText(o.getWaarde());
+                et.setText(filterItem.getWaarde());
                 et.requestFocus();
                 et.addTextChangedListener(new TextWatcher() {
 
@@ -165,14 +160,14 @@ public class FilterFragment extends TracClientFragment {
 
                     @Override
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        o.setWaarde(s.toString());
+                        filterItem.setWaarde(s.toString());
                     }
 
                 });
             }
 
             if (filterCheck != null && filterCheck.getChildCount() == 0) {
-                filterCheck.addView(makeCheckBoxes(o));
+                filterCheck.addView(makeCheckBoxes(filterItem));
             }
 
             if (filterEdit != null) {
@@ -183,18 +178,13 @@ public class FilterFragment extends TracClientFragment {
                 filterSave.setOnClickListener(stopEdit);
             }
 
-            if (filterDel != null) {
-                filterDel.setOnClickListener(new ImageButton.OnClickListener() {
-                    @Override
-                    public void onClick(View v1) {
-                        items.remove(o);
-                        FilterAdapter.this.notifyDataSetChanged();
-                    }
-                });
-            }
-
             return v;
         }
+
+		public void delItem(View v1) {
+			items.remove((FilterSpec)((View)v1.getParent()).getTag());
+			notifyDataSetChanged();
+		}
     }
 
 	@SuppressWarnings("unchecked")
@@ -283,27 +273,8 @@ public class FilterFragment extends TracClientFragment {
 
         final Button storButton = (Button) view.findViewById(R.id.storebutton);
         final ImageButton addButton = (ImageButton) view.findViewById(R.id.addbutton);
-        final Spinner addSpinner = (Spinner) view.findViewById(R.id.addspin);
+        addSpinner = (Spinner) view.findViewById(R.id.addspin);
 		getScreensize(addSpinner,addButton);
-
-        storButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v1) {
-                final ArrayList<FilterSpec> items = filterAdapter.items;
-
-                for (int i = items.size() - 1; i >= 0; i--) {
-                    if (items.get(i).getOperator() == null || items.get(i).getOperator().equals("")
-                            || items.get(i).getWaarde() == null || items.get(i).getWaarde().equals("")) {
-                        items.remove(i);
-                    } else {
-                        items.get(i).setEdit(false);
-                    }
-                }
-                sendMessageToHandler(TracStart.MSG_SET_FILTER,items);
-                getFragmentManager().popBackStack();
-            }
-        });
-
         if (addButton != null) {
             final ArrayList<String> velden = tm.velden();
 
@@ -311,18 +282,30 @@ public class FilterFragment extends TracClientFragment {
             final ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, velden);
 
             addSpinner.setAdapter(spinAdapter);
-            addButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v1) {
-                    final String veld = velden.get((int) addSpinner.getSelectedItemId());
-                    final FilterSpec o = new FilterSpec(veld, "=", "");
-
-                    filterAdapter.add(o);
-                    filterAdapter.notifyDataSetChanged();
-                }
-            });
         }
     }
+	public void addItem(View v1) {
+		final String veld = tm.velden().get((int) addSpinner.getSelectedItemId());
+		final FilterSpec o = new FilterSpec(veld, "=", "");
+
+		filterAdapter.add(o);
+		filterAdapter.notifyDataSetChanged();
+	}
+	
+	public void storeFilter(View v1) {
+		final ArrayList<FilterSpec> items = filterAdapter.items;
+
+		for (int i = items.size() - 1; i >= 0; i--) {
+			if (items.get(i).getOperator() == null || items.get(i).getOperator().equals("")
+					|| items.get(i).getWaarde() == null || items.get(i).getWaarde().equals("")) {
+				items.remove(i);
+			} else {
+				items.get(i).setEdit(false);
+			}
+		}
+		sendMessageToHandler(TracStart.MSG_SET_FILTER,items);
+		getFragmentManager().popBackStack();
+	}
 	
     private LinearLayout makeCheckBoxes(final FilterSpec o) {
         final String veldnaam = o.getVeld();
@@ -381,4 +364,8 @@ public class FilterFragment extends TracClientFragment {
         }
         return valCheckBoxes;
     }
+
+	public void delItem(View v) {
+		filterAdapter.delItem(v);
+	}
 }
