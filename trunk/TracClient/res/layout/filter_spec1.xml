@@ -22,6 +22,7 @@
 
     <TextView
         android:id="@+id/filternaam"
+		android:onClick="toggleFilterEdit"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="12"
@@ -29,6 +30,7 @@
 
     <ImageButton
         android:id="@+id/editfilter"
+		android:onClick="startFilterEdit"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"

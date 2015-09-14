@@ -30,7 +30,6 @@
         android:paddingBottom="@dimen/adview_padding" >
 
 		<Button
-			android:id="@+id/storebutton"
 			android:onClick="storeFilter"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"

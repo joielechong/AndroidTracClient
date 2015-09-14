@@ -53,32 +53,34 @@ public class FilterFragment extends TracClientFragment {
     private ArrayList<FilterSpec> inputSpec;
     private FilterAdapter filterAdapter;
 	private Spinner addSpinner;
-	
+	private ListView listView;
     private class FilterAdapter extends ArrayAdapter<FilterSpec> {
+	private ArrayList<String> operators;
+	private ArrayList<String> operatornames;
 
         private final ArrayList<FilterSpec> items;
 
         public FilterAdapter(Context context, int textViewResourceId, ArrayList<FilterSpec> input) {
             super(context, textViewResourceId, input);
             items = input;
+			
+            final Resources res = context.getResources();
+            operators = new ArrayList<String>(Arrays.asList(res.getStringArray(R.array.filter2_choice)));
+            operatornames = new ArrayList<String>(Arrays.asList(res.getStringArray(R.array.filter_names)));
         }
 
         @Override
         public View getView(final int position, View convertView, final ViewGroup parent) {
-//            tcLog.d(getClass().getName(), "getView pos=" + position + " " + convertView + " " + parent);
+			//tcLog.d(getClass().getName(), "getView pos=" + position + " " + convertView + " " + parent);
 
-            final Resources res = context.getResources();
-            final ArrayList<String> operators = new ArrayList<String>(Arrays.asList(res.getStringArray(R.array.filter2_choice)));
-            final ArrayList<String> operatornames = new ArrayList<String>(Arrays.asList(res.getStringArray(R.array.filter_names)));
-            final ListView listView = (ListView) parent;
-
+            listView = (ListView) parent;
             View v = convertView;
             int p = (position >= items.size() || position < 0 ? 0 : position);
 
             final FilterSpec filterItem = items.get(p);
             final TicketModelVeld tmv = tm.getVeld(filterItem.getVeld());
 
-//            tcLog.d(getClass().getName(), "getView pos=" + position +" " + filterItem + " " + tmv);
+			//tcLog.d(getClass().getName(), "getView pos=" + position +" " + filterItem + " " + tmv);
 
             final int resid = (filterItem.getEdit() ? (tmv.options() == null ? R.layout.filter_spec2 : R.layout.filter_spec3) : R.layout.filter_spec1);
             final int curid = convertView == null ? -1 : convertView.getId();
@@ -94,41 +96,12 @@ public class FilterFragment extends TracClientFragment {
 			v.setTag(filterItem);
 
             listView.invalidate();
-            final TextView tt = (TextView) v.findViewById(R.id.filternaam);
-            final ImageButton filterEdit = (ImageButton) v.findViewById(R.id.editfilter);
-            final ImageButton filterSave = (ImageButton) v.findViewById(R.id.savefilter);
+            final TextView filterNaam = (TextView) v.findViewById(R.id.filternaam);
             final Spinner spin = (Spinner) v.findViewById(R.id.filter_choice_spin);
             final EditText et = (EditText) v.findViewById(R.id.filtervaltext);
             final LinearLayout filterCheck = (LinearLayout) v.findViewById(R.id.filtercheck);
-
-            final View.OnClickListener startEdit = new View.OnClickListener() {
-                @Override
-                public void onClick(View v1) {
-                    filterItem.setEdit(true);
-                    listView.invalidateViews();
-                }
-            };
-
-            final View.OnClickListener stopEdit = new View.OnClickListener() {
-                @Override
-                public void onClick(View v1) {
-                    filterItem.setEdit(false);
-                    if (spin != null) {
-                        filterItem.setOperator(operators.get(spin.getSelectedItemPosition()));
-                    }
-                    listView.invalidateViews();
-                }
-            };
-
-            if (filterItem != null) {
-                if (filterItem.getEdit()) {
-                    tt.setText(filterItem.getVeld());
-                    tt.setOnClickListener(stopEdit);
-                } else {
-                    tt.setText(filterItem.toString());
-                    tt.setOnClickListener(startEdit);
-                }
-            }
+			
+			filterNaam.setText((filterItem.getEdit()?filterItem.getVeld():filterItem.toString()));
 
             if (spin != null) {
                 final ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item,
@@ -170,20 +143,50 @@ public class FilterFragment extends TracClientFragment {
                 filterCheck.addView(makeCheckBoxes(filterItem));
             }
 
-            if (filterEdit != null) {
-                filterEdit.setOnClickListener(startEdit);
-            }
-
-            if (filterSave != null) {
-                filterSave.setOnClickListener(stopEdit);
-            }
-
             return v;
         }
 
+		private FilterSpec getItem(View v1) {
+			return (FilterSpec)((View)v1.getParent()).getTag();
+		}
+		
 		public void delItem(View v1) {
-			items.remove((FilterSpec)((View)v1.getParent()).getTag());
+			items.remove(getItem(v1));
 			notifyDataSetChanged();
+		}
+		
+		public void toggleEdit(View v1) {
+			FilterSpec filterItem = getItem(v1);
+			if (filterItem.getEdit()) {
+				View v=(View)v1.getParent();
+				final Spinner spin = (Spinner) v.findViewById(R.id.filter_choice_spin);
+				stopEditItem(filterItem,spin);
+			} else {
+				startEditItem(filterItem);
+			}
+		}
+
+		private void startEditItem(FilterSpec filterItem) {
+			filterItem.setEdit(true);
+			listView.invalidateViews();
+		}
+		
+		public void startEdit(View v1) {
+			startEditItem(getItem(v1));
+		}
+		
+		private void stopEditItem(FilterSpec filterItem,Spinner spin){
+			filterItem.setEdit(false);
+			if (spin != null) {
+				filterItem.setOperator(operators.get(spin.getSelectedItemPosition()));
+			}
+			listView.invalidateViews();
+		}
+		
+		public void stopEdit(View v1) {
+			View v=(View)v1.getParent();
+			final Spinner spin = (Spinner) v.findViewById(R.id.filter_choice_spin);
+			stopEditItem(getItem(v1),spin);
 		}
     }
 
@@ -271,18 +274,13 @@ public class FilterFragment extends TracClientFragment {
         filterAdapter = new FilterAdapter(context, android.R.layout.simple_list_item_1, outputSpec);
         lv.setAdapter(filterAdapter);
 
-        final Button storButton = (Button) view.findViewById(R.id.storebutton);
         final ImageButton addButton = (ImageButton) view.findViewById(R.id.addbutton);
         addSpinner = (Spinner) view.findViewById(R.id.addspin);
 		getScreensize(addSpinner,addButton);
-        if (addButton != null) {
-            final ArrayList<String> velden = tm.velden();
-
-            Collections.sort(velden);
-            final ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, velden);
-
-            addSpinner.setAdapter(spinAdapter);
-        }
+		final ArrayList<String> velden = tm.velden();
+		Collections.sort(velden);
+		final ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, velden);
+		addSpinner.setAdapter(spinAdapter);
     }
 	public void addItem(View v1) {
 		final String veld = tm.velden().get((int) addSpinner.getSelectedItemId());
@@ -364,6 +362,18 @@ public class FilterFragment extends TracClientFragment {
         }
         return valCheckBoxes;
     }
+
+	public void toggleEdit(View v) {
+		filterAdapter.toggleEdit(v);
+	}
+
+	public void startEdit(View v) {
+		filterAdapter.startEdit(v);
+	}
+
+	public void stopEdit(View v) {
+		filterAdapter.stopEdit(v);
+	}
 
 	public void delItem(View v) {
 		filterAdapter.delItem(v);
