@@ -1667,6 +1667,18 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 		((FilterFragment)getFragment(FilterFragmentTag)).delItem(v);
 	}
 	
+	public void toggleFilterEdit(View v) {
+		((FilterFragment)getFragment(FilterFragmentTag)).toggleEdit(v);
+	}
+	
+	public void startFilterEdit(View v) {
+		((FilterFragment)getFragment(FilterFragmentTag)).startEdit(v);
+	}
+	
+	public void stopFilterEdit(View v) {
+		((FilterFragment)getFragment(FilterFragmentTag)).stopEdit(v);
+	}
+	
 	public void storeFilter(View v) {
 		((FilterFragment)getFragment(FilterFragmentTag)).storeFilter(v);
 	}
