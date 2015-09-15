@@ -33,7 +33,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
 
-public class TracTitlescreenActivity extends Activity {
+public class TracTitlescreenActivity extends Activity implements Thread.UncaughtExceptionHandler {
 	private static String _tag;
 	private int timerVal = 3000;
 	private Intent launchTrac = null; 
@@ -45,13 +45,18 @@ public class TracTitlescreenActivity extends Activity {
 		_tag = getClass().getName();
         tcLog.setContext(this);
         tcLog.i(_tag, "onCreate");
+		
+		Thread.setDefaultUncaughtExceptionHandler (this);
+		
         Credentials.getInstance(this);
         boolean doAnalytics = Const.doAnalytics;
-        try {
-			doAnalytics &= Credentials.metaDataGetBoolean("com.mfvl.trac.client.useAnalytics");
-        } catch (final Exception e) {
-            tcLog.e(_tag, "getApplicationInfo", e);
-        }
+		if (doAnalytics) {
+			try {
+				doAnalytics &= Credentials.metaDataGetBoolean("com.mfvl.trac.client.useAnalytics");
+			} catch (final Exception e) {
+				tcLog.e(_tag, "getApplicationInfo", e);
+			}
+		}
         tcLog.i(_tag, "doAnalytics = " + doAnalytics);
 		MyTracker.setDoAnalytics(doAnalytics);
         try {
@@ -158,5 +163,12 @@ public class TracTitlescreenActivity extends Activity {
 				});
 			}
 		}, timerVal);
+	}
+	
+	@Override
+	public void uncaughtException(Thread thread, Throwable ex) {
+		tcLog.e(getClass().getName(),"Uncaught exception in thread "+ thread,ex);
+		tcLog.save(getClass().getName());
+		finish();
 	}
 }

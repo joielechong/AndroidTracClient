@@ -161,6 +161,7 @@ public class RefreshService extends Service {
         final Message msg = mServiceHandler.obtainMessage();
 
         msg.arg1 = startId;
+		msg.what=TracStart.MSG_ACK_START;
         mServiceHandler.sendMessage(msg);
 
         // If we get killed, after returning from here, restart
@@ -174,14 +175,16 @@ public class RefreshService extends Service {
     }
 
     @Override
-    public boolean onUnbind(Intent i) {
-        stopSelf();
+    public boolean onUnbind(Intent intent) {
+        //tcLog.d(this.getClass().getName(), "onUnBind intent = " + intent);
+		stopTimer();
+        stopService(intent);
         return false;
     }
 
     @Override
     public void onDestroy() {
-        //tcLog.d(this.getClass().getName(), "onDestroy");
+        tcLog.d(this.getClass().getName(), "onDestroy");
         stopTimer();
         mHandlerThread.tcQuitSafely();
         final NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

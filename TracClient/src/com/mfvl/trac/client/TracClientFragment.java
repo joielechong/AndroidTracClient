@@ -111,7 +111,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
         super.onCreate(savedInstanceState);
         tcLog.d(getClass().getName() + ".super", "onCreate savedInstanceState = " + savedInstanceState);
         try {
-            adUnitId = Credentials.metaDataGetString("com.mfvl.trac.client.adUnitId");
+            adUnitId = context.getString(R.string.adUnitId);
             final String t = Credentials.metaDataGetString("com.mfvl.trac.client.testDevices");
 
             try {

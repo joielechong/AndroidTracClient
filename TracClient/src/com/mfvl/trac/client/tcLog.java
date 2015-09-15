@@ -17,11 +17,15 @@
 package com.mfvl.trac.client;
 
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -203,4 +207,22 @@ public class tcLog {
     public static String getStackTraceString(Throwable tr) {
         return Log.getStackTraceString(tr);
     }
+
+	public static void save(String tag) {
+		File path = null;
+		File file = null;
+		try {
+			path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+			path.mkdirs();
+
+			file = new File(path, "tc-log.txt");
+			final OutputStream os = new FileOutputStream(file);
+
+			os.write(tcLog.getDebug().getBytes());
+			os.close();
+			d(tag, "File saved  =  " + file);
+		} catch (final Exception e) {
+			tcLog.e(tag, "Exception while saving logfile on " + path + " " + file, e);
+		}
+	}
 }
