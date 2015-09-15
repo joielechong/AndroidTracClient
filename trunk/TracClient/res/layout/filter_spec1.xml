@@ -29,7 +29,6 @@
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <ImageButton
-        android:id="@+id/editfilter"
 		android:onClick="startFilterEdit"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

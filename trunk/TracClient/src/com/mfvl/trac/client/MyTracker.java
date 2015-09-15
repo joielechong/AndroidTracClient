@@ -2,7 +2,7 @@ package com.mfvl.trac.client;
 
 
 import android.app.Activity;
-import android.content.pm.PackageManager.NameNotFoundException;
+//import android.content.pm.PackageManager.NameNotFoundException;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
@@ -14,42 +14,40 @@ public class MyTracker {
     private static MyTracker _instance = null;
     private static GoogleAnalytics analytics = null;
     private static int delay = 500;
-	private static boolean doAnalytics = Const.doAnalytics;
+	private static boolean doAnalytics;
 
     private MyTracker(final Activity context) {
         try {
             delay = context.getResources().getInteger(R.integer.waitAnalytics);
         } catch (Exception e) {}
+		
         Thread anathread = new Thread("AnalyticsStartUp") {
             @Override
             public void run() {
-                try {
-                    String PROPERTY_ID = Credentials.metaDataGetString("com.mfvl.trac.client.propertyId");
+				String PROPERTY_ID = context.getString(R.string.ga_trackingId);
 
-                    if (mTracker == null) {
-                        Tracker t = null;
+				if (mTracker == null) {
+					Tracker t = null;
 
-                        analytics = GoogleAnalytics.getInstance(context);
-                        if (analytics != null) {
-                            tcLog.d(getClass().getName(), "Initialize analytics"); 
-                            analytics.enableAutoActivityReports(context.getApplication());
-                            t = analytics.newTracker(PROPERTY_ID);
-                            if (t != null) {
-                                t.enableExceptionReporting(true);
-                                t.setAnonymizeIp(true);
-                                t.setSessionTimeout(600);
-                                t.enableAutoActivityTracking(true);
-                                t.setSampleRate(100.0);
-							}
- 						}
-						doAnalytics &= (t!=null);
-//                        tcLog.d(getClass().getName()+"."+this.getName(), "tracker = " + t); 
-                        mTracker = t;
-                    }
-                } catch (final NameNotFoundException e) {
-                    tcLog.e(getClass().getName()+"."+this.getName(), "getApplicationInfo", e);
-					doAnalytics = false;
-                }
+					analytics = GoogleAnalytics.getInstance(context);
+					if (analytics != null) {
+						tcLog.d(getClass().getName(), "Initialize analytics"); 
+						analytics.enableAutoActivityReports(context.getApplication());
+						t = analytics.newTracker(PROPERTY_ID);
+/*							
+						if (t != null) {
+							t.enableExceptionReporting(true);
+							t.setAnonymizeIp(true);
+							t.setSessionTimeout(600);
+							t.enableAutoActivityTracking(true);
+							t.setSampleRate(100.0);
+						}
+*/
+					}
+					doAnalytics &= (t!=null);
+					//tcLog.d(getClass().getName()+"."+this.getName(), "tracker = " + t); 
+					mTracker = t;
+				}
             }
         };
 

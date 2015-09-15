@@ -19,8 +19,6 @@ package com.mfvl.trac.client;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -42,7 +40,6 @@ import android.net.Uri;
 import android.database.Cursor;
 import android.database.CursorWrapper;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -141,6 +138,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	static final int MSG_SET_FILTER = 24;
 	static final int MSG_SHOW_DIALOG = 25;
 	static final int MSG_DISPLAY_TICKET = 26;
+	static final int MSG_ACK_START = 27;
 	
 	public static final String PROVIDER_MESSAGE = "TracClientProviderMessage";
 	public static final String DATACHANGED_MESSAGE = "TracClientDataChangedMessage";
@@ -876,23 +874,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         /* save logfile when exiting */
         tcLog.d(getClass().getName(), "onPause  isFinishing = " + isFinishing());
         if (isFinishing() && Credentials.isRCVersion()) {
-            File path = null;
-            File file = null;
-
-            try {
-                path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-//                tcLog.d(getClass().getName(), "path =  " + path);
-                path.mkdirs();
-
-                file = new File(path, "tc-log.txt");
-                final OutputStream os = new FileOutputStream(file);
-
-                os.write(tcLog.getDebug().getBytes());
-                os.close();
-                tcLog.d(getClass().getName(), "File saved  =  " + file);
-            } catch (final Exception e) {
-                tcLog.e(getClass().getName(), "Exception while saving logfile on " + path + " " + file, e);
-            }
+			tcLog.save(getClass().getName());
         }
     }
 
