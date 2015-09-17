@@ -46,7 +46,6 @@
     <string name="storefilter">حفظ التصنيف</string>
     <string name="storesort">حفظ نظام الترتيب</string>
     <string name="help">مساعدة</string>
-    <string name="Add">إضافة</string>
     <string name="sslHack">قبول الشهادة الموقعة ذاتيا</string>
 
     <string-array name="filter_names">
@@ -86,7 +85,6 @@
     <string name="chooseticknr">أدخل رقم التذكرة</string>
     <string name="chooseticket">اختيار تذكرة</string>
     <string name="checking">فحص</string>
-    <string name="updating">تحديث</string>
     <string name="debug">تصحيح</string>
     <string name="foundnew">تم إيجاد تذكرة جديدة أو معدلة</string>
     <string name="notifmod">تم إيجاد تذكرة معدلة</string>

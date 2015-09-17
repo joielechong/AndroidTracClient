@@ -45,7 +45,6 @@
         <string name="storefilter">Сохранить фильтр</string>
         <string name="storesort">Сохранить порядок сортировки</string>
         <string name="help">Помощь</string>
-        <string name="Add">Добавить</string>
         <string name="sslHack">Принять собственные сертификаты</string>
         <string name="select">Выбрать</string>
         <string name="storeprofile">Сохранить профиль</string>
@@ -72,7 +71,6 @@
         <string name="chooseticknr">Введите номер тикета</string>
         <string name="chooseticket">Выберите тикет</string>
         <string name="checking">Проверка</string>
-        <string name="updating">Обновление</string>
         <string name="debug">Дебаг</string>
         <string name="foundnew">Найденные новые или изменённые тикеты:</string>
         <string name="notifmod">Найдены изменённые тикеты</string>

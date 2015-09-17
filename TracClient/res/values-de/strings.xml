@@ -46,7 +46,6 @@
 	<string name="storefilter">Filter speichern</string>
 	<string name="storesort">Speichern Sie die Sortierreihenfolge</string>
 	<string name="help">Hilfe</string>
-	<string name="Add">Hinzufügen</string>
 	<string name="sslHack">Selbstsignierte Zertifikate akzeptieren</string>
 	<string-array name="filter_names">
 		<item>ist gleich</item>
@@ -84,7 +83,6 @@
 	<string name="chooseticknr">Ticketnummer eingeben</string>
 	<string name="chooseticket">Ticket wählen</string>
 	<string name="checking">Prüfe</string>
-	<string name="updating">Aktualisiere</string>
 	<string name="debug">Fehler suchen</string>
 	<string name="foundnew">Geänderte oder neue Tickets gefunden:</string>
 	<string name="notifmod">Geänderte Tickets gefunden</string>
