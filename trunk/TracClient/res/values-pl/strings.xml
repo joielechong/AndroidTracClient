@@ -45,7 +45,6 @@
 	<string name="storefilter">Zapisz filtr</string>
 	<string name="storesort">Zapisz kolejność sortowania</string>
 	<string name="help">Pomoc</string>
-	<string name="Add">Dodaj</string>
 	<string name="sslHack">Akceptuj Certyfikaty z Podpisem Własnym (SSC)</string>
 	<string name="select">Wybierz</string>
 	<string name="getlist">Ładuj Listę Biletów</string>
@@ -73,7 +72,6 @@
 	<string name="chooseticknr">Wprowadź numer biletu</string>
 	<string name="chooseticket">Wybierz bilet</string>
 	<string name="checking">Trwa sprawdzanie</string>
-	<string name="updating">Aktualizacja w toku</string>
 	<string name="debug">Usuń błędy</string>
 	<string name="foundnew">Znaleziono nowe lub edytowane bilety:</string>
 	<string name="notifmod">Znaleziono edytowane bilety</string>

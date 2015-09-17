@@ -47,7 +47,6 @@
     <string name="storefilter">Sla filter op</string>
     <string name="storesort">Sla sortering op</string>
     <string name="help">Help</string>
-    <string name="Add">Voeg toe</string>
     <string name="sslHack">Accepteer Self Signed Certificaten</string>
 
     <string-array name="filter_names">
@@ -87,7 +86,6 @@
     <string name="chooseticknr">Voer ticketnummer in</string>
     <string name="chooseticket">Kies ticket</string>
     <string name="checking">Controleren</string>
-    <string name="updating">Bijwerken</string>
     <string name="debug">Debug</string>
     <string name="foundnew">Gewijzigde of nieuwe tickets gevonden:</string>
     <string name="notifmod">Gewijzigde tickets gevonden</string>

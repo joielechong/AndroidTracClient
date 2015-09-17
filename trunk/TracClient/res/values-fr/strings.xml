@@ -46,7 +46,6 @@
     <string name="storefilter">Enregistrer le filtre</string>
     <string name="storesort">Enregistrer l\'ordre de tri</string>
     <string name="help">Aide</string>
-    <string name="Add">Ajouter</string>
     <string name="sslHack">Accepter auto-signé Certificats</string>
 
     <string-array name="filter_names">
@@ -86,7 +85,6 @@
     <string name="chooseticknr">Entrez ticketnumber</string>
     <string name="chooseticket">Choisissez billet</string>
     <string name="checking">Compte chèque</string>
-    <string name="updating">Réactualisation</string>
     <string name="debug">Débogage</string>
     <string name="foundnew">Modification ou de nouveaux billets trouvés:</string>
     <string name="notifmod">Billets modifiés trouvés</string>

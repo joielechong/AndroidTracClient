@@ -46,7 +46,6 @@
     <string name="storefilter">Salvar filtro</string>
     <string name="storesort">Salvar ordem de classificação</string>
     <string name="help">Ajuda</string>
-    <string name="Add">Adicionar</string>
     <string name="sslHack">Aceitar Certificados Próprios Assinados</string>
 
     <string-array name="filter_names">
@@ -86,7 +85,6 @@
     <string name="chooseticknr">Introduzir número de bilhete</string>
     <string name="chooseticket">Escolher bilhete</string>
     <string name="checking">Verificando</string>
-    <string name="updating">Atualizando</string>
     <string name="debug">Depurar</string>
     <string name="foundnew">Modificado ou novos bilhetes encontrados:</string>
     <string name="notifmod">Bilhetes modificados encontrados</string>
