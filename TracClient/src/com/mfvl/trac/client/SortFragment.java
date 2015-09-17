@@ -32,35 +32,33 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-public class SortFragment extends TracClientFragment {
+public class SortFragment extends SpecFragment<SortSpec> implements View.OnClickListener {
 
-    private class SortAdapter extends ArrayAdapter<SortSpec> {
-        private final ArrayList<SortSpec> items;
-
+    private class SortAdapter extends SpecAdapter<SortSpec>  implements View.OnClickListener {
         public SortAdapter(Context context, int textViewResourceId, ArrayList<SortSpec> items) {
             super(context, textViewResourceId, items);
-            this.items = items;
-        }
-
-        public ArrayList<SortSpec> getArray() {
-            return items;
         }
 
         @Override
         public View getView(final int position, View convertView, final ViewGroup parent) {
 			// tcLog.d(getClass().getName(),"getView: "+position+" "+convertView+" "+parent);
+            listView = (ListView) parent;
+			
             View v = convertView;
 
             if (v == null) {
-                final LayoutInflater vi = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-                v = vi.inflate(R.layout.sort_spec, parent, false);
+				v = LayoutInflater.from(context).inflate(R.layout.sort_spec, parent, false);
             }
 			v.setTag(position);
             ImageButton sortup = (ImageButton) v.findViewById(R.id.sortup);
+			sortup.setOnClickListener(this);
             ImageButton sortdown = (ImageButton) v.findViewById(R.id.sortdown);
+			sortdown.setOnClickListener(this);
             TextView tt = (TextView) v.findViewById(R.id.sortfield);
             ImageButton direc = (ImageButton) v.findViewById(R.id.sortdirec);
+			direc.setOnClickListener(this);
+			v.findViewById(R.id.delitem).setOnClickListener(this);
+			
             SortSpec sortItem = items.get(position);
 
             if (sortItem != null) {
@@ -86,84 +84,61 @@ public class SortFragment extends TracClientFragment {
 			return (Integer)((View)dv.getParent()).getTag();
 		}
 
-		public void sortDirect(View dv) {
-			((ImageButton)dv).setImageResource(items.get(getSortPosition(dv)).flip() ? R.drawable.upArrow : R.drawable.downArrow);
-		}
-		
-		public void sortDown(View dv) {
+		public void onClick(View dv) {
 			int position = getSortPosition(dv);
-			if (position < items.size() - 1) {
-				final SortSpec o1 = items.get(position);
-				final SortSpec o2 = items.get(position + 1);
+			SortSpec sortItem = items.get(position);
+			switch (dv.getId()) {
+				case R.id.sortup:
+				if (position > 0) {
+					final SortSpec o1 = sortItem;
+					final SortSpec o2 = items.get(position - 1);
 
-				items.set(position + 1, o1);
-				items.set(position, o2);
+					items.set(position - 1, o1);
+					items.set(position, o2);
+					notifyDataSetChanged();
+				}
+				break;
+
+				case R.id.sortdown:
+				if (position < items.size() - 1) {
+					final SortSpec o1 = sortItem;
+					final SortSpec o2 = items.get(position + 1);
+
+					items.set(position + 1, o1);
+					items.set(position, o2);
+					notifyDataSetChanged();
+				}
+				break;
+
+				case R.id.sortdirec:
+				((ImageButton)dv).setImageResource(sortItem.flip() ? R.drawable.upArrow : R.drawable.downArrow);
+				break;
+				
+				case R.id.delitem:
+				items.remove(sortItem);
 				notifyDataSetChanged();
+				break;
 			}
-		}
-
-		public void sortUp(View dv) {
-			int position = getSortPosition(dv);			
-			if (position > 0) {
-				final SortSpec o1 = items.get(position);
-				final SortSpec o2 = items.get(position - 1);
-
-				items.set(position - 1, o1);
-				items.set(position, o2);
-				notifyDataSetChanged();
-			}
-		}
-
-		public void delItem(View dv) {
-			items.remove(items.get(getSortPosition(dv)));
-			notifyDataSetChanged();
 		}
     }
 
-	private final static String inputSpecText = "inputSpec";
-    private final static String outputSpecText = "outputSpec";
-
-    private TicketModel tm;
-    private ArrayList<SortSpec> inputSpec = null;
     public SortAdapter sortAdapter = null;
 	private Spinner addSpinner = null;
-	private ImageButton addButton = null;
-	
-	@SuppressWarnings("unchecked")
-	private void onMyAttach(Context activity) {
-		inputSpec = null;
-			
-        final Bundle args = getArguments();		
-        if (args != null) {
-            if (args.containsKey(Const.SORTLISTNAME)) {
-				inputSpec = (ArrayList<SortSpec>)args.getSerializable(Const.SORTLISTNAME);
-            }
-        }
-        tcLog.d(getClass().getName(), "onMyAttach inputSpec = "+inputSpec);
-	}
 	
     @Override
     public void onAttach(Context activity) {
         super.onAttach(activity);
-        tcLog.d(getClass().getName(), "onAttach(C)");
-		onMyAttach(activity);
+//        tcLog.d(getClass().getName(), "onAttach(C)");
+		onMyAttach(activity,Const.SORTLISTNAME);
     }
 	
     @Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-        tcLog.d(getClass().getName(), "onAttach(A)");
-		onMyAttach(activity);
+//        tcLog.d(getClass().getName(), "onAttach(A)");
+		onMyAttach(activity,Const.SORTLISTNAME);
 	}
 	
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-		helpFile = R.string.sorthelpfile;
-        setHasOptionsMenu(true);
-        tm = listener.getTicketModel();
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         tcLog.d(this.getClass().getName(), "onCreateView savedInstanceState = " + savedInstanceState);
@@ -173,96 +148,45 @@ public class SortFragment extends TracClientFragment {
     @SuppressWarnings("unchecked")
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+        super.onActivityCreated(savedInstanceState);  // vult inputSpec en outputSpec
         tcLog.d(getClass().getName(), "onActivityCreated savedInstanceState = " + savedInstanceState );
-        ArrayList<SortSpec> outputSpec = null;
-
-		if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(inputSpecText)) {
-                inputSpec = (ArrayList<SortSpec>) savedInstanceState.getSerializable(inputSpecText);
-            }
-            if (savedInstanceState.containsKey(outputSpecText)) {
-                outputSpec = (ArrayList<SortSpec>) savedInstanceState.getSerializable(outputSpecText);
-            }
-        }
+		helpFile = R.string.sorthelpfile;
         final View view = getView();
-        final ListView tl = (ListView) view.findViewById(R.id.sortlist);
 
-        if (outputSpec == null) {
-            outputSpec = new ArrayList<SortSpec>();
-            if (inputSpec != null) {
-                for (final SortSpec o : inputSpec) {
-                    try {
-                        outputSpec.add((SortSpec) o.clone());
-                    } catch (final Exception e) {
-                        outputSpec.add(o);
-                    }
-                }
-            }
-        }
         sortAdapter = new SortAdapter(context, R.layout.sort_spec, outputSpec);
-        tl.setAdapter(sortAdapter);
+        listView.setAdapter(sortAdapter);
 
-        addButton = (ImageButton) view.findViewById(R.id.addbutton);
+		ImageButton addButton = (ImageButton) view.findViewById(R.id.addbutton);
+		addButton.setOnClickListener(this);
+		view.findViewById(R.id.storebutton).setOnClickListener(this);
         addSpinner = (Spinner) view.findViewById(R.id.addspin);
 		getScreensize(addSpinner,addButton);
 
         if (addButton != null && addSpinner != null) {
+			//tcLog.d(getClass().getName(),"before setAdapter, tm = "+tm+ " addSspinner = "+ addSpinner+" context = "+context);
             addSpinner.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, tm.velden()));
         }
 
     }
 	
-	public void addField(View v) {
-		final String veld = tm.velden().get((int) addSpinner.getSelectedItemId());
-		// tcLog.d(this.getClass().getName(), "addButton " + veld);
-		sortAdapter.add(new SortSpec(veld));
- 	}
-	
-	public void performStore(View v) {
-		final ArrayList<SortSpec> outputSpec = sortAdapter.items;
-		for (int i = outputSpec.size() - 1; i >= 0; i--) {
-			if (outputSpec.get(i).getRichting() == null) {
-				outputSpec.remove(i);
+	public void onClick(View v) {
+		switch (v.getId()) {
+			case R.id.storebutton:
+			final ArrayList<SortSpec> items = sortAdapter.items;
+			for (int i = items.size() - 1; i >= 0; i--) {
+				if (items.get(i).getRichting() == null) {
+					items.remove(i);
+				}
 			}
+			sendMessageToHandler(TracStart.MSG_SET_SORT,items);
+			getFragmentManager().popBackStack();
+			break;
+			
+			case R.id.addbutton:
+			final String veld = tm.velden().get((int) addSpinner.getSelectedItemId());
+			// tcLog.d(getClass().getName(), "addButton " + veld);
+			sortAdapter.add(new SortSpec(veld));
+			break;
 		}
-		sendMessageToHandler(TracStart.MSG_SET_SORT,outputSpec);
-		getFragmentManager().popBackStack();
 	}
-
-    @Override
-    public void onSaveInstanceState(Bundle savedState) {
-        super.onSaveInstanceState(savedState);
-        tcLog.d(this.getClass().getName(), "onSaveInstanceState");
-        if (inputSpec != null) {
-            tcLog.d(this.getClass().getName(), "onSaveInstanceState inputSpec = " + inputSpec);
-            savedState.putSerializable(inputSpecText, inputSpec);
-        }
-        if (sortAdapter != null) {
-            final ArrayList<SortSpec> outputSpec = sortAdapter.getArray();
-
-            if (outputSpec != null) {
-                tcLog.d(this.getClass().getName(), "onSaveInstanceState outputSpec = " + outputSpec);
-                savedState.putSerializable(outputSpecText, outputSpec);
-            }
-        }
-        tcLog.d(this.getClass().getName(), "onSaveInstanceState = " + savedState);
-    }
-
-	public void sortDirect(View v) {
-		sortAdapter.sortDirect(v);
-	}
-
-	public void sortDown(View v) {
-		sortAdapter.sortDown(v);
-	}
-
-	public void sortUp(View v) {
-		sortAdapter.sortUp(v);
-	}
-
-	public void delItem(View v) {
-		sortAdapter.delItem(v);
-	}
-
 }

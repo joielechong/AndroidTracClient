@@ -69,6 +69,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 	
 	private void onMyAttach(Context activity) {
         context = (TracStart) activity;
+		Credentials.getInstance(context.getApplicationContext());
         listener = (InterFragmentListener) activity;
  		tracStartHandler = listener.getHandler();
 		large_move = context.getResources().getInteger(R.integer.large_move);
@@ -239,6 +240,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 
     @Override
     public void onPause() {
+        tcLog.d(getClass().getName() + ".super", "onPause");
         if (adView != null) {
             adView.pause();
         }
@@ -247,6 +249,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 
     @Override
     public void onResume() {
+        tcLog.d(getClass().getName() + ".super", "onResume");
         super.onResume();
         if (adView != null) {
             adView.resume();
@@ -289,6 +292,9 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
     }
 
     private Spinner _makeComboSpin(Context context, final String veldnaam, List<Object> waardes, boolean optional, Object w, boolean dialogWanted) {
+		if (waardes == null) 
+			return null;
+		
         final List<Object> spinValues = new ArrayList<Object>();
 
         if (optional) {

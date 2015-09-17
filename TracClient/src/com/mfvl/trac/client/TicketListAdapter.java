@@ -63,37 +63,10 @@ public class TicketListAdapter extends SimpleCursorAdapter /* implements OnTicke
         cursor = (c instanceof CursorWrapper ? (CursorWrapper) c : new CursorWrapper(c));
 		setTicketList(c);
     }
-/*	
-	@Override
-	public void onTicketsChanged() {
-		tcLog.d(getClass().getName(), "onTicketsChanged ticketList = "+ticketList);
-		if (ticketList != null) {
-			tcLog.d(getClass().getName(), "onTicketsChanged ticketList.ticketList = "+ticketList.ticketList);
-			this.notifyDataSetChanged();
-		}
-		//TODO
-	}
-	
-	private void registerTicketListChangeListener(Tickets t) {
-		tcLog.d(getClass().getName(), "registerTicketListChangeListener ticketList = " + t);
-		if (t != null) {
-			t.setOnTicketsChangeListener(this);
-		}
-	}
-	
-	private void unregisterTicketListChangeListener(Tickets t) {
-		tcLog.d(getClass().getName(), "unregisterTicketListChangeListener ticketList = " + t);
-		if (t != null) {
-			t.setOnTicketsChangeListener(null);
-		}
-	}
-*/	
+
 	private void setTicketList(Cursor c) {
-//		tcLog.d(getClass().getName(), "setTicketList cursor = " + c);
-//		tcLog.d(getClass().getName(), "setTicketList old ticketList = " + ticketList);
 		Tickets oldTicketList = ticketList;
 		if (c == null) {
-//			unregisterTicketListChangeListener(oldTicketList);
 			ticketList = null;
 		} else {
 			Cursor cursor = c;
@@ -101,16 +74,11 @@ public class TicketListAdapter extends SimpleCursorAdapter /* implements OnTicke
 				cursor = ((CursorWrapper)c).getWrappedCursor();
 			}
 			if (!(cursor instanceof TicketCursor)) {
-//				tcLog.e(getClass().getName(),"setTicketList cursor is not oftype TicketCursor: "+cursor);
 			} else {
 				ticketList = ((TicketCursor)cursor).getTicketList();
 				if (ticketList == null || !ticketList.equals(oldTicketList)) {
-//					unregisterTicketListChangeListener(oldTicketList);
-//					registerTicketListChangeListener(ticketList);
 				}
 			}
-//			tcLog.d(getClass().getName(), "setTicketList c = "+c+" cursor = "+cursor);
-//			tcLog.d(getClass().getName(), "setTicketList new ticketList = " + ticketList);
 		}
 	}
 	
@@ -128,13 +96,7 @@ public class TicketListAdapter extends SimpleCursorAdapter /* implements OnTicke
 //        tcLog.d(getClass().getName(), "hasStableIds");
         return true;
     }
-	
-    @Override
-    public void onContentChanged() {
-        tcLog.d(getClass().getName(), "onContentChanged");
-        super.onContentChanged();
-    }
-	
+		
     @Override
     public Object getItem(int position) {
         tcLog.d(getClass().getName(), "getItem " + position);

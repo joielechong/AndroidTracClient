@@ -125,11 +125,10 @@
                 android:text="@string/notify" />
 
             <LinearLayout style="@style/ButtonHolder">
-                <Button	style="@style/CancelButton" 
-					android:onClick="leaveFragment" />
+                <Button	style="@style/CancelButton"  />
                 <Button
 					style="@style/NormalButton"
- 					android:onClick="storeUpdate"
+ 					android:id="@+id/storeUpdate"
                     android:text="@string/storeupd" />
             </LinearLayout>
         </LinearLayout>

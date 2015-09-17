@@ -33,15 +33,14 @@ import org.alexd.jsonrpc.JSONRPCException;
 
 
 public class TicketProvider extends ContentProvider {
-		
-    public static final String SET_CONFIG = "setConfig";
-    public static final String GET_CONFIG = "getConfig";
-    public static final String VERIFY_HOST = "verifyHost";
+	public static final String GET_TICKETMODEL = "getTicketModel";	
+	
     public static final String RESULT = "rv";
     public static final String ERROR = "error";
 
     public static final String AUTHORITY = "com.mfvl.trac.client.provider.TicketProvider";
     public static final String URI = "content://" + AUTHORITY;
+	
     private static final String LIST_QUERY_PATH = "tickets";
 	private static final String GET_QUERY_PATH = "ticket/";
     private static final String QUERY_CHANGES_PATH = "ticket/getRecentChanges/";
@@ -76,10 +75,6 @@ public class TicketProvider extends ContentProvider {
     private final static String TICKET_ATTACH = "ATTACH";
     private final static String TICKET_ACTION = "ACTION";
 
-    public static final int INVALID_URL = 1;
-    public static final int LIST_NOT_LOADED = 2;
-    public static final int CONTENT_NOT_LOADED = 3;
-
     private static final UriMatcher sURIMatcher;
 	
 	private TracHttpClient tracClient = null;
@@ -93,6 +88,7 @@ public class TicketProvider extends ContentProvider {
 	private String currentReqString = null;
 
 	private Tickets ticketList = null;
+	private TicketModel tm = null;
 
     private static final int MAXPERMITS = 1;
     private static Semaphore accessAllowed = new Semaphore(MAXPERMITS, true);	
@@ -247,12 +243,27 @@ public class TicketProvider extends ContentProvider {
 			
 			case GET_ATTACHMENT:
 			return null;
-	    
+			
         default:
 			return null;
         }
 	
     }
+	
+	@Override
+	public Bundle call(String method, String arg, Bundle extras) {
+		tcLog.d(getClass().getName(),"call method = "+method);
+		if (GET_TICKETMODEL.equals(method)) {
+			if (tm != null) {
+				tm.wacht();
+				//tcLog.d(getClass().getName(),"call tm = "+ tm);
+				Bundle b = new Bundle();
+				b.putSerializable(Const.TICKETMODELNAME,tm);
+				return b;
+			}
+		}
+		return null;
+	}
 	
 	/**
 	  *  Internal methods
@@ -432,7 +443,7 @@ public class TicketProvider extends ContentProvider {
 		TicketCursor cTickets = new TicketCursor(ticketList);
 		
 		if (!uri.equals(currentUri) || !projection.equals(currentProjection) || !reqString.equals(currentReqString)) {
-			initCursor(cTickets);
+//			initCursor();
 			accessAllowed.acquireUninterruptibly(1); // initCursor claims all so  we know it is ready when we get the lock
 			accessAllowed.release(1); // No further need
 	 
@@ -544,17 +555,22 @@ public class TicketProvider extends ContentProvider {
         return true;
     }
     
-    private void initCursor(final Cursor cTickets) {
+    private void initCursor() {
         accessAllowed.acquireUninterruptibly(MAXPERMITS);
         new Thread() {
             @Override
             public void run() {
-                tcLog.d(getClass().getName() + ".initCursor.run " + this, "starting thread");
+                //tcLog.d(getClass().getName() + ".initCursor.run " + this, "starting thread");
 				tracClient = new TracHttpClient(currentUrl, currentSslHack, currentSslHostNameHack, currentName, currentPass);
-                TicketModel.getInstance(tracClient);
+                tm=TicketModel.getInstance(tracClient);
                 accessAllowed.release(MAXPERMITS);
+                //tcLog.d(getClass().getName() + ".initCursor.run " + this, "ending thread");
             }
         }.start();
+        //tcLog.d(getClass().getName() + ".initCursor.run " + this, "wait for thread");
+		accessAllowed.acquireUninterruptibly(MAXPERMITS);
+		accessAllowed.release(MAXPERMITS);
+        //tcLog.d(getClass().getName() + ".initCursor.run " + this, "thread finished");
     }
     
     private void cv2bs(ContentValues cv, Bundle b, String f) {
@@ -584,17 +600,17 @@ public class TicketProvider extends ContentProvider {
         final Bundle b = getConfig();
 
         if (!equalBundles(values, b) || ticketList == null) {
-            currentUrl = values.getString(Const.CURRENT_URL);
-            currentName = values.getString(Const.CURRENT_USERNAME);
-            currentPass = values.getString(Const.CURRENT_PASSWORD);
-            currentSslHack = values.getBoolean(Const.CURRENT_SSLHACK);
-            currentSslHostNameHack = values.getBoolean(Const.CURRENT_SSLHOSTNAMEHACK);
+			currentUrl = values.getString(Const.CURRENT_URL);
+			currentName = values.getString(Const.CURRENT_USERNAME);
+			currentPass = values.getString(Const.CURRENT_PASSWORD);
+			currentSslHack = values.getBoolean(Const.CURRENT_SSLHACK);
+			currentSslHostNameHack = values.getBoolean(Const.CURRENT_SSLHOSTNAMEHACK);
 			ticketList = new Tickets();
 			ticketList.resetCache();
- //           initCursor();
-        }
-        accessAllowed.release(MAXPERMITS);
-        return getConfig();
+			initCursor();
+		}
+		accessAllowed.release(MAXPERMITS);
+		return getConfig();
     }
     
     private Bundle clearConfig() {
@@ -607,6 +623,8 @@ public class TicketProvider extends ContentProvider {
 		currentUri = null;
 		currentProjection = null;
 		currentReqString = null;
+		
+		tm = null;
     
        return null;
     }

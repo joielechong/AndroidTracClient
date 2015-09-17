@@ -25,7 +25,7 @@ import android.webkit.WebViewClient;
 import android.widget.TextView;
 
 
-public class TracShowWebPage extends Activity {
+public class TracShowWebPage extends Activity implements View.OnClickListener {
 	private static String _tag;
 	private String filename;
 	private WebView wv;
@@ -35,6 +35,7 @@ public class TracShowWebPage extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+		Credentials.getInstance(getApplicationContext());
 		_tag = getClass().getName();
         tcLog.d(_tag, "onCreate savedInstanceState = " + savedInstanceState);
         final Intent i = this.getIntent();
@@ -63,20 +64,39 @@ public class TracShowWebPage extends Activity {
 				kb.setVisibility(View.VISIBLE);
 				TextView sch = (TextView)findViewById(R.id.showchanges);
 				sch.setVisibility(View.VISIBLE);
+				sch.setOnClickListener(this);
 				if (disclaimer) {
 					TextView v = (TextView)findViewById(R.id.showdisclaimer);
 					v.setVisibility(View.VISIBLE);
+					v.setOnClickListener(this);
 				}
 				if (cookies) {
 					TextView v = (TextView)findViewById(R.id.showcookies);
 					v.setVisibility(View.VISIBLE);
+					v.setOnClickListener(this);
 				}
 			}
         }
 		showWebpage(null);
     }
 	
-	public void showWebpage(View view) {
+	public void onClick(View v) {
+		switch (v.getId()) {
+			case R.id.showchanges:
+			showWebpage(v);
+			break;
+			
+			case R.id.showcookies:
+			showCookies(v);
+			break;
+			
+			case R.id.showdisclaimer:
+			showDisclaimer(v);
+			break;
+		}
+	}
+	
+	private void showWebpage(View view) {
 		wv.setVisibility(View.VISIBLE);
 		sv.setVisibility(View.GONE);
         // wv.getSettings().setJavaScriptEnabled(true);
@@ -85,14 +105,14 @@ public class TracShowWebPage extends Activity {
         wv.loadUrl(filename);
 	}
 	
-	public void showDisclaimer(View view) {
+	private void showDisclaimer(View view) {
 		sv.setVisibility(View.VISIBLE);
 		wv.setVisibility(View.GONE);
 		cv.setText(R.string.disclaimer);
 //		Credentials.setDisclaimer();
 	}
 	
-	public void showCookies(View view) {
+	private void showCookies(View view) {
 		sv.setVisibility(View.VISIBLE);
 		wv.setVisibility(View.GONE);
 		cv.setText(R.string.cookieInform);

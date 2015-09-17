@@ -36,4 +36,8 @@ abstract public class Spec implements Serializable, Cloneable {
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
+	
+    public Spec setEdit(final boolean edited) { //no-op
+		return this;
+    }
 }

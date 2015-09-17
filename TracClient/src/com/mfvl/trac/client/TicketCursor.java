@@ -16,9 +16,7 @@
 
 package com.mfvl.trac.client;
 
-
 import android.database.AbstractCursor;
-
 
 public class TicketCursor extends AbstractCursor {
 	

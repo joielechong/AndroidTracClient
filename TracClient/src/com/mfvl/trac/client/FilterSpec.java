@@ -53,27 +53,30 @@ public class FilterSpec extends Spec implements Serializable, Cloneable {
         }
     }
 
-    public void setOperator(final String o) {
+    public FilterSpec setOperator(final String o) {
         _operator = o;
+		return this;
     }
 
     public String getOperator() {
         return _operator;
     }
 
-    public void setWaarde(final String w) {
+    public FilterSpec setWaarde(final String w) {
         if (_edited) {
             _newwaarde = w;
         } else {
             _waarde = w;
         }
+		return this;
     }
 
     public String getWaarde() {
         return _edited ? _newwaarde : _waarde;
     }
 
-    public void setEdit(final boolean edited) {
+	@Override
+    public FilterSpec setEdit(final boolean edited) {
         // tcLog.i(this.getClass().getName(), "setEdit veld = " + _veld + " edited = " + edited);
         if (edited != _edited) {
             _edited = edited;
@@ -83,6 +86,7 @@ public class FilterSpec extends Spec implements Serializable, Cloneable {
                 _waarde = _newwaarde;
             }
         }
+		return this;
     }
 
     public boolean getEdit() {

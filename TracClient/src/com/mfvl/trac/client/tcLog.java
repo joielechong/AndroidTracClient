@@ -16,7 +16,6 @@
 
 package com.mfvl.trac.client;
 
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -28,7 +27,6 @@ import android.app.Activity;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
-
 
 public class tcLog {
     private static Activity _c = null;

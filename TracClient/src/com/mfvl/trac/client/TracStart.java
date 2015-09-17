@@ -337,7 +337,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 
         public IncomingHandler(Looper looper) {
             super(looper);
-            //tcLog.d(getClass().getName(), "ServiceHandler");
+            tcLog.d(getClass().getName(), "ServiceHandler");
         }
 
         @Override
@@ -455,7 +455,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     }
 
     private void sendMessageToService(int message, int value) {
-        // tcLog.d(getClass().getName(), "sendMessageToService message = "+ message);
+        //tcLog.d(getClass().getName(), "sendMessageToService message = "+ message);
         if (mIsBound && mService != null) {
             try {
                 final Message msg = Message.obtain();
@@ -473,7 +473,8 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     }
 
     private void sendMessageToService(int message, Object value) {
-        if (mIsBound && mService != null) {
+        //tcLog.d(getClass().getName(), "sendMessageToService message = "+ message+ " value = "+value);
+         if (mIsBound && mService != null) {
             try {
                 final Message msg = Message.obtain();
 
@@ -492,7 +493,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         @Override
         public void onItemClick(AdapterView parent, View view, int position, long id) {
             selectItem(position);
-            tcLog.d(getClass().getName(),"onItemClick: parent = " + parent + " view = " + view + " position = " + position + " id = " + id + " mDrawerId = " + mDrawerIds[position]);
+            //tcLog.d(getClass().getName(),"onItemClick: parent = " + parent + " view = " + view + " position = " + position + " id = " + id + " mDrawerId = " + mDrawerIds[position]);
         }
     }
 	
@@ -542,7 +543,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	}
 
 	private void showAbout() {
-		tcLog.d(getClass().getName(), "showAbout");
+		//tcLog.d(getClass().getName(), "showAbout");
         final Intent launchTrac = new Intent(getApplicationContext(), TracShowWebPage.class);
         launchTrac.putExtra(Const.HELP_FILE, getString(R.string.whatsnewhelpfile));
         launchTrac.putExtra(Const.HELP_VERSION, true);
@@ -604,13 +605,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());		
     }
 	
-	private void setContentObserver() {
-		MyHandlerThread mHandlerThread = new MyHandlerThread("ObserverHandler");
-        mHandlerThread.start();
-		myObserver = new TicketObserver(new Handler(mHandlerThread.getLooper()));
-		getContentResolver().registerContentObserver(TicketProvider.GET_QUERY_URI,true,myObserver);
-	}
-
 	@SuppressWarnings("unchecked")	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -626,6 +620,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         timerCorr = getResources().getInteger(R.integer.timerCorr);
 
         // FragmentManager.enableDebugLogging(true);
+		Credentials.getInstance(getApplicationContext());
         MyTracker.getInstance(this);
 		
         mHandlerThread = new MyHandlerThread("IncomingHandler", Process.THREAD_PRIORITY_BACKGROUND);
@@ -664,19 +659,19 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 			filterList = (ArrayList<FilterSpec>)savedInstanceState.getSerializable(Const.FILTERLISTNAME);
 			sortList = (ArrayList<SortSpec>)savedInstanceState.getSerializable(Const.SORTLISTNAME);
         } else {
-			if (getIntent().hasExtra(Const.ADMOB)) {
-				dispAds = getIntent().getBooleanExtra(Const.ADMOB, true);
-			}
 			// only at first start
-			if (getIntent().hasExtra(Const.INTENT_URL)) {
-				urlArg = getIntent().getStringExtra(Const.INTENT_URL);
-				ticketArg = (int) getIntent().getLongExtra(Const.INTENT_TICKET, -1);
-			}
 			if (Credentials.getFirstRun()) {
 				final Intent launchTrac = new Intent(this, TracShowWebPage.class);
 				launchTrac.putExtra(Const.HELP_FILE, getString(R.string.whatsnewhelpfile));
 				launchTrac.putExtra(Const.HELP_VERSION, false);
 				startActivity(launchTrac);
+			}
+			if (getIntent().hasExtra(Const.ADMOB)) {
+				dispAds = getIntent().getBooleanExtra(Const.ADMOB, true);
+			}
+			if (getIntent().hasExtra(Const.INTENT_URL)) {
+				urlArg = getIntent().getStringExtra(Const.INTENT_URL);
+				ticketArg = (int) getIntent().getLongExtra(Const.INTENT_TICKET, -1);
 			}
 		}
 
@@ -730,6 +725,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
             restoreFragment(savedInstanceState, FilterFragmentTag);
             restoreFragment(savedInstanceState, SortFragmentTag);
             tcLog.d(getClass().getName(), "onCreate: backstack restored");
+			startListLoader();
         } else {
             final FragmentTransaction ft = getFragmentManager().beginTransaction();
 
@@ -805,7 +801,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 		
         try {
             getContentResolver().insert(TicketProvider.CONFIG_QUERY_URI, cv);
-            // getContentResolver().call(TicketProvider.AUTH_URI,TicketProvider.SET_CONFIG,null,cv);
         } catch (Exception e) {
             tcLog.e(getClass().getName(), "Error while configuring TicketProvider", e);
         }
@@ -1186,6 +1181,12 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        tcLog.d(getClass().getName(), "onResume");
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
         tcLog.d(getClass().getName(), "onStop");
@@ -1238,23 +1239,25 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	}
 	
 	public TicketModel getTicketModel() {
-//        tcLog.d(getClass().getName(), "getTicketModel " + tm);
-		if (tm == null) {
-			startProgressBar(R.string.downloading);
-			tm = TicketModel.getInstance();
-			stopProgressBar();
+        tcLog.d(getClass().getName(), "getTicketModel");
+//		if (tm == null) {
+//			startProgressBar(R.string.downloading);
+//			tm = TicketModel.getInstance();
+//			stopProgressBar();
+//		}
+		Bundle b = getContentResolver().call(TicketProvider.AUTH_URI,TicketProvider.GET_TICKETMODEL,null,null);
+//        tcLog.d(getClass().getName(), "getTicketModel b = " + b);
+		if (b == null) {
+			tm = null;
+		} else {
+			tm = (TicketModel)b.getSerializable(Const.TICKETMODELNAME);
 		}
+//        tcLog.d(getClass().getName(), "getTicketModel tm-na = " + tm);
 		return tm;
 	}
 
     private Bundle makeArgs() {
         final Bundle args = new Bundle();
-
-        // args.putString(Const.CURRENT_URL, url);
-        // args.putString(Const.CURRENT_USERNAME, username);
-        // args.putString(Const.CURRENT_PASSWORD, password);
-        // args.putBoolean(Const.CURRENT_SSLHACK, sslHack);
-        // args.putBoolean(Const.CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
         return args;
     }
 	
@@ -1455,11 +1458,11 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     }
 	
     public void startProgressBar(String message) {
-        tcLog.d(getClass().getName(), "startProgressBar " + message);
+        tcLog.d(getClass().getName(), "startProgressBar " + message+" tracStartHandler = "+tracStartHandler);
 		try {
 			tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_START_PROGRESSBAR,message));
 		} catch (NullPointerException e) {
-			tcLog.e(getClass().getName(),"startProgressBar NullPointerException");
+			tcLog.e(getClass().getName(),"startProgressBar NullPointerException",e);
 		}
     }
 
@@ -1640,52 +1643,4 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	public boolean getSslHostNameHack() {
 		return sslHostNameHack;
 	}
-	
-	public void addFilterItem(View v) {
-		((FilterFragment)getFragment(FilterFragmentTag)).addItem(v);
-	}
-	
-	public void delFilterItem(View v) {
-		((FilterFragment)getFragment(FilterFragmentTag)).delItem(v);
-	}
-	
-	public void toggleFilterEdit(View v) {
-		((FilterFragment)getFragment(FilterFragmentTag)).toggleEdit(v);
-	}
-	
-	public void startFilterEdit(View v) {
-		((FilterFragment)getFragment(FilterFragmentTag)).startEdit(v);
-	}
-	
-	public void stopFilterEdit(View v) {
-		((FilterFragment)getFragment(FilterFragmentTag)).stopEdit(v);
-	}
-	
-	public void storeFilter(View v) {
-		((FilterFragment)getFragment(FilterFragmentTag)).storeFilter(v);
-	}
-	
-	public void delSortItem(View v) {
-		((SortFragment)getFragment(SortFragmentTag)).delItem(v);
-	}		
-	
-	public void sortUp(View v) {
-		((SortFragment)getFragment(SortFragmentTag)).sortUp(v);
-	}		
-	
-	public void sortDown(View v) {
-		((SortFragment)getFragment(SortFragmentTag)).sortDown(v);
-	}		
-	
-	public void sortDirect(View v) {
-		((SortFragment)getFragment(SortFragmentTag)).sortDirect(v);
-	}		
-	
-	public void addSortField(View v) {
-		((SortFragment)getFragment(SortFragmentTag)).addField(v);
-	}		
-	
-	public void performSortStore(View v) {
-		((SortFragment)getFragment(SortFragmentTag)).performStore(v);
-	}		
 }

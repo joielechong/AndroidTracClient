@@ -5,7 +5,7 @@
 	<integer name="ga_dispatchPeriod">30</integer>
 	<bool name="ga_dryRun">false</bool>
 	<bool name="ga_autoActivityTracking">true</bool>
-	<bool name="ga_anonymizeIp">false</bool>
+	<bool name="ga_anonymizeIp">true</bool>
 	<bool name="ga_reportUncaughtExceptions">true</bool>
 	
 </resources>
