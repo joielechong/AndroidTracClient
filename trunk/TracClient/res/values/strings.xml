@@ -63,7 +63,6 @@
 	<string name="storefilter">Save filter</string>
 	<string name="storesort">Save sort order</string>
 	<string name="help">Help</string>
-	<string name="Add">Add</string>
 	<string name="sslHack">Accept Self Signed Certificates</string>
 	<string name="select">Select</string>
 	<string name="getlist">Fetching Ticketlist</string>
@@ -91,7 +90,6 @@
 	<string name="chooseticknr">Enter ticketnumber</string>
 	<string name="chooseticket">Choose ticket</string>
 	<string name="checking">Checking</string>
-	<string name="updating">Updating</string>
 	<string name="debug">Debug</string>
 	<string name="foundnew">Modified or new tickets found:</string>
 	<string name="notifmod">Modified tickets found</string>
