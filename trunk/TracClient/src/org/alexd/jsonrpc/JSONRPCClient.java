@@ -9,8 +9,6 @@ import org.json.JSONObject;
 
 import ch.boye.httpclientandroidlib.Consts;
 
-import com.mfvl.trac.client.tcLog;
-
 public abstract class JSONRPCClient {
 
 	protected Versions version;
@@ -70,33 +68,7 @@ public abstract class JSONRPCClient {
 		return arr;
 	}
 
-	protected JSONObject doRequest(String method, Object[] params) throws JSONRPCException, JSONException {
-		// Copy method arguments in a json array
-		final JSONArray jsonParams = new JSONArray();
-		for (final Object param : params) {
-			if (param.getClass().isArray()) {
-				final JSONArray ar = getJSONArray((Object[]) param);
-
-				jsonParams.put(ar);
-			}
-			jsonParams.put(param);
-		}
-
-		// Create the json request object
-		final JSONObject jsonRequest = new JSONObject();
-		try {
-			jsonRequest.put("id", UUID.randomUUID().hashCode());
-			jsonRequest.put("method", method);
-			jsonRequest.put("params", jsonParams);
-			jsonRequest.put("jsonrpc", "2.0");
-		} catch (final JSONException e1) {
-			throw new JSONRPCException("Invalid JSON request", e1);
-		}
-		return doJSONRequest(jsonRequest);
-	}
-
 	protected JSONObject doRequest(String method, JSONObject params) throws JSONRPCException, JSONException {
-
 		final JSONObject jsonRequest = new JSONObject();
 		try {
 			jsonRequest.put("id", UUID.randomUUID().hashCode());
@@ -109,8 +81,35 @@ public abstract class JSONRPCClient {
 		return doJSONRequest(jsonRequest);
 	}
 
-	protected JSONObject doRequest(String method, JSONArray params) throws JSONRPCException, JSONException {
+	protected JSONObject doRequest(String method, Object[] params) throws JSONRPCException, JSONException {
+		// Copy method arguments in a json array
+		final JSONArray jsonParams = new JSONArray();
+		for (final Object param : params) {
+			if (param.getClass().isArray()) {
+				final JSONArray ar = getJSONArray((Object[]) param);
 
+				jsonParams.put(ar);
+			}
+			jsonParams.put(param);
+		}
+		
+		return doRequest(method,jsonParams);
+/*
+		// Create the json request object
+		final JSONObject jsonRequest = new JSONObject();
+		try {
+			jsonRequest.put("id", UUID.randomUUID().hashCode());
+			jsonRequest.put("method", method);
+			jsonRequest.put("params", jsonParams);
+			jsonRequest.put("jsonrpc", "2.0");
+		} catch (final JSONException e1) {
+			throw new JSONRPCException("Invalid JSON request", e1);
+		}
+		return doJSONRequest(jsonRequest);
+*/
+	}
+
+	protected JSONObject doRequest(String method, JSONArray params) throws JSONRPCException, JSONException {
 		final JSONObject jsonRequest = new JSONObject();
 		try {
 			jsonRequest.put("id", UUID.randomUUID().hashCode());
@@ -124,7 +123,7 @@ public abstract class JSONRPCClient {
 	}
 
 	protected int soTimeout = 0, connectionTimeout = 0;
-
+//
 	public Object beginCall(String method, final Object... params) {
 		// Handler
 		class RequestThread extends Thread {
@@ -153,7 +152,7 @@ public abstract class JSONRPCClient {
 
 		return null;
 	}
-
+//
 	/**
 	 * Get the socket operation timeout in milliseconds
 	 */
@@ -640,8 +639,8 @@ public abstract class JSONRPCClient {
 			}
 
 			return response.getJSONObject("result");
-		} catch (final JSONRPCException e) {
-			throw e;
+//		} catch (final JSONRPCException e) {
+//			throw e;
 		} catch (final JSONException e) {
 			try {
 				return new JSONObject(response.getString("result"));
@@ -661,18 +660,11 @@ public abstract class JSONRPCClient {
 				throw new JSONRPCException("Cannot call method: " + method);
 			}
 
-			if (_debug) {
-				tcLog.d(this.getClass().getName(), "callJSONObject response" + response.toString());
-				tcLog.d(this.getClass().getName(), "callJSONObject response.JSONObject(result)"
-						+ response.getJSONObject("result").toString());
-			}
-
 			return response.getJSONObject("result");
-		} catch (final JSONRPCException e) {
-			throw e;
+//		} catch (final JSONRPCException e) {
+//			throw e;
 		} catch (final JSONException e) {
 			try {
-				tcLog.i(this.getClass().getName(), "callJSONObject response.String(result)" + response.getString("result"));
 				return new JSONObject().put("result", response.getString("result"));
 			} catch (final NumberFormatException e1) {
 				throw new JSONRPCException("Cannot convert result to JSONObject", e);
@@ -702,8 +694,8 @@ public abstract class JSONRPCClient {
 			}
 
 			return response.getJSONObject("result");
-		} catch (final JSONRPCException e) {
-			throw e;
+//		} catch (final JSONRPCException e) {
+//			throw e;
 		} catch (final JSONException e) {
 			try {
 				return new JSONObject(response.getString("result"));
@@ -735,8 +727,8 @@ public abstract class JSONRPCClient {
 			}
 
 			return response.getJSONArray("result");
-		} catch (final JSONRPCException e) {
-			throw e;
+//		} catch (final JSONRPCException e) {
+//			throw e;
 		} catch (final JSONException e) {
 			try {
 				return new JSONArray(response.getString("result"));
@@ -768,8 +760,8 @@ public abstract class JSONRPCClient {
 			}
 
 			return response.getJSONArray("result");
-		} catch (final JSONRPCException e) {
-			throw e;
+//		} catch (final JSONRPCException e) {
+//			throw e;
 		} catch (final JSONException e) {
 			try {
 				return new JSONArray(response.getString("result"));
@@ -790,8 +782,8 @@ public abstract class JSONRPCClient {
 			}
 
 			return response.getJSONArray("result");
-		} catch (final JSONRPCException e) {
-			throw e;
+//		} catch (final JSONRPCException e) {
+//			throw e;
 		} catch (final JSONException e) {
 			try {
 				return new JSONArray(response.getString("result"));

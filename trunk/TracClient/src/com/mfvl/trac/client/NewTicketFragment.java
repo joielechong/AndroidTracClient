@@ -35,7 +35,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 
-public class NewTicketFragment extends TracClientFragment {
+public class NewTicketFragment extends TracClientFragment implements View.OnClickListener {
     private final static int EXTRA = 1000;
     private TicketModel tm;
     
@@ -54,7 +54,6 @@ public class NewTicketFragment extends TracClientFragment {
             return null;
         }
         final View view = inflater.inflate(R.layout.newtick_view, container, false);
-        tm = listener.getTicketModel();
         return view;
     }
     
@@ -62,9 +61,10 @@ public class NewTicketFragment extends TracClientFragment {
     public void onViewCreated(final View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         tcLog.d(this.getClass().getName(), "onViewCreated view = " + view + " sis = " + savedInstanceState);
+        tm = listener.getTicketModel();
         final Button storButton = (Button) view.findViewById(R.id.storebutton);
+		storButton.setOnClickListener(this);
         final TableLayout tl = (TableLayout) view.findViewById(R.id.newTickTable);
-	    LayoutInflater inflater = LayoutInflater.from(context);
 		
         try {
             View e = view.findViewById(R.id.waarde);
@@ -81,7 +81,7 @@ public class NewTicketFragment extends TracClientFragment {
 					if (veld.options() != null) {
 						v = makeComboSpin(context, veldnaam, veld.options(), veld.optional(), veld.value());
 					} else {
-						v = (EditText) inflater.inflate((veldnaam.equals("Description") ? R.layout.descrfield: R.layout.stdfield), null, false);
+						v = (EditText) LayoutInflater.from(context).inflate((veldnaam.equals("Description") ? R.layout.descrfield: R.layout.stdfield), null, false);
 						extra = EXTRA;
 					}
                     v.setLayoutParams(lp);
@@ -97,7 +97,7 @@ public class NewTicketFragment extends TracClientFragment {
         }
     }
     
-    public void storeTicket(View dummy) {
+    public void onClick(View dummy) {
         final JSONObject velden = new JSONObject();
         final View view = getView();
         final TableLayout tl = (TableLayout) view.findViewById(R.id.newTickTable);

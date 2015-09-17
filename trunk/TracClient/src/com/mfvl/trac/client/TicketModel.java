@@ -52,13 +52,14 @@ public class TicketModel implements Serializable {
     }
 
     private void loadModelData() {
+        //tcLog.d(tag, "TicketModel loadModelData");
         if (_tracClient != null) {
 			loading = true;
 			active.acquireUninterruptibly ();
             new Thread() {
                 @Override
                 public void run() {
-                    tcLog.d(tag, "TicketModel tracClient = " + _tracClient);
+                    //tcLog.d(tag, "TicketModel loading model tracClient = " + _tracClient);
                     try {
                         final JSONArray v = _tracClient.getModel();
 
@@ -79,6 +80,7 @@ public class TicketModel implements Serializable {
                     } finally {
 						active.release(1);
 						loading = false;
+						tcLog.d(tag, "TicketModel Model loaded");
                     }
                 }
             }.start();
@@ -132,7 +134,7 @@ public class TicketModel implements Serializable {
         return fieldCount;
     }
 
-    private void wacht() {
+    public void wacht() {
         if (loading) {
 			active.acquireUninterruptibly ();
 			active.release();

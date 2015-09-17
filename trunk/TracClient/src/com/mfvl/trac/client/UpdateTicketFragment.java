@@ -42,7 +42,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 
-public class UpdateTicketFragment extends TracClientFragment {
+public class UpdateTicketFragment extends TracClientFragment implements View.OnClickListener {
     private static final String UPDATE_CURRENT_BUTTON = "currentButton";
     private static final String UPDATE_SPIN_POSITION = "spinPosition";
     private static final String UPDATE_OPTION_VAL = "optionVal";
@@ -108,6 +108,10 @@ public class UpdateTicketFragment extends TracClientFragment {
 
                 ll.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                 ll.setOrientation(LinearLayout.VERTICAL);
+				final Button canButton = (Button) view.findViewById(R.id.canBut);
+				canButton.setOnClickListener(this);
+				final Button storeButton = (Button) view.findViewById(R.id.storeUpdate);
+				storeButton.setOnClickListener(this);
                 final TextView explain = (TextView) view.findViewById(R.id.explaintxt);
                 final RadioButton rb = new RadioButton(context);
                 final String hintText = actie.getString(2);
@@ -212,11 +216,23 @@ public class UpdateTicketFragment extends TracClientFragment {
         displayView(button, spinPosition, optionVal);
     }
 	
+	public void onClick(View v) {
+		switch (v.getId()) {
+			case R.id.canBut:
+			leaveFragment(v);
+			break;
+			
+			case R.id.storeUpdate:
+			storeUpdate(v);
+			break;
+		}
+	}
+	
 	/**
 	 * storeUpdate - called when the Store button is pressed
 	*/
 
-    public void storeUpdate(View v1) {
+    private void storeUpdate(View v1) {
         String w = null;
         final View view = getView();
         final RadioGroup rg = (RadioGroup) view.findViewById(R.id.actionblock);
@@ -255,7 +271,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 	 * leaveFragment - called when the Cancel button is pressed
 	*/
 
-	public void leaveFragment(View v) {
+	private void leaveFragment(View v) {
         tcLog.d(_tag, "leaveFragment v = " + v);
         synchronized (sissaved) {
             if (!sissaved) {

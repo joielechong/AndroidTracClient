@@ -65,16 +65,13 @@
 			<Button style="@style/TextViewButton"
 				android:id="@+id/showchanges"
 				android:text="@string/showchanges"
-				android:onClick="showWebpage"
 				android:visibility="gone" />
 			<Button style="@style/TextViewButton"
 				android:id="@+id/showcookies"
-				android:onClick="showCookies"
 				android:text="@string/cookies"
 				android:visibility="gone" />
 			<Button style="@style/TextViewButton"
 				android:id="@+id/showdisclaimer"
-				android:onClick="showDisclaimer"
 				android:text="@string/showdisclaimer"
 				android:visibility="gone" />
 		</LinearLayout>

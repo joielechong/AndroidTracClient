@@ -48,7 +48,7 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
 		
 		Thread.setDefaultUncaughtExceptionHandler (this);
 		
-        Credentials.getInstance(this);
+        Credentials.getInstance(getApplicationContext());
         boolean doAnalytics = Const.doAnalytics;
 		if (doAnalytics) {
 			try {

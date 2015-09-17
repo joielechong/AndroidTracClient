@@ -16,16 +16,10 @@
 
 package com.mfvl.trac.client;
 
-
 import java.io.Serializable;
 
-
 public class SortSpec extends Spec implements Cloneable, Serializable {
-
-    /**
-     *
-     */
-    private static final long serialVersionUID = -3435259758425014514L;
+	private static final long serialVersionUID = -3435259758425014514L;
     private Boolean _richting; // true = asc false = desc
 
     public SortSpec(String veld, Boolean richting) {

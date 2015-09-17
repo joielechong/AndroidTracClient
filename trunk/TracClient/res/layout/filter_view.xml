@@ -30,7 +30,7 @@
         android:paddingBottom="@dimen/adview_padding" >
 
 		<Button
-			android:onClick="storeFilter"
+			android:id="@+id/storefilter"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_gravity="center_horizontal"
@@ -49,7 +49,6 @@
 
             <ImageButton
                 android:id="@+id/addbutton"
-				android:onClick="addFilterItem"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="5"
@@ -57,7 +56,7 @@
         </LinearLayout>
 
         <ListView
-            android:id="@+id/filterlist"
+            android:id="@+id/itemlist"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginBottom="5dp" />

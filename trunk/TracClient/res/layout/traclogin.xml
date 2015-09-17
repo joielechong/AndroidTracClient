@@ -146,7 +146,6 @@
 
                 <Button
                     android:id="@+id/verBut"
-					android:onClick="performVerify"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/vertext" />
@@ -175,11 +174,9 @@
                     <Button
                         android:id="@+id/storebutton"
 						style="@style/NormalButton"
-						android:onClick="storeProfile"
                         android:text="@string/storeprofile" />
 
-                    <Button style="@style/OkButton"
-						android:onClick="performLogin" />
+                    <Button style="@style/OkButton" />
 				</LinearLayout>
             </LinearLayout>
         </LinearLayout>

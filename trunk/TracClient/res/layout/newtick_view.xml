@@ -31,7 +31,6 @@
             <Button
                 android:id="@+id/storebutton"
 				style="@style/NormalButton"
-				android:onClick="storeTicket"
                 android:text="@string/store" />
         </LinearLayout>
 

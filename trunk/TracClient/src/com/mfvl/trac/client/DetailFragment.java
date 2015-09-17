@@ -689,16 +689,14 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
             didUpdate = true;
         } else {
             final TicketModelVeld tmv = tm.getVeld(veld);
-            final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final LayoutInflater inflater = LayoutInflater.from(context);
 
             final RelativeLayout ll = (RelativeLayout) inflater.inflate(
                     tmv.options() == null ? R.layout.field_spec1 : R.layout.field_spec2, null, false);
 
             ((TextView) ll.findViewById(R.id.veldnaam)).setText(veld);
             final EditText et = (EditText) ll.findViewById(R.id.veldwaarde);
-            final Spinner spinValue = tmv.options() == null
-                    ? null
-                    : makeDialogComboSpin(getActivity(), veld, tmv.options(), tmv.optional(), waarde);
+            final Spinner spinValue = makeDialogComboSpin(getActivity(), veld, tmv.options(), tmv.optional(), waarde);
             final Button canBut = (Button) ll.findViewById(R.id.cancelpw);
 			canBut.setOnClickListener(this);
             final Button storBut = (Button) ll.findViewById(R.id.okBut);

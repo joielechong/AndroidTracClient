@@ -22,21 +22,21 @@
 
     <TextView
         android:id="@+id/filternaam"
-		android:onClick="toggleFilterEdit"
+		android:clickable="true"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="12"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <ImageButton
-		android:onClick="startFilterEdit"
+		android:id="@+id/startedit"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:src="@android:drawable/arrow_down_float" />
 
     <ImageButton
-		android:onClick="delFilterItem"
+		android:id="@+id/delitem"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"

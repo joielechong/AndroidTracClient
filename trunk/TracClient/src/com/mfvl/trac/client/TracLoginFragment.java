@@ -53,7 +53,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
-public class TracLoginFragment extends TracClientFragment {
+public class TracLoginFragment extends TracClientFragment implements View.OnClickListener {
 
     private static final String NEW_URL = "newURL";
     private static final String NEW_USERNAME = "newUsername";
@@ -130,9 +130,12 @@ public class TracLoginFragment extends TracClientFragment {
         pwView = (EditText) view.findViewById(R.id.trac_Pw);
         bewaarBox = (CheckBox) view.findViewById(R.id.bewaren);
         okButton = (Button) view.findViewById(R.id.okBut);
+		okButton.setOnClickListener(this);
         verButton = (Button) view.findViewById(R.id.verBut);
+		verButton.setOnClickListener(this);
         storButton = (Button) view.findViewById(R.id.storebutton);
-        credWarn = (TextView) view.findViewById(R.id.connWarn);
+ 		storButton.setOnClickListener(this);
+		credWarn = (TextView) view.findViewById(R.id.connWarn);
         credWarnSts = (TextView) view.findViewById(R.id.connWarnSts);
         sslHackBox = (CheckBox) view.findViewById(R.id.sslHack);
         loadProfileBox = (LinearLayout) view.findViewById(R.id.loadprofile);
@@ -278,8 +281,24 @@ public class TracLoginFragment extends TracClientFragment {
         });
 	
     }
+	
+	public void onClick(View v) {
+		switch (v.getId()) {
+			case R.id.okBut:
+			performLogin(v);
+			break;
+			
+			case R.id.storebutton:
+			storeProfile(v);
+			break;
+			
+			case R.id.verBut:
+			performVerify(v);
+			break;
+		}
+	}
 
-    public void performVerify(View v) {
+    private void performVerify(View v) {
         url = urlView.getText().toString();
         username = userView.getText().toString();
         password = pwView.getText().toString();
@@ -374,7 +393,7 @@ public class TracLoginFragment extends TracClientFragment {
         }.start();
     }
 	
-    public void performLogin(View v) {
+    private void performLogin(View v) {
         url = urlView.getText().toString();
         username = userView.getText().toString();
         password = pwView.getText().toString();
@@ -391,7 +410,7 @@ public class TracLoginFragment extends TracClientFragment {
         listener.onLogin(url, username, password, sslHack, sslHostNameHack, SelectedProfile);
     }
 	
-    public void storeProfile(View v) {
+    private void storeProfile(View v) {
         url = urlView.getText().toString();
         username = userView.getText().toString();
         password = pwView.getText().toString();
