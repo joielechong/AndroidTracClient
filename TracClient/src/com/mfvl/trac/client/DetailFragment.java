@@ -200,7 +200,6 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
         modVeld = new ModVeldMap();
         modVeld.clear();
         setHasOptionsMenu(true);
-        tm = listener.getTicketModel();
         didUpdate = false;
 		
         notModified = getResources().getStringArray(R.array.fieldsnotmodified);
@@ -291,6 +290,8 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         tcLog.d(getClass().getName(), "onActivityCreated savedInstanceState = " + savedInstanceState);
+
+        tm = listener.getTicketModel();
 
         if (savedInstanceState != null) {
             showEmptyFields = savedInstanceState.getBoolean(EMPTYFIELDS, false);

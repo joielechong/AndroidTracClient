@@ -16,12 +16,12 @@
 
 package com.mfvl.trac.client;
 
-import android.annotation.SuppressLint; 
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Notification;
+import android.support.v4.app.NotificationCompat;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -60,7 +60,6 @@ public class RefreshService extends Service {
             timerPeriod = res.getInteger(R.integer.timerPeriod);
         }
 
-		@SuppressLint("deprecated")
         @Override
         public void handleMessage(final Message msg) {
             //tcLog.d(this.getClass().getName(), "handleMessage msg = " + msg);
@@ -104,14 +103,15 @@ public class RefreshService extends Service {
                         launchIntent.setAction(refreshAction);
                         final PendingIntent pendingIntent = PendingIntent.getActivity(RefreshService.this, -1, launchIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-                        final Notification.Builder mBuilder = new Notification.Builder(RefreshService.this)
+                        final NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(RefreshService.this)
 							.setSmallIcon(R.drawable.traclogo)
 							.setContentTitle(RefreshService.this.getString(R.string.notifmod))
 							.setTicker(RefreshService.this.getString(R.string.foundnew))
 							.setContentText(RefreshService.this.getString(R.string.foundnew))
-							.setSubText(newTickets.toString())
-							.setContentIntent(pendingIntent);
-                        final Notification notification = mBuilder.getNotification();
+							.setContentIntent(pendingIntent)
+							.setSubText(newTickets.toString()); 
+						
+                        final Notification notification = mBuilder.build();
 
                         notification.flags |= Notification.FLAG_AUTO_CANCEL;
                         mNotificationManager.notify(notifId, notification);
@@ -186,7 +186,7 @@ public class RefreshService extends Service {
     public void onDestroy() {
         tcLog.d(this.getClass().getName(), "onDestroy");
         stopTimer();
-        mHandlerThread.tcQuitSafely();
+        mHandlerThread.quit();
         final NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         mNotificationManager.cancel(notifId);

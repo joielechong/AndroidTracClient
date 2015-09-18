@@ -52,7 +52,7 @@ public class TicketModel implements Serializable {
     }
 
     private void loadModelData() {
-        //tcLog.d(tag, "TicketModel loadModelData");
+        tcLog.d(tag, "TicketModel loadModelData");
         if (_tracClient != null) {
 			loading = true;
 			active.acquireUninterruptibly ();

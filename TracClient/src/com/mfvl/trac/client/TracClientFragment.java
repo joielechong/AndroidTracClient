@@ -16,7 +16,6 @@
 
 package com.mfvl.trac.client;
 
-import android.annotation.SuppressLint;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +29,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
+import android.support.v4.content.ContextCompat;
 import android.view.inputmethod.InputMethodManager;
 import android.view.MenuItem;
 import android.view.View;
@@ -77,7 +77,6 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
         drawer_border = context.getResources().getInteger(R.integer.drawer_border);
 	}
 
-	@SuppressLint("NewApi")
     @Override
     public void onAttach(Context activity) {
         super.onAttach(activity);
@@ -85,7 +84,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 		onMyAttach(activity);
     }
 	
-	@SuppressLint("deprecated")
+	@SuppressWarnings("deprecation")
     @Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
@@ -339,13 +338,12 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 		inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
 	}
 
-	@SuppressLint("deprecated")
 	protected void getScreensize(View spin,View but) {
 		DisplayMetrics metrics = new DisplayMetrics();
 		context.getWindowManager().getDefaultDisplay().getMetrics(metrics);
 		int heightPixels = metrics.heightPixels;
 		int widthPixels = metrics.widthPixels;
-		Drawable drawable = getResources().getDrawable(R.drawable.plus);
+		Drawable drawable = ContextCompat.getDrawable(context,R.drawable.plus);
 		spin.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, widthPixels-drawable.getIntrinsicWidth()));
 		but.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, drawable.getIntrinsicWidth()));
 	}

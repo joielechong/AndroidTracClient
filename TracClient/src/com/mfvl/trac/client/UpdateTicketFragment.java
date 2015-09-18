@@ -84,12 +84,34 @@ public class UpdateTicketFragment extends TracClientFragment implements View.OnC
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // tcLog.d(_tag,
-        // "onCreateView savedInstanceState = " + (savedInstanceState == null ?
-        // "null" : "not null"));
+        // tcLog.d(_tag,"onCreateView savedInstanceState = " + savedInstanceState);
         return inflater.inflate(R.layout.update_view, container, false);
     }
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        final int button;
+        final String optionVal;
+        final int spinPosition;
+
+        super.onActivityCreated(savedInstanceState);
+        tcLog.d(_tag, "onActivityCreated savedInstanceState = " + savedInstanceState);
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(Const.CURRENT_TICKET)) {
+                ticknr = savedInstanceState.getInt(Const.CURRENT_TICKET);
+            }
+            optionVal = (savedInstanceState.containsKey(UPDATE_OPTION_VAL) ?savedInstanceState.getString(UPDATE_OPTION_VAL) : null);
+            spinPosition = (savedInstanceState.containsKey(UPDATE_SPIN_POSITION) ?savedInstanceState.getInt(UPDATE_SPIN_POSITION) : 0);
+			button = (savedInstanceState.containsKey(UPDATE_CURRENT_BUTTON) ? savedInstanceState.getInt(UPDATE_CURRENT_BUTTON) :0);
+        } else {
+            button = 0;
+            optionVal = null;
+            spinPosition = 0;
+        }
+        _ticket = listener.getTicket(ticknr);
+        displayView(button, spinPosition, optionVal);
+    }
+	
     private void displayView(final int checkedButton, final int spinPosition, final String optionVal) {
         final View view = getView();
         final TextView tv = (TextView) view.findViewById(R.id.titel);
@@ -119,10 +141,9 @@ public class UpdateTicketFragment extends TracClientFragment implements View.OnC
                 final EditText optieval = (EditText) view.findViewById(R.id.optieval);
                 final JSONArray inputfields = actie.getJSONArray(3);
 
-                // tcLog.d(_tag, "inputfields = " +
-                // inputfields);
+                // tcLog.d(_tag, "inputfields = " + inputfields);
                 rb.setId(i);
-                if (i == 0) {
+                if (i == 0) { // 1st action is always leave
                     rb.setChecked(true);
                     explain.setText(hintText);
                     optiesSpin.setVisibility(View.GONE);
@@ -130,6 +151,10 @@ public class UpdateTicketFragment extends TracClientFragment implements View.OnC
                     optieval.setVisibility(View.GONE);
                     optieval.setText(null);
                 }
+				if (i == checkedButton) {
+					optiesSpin.setSelection(spinPosition);
+                    optieval.setText(optionVal);
+				}
                 rb.setText(actie.getString(0));
                 // rb.setTextSize(context.getResources().getDimensionPixelSize(R.dimen.list_textsize));
                 rb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -192,34 +217,16 @@ public class UpdateTicketFragment extends TracClientFragment implements View.OnC
         rg.check(checkedButton);
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        final int button;
-        final String optionVal;
-        final int spinPosition;
-
-        super.onActivityCreated(savedInstanceState);
-        tcLog.d(_tag, "onActivityCreated savedInstanceState = " + savedInstanceState);
-        if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(Const.CURRENT_TICKET)) {
-                ticknr = savedInstanceState.getInt(Const.CURRENT_TICKET);
-            }
-            optionVal = (savedInstanceState.containsKey(UPDATE_OPTION_VAL) ?savedInstanceState.getString(UPDATE_OPTION_VAL) : null);
-            spinPosition = (savedInstanceState.containsKey(UPDATE_SPIN_POSITION) ?savedInstanceState.getInt(UPDATE_SPIN_POSITION) : 0);
-			button = (savedInstanceState.containsKey(UPDATE_CURRENT_BUTTON) ? savedInstanceState.getInt(UPDATE_CURRENT_BUTTON) :0);
-        } else {
-            button = 0;
-            optionVal = null;
-            spinPosition = 0;
-        }
-        _ticket = listener.getTicket(ticknr);
-        displayView(button, spinPosition, optionVal);
-    }
-	
+	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
 			case R.id.canBut:
-			leaveFragment(v);
+			tcLog.d(_tag, "cancel pressed v = " + v);
+			synchronized (sissaved) {
+				if (!sissaved) {
+					getFragmentManager().popBackStack();
+				}
+			}
 			break;
 			
 			case R.id.storeUpdate:
@@ -266,19 +273,6 @@ public class UpdateTicketFragment extends TracClientFragment implements View.OnC
 			listener.stopProgressBar();
 		}
 	}
-
-	/**
-	 * leaveFragment - called when the Cancel button is pressed
-	*/
-
-	private void leaveFragment(View v) {
-        tcLog.d(_tag, "leaveFragment v = " + v);
-        synchronized (sissaved) {
-            if (!sissaved) {
-                getFragmentManager().popBackStack();
-            }
-        }
-    }
 
     @Override
     public void onResume() {
