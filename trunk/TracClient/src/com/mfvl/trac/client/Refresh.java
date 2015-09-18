@@ -17,7 +17,6 @@
 package com.mfvl.trac.client;
 
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -61,7 +60,6 @@ public class Refresh extends Activity implements ServiceConnection {
  * Implementing Activity 
  *
  */
-    @SuppressLint("DefaultLocale")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

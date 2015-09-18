@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.Semaphore;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -118,7 +119,32 @@ interface InterFragmentListener {
 }
 
 public class TracStart extends Activity implements LoaderManager.LoaderCallbacks<Cursor>, InterFragmentListener, OnBackStackChangedListener {
-    // onActivityResult requestcode for filechooser
+   
+	private class MySemaphore extends Semaphore {
+		
+		public MySemaphore(int i,boolean b) {
+			super(i,b);
+			tcLog.d(getClass().getName(),"constructor "+i+" "+b);
+			tcLog.d(getClass().getName(),"constructor "+super.availablePermits());
+		}
+		
+		@Override
+		public void acquireUninterruptibly() {
+			tcLog.d(getClass().getName(),"acquireUninterruptibly "+super.availablePermits());
+			super.acquireUninterruptibly();
+			tcLog.d(getClass().getName(),"acquireUninterruptibly "+super.availablePermits());
+		}
+		public void release() {
+			tcLog.d(getClass().getName(),"release "+super.availablePermits());
+			super.release();
+			tcLog.d(getClass().getName(),"release "+super.availablePermits());
+		}
+		public int availablePermits() {
+			int i = super.availablePermits();
+			tcLog.d(getClass().getName(),"availablePermits "+ i);
+			return i;
+		}
+	}
 
     /*
      * Constanten voor communicatie met de service en fragmenten
@@ -218,6 +244,8 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	private static final int CHANGES_LOADER = 2;
 	private static final int TICKET_LOADER = 3;
 	
+	private Semaphore loadingActive = new MySemaphore(1, true);	
+	
     @Override
     public Loader<Cursor> onCreateLoader(int loaderID, Bundle bundle) {
         tcLog.d(getClass().getName(), "onCreateLoader " + loaderID + " " + bundle);
@@ -234,13 +262,13 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 			} catch (Exception e) {
 				tcLog.e(getClass().getName(),"onCreateLoader LIST_LOADER cannot contact TicketListFragment");
 			}
-			synchronized(this) {
-				if (ListFragmentTag.equals(getTopFragment())) {
-					startProgressBar(getString(R.string.getlist) + (profile == null ? "" : "\n" + profile));
-					hasTicketsLoadingBar = true;
-				}
+			if (ListFragmentTag.equals(getTopFragment())) {
+				startProgressBar(getString(R.string.getlist) + (profile == null ? "" : "\n" + profile));
+				hasTicketsLoadingBar = true;
 			}
+			loadingActive.acquireUninterruptibly();
 			ticketsLoading = true;
+			tcLog.d(getClass().getName(), "onCreateLoader " + loaderID + " voor cursorloader");
             return new CursorLoader(this, TicketProvider.LIST_QUERY_URI, fields, joinList(filterList.toArray(), "&"), null, joinList(sortList.toArray(), "&"));
 			
 			case CHANGES_LOADER:
@@ -278,6 +306,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 			} catch (Exception e) {
 				tcLog.e(getClass().getName(),"onLoadFinished LIST_LOADER cannot contact TicketListFragment");
 			}
+			loadingActive.release();
 			break;
 			
 			case CHANGES_LOADER:
@@ -308,6 +337,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 			dataAdapter.swapCursor(null);
 			hasTicketsLoadingBar = false;
 			ticketsLoading = false;
+			loadingActive.release();
 			break;
 			
 			case TICKET_LOADER:
@@ -611,7 +641,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         super.onCreate(savedInstanceState);
         tcLog.d(getClass().getName(), "onCreate savedInstanceState = " + savedInstanceState);
 
-        try {
+		try {
             Const.ticketGroupCount = getResources().getInteger(R.integer.ticketGroupCount);
         } catch (Exception e) {
             tcLog.e(getClass().getName(), "Resource ticketGroupCount not found", e);
@@ -763,12 +793,13 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     }
 	
 	private void startListLoader() {
-		if (listLoaderStarted) {
+        tcLog.d(getClass().getName(), "startListLoader: listLoaderStarted = "+listLoaderStarted);
+//		if (listLoaderStarted) {
 			getLoaderManager().restartLoader(LIST_LOADER, null, this);
-		} else {
-			getLoaderManager().initLoader(LIST_LOADER, null, this);
+//		} else {
+//			getLoaderManager().initLoader(LIST_LOADER, null, this);
 			listLoaderStarted = true;
-		}
+//		}
 	}
 
 	public void showAlertBox(final int titleres, final int message, final String addit) {
@@ -1010,7 +1041,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         tcLog.d(getClass().getName(), "onDestroy");
         if (mIsBound) {
             sendMessageToService(MSG_STOP_TIMER);
-            mHandlerThread.tcQuitSafely();
+            mHandlerThread.quit();
             unbindService(mConnection);
             mIsBound = false;
         }
@@ -1491,6 +1522,10 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	
 	@Override
 	public Ticket getTicket(int i) {
+        tcLog.d(getClass().getName(), "getTicket i = "+i+ " semaphore = "+ loadingActive.availablePermits());
+		loadingActive.acquireUninterruptibly();
+		loadingActive.release();
+
 		Ticket t = dataAdapter.getTicket(i);
         tcLog.d(getClass().getName(), "getTicket i = "+i+ " ticket = "+ t);
 		if (t != null && t.hasdata()) {

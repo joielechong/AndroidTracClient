@@ -119,6 +119,6 @@ public class TicketListAdapter extends SimpleCursorAdapter /* implements OnTicke
 
 	public Ticket getTicket(int i) {
         tcLog.d(getClass().getName(), "getTicket i = " + i);
-		return ticketList.getTicket(i);
+		return (ticketList!= null?ticketList.getTicket(i):null);
 	}
 }

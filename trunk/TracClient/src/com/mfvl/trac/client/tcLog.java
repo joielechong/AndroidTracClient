@@ -21,8 +21,8 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Environment;
 import android.util.Log;
@@ -33,8 +33,7 @@ public class tcLog {
     private static boolean doToast = false;
     private static boolean doBuffer = true;
     private static String debugString = "";
-    @SuppressLint("SimpleDateFormat")
-    private static SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
 
     public static void setContext(Activity c) {
         _c = c;

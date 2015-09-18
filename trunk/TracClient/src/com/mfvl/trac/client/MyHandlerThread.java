@@ -16,7 +16,6 @@
 
 package com.mfvl.trac.client;
 
-import android.annotation.SuppressLint;
 import android.os.HandlerThread;
 
 public class MyHandlerThread extends HandlerThread {
@@ -29,12 +28,6 @@ public class MyHandlerThread extends HandlerThread {
         super(name, priority);
     }
 
-    @SuppressLint("NewApi")
-    public boolean tcQuitSafely() {
-        // QuitSafely, if older than 18 then fall through to quit
-        return (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2 ? super.quitSafely() : super.quit());
-    }
-		
     @Override
     public void run() {
         try {

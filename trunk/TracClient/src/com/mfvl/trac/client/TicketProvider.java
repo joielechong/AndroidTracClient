@@ -158,8 +158,12 @@ public class TicketProvider extends ContentProvider {
 			try {
 				JSONObject _velden = new JSONObject(values.getAsString("velden"));
 				final int newticknr = tracClient.createTicket(s, d, _velden);
-				reloadTicketData(new Ticket(newticknr));
-				newUri = Uri.withAppendedPath(GET_QUERY_URI,""+newticknr);
+				if (newticknr != -1) {
+					reloadTicketData(new Ticket(newticknr));
+					newUri = Uri.withAppendedPath(GET_QUERY_URI,""+newticknr);
+				} else {
+					popup_message(R.string.storerr,R.string.noticketUnk,"");
+				}
 			} catch (final Exception e) {
 				try {
 					final JSONObject o = new JSONObject(e.getMessage());
@@ -190,6 +194,10 @@ public class TicketProvider extends ContentProvider {
 	    
 			case GET_TICKET:
 			final int ticknr = Integer.parseInt(uri.getLastPathSegment());
+			if (ticknr == -1) {
+				popup_message(R.string.storerr,R.string.invtick,"Ticket = "+ticknr);
+				return 0;
+			}
 			final String cmt = cv.getAsString("comment");
 			final boolean notify = cv.getAsBoolean("notify");
 			Thread t = new Thread() {
@@ -209,6 +217,7 @@ public class TicketProvider extends ContentProvider {
 				t.join();
 			} catch (Exception e) {
 				tcLog.e(getClass().getName(),"Exception during join in update",e);
+				popup_message(R.string.storerr,R.string.storerrdesc,e.getMessage());
 			}
 			notifyChange(uri);
 			return 1;
