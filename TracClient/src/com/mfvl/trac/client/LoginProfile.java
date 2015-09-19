@@ -17,15 +17,19 @@
 package com.mfvl.trac.client;
 
 import java.io.Serializable;
+import java.util.List;
 
 
 public class LoginProfile implements Serializable, Cloneable {
-    private static final long serialVersionUID = 7810597433987080395L;
+    private static final long serialVersionUID = 7810597345256080395L;
 
     private final String _url;
     private final String _username;
     private final String _password;
     private final boolean _sslHack;
+	private boolean _sslHostNameHack = false;
+	private List<FilterSpec> filterList = null;
+	private List<SortSpec> sortList = null;
 
     public LoginProfile(String url, String username, String password, boolean sslHack) {
         _url = url;
@@ -50,8 +54,32 @@ public class LoginProfile implements Serializable, Cloneable {
         return _sslHack;
     }
 
+    public boolean getSslHostNameHack() {
+        return _sslHostNameHack;
+    }
+
+    public void setSslHostNameHack(boolean v) {
+        _sslHostNameHack = v;
+    }
+	
+	public void setFilterList(List<FilterSpec> fl) {
+		filterList = fl;
+	}
+	
+	public List<FilterSpec> getFilterList() {
+		return filterList;
+	}
+
+	public void setSortList(List<SortSpec> sl) {
+		sortList = sl;
+	}
+
+	public List<SortSpec> getSortList() {
+		return sortList;
+	}
+
     @Override
     public String toString() {
-        return "url: " + _url + " username: " + _username + " password: " + _password + " sslHack: " + _sslHack;
+        return "url: " + _url + " username: " + _username + " password: " + _password + " sslHack: " + _sslHack + " sslHostNameHack: " + _sslHostNameHack + " filterList: " + filterList + " sortList: " + sortList;
     }
 }
