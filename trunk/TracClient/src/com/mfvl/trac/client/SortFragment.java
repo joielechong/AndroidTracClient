@@ -145,7 +145,6 @@ public class SortFragment extends SpecFragment<SortSpec> implements View.OnClick
         return inflater.inflate(R.layout.sort_view, container, false);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);  // vult inputSpec en outputSpec

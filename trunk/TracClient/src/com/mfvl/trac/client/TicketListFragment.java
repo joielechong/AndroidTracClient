@@ -118,8 +118,6 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
         tcLog.d(getClass().getName(), "onCreateView savedInstanceState = " + savedInstanceState);
         final View view = inflater.inflate(R.layout.list_view, container, false);
 
-		dataAdapter = listener.getAdapter();
-		
         listView = (ListView) view.findViewById(R.id.listOfTickets);
         registerForContextMenu(listView);
         scrolling = false;
@@ -128,7 +126,6 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
         listView.setOnScrollListener(this);
         filterText = (EditText) view.findViewById(R.id.search_box);
         hs = (TextView) view.findViewById(R.id.listProgress);
-        listView.setAdapter(dataAdapter);
         return view;
     }
 	
@@ -148,6 +145,10 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         tcLog.d(getClass().getName(), "onActivityCreated savedInstanceState = " + savedInstanceState);
+
+		dataAdapter = listener.getAdapter();
+		listView.setAdapter(dataAdapter);
+		
         if (savedInstanceState != null) {
             zoeken = savedInstanceState.getBoolean(ZOEKENNAME);
             zoektext = savedInstanceState.getString(ZOEKTEXTNAME);
@@ -173,6 +174,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 		helpFile = R.string.helplistfile;
 		dataAdapter = listener.getAdapter();
 		dataAdapter.registerDataSetObserver(ticketDataSetObserver);
+		listView.setAdapter(dataAdapter);
         zetZoeken();
         setScroll();
         listView.invalidate();

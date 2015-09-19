@@ -222,7 +222,6 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements View.OnC
         return view;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState); // must be called first

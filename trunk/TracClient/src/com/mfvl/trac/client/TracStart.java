@@ -390,7 +390,12 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 
 				case MSG_REQUEST_REFRESH:
                 // tcLog.d(getClass().getName(),"handleMessage msg = REFRESH");
-                refreshOverview();
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						refreshOverview();
+					}
+				});
                 break;
 				
 				case MSG_START_PROGRESSBAR:
@@ -641,6 +646,8 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         super.onCreate(savedInstanceState);
         tcLog.d(getClass().getName(), "onCreate savedInstanceState = " + savedInstanceState);
 
+        // FragmentManager.enableDebugLogging(true);
+		LoaderManager.enableDebugLogging(true);
 		try {
             Const.ticketGroupCount = getResources().getInteger(R.integer.ticketGroupCount);
         } catch (Exception e) {
@@ -649,7 +656,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 
         timerCorr = getResources().getInteger(R.integer.timerCorr);
 
-        // FragmentManager.enableDebugLogging(true);
 		Credentials.getInstance(getApplicationContext());
         MyTracker.getInstance(this);
 		
@@ -794,12 +800,12 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	
 	private void startListLoader() {
         tcLog.d(getClass().getName(), "startListLoader: listLoaderStarted = "+listLoaderStarted);
-//		if (listLoaderStarted) {
+		if (listLoaderStarted) {
 			getLoaderManager().restartLoader(LIST_LOADER, null, this);
-//		} else {
-//			getLoaderManager().initLoader(LIST_LOADER, null, this);
+		} else {
+			getLoaderManager().initLoader(LIST_LOADER, null, this);
 			listLoaderStarted = true;
-//		}
+		}
 	}
 
 	public void showAlertBox(final int titleres, final int message, final String addit) {

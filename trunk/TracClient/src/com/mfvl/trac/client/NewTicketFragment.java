@@ -58,9 +58,10 @@ public class NewTicketFragment extends TracClientFragment implements View.OnClic
     }
     
     @Override
-    public void onViewCreated(final View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        tcLog.d(this.getClass().getName(), "onViewCreated view = " + view + " sis = " + savedInstanceState);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        tcLog.d(this.getClass().getName(), "onActivityCreated sis = " + savedInstanceState);
+		View view = getView();
         tm = listener.getTicketModel();
         final Button storButton = (Button) view.findViewById(R.id.storebutton);
 		storButton.setOnClickListener(this);

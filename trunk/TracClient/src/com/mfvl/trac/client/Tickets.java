@@ -16,14 +16,13 @@
 
 package com.mfvl.trac.client;
 
-
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
 public class Tickets {
 
-    public ArrayList<Ticket> ticketList = null;
+    public TicketList ticketList = null;
 
     private static Map<Integer, Ticket> ticketMap = null;
 
@@ -42,7 +41,7 @@ public class Tickets {
 
     public void initList() {
         tcLog.d(_tag, "initList");
-        ticketList = new ArrayList<Ticket>();
+        ticketList = new TicketList();
         ticketContentCount = 0;
         valid = true;
     }

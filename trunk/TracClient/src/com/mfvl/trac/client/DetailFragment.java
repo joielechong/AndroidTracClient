@@ -222,23 +222,6 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
         return inflater.inflate(R.layout.detail_view, container, false);
     }
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        CheckBox updNotify = (CheckBox) view.findViewById(R.id.updNotify);
-        updNotify.setOnCheckedChangeListener(this);
-		Button canbut = (Button) view.findViewById(R.id.canBut);
-		canbut.setOnClickListener(this);
-		Button storebut = (Button) view.findViewById(R.id.updBut);
-		storebut.setOnClickListener(this);
-		swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
-		swipeLayout.setOnRefreshListener(this);
-		swipeLayout.setColorSchemeResources(R.color.swipe_blue, 
-            R.color.swipe_green, 
-            R.color.swipe_orange, 
-            R.color.swipe_red);
-	}
-
 	@Override 
 	public void onRefresh() {
 //		tcLog.d(this.getClass().getName(), "onRefresh");
@@ -292,7 +275,19 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
         tcLog.d(getClass().getName(), "onActivityCreated savedInstanceState = " + savedInstanceState);
 
         tm = listener.getTicketModel();
-
+		View view = getView();
+        CheckBox updNotify = (CheckBox) view.findViewById(R.id.updNotify);
+        updNotify.setOnCheckedChangeListener(this);
+		Button canbut = (Button) view.findViewById(R.id.canBut);
+		canbut.setOnClickListener(this);
+		Button storebut = (Button) view.findViewById(R.id.updBut);
+		storebut.setOnClickListener(this);
+		swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+		swipeLayout.setOnRefreshListener(this);
+		swipeLayout.setColorSchemeResources(R.color.swipe_blue, 
+            R.color.swipe_green, 
+            R.color.swipe_orange, 
+            R.color.swipe_red);
         if (savedInstanceState != null) {
             showEmptyFields = savedInstanceState.getBoolean(EMPTYFIELDS, false);
             if (savedInstanceState.containsKey(Const.CURRENT_TICKET)) {
