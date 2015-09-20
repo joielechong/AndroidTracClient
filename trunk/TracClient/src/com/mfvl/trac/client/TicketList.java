@@ -21,7 +21,7 @@ import java.util.Collection;
 public class TicketList extends ArrayList<Ticket> {
 	public TicketList() {
 		super();
-	}
+	} 
 	
 	public  TicketList(int capacity) {
 		super(capacity);

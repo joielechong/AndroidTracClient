@@ -58,20 +58,23 @@ public class LoginProfile implements Serializable, Cloneable {
         return _sslHostNameHack;
     }
 
-    public void setSslHostNameHack(boolean v) {
+    public LoginProfile setSslHostNameHack(boolean v) {
         _sslHostNameHack = v;
+		return this;
     }
 	
-	public void setFilterList(List<FilterSpec> fl) {
+	public LoginProfile setFilterList(List<FilterSpec> fl) {
 		filterList = fl;
+		return this;
 	}
 	
 	public List<FilterSpec> getFilterList() {
 		return filterList;
 	}
 
-	public void setSortList(List<SortSpec> sl) {
+	public LoginProfile setSortList(List<SortSpec> sl) {
 		sortList = sl;
+		return this;
 	}
 
 	public List<SortSpec> getSortList() {

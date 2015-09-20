@@ -16,7 +16,6 @@
 
 package com.mfvl.trac.client;
 
-
 import org.alexd.jsonrpc.JSONRPCException;
 import org.alexd.jsonrpc.JSONRPCHttpClient;
 import org.json.JSONArray;
@@ -51,6 +50,16 @@ public class TracHttpClient extends JSONRPCHttpClient {
         current_pass = password;
 		current_sslHack = sslHack;
 		current_sslHostNameHack = sslHostNameHack;
+    }
+
+    public TracHttpClient(final LoginProfile lp) {
+        super(lp.getUrl(), lp.getSslHack(), lp.getSslHostNameHack());
+        setCredentials(lp.getUsername(), lp.getPassword());
+        current_url = lp.getUrl();
+        current_user = lp.getUsername();
+        current_pass = lp.getPassword();
+		current_sslHack = lp.getSslHack();
+		current_sslHostNameHack = lp.getSslHostNameHack();
     }
 
     public JSONArray Query(String reqString) throws JSONRPCException {
