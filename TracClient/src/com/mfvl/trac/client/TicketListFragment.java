@@ -140,14 +140,19 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
             R.color.swipe_red);
 		listener.listViewCreated();
 	}
+	
+	public void setAdapter(TicketListAdapter a) {
+		dataAdapter = a;
+		listView.setAdapter(a);
+	}
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         tcLog.d(getClass().getName(), "onActivityCreated savedInstanceState = " + savedInstanceState);
 
-		dataAdapter = listener.getAdapter();
-		listView.setAdapter(dataAdapter);
+//		dataAdapter = listener.getAdapter();
+//		listView.setAdapter(dataAdapter);
 		
         if (savedInstanceState != null) {
             zoeken = savedInstanceState.getBoolean(ZOEKENNAME);
@@ -172,9 +177,9 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
         super.onResume();
         tcLog.d(getClass().getName(), "onResume");
 		helpFile = R.string.helplistfile;
-		dataAdapter = listener.getAdapter();
+//		dataAdapter = listener.getAdapter();
 		dataAdapter.registerDataSetObserver(ticketDataSetObserver);
-		listView.setAdapter(dataAdapter);
+//		listView.setAdapter(dataAdapter);
         zetZoeken();
         setScroll();
         listView.invalidate();

@@ -118,7 +118,7 @@ interface InterFragmentListener {
 	Handler getHandler();
 }
 
-public class TracStart extends Activity implements LoaderManager.LoaderCallbacks<Cursor>, InterFragmentListener, OnBackStackChangedListener {
+public class TracStart extends Activity implements LoaderManager.LoaderCallbacks<Tickets>, InterFragmentListener, OnBackStackChangedListener {
    
 	private class MySemaphore extends Semaphore {
 		
@@ -211,6 +211,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     private boolean doNotFinish = false;
 	private IncomingHandler tracStartHandler = null;
 	private TicketModel tm = null;
+	private Tickets tickets;
 	private TicketObserver myObserver;
 
     boolean mIsBound = false;
@@ -243,18 +244,77 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     private static final int LIST_LOADER = 1;
 	private static final int CHANGES_LOADER = 2;
 	private static final int TICKET_LOADER = 3;
+    private static final int LIST_LOADER_NEW = 101;
 	
 	private Semaphore loadingActive = new MySemaphore(1, true);	
 	
     @Override
-    public Loader<Cursor> onCreateLoader(int loaderID, Bundle bundle) {
+    public Loader<Tickets> onCreateLoader(int loaderID, Bundle bundle) {
         tcLog.d(getClass().getName(), "onCreateLoader " + loaderID + " " + bundle);
 
         /*
          * Takes action based on the ID of the Loader that's being created
          */
         switch (loaderID) {
-			case LIST_LOADER:
+			case LIST_LOADER_NEW:
+			hasTicketsLoadingBar = false;
+            // Returns a new CursorLoader
+			try {
+				getTicketListFragment().startLoading();
+			} catch (Exception e) {
+				tcLog.e(getClass().getName(),"onCreateLoader LIST_LOADER cannot contact TicketListFragment");
+			}
+			if (ListFragmentTag.equals(getTopFragment())) {
+				startProgressBar(getString(R.string.getlist) + (profile == null ? "" : "\n" + profile));
+				hasTicketsLoadingBar = true;
+			}
+			loadingActive.acquireUninterruptibly();
+			LoginProfile lp = new LoginProfile(url,username,password,sslHack);
+			lp.setSslHostNameHack(sslHostNameHack)
+				.setFilterList(filterList)
+				.setSortList(sortList);
+			ticketsLoading = true;
+			tcLog.d(getClass().getName(), "onCreateLoader " + loaderID + " voor cursorloader");
+            return new TicketLoader(this, lp);
+		}
+		return null;
+	}
+	
+    @Override
+    public void onLoadFinished(Loader<Tickets> loader, Tickets tl) {
+        tcLog.d(getClass().getName(), "onLoadFinished " + loader + " " + loader.getId() + " " + tl);
+		switch (loader.getId()) {
+			case LIST_LOADER_NEW:
+			synchronized(this) {
+				if (hasTicketsLoadingBar) {
+					stopProgressBar();
+					hasTicketsLoadingBar = false;
+				}
+				ticketsLoading = false;
+			}
+			
+			tickets = tl;
+			newDataAdapter(tl);
+			try {
+				getTicketListFragment().dataHasChanged();
+			} catch (Exception e) {
+				tcLog.e(getClass().getName(),"onLoadFinished LIST_LOADER cannot contact TicketListFragment");
+			}
+			loadingActive.release();
+			break;
+		}
+	}
+
+    @Override
+    public void onLoaderReset(Loader<Tickets> loader) {
+        tcLog.d(getClass().getName(), "onLoaderReset " + loader + " " + loader.getId());
+	}
+/*
+	@Override
+    public Loader<Cursor> onCreateLoader(int loaderID, Bundle bundle) {
+        tcLog.d(getClass().getName(), "onCreateLoader " + loaderID + " " + bundle);
+        switch (loaderID) {
+			case LIST_LOADER_NEW:
 			hasTicketsLoadingBar = false;
             // Returns a new CursorLoader
 			try {
@@ -270,6 +330,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 			ticketsLoading = true;
 			tcLog.d(getClass().getName(), "onCreateLoader " + loaderID + " voor cursorloader");
             return new CursorLoader(this, TicketProvider.LIST_QUERY_URI, fields, joinList(filterList.toArray(), "&"), null, joinList(sortList.toArray(), "&"));
+			
 			
 			case CHANGES_LOADER:
 			String isoTijd = bundle.getString(BUNDLE_ISOTIJD);
@@ -292,7 +353,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 		TicketCursor cursor;
         tcLog.d(getClass().getName(), "onLoadFinished " + loader + " " + loader.getId() + " " + c);
 		switch (loader.getId()) {
-			case LIST_LOADER:
+			case LIST_LOADER_NEW:
 			synchronized(this) {
 				if (hasTicketsLoadingBar) {
 					stopProgressBar();
@@ -345,7 +406,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 			break;
 		}
     }
-	
+*/
     private final ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -801,9 +862,9 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	private void startListLoader() {
         tcLog.d(getClass().getName(), "startListLoader: listLoaderStarted = "+listLoaderStarted);
 		if (listLoaderStarted) {
-			getLoaderManager().restartLoader(LIST_LOADER, null, this);
+			getLoaderManager().restartLoader(LIST_LOADER_NEW, null, this);
 		} else {
-			getLoaderManager().initLoader(LIST_LOADER, null, this);
+			getLoaderManager().initLoader(LIST_LOADER_NEW, null, this);
 			listLoaderStarted = true;
 		}
 	}
@@ -851,7 +912,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	@Override 
 	public int getTicketContentCount() {
 		try {
-			return ((TicketCursor)dataAdapter.getCursor()).getTicketList().getTicketContentCount();
+			return dataAdapter.getTicketContentCount();
 		} catch (Exception e) {
 			return 0;
 		}
@@ -1386,9 +1447,9 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     @Override
     public void refreshOverview() {
         tcLog.d(getClass().getName(), "refreshOverview");
-		dataAdapter.swapCursor(null);
-        getContentResolver().insert(TicketProvider.RESET_QUERY_URI, null);
-		setConfigProvider();
+//		dataAdapter.swapCursor(null);
+//      getContentResolver().insert(TicketProvider.RESET_QUERY_URI, null);
+//		setConfigProvider();
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -1409,10 +1470,9 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         tcLog.d(getClass().getName(), "shareList");
         String lijst = "";
 		
-		if (dataAdapter != null && dataAdapter.getCursor() != null) {
-			TicketCursor c = (TicketCursor)dataAdapter.getCursor();
-			for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-				final Ticket t = (Ticket) c.getTicket(TicketCursor.FIELD_TICKET);
+		if (dataAdapter != null ) {
+			for (Iterator<Ticket> i = dataAdapter.getTicketList().iterator();i.hasNext();) {
+				final Ticket t = i.next();
 
 				try {
 					lijst += t.getTicketnr() + ";" + t.getString("status") + ";" + t.getString("summary") + "\r\n";
@@ -1428,6 +1488,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 		} else {
 			return null;
 		}
+
     }
 	
 	public Intent shareTicket(final Ticket ticket) {
@@ -1516,9 +1577,14 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 		}
 	}
 	
-    private void newDataAdapter(TicketCursor c) {
+    private void newDataAdapter(Tickets tl) {
         tcLog.d(getClass().getName(), "newDataAdapter");
-        dataAdapter = new TicketListAdapter(this, R.layout.ticket_list, null);
+        dataAdapter = new TicketListAdapter(this, R.layout.ticket_list, tl);
+		try {
+			getTicketListFragment().setAdapter(dataAdapter);
+		} catch (NullPointerException e) {
+			tcLog.e(getClass().getName(),"newDataAdapter NullPointerException");
+		}
 	}
 	
 	@Override

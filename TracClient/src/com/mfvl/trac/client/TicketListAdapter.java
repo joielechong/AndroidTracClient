@@ -16,33 +16,29 @@
 
 package com.mfvl.trac.client;
 
-import android.database.Cursor;
-import android.database.CursorWrapper;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SimpleCursorAdapter;
+import android.widget.ArrayAdapter;
+import java.util.ArrayList;
 
-public class TicketListAdapter extends SimpleCursorAdapter /* implements OnTicketsChangeListener */ {
-    private CursorWrapper cursor;
+public class TicketListAdapter extends ColoredArrayAdapter<Ticket> /* implements OnTicketsChangeListener */ {
     public static String[] fields = new String[] { TicketCursor.STR_FIELD_TICKET};
     public static int[] adapres = new int[] { R.id.ticket_list};
-	private Tickets ticketList = null;
     Context context;
+	final Tickets ticketList;
 
-    public TicketListAdapter(TracStart context, int resource, TicketCursor c) {
-        super(context, resource, c, fields, adapres, 0);
-        tcLog.d(getClass().getName(), "TicketListAdapter construction " + c);
+    public TicketListAdapter(TracStart context, int resource, Tickets tl) {
+        super(context, resource,(tl==null?null:tl.ticketList));
+        tcLog.d(getClass().getName(), "TicketListAdapter construction " + tl);
         this.context = context;
 
-		cursor = (c == null ? null : new CursorWrapper(c));
-
-		try {
-			ticketList = c.getTicketList();
-		} catch (Exception e) {
-			ticketList = null;
-		}
+		ticketList = tl;
     }
+	
+	public TicketList getTicketList() {
+		return ticketList.ticketList;
+	}
 	
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -50,47 +46,6 @@ public class TicketListAdapter extends SimpleCursorAdapter /* implements OnTicke
         return ColoredLines.getView(context, super.getView(position, convertView, parent), position, convertView, parent);
     }
 	
-	@Override
-	public Cursor getCursor() {
-		Cursor c = super.getCursor();
-        return (c instanceof CursorWrapper ?((CursorWrapper)c).getWrappedCursor() : c);
-	  }
-
-    public void changeCursor(Cursor c) {
-        tcLog.d(getClass().getName(), "changeCursor " + c);
-        // super.changeCursorAndColumns(c,fields,adapres);
-        super.changeCursor(c);
-        cursor = (c instanceof CursorWrapper ? (CursorWrapper) c : new CursorWrapper(c));
-		setTicketList(c);
-    }
-
-	private void setTicketList(Cursor c) {
-		Tickets oldTicketList = ticketList;
-		if (c == null) {
-			ticketList = null;
-		} else {
-			Cursor cursor = c;
-			if (c instanceof CursorWrapper) {
-				cursor = ((CursorWrapper)c).getWrappedCursor();
-			}
-			if (!(cursor instanceof TicketCursor)) {
-			} else {
-				ticketList = ((TicketCursor)cursor).getTicketList();
-				if (ticketList == null || !ticketList.equals(oldTicketList)) {
-				}
-			}
-		}
-	}
-	
-	@Override
-    public Cursor swapCursor(Cursor c) {
-        Cursor c1 = super.swapCursor(c);
-
-        tcLog.d(getClass().getName(), "swapCursor new = " + c + " old = " + c1);
-		setTicketList(c);
-        return c1;
-    }
-		
     @Override
     public boolean hasStableIds() {
 //        tcLog.d(getClass().getName(), "hasStableIds");
@@ -98,10 +53,10 @@ public class TicketListAdapter extends SimpleCursorAdapter /* implements OnTicke
     }
 		
     @Override
-    public Object getItem(int position) {
+    public Ticket getItem(int position) {
         tcLog.d(getClass().getName(), "getItem " + position);
 		try {
-			Object o = ticketList.ticketList.get(position);
+			Ticket o = ticketList.ticketList.get(position);
 			tcLog.d(getClass().getName(), "getItem o = " + o);
 			return o;
 		} catch (Exception e) {
@@ -120,5 +75,9 @@ public class TicketListAdapter extends SimpleCursorAdapter /* implements OnTicke
 	public Ticket getTicket(int i) {
         tcLog.d(getClass().getName(), "getTicket i = " + i);
 		return (ticketList!= null?ticketList.getTicket(i):null);
+	}
+	
+	public int getTicketContentCount() {
+		return ticketList.getTicketContentCount();
 	}
 }
