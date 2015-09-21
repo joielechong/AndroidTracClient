@@ -77,7 +77,6 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
         super.onStart();
 
         boolean adMobAvailable = false;
-        getContentResolver().insert(TicketProvider.RESET_QUERY_URI, null);
 
         try {
             final int isAvailable = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);

@@ -106,12 +106,6 @@
 			android:name=".RefreshService"
 			android:exported="false" />
 
-		<provider
-			android:name=".TicketProvider"
-			android:authorities="com.mfvl.trac.client.provider.TicketProvider" 
-			android:enabled="true"
-			android:exported="false" />
-
 		<receiver 
 			android:name="com.google.android.gms.analytics.AnalyticsReceiver"
 			tools:ignore="MissingRegistered"
