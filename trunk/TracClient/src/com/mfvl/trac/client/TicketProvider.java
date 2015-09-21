@@ -242,7 +242,7 @@ public class TicketProvider extends ContentProvider {
         switch (sURIMatcher.match(uri)) {
 			case LIST_TICKETS:
             accessAllowed.acquireUninterruptibly(1);
-            return loadTickets(uri, projection, joinList(new String[] { selection, sortOrder}, "&"));
+            return loadTickets(uri, projection, Credentials.joinList(new String[] { selection, sortOrder}, "&"));
 			
 			case GET_CHANGES:
 			return getChanges(uri.getLastPathSegment());
@@ -521,20 +521,6 @@ public class TicketProvider extends ContentProvider {
 			}
 		}
 		return cTickets;
-    }
-    
-    private String joinList(Object list[], final String sep) {
-        String reqString = "";
-
-        for (final Object fs : list) {
-            if (fs != null) {
-                if (reqString.length() > 0) {
-                    reqString += sep;
-                }
-                reqString += fs.toString();
-            }
-        }
-        return reqString;
     }
     
     private boolean equalBundles(Bundle one, Bundle two) {

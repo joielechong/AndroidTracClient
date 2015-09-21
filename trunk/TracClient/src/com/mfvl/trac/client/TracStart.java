@@ -228,17 +228,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 		
 	private TicketListAdapter dataAdapter = null;
 	
-    private String joinList(Object list[], final String sep) {
-        String reqString = "";
-
-        for (final Object fs : list) {
-            if (fs != null) {
-                reqString += ((reqString.length() > 0) ? sep : "")+fs.toString();
-            }
-        }
-        return reqString;
-    }
-
     private static final String[] fields = new String[] { TicketCursor.STR_FIELD_ID, TicketCursor.STR_FIELD_TICKET};
 	
     private static final int LIST_LOADER = 1;
@@ -329,7 +318,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 			loadingActive.acquireUninterruptibly();
 			ticketsLoading = true;
 			tcLog.d(getClass().getName(), "onCreateLoader " + loaderID + " voor cursorloader");
-            return new CursorLoader(this, TicketProvider.LIST_QUERY_URI, fields, joinList(filterList.toArray(), "&"), null, joinList(sortList.toArray(), "&"));
+            return new CursorLoader(this, TicketProvider.LIST_QUERY_URI, fields, Credentials.joinList(filterList.toArray(), "&"), null, Credentials.joinList(sortList.toArray(), "&"));
 			
 			
 			case CHANGES_LOADER:
@@ -803,9 +792,8 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
             }
         }
 		
-		newDataAdapter(null);
+		newDataAdapter(new Tickets()); // empty list
 		
-        setConfigProvider();
 		LocalBroadcastManager.getInstance(this).registerReceiver(mProviderMessageReceiver,new IntentFilter(PROVIDER_MESSAGE));
 		LocalBroadcastManager.getInstance(this).registerReceiver(mDataChangedMessageReceiver,new IntentFilter(DATACHANGED_MESSAGE));
 		
@@ -834,9 +822,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
                 if (urlArg != null) {
 					tcLog.d(getClass().getName(), "select Ticket = " + ticketArg);
 					final Bundle args = makeArgs();
-                    if (ticketListFragment != null) {
-                        args.putInt("TicketArg", ticketArg);
-                    }
+                    args.putInt("TicketArg", ticketArg);
                     urlArg = null;
                     ticketArg = -1;
 					ticketListFragment.setArguments(args);
@@ -887,23 +873,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 		}
 	}
 
-    private void setConfigProvider() {
-        ContentValues cv = new ContentValues();
-
-        cv.put(Const.CURRENT_URL, url);
-        cv.put(Const.CURRENT_USERNAME, username);
-        cv.put(Const.CURRENT_PASSWORD, password);
-        cv.put(Const.CURRENT_SSLHACK, sslHack);
-        cv.put(Const.CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
-
-		
-        try {
-            getContentResolver().insert(TicketProvider.CONFIG_QUERY_URI, cv);
-        } catch (Exception e) {
-            tcLog.e(getClass().getName(), "Error while configuring TicketProvider", e);
-        }
-    }
-	
 	@Override 
 	public int getTicketCount() {
 		return dataAdapter.getCount();
@@ -1143,7 +1112,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         sslHack = newHack;
         sslHostNameHack = newHostNameHack;
         profile = newProfile;
-        setConfigProvider();
         TicketListFragment ticketListFragment = (TicketListFragment) getFragment(ListFragmentTag);
         final FragmentTransaction ft = getFragmentManager().beginTransaction();
 
@@ -1338,19 +1306,11 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	
 	public TicketModel getTicketModel() {
         tcLog.d(getClass().getName(), "getTicketModel");
-//		if (tm == null) {
-//			startProgressBar(R.string.downloading);
-//			tm = TicketModel.getInstance();
-//			stopProgressBar();
-//		}
-		Bundle b = getContentResolver().call(TicketProvider.AUTH_URI,TicketProvider.GET_TICKETMODEL,null,null);
-//        tcLog.d(getClass().getName(), "getTicketModel b = " + b);
-		if (b == null) {
-			tm = null;
-		} else {
-			tm = (TicketModel)b.getSerializable(Const.TICKETMODELNAME);
+		if (tm == null) {
+			startProgressBar(R.string.downloading);
+			tm = TicketModel.getInstance();
+			stopProgressBar();
 		}
-//        tcLog.d(getClass().getName(), "getTicketModel tm-na = " + tm);
 		return tm;
 	}
 
@@ -1364,7 +1324,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         String filterString = "";
 
         if (filter != null) {
-			filterString = joinList(filter.toArray(),"&");
+			filterString = Credentials.joinList(filter.toArray(),"&");
         }
         Credentials.storeFilterString(filterString);
         filterList = filter;
@@ -1398,7 +1358,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         String sortString = "";
 
         if (sort != null) {
-			sortString = joinList(sort.toArray(),"&");
+			sortString = Credentials.joinList(sort.toArray(),"&");
         }
         Credentials.storeSortString(sortString);
         sortList = sort;
@@ -1447,9 +1407,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     @Override
     public void refreshOverview() {
         tcLog.d(getClass().getName(), "refreshOverview");
-//		dataAdapter.swapCursor(null);
-//      getContentResolver().insert(TicketProvider.RESET_QUERY_URI, null);
-//		setConfigProvider();
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -1660,12 +1617,12 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         velden.remove("changetime");
         velden.remove("time");
 		
- 		ContentValues args = new ContentValues();
-		args.put("comment",cmt);
-		args.put("notify",notify);
-		args.put("velden",velden.toString());
-		Uri uri = Uri.withAppendedPath(TicketProvider.GET_QUERY_URI,""+ticknr);
-		getContentResolver().update(uri, args,null,null);
+// 		ContentValues args = new ContentValues();
+//		args.put("comment",cmt);
+//		args.put("notify",notify);
+//		args.put("velden",velden.toString());
+//		Uri uri = Uri.withAppendedPath(TicketProvider.GET_QUERY_URI,""+ticknr);
+//		getContentResolver().update(uri, args,null,null);
 	}
 	
 	public int createTicket(Ticket t,boolean notify) throws Exception{

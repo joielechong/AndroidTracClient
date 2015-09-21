@@ -21,7 +21,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Editable;
@@ -61,26 +60,6 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 	
  	private ShareActionProvider listShare = null;	
 	private SwipeRefreshLayout swipeLayout;
-	
-	private class TicketDataSetObserver extends DataSetObserver  {
-		@Override
-		public void onChanged() {
-			context.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					tcLog.d(getClass().getName(), "TicketDataSetObserver.onChanged.run");
-					setStatus(listener.getTicketContentCount() + "/" + listener.getTicketCount());
-					listView.invalidate();
-				}
-			});
-		}
-		
-		@Override
-		public void onInvalidated() {
-		}
-	}
-	
-	TicketDataSetObserver ticketDataSetObserver = new TicketDataSetObserver();
 	
 	private void onMyAttach(Context activity) {
         final Bundle args = getArguments();
@@ -177,9 +156,8 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
         super.onResume();
         tcLog.d(getClass().getName(), "onResume");
 		helpFile = R.string.helplistfile;
-//		dataAdapter = listener.getAdapter();
-		dataAdapter.registerDataSetObserver(ticketDataSetObserver);
-//		listView.setAdapter(dataAdapter);
+		dataAdapter = listener.getAdapter();
+		listView.setAdapter(dataAdapter);
         zetZoeken();
         setScroll();
         listView.invalidate();
@@ -190,7 +168,6 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
         tcLog.d(getClass().getName(), "onPause");
         super.onPause();
         scrollPosition = listView.getFirstVisiblePosition();
-		dataAdapter.unregisterDataSetObserver(ticketDataSetObserver);
         // tcLog.d(getClass().getName(),"onPause scrollPosition <= "+scrollPosition);
     }
 

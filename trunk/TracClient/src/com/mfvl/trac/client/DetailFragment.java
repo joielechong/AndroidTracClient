@@ -400,7 +400,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
         final MenuItem item = menu.findItem(R.id.dfempty);
 
         if (item != null) {
-			tcLog.d(getClass().getName(), "showEmptyFields = "+showEmptyFields);
+			//tcLog.d(getClass().getName(), "showEmptyFields = "+showEmptyFields);
             item.setChecked(showEmptyFields);
         }
         setSelect(modVeld.isEmpty());

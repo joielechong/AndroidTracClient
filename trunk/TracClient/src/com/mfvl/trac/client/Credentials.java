@@ -290,4 +290,18 @@ public class Credentials {
         return (_context != null
                 ? _context.getPackageManager().getApplicationInfo(_context.getPackageName(), PackageManager.GET_META_DATA).metaData.getString(metaId): null);
     }
+	
+	public static String joinList(Object list[], final String sep) {
+		String reqString = "";
+
+		for (final Object fs : list) {
+			if (fs != null) {
+				if (reqString.length() > 0) {
+					reqString += sep;
+				}
+				reqString += fs.toString();
+			}
+		}
+		return reqString;
+	} 
 }

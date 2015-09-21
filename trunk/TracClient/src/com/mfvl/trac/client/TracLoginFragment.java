@@ -22,10 +22,8 @@ package com.mfvl.trac.client;
 //
 
 import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.widget.CursorAdapter;
 import android.widget.SimpleCursorAdapter;
@@ -54,6 +52,9 @@ import org.json.JSONObject;
 
 
 public class TracLoginFragment extends TracClientFragment implements View.OnClickListener {
+
+    public static final String RESULT = "rv";
+    public static final String ERROR = "error";
 
     private static final String NEW_URL = "newURL";
     private static final String NEW_USERNAME = "newUsername";
@@ -210,26 +211,15 @@ public class TracLoginFragment extends TracClientFragment implements View.OnClic
     }
     
     private JSONObject verifyHost(final String url, final boolean sslHack, final boolean sslHostNameHack, final String username, final String password) {
-        final ContentValues cv = new ContentValues();
-
-        cv.put(Const.CURRENT_URL, url);
-        cv.put(Const.CURRENT_USERNAME, username);
-        cv.put(Const.CURRENT_PASSWORD, password);
-        cv.put(Const.CURRENT_SSLHACK, sslHack);
-        cv.put(Const.CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
-        Uri uri = context.getContentResolver().insert(TicketProvider.VERIFY_QUERY_URI, cv);
-        JSONObject j = null;
-
-        try {
-            j = new JSONObject(uri.getLastPathSegment());
-            tcLog.d(_tag, "verifyHost " + uri + " " + j);
-        } catch (JSONException e) {
-            try {
-                j = new JSONObject();
-                j.put(TicketProvider.ERROR, "Bad response from TicketProvider");
-                tcLog.d(_tag, "verifyHost " + uri + " " + j);
-            } catch (JSONException e1) {}
-        }
+        JSONObject j = new JSONObject();
+		try {
+			TracHttpClient tc = new TracHttpClient(url,sslHack,sslHostNameHack,username,password);
+			j.put(RESULT,tc.verifyHost());
+		} catch (Exception e) {
+			try {
+				j.put(ERROR, e.getMessage());
+			} catch (JSONException e1) {}
+		}
         return j;
     }
     
@@ -311,13 +301,13 @@ public class TracLoginFragment extends TracClientFragment implements View.OnClic
             public void run() {
 				JSONObject j = verifyHost(url, sslHack, sslHostNameHack, username, password);
 				try {
-					final String TracVersion = (String) j.get(TicketProvider.RESULT);
+					final String TracVersion = (String) j.get(RESULT);
 
 					tcLog.d(getClass().getName(), TracVersion);
 					setValidMessage("Success");
 				} catch (JSONException e) {
 					try {
-						final String errmsg = (String) j.get(TicketProvider.ERROR);
+						final String errmsg = (String) j.get(ERROR);
 							
 						tcLog.d(getClass().getName(), "Exception during verify 1 " + errmsg);
 						tcLog.toast("==" + errmsg + "==");
@@ -343,14 +333,14 @@ public class TracLoginFragment extends TracClientFragment implements View.OnClic
 													final JSONObject j1 = verifyHost(url, sslHack, true, username, password);
 													
 													try {
-														final String TracVersion1 = (String) j1.get(TicketProvider.RESULT);
+														final String TracVersion1 = (String) j1.get(RESULT);
 
 														tcLog.d(getClass().getName(), TracVersion1);
 														setValidMessage("Success Hostname");
 														sslHostNameHack = true;
 													} catch (JSONException e1) {
 														try {
-															final String errmsg1 = (String) j1.get(TicketProvider.ERROR);
+															final String errmsg1 = (String) j1.get(ERROR);
 
 															tcLog.d(getClass().getName(), "Exception during verify 2 " + errmsg1);
 															// tcLog.toast("==" + errmsg1 + "==");
