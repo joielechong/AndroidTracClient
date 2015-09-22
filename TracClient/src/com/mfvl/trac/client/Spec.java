@@ -20,7 +20,7 @@ package com.mfvl.trac.client;
 import java.io.Serializable;
 
 
-abstract public class Spec implements Serializable, Cloneable {
+abstract public class Spec extends TcObject implements Serializable, Cloneable {
     private static final long serialVersionUID = -4398082467476637503L;
     protected String _veld;
 	
@@ -28,16 +28,6 @@ abstract public class Spec implements Serializable, Cloneable {
         _veld = veld;
     }
 	
-	protected boolean equalFields(Object f1, Object f2) {
-		boolean retVal = true;
-		if (f1 == null) {
-			retVal |= (f2 == null);
-		} else {
-			retVal |= f1.equals(f2);
-		}
-		return retVal;			
-	}
-
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {

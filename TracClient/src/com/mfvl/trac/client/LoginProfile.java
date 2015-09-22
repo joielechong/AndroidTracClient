@@ -20,7 +20,7 @@ import java.io.Serializable;
 import java.util.List;
 
 
-public class LoginProfile implements Serializable, Cloneable {
+public class LoginProfile extends TcObject implements Serializable, Cloneable {
     private static final long serialVersionUID = 7810597345256080395L;
 
     private final String _url;
@@ -37,16 +37,6 @@ public class LoginProfile implements Serializable, Cloneable {
         _password = password;
         _sslHack = sslHack;
     }
-	
-	private boolean equalFields(Object f1, Object f2) {
-		boolean retVal = true;
-		if (f1 == null) {
-			retVal |= (f2 == null);
-		} else {
-			retVal |= f1.equals(f2);
-		}
-		return retVal;			
-	}
 	
 	@Override
 	public boolean equals(Object o) {
