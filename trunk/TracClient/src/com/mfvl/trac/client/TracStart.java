@@ -17,6 +17,7 @@
 package com.mfvl.trac.client;
 
 import org.json.JSONObject;
+import org.json.JSONException;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -212,7 +213,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	private IncomingHandler tracStartHandler = null;
 	private TicketModel tm = null;
 	private Tickets tickets;
-	private TicketObserver myObserver;
 
     boolean mIsBound = false;
     Messenger mService = null;
@@ -233,7 +233,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     private static final int LIST_LOADER = 1;
 	private static final int CHANGES_LOADER = 2;
 	private static final int TICKET_LOADER = 3;
-    private static final int LIST_LOADER_NEW = 101;
+	private static final int TICKET_LOADER_NOSHOW = 4;
 	
 	private Semaphore loadingActive = new MySemaphore(1, true);	
 	
@@ -244,8 +244,12 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         /*
          * Takes action based on the ID of the Loader that's being created
          */
+		LoginProfile lp = new LoginProfile(url,username,password,sslHack)
+				.setSslHostNameHack(sslHostNameHack)
+				.setFilterList(filterList)
+				.setSortList(sortList);
         switch (loaderID) {
-			case LIST_LOADER_NEW:
+			case LIST_LOADER:
 			hasTicketsLoadingBar = false;
             // Returns a new CursorLoader
 			try {
@@ -258,13 +262,20 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 				hasTicketsLoadingBar = true;
 			}
 			loadingActive.acquireUninterruptibly();
-			LoginProfile lp = new LoginProfile(url,username,password,sslHack);
-			lp.setSslHostNameHack(sslHostNameHack)
-				.setFilterList(filterList)
-				.setSortList(sortList);
 			ticketsLoading = true;
 			tcLog.d(getClass().getName(), "onCreateLoader " + loaderID + " voor cursorloader");
             return new TicketLoader(this, lp);
+			
+			case CHANGES_LOADER:
+			String isoTijd = bundle.getString(BUNDLE_ISOTIJD);
+			return new TicketLoader(this,lp,isoTijd);
+			
+			case TICKET_LOADER:
+			case TICKET_LOADER_NOSHOW:
+			int ticknr = bundle.getInt(BUNDLE_TICKET);
+			startProgressBar(getString(R.string.downloading)+" "+ticknr);
+			return new TicketLoader(this,lp,new Ticket(ticknr));
+			
 		}
 		return null;
 	}
@@ -273,7 +284,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     public void onLoadFinished(Loader<Tickets> loader, Tickets tl) {
         tcLog.d(getClass().getName(), "onLoadFinished " + loader + " " + loader.getId() + " " + tl);
 		switch (loader.getId()) {
-			case LIST_LOADER_NEW:
+			case LIST_LOADER:
 			synchronized(this) {
 				if (hasTicketsLoadingBar) {
 					stopProgressBar();
@@ -289,7 +300,36 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 			} catch (Exception e) {
 				tcLog.e(getClass().getName(),"onLoadFinished LIST_LOADER cannot contact TicketListFragment");
 			}
-			loadingActive.release();
+			if (loadingActive.availablePermits() == 0) {
+				loadingActive.release();
+			}
+			break;
+			
+			case CHANGES_LOADER:
+			List<Integer> newTickets = new ArrayList<Integer>();
+			
+			for (Iterator<Ticket> i = tl.ticketList.iterator();i.hasNext();) {
+				newTickets.add(i.next().getTicketnr());
+			}
+			sendMessageToService(MSG_SEND_NEW_TICKETS, newTickets);
+			getLoaderManager().destroyLoader(CHANGES_LOADER);
+			break;
+			
+			case TICKET_LOADER:
+			stopProgressBar();
+			if (tl != null ) {
+				tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_DISPLAY_TICKET,tl.ticketList.get(0)));
+			} else {
+				showAlertBox(R.string.notfound,R.string.ticketnotfound,null);
+			}
+			getLoaderManager().destroyLoader(TICKET_LOADER);
+			
+			case TICKET_LOADER_NOSHOW:
+			stopProgressBar();
+			if (tl == null ) {
+				showAlertBox(R.string.notfound,R.string.ticketnotfound,null);
+			}
+			getLoaderManager().destroyLoader(TICKET_LOADER_NOSHOW);
 			break;
 		}
 	}
@@ -297,105 +337,23 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     @Override
     public void onLoaderReset(Loader<Tickets> loader) {
         tcLog.d(getClass().getName(), "onLoaderReset " + loader + " " + loader.getId());
-	}
-/*
-	@Override
-    public Loader<Cursor> onCreateLoader(int loaderID, Bundle bundle) {
-        tcLog.d(getClass().getName(), "onCreateLoader " + loaderID + " " + bundle);
-        switch (loaderID) {
-			case LIST_LOADER_NEW:
-			hasTicketsLoadingBar = false;
-            // Returns a new CursorLoader
-			try {
-				getTicketListFragment().startLoading();
-			} catch (Exception e) {
-				tcLog.e(getClass().getName(),"onCreateLoader LIST_LOADER cannot contact TicketListFragment");
-			}
-			if (ListFragmentTag.equals(getTopFragment())) {
-				startProgressBar(getString(R.string.getlist) + (profile == null ? "" : "\n" + profile));
-				hasTicketsLoadingBar = true;
-			}
-			loadingActive.acquireUninterruptibly();
-			ticketsLoading = true;
-			tcLog.d(getClass().getName(), "onCreateLoader " + loaderID + " voor cursorloader");
-            return new CursorLoader(this, TicketProvider.LIST_QUERY_URI, fields, Credentials.joinList(filterList.toArray(), "&"), null, Credentials.joinList(sortList.toArray(), "&"));
-			
-			
-			case CHANGES_LOADER:
-			String isoTijd = bundle.getString(BUNDLE_ISOTIJD);
-			return new CursorLoader(this,Uri.withAppendedPath(TicketProvider.QUERY_CHANGES_URI,isoTijd),fields,null,null,null);
-			
-			case TICKET_LOADER:
-			int ticknr = bundle.getInt(BUNDLE_TICKET);
-			startProgressBar(getString(R.string.downloading)+" "+ticknr);
-			return new CursorLoader(this,Uri.withAppendedPath(TicketProvider.GET_QUERY_URI,""+ticknr),fields,null,null,null);
-			
-				
-        default:
-            // An invalid id was passed in
-            return null;
-        }
-    }
-	
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor c) {
-		TicketCursor cursor;
-        tcLog.d(getClass().getName(), "onLoadFinished " + loader + " " + loader.getId() + " " + c);
-		switch (loader.getId()) {
-			case LIST_LOADER_NEW:
-			synchronized(this) {
-				if (hasTicketsLoadingBar) {
-					stopProgressBar();
-					hasTicketsLoadingBar = false;
-				}
-				ticketsLoading = false;
-			}
-			dataAdapter.swapCursor(c);
-			try {
-				getTicketListFragment().dataHasChanged();
-			} catch (Exception e) {
-				tcLog.e(getClass().getName(),"onLoadFinished LIST_LOADER cannot contact TicketListFragment");
-			}
-			loadingActive.release();
-			break;
-			
-			case CHANGES_LOADER:
-			List<Integer> newTickets = new ArrayList<Integer>();
-			for(c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-				newTickets.add(c.getInt(0));
-			}
-			sendMessageToService(MSG_SEND_NEW_TICKETS, newTickets);
-			break;
-			
-			case TICKET_LOADER:
-			stopProgressBar();
-			if (c != null && c.moveToFirst()) {
-				tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_DISPLAY_TICKET,getTicket(c.getInt(0))));
-			} else {
-				showAlertBox(R.string.notfound,R.string.ticketnotfound,null);
-				getLoaderManager().destroyLoader(TICKET_LOADER);
-			}
-			break;
-		}
-    }		
-	
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        tcLog.d(getClass().getName(), "onLoaderReset " + loader + " " + loader.getId());
 		switch (loader.getId()) {
 			case LIST_LOADER:
-			dataAdapter.swapCursor(null);
 			hasTicketsLoadingBar = false;
 			ticketsLoading = false;
-			loadingActive.release();
 			break;
 			
 			case TICKET_LOADER:
+			case TICKET_LOADER_NOSHOW:
 			ticketLoaderStarted = false;
 			break;
+			
+			case CHANGES_LOADER:
+			changesLoaderStarted = false;
+			break;
 		}
-    }
-*/
+	}
+
     private final ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -848,9 +806,9 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	private void startListLoader() {
         tcLog.d(getClass().getName(), "startListLoader: listLoaderStarted = "+listLoaderStarted);
 		if (listLoaderStarted) {
-			getLoaderManager().restartLoader(LIST_LOADER_NEW, null, this);
+			getLoaderManager().restartLoader(LIST_LOADER, null, this);
 		} else {
-			getLoaderManager().initLoader(LIST_LOADER_NEW, null, this);
+			getLoaderManager().initLoader(LIST_LOADER, null, this);
 			listLoaderStarted = true;
 		}
 	}
@@ -862,12 +820,20 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 				@Override
 				public void run() {
 					String s = (message != 0 ? getResources().getString(message)+(addit != null ? ": "+addit:"") : addit);
-					AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(TracStart.this);
-					alertDialogBuilder.setTitle(titleres)
+					final AlertDialog ad = new AlertDialog.Builder(TracStart.this)
+						.setTitle(titleres)
 						.setMessage(s)
-						.setCancelable(false)
+//						.setCancelable(false)
 						.setPositiveButton(R.string.oktext, null)
-						.show();
+						.create();
+					tracStartHandler.postDelayed(new Runnable() {
+						@Override
+						public void run() {
+							tcLog.d(getClass().getName(), "showAlertBox: dismiss");
+							ad.dismiss();
+						}
+					},7500);
+					ad.show();	
 				}
 			});
 		}
@@ -1261,8 +1227,15 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 
     @Override
     public void onTicketSelected(Ticket ticket) {
+/*
+		try {
+			throw new Exception("debug");
+		} catch (Exception e) {
+			tcLog.d(getClass().getName(),"Debug",e);
+		}
+*/
 		boolean isTop = (DetailFragmentTag.equals(getTopFragment()));
-        tcLog.d(getClass().getName(), "onTicketSelected Ticket: " + ticket+"isTop = "+ isTop);
+        tcLog.d(getClass().getName(), "onTicketSelected Ticket: " + ticket+" isTop = "+ isTop);
 		
 		DetailFragment detailFragment = new DetailFragment();
         final Bundle args = makeArgs();
@@ -1407,6 +1380,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     @Override
     public void refreshOverview() {
         tcLog.d(getClass().getName(), "refreshOverview");
+//		getLoaderManager().destroyLoader(LIST_LOADER);
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -1495,7 +1469,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 		}
     }
 
-
     @Override
     public void setReferenceTime() {
         // tcLog.d(getClass().getName(), "setReferenceTime");
@@ -1552,8 +1525,10 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	@Override
 	public Ticket getTicket(int i) {
         tcLog.d(getClass().getName(), "getTicket i = "+i+ " semaphore = "+ loadingActive.availablePermits());
-		loadingActive.acquireUninterruptibly();
-		loadingActive.release();
+		if (loadingActive.availablePermits() == 0) {
+			loadingActive.acquireUninterruptibly();
+			loadingActive.release();
+		}
 
 		Ticket t = dataAdapter.getTicket(i);
         tcLog.d(getClass().getName(), "getTicket i = "+i+ " ticket = "+ t);
@@ -1565,15 +1540,20 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	}
 	
 	@Override
-	public Ticket refreshTicket(int i) {
-		Bundle args = new Bundle();
-		args.putInt(BUNDLE_TICKET,i);
-		if (ticketLoaderStarted) {
-			getLoaderManager().restartLoader(TICKET_LOADER,args,this);
-		} else {
-			getLoaderManager().initLoader(TICKET_LOADER,args,this);
-			ticketLoaderStarted = true;
-		}
+	public Ticket refreshTicket(final int i) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				Bundle args = new Bundle();
+				args.putInt(BUNDLE_TICKET,i);
+				if (ticketLoaderStarted) {
+					getLoaderManager().restartLoader(TICKET_LOADER_NOSHOW,args,TracStart.this);
+				} else {
+					getLoaderManager().initLoader(TICKET_LOADER_NOSHOW,args,TracStart.this);
+					ticketLoaderStarted = true;
+				}
+			}
+		});
 		return null;  // TODO
 	}
 	
@@ -1593,7 +1573,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
             throw new IllegalArgumentException("Invalid ticketnumber during update");
         }
         if (action == null) {
-            throw new NullPointerException("No action supplied update ticket " + ticknr);
+            throw new IllegalArgumentException("No action supplied update ticket " + ticknr);
         }
         velden.put("action", action);
         if (waarde != null && veld != null && !"".equals(veld) && !"".equals(waarde)) {
@@ -1630,7 +1610,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 		final JSONObject velden = t.getVelden();
 		
         if (ticknr != -1) {
-            throw new RuntimeException("Call create ticket not -1");
+            throw new IllegalArgumentException("Call create ticket not -1");
         }
         tcLog.i(this.getClass().getName(), "create: " + velden.toString());
         final String s = velden.getString("summary");
@@ -1639,17 +1619,21 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         velden.remove("summary");
         velden.remove("description");
 
- 		ContentValues args = new ContentValues();
-		args.put("summary",s);
-		args.put("description",d);
-		args.put("velden",velden.toString());
-		Uri uri = Uri.withAppendedPath(TicketProvider.GET_QUERY_URI,""+ticknr);
-		Uri resultUri = getContentResolver().insert(uri, args);
-		if (resultUri == null) {
+		try {
+			TracHttpClient tracClient = new TracHttpClient(url,sslHack,sslHostNameHack,username,password);
+			final int newticknr = tracClient.createTicket(s, d, velden);
+			if (newticknr != -1) {
+//				reloadTicketData(new Ticket(newticknr));
+				refreshTicket(newticknr);
+				return newticknr;
+			} else {
+				showAlertBox(R.string.storerr,R.string.noticketUnk,"");
+				return -1;
+			}
+		} catch (final Exception e) {
+			tcLog.d(getClass().getName(),"Exception during create",e);
+			showAlertBox(R.string.storerr,R.string.storerrdesc,e.getMessage());
 			return -1;
-		} else {
-			String lastPart = uri.getLastPathSegment();
-			return Integer.parseInt(lastPart);
 		}
 	}
 

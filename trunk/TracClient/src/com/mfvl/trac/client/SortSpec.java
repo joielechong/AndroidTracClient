@@ -31,6 +31,21 @@ public class SortSpec extends Spec implements Cloneable, Serializable {
         this(veld, true);
     }
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+
+		if (! (o instanceof SortSpec)) {
+			return false;
+		}
+		boolean retVal = super.equals(o);
+		SortSpec f =(SortSpec)o;
+		retVal |= equalFields(_richting,f.getRichting());
+		return retVal;
+	}
+
     public void setRichting(Boolean r) {
         _richting = r;
     }

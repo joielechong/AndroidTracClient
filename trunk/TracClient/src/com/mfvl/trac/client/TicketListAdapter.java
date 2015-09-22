@@ -26,18 +26,18 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket> /* implements
     public static String[] fields = new String[] { TicketCursor.STR_FIELD_TICKET};
     public static int[] adapres = new int[] { R.id.ticket_list};
     Context context;
-	final Tickets ticketList;
+	final Tickets mTickets;
 
     public TicketListAdapter(TracStart context, int resource, Tickets tl) {
         super(context, resource,(tl==null?null:tl.ticketList));
         tcLog.d(getClass().getName(), "TicketListAdapter construction " + tl);
         this.context = context;
 
-		ticketList = tl;
+		mTickets = tl;
     }
 	
 	public TicketList getTicketList() {
-		return ticketList.ticketList;
+		return mTickets.ticketList;
 	}
 	
     @Override
@@ -54,10 +54,10 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket> /* implements
 		
     @Override
     public Ticket getItem(int position) {
-        tcLog.d(getClass().getName(), "getItem " + position);
+//        tcLog.d(getClass().getName(), "getItem " + position);
 		try {
-			Ticket o = ticketList.ticketList.get(position);
-			tcLog.d(getClass().getName(), "getItem o = " + o);
+			Ticket o = mTickets.ticketList.get(position);
+//			tcLog.d(getClass().getName(), "getItem o = " + o);
 			return o;
 		} catch (Exception e) {
 			return null;
@@ -65,19 +65,19 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket> /* implements
     }
 	
 	public int getNextTicket(int pos) {
-		return ticketList.getNextTicket(pos);
+		return mTickets.getNextTicket(pos);
 	}
 
 	public int getPrevTicket(int pos) {
-		return ticketList.getPrevTicket(pos);
+		return mTickets.getPrevTicket(pos);
 	}
 
 	public Ticket getTicket(int i) {
-        tcLog.d(getClass().getName(), "getTicket i = " + i);
-		return (ticketList!= null?ticketList.getTicket(i):null);
+//        tcLog.d(getClass().getName(), "getTicket i = " + i);
+		return (mTickets!= null?mTickets.getTicket(i):null);
 	}
 	
 	public int getTicketContentCount() {
-		return ticketList.getTicketContentCount();
+		return mTickets.getTicketContentCount();
 	}
 }
