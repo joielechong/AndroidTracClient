@@ -461,7 +461,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
         } else if (item.getItemId() == R.id.dfempty) {
             item.setChecked(!item.isChecked());
             showEmptyFields = item.isChecked();
- 			tcLog.d(getClass().getName(), "showEmptyFields = "+showEmptyFields);
+// 			tcLog.d(getClass().getName(), "showEmptyFields = "+showEmptyFields);
             displayTicket();
         } else {
             return super.onOptionsItemSelected(item);
@@ -581,7 +581,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
                     veld = fields.get(i);
                     modifiedString ms = null;
 					
-					tcLog.d(getClass().getName(), "showEmptyFields = "+showEmptyFields);
+//					tcLog.d(getClass().getName(), "showEmptyFields = "+showEmptyFields);
 
                     if ("summary".equals(veld) || "_ts".equals(veld) || "max".equals(veld) || "page".equals(veld)
                             || "id".equals(veld)) {// skip

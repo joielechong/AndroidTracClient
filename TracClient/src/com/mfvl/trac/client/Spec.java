@@ -27,6 +27,32 @@ abstract public class Spec implements Serializable, Cloneable {
     public Spec(String veld) {
         _veld = veld;
     }
+	
+	protected boolean equalFields(Object f1, Object f2) {
+		boolean retVal = true;
+		if (f1 == null) {
+			retVal |= (f2 == null);
+		} else {
+			retVal |= f1.equals(f2);
+		}
+		return retVal;			
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+
+		if (! (o instanceof Spec)) {
+			return false;
+		}
+		boolean retVal = super.equals(o);
+		
+		Spec f =(Spec)o;
+		retVal |= equalFields(_veld,f.getVeld());
+		return retVal;
+	}
 
     public String getVeld() {
         return _veld;

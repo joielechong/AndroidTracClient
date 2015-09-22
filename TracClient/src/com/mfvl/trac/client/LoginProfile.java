@@ -37,6 +37,38 @@ public class LoginProfile implements Serializable, Cloneable {
         _password = password;
         _sslHack = sslHack;
     }
+	
+	private boolean equalFields(Object f1, Object f2) {
+		boolean retVal = true;
+		if (f1 == null) {
+			retVal |= (f2 == null);
+		} else {
+			retVal |= f1.equals(f2);
+		}
+		return retVal;			
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+
+		if (! (o instanceof LoginProfile)) {
+			return false;
+		}
+		boolean retVal = super.equals(o);
+		
+		LoginProfile f =(LoginProfile)o;
+		retVal |= equalFields(_url,f.getUrl());
+		retVal |= equalFields(_username,f.getUsername());
+		retVal |= equalFields(_password,f.getPassword());
+		retVal |= equalFields(filterList,f.getFilterList());
+		retVal |= equalFields(sortList,f.getSortList());
+		retVal |= (_sslHack == f.getSslHack());
+		retVal |= (_sslHostNameHack == f.getSslHostNameHack());
+		return retVal;
+	}
 
     public String getUrl() {
         return _url;

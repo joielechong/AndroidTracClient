@@ -71,6 +71,7 @@ public class NewTicketFragment extends TracClientFragment implements View.OnClic
             View e = view.findViewById(R.id.waarde);
             final LayoutParams lp = e.getLayoutParams();
             final String[] ignoreFields = getResources().getStringArray(R.array.ignorecreatefields);
+			boolean first = true;
 			
             for (int i = 0; i < tm.count(); i++) {
                 View v = null;
@@ -86,6 +87,10 @@ public class NewTicketFragment extends TracClientFragment implements View.OnClic
 						extra = EXTRA;
 					}
                     v.setLayoutParams(lp);
+					if (first) {
+						v.requestFocus();
+						first = false;
+					}
                     makeRow(tl, veldnaam, v, i + extra);
                 }
             }

@@ -52,6 +52,22 @@ public class FilterSpec extends Spec implements Serializable, Cloneable {
             }
         }
     }
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+
+		if (! (o instanceof FilterSpec)) {
+			return false;
+		}
+		boolean retVal = super.equals(o);
+		FilterSpec f =(FilterSpec)o;
+		retVal |= equalFields(_operator,f.getOperator());
+		retVal |= equalFields(_waarde,f.getWaarde());
+		return retVal;
+	}
 
     public FilterSpec setOperator(final String o) {
         _operator = o;
