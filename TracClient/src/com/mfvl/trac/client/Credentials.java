@@ -137,7 +137,7 @@ public class Credentials {
     }
 
     public static boolean checkDisclaimer() {
-        tcLog.d("Credentials", "checkDisclaimer");
+        //tcLog.d("Credentials", "checkDisclaimer");
         final String thisRun = Const.DisclaimerVersion;
         final String lastRun = settings.getString(Const.PREF_DISCLAIM, "");
 	
@@ -167,7 +167,7 @@ public class Credentials {
 	}
 
     public static void storeFilterString(final String filterString) {
-        tcLog.d("Credentials", "storeFilterString: " + filterString);
+        //tcLog.d("Credentials", "storeFilterString: " + filterString);
         settings.edit().putString(Const.PREF_FILTER, filterString == null ? "" : filterString).apply();
     }
 
@@ -175,17 +175,17 @@ public class Credentials {
         // tcLog.d("Credentials", "getFilterString");
         final String filterString = settings.getString(Const.PREF_FILTER, "max=500&status!=closed");
 
-        tcLog.d("Credentials", "getFilterString filterString = " + filterString);
+        //tcLog.d("Credentials", "getFilterString filterString = " + filterString);
         return filterString;
     }
 
     public static void removeFilterString() {
-        tcLog.d("Credentials", "removeFilterString");
+        //tcLog.d("Credentials", "removeFilterString");
 		storeFilterString("max=500&status!=closed");
     }
 
     public static void storeSortString(final String sortString) {
-        tcLog.d("Credentials", "storeSortString: " + sortString);
+        //tcLog.d("Credentials", "storeSortString: " + sortString);
         settings.edit().putString(Const.PREF_SORT, sortString == null ? "" : sortString).apply();
     }
 
@@ -198,7 +198,7 @@ public class Credentials {
     }
 
     public static void removeSortString() {
-        tcLog.d(_tag, "removeSortString");
+        //tcLog.d(_tag, "removeSortString");
         storeSortString("order=priority&order=modified&desc=1");
     }
 
