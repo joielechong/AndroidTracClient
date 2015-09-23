@@ -41,12 +41,6 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket> /* implements
 	}
 	
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        //tcLog.d(getClass().getName(), "getView position = " + position + " "+ convertView + " "+ parent);
-        return ColoredLines.getView(context, super.getView(position, convertView, parent), position, convertView, parent);
-    }
-	
-    @Override
     public boolean hasStableIds() {
 //        tcLog.d(getClass().getName(), "hasStableIds");
         return true;

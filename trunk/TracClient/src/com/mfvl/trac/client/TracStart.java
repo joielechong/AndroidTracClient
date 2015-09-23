@@ -166,6 +166,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	static final int MSG_SHOW_DIALOG = 25;
 	static final int MSG_DISPLAY_TICKET = 26;
 	static final int MSG_ACK_START = 27;
+	static final int MSG_START_LISTLOADER = 28;
 	
 	public static final String PROVIDER_MESSAGE = "TracClientProviderMessage";
 	public static final String DATACHANGED_MESSAGE = "TracClientDataChangedMessage";
@@ -381,7 +382,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         @Override
 		@SuppressWarnings("unchecked")
         public void handleMessage(Message msg) {
-            //tcLog.d(getClass().getName(), "handleMessage msg = " + msg);
+            tcLog.d(getClass().getName(), "handleMessage msg = " + msg);
             switch (msg.what) {
 				case MSG_REQUEST_TICKET_COUNT:
 				if (!LoginFragmentTag.equals(getTopFragment())) {
@@ -472,6 +473,15 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 					});
 				} else {
 					onTicketSelected(t);
+				}
+				break;
+				
+				case MSG_START_LISTLOADER:
+				if (listLoaderStarted) {
+					getLoaderManager().restartLoader(LIST_LOADER, null, TracStart.this);
+				} else {
+					getLoaderManager().initLoader(LIST_LOADER, null, TracStart.this);
+					listLoaderStarted = true;
 				}
 				break;
 
@@ -804,13 +814,8 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     }
 	
 	private void startListLoader() {
-        tcLog.d(getClass().getName(), "startListLoader: listLoaderStarted = "+listLoaderStarted);
-		if (listLoaderStarted) {
-			getLoaderManager().restartLoader(LIST_LOADER, null, this);
-		} else {
-			getLoaderManager().initLoader(LIST_LOADER, null, this);
-			listLoaderStarted = true;
-		}
+        tcLog.d(getClass().getName(), "startListLoader");
+		tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_START_LISTLOADER,null));
 	}
 
 	public void showAlertBox(final int titleres, final int message, final String addit) {
@@ -1380,16 +1385,10 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     @Override
     public void refreshOverview() {
         tcLog.d(getClass().getName(), "refreshOverview");
-//		getLoaderManager().destroyLoader(LIST_LOADER);
-		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				tcLog.d(getClass().getName(), "refreshOverview in UiThread");
+		tcLog.d(getClass().getName(), "refreshOverview in UiThread");
 //				dataAdapter.notifyDataSetChanged();
-				startListLoader();
-				setReferenceTime();
-			}
-		});
+		startListLoader();
+		setReferenceTime();
 	}
 
     @Override
