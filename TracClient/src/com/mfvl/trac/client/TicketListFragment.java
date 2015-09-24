@@ -111,6 +111,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState){
 		tcLog.d(this.getClass().getName(), "onViewCreated view = " + view + " sis = " + savedInstanceState);
+		super.onViewCreated(view,savedInstanceState);
 		swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
 		swipeLayout.setOnRefreshListener(this);
 		swipeLayout.setColorSchemeResources(R.color.swipe_blue, 

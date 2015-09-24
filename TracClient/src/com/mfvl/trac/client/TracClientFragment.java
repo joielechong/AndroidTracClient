@@ -45,7 +45,7 @@ import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 
 
-abstract public class TracClientFragment extends Fragment implements OnGlobalLayoutListener {
+abstract public class TracClientFragment extends Fragment implements OnGlobalLayoutListener, View.OnClickListener {
  
     public Ticket _ticket = null;
     public TracStart context;
@@ -135,12 +135,9 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
     @Override
     public void onViewCreated(final View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        tcLog.d(getClass().getName() + ".super", "onViewCreated");
+        tcLog.d(getClass().getName() + ".super", "onViewCreated view = "+view);
         aboveView = view.findViewById(R.id.aboveAdBlock);
-        adViewContainer = (LinearLayout) view.findViewById(R.id.adBlock);
-
-        activityRootView = view.findViewById(R.id.updateTop);
-
+ 
         if (listener != null && listener.getDispAds()) {
             if (adViewContainer != null) {
                 adView = new AdView(context);
@@ -155,7 +152,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
                         for (final String t : testDevices) {
                             tcLog.d(getClass().getName() + ".super", "onViewCreated testDevice = " + t);
                             arb.addTestDevice(t);
-                        }
+                        } 
                     }
                     arb.setGender(AdRequest.GENDER_UNKNOWN);
                     final AdRequest adRequest = arb.build();
@@ -171,13 +168,13 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
                         }
                     }
                 }
-                if (activityRootView != null && aboveView != null) {
+                if (view != null && aboveView != null) {
                     padTop = aboveView.getPaddingTop();
                     padRight = aboveView.getPaddingRight();
                     padBot = aboveView.getPaddingBottom();
                     padLeft = aboveView.getPaddingLeft();
                     adsVisible = true;
-                    activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(this);
+                    view.getViewTreeObserver().addOnGlobalLayoutListener(this);
                 }
             }
         } else {
@@ -348,4 +345,19 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 		but.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, drawable.getIntrinsicWidth()));
 	}
 
+	protected void setListener(int resid){
+		setListener(resid,this.getView(),this);
+	}
+	
+	protected void setListener(int resid,View v,View.OnClickListener c) {
+		tcLog.d(getClass().getName(), "setListener resid = "+resid+" v = "+v+" c =" + c);
+		try {
+			v.findViewById(resid).setOnClickListener(c);
+		} catch (Exception e) {}
+	}
+	
+	@Override
+	public void onClick(View v) {
+		tcLog.d(getClass().getName(), "onClick v =" + v);
+	}
 }

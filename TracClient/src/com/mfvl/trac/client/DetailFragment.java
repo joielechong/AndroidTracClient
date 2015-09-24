@@ -67,7 +67,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 
-public class DetailFragment extends TracClientFragment implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener, CompoundButton.OnCheckedChangeListener, GestureDetector.OnGestureListener, onFileSelectedListener {
+public class DetailFragment extends TracClientFragment implements SwipeRefreshLayout.OnRefreshListener, CompoundButton.OnCheckedChangeListener, GestureDetector.OnGestureListener, onFileSelectedListener {
 
     private static final String EMPTYFIELDS = "emptyfields";
     private static final String MODVELD = "modveld";
@@ -278,10 +278,8 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 		View view = getView();
         CheckBox updNotify = (CheckBox) view.findViewById(R.id.updNotify);
         updNotify.setOnCheckedChangeListener(this);
-		Button canbut = (Button) view.findViewById(R.id.canBut);
-		canbut.setOnClickListener(this);
-		Button storebut = (Button) view.findViewById(R.id.updBut);
-		storebut.setOnClickListener(this);
+		setListener(R.id.canBut);
+		setListener(R.id.updBut);
 		swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
 		swipeLayout.setOnRefreshListener(this);
 		swipeLayout.setColorSchemeResources(R.color.swipe_blue, 
