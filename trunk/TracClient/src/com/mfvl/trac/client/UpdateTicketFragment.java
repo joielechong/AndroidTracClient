@@ -42,7 +42,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 
-public class UpdateTicketFragment extends TracClientFragment implements View.OnClickListener {
+public class UpdateTicketFragment extends TracClientFragment {
     private static final String UPDATE_CURRENT_BUTTON = "currentButton";
     private static final String UPDATE_SPIN_POSITION = "spinPosition";
     private static final String UPDATE_OPTION_VAL = "optionVal";
@@ -130,10 +130,8 @@ public class UpdateTicketFragment extends TracClientFragment implements View.OnC
 
                 ll.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                 ll.setOrientation(LinearLayout.VERTICAL);
-				final Button canButton = (Button) view.findViewById(R.id.canBut);
-				canButton.setOnClickListener(this);
-				final Button storeButton = (Button) view.findViewById(R.id.storeUpdate);
-				storeButton.setOnClickListener(this);
+				setListener(R.id.canBut);
+				setListener(R.id.storeUpdate);
                 final TextView explain = (TextView) view.findViewById(R.id.explaintxt);
                 final RadioButton rb = new RadioButton(context);
                 final String hintText = actie.getString(2);

@@ -44,7 +44,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-public class FilterFragment extends SpecFragment<FilterSpec> implements View.OnClickListener {
+public class FilterFragment extends SpecFragment<FilterSpec> {
     private FilterAdapter filterAdapter;
 	private Spinner addSpinner;
 	
@@ -85,10 +85,10 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements View.OnC
 			v.setTag(filterItem);
 
             final TextView filterNaam = (TextView) v.findViewById(R.id.filternaam);
-			filterNaam.setOnClickListener(this);
-			v.findViewById(R.id.startedit).setOnClickListener(this);
-			v.findViewById(R.id.stopedit).setOnClickListener(this);
-			v.findViewById(R.id.delitem).setOnClickListener(this);
+			setListener(R.id.filternaam,v,this);
+			setListener(R.id.startedit,v,this);
+			setListener(R.id.stopedit,v,this);
+			setListener(R.id.delitem,v,this);
             final Spinner spin = (Spinner) v.findViewById(R.id.filter_choice_spin);
             final EditText et = (EditText) v.findViewById(R.id.filtervaltext);
             final LinearLayout filterCheck = (LinearLayout) v.findViewById(R.id.filtercheck);
@@ -140,7 +140,9 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements View.OnC
             return v;
         }
 
+		@Override
 		public void onClick(View v) {
+			tcLog.d(getClass().getName(), "onClick v =" + v);
 			FilterSpec filterItem = getItem(v);
 			switch (v.getId()) {
 				case R.id.filternaam:

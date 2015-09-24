@@ -51,7 +51,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
-public class TracLoginFragment extends TracClientFragment implements View.OnClickListener {
+public class TracLoginFragment extends TracClientFragment {
 
     public static final String RESULT = "rv";
     public static final String ERROR = "error";

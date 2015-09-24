@@ -35,7 +35,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 
-public class NewTicketFragment extends TracClientFragment implements View.OnClickListener {
+public class NewTicketFragment extends TracClientFragment {
     private final static int EXTRA = 1000;
     private TicketModel tm;
     

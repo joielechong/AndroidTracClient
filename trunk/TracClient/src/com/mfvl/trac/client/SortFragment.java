@@ -32,13 +32,13 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-public class SortFragment extends SpecFragment<SortSpec> implements View.OnClickListener {
+public class SortFragment extends SpecFragment<SortSpec>  {
 
     private class SortAdapter extends SpecAdapter<SortSpec>  implements View.OnClickListener {
         public SortAdapter(Context context, int textViewResourceId, ArrayList<SortSpec> items) {
             super(context, textViewResourceId, items);
         }
-
+		
         @Override
         public View getView(final int position, View convertView, final ViewGroup parent) {
 			// tcLog.d(getClass().getName(),"getView: "+position+" "+convertView+" "+parent);
@@ -57,7 +57,7 @@ public class SortFragment extends SpecFragment<SortSpec> implements View.OnClick
             TextView tt = (TextView) v.findViewById(R.id.sortfield);
             ImageButton direc = (ImageButton) v.findViewById(R.id.sortdirec);
 			direc.setOnClickListener(this);
-			v.findViewById(R.id.delitem).setOnClickListener(this);
+			setListener(R.id.delitem,v,this);
 			
             SortSpec sortItem = items.get(position);
 
@@ -87,6 +87,7 @@ public class SortFragment extends SpecFragment<SortSpec> implements View.OnClick
 		public void onClick(View dv) {
 			int position = getSortPosition(dv);
 			SortSpec sortItem = items.get(position);
+			tcLog.d(getClass().getName(),"onClick: "+dv+" "+position+" "+sortItem);	
 			switch (dv.getId()) {
 				case R.id.sortup:
 				if (position > 0) {
@@ -115,7 +116,7 @@ public class SortFragment extends SpecFragment<SortSpec> implements View.OnClick
 				break;
 				
 				case R.id.delitem:
-				items.remove(sortItem);
+				this.remove(sortItem);
 				notifyDataSetChanged();
 				break;
 			}
@@ -157,7 +158,7 @@ public class SortFragment extends SpecFragment<SortSpec> implements View.OnClick
 
 		ImageButton addButton = (ImageButton) view.findViewById(R.id.addbutton);
 		addButton.setOnClickListener(this);
-		view.findViewById(R.id.storebutton).setOnClickListener(this);
+		setListener(R.id.storebutton);
         addSpinner = (Spinner) view.findViewById(R.id.addspin);
 		getScreensize(addSpinner,addButton);
 
