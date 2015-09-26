@@ -20,8 +20,6 @@ import java.lang.Exception;
 
 
 public class TicketLoadException extends RuntimeException {
-    private static final long serialVersionUID = 7847222445437027235L;
-
     public TicketLoadException(String s) {
         super(s);
     }
