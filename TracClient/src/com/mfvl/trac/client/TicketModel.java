@@ -19,17 +19,18 @@ package com.mfvl.trac.client;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.Semaphore;
 
 import org.json.JSONArray;
 
-import android.support.v4.util.ArrayMap;
+//import android.support.v4.util.SimpleArrayMap;
 
 
 public class TicketModel implements Serializable {
     private static final long serialVersionUID = 4307815225424930343L;
-    private static ArrayMap<String, TicketModelVeld> _velden;
-    private static ArrayMap<Integer, String> _volgorde;
+    private static HashMap<String, TicketModelVeld> _velden;
+    private static HashMap<Integer, String> _volgorde;
     private static int fieldCount;
     private static boolean loading;
     private static TicketModel _instance = null;
@@ -45,9 +46,9 @@ public class TicketModel implements Serializable {
         loading = false;
 		_tracClient = tracClient;
         _hasData = false;
-        _velden = new ArrayMap<String, TicketModelVeld>();
+        _velden = new HashMap<String, TicketModelVeld>();
         _velden.clear();
-        _volgorde = new ArrayMap<Integer, String>();
+        _volgorde = new HashMap<Integer, String>();
         _volgorde.clear();
     }
 
@@ -78,7 +79,7 @@ public class TicketModel implements Serializable {
                     } catch (final Exception e) {
                         tcLog.e(tag, "TicketModel exception", e);
                     } finally {
-						active.release(1);
+						active.release();
 						loading = false;
 						tcLog.d(tag, "TicketModel Model loaded");
                     }

@@ -26,7 +26,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -124,8 +123,8 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 
 			case 2:
 			Tickets tl = new Tickets();
-			for (Iterator<Ticket> i = ticketList.iterator();i.hasNext();) {
-				tl.addTicket(i.next());
+			for (Ticket t: ticketList) {
+				tl.addTicket(t);
 			}
 			loadTicketContent(tl);
 			return tl;

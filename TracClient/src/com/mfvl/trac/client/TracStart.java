@@ -21,7 +21,6 @@ import org.json.JSONException;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -309,9 +308,10 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 			case CHANGES_LOADER:
 			List<Integer> newTickets = new ArrayList<Integer>();
 			
-			for (Iterator<Ticket> i = tl.ticketList.iterator();i.hasNext();) {
-				newTickets.add(i.next().getTicketnr());
+			for (Ticket t: tl.ticketList) {
+				newTickets.add(t.getTicketnr());
 			}
+			
 			sendMessageToService(MSG_SEND_NEW_TICKETS, newTickets);
 			getLoaderManager().destroyLoader(CHANGES_LOADER);
 			break;
@@ -1401,9 +1401,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         String lijst = "";
 		
 		if (dataAdapter != null ) {
-			for (Iterator<Ticket> i = dataAdapter.getTicketList().iterator();i.hasNext();) {
-				final Ticket t = i.next();
-
+			for (Ticket t: dataAdapter.getTicketList()){
 				try {
 					lijst += t.getTicketnr() + ";" + t.getString("status") + ";" + t.getString("summary") + "\r\n";
 				} catch (final Exception e) {
@@ -1579,15 +1577,9 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
             velden.put(veld, waarde);
         }
         if (modVeld != null) {
-            final Iterator<Entry<String, String>> i = modVeld.entrySet().iterator();
-
-            while (i.hasNext()) {
-                final Entry<String, String> e = i.next();
+			for (Entry<String,String> e: modVeld.entrySet()) {
                 // tcLog.d(getClass().getName(), e.toString());
-                final String v = e.getKey();
-                final String w = e.getValue();
-
-                velden.put(v, w);
+                velden.put(e.getKey(), e.getValue());
             }
         }
 

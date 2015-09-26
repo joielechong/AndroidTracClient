@@ -569,14 +569,12 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
                     }
                 });
             }
-            final ArrayList<String> fields = tm.velden();
-            final int count = fields.size();
+//            final ArrayList<String> fields = tm.velden();
+//            final int count = fields.size();
 
-            for (int i = 0; i < count; i++) {
-                String veld = "veld " + i;
+			for (final String veld : tm.velden()) {
 
                 try {
-                    veld = fields.get(i);
                     modifiedString ms = null;
 					
 //					tcLog.d(getClass().getName(), "showEmptyFields = "+showEmptyFields);
