@@ -297,18 +297,16 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
             spinValues.add("");
         }
 
-//        if (waardes != null) {
-			for (final Object o: waardes) {
-				spinValues.add(o);
-			}
-//        }
+		for (final Object o: waardes) {
+			spinValues.add(o);
+		}
 
         final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<Object>(context, android.R.layout.simple_spinner_item, spinValues);
         spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         final Spinner valSpinner = makeDialogSpinner(context, dialogWanted);
 
         valSpinner.setAdapter(spinAdapter);
-        if (waardes != null && w != null && !"".equals(w)) {
+        if (w != null && !"".equals(w)) {
             valSpinner.setSelection(waardes.indexOf(w) + (optional ? 1 : 0), true);
         }
         return valSpinner;

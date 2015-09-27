@@ -24,9 +24,6 @@ import java.util.concurrent.Semaphore;
 
 import org.json.JSONArray;
 
-//import android.support.v4.util.SimpleArrayMap;
-
-
 public class TicketModel implements Serializable {
     private static final long serialVersionUID = 4307815225424930343L;
     private static HashMap<String, TicketModelVeld> _velden;
