@@ -22,12 +22,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.Semaphore;
 
+import android.util.SparseArray;
+
 import org.json.JSONArray;
 
 public class TicketModel implements Serializable {
     private static final long serialVersionUID = 4307815225424930343L;
     private static HashMap<String, TicketModelVeld> _velden;
-    private static HashMap<Integer, String> _volgorde;
+    private static SparseArray<String> _volgorde;
     private static int fieldCount;
     private static boolean loading;
     private static TicketModel _instance = null;
@@ -45,7 +47,7 @@ public class TicketModel implements Serializable {
         _hasData = false;
         _velden = new HashMap<String, TicketModelVeld>();
         _velden.clear();
-        _volgorde = new HashMap<Integer, String>();
+        _volgorde = new SparseArray<String>();
         _volgorde.clear();
     }
 
