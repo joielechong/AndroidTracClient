@@ -16,9 +16,6 @@
 
 package com.mfvl.trac.client;
 
-import java.lang.Exception;
-
-
 public class TicketLoadException extends RuntimeException {
     public TicketLoadException(String s) {
         super(s);
