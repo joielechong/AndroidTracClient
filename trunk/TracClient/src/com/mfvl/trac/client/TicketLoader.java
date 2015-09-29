@@ -108,13 +108,6 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
     @Override
     public Tickets loadInBackground() {
         tcLog.d(getClass().getName(), "loadInBackground this = "+this);
-        synchronized (this) {
-            if (isLoadInBackgroundCanceled()) {
-                throw new OperationCanceledException();
-            }
-            mCancellationSignal = new CancellationSignal();
-        }
-		
 		tracClient = new TracHttpClient(mLoginProfile);
 		tm=TicketModel.getInstance(tracClient);
 		switch (mode) {
@@ -160,18 +153,6 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 		}
 		return null;
    }
-
-    @Override
-    public void cancelLoadInBackground() {
-        super.cancelLoadInBackground();
-        tcLog.d(getClass().getName(), "cancelLoadInBackground this = "+this);
-
-        synchronized (this) {
-            if (mCancellationSignal != null) {
-                mCancellationSignal.cancel();
-            }
-        }
-    }
 
     /* Runs on the UI thread */
     @Override

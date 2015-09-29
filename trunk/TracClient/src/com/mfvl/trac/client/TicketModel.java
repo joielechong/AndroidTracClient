@@ -19,17 +19,17 @@ package com.mfvl.trac.client;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.HashMap;
 import java.util.concurrent.Semaphore;
-
-import android.util.SparseArray;
 
 import org.json.JSONArray;
 
 public class TicketModel implements Serializable {
     private static final long serialVersionUID = 4307815225424930343L;
     private static HashMap<String, TicketModelVeld> _velden;
-    private static SparseArray<String> _volgorde;
+    private static ArrayList<String> _volgorde;
     private static int fieldCount;
     private static boolean loading;
     private static TicketModel _instance = null;
@@ -37,8 +37,16 @@ public class TicketModel implements Serializable {
     private static String tag = "**TicketModel**";
 	private static TracHttpClient _tracClient = null;
 	private static Semaphore active = new Semaphore(1, true);	
+	private static List<String> extraFields;
+	private static List<String> extraValues;
+	
+	static {
+		extraFields = Arrays.asList(new String[] {"max","page"});
+		extraValues = Arrays.asList(new String[] {"500","0"});
+	};
 	
     private TicketModel(TracHttpClient tracClient) {
+		
         tag = getClass().getName();
         tcLog.d(tag, "TicketModel constructor");
         fieldCount = 0;
@@ -46,9 +54,7 @@ public class TicketModel implements Serializable {
 		_tracClient = tracClient;
         _hasData = false;
         _velden = new HashMap<String, TicketModelVeld>();
-        _velden.clear();
-        _volgorde = new SparseArray<String>();
-        _volgorde.clear();
+        _volgorde = new ArrayList<String>();
     }
 
     private void loadModelData() {
@@ -68,12 +74,13 @@ public class TicketModel implements Serializable {
                             final String key = v.getJSONObject(i).getString("name");
 
                             _velden.put(key, new TicketModelVeld(v.getJSONObject(i)));
-                            _volgorde.put(i, key);
+                            _volgorde.add(key);
                         }
-                        _velden.put("max", new TicketModelVeld("max", "max", "500"));
-                        _volgorde.put(fieldCount, "max");
-                        _velden.put("page", new TicketModelVeld("page", "page", "0"));
-                        _volgorde.put(fieldCount + 1, "page");
+						for (int i=0;i<extraFields.size();i++) {
+							String v1 = extraFields.get(i);
+							_velden.put(v1,new TicketModelVeld(v1,v1,extraValues.get(i)));
+							_volgorde.add(v1);
+						}
                         _hasData = true;
                     } catch (final Exception e) {
                         tcLog.e(tag, "TicketModel exception", e);
@@ -110,8 +117,8 @@ public class TicketModel implements Serializable {
         wacht();
         String s = "";
 
-        for (int i = 0; i < fieldCount; i++) {
-            s += _velden.get(_volgorde.get(i)) + "\n";
+		for (String v: _volgorde) {
+            s += _velden.get(v) + "\n";
         }
         return s;
     }
@@ -122,8 +129,10 @@ public class TicketModel implements Serializable {
         wacht();
         if (fieldCount > 0) {
             v.add("id");
-            for (int i = 0; i < fieldCount + 2; i++) {
-                v.add(_velden.get(_volgorde.get(i)).name());
+			for (String v1: _volgorde) {
+				if (!extraFields.contains(v1)) {
+					v.add(_velden.get(v1).name());
+				}
             }
         }
         return v;
@@ -139,8 +148,7 @@ public class TicketModel implements Serializable {
 			active.acquireUninterruptibly ();
 			active.release();
 			loading = false;
-        }
-        loading = false;
+		}
     }
 	
 	boolean hasData() {
