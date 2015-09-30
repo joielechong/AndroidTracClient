@@ -154,7 +154,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
                 ((TextView) view).setTextColor(ms.getUpdated() ? popup_selected_color : popup_unselected_color);
                 return view;
             } catch (final Exception e) {
-                tcLog.e(getClass().getName(), "getView exception", e);
+                tcLog.e(getClass().getName(), "exception", e);
                 return null;
             }
         }
@@ -178,7 +178,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 	private SwipeRefreshLayout swipeLayout;
 
     private void setSelect(final boolean value) {
-        tcLog.d(this.getClass().getName(), "setSelect " + value);
+        tcLog.d(this.getClass().getName(), ""+value);
         if (selectItem != null) {
             selectItem.setEnabled(value);
         }
@@ -272,7 +272,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        tcLog.d(getClass().getName(), "onActivityCreated savedInstanceState = " + savedInstanceState);
+        tcLog.d(getClass().getName(), "savedInstanceState = " + savedInstanceState);
 
         tm = listener.getTicketModel();
 		View view = getView();
@@ -394,7 +394,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        tcLog.d(getClass().getName(), "onPrepareOptionsMenu");
+        tcLog.d(getClass().getName(), "");
         final MenuItem item = menu.findItem(R.id.dfempty);
 
         if (item != null) {
@@ -469,7 +469,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 
 	@Override
 	public void onFileSelected(final String filename) {
-		tcLog.d(this.getClass().getName(),"onFileSelected ticket = " + _ticket + " filename = " + filename);
+		tcLog.d(this.getClass().getName(),"ticket = " + _ticket + " filename = " + filename);
 /*
 		listener.startProgressBar(R.string.uploading);
 
@@ -503,7 +503,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
     @Override
     public void onSaveInstanceState(Bundle savedState) {
         super.onSaveInstanceState(savedState);
-        tcLog.d(getClass().getName(), "onSaveInstanceState _ticket = " + _ticket+ " "+ modVeld);
+        tcLog.d(getClass().getName(), "_ticket = " + _ticket+ " "+ modVeld);
         if (_ticket != null) {
             savedState.putInt(Const.CURRENT_TICKET, _ticket.getTicketnr());
         } else if (ticknr != -1) {
@@ -533,7 +533,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
     }
 
     private void displayTicket() {
-        tcLog.d(this.getClass().getName(), "displayTicket ticket = " + _ticket);
+        tcLog.d(this.getClass().getName(), "ticket = " + _ticket);
         if (_ticket != null) {
             final View v = getView();
 
@@ -564,7 +564,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
                     @Override
                     public boolean onLongClick(View view) {
                         selectField("summary", ((TextView) view).getText().toString(), tickText);
-                        tcLog.d(getClass().getName(), "OnLongClick tickText modVeld = " + modVeld);
+                        tcLog.d(getClass().getName(), "tickText modVeld = " + modVeld);
                         return true;
                     }
                 });
@@ -640,7 +640,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
                 public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                     final modifiedString t = (modifiedString) ((ListView) parent).getItemAtPosition(position);
 
-                    tcLog.d(this.getClass().getName(), "onItemLongClick position = " + position);
+                    tcLog.d(this.getClass().getName(), "position = " + position);
                     if (t.length() >= 8 && "bijlage ".equals(t.substring(0, 8))) {
                         return false;
                     } else if (t.length() >= 8 && "comment:".equals(t.substring(0, 8))) {
@@ -658,7 +658,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     final modifiedString t = (modifiedString) ((ListView) parent).getItemAtPosition(position);
 
-                    tcLog.d(this.getClass().getName(), " onItemClick position = " + position);
+                    tcLog.d(this.getClass().getName(), "position = " + position);
                     if (t.length() >= 8 && "bijlage ".equals(t.substring(0, 8))) {
                         final int d = t.indexOf(":");
                         final int bijlagenr = Integer.parseInt(t.substring(8, d));
@@ -719,7 +719,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
                         if ("summary".equals(veld)) {
                             ((TextView) dataView).setText(newValue);
                             ((TextView) dataView).setTextColor(popup_selected_color);
-                            tcLog.d(getClass().getName(), "OnClick tickText na postInvalidate + " + dataView);
+                            tcLog.d(getClass().getName(), "tickText na postInvalidate + " + dataView);
                             final String[] parsed = newValue.split(":", 2);
 
                             modVeld.put("summary", parsed[1].trim());
@@ -759,7 +759,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
     }
 
     public boolean onBackPressed() {
-        tcLog.d(this.getClass().getName(), "onBackPressed");
+        tcLog.d(this.getClass().getName(), "");
 		try {
             if (pw.isShowing() && !listener.isFinishing()) {
                 pw.dismiss();
@@ -788,7 +788,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 				return true;
 			}
 		}
-        tcLog.d(getClass().getName(), "onBackPressed returned false");
+        tcLog.d(getClass().getName(), "returned false");
 		return false;
     }
 
@@ -851,7 +851,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
     }
 
     private void updateTicket() {
-        tcLog.d(getClass().getName(), "updateTicket");
+        tcLog.d(getClass().getName(), "");
 		try {
 			listener.updateTicket(_ticket,"leave", "", null, null, sendNotification,  modVeld);
 		} catch (final Exception e) {

@@ -38,7 +38,7 @@ public class Refresh extends Activity implements ServiceConnection {
  */
     @Override
     public void onServiceConnected(ComponentName className, IBinder service) {
-        tcLog.d(this.getClass().getName(),"onServiceConnected className = " + className + " service = " + service);
+        tcLog.d(this.getClass().getName(),"className = " + className + " service = " + service);
         mService = new Messenger(service);
         try {
             final Message msg = Message.obtain(null, TracStart.MSG_REQUEST_REFRESH);
@@ -52,7 +52,7 @@ public class Refresh extends Activity implements ServiceConnection {
 
     @Override
     public void onServiceDisconnected(ComponentName className) {
-        tcLog.d(getClass().getName(),"onServiceDisconnected className = " + className);
+        tcLog.d(getClass().getName(),"className = " + className);
         mService = null;
     }
 
@@ -63,7 +63,7 @@ public class Refresh extends Activity implements ServiceConnection {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        tcLog.d(getClass().getName(), "onCreate savedInstanceState = " + savedInstanceState);
+        tcLog.d(getClass().getName(), "savedInstanceState = " + savedInstanceState);
 
         try {
             final String action = getIntent().getAction();
@@ -82,7 +82,7 @@ public class Refresh extends Activity implements ServiceConnection {
 
     @Override
     public void onDestroy() {
-        tcLog.d(this.getClass().getName(), "onDestroy");
+        tcLog.d(this.getClass().getName(), "");
         super.onDestroy();
         try {
             unbindService(this);

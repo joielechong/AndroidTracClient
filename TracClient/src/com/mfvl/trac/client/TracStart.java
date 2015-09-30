@@ -228,8 +228,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 		
 	private TicketListAdapter dataAdapter = null;
 	
-    private static final String[] fields = new String[] { TicketCursor.STR_FIELD_ID, TicketCursor.STR_FIELD_TICKET};
-	
     private static final int LIST_LOADER = 1;
 	private static final int CHANGES_LOADER = 2;
 	private static final int TICKET_LOADER = 3;

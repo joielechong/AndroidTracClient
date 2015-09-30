@@ -60,7 +60,7 @@ public class NewTicketFragment extends TracClientFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        tcLog.d(this.getClass().getName(), "onActivityCreated sis = " + savedInstanceState);
+        tcLog.d(this.getClass().getName(), "sis = " + savedInstanceState);
 		View view = getView();
         tm = listener.getTicketModel();
         final Button storButton = (Button) view.findViewById(R.id.storebutton);

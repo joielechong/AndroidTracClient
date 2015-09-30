@@ -48,7 +48,7 @@ public class TicketModel implements Serializable {
     private TicketModel(TracHttpClient tracClient) {
 		
         tag = getClass().getName();
-        tcLog.d(tag, "TicketModel constructor");
+        tcLog.d(tag, "");
         fieldCount = 0;
         loading = false;
 		_tracClient = tracClient;
@@ -58,7 +58,7 @@ public class TicketModel implements Serializable {
     }
 
     private void loadModelData() {
-        tcLog.d(tag, "TicketModel loadModelData");
+        tcLog.d(tag, "loadModelData");
         if (_tracClient != null) {
 			loading = true;
 			active.acquireUninterruptibly ();
@@ -83,21 +83,21 @@ public class TicketModel implements Serializable {
 						}
                         _hasData = true;
                     } catch (final Exception e) {
-                        tcLog.e(tag, "TicketModel exception", e);
+                        tcLog.e(tag, "exception", e);
                     } finally {
 						active.release();
 						loading = false;
-						tcLog.d(tag, "TicketModel Model loaded");
+						tcLog.d(tag, "Model loaded");
                     }
                 }
             }.start();
         } else {
-            tcLog.e(tag, "TicketModel called with url == null");
+            tcLog.e(tag, "called with url == null");
         }
     }
 
     public static TicketModel getInstance(TracHttpClient tracClient) {
-        tcLog.d(tag, "TicketModel getInstance new tracClient = "+ tracClient);
+        tcLog.d(tag, "new tracClient = "+ tracClient);
         if (_instance == null  || tracClient.equals(_tracClient)) {
             _instance = new TicketModel(tracClient);
         }
@@ -108,7 +108,7 @@ public class TicketModel implements Serializable {
     }
 
     public static TicketModel getInstance() {
-        tcLog.d(tag, "TicketModel getInstance old tracClient = "+ _tracClient);
+        tcLog.d(tag, "old tracClient = "+ _tracClient);
         return _instance;
     }
 

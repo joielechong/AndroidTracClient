@@ -157,12 +157,12 @@ public class Credentials {
     }
 
     public static boolean getCookieInform() {
-        tcLog.d("Credentials", "getCookieInform");
+        tcLog.d("Credentials", "");
 		return settings.getBoolean(Const.PREF_COOKIEINFORM,true);
 	}
 	
 	public static void setCookieInform(boolean val) {
-        tcLog.d("Credentials", "getCookieInform");
+        tcLog.d("Credentials", "");
 		settings.edit().putBoolean(Const.PREF_COOKIEINFORM, val).apply();
 	}
 
@@ -193,7 +193,7 @@ public class Credentials {
         // tcLog.d("Credentials", "getSortString");
         final String sortString = settings.getString(Const.PREF_SORT, "order=priority&order=modified&desc=1");
 
-        tcLog.d("Credentials", "getSortString sortString = " + sortString);
+        tcLog.d("Credentials", "sortString = " + sortString);
         return sortString;
     }
 
@@ -224,9 +224,9 @@ public class Credentials {
                 }
             }
         } catch (final NameNotFoundException e) {
-            tcLog.i(_tag, "isDebuggable", e);
+            tcLog.i(_tag, "",e);
         } catch (final CertificateException e) {
-            tcLog.i(_tag, "isDebuggable", e);
+            tcLog.i(_tag, "", e);
         }
         return debuggable;
     }
@@ -246,7 +246,7 @@ public class Credentials {
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
 			final File extPath = Environment.getExternalStorageDirectory();
 			final File dirPath = new File(extPath,"TracClient");
-			//tcLog.d(_tag,"makeDbPath dirpath = "+dirPath);
+			//tcLog.d(_tag,"dirpath = "+dirPath);
 			final File filePath = new File(dirPath,dbname);
             final String p1 = filePath.toString();
 
@@ -259,11 +259,11 @@ public class Credentials {
 				dbpath = p1;
             }
         }
-        tcLog.d(_tag, "makeDbPath dbpath = " + dbpath);
+        tcLog.d(_tag, "dbpath = " + dbpath);
         return dbpath;
     }
 
-    public static String makeExtFilePath(String filename) throws FileNotFoundException {
+    public static File makeExtFilePath(String filename) throws FileNotFoundException {
 		//tcLog.d(_tag,"makeExtFilePath filename = "+filename);
         final File extPath = Environment.getExternalStorageDirectory();
 		//tcLog.d(_tag,"makeExtFilePath extpath = "+extPath);
@@ -278,7 +278,7 @@ public class Credentials {
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             throw new FileNotFoundException(filePath.toString());
         }
-        return filePath.toString();
+        return filePath;
     }
 	
     public static Boolean metaDataGetBoolean(String metaId) throws NameNotFoundException {

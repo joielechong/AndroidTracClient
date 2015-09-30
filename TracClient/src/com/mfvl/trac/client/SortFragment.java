@@ -87,7 +87,7 @@ public class SortFragment extends SpecFragment<SortSpec>  {
 		public void onClick(View dv) {
 			int position = getSortPosition(dv);
 			SortSpec sortItem = items.get(position);
-			tcLog.d(getClass().getName(),"onClick: "+dv+" "+position+" "+sortItem);	
+			tcLog.d(getClass().getName(),""+dv+" "+position+" "+sortItem);	
 			switch (dv.getId()) {
 				case R.id.sortup:
 				if (position > 0) {
@@ -142,14 +142,14 @@ public class SortFragment extends SpecFragment<SortSpec>  {
 	
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        tcLog.d(this.getClass().getName(), "onCreateView savedInstanceState = " + savedInstanceState);
+        tcLog.d(this.getClass().getName(), "savedInstanceState = " + savedInstanceState);
         return inflater.inflate(R.layout.sort_view, container, false);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);  // vult inputSpec en outputSpec
-        tcLog.d(getClass().getName(), "onActivityCreated savedInstanceState = " + savedInstanceState );
+        tcLog.d(getClass().getName(), "savedInstanceState = " + savedInstanceState );
 		helpFile = R.string.sorthelpfile;
         final View view = getView();
 

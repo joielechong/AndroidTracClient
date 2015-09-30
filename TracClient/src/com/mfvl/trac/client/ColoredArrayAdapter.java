@@ -25,22 +25,14 @@ import android.content.Context;
 
 public class ColoredArrayAdapter<T> extends ArrayAdapter<T> {
     private static int[] colors = null;
-    private final List<T> items;
     Context context = null;
 
     public ColoredArrayAdapter(TracStart context, int resource, List<T> list) {
         super(context, resource, list);
-        items = list;
         this.context = context;
         if (colors == null) {
             colors = context.getResources().getIntArray(R.array.list_col);
         }
-    }
-
-    @Override
-    public void clear() {
-        items.clear();
-        super.clear();
     }
 
 	@Override

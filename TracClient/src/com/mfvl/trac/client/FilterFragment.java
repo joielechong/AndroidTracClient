@@ -47,17 +47,19 @@ import android.widget.TextView;
 public class FilterFragment extends SpecFragment<FilterSpec> {
     private FilterAdapter filterAdapter;
 	private Spinner addSpinner;
+	private static ArrayList<String> operators = null;
+	private static ArrayList<String> operatornames = null;
 	
 	
     private class FilterAdapter extends SpecAdapter<FilterSpec> implements View.OnClickListener {
-	private ArrayList<String> operators;
-	private ArrayList<String> operatornames;
 
         public FilterAdapter(Context context, int textViewResourceId, ArrayList<FilterSpec> input) {
             super(context, textViewResourceId, input);
-            final Resources res = context.getResources();
-            operators = new ArrayList<String>(Arrays.asList(res.getStringArray(R.array.filter2_choice)));
-            operatornames = new ArrayList<String>(Arrays.asList(res.getStringArray(R.array.filter_names)));
+			if (operators == null) {
+				final Resources res = context.getResources();
+				operators = new ArrayList<String>(Arrays.asList(res.getStringArray(R.array.filter2_choice)));
+				operatornames = new ArrayList<String>(Arrays.asList(res.getStringArray(R.array.filter_names)));
+			}
         }
 
         @Override
@@ -142,7 +144,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> {
 
 		@Override
 		public void onClick(View v) {
-			tcLog.d(getClass().getName(), "onClick v =" + v);
+			tcLog.d(getClass().getName(), "v =" + v);
 			FilterSpec filterItem = getItem(v);
 			switch (v.getId()) {
 				case R.id.filternaam:
@@ -218,7 +220,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> {
 	
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        tcLog.d(this.getClass().getName(),"onCreateView savedInstanceState = " + savedInstanceState);
+        tcLog.d(this.getClass().getName(),"savedInstanceState = " + savedInstanceState);
         final View view = inflater.inflate(R.layout.filter_view, container, false);
 
         return view;
@@ -227,7 +229,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState); // must be called first
-        tcLog.d(getClass().getName(),"onActivityCreated savedInstanceState = " + savedInstanceState);
+        tcLog.d(getClass().getName(),"savedInstanceState = " + savedInstanceState);
         final View view = getView();
 		helpFile = R.string.filterhelpfile;
 
@@ -280,7 +282,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> {
         final String op = o.getOperator();
         final boolean omgekeerd = op != null && op.equals("!=");
 
-        tcLog.d(this.getClass().getName(), "makeCheckBoxes " + veldnaam + " " + w + " " + omgekeerd);
+        tcLog.d(this.getClass().getName(), veldnaam + " " + w + " " + omgekeerd);
         final LinearLayout valCheckBoxes = new LinearLayout(context);
 
         valCheckBoxes.setOrientation(LinearLayout.VERTICAL);

@@ -33,31 +33,31 @@ public class Tickets {
 
     public Tickets() {
         _tag = getClass().getName();
-        tcLog.d(_tag, "Tickets create");
+        tcLog.d(_tag, "create");
 		initList();
         valid = ticketList != null;
     }
 
     public void initList() {
-        tcLog.d(_tag, "initList");
+        tcLog.d(_tag, "");
         ticketList = new TicketList();
         ticketContentCount = 0;
         valid = true;
     }
 
     public void resetCache() {
-        // tcLog.d(_tag,"resetCache voor ticketMap = "+ticketMap);
+        // tcLog.d(_tag,"voor ticketMap = "+ticketMap);
         ticketMap = new TreeMap<Integer, Ticket>();
-        // tcLog.d(_tag,"resetCache na ticketMap = "+ticketMap);
+        // tcLog.d(_tag,"na ticketMap = "+ticketMap);
     }
 
     public Ticket getTicket(final int ticknr) {
-        // tcLog.d(_tag, "getTicket ticknr = "+ticknr+ " "+ticketMap.containsKey(ticknr));
+        // tcLog.d(_tag, "ticknr = "+ticknr+ " "+ticketMap.containsKey(ticknr));
         return ticketMap.containsKey(ticknr) ? ticketMap.get(ticknr) : null;
     }
 
     public void putTicket(Ticket ticket) {
-        // tcLog.d(getClass().getName(), "putTicket ticket = "+ticket);
+        // tcLog.d(getClass().getName(), "ticket = "+ticket);
         ticketMap.put(ticket.getTicketnr(), ticket);
     }
 	
@@ -67,11 +67,11 @@ public class Tickets {
 	}
 	
 	public void delTicket(int ticknr) {
-		tcLog.d(getClass().getName(), "delTicket ticknr = "+ticknr);
+		tcLog.d(getClass().getName(), "ticknr = "+ticknr);
 		if (ticketMap.containsKey(ticknr)) {
 			Ticket removed = ticketMap.remove(ticknr);
 			ticketList.remove(removed);
-			tcLog.d(getClass().getName(), "delTicket removed = "+removed);
+			tcLog.d(getClass().getName(), "removed = "+removed);
 		}
 	}
 	
@@ -112,7 +112,7 @@ public class Tickets {
     }
 
     private int getNeighTicket(final int ticknr, final int dir) {
-        tcLog.d(_tag, "getNeighTicket ticknr = " + ticknr + ", dir = " + dir);
+        tcLog.d(_tag, "ticknr = " + ticknr + ", dir = " + dir);
         Ticket t = getTicket(ticknr);
 
         // tcLog.d(_tag, "t = " + t);
@@ -137,7 +137,7 @@ public class Tickets {
         try {
             return ticketList.size();
         } catch (final Exception e) {
-//            tcLog.d(_tag, "getTicketCount Exception", e);
+//            tcLog.d(_tag, "Exception", e);
             return 0;
         }
     }
