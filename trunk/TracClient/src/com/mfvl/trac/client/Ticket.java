@@ -114,7 +114,7 @@ public class Ticket implements Serializable {
     }
 /*
     private void loadTicketData_x(TracStart context, final onTicketCompleteListener oc) {
-        tcLog.i(this.getClass().getName(), "loadTicketData ticketnr = " + _ticknr);
+        tcLog.i(this.getClass().getName(), "ticketnr = " + _ticknr);
         actionLock.acquireUninterruptibly();
         _isloading = true;
         new Thread("loadTicketData") {

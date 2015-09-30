@@ -53,7 +53,7 @@ public class RefreshService extends Service {
     private final class ServiceHandler extends Handler {
         public ServiceHandler(Looper looper) {
             super(looper);
-            tcLog.d(getClass().getName(), "ServiceHandler");
+            tcLog.d(getClass().getName(), "");
             Resources res = getResources();
 
             timerStart = res.getInteger(R.integer.timerStart);
@@ -127,14 +127,14 @@ public class RefreshService extends Service {
     }
 
     private void sendMessageToUI(int message) {
-        //tcLog.d(this.getClass().getName(), "sendMessageToUI");
+        //tcLog.d(this.getClass().getName(), ""+message);
         try {
             // Send data as an Integer
             if (receiver != null) {
                 receiver.send(Message.obtain(null, message, 0, 0));
             }
         } catch (final RemoteException e) {
-            tcLog.e(this.getClass().getName(), "sendMessageToUI failed", e);
+            tcLog.e(this.getClass().getName(), "failed", e);
         }
     }
 
@@ -182,7 +182,7 @@ public class RefreshService extends Service {
 
     @Override
     public void onDestroy() {
-        tcLog.d(this.getClass().getName(), "onDestroy");
+        tcLog.d(this.getClass().getName(), "");
         stopTimer();
         mHandlerThread.quit();
         final NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

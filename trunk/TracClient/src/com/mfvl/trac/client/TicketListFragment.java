@@ -74,27 +74,27 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
     @Override
     public void onAttach(Context activity) {
         super.onAttach(activity);
-        tcLog.d(getClass().getName(), "onAttach(C)");
+        tcLog.d(getClass().getName(), "(C)");
 		onMyAttach(activity);
     }
 	
     @Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-        tcLog.d(getClass().getName(), "onAttach(A)");
+        tcLog.d(getClass().getName(), "(A)");
 		onMyAttach(activity);
 	}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        tcLog.d(getClass().getName(), "onCreate savedInstanceState = " + savedInstanceState);
+        tcLog.d(getClass().getName(), "savedInstanceState = " + savedInstanceState);
         setHasOptionsMenu(true);
 	}
 	
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        tcLog.d(getClass().getName(), "onCreateView savedInstanceState = " + savedInstanceState);
+        tcLog.d(getClass().getName(), "savedInstanceState = " + savedInstanceState);
         final View view = inflater.inflate(R.layout.list_view, container, false);
 
         listView = (ListView) view.findViewById(R.id.listOfTickets);
@@ -110,7 +110,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 	
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState){
-		tcLog.d(this.getClass().getName(), "onViewCreated view = " + view + " sis = " + savedInstanceState);
+		tcLog.d(this.getClass().getName(), "view = " + view + " sis = " + savedInstanceState);
 		super.onViewCreated(view,savedInstanceState);
 		swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
 		swipeLayout.setOnRefreshListener(this);
@@ -129,7 +129,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        tcLog.d(getClass().getName(), "onActivityCreated savedInstanceState = " + savedInstanceState);
+        tcLog.d(getClass().getName(), "savedInstanceState = " + savedInstanceState);
 
 //		dataAdapter = listener.getAdapter();
 //		listView.setAdapter(dataAdapter);
@@ -155,7 +155,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
     @Override
     public void onResume() {
         super.onResume();
-        tcLog.d(getClass().getName(), "onResume");
+        tcLog.d(getClass().getName(), "");
 		helpFile = R.string.helplistfile;
 		dataAdapter = listener.getAdapter();
 		listView.setAdapter(dataAdapter);
@@ -166,7 +166,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 
     @Override
     public void onPause() {
-        tcLog.d(getClass().getName(), "onPause");
+        tcLog.d(getClass().getName(), "");
         super.onPause();
         scrollPosition = listView.getFirstVisiblePosition();
         // tcLog.d(getClass().getName(),"onPause scrollPosition <= "+scrollPosition);
@@ -174,7 +174,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-        tcLog.d(getClass().getName(), "onCreateContextMenu menu = "+menu+" view = "+v+"menuInfo = "+menuInfo);
+        tcLog.d(getClass().getName(), "menu = "+menu+" view = "+v+"menuInfo = "+menuInfo);
         super.onCreateContextMenu(menu, v, menuInfo);
         if (v.getId() == R.id.listOfTickets) {
             final MenuInflater inflater = context.getMenuInflater();
@@ -198,7 +198,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        tcLog.d(getClass().getName(), "onContextItemSelected item = "+item);
+        tcLog.d(getClass().getName(), "item = "+item);
         final AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
         final Ticket t = (Ticket) listView.getItemAtPosition(info.position);
 
@@ -227,7 +227,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 
     @Override
     public void onDestroyView() {
-        tcLog.d(getClass().getName(), "onDestroyView");
+        tcLog.d(getClass().getName(), "");
         if (filterText != null && zoeken) {
             filterText.removeTextChangedListener(this);
         }
@@ -242,14 +242,14 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        tcLog.d(getClass().getName(), "onCreateOptionsMenu");
+        tcLog.d(getClass().getName(), "");
         inflater.inflate(R.menu.ticketlistmenu, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 	
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        tcLog.d(getClass().getName(), "onPrepareOptionsMenu");
+        tcLog.d(getClass().getName(), "");
         super.onPrepareOptionsMenu(menu);
 		listener.setActionProvider(menu,R.id.tlshare);
 		final MenuItem itemList = menu.findItem(R.id.tlshare);
@@ -261,7 +261,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 	}
 	
 	private void updateShareActionProvider() {
-        tcLog.d(getClass().getName(), "updateShareActionProvider");
+        tcLog.d(getClass().getName(), "");
 		Intent i = listener.shareList();
 		tcLog.d(getClass().getName(), "SAP = " + listShare + " " + i);
 		if (listShare != null && i != null) {
@@ -272,7 +272,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 	
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        tcLog.d(getClass().getName(), "onOptionsItemSelected item=" + item.getTitle());
+        tcLog.d(getClass().getName(), "item=" + item.getTitle());
         final int itemId = item.getItemId();
 
 		if (itemId == R.id.tlselect) {
@@ -321,12 +321,12 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 
     @Override
     public void onSaveInstanceState(Bundle savedState) {
-        tcLog.e(getClass().getName(), "onSaveInstanceState in = "+ savedState);
+        tcLog.e(getClass().getName(), "in = "+ savedState);
         super.onSaveInstanceState(savedState);
         savedState.putBoolean(ZOEKENNAME, zoeken);
         savedState.putString(ZOEKTEXTNAME, zoektext);
         savedState.putInt(SCROLLPOSITIONNAME,scrollPosition);
-        tcLog.d(getClass().getName(), "onSaveInstanceState out = " + savedState);
+        tcLog.d(getClass().getName(), "out = " + savedState);
     }
 	
 	private void setStatus(final String s) {
@@ -344,7 +344,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 
 	public void dataHasChanged() {
 		try {
-			tcLog.d(getClass().getName(), "dataHasChanged hs = " + hs);
+			tcLog.d(getClass().getName(), "hs = " + hs);
 			setStatus(listener.getTicketContentCount() + "/" + listener.getTicketCount());
 			updateShareActionProvider();
 			listView.invalidate();
@@ -354,7 +354,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 	}
 	
 	public void startLoading() {
-        tcLog.d(getClass().getName(), "startLoading hs = " + hs);
+        tcLog.d(getClass().getName(), "hs = " + hs);
         setStatus(R.string.ophalen);
  	}
 
@@ -384,7 +384,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 	
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        tcLog.d(getClass().getName(), "onItemClick + " + parent + " " + view + " " + position + " " + id);
+        tcLog.d(getClass().getName(), "" + parent + " " + view + " " + position + " " + id);
         switch (parent.getId()) {
         case R.id.listOfTickets:
             final Ticket t = (Ticket)dataAdapter.getItem(position);
@@ -405,7 +405,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
     }
 
     private void zetZoeken() {
-        tcLog.d(getClass().getName(), "zetZoeken");
+        tcLog.d(getClass().getName(), "");
         final View v = getView();
 
         if (v != null) {
@@ -428,7 +428,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 	
 	@Override 
 	public void onRefresh() {
-		tcLog.d(this.getClass().getName(), "onRefresh");
+		tcLog.d(this.getClass().getName(), "");
  		listener.refreshOverview();
 		swipeLayout.setRefreshing(false);
 	}
@@ -443,7 +443,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-		tcLog.d(getClass().getName(),"onTextChanged "+s+" "+dataAdapter);
+		tcLog.d(getClass().getName(),""+s+" "+dataAdapter);
         if (dataAdapter != null && s != null) {
             dataAdapter.getFilter().filter(s);
             zoektext = s.toString();

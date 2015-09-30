@@ -33,7 +33,7 @@ public class MyHandlerThread extends HandlerThread {
         try {
             super.run();
         } catch (Exception e) {
-            tcLog.e(getClass().getName() + "." + getThreadId(), "Exception in HandlerThread Run - " +getName(), e);
+            tcLog.e(getClass().getName() + "." , "Exception in HandlerThread "+ getThreadId()+" Run - " +getName(), e);
         }
     }
 }

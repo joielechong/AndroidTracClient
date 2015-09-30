@@ -22,14 +22,12 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
 public class TicketListAdapter extends ColoredArrayAdapter<Ticket> /* implements OnTicketsChangeListener */ {
-    public static String[] fields = new String[] { TicketCursor.STR_FIELD_TICKET};
-    public static int[] adapres = new int[] { R.id.ticket_list};
     Context context;
 	final Tickets mTickets;
 
     public TicketListAdapter(TracStart context, int resource, Tickets tl) {
         super(context, resource,(tl==null?null:tl.ticketList));
-        tcLog.d(getClass().getName(), "TicketListAdapter construction " + tl);
+        tcLog.d(getClass().getName(), "" + tl);
         this.context = context;
 
 		mTickets = tl;
