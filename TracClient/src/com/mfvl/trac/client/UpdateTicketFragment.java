@@ -95,7 +95,7 @@ public class UpdateTicketFragment extends TracClientFragment {
         final int spinPosition;
 
         super.onActivityCreated(savedInstanceState);
-        tcLog.d(_tag, "onActivityCreated savedInstanceState = " + savedInstanceState);
+        tcLog.d(_tag, "savedInstanceState = " + savedInstanceState);
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(Const.CURRENT_TICKET)) {
                 ticknr = savedInstanceState.getInt(Const.CURRENT_TICKET);
@@ -187,7 +187,7 @@ public class UpdateTicketFragment extends TracClientFragment {
                                             try {
                                                 opties.add(ifOpties.getString(j));
                                             } catch (final JSONException e) {
-                                                tcLog.e(_tag, "displayView exception adding " + ifOpties + " j=" + j,e);
+                                                tcLog.e(_tag, "exception adding " + ifOpties + " j=" + j,e);
                                             }
                                         }
                                         final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<Object>(context, android.R.layout.simple_spinner_item, opties);
@@ -199,7 +199,7 @@ public class UpdateTicketFragment extends TracClientFragment {
                                         }
                                     }
                                 } catch (final Exception e) {
-                                    tcLog.e(_tag, "displayView exception getting fields", e);
+                                    tcLog.e(_tag, "exception getting fields", e);
                                 }
                             }
                             view.postInvalidate();
@@ -209,9 +209,9 @@ public class UpdateTicketFragment extends TracClientFragment {
                 rg.addView(rb);
             }
         } catch (final Exception e) {
-            tcLog.e(_tag, "displayView exception loading ticketdata", e);
+            tcLog.e(_tag, "exception loading ticketdata", e);
         }
-//        tcLog.d(_tag, "displayView currentButton = " + checkedButton);
+//        tcLog.d(_tag, "currentButton = " + checkedButton);
         rg.check(checkedButton);
     }
 
@@ -308,7 +308,7 @@ public class UpdateTicketFragment extends TracClientFragment {
                 }
             }
             sissaved = true;
-            tcLog.d(_tag, "onSaveInstanceState, savedState = " + savedState);
+            tcLog.d(_tag, "savedState = " + savedState);
         }
     }
 }

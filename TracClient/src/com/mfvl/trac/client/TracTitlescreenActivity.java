@@ -44,7 +44,7 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
         super.onCreate(savedInstanceState);
 		_tag = getClass().getName();
         tcLog.setContext(this);
-        tcLog.i(_tag, "onCreate");
+        tcLog.i(_tag, "");
 		
 		Thread.setDefaultUncaughtExceptionHandler (this);
 		
@@ -73,7 +73,7 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
 
     @Override
     public void onStart() {
-        tcLog.i(_tag, "onStart");
+        tcLog.i(_tag, "");
         super.onStart();
 
         boolean adMobAvailable = false;
@@ -142,7 +142,7 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
 
     @Override
     public void onStop() {
-        tcLog.i(_tag, "onStop");
+        tcLog.i(_tag, "");
         super.onStop();
         // Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
         MyTracker.reportActivityStop(this);

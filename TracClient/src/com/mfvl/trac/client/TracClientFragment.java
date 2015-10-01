@@ -80,7 +80,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
     @Override
     public void onAttach(Context activity) {
         super.onAttach(activity);
-        tcLog.d(getClass().getName() + ".super", "onAttach(C) ");
+        tcLog.d(getClass().getName(), "(C) ");
 		onMyAttach(activity);
     }
 	
@@ -88,17 +88,17 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
     @Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-        tcLog.d(getClass().getName() + ".super", "onAttach(A) ");
+        tcLog.d(getClass().getName(), "(A) ");
 		onMyAttach(activity);
 	}
 
 	protected void sendMessageToHandler(int msg) {
-        tcLog.d(getClass().getName() + ".super", "sendMessageToHandler msg = " + msg);
+        tcLog.d(getClass().getName(), "msg = " + msg);
 		tracStartHandler.sendMessage(tracStartHandler.obtainMessage(msg));
 	}
 
 	protected void sendMessageToHandler(int msg,Object o) {
-        tcLog.d(getClass().getName() + ".super", "sendMessageToHandler msg = " + msg+ " o = "+o);
+        tcLog.d(getClass().getName(), "msg = " + msg+ " o = "+o);
 		tracStartHandler.sendMessage(tracStartHandler.obtainMessage(msg,o));
 	}
 
@@ -109,7 +109,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        tcLog.d(getClass().getName() + ".super", "onCreate savedInstanceState = " + savedInstanceState);
+        tcLog.d(getClass().getName(), "savedInstanceState = " + savedInstanceState);
         try {
             adUnitId = context.getString(R.string.adUnitId);
             final String t = Credentials.metaDataGetString("com.mfvl.trac.client.testDevices");
@@ -135,7 +135,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
     @Override
     public void onViewCreated(final View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        tcLog.d(getClass().getName() + ".super", "onViewCreated view = "+view);
+        tcLog.d(getClass().getName(), "view = "+view);
         aboveView = view.findViewById(R.id.aboveAdBlock);
  
         if (listener != null && listener.getDispAds()) {
@@ -150,7 +150,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
                     arb.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
                     if (Credentials.isDebuggable()) {
                         for (final String t : testDevices) {
-                            tcLog.d(getClass().getName() + ".super", "onViewCreated testDevice = " + t);
+                            tcLog.d(getClass().getName(), "testDevice = " + t);
                             arb.addTestDevice(t);
                         } 
                     }
@@ -218,7 +218,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 
     @Override
     public void onStart() {
-        tcLog.d(getClass().getName() + ".super", "onStart");
+        tcLog.d(getClass().getName(), "");
         super.onStart();
          
         // Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
@@ -229,14 +229,14 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 
     @Override
     public void onStop() {
-        tcLog.d(getClass().getName() + ".super", "onStop");
+        tcLog.d(getClass().getName(), "");
         super.onStop();
         MyTracker.reportActivityStop(context);
     }
 
     @Override
     public void onPause() {
-        tcLog.d(getClass().getName() + ".super", "onPause");
+        tcLog.d(getClass().getName(), "");
         if (adView != null) {
             adView.pause();
         }
@@ -245,7 +245,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 
     @Override
     public void onResume() {
-        tcLog.d(getClass().getName() + ".super", "onResume");
+        tcLog.d(getClass().getName(), "");
         super.onResume();
         if (adView != null) {
             adView.resume();
@@ -254,7 +254,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        tcLog.d(getClass().getName() + ".super", "onOptionsItemSelected item=" + item+ " "+ helpFile);
+        tcLog.d(getClass().getName(), "item=" + item+ " "+ helpFile);
         final int itemId = item.getItemId();
 
         if (itemId == R.id.help && helpFile != -1) {
@@ -271,7 +271,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 
     @Override
     public void onDestroy() {
-        tcLog.d(getClass().getName() + ".super", "onDestroy");
+        tcLog.d(getClass().getName(), "");
         if (getView() != null && adView != null) {
             adView.destroy();
         }
@@ -321,7 +321,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
     }
 
     protected void selectTicket(int ticknr) {
-        tcLog.d(getClass().getName()+".super", "selectTicket = " + ticknr);
+        tcLog.d(getClass().getName(), "ticknr = " + ticknr);
         final Ticket t = listener.getTicket(ticknr);
 		if (t != null  && t.hasdata()) {
 			listener.onTicketSelected(t);
@@ -348,7 +348,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 	}
 	
 	protected void setListener(int resid,View v,View.OnClickListener c) {
-		tcLog.d(getClass().getName(), "setListener resid = "+resid+" v = "+v+" c =" + c);
+		tcLog.d(getClass().getName(), "resid = "+resid+" v = "+v+" c =" + c);
 		try {
 			v.findViewById(resid).setOnClickListener(c);
 		} catch (Exception e) {}
@@ -356,6 +356,6 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 	
 	@Override
 	public void onClick(View v) {
-		tcLog.d(getClass().getName(), "onClick v =" + v);
+		tcLog.d(getClass().getName(), "v =" + v);
 	}
 }
