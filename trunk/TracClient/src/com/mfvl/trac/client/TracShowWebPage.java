@@ -37,7 +37,7 @@ public class TracShowWebPage extends Activity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
 		Credentials.getInstance(getApplicationContext());
 		_tag = getClass().getName();
-        tcLog.d(_tag, "onCreate savedInstanceState = " + savedInstanceState);
+        tcLog.d(_tag, "savedInstanceState = " + savedInstanceState);
         final Intent i = this.getIntent();
         final boolean toonVersie = i.getBooleanExtra(Const.HELP_VERSION, true);
 

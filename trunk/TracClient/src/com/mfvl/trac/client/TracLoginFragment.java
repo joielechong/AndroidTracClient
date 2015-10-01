@@ -106,13 +106,13 @@ public class TracLoginFragment extends TracClientFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 		_tag = getClass().getName();
-        tcLog.d(_tag, "onCreate savedInstanceState = " + savedInstanceState);
+        tcLog.d(_tag, "savedInstanceState = " + savedInstanceState);
         setHasOptionsMenu(true);
     }
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        tcLog.d(_tag, "onCreateView savedInstanceState = " + savedInstanceState);
+        tcLog.d(_tag, "savedInstanceState = " + savedInstanceState);
         // tcLog.d(_tag, "container = " + (container == null ? "null" : "not null"));
         if (container == null) {
             return null;
@@ -125,7 +125,7 @@ public class TracLoginFragment extends TracClientFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        tcLog.d(_tag, "onViewCreated");
+        tcLog.d(_tag, "");
         urlView = (EditText) view.findViewById(R.id.trac_URL);
         userView = (EditText) view.findViewById(R.id.trac_User);
         pwView = (EditText) view.findViewById(R.id.trac_Pw);
@@ -205,7 +205,7 @@ public class TracLoginFragment extends TracClientFragment {
     
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        tcLog.d(_tag, "onCreateOptionsMenu");
+        tcLog.d(_tag, "");
         inflater.inflate(R.menu.tracloginmenu, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -226,7 +226,7 @@ public class TracLoginFragment extends TracClientFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        tcLog.d(_tag,"onActivityCreated savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+        tcLog.d(_tag,"savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 	
         if (url == null) {
             if (savedInstanceState == null) {
@@ -436,7 +436,7 @@ public class TracLoginFragment extends TracClientFragment {
 	
     @Override
     public void onStart() {
-        tcLog.d(_tag, "onStart");
+        tcLog.d(_tag, "");
         super.onStart();
         urlView.addTextChangedListener(checkUrlInput);
         userView.addTextChangedListener(checkUserPwInput);
@@ -445,7 +445,7 @@ public class TracLoginFragment extends TracClientFragment {
     
     @Override
     public void onResume() {
-        tcLog.d(_tag, "onResume");
+        tcLog.d(_tag, "");
         super.onResume();
 		helpFile = R.string.loginhelpfile;
         checkHackBox(urlView.getText().toString());
@@ -453,7 +453,7 @@ public class TracLoginFragment extends TracClientFragment {
 	
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // tcLog.d(_tag, "onOptionsItemSelected item=" + item.getTitle());
+        // tcLog.d(_tag, "item=" + item.getTitle());
         final int itemId = item.getItemId();
 
         if (itemId == R.id.exportprofiles) {
@@ -485,7 +485,7 @@ public class TracLoginFragment extends TracClientFragment {
     
     @Override
     public void onStop() {
-        tcLog.d(_tag, "onStop");
+        tcLog.d(_tag, "");
         super.onStop();
         urlView.removeTextChangedListener(checkUrlInput);
         userView.removeTextChangedListener(checkUserPwInput);
@@ -494,7 +494,7 @@ public class TracLoginFragment extends TracClientFragment {
     
     @Override
     public void onDestroyView() {
-        tcLog.d(_tag, "onDestroyView");
+        tcLog.d(_tag, "");
         registerForContextMenu(loginSpinner);
         loginSpinner.setAdapter(null);
         if (c != null) {
@@ -521,7 +521,7 @@ public class TracLoginFragment extends TracClientFragment {
         try {
             savedState.putBoolean(bewaarText, bewaarBox.isChecked());
         } catch (final Exception e) {}
-        tcLog.d(_tag, "onSaveInstanceState savedState = " + savedState);
+        tcLog.d(_tag, " savedState = " + savedState);
     }
     
     private void checkHackBox(String s) {
