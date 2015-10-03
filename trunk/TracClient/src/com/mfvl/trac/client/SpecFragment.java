@@ -41,20 +41,20 @@ public class SpecFragment<T extends Spec> extends TracClientFragment {
 				inputSpec = (ArrayList<T>)args.getSerializable(keyName);
             }
         }
-        //tcLog.d(getClass().getName()+".Spec", "onMyAttach inputSpec = "+inputSpec);
+        //tcLog.d("onMyAttach inputSpec = "+inputSpec);
 	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-        tcLog.d(getClass().getName()+".Spec", "savedInstanceState = "+ savedInstanceState);
+        tcLog.d("savedInstanceState = "+ savedInstanceState);
         setHasOptionsMenu(true);
 	}
 	
 	@Override
     public void onViewCreated(final View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        tcLog.d(this.getClass().getName()+".Spec", "view = " + view + " savedInstanceState = " + savedInstanceState);
+        tcLog.d("view = " + view + " savedInstanceState = " + savedInstanceState);
 		listView = (ListView) view.findViewById(R.id.itemlist);
 	}
 
@@ -62,7 +62,7 @@ public class SpecFragment<T extends Spec> extends TracClientFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        tcLog.d(getClass().getName()+".Spec", "savedInstanceState = " + savedInstanceState );
+        tcLog.d("savedInstanceState = " + savedInstanceState );
 		tm = listener.getTicketModel();
 
 		if (savedInstanceState != null) {
@@ -93,9 +93,9 @@ public class SpecFragment<T extends Spec> extends TracClientFragment {
 	@Override
     public void onSaveInstanceState(Bundle savedState) {
         super.onSaveInstanceState(savedState);
-        tcLog.d(getClass().getName()+".Spec", "");
+        tcLog.logCall();
         if (inputSpec != null) {
-            tcLog.d(getClass().getName(), "inputSpec = " + inputSpec);
+            tcLog.d( "inputSpec = " + inputSpec);
             savedState.putSerializable(inputSpecText, inputSpec);
         }
 		
@@ -105,10 +105,10 @@ public class SpecFragment<T extends Spec> extends TracClientFragment {
             final ArrayList<T> outputSpec = adapter.getItems();
 
             if (outputSpec != null) {
-                tcLog.d(this.getClass().getName(), "outputSpec = " + outputSpec);
+                tcLog.d( "outputSpec = " + outputSpec);
                 savedState.putSerializable(outputSpecText, outputSpec);
             }
         }
-        tcLog.d(getClass().getName(), "super savedState = " + savedState);
+        tcLog.d( "super savedState = " + savedState);
     }
 }

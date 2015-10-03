@@ -42,14 +42,14 @@ public class NewTicketFragment extends TracClientFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // tcLog.d(this.getClass().getName(), "onCreate savedInstanceState = " + savedInstanceState);
+        // tcLog.d( "onCreate savedInstanceState = " + savedInstanceState);
 		helpFile = R.string.newhelpfile;
         setHasOptionsMenu(true);
     }
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // tcLog.d(this.getClass().getName(),"onCreateView savedInstanceState = " + savedInstanceState);
+        // tcLog.d("onCreateView savedInstanceState = " + savedInstanceState);
         if (container == null) {
             return null;
         }
@@ -60,7 +60,7 @@ public class NewTicketFragment extends TracClientFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        tcLog.d(this.getClass().getName(), "sis = " + savedInstanceState);
+        tcLog.d( "sis = " + savedInstanceState);
 		View view = getView();
         tm = listener.getTicketModel();
         final Button storButton = (Button) view.findViewById(R.id.storebutton);
@@ -97,7 +97,7 @@ public class NewTicketFragment extends TracClientFragment {
             e.setVisibility(View.GONE);
             view.findViewById(R.id.veld).setVisibility(View.GONE);
         } catch (final Exception e) {
-            tcLog.e(getClass().getName(), "Exception in createTicket", e);
+            tcLog.e( "Exception in createTicket", e);
         } finally {
             view.invalidate();
         }
@@ -138,7 +138,7 @@ public class NewTicketFragment extends TracClientFragment {
                                     velden.put(veldnaam, val);
                                 }
                             } catch (final Exception e) {
-                                tcLog.e(getClass().getName(), "Exception in createTicket", e);
+                                tcLog.e( "Exception in createTicket", e);
                             }
                         }
                     }
@@ -158,7 +158,7 @@ public class NewTicketFragment extends TracClientFragment {
                     listener.refreshOverview();
                     getFragmentManager().popBackStack();
                 } catch (final Exception e) {
-                    tcLog.e(getClass().getName(), "Exception in createTicket", e);
+                    tcLog.e( "Exception in createTicket", e);
                     final String message = e.getMessage();
                     listener.stopProgressBar();
                     showAlertBox(R.string.storerr,R.string.storerrdesc,message);

@@ -41,7 +41,7 @@ public class SortFragment extends SpecFragment<SortSpec>  {
 		
         @Override
         public View getView(final int position, View convertView, final ViewGroup parent) {
-			// tcLog.d(getClass().getName(),"getView: "+position+" "+convertView+" "+parent);
+			// tcLog.d(    "getView: "+position+" "+convertView+" "+parent);
             listView = (ListView) parent;
 			
             View v = convertView;
@@ -87,7 +87,7 @@ public class SortFragment extends SpecFragment<SortSpec>  {
 		public void onClick(View dv) {
 			int position = getSortPosition(dv);
 			SortSpec sortItem = items.get(position);
-			tcLog.d(getClass().getName(),""+dv+" "+position+" "+sortItem);	
+			tcLog.d(    ""+dv+" "+position+" "+sortItem);	
 			switch (dv.getId()) {
 				case R.id.sortup:
 				if (position > 0) {
@@ -129,27 +129,27 @@ public class SortFragment extends SpecFragment<SortSpec>  {
     @Override
     public void onAttach(Context activity) {
         super.onAttach(activity);
-//        tcLog.d(getClass().getName(), "onAttach(C)");
+//        tcLog.d("onAttach(C)");
 		onMyAttach(activity,Const.SORTLISTNAME);
     }
 	
     @Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-//        tcLog.d(getClass().getName(), "onAttach(A)");
+//        tcLog.d("onAttach(A)");
 		onMyAttach(activity,Const.SORTLISTNAME);
 	}
 	
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        tcLog.d(this.getClass().getName(), "savedInstanceState = " + savedInstanceState);
+        tcLog.d("savedInstanceState = " + savedInstanceState);
         return inflater.inflate(R.layout.sort_view, container, false);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);  // vult inputSpec en outputSpec
-        tcLog.d(getClass().getName(), "savedInstanceState = " + savedInstanceState );
+        tcLog.d("savedInstanceState = " + savedInstanceState );
 		helpFile = R.string.sorthelpfile;
         final View view = getView();
 
@@ -163,7 +163,7 @@ public class SortFragment extends SpecFragment<SortSpec>  {
 		getScreensize(addSpinner,addButton);
 
         if (addButton != null && addSpinner != null) {
-			//tcLog.d(getClass().getName(),"before setAdapter, tm = "+tm+ " addSspinner = "+ addSpinner+" context = "+context);
+			//tcLog.d("before setAdapter, tm = "+tm+ " addSspinner = "+ addSpinner+" context = "+context);
             addSpinner.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, tm.velden()));
         }
 
@@ -184,7 +184,7 @@ public class SortFragment extends SpecFragment<SortSpec>  {
 			
 			case R.id.addbutton:
 			final String veld = tm.velden().get((int) addSpinner.getSelectedItemId());
-			// tcLog.d(getClass().getName(), "addButton " + veld);
+			// tcLog.d(     "addButton " + veld);
 			sortAdapter.add(new SortSpec(veld));
 			break;
 		}

@@ -26,38 +26,36 @@ public class Tickets {
     private static Map<Integer, Ticket> ticketMap = null;
 
     private Tickets _instance = null;
-    private String _tag = "";
     private int ticketGroupCount;
     private int ticketContentCount;
     private boolean valid = false;
 
     public Tickets() {
-        _tag = getClass().getName();
-        tcLog.d(_tag, "create");
+        tcLog.d("create");
 		initList();
         valid = ticketList != null;
     }
 
     public void initList() {
-        tcLog.d(_tag, "");
+        tcLog.logCall();
         ticketList = new TicketList();
         ticketContentCount = 0;
         valid = true;
     }
 
     public void resetCache() {
-        // tcLog.d(_tag,"voor ticketMap = "+ticketMap);
+        // tcLog.d("voor ticketMap = "+ticketMap);
         ticketMap = new TreeMap<Integer, Ticket>();
-        // tcLog.d(_tag,"na ticketMap = "+ticketMap);
+        // tcLog.d("na ticketMap = "+ticketMap);
     }
 
     public Ticket getTicket(final int ticknr) {
-        // tcLog.d(_tag, "ticknr = "+ticknr+ " "+ticketMap.containsKey(ticknr));
+        // tcLog.d("ticknr = "+ticknr+ " "+ticketMap.containsKey(ticknr));
         return ticketMap.containsKey(ticknr) ? ticketMap.get(ticknr) : null;
     }
 
     public void putTicket(Ticket ticket) {
-        // tcLog.d(getClass().getName(), "ticket = "+ticket);
+        // tcLog.d( "ticket = "+ticket);
         ticketMap.put(ticket.getTicketnr(), ticket);
     }
 	
@@ -67,11 +65,11 @@ public class Tickets {
 	}
 	
 	public void delTicket(int ticknr) {
-		tcLog.d(getClass().getName(), "ticknr = "+ticknr);
+		tcLog.d( "ticknr = "+ticknr);
 		if (ticketMap.containsKey(ticknr)) {
 			Ticket removed = ticketMap.remove(ticknr);
 			ticketList.remove(removed);
-			tcLog.d(getClass().getName(), "removed = "+removed);
+			tcLog.d( "removed = "+removed);
 		}
 	}
 	
@@ -112,22 +110,22 @@ public class Tickets {
     }
 
     private int getNeighTicket(final int ticknr, final int dir) {
-        tcLog.d(_tag, "ticknr = " + ticknr + ", dir = " + dir);
+        tcLog.d("ticknr = " + ticknr + ", dir = " + dir);
         Ticket t = getTicket(ticknr);
 
-        // tcLog.d(_tag, "t = " + t);
+        // tcLog.d("t = " + t);
         if (t == null) {
             return -1;
         } else {
             final int pos = ticketList.indexOf(t);
             final int newpos = pos + dir;
 
-            // tcLog.d(_tag,"pos = "+pos+", newpos = "+newpos+", count = "+ticketList.size());
+            // tcLog.d("pos = "+pos+", newpos = "+newpos+", count = "+ticketList.size());
             if (pos < 0 || newpos < 0 || newpos >= ticketList.size()) {
                 return -1;
             } else {
                 t = ticketList.get(newpos);
-                tcLog.d(_tag, "new ticket = " + t);
+                tcLog.d("new ticket = " + t);
                 return t != null && t.hasdata() ? t.getTicketnr() : ticknr;
             }
         }
@@ -137,7 +135,7 @@ public class Tickets {
         try {
             return ticketList.size();
         } catch (final Exception e) {
-//            tcLog.d(_tag, "Exception", e);
+//            tcLog.d("Exception", e);
             return 0;
         }
     }

@@ -31,7 +31,7 @@ public class MyTracker {
 
 					analytics = GoogleAnalytics.getInstance(context);
 					if (analytics != null) {
-						tcLog.d(getClass().getName(), "Initialize analytics"); 
+						tcLog.d("Initialize analytics"); 
 						analytics.enableAutoActivityReports(context.getApplication());
 						t = analytics.newTracker(PROPERTY_ID);
 /*							
@@ -55,7 +55,7 @@ public class MyTracker {
         try {
             anathread.join(delay);
         } catch (InterruptedException e) {
-            tcLog.e(getClass().getName(), anathread.getName()+ " exception", e);
+            tcLog.e( anathread.getName()+ " exception", e);
         }
     }
 

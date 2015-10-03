@@ -26,7 +26,6 @@ import android.widget.TextView;
 
 
 public class TracShowWebPage extends Activity implements View.OnClickListener {
-	private static String _tag;
 	private String filename;
 	private WebView wv;
 	private TextView cv;
@@ -36,8 +35,7 @@ public class TracShowWebPage extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 		Credentials.getInstance(getApplicationContext());
-		_tag = getClass().getName();
-        tcLog.d(_tag, "savedInstanceState = " + savedInstanceState);
+        tcLog.d("savedInstanceState = " + savedInstanceState);
         final Intent i = this.getIntent();
         final boolean toonVersie = i.getBooleanExtra(Const.HELP_VERSION, true);
 
@@ -45,7 +43,7 @@ public class TracShowWebPage extends Activity implements View.OnClickListener {
         filename = "file:///android_asset/" + i.getStringExtra(Const.HELP_FILE) + ".html";
 
         final View tv = findViewById(R.id.versionblock);
-        tcLog.d(_tag, filename + " " + toonVersie+" "+tv);
+        tcLog.d(filename + " " + toonVersie+" "+tv);
         wv = (WebView) findViewById(R.id.webfile);
         cv = (TextView) findViewById(R.id.textAbout);
 		sv = findViewById(R.id.scrollAbout);
@@ -121,14 +119,14 @@ public class TracShowWebPage extends Activity implements View.OnClickListener {
 	
     @Override
     public void onStart() {
-        //tcLog.d(_tag, "onStart");
+        //tcLog.d("onStart");
         super.onStart();
         MyTracker.reportActivityStart(this);
     }
     
     @Override
     public void onStop() {
-        //tcLog.d(_tag, "onStop");
+        //tcLog.d("onStop");
         super.onStop();
         MyTracker.reportActivityStop(this);
     }

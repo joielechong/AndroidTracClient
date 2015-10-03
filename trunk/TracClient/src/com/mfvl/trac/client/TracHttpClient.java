@@ -71,7 +71,7 @@ public class TracHttpClient extends JSONRPCHttpClient {
     }
 
     public JSONArray updateTicket(final int _ticknr, final String cmt, final JSONObject _velden, final boolean notify) throws JSONRPCException {
-        // tcLog.d(this.getClass().getName(), "_velden call = " + _velden);
+        // tcLog.d( "_velden call = " + _velden);
         return callJSONArray(TICKET_UPDATE, _ticknr, cmt, _velden, notify);
     }
 

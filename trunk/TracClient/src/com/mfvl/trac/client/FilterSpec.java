@@ -93,7 +93,7 @@ public class FilterSpec extends Spec implements Serializable, Cloneable {
 
 	@Override
     public FilterSpec setEdit(final boolean edited) {
-        // tcLog.i(this.getClass().getName(), "setEdit veld = " + _veld + " edited = " + edited);
+        // tcLog.i( "setEdit veld = " + _veld + " edited = " + edited);
         if (edited != _edited) {
             _edited = edited;
             if (_edited) {

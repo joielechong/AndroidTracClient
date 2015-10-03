@@ -27,7 +27,7 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket> /* implements
 
     public TicketListAdapter(TracStart context, int resource, Tickets tl) {
         super(context, resource,(tl==null?null:tl.ticketList));
-        tcLog.d(getClass().getName(), "" + tl);
+        tcLog.d( "" + tl);
         this.context = context;
 
 		mTickets = tl;
@@ -39,16 +39,16 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket> /* implements
 	
     @Override
     public boolean hasStableIds() {
-//        tcLog.d(getClass().getName(), "hasStableIds");
+//        tcLog.d( "hasStableIds");
         return true;
     }
 		
     @Override
     public Ticket getItem(int position) {
-//        tcLog.d(getClass().getName(), "getItem " + position);
+//        tcLog.d( "getItem " + position);
 		try {
 			Ticket o = mTickets.ticketList.get(position);
-//			tcLog.d(getClass().getName(), "getItem o = " + o);
+//			tcLog.d( "getItem o = " + o);
 			return o;
 		} catch (Exception e) {
 			return null;
@@ -64,7 +64,7 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket> /* implements
 	}
 
 	public Ticket getTicket(int i) {
-//        tcLog.d(getClass().getName(), "getTicket i = " + i);
+//        tcLog.d( "getTicket i = " + i);
 		return (mTickets!= null?mTickets.getTicket(i):null);
 	}
 	

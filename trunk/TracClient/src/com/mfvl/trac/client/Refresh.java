@@ -38,7 +38,7 @@ public class Refresh extends Activity implements ServiceConnection {
  */
     @Override
     public void onServiceConnected(ComponentName className, IBinder service) {
-        tcLog.d(this.getClass().getName(),"className = " + className + " service = " + service);
+        tcLog.d("className = " + className + " service = " + service);
         mService = new Messenger(service);
         try {
             final Message msg = Message.obtain(null, TracStart.MSG_REQUEST_REFRESH);
@@ -46,13 +46,13 @@ public class Refresh extends Activity implements ServiceConnection {
 			msg.replyTo = null;
             mService.send(msg);
         } catch (final Exception e) {
-            tcLog.e(getClass().getName(), "Problem connecting", e);
+            tcLog.e( "Problem connecting", e);
         }
     }
 
     @Override
     public void onServiceDisconnected(ComponentName className) {
-        tcLog.d(getClass().getName(),"className = " + className);
+        tcLog.d("className = " + className);
         mService = null;
     }
 
@@ -63,7 +63,7 @@ public class Refresh extends Activity implements ServiceConnection {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        tcLog.d(getClass().getName(), "savedInstanceState = " + savedInstanceState);
+        tcLog.d( "savedInstanceState = " + savedInstanceState);
 
         try {
             final String action = getIntent().getAction();
@@ -71,23 +71,23 @@ public class Refresh extends Activity implements ServiceConnection {
             if (action != null) {
                 if (action.equalsIgnoreCase(RefreshService.refreshAction)) {
                     bindService(new Intent(this, RefreshService.class), this, Context.BIND_AUTO_CREATE);
-                    // tcLog.i(getClass().getName(), "Refresh sent");
+                    // tcLog.i( "Refresh sent");
                 }
             }
         } catch (final Exception e) {
-            tcLog.e(getClass().getName(), "Problem consuming action from intent", e);
+            tcLog.e( "Problem consuming action from intent", e);
         }
         finish();
     }
 
     @Override
     public void onDestroy() {
-        tcLog.d(this.getClass().getName(), "");
+        tcLog.logCall();
         super.onDestroy();
         try {
             unbindService(this);
         } catch (final Throwable t) {
-            tcLog.e(getClass().getName(), "Failed to unbind from the service", t);
+            tcLog.e( "Failed to unbind from the service", t);
         }
     }
 }

@@ -45,7 +45,6 @@ public class tcLog {
 		try {
 			throw new Exception("debug");
 		} catch (Exception e) {
-//			tcLog.d(getClass().getName(),"Debug trace:\n"+Arrays.asList(e.getStackTrace()));
 			StackTraceElement[] s = e.getStackTrace();
 			retval = s[index].getClassName()+"."+s[index].getMethodName();
 		}
@@ -78,19 +77,7 @@ public class tcLog {
     }
 
     private static void myLog(final String tag, final String message) {
-        if (doBuffer) {
-            final Date d = new Date();
-			int tid = android.os.Process.myTid();
-			int pid = android.os.Process.myPid();
-
-            d.setTime(System.currentTimeMillis());
-            final String date = s.format(new Date());
-
-            debugString += "\n" + date + " " +pid +" "+tid+" "+ tag + ": " + message;
-        }
-        if (doToast) {
-            toast(tag + ": " + message);
-        }
+		myLog(tag,message,null);
     }
 
     private static void myLog(final String tag, final String message, Throwable tr) {
@@ -103,15 +90,24 @@ public class tcLog {
             final String date = s.format(new Date());
 
             debugString += "\n" + date + " " +pid +" "+tid + " " + tag + ": " + message;
-            debugString += "\nException thrown: " + tr.getMessage();
-            debugString += "\n" + getStackTraceString(tr);
+			if (tr != null) {
+				debugString += "\nException thrown: " + tr.getMessage() + "\n" + getStackTraceString(tr);
+			}
         }
         if (doToast) {
             toast(tag + ": " + message);
         }
     }
 
-    public static int d(String tag, String msg) {
+	public static int logCall() {
+		String caller = getCaller(2);
+        final int i = Log.d(caller, "");
+
+        myLog("D." + caller, "");
+        return i;
+	}
+	
+    public static int d(String msg) {
 		String caller = getCaller(2);
         final int i = Log.d(caller, msg);
 
@@ -119,7 +115,7 @@ public class tcLog {
         return i;
     }
 
-    public static int d(String tag, String msg, Throwable tr) {
+    public static int d(String msg, Throwable tr) {
 		String caller = getCaller(2);
         final int i = Log.d(caller, msg, tr);
 
@@ -127,7 +123,7 @@ public class tcLog {
         return i;
     }
 
-    public static int e(String tag, String msg) {
+    public static int e(String msg) {
 		String caller = getCaller(2);
         final int i = Log.e(caller, msg);
 
@@ -135,7 +131,7 @@ public class tcLog {
         return i;
     }
 
-    public static int e(String tag, String msg, Throwable tr) {
+    public static int e(String msg, Throwable tr) {
 		String caller = getCaller(2);
         final int i = Log.e(caller, msg, tr);
 
@@ -143,7 +139,7 @@ public class tcLog {
         return i;
     }
 
-    public static int e(String tag, Throwable tr) {
+    public static int e(Throwable tr) {
 		String caller = getCaller(2);
         final int i = Log.w(caller, tr);
 
@@ -151,7 +147,7 @@ public class tcLog {
         return i;
     }
 
-    public static int i(String tag, String msg) {
+    public static int i(String msg) {
 		String caller = getCaller(2);
         final int i = Log.i(caller, msg);
 
@@ -159,7 +155,7 @@ public class tcLog {
         return i;
     }
 
-    public static int i(String tag, String msg, Throwable tr) {
+    public static int i(String msg, Throwable tr) {
 		String caller = getCaller(2);
         final int i = Log.i(caller, msg, tr);
 
@@ -167,7 +163,7 @@ public class tcLog {
         return i;
     }
 
-    public static int v(String tag, String msg) {
+    public static int v(String msg) {
 		String caller = getCaller(2);
         final int i = Log.v(caller, msg);
 
@@ -175,7 +171,7 @@ public class tcLog {
         return i;
     }
 
-    public static int v(String tag, String msg, Throwable tr) {
+    public static int v(String msg, Throwable tr) {
 		String caller = getCaller(2);
         final int i = Log.v(caller, msg, tr);
 
@@ -183,7 +179,7 @@ public class tcLog {
         return i;
     }
 
-    public static int w(String tag, Throwable tr) {
+    public static int w(Throwable tr) {
 		String caller = getCaller(2);
         final int i = Log.w(caller, tr);
 
@@ -191,7 +187,7 @@ public class tcLog {
         return i;
     }
 
-    public static int w(String tag, String msg) {
+    public static int w(String msg) {
 		String caller = getCaller(2);
         final int i = Log.w(caller, msg);
 
@@ -199,7 +195,7 @@ public class tcLog {
         return i;
     }
 
-    public static int w(String tag, String msg, Throwable tr) {
+    public static int w(String msg, Throwable tr) {
 		String caller = getCaller(2);
         final int i = Log.w(caller, msg, tr);
 
@@ -207,7 +203,7 @@ public class tcLog {
         return i;
     }
 
-    public static int wtf(String tag, Throwable tr) {
+    public static int wtf(Throwable tr) {
 		String caller = getCaller(2);
         final int i = Log.wtf(caller, tr);
 
@@ -215,7 +211,7 @@ public class tcLog {
         return i;
     }
 
-    public static int wtf(String tag, String msg) {
+    public static int wtf(String msg) {
 		String caller = getCaller(2);
         final int i = Log.wtf(caller, msg);
 
@@ -223,7 +219,7 @@ public class tcLog {
         return i;
     }
 
-    public static int wtf(String tag, String msg, Throwable tr) {
+    public static int wtf(String msg, Throwable tr) {
 		String caller = getCaller(2);
         final int i = Log.wtf(caller, msg, tr);
 
@@ -235,7 +231,7 @@ public class tcLog {
         return Log.getStackTraceString(tr);
     }
 
-	public static void save(String tag) {
+	public static void save() {
 		String caller = getCaller(2);
 		File file = null;
 		try {
@@ -244,8 +240,8 @@ public class tcLog {
 
 			os.write(tcLog.getDebug().getBytes());
 			os.close();
-			Log.d(tag, "File saved  =  " + file);
-			myLog("D."+tag, "File saved  =  " + file);
+			Log.d(caller, "File saved  =  " + file);
+			myLog("D."+caller, "File saved  =  " + file);
 		} catch (final Exception e) {
 			Log.e(caller, "Exception while saving logfile on " + file, e);
 			myLog("E."+caller, "Exception while saving logfile on " + file, e);

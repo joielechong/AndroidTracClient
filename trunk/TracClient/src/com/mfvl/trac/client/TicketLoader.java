@@ -58,7 +58,7 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
      */
     public TicketLoader(Context context) {
         super(context);
-        tcLog.d(getClass().getName(), "" + context);
+        tcLog.d( "" + context);
         mObserver = new ForceLoadContentObserver();
 		tracClient = null;
 		mode = 1;
@@ -66,7 +66,7 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 
    public TicketLoader(Context context, LoginProfile lp) {
 		super(context);
-        tcLog.d(getClass().getName(), "" + context+" "+lp);
+        tcLog.d( "" + context+" "+lp);
 		mObserver = new ForceLoadContentObserver();
 		mLoginProfile = lp;
 		tracClient = null;
@@ -75,7 +75,7 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 
    public TicketLoader(Context context, LoginProfile lp, TicketList tl) {
 		super(context);
-        tcLog.d(getClass().getName(), "" + context+" "+lp+"  "+tl);
+        tcLog.d( "" + context+" "+lp+"  "+tl);
 		mObserver = new ForceLoadContentObserver();
 		mLoginProfile = lp;
 		tracClient = null;
@@ -85,7 +85,7 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 
    public TicketLoader(Context context, LoginProfile lp, Ticket t) {
 		super(context);
-        tcLog.d(getClass().getName(), "" + context+" "+lp+"  "+t);
+        tcLog.d( "" + context+" "+lp+"  "+t);
 		mObserver = new ForceLoadContentObserver();
 		mLoginProfile = lp;
 		tracClient = null;
@@ -96,7 +96,7 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 
    public TicketLoader(Context context, LoginProfile lp, String tijd) {
 		super(context);
-        tcLog.d(getClass().getName(), "" + context+" "+lp+"  "+tijd);
+        tcLog.d( "" + context+" "+lp+"  "+tijd);
 		mObserver = new ForceLoadContentObserver();
 		mLoginProfile = lp;
 		tracClient = null;
@@ -107,7 +107,7 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
     /* Runs on a worker thread */
     @Override
     public Tickets loadInBackground() {
-        tcLog.d(getClass().getName(), "this = "+this);
+        tcLog.d( "this = "+this);
 		tracClient = new TracHttpClient(mLoginProfile);
 		tm=TicketModel.getInstance(tracClient);
 		switch (mode) {
@@ -147,7 +147,7 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 				}
 				return t;
 			} catch (Exception e) {
-				tcLog.d(getClass().getName(),"getChanges exception",e);
+				tcLog.d("getChanges exception",e);
 			}
 			
 		}
@@ -157,7 +157,7 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
     /* Runs on the UI thread */
     @Override
     public void deliverResult(Tickets tl) {
-        tcLog.d(getClass().getName(), "this = "+this+" " + tl);
+        tcLog.d( "this = "+this+" " + tl);
         if (isReset()) {
             // An async query came in while the loader is stopped
 			super.deliverResult(null);;
@@ -182,7 +182,7 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
      */
     @Override
     protected void onStartLoading() {
-        tcLog.d(getClass().getName(), "this = "+this);
+        tcLog.d( "this = "+this);
         if (mTickets != null) {
             deliverResult(mTickets);
         }
@@ -196,14 +196,14 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
      */
     @Override
     protected void onStopLoading() {
-        tcLog.d(getClass().getName(), "this = "+this);
+        tcLog.d( "this = "+this);
         // Attempt to cancel the current load task if possible.
         cancelLoad();
     }
 
     @Override
     public void onCanceled(Tickets tl) {
-        tcLog.d(getClass().getName(), "this = "+this+"  "+tl);
+        tcLog.d( "this = "+this+"  "+tl);
 		/*
         if (cursor != null && !cursor.isClosed()) {
             cursor.close();
@@ -214,7 +214,7 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 
     @Override
     protected void onReset() {
-        tcLog.d(getClass().getName(), "this = "+this);
+        tcLog.d( "this = "+this);
         super.onReset();
         
         // Ensure the loader is stopped
@@ -228,19 +228,19 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 		}
 
     public LoginProfile getLoginProfile() {
-        tcLog.d(getClass().getName(), "this = "+this);
+        tcLog.d( "this = "+this);
         return mLoginProfile;
     }
 
     public void setLoginProfile(LoginProfile lp) {
-        tcLog.d(getClass().getName(), "this = "+this+"  "+ lp);
+        tcLog.d( "this = "+this+"  "+ lp);
 		mLoginProfile = lp;
 		mTickets = null;
     }
 
     @Override
     public void dump(String prefix, FileDescriptor fd, PrintWriter writer, String[] args) {
-        tcLog.d(getClass().getName(), prefix);
+        tcLog.d( prefix);
         super.dump(prefix, fd, writer, args);
         writer.print(prefix); writer.print("this="); writer.println(this);
         writer.print(prefix); writer.print("mLoginProfile="); writer.println(mLoginProfile);
@@ -250,7 +250,7 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 	
 	private Tickets loadTickets() {
 
-		tcLog.d(getClass().getName(), "" + mLoginProfile );
+		tcLog.d( "" + mLoginProfile );
 
 		final Tickets mTickets = new Tickets();
 		mTickets.resetCache();
@@ -269,11 +269,11 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 		if (reqString.length() == 0) {
 			reqString = "max=0";
 		}
-		tcLog.d(getClass().getName(), "reqString = " + reqString);
+		tcLog.d( "reqString = " + reqString);
 		try {
 			final JSONArray jsonTicketlist = tracClient.Query(reqString);
 
-			tcLog.d(getClass().getName(), jsonTicketlist.toString());
+			tcLog.d( jsonTicketlist.toString());
 			final int count = jsonTicketlist.length();
 
 			if (count > 0) {
@@ -290,16 +290,16 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 						mTickets.ticketList.add(i, t);
 					}
 				}
-				tcLog.d(getClass().getName(), "ticketlist loaded");
+				tcLog.d( "ticketlist loaded");
 				new Thread() {
 					@Override
 					public void run() {
 						try {
 							loadTicketContent(mTickets);
 						} catch (Exception e) {
-							tcLog.e(getClass().getName(), "Exception in ticketContentLoad", e);
+							tcLog.e( "Exception in ticketContentLoad", e);
 						} finally {
-							tcLog.d(getClass().getName(), "content loaded");
+							tcLog.d( "content loaded");
 						}
 					}
 				}.start();
@@ -307,7 +307,7 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 		} catch (JSONRPCException e) {
 			popup_warning(R.string.connerr,e.getMessage());
 		}		
-		tcLog.e(getClass().getName(), "In main thread again count = "+mTickets.getTicketCount());
+		tcLog.e( "In main thread again count = "+mTickets.getTicketCount());
 		if (mTickets.getTicketCount() == 0) {
 			popup_warning(R.string.notickets,null);
 		}
@@ -315,9 +315,9 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 	}
 	
 	 private void loadTicketContent(Tickets tl) throws TicketLoadException {
-		tcLog.d(getClass().getName(), "");
+		tcLog.logCall();
 		int count = tl.getTicketCount();
-		tcLog.d(getClass().getName(), "loadTicketContent count = "+count+ " "+ tl);
+		tcLog.d( "loadTicketContent count = "+count+ " "+ tl);
 		
 
 		for (int j = 0; j < count; j += Const.ticketGroupCount) {
@@ -332,7 +332,7 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 			}
 			try {
 				final JSONArray mcresult = tracClient.callJSONArray("system.multicall", mc);
-				// tcLog.d(getClass().getName(), "mcresult = " + mcresult);
+				// tcLog.d( "mcresult = " + mcresult);
 				Ticket t = null;
 
 				for (int k = 0; k < mcresult.length(); k++) {
@@ -357,7 +357,7 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 							} else if (id.equals(TICKET_ACTION + "_" + thisTicket)) {
 								t.setActions(result);
 							} else {
-								tcLog.d(getClass().getName(), "unexpected response = " + result);
+								tcLog.d( "unexpected response = " + result);
 							}
 						}
 					} catch (final Exception e1) {
@@ -369,7 +369,7 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 			} catch (final Exception e) {
 				throw new TicketLoadException("loadTicketContent Exception thrown outerloop j=" + j, e);
 			}  finally {
-				tcLog.d(getClass().getName(), "loop " + tl.getTicketContentCount());
+				tcLog.d( "loop " + tl.getTicketContentCount());
 			}
 			notify_datachanged();
 		}
