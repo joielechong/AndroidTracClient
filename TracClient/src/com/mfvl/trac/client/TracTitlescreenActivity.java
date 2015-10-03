@@ -34,7 +34,6 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 
 
 public class TracTitlescreenActivity extends Activity implements Thread.UncaughtExceptionHandler {
-	private static String _tag;
 	private int timerVal = 3000;
 	private Intent launchTrac = null; 
 	private Handler handler = null;
@@ -42,9 +41,8 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-		_tag = getClass().getName();
         tcLog.setContext(this);
-        tcLog.i(_tag, "");
+        tcLog.i( "");
 		
 		Thread.setDefaultUncaughtExceptionHandler (this);
 		
@@ -54,10 +52,10 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
 			try {
 				doAnalytics &= Credentials.metaDataGetBoolean("com.mfvl.trac.client.useAnalytics");
 			} catch (final Exception e) {
-				tcLog.e(_tag, "getApplicationInfo", e);
+				tcLog.e( "getApplicationInfo", e);
 			}
 		}
-        tcLog.i(_tag, "doAnalytics = " + doAnalytics);
+        tcLog.i( "doAnalytics = " + doAnalytics);
 		MyTracker.setDoAnalytics(doAnalytics);
         try {
             setContentView(R.layout.activity_titlescreen);
@@ -67,13 +65,13 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
             // Get a Tracker (should auto-report)
             MyTracker.getInstance(this);
         } catch (final Exception e) {
-            tcLog.e(_tag, "crash", e);
+            tcLog.e( "crash", e);
         }
     }
 
     @Override
     public void onStart() {
-        tcLog.i(_tag, "");
+        tcLog.i( "");
         super.onStart();
 
         boolean adMobAvailable = false;
@@ -81,18 +79,18 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
         try {
             final int isAvailable = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
 
-            tcLog.d(_tag, "Google Play Services available? : " + isAvailable);
+            tcLog.d( "Google Play Services available? : " + isAvailable);
             if (isAvailable == ConnectionResult.SUCCESS) {
                 adMobAvailable = true;
             } else {
                 if (GooglePlayServicesUtil.isUserRecoverableError(isAvailable)) {
                     GooglePlayServicesUtil.getErrorDialog(isAvailable, this, 123456).show();
                 } else {
-                    tcLog.d(_tag, "Hoe kom je hier");
+                    tcLog.d( "Hoe kom je hier");
                 }
             }
         } catch (final Exception e) {
-            tcLog.e(_tag, "Exception while determining Google Play Services", e);
+            tcLog.e( "Exception while determining Google Play Services", e);
         }
 
         // Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
@@ -111,7 +109,7 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             final String contentString = intent.getDataString();
 
-            // tcLog.d(_tag, "View intent data = " + contentString);
+            // tcLog.d( "View intent data = " + contentString);
             if (contentString != null) {
                 final Uri uri = Uri.parse(contentString.replace("trac.client.mfvl.com/", ""));
                 final List<String> segments = uri.getPathSegments();
@@ -130,7 +128,7 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
                     launchTrac.putExtra(Const.INTENT_URL, urlstring);
                     launchTrac.putExtra(Const.INTENT_TICKET, (long) ticket);
                 } else {
-                    tcLog.w(_tag, "View intent bad Url");
+                    tcLog.w( "View intent bad Url");
                     urlstring = null;
                 }
             }
@@ -142,13 +140,13 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
 
     @Override
     public void onStop() {
-        tcLog.i(_tag, "");
+        tcLog.i( "");
         super.onStop();
         // Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
         MyTracker.reportActivityStop(this);
     }
 	private void startApp() {
-        tcLog.d(_tag, "startApp");
+        tcLog.d( "startApp");
         final Timer t = new Timer();
 		t.schedule(new TimerTask() {
 			@Override
@@ -166,8 +164,8 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
 	
 	@Override
 	public void uncaughtException(Thread thread, Throwable ex) {
-		tcLog.e(getClass().getName(),"Uncaught exception in thread "+ thread,ex);
-		tcLog.save(getClass().getName());
+		tcLog.e("Uncaught exception in thread "+ thread,ex);
+		tcLog.save();
 		finish();
 	}
 }

@@ -67,7 +67,7 @@ public class Credentials {
      * Load login credentials from shared preferences: server-url, username, password and profile
      */
     public static void loadCredentials() {
-        // tcLog.d(_tag, "loadCredentials");
+        // tcLog.d("loadCredentials");
         _url = settings.getString(Const.PREF_URL, "");
         _username = settings.getString(Const.PREF_USER, "");
         _password = settings.getString(Const.PREF_PASS, "");
@@ -80,7 +80,7 @@ public class Credentials {
      * Store login credentials to shared preferences: server-url, username, password and profile
      */
     public static void storeCredentials() {
-        // tcLog.d(_tag, "storeCredentials");
+        // tcLog.d("storeCredentials");
         settings.edit()
 			.putString(Const.PREF_URL, _url)
 			.putString(Const.PREF_USER, _username)
@@ -93,7 +93,7 @@ public class Credentials {
 
     /** Set login credentials server-url, username, password and profile */
     public static void setCredentials(final String url, final String username, final String password, final String profile) {
-        // tcLog.d(_tag, "setCredentials");
+        // tcLog.d("setCredentials");
         _url = url;
         _username = username;
         _password = password;
@@ -137,7 +137,7 @@ public class Credentials {
     }
 
     public static boolean checkDisclaimer() {
-        //tcLog.d("Credentials", "checkDisclaimer");
+        //tcLog.d("checkDisclaimer");
         final String thisRun = Const.DisclaimerVersion;
         final String lastRun = settings.getString(Const.PREF_DISCLAIM, "");
 	
@@ -149,7 +149,7 @@ public class Credentials {
 	}
 
     public static boolean getFirstRun() {
-        // tcLog.d("Credentials", "getFirstRun");
+        // tcLog.d("getFirstRun");
         final String thisRun = versie;
         final String lastRun = settings.getString(Const.PREF_1ST, "");
         settings.edit().putString(Const.PREF_1ST, thisRun).apply();
@@ -157,12 +157,12 @@ public class Credentials {
     }
 
     public static boolean getCookieInform() {
-        tcLog.d("Credentials", "");
+        tcLog.logCall();
 		return settings.getBoolean(Const.PREF_COOKIEINFORM,true);
 	}
 	
 	public static void setCookieInform(boolean val) {
-        tcLog.d("Credentials", "");
+        tcLog.logCall();
 		settings.edit().putBoolean(Const.PREF_COOKIEINFORM, val).apply();
 	}
 
@@ -172,33 +172,33 @@ public class Credentials {
     }
 
     public static String getFilterString() {
-        // tcLog.d("Credentials", "getFilterString");
+        // tcLog.d("getFilterString");
         final String filterString = settings.getString(Const.PREF_FILTER, "max=500&status!=closed");
 
-        //tcLog.d("Credentials", "getFilterString filterString = " + filterString);
+        //tcLog.d("getFilterString filterString = " + filterString);
         return filterString;
     }
 
     public static void removeFilterString() {
-        //tcLog.d("Credentials", "removeFilterString");
+        //tcLog.d("removeFilterString");
 		storeFilterString("max=500&status!=closed");
     }
 
     public static void storeSortString(final String sortString) {
-        //tcLog.d("Credentials", "storeSortString: " + sortString);
+        //tcLog.d("storeSortString: " + sortString);
         settings.edit().putString(Const.PREF_SORT, sortString == null ? "" : sortString).apply();
     }
 
     public static String getSortString() {
-        // tcLog.d("Credentials", "getSortString");
+        // tcLog.d("getSortString");
         final String sortString = settings.getString(Const.PREF_SORT, "order=priority&order=modified&desc=1");
 
-        tcLog.d("Credentials", "sortString = " + sortString);
+        tcLog.d("sortString = " + sortString);
         return sortString;
     }
 
     public static void removeSortString() {
-        //tcLog.d(_tag, "removeSortString");
+        //tcLog.d("removeSortString");
         storeSortString("order=priority&order=modified&desc=1");
     }
 
@@ -224,9 +224,9 @@ public class Credentials {
                 }
             }
         } catch (final NameNotFoundException e) {
-            tcLog.i(_tag, "",e);
+            tcLog.w(e);
         } catch (final CertificateException e) {
-            tcLog.i(_tag, "", e);
+            tcLog.w(e);
         }
         return debuggable;
     }
@@ -246,7 +246,7 @@ public class Credentials {
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
 			final File extPath = Environment.getExternalStorageDirectory();
 			final File dirPath = new File(extPath,"TracClient");
-			//tcLog.d(_tag,"dirpath = "+dirPath);
+			//tcLog.d("dirpath = "+dirPath);
 			final File filePath = new File(dirPath,dbname);
             final String p1 = filePath.toString();
 
@@ -259,22 +259,22 @@ public class Credentials {
 				dbpath = p1;
             }
         }
-        tcLog.d(_tag, "dbpath = " + dbpath);
+        tcLog.d("dbpath = " + dbpath);
         return dbpath;
     }
 
     public static File makeExtFilePath(String filename) throws FileNotFoundException {
-		//tcLog.d(_tag,"makeExtFilePath filename = "+filename);
+		//tcLog.d("makeExtFilePath filename = "+filename);
         final File extPath = Environment.getExternalStorageDirectory();
-		//tcLog.d(_tag,"makeExtFilePath extpath = "+extPath);
+		//tcLog.d("makeExtFilePath extpath = "+extPath);
         final File dirPath = new File(extPath,"TracClient");
-		//tcLog.d(_tag,"makeExtFilePath dirpath = "+dirPath);
+		//tcLog.d("makeExtFilePath dirpath = "+dirPath);
 		dirPath.mkdirs();
 		if (!dirPath.isDirectory()) {
             throw new FileNotFoundException("Not a directory: "+dirPath.toString());
 		}
         final File filePath = new File(dirPath,filename);
-		//tcLog.d(_tag,"makeExtFilePath filepath = "+filePath);
+		//tcLog.d("makeExtFilePath filepath = "+filePath);
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             throw new FileNotFoundException(filePath.toString());
         }

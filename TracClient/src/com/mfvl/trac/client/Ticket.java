@@ -64,7 +64,7 @@ public class Ticket implements Serializable {
 
 	
     public Ticket(final JSONObject velden) {
-        tcLog.d(getClass().getName(), "Ticket = " + velden);
+        tcLog.d( "Ticket = " + velden);
 
         _ticknr = -1;
         _velden = velden;
@@ -86,7 +86,7 @@ public class Ticket implements Serializable {
 	}
 /*	
     private void refresh(TracStart context, onTicketCompleteListener oc) {
-        tcLog.i(this.getClass().getName(), "refresh Ticketnr = " + _ticknr);
+        tcLog.i( "refresh Ticketnr = " + _ticknr);
         actionLock.release();
         available.release();
         loadTicketData(context, oc);
@@ -114,7 +114,7 @@ public class Ticket implements Serializable {
     }
 /*
     private void loadTicketData_x(TracStart context, final onTicketCompleteListener oc) {
-        tcLog.i(this.getClass().getName(), "ticketnr = " + _ticknr);
+        tcLog.i( "ticketnr = " + _ticknr);
         actionLock.acquireUninterruptibly();
         _isloading = true;
         new Thread("loadTicketData") {
@@ -153,10 +153,10 @@ public class Ticket implements Serializable {
                                 _actions = result;
                                 actionLock.release();
                             } else {
-                                tcLog.i(this.getClass().getName(), "loadTicketData, unexpected response = " + result);
+                                tcLog.i( "loadTicketData, unexpected response = " + result);
                             }
                         } catch (final Exception e1) {
-                            tcLog.e(getClass().getName(), "loadTicketData error while reading response", e1);
+                            tcLog.e( "loadTicketData error while reading response", e1);
                         }
                     }
                     _hasdata = _velden != null && _history != null && _actions != null;
@@ -166,7 +166,7 @@ public class Ticket implements Serializable {
                         oc.onComplete(Ticket.this);
                     }
                 } catch (final Exception e) {
-                    tcLog.i(getClass().getName(), "loadTicketData exception", e);
+                    tcLog.i( "loadTicketData exception", e);
                 } finally {
                     available.release();
                 }
@@ -321,7 +321,7 @@ public class Ticket implements Serializable {
         if (_ticknr != -1) {
             throw new RuntimeException("Call create ticket not -1");
         }
-        tcLog.i(this.getClass().getName(), "create: " + _velden.toString());
+        tcLog.i( "create: " + _velden.toString());
         final String s = _velden.getString("summary");
         final String d = _velden.getString("description");
 
@@ -344,7 +344,7 @@ public class Ticket implements Serializable {
 
                         rpcerror = o.getString("message");
                     } catch (final JSONException e1) {
-                        tcLog.e(getClass().getName(), "create failed", e1);
+                        tcLog.e( "create failed", e1);
                         rpcerror = context.getString(R.string.invalidJson);
                     }
                 }
@@ -371,8 +371,8 @@ public class Ticket implements Serializable {
     // update is called from within a non UI thread
 /*
     public void update(String action, String comment, String veld, String waarde, final boolean notify, final TracStart context,Map<String, String> modVeld) throws Exception {
-        tcLog.d(this.getClass().getName(), "update: " + action + " '" + comment + "' '" + veld + "' '" + waarde + "' " + modVeld);
-        // tcLog.d(this.getClass().getName(), "_velden voor = " + _velden);
+        tcLog.d( "update: " + action + " '" + comment + "' '" + veld + "' '" + waarde + "' " + modVeld);
+        // tcLog.d( "_velden voor = " + _velden);
         if (_ticknr == -1) {
             throw new IllegalArgumentException(context.getString(R.string.invtick) + " " + _ticknr);
         }
@@ -388,7 +388,7 @@ public class Ticket implements Serializable {
 
             while (i.hasNext()) {
                 final Entry<String, String> e = i.next();
-                // tcLog.d(getClass().getName(), e.toString());
+                // tcLog.d( e.toString());
                 final String v = e.getKey();
                 final String w = e.getValue();
 
@@ -409,7 +409,7 @@ public class Ticket implements Serializable {
                 loadTicketData(context, null);
             }
         } catch (final JSONRPCException e) {
-            tcLog.e(getClass().getName(), "JSONRPCException", e);
+            tcLog.e( "JSONRPCException", e);
             rpcerror = e.getMessage();
         } finally {
             available.release();
@@ -424,7 +424,7 @@ public class Ticket implements Serializable {
         try {
             return ISO8601.toCalendar(v.getJSONArray("__jsonclass__").getString(1) + "Z").getTime().toString();
         } catch (final Exception e) {
-            tcLog.e(this.getClass().getName(), e.toString());
+            tcLog.e( e.toString());
             return "";
         }
     }
@@ -453,7 +453,7 @@ public class Ticket implements Serializable {
                 } catch (final Exception e) {}
             }
         } catch (final JSONException e) {
-            tcLog.e(getClass().getName(), "toText velden failed", e);
+            tcLog.e( "toText velden failed", e);
         }
         for (int j = 0; j < _history.length(); j++) {
             JSONArray cmt;
@@ -465,7 +465,7 @@ public class Ticket implements Serializable {
                             + "\n";
                 }
             } catch (final JSONException e) {
-                tcLog.e(getClass().getName(), "toText history failed", e);
+                tcLog.e( "toText history failed", e);
             }
         }
         for (int j = 0; j < _attachments.length(); j++) {
@@ -476,7 +476,7 @@ public class Ticket implements Serializable {
                 tekst += "bijlage " + (j + 1) + ": " + toonTijd(bijlage.getJSONObject(3)) + " - " + bijlage.getString(4) + " - "
                         + bijlage.getString(0) + " - " + bijlage.getString(1) + "\n";
             } catch (final JSONException e) {
-                tcLog.e(getClass().getName(), "toText atachment failed", e);
+                tcLog.e( "toText atachment failed", e);
             }
         }
         return tekst;

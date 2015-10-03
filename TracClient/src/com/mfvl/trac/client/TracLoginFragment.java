@@ -100,20 +100,18 @@ public class TracLoginFragment extends TracClientFragment {
     private ProfileDatabaseHelper pdb = null;
     private String SelectedProfile = null;
     private int debugcounter = 0;
-	private static String _tag;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-		_tag = getClass().getName();
-        tcLog.d(_tag, "savedInstanceState = " + savedInstanceState);
+        tcLog.d("savedInstanceState = " + savedInstanceState);
         setHasOptionsMenu(true);
     }
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        tcLog.d(_tag, "savedInstanceState = " + savedInstanceState);
-        // tcLog.d(_tag, "container = " + (container == null ? "null" : "not null"));
+        tcLog.d("savedInstanceState = " + savedInstanceState);
+        // tcLog.d("container = " + (container == null ? "null" : "not null"));
         if (container == null) {
             return null;
         }
@@ -125,7 +123,7 @@ public class TracLoginFragment extends TracClientFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        tcLog.d(_tag, "");
+        tcLog.logCall();
         urlView = (EditText) view.findViewById(R.id.trac_URL);
         userView = (EditText) view.findViewById(R.id.trac_User);
         pwView = (EditText) view.findViewById(R.id.trac_Pw);
@@ -205,7 +203,7 @@ public class TracLoginFragment extends TracClientFragment {
     
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        tcLog.d(_tag, "");
+        tcLog.logCall();
         inflater.inflate(R.menu.tracloginmenu, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -226,18 +224,18 @@ public class TracLoginFragment extends TracClientFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        tcLog.d(_tag,"savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+        tcLog.d("savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 	
         if (url == null) {
             if (savedInstanceState == null) {
-                // tcLog.d(_tag, "onActivityCreated use Activity");
+                // tcLog.d("onActivityCreated use Activity");
 				url = listener.getUrl();
 				username = listener.getUsername();
 				password = listener.getPassword();
 				sslHack = listener.getSslHack();
 				sslHostNameHack = listener.getSslHostNameHack();
             } else {
-                // tcLog.d(_tag, "onActivityCreated use savedInstanceState");
+                // tcLog.d("onActivityCreated use savedInstanceState");
                 url = savedInstanceState.getString(NEW_URL);
                 username = savedInstanceState.getString(NEW_USERNAME);
                 password = savedInstanceState.getString(NEW_PASSWORD);
@@ -303,13 +301,13 @@ public class TracLoginFragment extends TracClientFragment {
 				try {
 					final String TracVersion = (String) j.get(RESULT);
 
-					tcLog.d(getClass().getName(), TracVersion);
+					tcLog.d( TracVersion);
 					setValidMessage("Success");
 				} catch (JSONException e) {
 					try {
 						final String errmsg = (String) j.get(ERROR);
 							
-						tcLog.d(getClass().getName(), "Exception during verify 1 " + errmsg);
+						tcLog.d( "Exception during verify 1 " + errmsg);
 						tcLog.toast("==" + errmsg + "==");
 						if (errmsg.startsWith("hostname in certificate didn't match:")) {
 							context.runOnUiThread(new Runnable() {
@@ -335,14 +333,14 @@ public class TracLoginFragment extends TracClientFragment {
 													try {
 														final String TracVersion1 = (String) j1.get(RESULT);
 
-														tcLog.d(getClass().getName(), TracVersion1);
+														tcLog.d( TracVersion1);
 														setValidMessage("Success Hostname");
 														sslHostNameHack = true;
 													} catch (JSONException e1) {
 														try {
 															final String errmsg1 = (String) j1.get(ERROR);
 
-															tcLog.d(getClass().getName(), "Exception during verify 2 " + errmsg1);
+															tcLog.d( "Exception during verify 2 " + errmsg1);
 															// tcLog.toast("==" + errmsg1 + "==");
 															if ("NOJSON".equals(errmsg1)) {
 																setNoJSONMessage("Fail Hostname NOJSON");
@@ -436,7 +434,7 @@ public class TracLoginFragment extends TracClientFragment {
 	
     @Override
     public void onStart() {
-        tcLog.d(_tag, "");
+        tcLog.logCall();
         super.onStart();
         urlView.addTextChangedListener(checkUrlInput);
         userView.addTextChangedListener(checkUserPwInput);
@@ -445,7 +443,7 @@ public class TracLoginFragment extends TracClientFragment {
     
     @Override
     public void onResume() {
-        tcLog.d(_tag, "");
+        tcLog.logCall();
         super.onResume();
 		helpFile = R.string.loginhelpfile;
         checkHackBox(urlView.getText().toString());
@@ -453,7 +451,7 @@ public class TracLoginFragment extends TracClientFragment {
 	
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // tcLog.d(_tag, "item=" + item.getTitle());
+        // tcLog.d("item=" + item.getTitle());
         final int itemId = item.getItemId();
 
         if (itemId == R.id.exportprofiles) {
@@ -466,7 +464,7 @@ public class TracLoginFragment extends TracClientFragment {
                 a.swapCursor(pdb.getProfiles());
                 loginSpinner.postInvalidate();
             } catch (final Exception e) {
-				tcLog.e(getClass().getName(),"Export failed",e);
+				tcLog.e("Export failed",e);
 				showAlertBox(R.string.failed,0,e.getMessage());
             }
         } else if (itemId == R.id.importprofiles) {
@@ -485,7 +483,7 @@ public class TracLoginFragment extends TracClientFragment {
     
     @Override
     public void onStop() {
-        tcLog.d(_tag, "");
+        tcLog.logCall();
         super.onStop();
         urlView.removeTextChangedListener(checkUrlInput);
         userView.removeTextChangedListener(checkUserPwInput);
@@ -494,7 +492,7 @@ public class TracLoginFragment extends TracClientFragment {
     
     @Override
     public void onDestroyView() {
-        tcLog.d(_tag, "");
+        tcLog.logCall();
         registerForContextMenu(loginSpinner);
         loginSpinner.setAdapter(null);
         if (c != null) {
@@ -521,7 +519,7 @@ public class TracLoginFragment extends TracClientFragment {
         try {
             savedState.putBoolean(bewaarText, bewaarBox.isChecked());
         } catch (final Exception e) {}
-        tcLog.d(_tag, " savedState = " + savedState);
+        tcLog.d(" savedState = " + savedState);
     }
     
     private void checkHackBox(String s) {

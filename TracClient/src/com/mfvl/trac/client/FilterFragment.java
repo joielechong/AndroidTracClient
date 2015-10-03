@@ -64,21 +64,21 @@ public class FilterFragment extends SpecFragment<FilterSpec> {
 
         @Override
         public View getView(final int position, View convertView, final ViewGroup parent) {
-			//tcLog.d(getClass().getName(), "getView pos=" + position + " " + convertView + " " + parent);
+			//tcLog.d( "getView pos=" + position + " " + convertView + " " + parent);
 
             listView = (ListView) parent;
 			
             int p = (position >= items.size() || position < 0 ? 0 : position);
             final FilterSpec filterItem = items.get(p);
             final TicketModelVeld tmv = tm.getVeld(filterItem.getVeld());
-			//tcLog.d(getClass().getName(), "getView pos=" + position +" " + filterItem + " " + tmv);
+			//tcLog.d( "getView pos=" + position +" " + filterItem + " " + tmv);
             final int resid = (filterItem.getEdit() ? (tmv.options() == null ? R.layout.filter_spec2 : R.layout.filter_spec3) : R.layout.filter_spec1);
 			
             View v = convertView;
 
             final int curid = convertView == null ? -1 : convertView.getId();
 
-            //tcLog.d(getClass().getName(),"getView pos = " + position + " curid = " + curid + " resid=" + resid + " veld = " + filterItem.getVeld());
+            //tcLog.d("getView pos = " + position + " curid = " + curid + " resid=" + resid + " veld = " + filterItem.getVeld());
             if (curid != resid) {
                 v = LayoutInflater.from(context).inflate(resid, null);
                 v.setId(resid); // hack hack
@@ -144,11 +144,11 @@ public class FilterFragment extends SpecFragment<FilterSpec> {
 
 		@Override
 		public void onClick(View v) {
-			tcLog.d(getClass().getName(), "v =" + v);
+			tcLog.d( "v =" + v);
 			FilterSpec filterItem = getItem(v);
 			switch (v.getId()) {
 				case R.id.filternaam:
-	//			tcLog.d(getClass().getName(), "toggleEdit filterItem =" + filterItem);
+	//			tcLog.d( "toggleEdit filterItem =" + filterItem);
 				if (filterItem.getEdit()) {
 					View v1=(View)v.getParent();
 					final Spinner spin = (Spinner) v1.findViewById(R.id.filter_choice_spin);
@@ -176,26 +176,26 @@ public class FilterFragment extends SpecFragment<FilterSpec> {
 		}
 	
 		private FilterSpec getItem(View v1) {
-//			tcLog.d(getClass().getName(), "getItem v1 =" + v1);
+//			tcLog.d( "getItem v1 =" + v1);
 			View parent = (View)v1.getParent();
-//			tcLog.d(getClass().getName(), "getItem parent =" + parent);
+//			tcLog.d( "getItem parent =" + parent);
 			if (parent.getTag() == null) {
 				parent = (View)parent.getParent();
 			}
-//			tcLog.d(getClass().getName(), "getItem parent2 =" + parent);
+//			tcLog.d( "getItem parent2 =" + parent);
 			FilterSpec o = (FilterSpec)parent.getTag();
-			tcLog.d(getClass().getName(), "getItem filterItem = " + o);
+			tcLog.d( "getItem filterItem = " + o);
 			return o;
 		}
 		
 		private void startEditItem(FilterSpec filterItem) {
-//			tcLog.d(getClass().getName(), "startEditItem filterItem =" + filterItem );
+//			tcLog.d( "startEditItem filterItem =" + filterItem );
 			filterItem.setEdit(true);
 			listView.invalidateViews();
 		}
 		
 		private void stopEditItem(FilterSpec filterItem,Spinner spin){
-//			tcLog.d(getClass().getName(), "stopEditItem filterItem =" + filterItem + " spin = " + spin);
+//			tcLog.d( "stopEditItem filterItem =" + filterItem + " spin = " + spin);
 			filterItem.setEdit(false);
 			if (spin != null) {
 				filterItem.setOperator(operators.get(spin.getSelectedItemPosition()));
@@ -207,20 +207,20 @@ public class FilterFragment extends SpecFragment<FilterSpec> {
     @Override
     public void onAttach(Context activity) {
         super.onAttach(activity);
-//        tcLog.d(getClass().getName(), "onAttach(C)");
+//        tcLog.d( "onAttach(C)");
 		onMyAttach(activity,Const.FILTERLISTNAME);
     }
 	
     @Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-//        tcLog.d(getClass().getName(), "onAttach(A)");
+//        tcLog.d( "onAttach(A)");
 		onMyAttach(activity,Const.FILTERLISTNAME);
 	}
 	
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        tcLog.d(this.getClass().getName(),"savedInstanceState = " + savedInstanceState);
+        tcLog.d("savedInstanceState = " + savedInstanceState);
         final View view = inflater.inflate(R.layout.filter_view, container, false);
 
         return view;
@@ -229,7 +229,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState); // must be called first
-        tcLog.d(getClass().getName(),"savedInstanceState = " + savedInstanceState);
+        tcLog.d("savedInstanceState = " + savedInstanceState);
         final View view = getView();
 		helpFile = R.string.filterhelpfile;
 
@@ -282,7 +282,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> {
         final String op = o.getOperator();
         final boolean omgekeerd = op != null && op.equals("!=");
 
-        tcLog.d(this.getClass().getName(), veldnaam + " " + w + " " + omgekeerd);
+        tcLog.d( veldnaam + " " + w + " " + omgekeerd);
         final LinearLayout valCheckBoxes = new LinearLayout(context);
 
         valCheckBoxes.setOrientation(LinearLayout.VERTICAL);

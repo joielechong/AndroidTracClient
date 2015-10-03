@@ -72,7 +72,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
         }
 
         @Override
-        public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException,           RuntimeException {
+        public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException, RuntimeException {
 			switch (state) {
 				case 0:
 				if (localName.equals(_appname)) {
@@ -165,7 +165,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 					String[] values = res.getStringArray(resId);
 
 					addProfile(values[0], new LoginProfile(values[1], values[2], values[3], values[4] == "true"));
-					// tcLog.d(getClass().getName(),"i = "+i+" values = "+Arrays.asList(values));
+					// tcLog.d("i = "+i+" values = "+Arrays.asList(values));
 				}
 				ta.recycle();
 				upgrade = false;

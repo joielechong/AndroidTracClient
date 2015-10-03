@@ -51,13 +51,11 @@ public class UpdateTicketFragment extends TracClientFragment {
     private JSONArray _actions = null;
     private int ticknr;
     private Boolean sissaved = false;
-	private static String _tag;
 	
 	private void onMyAttach(Context activity) {
- 		_tag = getClass().getName();
        final Bundle args = getArguments();
 
-        // tcLog.d(_tag, "onAttach ");
+        // tcLog.d("onAttach ");
         if (args != null) {
             ticknr = args.getInt(Const.CURRENT_TICKET);
         }
@@ -78,7 +76,7 @@ public class UpdateTicketFragment extends TracClientFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // tcLog.d(_tag, "onCreate savedInstanceState = " + savedInstanceState );
+        // tcLog.d("onCreate savedInstanceState = " + savedInstanceState );
         setHasOptionsMenu(true);
     }
 
@@ -95,7 +93,7 @@ public class UpdateTicketFragment extends TracClientFragment {
         final int spinPosition;
 
         super.onActivityCreated(savedInstanceState);
-        tcLog.d(_tag, "savedInstanceState = " + savedInstanceState);
+        tcLog.d("savedInstanceState = " + savedInstanceState);
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(Const.CURRENT_TICKET)) {
                 ticknr = savedInstanceState.getInt(Const.CURRENT_TICKET);
@@ -120,7 +118,7 @@ public class UpdateTicketFragment extends TracClientFragment {
         tv.setText(text);
 
         _actions = _ticket.getActions();
-        tcLog.d(_tag, "actions = " + _actions);
+        tcLog.d("actions = " + _actions);
         final RadioGroup rg = (RadioGroup) view.findViewById(R.id.actionblock);
 		
         try {
@@ -139,7 +137,7 @@ public class UpdateTicketFragment extends TracClientFragment {
                 final EditText optieval = (EditText) view.findViewById(R.id.optieval);
                 final JSONArray inputfields = actie.getJSONArray(3);
 
-                // tcLog.d(_tag, "inputfields = " + inputfields);
+                // tcLog.d("inputfields = " + inputfields);
                 rb.setId(i);
                 if (i == 0) { // 1st action is always leave
                     rb.setChecked(true);
@@ -187,7 +185,7 @@ public class UpdateTicketFragment extends TracClientFragment {
                                             try {
                                                 opties.add(ifOpties.getString(j));
                                             } catch (final JSONException e) {
-                                                tcLog.e(_tag, "exception adding " + ifOpties + " j=" + j,e);
+                                                tcLog.e("exception adding " + ifOpties + " j=" + j,e);
                                             }
                                         }
                                         final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<Object>(context, android.R.layout.simple_spinner_item, opties);
@@ -199,7 +197,7 @@ public class UpdateTicketFragment extends TracClientFragment {
                                         }
                                     }
                                 } catch (final Exception e) {
-                                    tcLog.e(_tag, "exception getting fields", e);
+                                    tcLog.e("exception getting fields", e);
                                 }
                             }
                             view.postInvalidate();
@@ -209,9 +207,9 @@ public class UpdateTicketFragment extends TracClientFragment {
                 rg.addView(rb);
             }
         } catch (final Exception e) {
-            tcLog.e(_tag, "exception loading ticketdata", e);
+            tcLog.e("exception loading ticketdata", e);
         }
-//        tcLog.d(_tag, "currentButton = " + checkedButton);
+//        tcLog.d("currentButton = " + checkedButton);
         rg.check(checkedButton);
     }
 
@@ -219,7 +217,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 	public void onClick(View v) {
 		switch (v.getId()) {
 			case R.id.canBut:
-			tcLog.d(_tag, "cancel pressed v = " + v);
+			tcLog.d("cancel pressed v = " + v);
 			synchronized (sissaved) {
 				if (!sissaved) {
 					getFragmentManager().popBackStack();
@@ -265,7 +263,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 			final boolean notify = updNotify == null ? false : updNotify.isChecked();
 			listener.updateTicket(_ticket,action, comment, currentActionName, waarde, notify, null);
 		} catch (final Exception e) {
-			tcLog.e(getClass().getName(), "update failed", e);
+			tcLog.e( "update failed", e);
 			showAlertBox(R.string.storerr,R.string.storerrdesc,e.getMessage());
 		} finally {
 			listener.stopProgressBar();
@@ -308,7 +306,7 @@ public class UpdateTicketFragment extends TracClientFragment {
                 }
             }
             sissaved = true;
-            tcLog.d(_tag, "savedState = " + savedState);
+            tcLog.d("savedState = " + savedState);
         }
     }
 }
