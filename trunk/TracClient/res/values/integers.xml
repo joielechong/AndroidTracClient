@@ -17,7 +17,8 @@
 -->
 <resources>
     <integer name="timerStart">60000</integer> <!-- 1*60*1000 1 min. -->
-    <integer name="timerPeriod">300000</integer> <!-- 5*60*1000 5 min. -->
+	<integer name="timerPeriod">300000</integer> <!-- 5*60*1000 5 min. -->
+	<integer name="startupTimer">3000</integer> <!-- 30 sec. -->
 	<integer name="waitAnalytics">500</integer> <!-- time to wait for startup of Google Analytics -->
 	<integer name="timerCorr">120000</integer> <!-- 2 * 60 * 1000 2 minuten -->
 	<integer name="ticketGroupCount">50</integer> <!-- number of tickets to load in 1 batch from the server -->
