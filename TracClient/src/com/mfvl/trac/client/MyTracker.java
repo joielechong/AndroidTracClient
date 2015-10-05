@@ -13,7 +13,7 @@ public class MyTracker {
     private static Tracker mTracker = null;
     private static MyTracker _instance = null;
     private static GoogleAnalytics analytics = null;
-    private static int delay = 500;
+    private static int delay;
 	private static boolean doAnalytics;
 
     private MyTracker(final Activity context) {
@@ -60,7 +60,7 @@ public class MyTracker {
     }
 
     public static MyTracker getInstance(Activity context) {
-        if (doAnalytics && _instance == null) {
+        if (doAnalytics) {
             _instance = new MyTracker(context);
         }
         return _instance;
@@ -78,7 +78,7 @@ public class MyTracker {
 	}
 
     public static void reportActivityStart(final Activity acContext) {
-        if (doAnalytics && analytics != null) {
+        if (doAnalytics) {
             analytics.reportActivityStart(acContext);
         }
     }

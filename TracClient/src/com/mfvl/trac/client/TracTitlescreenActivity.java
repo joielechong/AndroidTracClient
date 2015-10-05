@@ -26,7 +26,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -34,15 +33,14 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 
 
 public class TracTitlescreenActivity extends Activity implements Thread.UncaughtExceptionHandler {
-	private int timerVal = 3000;
-	private Intent launchTrac = null; 
+    private Intent launchTrac = null;
 	private Handler handler = null;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         tcLog.setContext(this);
-        tcLog.i( "");
+        tcLog.logCall();
 		
 		Thread.setDefaultUncaughtExceptionHandler (this);
 		
@@ -50,9 +48,9 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
         boolean doAnalytics = Const.doAnalytics;
 		if (doAnalytics) {
 			try {
-				doAnalytics &= Credentials.metaDataGetBoolean("com.mfvl.trac.client.useAnalytics");
+				doAnalytics = Credentials.metaDataGetBoolean("com.mfvl.trac.client.useAnalytics");
 			} catch (final Exception e) {
-				tcLog.e( "getApplicationInfo", e);
+				tcLog.e("getApplicationInfo", e);
 			}
 		}
         tcLog.i( "doAnalytics = " + doAnalytics);
@@ -65,13 +63,13 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
             // Get a Tracker (should auto-report)
             MyTracker.getInstance(this);
         } catch (final Exception e) {
-            tcLog.e( "crash", e);
+            tcLog.e("crash", e);
         }
     }
 
     @Override
     public void onStart() {
-        tcLog.i( "");
+        tcLog.logCall();
         super.onStart();
 
         boolean adMobAvailable = false;
@@ -79,18 +77,18 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
         try {
             final int isAvailable = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
 
-            tcLog.d( "Google Play Services available? : " + isAvailable);
+            tcLog.d("Google Play Services available? : " + isAvailable);
             if (isAvailable == ConnectionResult.SUCCESS) {
                 adMobAvailable = true;
             } else {
                 if (GooglePlayServicesUtil.isUserRecoverableError(isAvailable)) {
                     GooglePlayServicesUtil.getErrorDialog(isAvailable, this, 123456).show();
                 } else {
-                    tcLog.d( "Hoe kom je hier");
+                    tcLog.d("Hoe kom je hier");
                 }
             }
         } catch (final Exception e) {
-            tcLog.e( "Exception while determining Google Play Services", e);
+            tcLog.e("Exception while determining Google Play Services", e);
         }
 
         // Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
@@ -109,7 +107,7 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             final String contentString = intent.getDataString();
 
-            // tcLog.d( "View intent data = " + contentString);
+            // tcLog.d("View intent data = " + contentString);
             if (contentString != null) {
                 final Uri uri = Uri.parse(contentString.replace("trac.client.mfvl.com/", ""));
                 final List<String> segments = uri.getPathSegments();
@@ -125,28 +123,28 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
                     for (final String segment : segments.subList(0, count - 2)) {
                         urlstring += segment + "/";
                     }
-                    launchTrac.putExtra(Const.INTENT_URL, urlstring);
-                    launchTrac.putExtra(Const.INTENT_TICKET, (long) ticket);
+                    launchTrac.putExtra(Const.INTENT_URL, urlstring)
+                            .putExtra(Const.INTENT_TICKET, (long) ticket);
                 } else {
-                    tcLog.w( "View intent bad Url");
+                    tcLog.w("View intent bad Url");
                     urlstring = null;
                 }
             }
         }
         handler = new Handler();
 		startApp();
-//		cookieInform();
 	}
 
     @Override
     public void onStop() {
-        tcLog.i( "");
+        tcLog.logCall();
         super.onStop();
         // Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
         MyTracker.reportActivityStop(this);
     }
 	private void startApp() {
-        tcLog.d( "startApp");
+        tcLog.logCall();
+        int timerVal = getResources().getInteger(R.integer.startupTimer);
         final Timer t = new Timer();
 		t.schedule(new TimerTask() {
 			@Override

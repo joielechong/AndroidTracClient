@@ -20,12 +20,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.CancellationSignal;
-import android.os.OperationCanceledException;
 import android.support.v4.content.LocalBroadcastManager;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -343,18 +341,17 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 						final int startpos = id.indexOf("_") + 1;
 						final int thisTicket = Integer.parseInt(id.substring(startpos));
 
-						if (t == null || t.getTicketnr() != thisTicket) {
+						if (t == null || t.getTicketnr() != thisTicket)
 							t = tl.getTicket(thisTicket);
-						}
 						if (t != null) {
-							if (id.equals(TICKET_GET + "_" + thisTicket)) {
+							if ((TICKET_GET + "_" + thisTicket).equals(id)) {
 								t.setFields(result.getJSONObject(3));
 								tl.incTicketContentCount();
-							} else if (id.equals(TICKET_CHANGE + "_" + thisTicket)) {
+							} else if ((TICKET_CHANGE + "_" + thisTicket).equals(id)) {
 								t.setHistory(result);
-							} else if (id.equals(TICKET_ATTACH + "_" + thisTicket)) {
+							} else if ((TICKET_ATTACH + "_" + thisTicket).equals(id)) {
 								t.setAttachments(result);
-							} else if (id.equals(TICKET_ACTION + "_" + thisTicket)) {
+							} else if ((TICKET_ACTION + "_" + thisTicket).equals(id)) {
 								t.setActions(result);
 							} else {
 								tcLog.d( "unexpected response = " + result);
@@ -403,11 +400,11 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 			Since we are in a Content Provider we only have an Application context. This means we cannot do a runOnUIthread call here.
 			For that reason we send a Broadcast within the app to the receiver in TracStart. There the popup will be serviced.
 		*/
-        Intent intent = new Intent(TracStart.PROVIDER_MESSAGE);
-        intent.putExtra("title", title );
-        intent.putExtra("message", messString );
- 		intent.putExtra("additonal",addit);
-		LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
+		LocalBroadcastManager.getInstance(getContext())
+				.sendBroadcast(new Intent(TracStart.PROVIDER_MESSAGE)
+						.putExtra("title", title)
+						.putExtra("message", messString)
+						.putExtra("additonal", addit));
 	}
     
     private void buildCall(JSONArray multiCall, int ticknr) throws JSONException {

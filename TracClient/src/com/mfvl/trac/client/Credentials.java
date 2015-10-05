@@ -26,6 +26,7 @@ import java.util.Locale;
 
 import javax.security.auth.x500.X500Principal;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -33,7 +34,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
 import android.os.Environment;
-
 
 public class Credentials {
     private static String versie = null;
@@ -46,13 +46,11 @@ public class Credentials {
     private static SharedPreferences settings = null;
     private static Credentials _instance = null;
     private static Context _context = null;
-    private static String _tag = "";
 
     private Credentials(final Context context) {
         settings = context.getSharedPreferences(Const.PREFS_NAME, 0);
         _context = context;
-        _tag = getClass().getName();
-		versie = context.getString(R.string.app_version);
+ 		versie = context.getString(R.string.app_version);
     }
 
     public static Credentials getInstance(final Context context) {
@@ -173,10 +171,7 @@ public class Credentials {
 
     public static String getFilterString() {
         // tcLog.d("getFilterString");
-        final String filterString = settings.getString(Const.PREF_FILTER, "max=500&status!=closed");
-
-        //tcLog.d("getFilterString filterString = " + filterString);
-        return filterString;
+        return settings.getString(Const.PREF_FILTER, "max=500&status!=closed");
     }
 
     public static void removeFilterString() {
@@ -208,9 +203,8 @@ public class Credentials {
         boolean debuggable = false;
 
         try {
-            final PackageInfo pinfo = _context.getPackageManager().getPackageInfo(_context.getPackageName(),
-                    PackageManager.GET_SIGNATURES);
-            final Signature signatures[] = pinfo.signatures;
+            @SuppressLint("PackageManagerGetSignatures")
+            final Signature signatures[] = _context.getPackageManager().getPackageInfo(_context.getPackageName(),PackageManager.GET_SIGNATURES).signatures;
 
             final CertificateFactory cf = CertificateFactory.getInstance("X.509");
 
@@ -223,9 +217,7 @@ public class Credentials {
                     break;
                 }
             }
-        } catch (final NameNotFoundException e) {
-            tcLog.w(e);
-        } catch (final CertificateException e) {
+        } catch (final NameNotFoundException | CertificateException e) {
             tcLog.w(e);
         }
         return debuggable;
@@ -239,6 +231,7 @@ public class Credentials {
 		return (versie != null) && (versie.toLowerCase(Locale.US).contains("rc"));
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static String makeDbPath(String dbname) {
 
         String dbpath = dbname;
@@ -263,6 +256,7 @@ public class Credentials {
         return dbpath;
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static File makeExtFilePath(String filename) throws FileNotFoundException {
 		//tcLog.d("makeExtFilePath filename = "+filename);
         final File extPath = Environment.getExternalStorageDirectory();

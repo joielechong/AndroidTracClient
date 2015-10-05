@@ -21,13 +21,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
-public class TicketListAdapter extends ColoredArrayAdapter<Ticket> /* implements OnTicketsChangeListener */ {
+public class TicketListAdapter extends ColoredArrayAdapter<Ticket>  {
     Context context;
 	final Tickets mTickets;
 
     public TicketListAdapter(TracStart context, int resource, Tickets tl) {
-        super(context, resource,(tl==null?null:tl.ticketList));
-        tcLog.d( "" + tl);
+        super(context, resource,tl!=null?tl.ticketList:null);
+        tcLog.d(tl != null ? tl.toString() : null);
         this.context = context;
 
 		mTickets = tl;
@@ -47,9 +47,8 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket> /* implements
     public Ticket getItem(int position) {
 //        tcLog.d( "getItem " + position);
 		try {
-			Ticket o = mTickets.ticketList.get(position);
-//			tcLog.d( "getItem o = " + o);
-			return o;
+			//			tcLog.d( "getItem o = " + o);
+			return mTickets.ticketList.get(position);
 		} catch (Exception e) {
 			return null;
 		}

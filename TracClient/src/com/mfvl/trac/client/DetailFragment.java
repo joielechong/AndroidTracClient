@@ -39,8 +39,8 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.widget.ShareActionProvider;
 import android.text.InputType;
 import android.view.GestureDetector;
 import android.view.Gravity;
@@ -63,6 +63,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+import android.widget.ShareActionProvider;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -127,15 +128,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-
-            if (!(o instanceof modifiedString)) {
-                return false;
-            }
-
-            return _veld.equals(((modifiedString) o).veld());
+            return this == o || o instanceof modifiedString && _veld.equals(((modifiedString) o).veld());
         }
     }
 
@@ -204,8 +197,8 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 		
         notModified = getResources().getStringArray(R.array.fieldsnotmodified);
         isStatusUpd = getResources().getStringArray(R.array.fieldsstatusupdate);
-		popup_selected_color = getResources().getInteger(R.color.popup_selected);
-		popup_unselected_color = getResources().getInteger(R.color.popup_unselected);
+		popup_selected_color = ContextCompat.getColor(context,R.color.popup_selected);
+		popup_unselected_color = ContextCompat.getColor(context,R.color.popup_unselected);
     }
 
     @Override
@@ -751,7 +744,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
             });
 
             pw = new PopupWindow(ll,getView().getWidth() * 9 / 10,getView().getHeight() * 4 / 5,true);
-            final Drawable drw = new ColorDrawable(context.getResources().getInteger(R.color.popup_back));
+            final Drawable drw = new ColorDrawable(ContextCompat.getColor(context,R.color.popup_back));
             drw.setAlpha(220);
             pw.setBackgroundDrawable(drw);
             pw.showAtLocation(parent, Gravity.CENTER, 0, 0);

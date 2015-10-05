@@ -18,6 +18,7 @@
 
 	<application
 		android:allowBackup="true"
+		android:fullBackupContent="true"
 		android:icon="@drawable/traclogo"
 		android:label="@string/app_name"
 		android:restoreNeedsApplication="false"
