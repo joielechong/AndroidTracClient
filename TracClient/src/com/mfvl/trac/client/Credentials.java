@@ -204,7 +204,9 @@ public class Credentials {
 
         try {
             @SuppressLint("PackageManagerGetSignatures")
-            final Signature signatures[] = _context.getPackageManager().getPackageInfo(_context.getPackageName(),PackageManager.GET_SIGNATURES).signatures;
+            final PackageInfo pinfo = _context.getPackageManager().getPackageInfo(_context.getPackageName(),
+                    PackageManager.GET_SIGNATURES);
+            final Signature signatures[] = pinfo.signatures;
 
             final CertificateFactory cf = CertificateFactory.getInstance("X.509");
 

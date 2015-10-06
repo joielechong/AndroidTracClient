@@ -89,7 +89,7 @@ public class tcLog {
             dt.setTime(System.currentTimeMillis());
             final String date = s.format(new Date());
 
-            debugString += "\n" + date + " " +pid +" "+tid + " " + tag 
+            debugString += "\n" + date + " " +pid +" "+tid + " " + tag
 				+ ("".equals(message)?": " + message:"")
 				+ (tr != null ? "\nException thrown: " + tr.getMessage() + "\n" + getStackTraceString(tr) : "");
         }

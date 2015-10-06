@@ -745,7 +745,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 
             pw = new PopupWindow(ll,getView().getWidth() * 9 / 10,getView().getHeight() * 4 / 5,true);
             final Drawable drw = new ColorDrawable(ContextCompat.getColor(context,R.color.popup_back));
-            drw.setAlpha(220);
+            drw.setAlpha(context.getResources().getInteger(R.integer.popupAlpha));
             pw.setBackgroundDrawable(drw);
             pw.showAtLocation(parent, Gravity.CENTER, 0, 0);
         }
