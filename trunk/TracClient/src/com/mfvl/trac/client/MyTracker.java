@@ -60,7 +60,7 @@ public class MyTracker {
     }
 
     public static MyTracker getInstance(Activity context) {
-        if (doAnalytics) {
+        if (doAnalytics && _instance == null) {
             _instance = new MyTracker(context);
         }
         return _instance;
@@ -78,7 +78,7 @@ public class MyTracker {
 	}
 
     public static void reportActivityStart(final Activity acContext) {
-        if (doAnalytics) {
+        if (doAnalytics && analytics != null) {
             analytics.reportActivityStart(acContext);
         }
     }
