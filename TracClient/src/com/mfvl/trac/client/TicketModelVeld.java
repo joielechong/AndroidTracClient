@@ -45,17 +45,17 @@ public class TicketModelVeld {
         _options = null;
     }
 
-	private String getNeededField(final JSONObject v,final String field) throws TicketModelException {
+	private String getNeededField(final JSONObject v,final String field) throws RuntimeException {
         try {
             return v.getString(field);
         } catch (final JSONException e) {
-            throw new TicketModelException("Missing "+field+" in field definition", e);
+            throw new RuntimeException("Missing "+field+" in field definition", e);
         }
 	}
 
-    public TicketModelVeld(final JSONObject v) throws TicketModelException {
+    public TicketModelVeld(final JSONObject v) throws RuntimeException {
         if (v == null) {
-            throw new TicketModelException("JSONObject is null");
+            throw new RuntimeException("JSONObject is null");
         }
 		
 		_name = getNeededField(v,"name");
@@ -90,7 +90,7 @@ public class TicketModelVeld {
                     _options.add(ja.getString(i));
                 }
             } catch (final JSONException e) {
-                throw new TicketModelException("No options", e);
+                throw new RuntimeException("No options", e);
             }
             try {
                 _value = v.getString("value");
