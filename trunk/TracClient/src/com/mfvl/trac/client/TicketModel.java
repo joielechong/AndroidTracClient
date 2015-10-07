@@ -31,11 +31,10 @@ public class TicketModel implements Serializable {
     private static HashMap<String, TicketModelVeld> _velden;
     private static ArrayList<String> _volgorde;
     private static int fieldCount;
-    private static boolean loading;
     private static TicketModel _instance = null;
     private static boolean _hasData;
 	private static TracHttpClient _tracClient = null;
-	private static Semaphore active = new Semaphore(1, true);	
+	private static Semaphore active;
 	private final static List<String> extraFields = Arrays.asList("max","page");
 	private final static List<String> extraValues = Arrays.asList("500","0");
 
@@ -43,17 +42,15 @@ public class TicketModel implements Serializable {
 		
         tcLog.logCall();
         fieldCount = 0;
-        loading = false;
 		_tracClient = tracClient;
         _hasData = false;
         _velden = new HashMap<String, TicketModelVeld>();
         _volgorde = new ArrayList<String>();
-    }
+		active = new Semaphore(1, true);   }
 
     private void loadModelData() {
-        tcLog.d("loadModelData");
+        tcLog.logCall();
         if (_tracClient != null) {
-			loading = true;
 			active.acquireUninterruptibly ();
             new Thread() {
                 @Override
@@ -79,7 +76,6 @@ public class TicketModel implements Serializable {
                         tcLog.e( "exception", e);
                     } finally {
 						active.release();
-						loading = false;
 						tcLog.d( "Model loaded");
                     }
                 }
@@ -94,7 +90,7 @@ public class TicketModel implements Serializable {
         if (_instance == null  || tracClient.equals(_tracClient)) {
             _instance = new TicketModel(tracClient);
         }
-        if (!_hasData && !loading) {
+        if (!_hasData && active.availablePermits()>0) {
             _instance.loadModelData();
         }
         return _instance;
@@ -137,11 +133,8 @@ public class TicketModel implements Serializable {
     }
 
     public void wacht() {
-        if (loading) {
-			active.acquireUninterruptibly ();
-			active.release();
-			loading = false;
-		}
+		active.acquireUninterruptibly ();
+		active.release();
     }
 	
 	boolean hasData() {
@@ -150,11 +143,18 @@ public class TicketModel implements Serializable {
 
     TicketModelVeld getVeld(final String naam) {
         wacht();
-        return _velden.containsKey(naam) ? _velden.get(naam) : naam.equals("id") ? new TicketModelVeld(naam, naam, "0") : null;
+		if (_velden.containsKey(naam)) {
+			return _velden.get(naam);
+		} else if ("id".equals(naam)) {
+			return new TicketModelVeld(naam, naam, "0");
+		}
+		throw new IndexOutOfBoundsException();
     }
 
     TicketModelVeld getVeld(final int i) {
 		wacht();
-        return i < 0 || i >= fieldCount ? null : getVeld(_volgorde.get(i));
+		if (i < 0 || i >= fieldCount)
+			throw new IndexOutOfBoundsException();
+		return getVeld(_volgorde.get(i));
     }
 }
