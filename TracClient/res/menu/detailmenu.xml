@@ -15,7 +15,9 @@
  * limitations under the License.
 
 -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:tools="http://schemas.android.com/tools"
+		tools:ignore="AppCompatResource">
 
     <item
         android:id="@+id/dfrefresh"
