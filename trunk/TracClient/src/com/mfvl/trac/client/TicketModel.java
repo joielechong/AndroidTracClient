@@ -36,8 +36,8 @@ public class TicketModel implements Serializable {
     private static boolean _hasData;
 	private static TracHttpClient _tracClient = null;
 	private static Semaphore active = new Semaphore(1, true);	
-	private static List<String> extraFields = Arrays.asList("max","page");
-	private static List<String> extraValues = Arrays.asList("500","0");
+	private final static List<String> extraFields = Arrays.asList("max","page");
+	private final static List<String> extraValues = Arrays.asList("500","0");
 
     private TicketModel(TracHttpClient tracClient) {
 		

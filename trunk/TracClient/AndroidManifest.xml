@@ -109,7 +109,7 @@
 
 		<receiver 
 			android:name="com.google.android.gms.analytics.AnalyticsReceiver"
-			tools:ignore="MissingRegistered"
+			tools:ignore="MissingRegistered,ExportedReceiver"
 			android:enabled="true">
 			<intent-filter>
 				<action android:name="com.google.android.gms.analytics.ANALYTICS_DISPATCH" />
