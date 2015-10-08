@@ -83,7 +83,7 @@ public class NewTicketFragment extends TracClientFragment {
 					if (veld.options() != null) {
 						v = makeComboSpin(context, veldnaam, veld.options(), veld.optional(), veld.value());
 					} else {
-						v = (EditText) LayoutInflater.from(context).inflate((veldnaam.equals("Description") ? R.layout.descrfield: R.layout.stdfield), null, false);
+						v = LayoutInflater.from(context).inflate((veldnaam.equals("Description") ? R.layout.descrfield: R.layout.stdfield), null, false);
 						extra = EXTRA;
 					}
                     v.setLayoutParams(lp);
@@ -145,7 +145,7 @@ public class NewTicketFragment extends TracClientFragment {
                     velden.put("status", "new");
                     velden.put("reporter", listener.getUsername());
                     final CheckBox updNotify = (CheckBox) view.findViewById(R.id.updNotify);
-                    final boolean notify = updNotify == null ? false : updNotify.isChecked();
+                    final boolean notify = updNotify != null && updNotify.isChecked();
                     final Ticket t = new Ticket(velden);
                     final int newtick = listener.createTicket(t, notify);
 					

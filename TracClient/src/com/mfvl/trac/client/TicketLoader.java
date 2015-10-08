@@ -19,7 +19,6 @@ import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.CancellationSignal;
 import android.support.v4.content.LocalBroadcastManager;
 
 import java.io.FileDescriptor;
@@ -41,8 +40,7 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 
 	LoginProfile mLoginProfile;
 
-    CancellationSignal mCancellationSignal;
-	private TicketModel tm = null;
+ 	TicketModel tm = null;
 	private TracHttpClient tracClient;
 	int mode;
 	String isoTijd;
@@ -158,7 +156,7 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
         tcLog.d( "this = "+this+" " + tl);
         if (isReset()) {
             // An async query came in while the loader is stopped
-			super.deliverResult(null);;
+			super.deliverResult(null);
             return;
         }
 		
@@ -312,7 +310,7 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 		return mTickets;
 	}
 	
-	 private void loadTicketContent(Tickets tl) throws TicketLoadException {
+	 private void loadTicketContent(Tickets tl) throws RuntimeException {
 		tcLog.logCall();
 		int count = tl.getTicketCount();
 		tcLog.d( "loadTicketContent count = "+count+ " "+ tl);
@@ -325,7 +323,7 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 				try {
 					buildCall(mc, tl.ticketList.get(i).getTicketnr());
 				} catch (final Exception e) {
-					throw new TicketLoadException("loadTicketContent Exception during buildCall",e);
+					throw new RuntimeException("loadTicketContent Exception during buildCall",e);
 				}
 			}
 			try {
@@ -358,13 +356,13 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 							}
 						}
 					} catch (final Exception e1) {
-						throw new TicketLoadException("loadTicketContent Exception thrown innerloop j=" + j + " k=" + k, e1);
+						throw new RuntimeException("loadTicketContent Exception thrown innerloop j=" + j + " k=" + k, e1);
 					}
 				}
-			} catch (final TicketLoadException e) {
-				throw new TicketLoadException("loadTicketContent TicketLoadException thrown outerloop j=" + j, e);
+			} catch (final RuntimeException e) {
+				throw new RuntimeException("loadTicketContent RuntimeException thrown outerloop j=" + j, e);
 			} catch (final Exception e) {
-				throw new TicketLoadException("loadTicketContent Exception thrown outerloop j=" + j, e);
+				throw new RuntimeException("loadTicketContent Exception thrown outerloop j=" + j, e);
 			}  finally {
 				tcLog.d( "loop " + tl.getTicketContentCount());
 			}

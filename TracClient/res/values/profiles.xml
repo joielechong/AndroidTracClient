@@ -26,8 +26,8 @@
 	<string-array name="TracClient_RO">
 		<item name="name">TracClient-RO</item>
 		<item name="url">http://van-loon.xs4all.nl/TracClient/rpc</item>
-		<item name="user"></item>
-		<item name="password"></item>
+		<item name="user"/>
+		<item name="password"/>
 		<item name="sslhack">false</item>
 	</string-array>
 	 

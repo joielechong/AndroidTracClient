@@ -250,7 +250,7 @@ public class UpdateTicketFragment extends TracClientFragment {
         final EditText optieVal = (EditText) view.findViewById(R.id.optieval);
 
         if (currentActionName != null) {
-            if (!"".equals(optieVal.getText())) {
+            if (!"".equals(optieVal.getText().toString())) {
                 w = optieVal.getText().toString();
             }
             if (optiesSpin.getAdapter() != null) {
@@ -260,7 +260,7 @@ public class UpdateTicketFragment extends TracClientFragment {
         final String waarde = w;
         listener.startProgressBar(R.string.saveupdate);
 		try {
-			final boolean notify = updNotify == null ? false : updNotify.isChecked();
+			final boolean notify = updNotify != null && updNotify.isChecked();
 			listener.updateTicket(_ticket,action, comment, currentActionName, waarde, notify, null);
 		} catch (final Exception e) {
 			tcLog.e( "update failed", e);

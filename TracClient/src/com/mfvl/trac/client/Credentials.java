@@ -56,7 +56,7 @@ public class Credentials {
     public static Credentials getInstance(final Context context) {
         if (_instance == null || !context.equals(_context)) {
             _instance = new Credentials(context);
-			_instance.loadCredentials();
+			loadCredentials();
         }
         return _instance;
     }

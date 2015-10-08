@@ -32,7 +32,6 @@ import android.widget.Toast;
 public class tcLog {
     private static Activity _c = null;
     private static boolean doToast = false;
-    private static boolean doBuffer = true;
     private static String debugString = "";
     private static SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
 
@@ -81,18 +80,16 @@ public class tcLog {
     }
 
     private static void myLog(final String tag, final String message, Throwable tr) {
-        if (doBuffer) {
-            final Date dt = new Date();
-			int tid = android.os.Process.myTid();
-			int pid = android.os.Process.myPid();
+        final Date dt = new Date();
+        int tid = android.os.Process.myTid();
+        int pid = android.os.Process.myPid();
 
-            dt.setTime(System.currentTimeMillis());
-            final String date = s.format(new Date());
+        dt.setTime(System.currentTimeMillis());
+        final String date = s.format(new Date());
 
-            debugString += "\n" + date + " " +pid +" "+tid + " " + tag
-				+ ("".equals(message)?": " + message:"")
-				+ (tr != null ? "\nException thrown: " + tr.getMessage() + "\n" + getStackTraceString(tr) : "");
-        }
+        debugString += "\n" + date + " " +pid +" "+tid + " " + tag
+            + ("".equals(message)?": " + message:"")
+            + (tr != null ? "\nException thrown: " + tr.getMessage() + "\n" + getStackTraceString(tr) : "");
         if (doToast) {
             toast(tag + ": " + message);
         }
