@@ -387,7 +387,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
         tcLog.d( "" + parent + " " + view + " " + position + " " + id);
         switch (parent.getId()) {
         case R.id.listOfTickets:
-            final Ticket t = (Ticket)dataAdapter.getItem(position);
+            final Ticket t = dataAdapter.getItem(position);
 
             if (t.hasdata()) {
                 listener.onTicketSelected(t);

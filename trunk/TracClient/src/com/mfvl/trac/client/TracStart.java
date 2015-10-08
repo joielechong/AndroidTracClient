@@ -972,7 +972,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     public void onBackPressed() {
         tcLog.logCall();
         final DetailFragment df = (DetailFragment) getFragment(DetailFragmentTag);
-        final boolean callSuper = df != null ? !df.onBackPressed() : true;
+        final boolean callSuper = df == null || !df.onBackPressed();
 
         if (callSuper) {
             super.onBackPressed();
@@ -1548,7 +1548,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	}
 	
 	public void updateTicket(Ticket t,String action, String comment, String veld, String waarde, final boolean notify, Map<String, String> modVeld) throws Exception{
-		JSONObject velden = t.getVelden();;
+		JSONObject velden = t.getVelden();
 
 		tcLog.d( "update: " + action + " '" + comment + "' '" + veld + "' '" + waarde + "' " + modVeld);
         tcLog.d( "velden voor = " + velden);

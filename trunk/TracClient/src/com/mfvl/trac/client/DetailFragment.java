@@ -17,8 +17,6 @@
 package com.mfvl.trac.client;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -31,14 +29,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.InputType;
@@ -631,7 +626,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
             listView.setOnItemLongClickListener(new OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                    final modifiedString t = (modifiedString) ((ListView) parent).getItemAtPosition(position);
+                    final modifiedString t = (modifiedString) parent.getItemAtPosition(position);
 
                     tcLog.d( "position = " + position);
                     if (t.length() >= 8 && "bijlage ".equals(t.substring(0, 8))) {
@@ -649,7 +644,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
             listView.setOnItemClickListener(new OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    final modifiedString t = (modifiedString) ((ListView) parent).getItemAtPosition(position);
+                    final modifiedString t = (modifiedString) parent.getItemAtPosition(position);
 
                     tcLog.d( "position = " + position);
                     if (t.length() >= 8 && "bijlage ".equals(t.substring(0, 8))) {
