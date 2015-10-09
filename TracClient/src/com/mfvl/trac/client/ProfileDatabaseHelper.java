@@ -159,15 +159,18 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 			if (upgrade) {
 				Resources res = _context.getResources();
 				TypedArray ta = res.obtainTypedArray(R.array.profiles);
+				try {
 
-				for (int i = 0; i < ta.length(); ++i) {
-					int resId = ta.getResourceId(i, 0);
-					String[] values = res.getStringArray(resId);
-
-					addProfile(values[0], new LoginProfile(values[1], values[2], values[3], values[4] == "true"));
-					// tcLog.d("i = "+i+" values = "+Arrays.asList(values));
+					for (int i = 0; i < ta.length(); ++i) {
+						int resId = ta.getResourceId(i, 0);
+						String[] values = res.getStringArray(resId);
+						
+						addProfile(values[0], new LoginProfile(values[1], values[2], values[3], values[4] == "true"));
+						// tcLog.d("i = "+i+" values = "+Arrays.asList(values));
+					}
+				} finally {
+					ta.recycle();
 				}
-				ta.recycle();
 				upgrade = false;
 			}
 		}
