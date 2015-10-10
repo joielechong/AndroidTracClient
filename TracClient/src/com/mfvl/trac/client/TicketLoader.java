@@ -157,7 +157,7 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
         if (isReset()) {
             // An async query came in while the loader is stopped
 			super.deliverResult(null);
-            return;
+			return;
         }
 		
 		if (mode == 1) {

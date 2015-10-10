@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -156,7 +157,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
     private PopupWindow pw = null;
     private boolean sendNotification = false;
     private boolean didUpdate = false;
-    private final List<modifiedString> values = new ArrayList<modifiedString>();
+    private final List<modifiedString> values = new ArrayList<>();
     private String[] notModified;
     private String[] isStatusUpd;
     private MenuItem selectItem;
@@ -233,11 +234,10 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 			
 			case R.id.updBut:
 			updateTicket();
-			final LinearLayout mv = (LinearLayout) getView().findViewById(R.id.modveld);
-
-			if (mv != null) {
-				mv.setVisibility(View.GONE);
-			}
+            try {
+                getView().findViewById(R.id.modveld).setVisibility(View.GONE);
+            } catch (NullPointerException ignored) {
+            }
 			break;
 			
 			case R.id.cancelpw:
@@ -312,14 +312,10 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 			});
 			didUpdate = false;
 		}
-		final View v = getView();
 
-		if (v != null) {
-			final LinearLayout mv = (LinearLayout) v.findViewById(R.id.modveld);
-
-			if (mv != null) {
-				mv.setVisibility(modVeld.isEmpty() ? View.GONE : View.VISIBLE);
-			}
+        try {
+    		getView().findViewById(R.id.modveld).setVisibility(modVeld.isEmpty() ? View.GONE : View.VISIBLE);
+        } catch (NullPointerException ignored) {
 		}
 		setSelect(modVeld.isEmpty());
 	}
@@ -395,10 +391,11 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 		if (itemDetail != null) {
 			ShareActionProvider mShareActionProvider = (ShareActionProvider) itemDetail.getActionProvider();
 			Intent i = listener.shareTicket(_ticket);
-			tcLog.d( "item = " + itemDetail + " " + mShareActionProvider + " " + i);
+			tcLog.d("item = " + itemDetail + " " + mShareActionProvider + " " + i);
 			if (mShareActionProvider != null) {
-				mShareActionProvider.setShareIntent(i);
-			}
+                mShareActionProvider.setShareIntent(i);
+                mShareActionProvider.setShareHistoryFileName("custom_share_history_detail.xml");
+            }
 			mShareActionProvider.setShareHistoryFileName("custom_share_history_detail.xml");
 		}
     }
@@ -535,7 +532,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
             final TextView tickText = (TextView) v.findViewById(R.id.ticknr);
 
             if (tickText != null) {
-                tickText.setText("Ticket " + _ticket.getTicketnr());
+                tickText.setText(String.format(Locale.US,"Ticket %d",_ticket.getTicketnr()));
                 try {
                     String summ = _ticket.getString("summary");
 
@@ -686,7 +683,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
                 et.setText(waarde);
                 et.requestFocus();
             }
-			
+
             try {
                 spinValue.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                 ((LinearLayout) ll.findViewById(R.id.veld)).addView(spinValue);
