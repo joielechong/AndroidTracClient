@@ -145,7 +145,6 @@ public abstract class JSONRPCClient {
 			}
 
 		}
-		;
 
 		final RequestThread requestThread = new RequestThread(method, params);
 		requestThread.start();
