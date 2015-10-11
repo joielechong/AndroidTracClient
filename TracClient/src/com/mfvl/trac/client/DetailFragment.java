@@ -396,7 +396,6 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
                 mShareActionProvider.setShareIntent(i);
                 mShareActionProvider.setShareHistoryFileName("custom_share_history_detail.xml");
             }
-			mShareActionProvider.setShareHistoryFileName("custom_share_history_detail.xml");
 		}
     }
 	
