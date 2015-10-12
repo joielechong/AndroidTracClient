@@ -167,7 +167,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 	private SwipeRefreshLayout swipeLayout;
 
     private void setSelect(final boolean value) {
-        tcLog.d(""+value);
+        tcLog.d(String.format(Locale.US,"%b",value));
         if (selectItem != null) {
             selectItem.setEnabled(value);
         }
@@ -193,7 +193,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 		
         notModified = getResources().getStringArray(R.array.fieldsnotmodified);
         isStatusUpd = getResources().getStringArray(R.array.fieldsstatusupdate);
-		popup_selected_color = ContextCompat.getColor(context,R.color.popup_selected);
+		popup_selected_color = ContextCompat.getColor(context, R.color.popup_selected);
 		popup_unselected_color = ContextCompat.getColor(context,R.color.popup_unselected);
     }
 
@@ -563,9 +563,10 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 					
 //					tcLog.d( "showEmptyFields = "+showEmptyFields);
 
-                    if ("summary".equals(veld) || "_ts".equals(veld) || "max".equals(veld) || "page".equals(veld)
-                            || "id".equals(veld)) {// skip
-                    } else if ("time".equals(veld) || "changetime".equals(veld)) {
+                    if (Arrays.asList("summary","_ts","max","page","id").contains(veld)) {
+//                    if ("summary".equals(veld) || "_ts".equals(veld) || "max".equals(veld) || "page".equals(veld) || "id".equals(veld)) {// skip
+//                    } else if ("time".equals(veld) || "changetime".equals(veld)) {
+                    } else if (Arrays.asList("time","changetime").contains(veld)){
                         ms = new modifiedString(veld, toonTijd(_ticket.getJSONObject(veld)));
                     } else if (showEmptyFields || _ticket.getString(veld).length() > 0) {
                         ms = new modifiedString(veld, _ticket.getString(veld));
@@ -686,7 +687,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
             try {
                 spinValue.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                 ((LinearLayout) ll.findViewById(R.id.veld)).addView(spinValue);
-            } catch (final Exception e) {}
+            } catch (final Exception ignored) {}
 
             storBut.setOnClickListener(new View.OnClickListener() {
                 @Override
