@@ -860,7 +860,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         if (savedInstanceState.containsKey(tag)) {
             try {
                 getFragmentManager().getFragment(savedInstanceState, tag);
-            } catch (final Exception e) {}
+            } catch (final Exception ignored) {}
         }
     }
 
@@ -871,7 +871,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
             if (f != null) {
                 getFragmentManager().putFragment(savedInstanceState, tag, f);
             }
-        } catch (final Exception e) {// Exception if fragment not on stack can be ignored
+        } catch (final Exception ignored) {// Exception if fragment not on stack can be ignored
         }
     }
 
@@ -1017,7 +1017,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 
         try {
             startActivityForResult(intent, REQUEST_CODE);
-        } catch (final ActivityNotFoundException e) {// The reason for the existence of aFileChooser
+        } catch (final ActivityNotFoundException ignored) {// The reason for the existence of aFileChooser
         }
     }
 	
@@ -1152,7 +1152,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 		for(int i=0;i<mDrawerIds.length;i++) {
 			try {
 				menu.findItem(mDrawerIds[i]).setVisible(!drawerOpen);
-			} catch(Exception e) {}
+			} catch(Exception ignored) {}
 		}
 		Intent i = null;
 	
@@ -1356,7 +1356,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
                     if (i + 1 < sort.length) {
                         final String s1 = sort[i + 1];
 
-                        if (s1.equalsIgnoreCase("desc=1")) {
+                        if ("desc=1".equalsIgnoreCase(s1)) {
                             richting = false;
                             i++;
                         }
@@ -1468,7 +1468,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         boolean ret = super.dispatchTouchEvent(ev);
         try {
 			ret |= ((DetailFragment) getFragment(DetailFragmentTag)).dispatchTouchEvent(ev);
-		} catch (Exception e) {}
+		} catch (Exception ignored) {}
         return ret;
     }
 	
@@ -1641,8 +1641,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 		@Override
 		public void onReceive(Context c,Intent i) {
 			tcLog.d( "Receive DATACHANGED_MESSAGE");
-			View v = findViewById(R.id.displayList);
-			v.invalidate();
+			findViewById(R.id.displayList).invalidate();
 			try {
 				getTicketListFragment().dataHasChanged();
 			} catch (Exception e) {

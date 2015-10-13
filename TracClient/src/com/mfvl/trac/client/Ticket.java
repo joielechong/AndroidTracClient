@@ -197,7 +197,7 @@ public class Ticket implements Serializable {
             if (rpcerror != null) {
                 throw new RuntimeException(rpcerror);
             }
-        } catch (final Exception e) {}
+        } catch (final Exception ignored) {}
     }
 
     public void addAttachment(final String filename, final TracStart context, final onTicketCompleteListener oc) {
@@ -450,7 +450,7 @@ public class Ticket implements Serializable {
                         tekst += veld + ":\t" + _velden.getString(veld) + "\n";
                     }
 
-                } catch (final Exception e) {}
+                } catch (final Exception ignored) {}
             }
         } catch (final JSONException e) {
             tcLog.e( "toText velden failed", e);
