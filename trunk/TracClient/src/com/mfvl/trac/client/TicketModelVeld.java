@@ -94,7 +94,7 @@ public class TicketModelVeld {
             }
             try {
                 _value = v.getString("value");
-            } catch (final JSONException e) {}
+            } catch (final JSONException ignored) {}
             try {
                 _optional = v.getString("optional").equals("true");
             } catch (final JSONException e) {

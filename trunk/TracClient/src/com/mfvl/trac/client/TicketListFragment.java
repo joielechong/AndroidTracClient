@@ -332,14 +332,13 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 	private void setStatus(final String s) {
 		try {
 			hs.setText(s);
-		} catch (Exception e) {
-		}
+		} catch (Exception ignored) {}
 	}
 
 	private void setStatus(final int s) {
 		try {
 			hs.setText(s);
-		} catch (Exception e) {		}
+		} catch (Exception ignored) {}
 	}
 
 	public void dataHasChanged() {
@@ -350,7 +349,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 			listView.invalidate();
 			listView.invalidateViews();
 			setScroll();
-		} catch (Exception e) {}
+		} catch (Exception ignored) {}
 	}
 	
 	public void startLoading() {
@@ -401,7 +400,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
     private void setScroll() {
 		try {
             listView.setSelection(scrollPosition);
-        } catch (Exception e) {}
+        } catch (Exception ignored) {}
     }
 
     private void zetZoeken() {

@@ -19,7 +19,7 @@ public class MyTracker {
     private MyTracker(final Activity context) {
         try {
             delay = context.getResources().getInteger(R.integer.waitAnalytics);
-        } catch (Exception e) {}
+        } catch (Exception ignored) {}
 		
         Thread anathread = new Thread("AnalyticsStartUp") {
             @Override

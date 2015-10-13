@@ -216,7 +216,7 @@ public class TracLoginFragment extends TracClientFragment {
 		} catch (Exception e) {
 			try {
 				j.put(ERROR, e.getMessage());
-			} catch (JSONException e1) {}
+			} catch (JSONException ignored) {}
 		}
         return j;
     }
@@ -507,18 +507,18 @@ public class TracLoginFragment extends TracClientFragment {
         super.onSaveInstanceState(savedState);
         try {
             savedState.putString(NEW_URL, urlView.getText().toString());
-        } catch (final Exception e) {}
+        } catch (final Exception ignored) {}
         try {
             savedState.putString(NEW_USERNAME, userView.getText().toString());
-        } catch (final Exception e) {}
+        } catch (final Exception ignored) {}
         try {
             savedState.putString(NEW_PASSWORD, pwView.getText().toString());
-        } catch (final Exception e) {}
+        } catch (final Exception ignored) {}
         savedState.putBoolean(Const.CURRENT_SSLHACK, sslHackBox.isChecked());
         savedState.putBoolean(Const.CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
         try {
             savedState.putBoolean(bewaarText, bewaarBox.isChecked());
-        } catch (final Exception e) {}
+        } catch (final Exception ignored) {}
         tcLog.d(" savedState = " + savedState);
     }
     

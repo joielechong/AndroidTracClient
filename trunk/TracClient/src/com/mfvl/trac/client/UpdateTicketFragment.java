@@ -50,7 +50,6 @@ public class UpdateTicketFragment extends TracClientFragment {
     private String currentActionName = null;
     private JSONArray _actions = null;
     private int ticknr;
-    private Boolean sissaved = false;
 	
 	private void onMyAttach(Context activity) {
        final Bundle args = getArguments();
@@ -218,11 +217,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 		switch (v.getId()) {
 			case R.id.canBut:
 			tcLog.d("cancel pressed v = " + v);
-			synchronized (sissaved) {
-				if (!sissaved) {
-					getFragmentManager().popBackStack();
-				}
-			}
+			getFragmentManager().popBackStack();
 			break;
 			
 			case R.id.storeUpdate:
@@ -274,39 +269,33 @@ public class UpdateTicketFragment extends TracClientFragment {
     public void onResume() {
         super.onResume();
 		helpFile = R.string.updatehelpfile;
-        synchronized (sissaved) {
-            sissaved = false;
-        }
     }
 
     @Override
     public void onSaveInstanceState(Bundle savedState) {
-        synchronized (sissaved) {
-            super.onSaveInstanceState(savedState);
-            if (_ticket != null) {
-                savedState.putInt(Const.CURRENT_TICKET, _ticket.getTicketnr());
-            }
-            final View view = getView();
+		super.onSaveInstanceState(savedState);
+		if (_ticket != null) {
+			savedState.putInt(Const.CURRENT_TICKET, _ticket.getTicketnr());
+		}
+		final View view = getView();
 
-            if (view != null) {
-                final RadioGroup rg = (RadioGroup) view.findViewById(R.id.actionblock);
+		if (view != null) {
+			final RadioGroup rg = (RadioGroup) view.findViewById(R.id.actionblock);
 
-                if (rg != null) {
-                    savedState.putInt(UPDATE_CURRENT_BUTTON, rg.getCheckedRadioButtonId());
-                }
-                final Spinner optiesSpin = (Spinner) view.findViewById(R.id.opties);
+			if (rg != null) {
+				savedState.putInt(UPDATE_CURRENT_BUTTON, rg.getCheckedRadioButtonId());
+			}
+			final Spinner optiesSpin = (Spinner) view.findViewById(R.id.opties);
 
-                if (optiesSpin != null) {
-                    savedState.putInt(UPDATE_SPIN_POSITION, optiesSpin.getSelectedItemPosition());
-                }
-                final EditText optieVal = (EditText) view.findViewById(R.id.optieval);
+			if (optiesSpin != null) {
+				savedState.putInt(UPDATE_SPIN_POSITION, optiesSpin.getSelectedItemPosition());
+			}
+			final EditText optieVal = (EditText) view.findViewById(R.id.optieval);
 
-                if (optieVal != null) {
-                    savedState.putString(UPDATE_OPTION_VAL, optieVal.getText().toString());
-                }
-            }
-            sissaved = true;
-            tcLog.d("savedState = " + savedState);
-        }
-    }
+			if (optieVal != null) {
+				savedState.putString(UPDATE_OPTION_VAL, optieVal.getText().toString());
+			}
+		}
+		tcLog.d("savedState = " + savedState);
+	}
 }
