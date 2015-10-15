@@ -39,11 +39,10 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-public class FilterFragment extends SpecFragment<FilterSpec> {
+public class FilterFragment extends SpecFragment<FilterSpec> implements OnCheckedChangeListener {
     private FilterAdapter filterAdapter;
 	private Spinner addSpinner;
 	private static ArrayList<String> operators = null;
@@ -65,7 +64,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> {
         public View getView(final int position, View convertView, final ViewGroup parent) {
 			//tcLog.d( "getView pos=" + position + " " + convertView + " " + parent);
 
-            listView = (ListView) parent;
+            View vp = (View) parent;
 			
             int p = (position >= items.size() || position < 0 ? 0 : position);
             final FilterSpec filterItem = items.get(p);
@@ -81,7 +80,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> {
             if (curid != resid) {
                 v = LayoutInflater.from(context).inflate(resid, null);
                 v.setId(resid); // hack hack
-                listView.requestLayout();
+                vp.requestLayout();
             }
 			v.setTag(filterItem);
 
@@ -136,7 +135,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> {
                 filterCheck.addView(makeCheckBoxes(filterItem));
             }
 
-            listView.invalidate();
+            vp.invalidate();
 
             return v;
         }
@@ -175,45 +174,45 @@ public class FilterFragment extends SpecFragment<FilterSpec> {
 		}
 	
 		private FilterSpec getItem(View v1) {
-//			tcLog.d( "getItem v1 =" + v1);
+//			tcLog.d("getItem v1 =" + v1);
 			View parent = (View)v1.getParent();
-//			tcLog.d( "getItem parent =" + parent);
+//			tcLog.d("getItem parent =" + parent);
 			if (parent.getTag() == null) {
 				parent = (View)parent.getParent();
 			}
-//			tcLog.d( "getItem parent2 =" + parent);
+//			tcLog.d("getItem parent2 =" + parent);
 			FilterSpec o = (FilterSpec)parent.getTag();
-			tcLog.d( "getItem filterItem = " + o);
+			tcLog.d("getItem filterItem = " + o);
 			return o;
 		}
 		
 		private void startEditItem(FilterSpec filterItem) {
-//			tcLog.d( "startEditItem filterItem =" + filterItem );
+//			tcLog.d("startEditItem filterItem =" + filterItem);
 			filterItem.setEdit(true);
-			listView.invalidateViews();
+			notifyDataSetChanged();
 		}
 		
 		private void stopEditItem(FilterSpec filterItem,Spinner spin){
-//			tcLog.d( "stopEditItem filterItem =" + filterItem + " spin = " + spin);
+//			tcLog.d("stopEditItem filterItem =" + filterItem + " spin = " + spin);
 			filterItem.setEdit(false);
 			if (spin != null) {
 				filterItem.setOperator(operators.get(spin.getSelectedItemPosition()));
 			}
-			listView.invalidateViews();
+			notifyDataSetChanged();
 		}
     }
 
     @Override
     public void onAttach(Context activity) {
         super.onAttach(activity);
-//        tcLog.d( "onAttach(C)");
+//        tcLog.d("onAttach(C)");
 		onMyAttach(activity,Const.FILTERLISTNAME);
     }
 	
     @Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-//        tcLog.d( "onAttach(A)");
+//        tcLog.d("onAttach(A)");
 		onMyAttach(activity,Const.FILTERLISTNAME);
 	}
 	
@@ -258,9 +257,9 @@ public class FilterFragment extends SpecFragment<FilterSpec> {
 				} else {
 					items.get(i).setEdit(false);
 				}
+			}
 			sendMessageToHandler(TracStart.MSG_SET_FILTER,items);
 			getFragmentManager().popBackStack();
-			}
 			break;
 			
 			case R.id.addbutton:
@@ -276,13 +275,13 @@ public class FilterFragment extends SpecFragment<FilterSpec> {
 
     private LinearLayout makeCheckBoxes(final FilterSpec o) {
         final String veldnaam = o.getVeld();
-        final List<Object> waardes = tm.getVeld(veldnaam).options();
+        List<Object> waardes = tm.getVeld(veldnaam).options();
         final String w = o.getWaarde();
         final String op = o.getOperator();
         final boolean omgekeerd = op != null && op.equals("!=");
 
         tcLog.d( veldnaam + " " + w + " " + omgekeerd);
-        final LinearLayout valCheckBoxes = new LinearLayout(context);
+        LinearLayout valCheckBoxes = new LinearLayout(context);
 
         valCheckBoxes.setOrientation(LinearLayout.VERTICAL);
         String[] ws;
@@ -307,27 +306,32 @@ public class FilterFragment extends SpecFragment<FilterSpec> {
                     }
                 }
             }
-            rb.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton cb0, boolean isChecked) {
-                    String temp = null;
-
-                    for (int j = 0; j < waardes.size(); j++) {
-                        final CheckBox cb = (CheckBox) valCheckBoxes.findViewById(j);
-
-                        if (cb != null && cb.isChecked()) {
-                            if (temp == null) {
-                                temp = cb.getText().toString();
-                            } else {
-                                temp += "|" + cb.getText();
-                            }
-                        }
-                    }
-                    o.setOperator("=").setWaarde(temp);
-                }
-            });
+			rb.setTag(o);
+            rb.setOnCheckedChangeListener(this);
             valCheckBoxes.addView(rb);
         }
         return valCheckBoxes;
     }
+
+    @Override
+	public void onCheckedChanged(CompoundButton cb0, boolean isChecked) {
+//		tcLog.d("cb0 = "+cb0+" parent = "+ cb0.getParent());
+		String temp = null;
+		ViewGroup parent = (ViewGroup)cb0.getParent();
+
+		for (int j = 0; j < parent.getChildCount(); j++) {
+			final CheckBox cb = (CheckBox) parent.getChildAt(j);
+//			tcLog.d("cb = "+cb+" j = "+ j);
+
+			if (cb != null && cb.isChecked()) {
+				if (temp == null) {
+					temp = cb.getText().toString();
+				} else {
+					temp += "|" + cb.getText();
+				}
+			}
+		}
+		FilterSpec o = (FilterSpec)cb0.getTag();
+		o.setOperator("=").setWaarde(temp);
+	}
 }

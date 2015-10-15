@@ -28,7 +28,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -42,8 +41,6 @@ public class SortFragment extends SpecFragment<SortSpec>  {
         @Override
         public View getView(final int position, View convertView, final ViewGroup parent) {
 			// tcLog.d(    "getView: "+position+" "+convertView+" "+parent);
-            listView = (ListView) parent;
-			
             View v = convertView;
 
             if (v == null) {
@@ -87,7 +84,7 @@ public class SortFragment extends SpecFragment<SortSpec>  {
 		public void onClick(View dv) {
 			int position = getSortPosition(dv);
 			SortSpec sortItem = items.get(position);
-			tcLog.d(    ""+dv+" "+position+" "+sortItem);	
+			tcLog.d(dv.toString()+" "+position+" "+sortItem);	
 			switch (dv.getId()) {
 				case R.id.sortup:
 				if (position > 0) {
