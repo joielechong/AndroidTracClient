@@ -179,20 +179,6 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
         if (v.getId() == R.id.listOfTickets) {
             final MenuInflater inflater = context.getMenuInflater();
             inflater.inflate(R.menu.listcontextmenu, menu);
-/*
-			final Ticket t = (Ticket) listView.getItemAtPosition(((AdapterContextMenuInfo)menuInfo).position);
-
-			final MenuItem itemDetail = menu.findItem(R.id.dfshare);
-			if (itemDetail != null) {
-				tcLog.d( "item = " + itemDetail);
-				listener.setActionProvider(menu,R.id.dfshare);
-				ShareActionProvider detailShare = (ShareActionProvider) itemDetail.getActionProvider();
-				detailShare.setShareHistoryFileName("custom_share_history_detail_popup.xml");
-				Intent i = listener.shareTicket(t);
-				tcLog.d( "SAP = " + detailShare + " " + i);
-				detailShare.setShareIntent(i);
-			}
-*/
 		}
     }
 

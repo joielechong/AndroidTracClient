@@ -120,32 +120,6 @@ interface InterFragmentListener {
 
 public class TracStart extends Activity implements LoaderManager.LoaderCallbacks<Tickets>, InterFragmentListener, OnBackStackChangedListener {
    
-	private class MySemaphore extends Semaphore {
-		
-		public MySemaphore(int i,boolean b) {
-			super(i,b);
-			tcLog.d(""+i+" "+b);
-			tcLog.d(""+super.availablePermits());
-		}
-		
-		@Override
-		public void acquireUninterruptibly() {
-			tcLog.d(""+super.availablePermits());
-			super.acquireUninterruptibly();
-			tcLog.d(""+super.availablePermits());
-		}
-		public void release() {
-			tcLog.d(""+super.availablePermits());
-			super.release();
-			tcLog.d(""+super.availablePermits());
-		}
-		public int availablePermits() {
-			int i = super.availablePermits();
-			tcLog.d(""+ i);
-			return i;
-		}
-	}
-
     /*
      * Constanten voor communicatie met de service en fragmenten
      */
@@ -233,7 +207,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	private static final int TICKET_LOADER = 3;
 	private static final int TICKET_LOADER_NOSHOW = 4;
 	
-	private Semaphore loadingActive = new MySemaphore(1, true);	
+	private Semaphore loadingActive = new Semaphore(1, true);	
 	
     @Override
     public Loader<Tickets> onCreateLoader(int loaderID, Bundle bundle) {
@@ -760,8 +734,10 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 		
 		newDataAdapter(new Tickets()); // empty list
 		
-		LocalBroadcastManager.getInstance(this).registerReceiver(mProviderMessageReceiver,new IntentFilter(PROVIDER_MESSAGE));
-		LocalBroadcastManager.getInstance(this).registerReceiver(mDataChangedMessageReceiver,new IntentFilter(DATACHANGED_MESSAGE));
+		
+		IntentFilter intFilt = new IntentFilter(PROVIDER_MESSAGE);
+		intFilt.addAction(DATACHANGED_MESSAGE);
+		LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastMessageReceiver,intFilt);
 		
         getFragmentManager().addOnBackStackChangedListener(this);
         // Handle when activity is recreated like on orientation Change
@@ -1051,8 +1027,9 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
             mIsBound = false;
         }
         // stopService(new Intent(this, RefreshService.class));
-		LocalBroadcastManager.getInstance(this).unregisterReceiver(mProviderMessageReceiver);
-		LocalBroadcastManager.getInstance(this).unregisterReceiver(mDataChangedMessageReceiver);
+//		LocalBroadcastManager.getInstance(this).unregisterReceiver(mProviderMessageReceiver);
+//		LocalBroadcastManager.getInstance(this).unregisterReceiver(mProviderMessageReceiver);
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastMessageReceiver);
         super.onDestroy();
     }
 
@@ -1625,6 +1602,8 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	public int getPrevTicket(int i) {
 		return dataAdapter.getPrevTicket(i);
 	}
+	
+/*
 
     private BroadcastReceiver mProviderMessageReceiver = new BroadcastReceiver() {
 		@Override
@@ -1649,6 +1628,36 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 			}			
 		}
     };
+*/
+    private BroadcastReceiver mBroadcastMessageReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context c,Intent i) {
+			tcLog.d( "Receive "+i);
+			switch (i.getAction()) {
+				case PROVIDER_MESSAGE:
+				tcLog.d( "Receive PROVIDER_MESSAGE");
+				int title = i.getIntExtra("title",R.string.warning);
+				int message = i.getIntExtra("message",R.string.unknownError);
+				String addit = i.getStringExtra("additional");
+				showAlertBox(title,message,addit);
+				break;
+
+				case DATACHANGED_MESSAGE:
+				tcLog.d( "Receive DATACHANGED_MESSAGE");
+				findViewById(R.id.displayList).invalidate();
+				try {
+					getTicketListFragment().dataHasChanged();
+				} catch (Exception e) {
+					tcLog.e("cannot contact TicketListFragment");
+				}	
+				break;
+
+				default:
+				throw new IllegalArgumentException();
+			}
+		}
+    };
+
 	
 	public String getUsername() {
 		return username;

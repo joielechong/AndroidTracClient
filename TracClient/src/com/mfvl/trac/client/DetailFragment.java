@@ -64,7 +64,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 
-public class DetailFragment extends TracClientFragment implements SwipeRefreshLayout.OnRefreshListener, CompoundButton.OnCheckedChangeListener, GestureDetector.OnGestureListener, onFileSelectedListener {
+public class DetailFragment extends TracClientFragment implements SwipeRefreshLayout.OnRefreshListener, CompoundButton.OnCheckedChangeListener, GestureDetector.OnGestureListener, onFileSelectedListener, OnItemClickListener,OnItemLongClickListener {
 
     private static final String EMPTYFIELDS = "emptyfields";
     private static final String MODVELD = "modveld";
@@ -620,128 +620,127 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
                     }
                 }
             }
-            listView.setOnItemLongClickListener(new OnItemLongClickListener() {
-                @Override
-                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                    final modifiedString t = (modifiedString) parent.getItemAtPosition(position);
-
-                    tcLog.d( "position = " + position);
-                    if (t.length() >= 8 && "bijlage ".equals(t.substring(0, 8))) {
-                        return false;
-                    } else if (t.length() >= 8 && "comment:".equals(t.substring(0, 8))) {
-						showAlertBox(R.string.notpossible,R.string.nocomment,null);
-                    } else {
-                        final String[] parsed = t.split(":", 2);
-
-                        selectField(parsed[0], parsed[1].trim(), null);
-                    }
-                    return true;
-                }
-            });
-            listView.setOnItemClickListener(new OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    final modifiedString t = (modifiedString) parent.getItemAtPosition(position);
-
-                    tcLog.d( "position = " + position);
-                    if (t.length() >= 8 && "bijlage ".equals(t.substring(0, 8))) {
-                        final int d = t.indexOf(":");
-                        final int bijlagenr = Integer.parseInt(t.substring(8, d));
-
-                        selectBijlage(bijlagenr);
-                    }
-                }
-            });
+            listView.setOnItemLongClickListener(this);
+            listView.setOnItemClickListener(this);
             final ModifiedStringArrayAdapter dataAdapter = new ModifiedStringArrayAdapter(context, R.layout.ticket_list, values);
 
             listView.setAdapter(dataAdapter);
         }
     }
 
-    private void selectField(final String veld, final String waarde, final View dataView) {
-        if (Arrays.asList(notModified).contains(veld)) {
+	@Override
+	public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+		final modifiedString t = (modifiedString) parent.getItemAtPosition(position);
+
+		tcLog.d( "position = " + position);
+		if (t.length() >= 8 && "bijlage ".equals(t.substring(0, 8))) {
+			return false;
+		} else if (t.length() >= 8 && "comment:".equals(t.substring(0, 8))) {
+			showAlertBox(R.string.notpossible,R.string.nocomment,null);
+		} else {
+			final String[] parsed = t.split(":", 2);
+
+			selectField(parsed[0], parsed[1].trim(), null);
+		}
+		return true;
+	}
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		final modifiedString t = (modifiedString) parent.getItemAtPosition(position);
+
+		tcLog.d( "position = " + position);
+		if (t.length() >= 8 && "bijlage ".equals(t.substring(0, 8))) {
+			final int d = t.indexOf(":");
+			final int bijlagenr = Integer.parseInt(t.substring(8, d));
+
+			selectBijlage(bijlagenr);
+		}
+	}
+		
+	private void selectField(final String veld, final String waarde, final View dataView) {
+		if (Arrays.asList(notModified).contains(veld)) {
 			showAlertBox(R.string.notpossible,R.string.notchange,null);
-        } else if (Arrays.asList(isStatusUpd).contains(veld)) {
-            listener.onUpdateTicket(_ticket);
-            didUpdate = true;
-        } else {
-            final TicketModelVeld tmv = tm.getVeld(veld);
-            final LayoutInflater inflater = LayoutInflater.from(context);
+		} else if (Arrays.asList(isStatusUpd).contains(veld)) {
+			listener.onUpdateTicket(_ticket);
+			didUpdate = true;
+		} else {
+			final TicketModelVeld tmv = tm.getVeld(veld);
+			final LayoutInflater inflater = LayoutInflater.from(context);
 
-            final RelativeLayout ll = (RelativeLayout) inflater.inflate(
-                    tmv.options() == null ? R.layout.field_spec1 : R.layout.field_spec2, null, false);
+			final RelativeLayout ll = (RelativeLayout) inflater.inflate(
+					tmv.options() == null ? R.layout.field_spec1 : R.layout.field_spec2, null, false);
 
-            ((TextView) ll.findViewById(R.id.veldnaam)).setText(veld);
-            final EditText et = (EditText) ll.findViewById(R.id.veldwaarde);
-            final Spinner spinValue = makeDialogComboSpin(getActivity(), veld, tmv.options(), tmv.optional(), waarde);
-            final Button canBut = (Button) ll.findViewById(R.id.cancelpw);
+			((TextView) ll.findViewById(R.id.veldnaam)).setText(veld);
+			final EditText et = (EditText) ll.findViewById(R.id.veldwaarde);
+			final Spinner spinValue = makeDialogComboSpin(getActivity(), veld, tmv.options(), tmv.optional(), waarde);
+			final Button canBut = (Button) ll.findViewById(R.id.cancelpw);
 			canBut.setOnClickListener(this);
-            final Button storBut = (Button) ll.findViewById(R.id.okBut);
-            final ListView parent = (ListView) getView().findViewById(R.id.listofFields);
+			final Button storBut = (Button) ll.findViewById(R.id.okBut);
+			final ListView parent = (ListView) getView().findViewById(R.id.listofFields);
 
-            if (et != null) {
-                et.setText(waarde);
-                et.requestFocus();
-            }
+			if (et != null) {
+				et.setText(waarde);
+				et.requestFocus();
+			}
 
-            try {
-                spinValue.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-                ((LinearLayout) ll.findViewById(R.id.veld)).addView(spinValue);
-            } catch (final Exception ignored) {}
+			try {
+				spinValue.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+				((LinearLayout) ll.findViewById(R.id.veld)).addView(spinValue);
+			} catch (final Exception ignored) {}
 
-            storBut.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String newValue = null;
+			storBut.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					String newValue = null;
 
-                    if (spinValue != null) {
-                        newValue = spinValue.getSelectedItem().toString();
-                    }
-                    if (et != null) {
-                        newValue = et.getText().toString();
-                    }
-                    if (newValue != null && !newValue.equals(waarde) || newValue == null && waarde != null) {
-                        if ("summary".equals(veld)) {
-                            ((TextView) dataView).setText(newValue);
-                            ((TextView) dataView).setTextColor(popup_selected_color);
-                            tcLog.d( "tickText na postInvalidate + " + dataView);
-                            final String[] parsed = newValue.split(":", 2);
+					if (spinValue != null) {
+						newValue = spinValue.getSelectedItem().toString();
+					}
+					if (et != null) {
+						newValue = et.getText().toString();
+					}
+					if (newValue != null && !newValue.equals(waarde) || newValue == null && waarde != null) {
+						if ("summary".equals(veld)) {
+							((TextView) dataView).setText(newValue);
+							((TextView) dataView).setTextColor(popup_selected_color);
+							tcLog.d( "tickText na postInvalidate + " + dataView);
+							final String[] parsed = newValue.split(":", 2);
 
-                            modVeld.put("summary", parsed[1].trim());
-                        } else {
-                            final int pos = ((ModifiedStringArrayAdapter) parent.getAdapter()).getPosition(
-                                    new modifiedString(veld, newValue));
+							modVeld.put("summary", parsed[1].trim());
+						} else {
+							final int pos = ((ModifiedStringArrayAdapter) parent.getAdapter()).getPosition(
+									new modifiedString(veld, newValue));
 
-                            if (pos >= 0) {
-                                final modifiedString ms = values.get(pos);
+							if (pos >= 0) {
+								final modifiedString ms = values.get(pos);
 
-                                ms.setWaarde(newValue);
-                                ms.setUpdated(true);
-                                values.set(pos, ms);
-                                ((ModifiedStringArrayAdapter) parent.getAdapter()).notifyDataSetChanged();
-                            }
-                            modVeld.put(veld, newValue);
-                        }
-                        setSelect(false);
-                    }
-                    final LinearLayout mv = (LinearLayout) getView().findViewById(R.id.modveld);
+								ms.setWaarde(newValue);
+								ms.setUpdated(true);
+								values.set(pos, ms);
+								((ModifiedStringArrayAdapter) parent.getAdapter()).notifyDataSetChanged();
+							}
+							modVeld.put(veld, newValue);
+						}
+						setSelect(false);
+					}
+					final LinearLayout mv = (LinearLayout) getView().findViewById(R.id.modveld);
 
-                    if (mv != null && !modVeld.isEmpty()) {
-                        mv.setVisibility(View.VISIBLE);
-                    }
-                    if (pw != null && !listener.isFinishing()) {
-                        pw.dismiss();
-                    }
-                }
-            });
+					if (mv != null && !modVeld.isEmpty()) {
+						mv.setVisibility(View.VISIBLE);
+					}
+					if (pw != null && !listener.isFinishing()) {
+						pw.dismiss();
+					}
+				}
+			});
 
-            pw = new PopupWindow(ll,getView().getWidth() * 9 / 10,getView().getHeight() * 4 / 5,true);
-            final Drawable drw = new ColorDrawable(ContextCompat.getColor(context,R.color.popup_back));
-            drw.setAlpha(context.getResources().getInteger(R.integer.popupAlpha));
-            pw.setBackgroundDrawable(drw);
-            pw.showAtLocation(parent, Gravity.CENTER, 0, 0);
-        }
-    }
+			pw = new PopupWindow(ll,getView().getWidth() * 9 / 10,getView().getHeight() * 4 / 5,true);
+			final Drawable drw = new ColorDrawable(ContextCompat.getColor(context,R.color.popup_back));
+			drw.setAlpha(context.getResources().getInteger(R.integer.popupAlpha));
+			pw.setBackgroundDrawable(drw);
+			pw.showAtLocation(parent, Gravity.CENTER, 0, 0);
+		}
+	}
 
     public boolean onBackPressed() {
         tcLog.logCall();

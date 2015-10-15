@@ -348,7 +348,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 	}
 	
 	protected void setListener(int resid,View v,View.OnClickListener c) {
-		tcLog.d( "resid = "+resid+" v = "+v+" c =" + c);
+//		tcLog.d( "resid = "+resid+" v = "+v+" c =" + c);
 		try {
 			v.findViewById(resid).setOnClickListener(c);
 		} catch (Exception ignored) {}

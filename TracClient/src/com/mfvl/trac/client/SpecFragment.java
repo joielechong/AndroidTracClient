@@ -56,6 +56,7 @@ public class SpecFragment<T extends Spec> extends TracClientFragment {
         super.onViewCreated(view, savedInstanceState);
         tcLog.d("view = " + view + " savedInstanceState = " + savedInstanceState);
 		listView = (ListView) view.findViewById(R.id.itemlist);
+        tcLog.d("view = " + view + " listView = "+ listView + " savedInstanceState = " + savedInstanceState);
 	}
 
 	@SuppressWarnings("unchecked")
