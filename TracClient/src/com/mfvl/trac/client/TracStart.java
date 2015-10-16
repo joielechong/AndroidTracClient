@@ -141,8 +141,8 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	static final int MSG_ACK_START = 27;
 	static final int MSG_START_LISTLOADER = 28;
 	
-	public static final String PROVIDER_MESSAGE = "TracClientProviderMessage";
-	public static final String DATACHANGED_MESSAGE = "TracClientDataChangedMessage";
+	public static final String PROVIDER_MESSAGE = "com.mfvl.trac.client.message.provider";
+	public static final String DATACHANGED_MESSAGE = "com.mfvl.trac.client.message.datachanged";
     private static final int REQUEST_CODE = 6384;
 
 	public static String[] mDrawerTitles = null;
@@ -1603,32 +1603,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 		return dataAdapter.getPrevTicket(i);
 	}
 	
-/*
-
-    private BroadcastReceiver mProviderMessageReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context c,Intent i) {
-			tcLog.d( "Receive PROVIDER_MESSAGE");
-			int title = i.getIntExtra("title",R.string.warning);
-			int message = i.getIntExtra("message",R.string.unknownError);
-			String addit = i.getStringExtra("additional");
-			showAlertBox(title,message,addit);
-		}
-    };
-	
-    private BroadcastReceiver mDataChangedMessageReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context c,Intent i) {
-			tcLog.d( "Receive DATACHANGED_MESSAGE");
-			findViewById(R.id.displayList).invalidate();
-			try {
-				getTicketListFragment().dataHasChanged();
-			} catch (Exception e) {
-				tcLog.e("cannot contact TicketListFragment");
-			}			
-		}
-    };
-*/
     private BroadcastReceiver mBroadcastMessageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context c,Intent i) {

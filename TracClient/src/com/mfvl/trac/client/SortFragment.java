@@ -113,7 +113,7 @@ public class SortFragment extends SpecFragment<SortSpec>  {
 				break;
 				
 				case R.id.delitem:
-				this.remove(sortItem);
+				remove(sortItem);
 				notifyDataSetChanged();
 				break;
 			}

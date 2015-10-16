@@ -55,17 +55,18 @@ public class FilterSpec extends Spec implements Serializable, Cloneable {
 	
 	@Override
 	public boolean equals(Object o) {
+		boolean retVal;
 		if (this == o) {
-			return true;
+			retVal = true;
+		} else if (! (o instanceof FilterSpec)) {
+			retVal = false;
+		} else {
+			retVal = super.equals(o);
+			FilterSpec f =(FilterSpec)o;
+			retVal &= equalFields(_operator,f.getOperator());
+			retVal &= equalFields(_waarde,f.getWaarde());
 		}
-
-		if (! (o instanceof FilterSpec)) {
-			return false;
-		}
-		boolean retVal = super.equals(o);
-		FilterSpec f =(FilterSpec)o;
-		retVal |= equalFields(_operator,f.getOperator());
-		retVal |= equalFields(_waarde,f.getWaarde());
+//		tcLog.d("this = "+this+" o = "+o+" retVal = "+retVal);
 		return retVal;
 	}
 

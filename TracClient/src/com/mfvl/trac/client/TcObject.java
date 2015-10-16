@@ -7,6 +7,7 @@ public class TcObject {
 		if (!retVal && f1 != null && f2 != null) {
 			retVal = f1.equals(f2);
 		}
+//		tcLog.d("f1 = "+f1+" f2 = "+f2+" retVal = "+retVal);
 		return retVal;
 	}
 }

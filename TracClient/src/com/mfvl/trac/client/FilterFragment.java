@@ -167,7 +167,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
 				break;
 				
 				case R.id.delitem:
-				items.remove(filterItem);
+				remove(filterItem);
 				notifyDataSetChanged();
 				break;
 			}
@@ -263,7 +263,8 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
 			break;
 			
 			case R.id.addbutton:
-			final String veld = tm.velden().get((int) addSpinner.getSelectedItemId());
+//			final String veld = tm.velden().get((int) addSpinner.getSelectedItemId());
+			final String veld = (String)addSpinner.getSelectedItem();
 			final FilterSpec o = new FilterSpec(veld, "=", "");
 
 			filterAdapter.add(o);
