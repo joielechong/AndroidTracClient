@@ -16,9 +16,7 @@
 
 package com.mfvl.trac.client;
 
-
 import java.io.Serializable;
-
 
 abstract public class Spec extends TcObject implements Serializable, Cloneable {
     private static final long serialVersionUID = -4398082467476637503L;
@@ -30,17 +28,18 @@ abstract public class Spec extends TcObject implements Serializable, Cloneable {
 	
 	@Override
 	public boolean equals(Object o) {
+		boolean retVal;
 		if (this == o) {
-			return true;
-		}
-
-		if (! (o instanceof Spec)) {
-			return false;
-		}
-		boolean retVal = super.equals(o);
+			retVal = true;
+		} else if (! (o instanceof Spec)) {
+			retVal = false;
+		} else {
+			retVal = super.equals(o);
 		
-		Spec f =(Spec)o;
-		retVal |= equalFields(_veld,f.getVeld());
+			Spec f =(Spec)o;
+			retVal &= equalFields(_veld,f.getVeld());
+		}
+//		tcLog.d("this = "+this+" o = "+o+" retVal = "+retVal);
 		return retVal;
 	}
 

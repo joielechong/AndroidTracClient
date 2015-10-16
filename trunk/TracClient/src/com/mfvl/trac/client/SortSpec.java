@@ -33,16 +33,17 @@ public class SortSpec extends Spec implements Cloneable, Serializable {
 
 	@Override
 	public boolean equals(Object o) {
+		boolean retVal;
 		if (this == o) {
-			return true;
+			retVal = true;
+		} else if (! (o instanceof SortSpec)) {
+			retVal = false;
+		} else {
+			retVal = super.equals(o);
+			SortSpec f =(SortSpec)o;
+			retVal &= equalFields(_richting,f.getRichting());
 		}
-
-		if (! (o instanceof SortSpec)) {
-			return false;
-		}
-		boolean retVal = super.equals(o);
-		SortSpec f =(SortSpec)o;
-		retVal |= equalFields(_richting,f.getRichting());
+//		tcLog.d("this = "+this+" o = "+o+" retVal = "+retVal);
 		return retVal;
 	}
 
