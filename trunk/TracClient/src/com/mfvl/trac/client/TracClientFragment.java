@@ -64,8 +64,8 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
     protected int extra_large_move;
     protected int drawer_border;
 	protected Handler tracStartHandler;
-	protected View activityRootView;
 	protected int helpFile = -1;
+	protected Bundle fragmentArgs = null;
 	
 	private void onMyAttach(Context activity) {
         context = (TracStart) activity;
@@ -75,6 +75,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 		large_move = context.getResources().getInteger(R.integer.large_move);
         extra_large_move = context.getResources().getInteger(R.integer.extra_large_move);
         drawer_border = context.getResources().getInteger(R.integer.drawer_border);
+		fragmentArgs = getArguments();
 	}
 
     @Override
@@ -90,11 +91,6 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 		super.onAttach(activity);
         tcLog.d( "(A) ");
 		onMyAttach(activity);
-	}
-
-	protected void sendMessageToHandler(int msg) {
-        tcLog.d( "msg = " + msg);
-		tracStartHandler.sendMessage(tracStartHandler.obtainMessage(msg));
 	}
 
 	protected void sendMessageToHandler(int msg,Object o) {
@@ -127,56 +123,55 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
             testDevices = new String[1];
             testDevices[0] = "";
         }
-
-        // Get a Tracker (should auto-report)
-        MyTracker.getInstance(context);
     }
 
     @Override
     public void onViewCreated(final View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        tcLog.d( "view = "+view);
+//        tcLog.d( "view = "+view);
         aboveView = view.findViewById(R.id.aboveAdBlock);
+		adViewContainer = (LinearLayout) view.findViewById(R.id.adBlock);
  
-        if (listener != null && listener.getDispAds()) {
-            if (adViewContainer != null) {
-                adView = new AdView(context);
-                adView.setAdUnitId(adUnitId);
-                adView.setAdSize(AdSize.SMART_BANNER);
+        if (listener.getDispAds() && adViewContainer != null) {
+			adView = new AdView(context);
+			adView.setAdUnitId(adUnitId);
+			adView.setAdSize(AdSize.SMART_BANNER);
 
-                final AdRequest.Builder arb = new AdRequest.Builder();
+			final AdRequest.Builder arb = new AdRequest.Builder();
 
-                if (adView != null && arb != null) {
-                    arb.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
-                    if (Credentials.isDebuggable()) {
-                        for (final String t : testDevices) {
-                            tcLog.d( "testDevice = " + t);
-                            arb.addTestDevice(t);
-                        } 
-                    }
-                    arb.setGender(AdRequest.GENDER_UNKNOWN);
-                    final AdRequest adRequest = arb.build();
+			if (adView != null && arb != null) {
+				arb.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
+				if (Credentials.isDebuggable()) {
+					for (final String t : testDevices) {
+						tcLog.d( "testDevice = " + t);
+						arb.addTestDevice(t);
+					} 
+				}
+				arb.setGender(AdRequest.GENDER_UNKNOWN);
+				final AdRequest adRequest = arb.build();
 
-                    if (adRequest != null) {
-                        try {
-                            adView.loadAd(adRequest);
-                            adView.setLayoutParams(adViewContainer.getLayoutParams());
-                            // tcLog.d( "adView size = " +adView.getHeight());
-                            adViewContainer.addView(adView);
-                        } catch (final Exception e) {
-                            listener.setDispAds(false);
-                        }
-                    }
-                }
-                if (view != null && aboveView != null) {
-                    padTop = aboveView.getPaddingTop();
-                    padRight = aboveView.getPaddingRight();
-                    padBot = aboveView.getPaddingBottom();
-                    padLeft = aboveView.getPaddingLeft();
-                    adsVisible = true;
-                    view.getViewTreeObserver().addOnGlobalLayoutListener(this);
-                }
-            }
+				if (adRequest != null) {
+					try {
+						adView.loadAd(adRequest);
+						adView.setLayoutParams(adViewContainer.getLayoutParams());
+						// tcLog.d( "adView size = " +adView.getHeight());
+						adViewContainer.addView(adView);
+					} catch (final Exception e) {
+						if (aboveView != null) {
+							aboveView.setPadding(0, 0, 0, 0);
+						}
+						listener.setDispAds(false);
+					}
+				}
+			}
+			if (view != null && aboveView != null) {
+				padTop = aboveView.getPaddingTop();
+				padRight = aboveView.getPaddingRight();
+				padBot = aboveView.getPaddingBottom();
+				padLeft = aboveView.getPaddingLeft();
+				adsVisible = true;
+				view.getViewTreeObserver().addOnGlobalLayoutListener(this);
+			}
         } else {
             if (aboveView != null) {
                 aboveView.setPadding(0, 0, 0, 0);
@@ -193,9 +188,9 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
             final Rect r = new Rect();
 
             // r will be populated with the coordinates of your view that area still visible.
-            activityRootView.getWindowVisibleDisplayFrame(r);
+            view.getWindowVisibleDisplayFrame(r);
 
-            final int heightDiff = activityRootView.getRootView().getHeight() - (r.bottom - r.top);
+            final int heightDiff = view.getRootView().getHeight() - (r.bottom - r.top);
 
             if (heightDiff > 100) { // if more than 100 pixels,
                 // its probably a keyboard...
@@ -214,24 +209,6 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
                 ab.show();
             }
         }
-    }
-
-    @Override
-    public void onStart() {
-        tcLog.logCall();
-        super.onStart();
-         
-        // Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
-		MyTracker.getInstance(context);
-        MyTracker.reportActivityStart(context);
-        MyTracker.hitScreen(getClass().getName());
-    }
-
-    @Override
-    public void onStop() {
-        tcLog.logCall();
-        super.onStop();
-        MyTracker.reportActivityStop(context);
     }
 
     @Override

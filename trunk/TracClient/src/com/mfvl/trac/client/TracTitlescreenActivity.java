@@ -44,24 +44,11 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
 		
 		Thread.setDefaultUncaughtExceptionHandler (this);
 		
-        Credentials.getInstance(getApplicationContext());
-        boolean doAnalytics = Const.doAnalytics;
-		if (doAnalytics) {
-			try {
-				doAnalytics = Credentials.metaDataGetBoolean("com.mfvl.trac.client.useAnalytics");
-			} catch (final Exception e) {
-				tcLog.e("getApplicationInfo", e);
-			}
-		}
-        tcLog.i( "doAnalytics = " + doAnalytics);
-		MyTracker.setDoAnalytics(doAnalytics);
         try {
             setContentView(R.layout.activity_titlescreen);
             final TextView tv = (TextView) findViewById(R.id.version_content);
 
             tv.setText(Credentials.getVersion());
-            // Get a Tracker (should auto-report)
-            MyTracker.getInstance(this);
         } catch (final Exception e) {
             tcLog.e("crash", e);
         }
@@ -90,9 +77,6 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
         } catch (final Exception e) {
             tcLog.e("Exception while determining Google Play Services", e);
         }
-
-        // Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
-        MyTracker.reportActivityStart(this);
 		
         launchTrac = new Intent(getApplicationContext(), TracStart.class);
 
@@ -135,13 +119,6 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
 		startApp();
 	}
 
-    @Override
-    public void onStop() {
-        tcLog.logCall();
-        super.onStop();
-        // Get an Analytics tracker to report app starts &amp; uncaught exceptions etc.
-        MyTracker.reportActivityStop(this);
-    }
 	private void startApp() {
         tcLog.logCall();
         int timerVal = getResources().getInteger(R.integer.startupTimer);

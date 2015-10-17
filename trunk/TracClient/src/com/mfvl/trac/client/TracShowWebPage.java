@@ -116,18 +116,4 @@ public class TracShowWebPage extends Activity implements View.OnClickListener {
 		cv.setText(R.string.cookieInform);
 //		Credentials.setCookieInform();
 	}
-	
-    @Override
-    public void onStart() {
-        //tcLog.d("onStart");
-        super.onStart();
-        MyTracker.reportActivityStart(this);
-    }
-    
-    @Override
-    public void onStop() {
-        //tcLog.d("onStop");
-        super.onStop();
-        MyTracker.reportActivityStop(this);
-    }
 }
