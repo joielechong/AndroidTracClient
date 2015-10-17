@@ -64,6 +64,5 @@ public final class Const {
      */
     static final String mimeUnknown = "application/unknown";
 	
-    static final boolean doAnalytics = true;
     static public int ticketGroupCount = 50;
 }

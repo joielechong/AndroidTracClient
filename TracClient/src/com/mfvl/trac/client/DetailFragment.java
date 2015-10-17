@@ -177,10 +177,8 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // tcLog.d( "onCreate savedInstanceState = " + savedInstanceState);
-        final Bundle args = getArguments();
-
-        if (args != null) {
-            ticknr = args.getInt(Const.CURRENT_TICKET);
+        if (fragmentArgs != null) {
+            ticknr = fragmentArgs.getInt(Const.CURRENT_TICKET);
         }
         if (savedInstanceState != null && savedInstanceState.containsKey(Const.CURRENT_TICKET)) {
             ticknr = savedInstanceState.getInt(Const.CURRENT_TICKET, -1);

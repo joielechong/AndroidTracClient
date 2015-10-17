@@ -178,7 +178,7 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
      */
     @Override
     protected void onStartLoading() {
-        tcLog.d( "this = "+this);
+        tcLog.d("this = "+this);
         if (mTickets != null) {
             deliverResult(mTickets);
         }
@@ -245,8 +245,7 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
     }
 	
 	private Tickets loadTickets() {
-
-		tcLog.d( "" + mLoginProfile );
+		tcLog.d(mLoginProfile.toString());
 
 		final Tickets mTickets = new Tickets();
 		mTickets.resetCache();
@@ -265,11 +264,11 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 		if (reqString.length() == 0) {
 			reqString = "max=0";
 		}
-		tcLog.d( "reqString = " + reqString);
+		tcLog.d("reqString = " + reqString);
 		try {
 			final JSONArray jsonTicketlist = tracClient.Query(reqString);
 
-			tcLog.d( jsonTicketlist.toString());
+			tcLog.d(jsonTicketlist.toString());
 			final int count = jsonTicketlist.length();
 
 			if (count > 0) {
@@ -286,16 +285,14 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 						mTickets.ticketList.add(i, t);
 					}
 				}
-				tcLog.d( "ticketlist loaded");
+				tcLog.d("ticketlist loaded");
 				new Thread() {
 					@Override
 					public void run() {
 						try {
 							loadTicketContent(mTickets);
 						} catch (Exception e) {
-							tcLog.e( "Exception in ticketContentLoad", e);
-						} finally {
-							tcLog.d( "content loaded");
+							tcLog.e("Exception in ticketContentLoad", e);
 						}
 					}
 				}.start();
@@ -303,7 +300,6 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 		} catch (JSONRPCException e) {
 			popup_warning(R.string.connerr,e.getMessage());
 		}		
-		tcLog.e( "In main thread again count = "+mTickets.getTicketCount());
 		if (mTickets.getTicketCount() == 0) {
 			popup_warning(R.string.notickets,null);
 		}
@@ -313,7 +309,7 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 	 private void loadTicketContent(Tickets tl) throws RuntimeException {
 		tcLog.logCall();
 		int count = tl.getTicketCount();
-		tcLog.d( "loadTicketContent count = "+count+ " "+ tl);
+//		tcLog.d( "loadTicketContent count = "+count+ " "+ tl);
 		
 
 		for (int j = 0; j < count; j += Const.ticketGroupCount) {

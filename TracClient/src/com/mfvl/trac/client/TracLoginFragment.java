@@ -62,22 +62,27 @@ public class TracLoginFragment extends TracClientFragment {
 
     /** server url */
     private String url = null;
+    private String currentUrl = null;
 
     /** username to use on server */
     private String username;
+    private String currentUsername;
 
     /** password to use on server */
     private String password;
+    private String currentPassword;
     
     /**
      * flag to indicate that SSL sites can have problems like Self signed certificates
      */
     private boolean sslHack;
+    private boolean currentSslHack;
 
     /**
      * flag to ingnore Hostname verification errors in SSL
      */
     private boolean sslHostNameHack;
+    private boolean currentSslHostNameHack;
 
     /**
      * flag to indicate that the credentials will be stored in the shared preferences
@@ -105,6 +110,11 @@ public class TracLoginFragment extends TracClientFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         tcLog.d("savedInstanceState = " + savedInstanceState);
+		currentUrl=fragmentArgs.getString(Const.CURRENT_URL);
+		currentUsername=fragmentArgs.getString(Const.CURRENT_USERNAME);
+		currentPassword=fragmentArgs.getString(Const.CURRENT_PASSWORD);
+		currentSslHack =fragmentArgs.getBoolean(Const.CURRENT_SSLHACK);
+		currentSslHostNameHack =fragmentArgs.getBoolean(Const.CURRENT_SSLHOSTNAMEHACK);
         setHasOptionsMenu(true);
     }
     
@@ -229,11 +239,11 @@ public class TracLoginFragment extends TracClientFragment {
         if (url == null) {
             if (savedInstanceState == null) {
                 // tcLog.d("onActivityCreated use Activity");
-				url = listener.getUrl();
-				username = listener.getUsername();
-				password = listener.getPassword();
-				sslHack = listener.getSslHack();
-				sslHostNameHack = listener.getSslHostNameHack();
+				url = currentUrl;
+				username = currentUsername;
+				password = currentPassword;
+				sslHack = currentSslHack;
+				sslHostNameHack = currentSslHostNameHack;
             } else {
                 // tcLog.d("onActivityCreated use savedInstanceState");
                 url = savedInstanceState.getString(NEW_URL);

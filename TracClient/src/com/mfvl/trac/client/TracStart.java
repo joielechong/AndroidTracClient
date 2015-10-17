@@ -29,7 +29,6 @@ import java.util.concurrent.Semaphore;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentValues;
@@ -109,11 +108,6 @@ interface InterFragmentListener {
 	Intent shareList();
 	Intent shareTicket(final Ticket ticket);
 	void listViewCreated();
-	String getUsername();
-	String getPassword();
-	String getUrl();
-	boolean getSslHack();
-	boolean getSslHostNameHack();
 	boolean isFinishing();
 	Handler getHandler();
 }
@@ -235,7 +229,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 			}
 			loadingActive.acquireUninterruptibly();
 			ticketsLoading = true;
-			tcLog.d( loaderID + " voor cursorloader");
             return new TicketLoader(this, lp);
 			
 			case CHANGES_LOADER:
@@ -264,7 +257,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 				}
 				ticketsLoading = false;
 			}
-			
 			tickets = tl;
 			newDataAdapter(tl);
 			try {
@@ -296,6 +288,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 				showAlertBox(R.string.notfound,R.string.ticketnotfound,null);
 			}
 			getLoaderManager().destroyLoader(TICKET_LOADER);
+			break;
 			
 			case TICKET_LOADER_NOSHOW:
 			stopProgressBar();
@@ -309,7 +302,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 
     @Override
     public void onLoaderReset(Loader<Tickets> loader) {
-        tcLog.d( loader + " " + loader.getId());
+        tcLog.d(loader + " " + loader.getId());
 		switch (loader.getId()) {
 			case LIST_LOADER:
 			hasTicketsLoadingBar = false;
@@ -381,42 +374,32 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 				
 				case MSG_START_PROGRESSBAR:
 				final String message = (String) msg.obj;
-                post(new Runnable() {
-                    @Override
-                    public void run() {
-						synchronized (this) {
-							// tcLog.d("handleMessage msg = START_PROGRESSBAR string = "+message);
-							if (progressBar == null) {
-								progressBar = new ProgressDialog(TracStart.this);
-								progressBar.setCancelable(true);
-								if (message != null) {
-									progressBar.setMessage(message);
-								}
-								progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-								if (!TracStart.this.isFinishing()) {
-									progressBar.show();
-								}
-							}
+				synchronized (this) {
+					// tcLog.d("handleMessage msg = START_PROGRESSBAR string = "+message);
+					if (progressBar == null) {
+						progressBar = new ProgressDialog(TracStart.this);
+						progressBar.setCancelable(true);
+						if (message != null) {
+							progressBar.setMessage(message);
+						}
+						progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+						if (!TracStart.this.isFinishing()) {
+							progressBar.show();
 						}
 					}
-                });
+				}
 				break;
 
 				case MSG_STOP_PROGRESSBAR:
-                post(new Runnable() {
-                    @Override
-                    public void run() {
-						synchronized (this) {
-						// tcLog.d("handleMessage msg = STOP_PROGRESSBAR");
-							if (progressBar != null) {
-								if (!TracStart.this.isFinishing()) {
-									progressBar.dismiss();
-								}
-								progressBar = null;
-							}
+				synchronized (this) {
+					// tcLog.d("handleMessage msg = STOP_PROGRESSBAR");
+					if (progressBar != null) {
+						if (!TracStart.this.isFinishing()) {
+							progressBar.dismiss();
 						}
+						progressBar = null;
 					}
-				});
+				}
 				break;
 				
 				case MSG_SET_SORT:
@@ -637,17 +620,14 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         tcLog.d( "savedInstanceState = " + savedInstanceState);
 
         // FragmentManager.enableDebugLogging(true);
-		LoaderManager.enableDebugLogging(true);
+		// LoaderManager.enableDebugLogging(true);
 		try {
             Const.ticketGroupCount = getResources().getInteger(R.integer.ticketGroupCount);
-        } catch (Exception e) {
-            tcLog.e( "Resource ticketGroupCount not found", e);
-        }
+        } catch (Exception ignored) {}
 
         timerCorr = getResources().getInteger(R.integer.timerCorr);
 
 		Credentials.getInstance(getApplicationContext());
-        MyTracker.getInstance(this);
 		
         mHandlerThread = new MyHandlerThread("IncomingHandler", Process.THREAD_PRIORITY_BACKGROUND);
         mHandlerThread.start();
@@ -772,7 +752,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
                 ft.add(R.id.displayList, ticketListFragment, ListFragmentTag);
 				ft.addToBackStack(ListFragmentTag);
             } else {
-                final TracLoginFragment tracLoginFragment = new TracLoginFragment();
+                final TracLoginFragment tracLoginFragment = newLoginFrag();
 
                 ft.add(R.id.displayList, tracLoginFragment, LoginFragmentTag);
 				ft.addToBackStack(LoginFragmentTag);
@@ -899,6 +879,20 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	}
 
     @Override
+    public void onChooserSelected(onFileSelectedListener oc) {
+        tcLog.logCall();
+        // save callback
+        _oc = oc;
+        // Use the GET_CONTENT intent from the utility class
+        final Intent target = new Intent(Intent.ACTION_GET_CONTENT);
+
+        target.setType("*/*");
+        target.addCategory(Intent.CATEGORY_OPENABLE);
+        // Create the chooser Intent
+		startActivityForResult(Intent.createChooser(target, getString(R.string.chooser_title)), REQUEST_CODE);
+    }
+	
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         tcLog.d( "requestcode = " + requestCode);
         switch (requestCode) {
@@ -966,11 +960,23 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         doNotFinish = false;
         shouldDisplayHomeUp();
     }
+	
+	TracLoginFragment newLoginFrag() {
+        final TracLoginFragment tracLoginFragment = new TracLoginFragment();
+		final Bundle args = makeArgs();
+		args.putString(Const.CURRENT_URL, url);
+		args.putString(Const.CURRENT_USERNAME, username);
+		args.putString(Const.CURRENT_PASSWORD, password);
+		args.putBoolean(Const.CURRENT_SSLHACK, sslHack);
+		args.putBoolean(Const.CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
+		tracLoginFragment.setArguments(args);
+		return tracLoginFragment;
+	}
 
     private void onChangeHost() {
         tcLog.logCall();
         final FragmentTransaction ft = getFragmentManager().beginTransaction();
-        final TracLoginFragment tracLoginFragment = new TracLoginFragment();
+        final TracLoginFragment tracLoginFragment = newLoginFrag();
 
         ft.replace(R.id.displayList, tracLoginFragment, LoginFragmentTag);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -978,25 +984,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         ft.commit();
     }
 
-    @Override
-    public void onChooserSelected(onFileSelectedListener oc) {
-        tcLog.logCall();
-        // save callback
-        _oc = oc;
-        // Use the GET_CONTENT intent from the utility class
-        final Intent target = new Intent(Intent.ACTION_GET_CONTENT);
-
-        target.setType("*/*");
-        target.addCategory(Intent.CATEGORY_OPENABLE);
-        // Create the chooser Intent
-        final Intent intent = Intent.createChooser(target, getString(R.string.chooser_title));
-
-        try {
-            startActivityForResult(intent, REQUEST_CODE);
-        } catch (final ActivityNotFoundException ignored) {// The reason for the existence of aFileChooser
-        }
-    }
-	
 	public void setActionProvider(Menu menu,int resid) {
         final MenuItem item = menu.findItem(resid);
         ShareActionProvider mShareActionProvider = (ShareActionProvider)item.getActionProvider();
@@ -1079,6 +1066,9 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         final NewTicketFragment newtickFragment = new NewTicketFragment();
         // tcLog.d( "newTickFragment =" +  newtickFragment.toString());
         final FragmentTransaction ft = getFragmentManager().beginTransaction();
+		final Bundle args = makeArgs();
+		args.putString(Const.CURRENT_USERNAME, username);
+		newtickFragment.setArguments(args);
 
         ft.replace(R.id.displayList, newtickFragment, NewFragmentTag);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -1183,26 +1173,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.addToBackStack(SortFragmentTag);
         ft.commit();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        tcLog.logCall();
-        MyTracker.reportActivityStart(this);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        tcLog.logCall();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        tcLog.logCall();
-        MyTracker.reportActivityStop(this);
     }
 
     @Override
@@ -1347,6 +1317,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 
     @Override
     public boolean getDispAds() {
+		tcLog.d("dispAds = "+dispAds);
         return dispAds;
     }
 
@@ -1606,10 +1577,10 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     private BroadcastReceiver mBroadcastMessageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context c,Intent i) {
-			tcLog.d( "Receive "+i);
+//			tcLog.d( "Receive "+i);
 			switch (i.getAction()) {
 				case PROVIDER_MESSAGE:
-				tcLog.d( "Receive PROVIDER_MESSAGE");
+//				tcLog.d( "Receive PROVIDER_MESSAGE");
 				int title = i.getIntExtra("title",R.string.warning);
 				int message = i.getIntExtra("message",R.string.unknownError);
 				String addit = i.getStringExtra("additional");
@@ -1617,7 +1588,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 				break;
 
 				case DATACHANGED_MESSAGE:
-				tcLog.d( "Receive DATACHANGED_MESSAGE");
+//				tcLog.d( "Receive DATACHANGED_MESSAGE");
 				findViewById(R.id.displayList).invalidate();
 				try {
 					getTicketListFragment().dataHasChanged();
@@ -1631,25 +1602,4 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 			}
 		}
     };
-
-	
-	public String getUsername() {
-		return username;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-	
-	public String getUrl() {
-		return url;
-	}
-	
-	public boolean getSslHack() {
-		return sslHack;
-	}
-	
-	public boolean getSslHostNameHack() {
-		return sslHostNameHack;
-	}
 }

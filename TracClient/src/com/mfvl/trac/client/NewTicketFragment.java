@@ -38,12 +38,18 @@ import android.widget.TextView;
 public class NewTicketFragment extends TracClientFragment {
     private final static int EXTRA = 1000;
     private TicketModel tm;
+	private String username = null;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // tcLog.d( "onCreate savedInstanceState = " + savedInstanceState);
 		helpFile = R.string.newhelpfile;
+        if (fragmentArgs != null) {
+            if (fragmentArgs.containsKey(Const.CURRENT_USERNAME)) {
+                username = fragmentArgs.getString(Const.CURRENT_USERNAME);
+            }
+        }
         setHasOptionsMenu(true);
     }
     
@@ -143,7 +149,7 @@ public class NewTicketFragment extends TracClientFragment {
                         }
                     }
                     velden.put("status", "new");
-                    velden.put("reporter", listener.getUsername());
+                    velden.put("reporter", username);
                     final CheckBox updNotify = (CheckBox) view.findViewById(R.id.updNotify);
                     final boolean notify = updNotify != null && updNotify.isChecked();
                     final Ticket t = new Ticket(velden);

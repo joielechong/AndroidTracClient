@@ -62,11 +62,9 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 	private SwipeRefreshLayout swipeLayout;
 	
 	private void onMyAttach(Context activity) {
-        final Bundle args = getArguments();
-
-        if (args != null) {
-            if (args.containsKey("TicketArg")) {
-                selectTicket(args.getInt("TicketArg"));
+        if (fragmentArgs != null) {
+            if (fragmentArgs.containsKey("TicketArg")) {
+                selectTicket(fragmentArgs.getInt("TicketArg"));
             }
         }
 	}
@@ -147,7 +145,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
         } else {
             filterText.setVisibility(View.GONE);
             if (filterText.isFocused()) {
-                filterText.clearFocus();
+				filterText.clearFocus();
             }
         }
     }
@@ -329,8 +327,9 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 
 	public void dataHasChanged() {
 		try {
-			tcLog.d( "hs = " + hs);
+//			tcLog.d("hs = " + hs);
 			setStatus(listener.getTicketContentCount() + "/" + listener.getTicketCount());
+			setAdapter(listener.getAdapter());
 			updateShareActionProvider();
 			listView.invalidate();
 			listView.invalidateViews();
@@ -339,7 +338,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 	}
 	
 	public void startLoading() {
-        tcLog.d( "hs = " + hs);
+//        tcLog.d("hs = " + hs);
         setStatus(R.string.ophalen);
  	}
 
