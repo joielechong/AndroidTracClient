@@ -26,6 +26,7 @@
     <string name="oktext">OK</string>
     <string name="store">Sla ticket op</string>
     <string name="storerr">Fout tijdens creeeren van ticket</string>
+    <string name="upderr">Fout tijdens bijwerken van ticket</string>
     <string name="storerrdesc">Kan ticket niet opslaan</string>
     <string name="storok">Ticket aangemaakt</string>
     <string name="storokdesc">Ticket aangemaakt, id =</string>

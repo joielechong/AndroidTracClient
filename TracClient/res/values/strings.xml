@@ -42,6 +42,7 @@
 	<string name="oktext">OK</string>
 	<string name="store">Store ticket</string>
 	<string name="storerr">Error during create ticket</string>
+	<string name="upderr">Error during update ticket</string>
 	<string name="storerrdesc">Cannot store ticket</string>
 	<string name="storok">Ticket created</string>
 	<string name="storokdesc">Ticket created, id =</string>
