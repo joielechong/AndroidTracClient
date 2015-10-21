@@ -77,6 +77,7 @@ public class UpdateTicketFragment extends TracClientFragment {
         super.onCreate(savedInstanceState);
         // tcLog.d("onCreate savedInstanceState = " + savedInstanceState );
         setHasOptionsMenu(true);
+		helpFile = R.string.updatehelpfile;
     }
 
     @Override
@@ -221,6 +222,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 			break;
 			
 			case R.id.storeUpdate:
+			getFragmentManager().popBackStack();
 			storeUpdate(v);
 			break;
 		}
@@ -264,12 +266,6 @@ public class UpdateTicketFragment extends TracClientFragment {
 			listener.stopProgressBar();
 		}
 	}
-
-    @Override
-    public void onResume() {
-        super.onResume();
-		helpFile = R.string.updatehelpfile;
-    }
 
     @Override
     public void onSaveInstanceState(Bundle savedState) {

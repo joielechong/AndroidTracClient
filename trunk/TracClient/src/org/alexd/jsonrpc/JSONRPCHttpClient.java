@@ -120,7 +120,7 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 		}
 
 		hcb.setTargetAuthenticationStrategy(new TargetAuthenticationStrategy());
-			httpClient = hcb.build();
+		httpClient = hcb.build();
 	}
 
 	/**
@@ -173,18 +173,20 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 
 				// Execute the request and try to decode the JSON Response
 				try {
+//					tcLog.d("httpClient = "+httpClient+"request = "+request+" httpContext = "+httpContext);
 					response = httpClient.execute(request, httpContext);
 					int statusCode = response.getStatusLine().getStatusCode();
 					if (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
 						final Header headers[] = response.getHeaders("Location");
 						actualUri = headers[0].getValue();
+						retry = true;
 					}
-					retry |= (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY);
 				} catch (SSLException e) {
 					// Catch 1st 3 times
-					tcLog.d( "SSLException in 	JSONRPCHTTPClient.doJSONRequest retrycount = "+retrycount);
-					retry |= (retrycount++ < 3);
-					if (!retry) {
+					tcLog.w( "SSLException in 	JSONRPCHTTPClient.doJSONRequest retrycount = "+retrycount);
+					if (retrycount++ < 3) {
+						retry = true;
+					} else {
 						throw(e);
 					}
 				}

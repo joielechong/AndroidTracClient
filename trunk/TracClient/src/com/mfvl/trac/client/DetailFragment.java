@@ -539,8 +539,8 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
                         tickText.setTextColor(popup_selected_color);
                     }
                     tickText.append(" : " + summ);
-                } catch (final JSONException e) {
-                    tcLog.e( "JSONException fetching summary");
+                } catch (final JSONException ignored) {
+//                    tcLog.e( "JSONException fetching summary");
                 }
                 tickText.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
@@ -578,7 +578,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
                         values.add(ms);
                     }
                 } catch (final Exception e) {
-                    tcLog.e( "JSONException fetching field " + veld);
+//                    tcLog.e( "JSONException fetching field " + veld);
                     values.add(new modifiedString(veld, ""));
                 }
             }
@@ -760,8 +760,8 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 							.setPositiveButton(R.string.ja, new DialogInterface.OnClickListener() {
 								@Override
 								public void onClick(DialogInterface dialog, int which) {
-									updateTicket();
 									getFragmentManager().popBackStack();
+									updateTicket();
 								}})
 							.setNegativeButton(R.string.nee, null)
 							.show();
@@ -835,7 +835,19 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
     private void updateTicket() {
         tcLog.logCall();
 		try {
+			listener.startProgressBar(R.string.saveupdate);
 			listener.updateTicket(_ticket,"leave", "", null, null, sendNotification,  modVeld);
+			modVeld.clear();
+			listener.stopProgressBar();
+			displayTicket();
+//			listener.refreshOverview();
+//			context.runOnUiThread(new Runnable() {
+//				@Override
+//				public void run() {
+//					setSelect(true);
+//					refresh_ticket();
+//				}
+//			});
 		} catch (final Exception e) {
 			tcLog.e( "Exception during update", e);
 			showAlertBox(R.string.storerr,R.string.storerrdesc,e.getMessage());

@@ -16,6 +16,7 @@
 
 package com.mfvl.trac.client;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
 
@@ -102,7 +103,7 @@ interface InterFragmentListener {
 	int getPrevTicket(int i);
 	int getTicketCount();
 	int getTicketContentCount();
-	void updateTicket(Ticket t,String action, String comment, String veld, String waarde, final boolean notify, Map<String, String> modVeld) throws Exception;
+	boolean updateTicket(Ticket t,String action, String comment, String veld, String waarde, final boolean notify, Map<String, String> modVeld) throws Exception;
 	int createTicket(Ticket t , boolean notify) throws Exception;
 	void setActionProvider(Menu menu,int resid);
 	Intent shareList();
@@ -1495,12 +1496,12 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 		//TODO
 	}
 	
-	public void updateTicket(Ticket t,String action, String comment, String veld, String waarde, final boolean notify, Map<String, String> modVeld) throws Exception{
-		JSONObject velden = t.getVelden();
-
-		tcLog.d( "update: " + action + " '" + comment + "' '" + veld + "' '" + waarde + "' " + modVeld);
-        tcLog.d( "velden voor = " + velden);
-		int ticknr = t.getTicketnr();
+	public boolean updateTicket(final Ticket t,final String action, final String comment, final String veld, final String waarde, final boolean notify, final Map<String, String> modVeld) throws Exception{
+		final JSONObject velden = t.getVelden();
+		tcLog.d("Ticket = "+ t);
+		tcLog.d("update: " + action + " '" + comment + "' '" + veld + "' '" + waarde + "' " + modVeld);
+        tcLog.d("velden voor = " + velden);
+		final int ticknr = t.getTicketnr();
 		
         if (ticknr == -1) {
             throw new IllegalArgumentException("Invalid ticketnumber during update");
@@ -1523,13 +1524,33 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 
         velden.remove("changetime");
         velden.remove("time");
-		
-// 		ContentValues args = new ContentValues();
-//		args.put("comment",cmt);
-//		args.put("notify",notify);
-//		args.put("velden",velden.toString());
-//		Uri uri = Uri.withAppendedPath(TicketProvider.GET_QUERY_URI,""+ticknr);
-//		getContentResolver().update(uri, args,null,null);
+
+		Thread updateThread = new Thread() {
+			@Override
+			public void run() {
+				try {
+					TracHttpClient tracClient = new TracHttpClient(url,sslHack,sslHostNameHack,username,password);
+					JSONArray retTick = tracClient.updateTicket(ticknr, cmt, velden, notify); // TODO zou nieuwe ticket retourneren en is volgende dus niet nodig
+					t.setFields(retTick.getJSONObject(3));
+					if (modVeld != null) {
+						modVeld.clear();
+					}
+					tcLog.d("retTicket = "+retTick);
+				} catch (final Exception e) {
+					tcLog.e("JSONRPCException", e);
+					showAlertBox(R.string.upderr,R.string.storerrdesc,e.getMessage());
+				}
+			}
+		};
+		updateThread.start();
+		try {
+			updateThread.join();
+		} catch (Exception e) {
+			tcLog.e("Exception during join in update",e);
+			showAlertBox(R.string.storerr,R.string.storerrdesc,e.getMessage());
+			return false;
+		}
+		return true;
 	}
 	
 	public int createTicket(Ticket t,boolean notify) throws Exception{
