@@ -29,7 +29,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public final class ISO8601 {
+final class ISO8601 {
 
     /**
      * Transform Calendar to ISO 8601 string.

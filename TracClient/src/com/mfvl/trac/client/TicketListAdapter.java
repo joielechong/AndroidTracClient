@@ -17,9 +17,6 @@
 package com.mfvl.trac.client;
 
 import android.content.Context;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 
 public class TicketListAdapter extends ColoredArrayAdapter<Ticket>  {
     Context context;
@@ -32,6 +29,27 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket>  {
 
 		mTickets = tl;
     }
+	
+//	public View getView(int position, View convertView, ViewGroup parent) {
+//		tcLog.d("position = "+position+" convertView = "+convertView+" parent = "+parent);
+//		return super.getView(position,convertView,parent);
+//	}
+	
+	public void clear() {
+		tcLog.logCall();
+		super.clear();
+		mTickets.clear();
+		notifyDataSetChanged();
+	}
+	
+	public void addAll(Tickets tl) {
+        tcLog.d(tl != null ? tl.ticketList.toString() : null);
+		if (tl != null) {
+			super.addAll(tl.ticketList);
+			mTickets.add(tl);
+			notifyDataSetChanged();
+		}
+	}
 	
 	public TicketList getTicketList() {
 		return mTickets.ticketList;

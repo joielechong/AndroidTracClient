@@ -34,7 +34,9 @@ public class TicketModelVeld {
     private String _value;
     private List<Object> _options = null;
     private boolean _optional;
+    @SuppressWarnings("FieldCanBeLocal")
     private int _order;
+    @SuppressWarnings("FieldCanBeLocal")
     private boolean _custom;
 
     public TicketModelVeld(String name, String label, String value) {
@@ -85,7 +87,7 @@ public class TicketModelVeld {
                 final JSONArray ja = v.getJSONArray("options");
                 final int count = ja.length();
 
-                _options = new ArrayList<Object>();
+                _options = new ArrayList<>();
                 for (int i = 0; i < count; i++) {
                     _options.add(ja.getString(i));
                 }

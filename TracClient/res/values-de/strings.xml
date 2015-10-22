@@ -23,8 +23,9 @@
 	<string name="connerr">Verbindungsfehler</string>
 	<string name="newtick">Neues Ticket</string>
     <string name="oktext">OK</string>
-	<string name="store">Ticket Shop</string>
+	<string name="store">Ticket Speichern</string>
 	<string name="storerr">Fehler beim Erstellen des Tickets</string>
+	<string name="upderr">Fehler beim Ändern des Tickets</string>
 	<string name="storerrdesc">Ticket kann nicht gespeichert werden</string>
 	<string name="storok">Ticket erstellt</string>
 	<string name="storokdesc">Ticket erstellt, ID =</string>

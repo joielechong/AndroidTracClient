@@ -111,7 +111,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
             final String t = Credentials.metaDataGetString("com.mfvl.trac.client.testDevices");
 
             try {
-                testDevices = t.split("\\,");
+                testDevices = t.split(",");
             } catch (final IllegalArgumentException e) { // only 1
                 testDevices = new String[1];
                 testDevices[0] = t;
@@ -268,7 +268,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 		if (waardes == null) 
 			return null;
 		
-        final List<Object> spinValues = new ArrayList<Object>();
+        final List<Object> spinValues = new ArrayList<>();
 
         if (optional) {
             spinValues.add("");
@@ -278,7 +278,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 			spinValues.add(o);
 		}
 
-        final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<Object>(context, android.R.layout.simple_spinner_item, spinValues);
+        final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, spinValues);
         spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         final Spinner valSpinner = makeDialogSpinner(context, dialogWanted);
 

@@ -55,8 +55,8 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
             super(context, textViewResourceId, input);
 			if (operators == null) {
 				final Resources res = context.getResources();
-				operators = new ArrayList<String>(Arrays.asList(res.getStringArray(R.array.filter2_choice)));
-				operatornames = new ArrayList<String>(Arrays.asList(res.getStringArray(R.array.filter_names)));
+				operators = new ArrayList<>(Arrays.asList(res.getStringArray(R.array.filter2_choice)));
+				operatornames = new ArrayList<>(Arrays.asList(res.getStringArray(R.array.filter_names)));
 			}
         }
 
@@ -64,9 +64,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
         public View getView(final int position, View convertView, final ViewGroup parent) {
 			//tcLog.d( "getView pos=" + position + " " + convertView + " " + parent);
 
-            View vp = (View) parent;
-			
-            int p = (position >= items.size() || position < 0 ? 0 : position);
+			int p = (position >= items.size() || position < 0 ? 0 : position);
             final FilterSpec filterItem = items.get(p);
             final TicketModelVeld tmv = tm.getVeld(filterItem.getVeld());
 			//tcLog.d( "getView pos=" + position +" " + filterItem + " " + tmv);
@@ -79,8 +77,9 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
             //tcLog.d("getView pos = " + position + " curid = " + curid + " resid=" + resid + " veld = " + filterItem.getVeld());
             if (curid != resid) {
                 v = LayoutInflater.from(context).inflate(resid, null);
-                v.setId(resid); // hack hack
-                vp.requestLayout();
+				//noinspection ResourceType
+				v.setId(resid); // hack hack
+                parent.requestLayout();
             }
 			v.setTag(filterItem);
 
@@ -96,8 +95,8 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
 			filterNaam.setText((filterItem.getEdit()?filterItem.getVeld():filterItem.toString()));
 
             if (spin != null) {
-                final ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item,
-                        operatornames);
+                final ArrayAdapter<String> spinAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item,
+						operatornames);
 
                 spin.setAdapter(spinAdapter);
                 spin.setSelection(operators.indexOf(filterItem.getOperator()));
@@ -135,7 +134,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
                 filterCheck.addView(makeCheckBoxes(filterItem));
             }
 
-            vp.invalidate();
+            parent.invalidate();
 
             return v;
         }
@@ -219,9 +218,8 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         tcLog.d("savedInstanceState = " + savedInstanceState);
-        final View view = inflater.inflate(R.layout.filter_view, container, false);
 
-        return view;
+		return inflater.inflate(R.layout.filter_view, container, false);
     }
 
     @Override
@@ -241,7 +239,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
 		getScreensize(addSpinner,addButton);
 		final ArrayList<String> velden = tm.velden();
 		Collections.sort(velden);
-		final ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, velden);
+		final ArrayAdapter<String> spinAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, velden);
 		addSpinner.setAdapter(spinAdapter);
     }
 	

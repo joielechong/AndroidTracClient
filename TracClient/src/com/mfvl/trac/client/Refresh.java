@@ -30,7 +30,7 @@ import android.os.Messenger;
 
 public class Refresh extends Activity implements ServiceConnection {
 
-    Messenger mService = null;
+    private Messenger mService = null;
 
 /*
  * Implementing ServiceConnection 

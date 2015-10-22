@@ -56,7 +56,7 @@
 		<android.support.v4.widget.SwipeRefreshLayout
 			style="@style/SwipeContainer">
 
-			<ListView
+			<view class="com.mfvl.trac.client.TicketListFragment$MyListView"
 				android:id="@+id/listOfTickets"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"

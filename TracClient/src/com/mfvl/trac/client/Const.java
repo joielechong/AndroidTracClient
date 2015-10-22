@@ -17,7 +17,7 @@
 package com.mfvl.trac.client;
 
 
-public final class Const {
+final class Const {
 	
     /*
      * Constanten voor opslaan van variablen
@@ -28,7 +28,6 @@ public final class Const {
     static final String CURRENT_TICKET = "ticknr";
     static final String CURRENT_SSLHACK = "sslHack";
     static final String CURRENT_SSLHOSTNAMEHACK = "sslHostNameHack";
-	static final String TICKETMODELNAME = "TM";
 
     static final String ADMOB = "Admob";
     static final String FILTERLISTNAME = "filterlist";

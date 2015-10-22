@@ -290,6 +290,7 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 					@Override
 					public void run() {
 						try {
+							tcLog.logCall();
 							loadTicketContent(mTickets);
 						} catch (Exception e) {
 							tcLog.e("Exception in ticketContentLoad", e);
@@ -309,7 +310,7 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 	 private void loadTicketContent(Tickets tl) throws RuntimeException {
 		tcLog.logCall();
 		int count = tl.getTicketCount();
-//		tcLog.d( "loadTicketContent count = "+count+ " "+ tl);
+		tcLog.d( "count = "+count+ " "+ tl);
 		
 
 		for (int j = 0; j < count; j += Const.ticketGroupCount) {
@@ -360,7 +361,7 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 			} catch (final Exception e) {
 				throw new RuntimeException("loadTicketContent Exception thrown outerloop j=" + j, e);
 			}  finally {
-				tcLog.d( "loop " + tl.getTicketContentCount());
+				tcLog.d("loop " + tl.getTicketContentCount());
 			}
 			notify_datachanged();
 		}
