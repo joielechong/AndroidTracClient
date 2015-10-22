@@ -18,14 +18,10 @@ package com.mfvl.trac.client;
 
 import android.os.HandlerThread;
 
-public class MyHandlerThread extends HandlerThread {
+class MyHandlerThread extends HandlerThread {
 
     MyHandlerThread(String name) {
-        super(name);
-    }
-		
-    MyHandlerThread(String name, int priority) {
-        super(name, priority);
+        super(name, android.os.Process.THREAD_PRIORITY_BACKGROUND);
     }
 
     @Override

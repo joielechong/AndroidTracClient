@@ -43,17 +43,17 @@ import android.content.res.TypedArray;
 import android.content.res.Resources;
 
 
-public class ProfileDatabaseHelper extends SQLiteOpenHelper {
+class ProfileDatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "profile.db";
     private static final int DATABASE_VERSION = 2;
-    public static final String TABLE_NAME = "profiles";
-    public static final String NAME_ID = "name";
-    public static final String URL_ID = "url";
-    public static final String USERNAME_ID = "username";
-    public static final String PASSWORD_ID = "password";
-    public static final String SSLHACK_ID = "sslhack";
-    public SQLiteDatabase db = null;
-    public boolean upgrade = false;
+    private static final String TABLE_NAME = "profiles";
+    private static final String NAME_ID = "name";
+    private static final String URL_ID = "url";
+    private static final String USERNAME_ID = "username";
+    private static final String PASSWORD_ID = "password";
+    private static final String SSLHACK_ID = "sslhack";
+    private SQLiteDatabase db = null;
+    private boolean upgrade = false;
     private Context _context;
 
     public class XMLHandler extends DefaultHandler {
@@ -165,7 +165,7 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 						int resId = ta.getResourceId(i, 0);
 						String[] values = res.getStringArray(resId);
 						
-						addProfile(values[0], new LoginProfile(values[1], values[2], values[3], values[4] == "true"));
+						addProfile(values[0], new LoginProfile(values[1], values[2], values[3], "true".equals(values[4])));
 						// tcLog.d("i = "+i+" values = "+Arrays.asList(values));
 					}
 				} finally {
@@ -212,19 +212,17 @@ public class ProfileDatabaseHelper extends SQLiteOpenHelper {
 
     public Cursor getProfiles() {
         open();
-        final Cursor c = db.rawQuery("SELECT rowid as _id,name from " + TABLE_NAME + " ORDER BY name", null);
 
-        return c;
+        return db.rawQuery("SELECT rowid as _id,name from " + TABLE_NAME + " ORDER BY name", null);
     }
 
     public Cursor getAllProfiles() {
         open();
-        final Cursor c = db.rawQuery(
+
+        return db.rawQuery(
                 "SELECT " + NAME_ID + "," + URL_ID + "," + USERNAME_ID + "," + PASSWORD_ID + "," + SSLHACK_ID + " from "
                 + TABLE_NAME + " WHERE " + NAME_ID + " !=''",
                 null);
-
-        return c;
     }
 
     public LoginProfile getProfile(String name) {

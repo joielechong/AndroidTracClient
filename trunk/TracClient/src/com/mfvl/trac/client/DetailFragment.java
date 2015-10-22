@@ -16,19 +16,6 @@
 
 package com.mfvl.trac.client;
 
-import java.io.File;
-import java.io.Serializable;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -62,6 +49,18 @@ import android.widget.RelativeLayout;
 import android.widget.ShareActionProvider;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.Serializable;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 
 
 public class DetailFragment extends TracClientFragment implements SwipeRefreshLayout.OnRefreshListener, CompoundButton.OnCheckedChangeListener, GestureDetector.OnGestureListener, onFileSelectedListener, OnItemClickListener,OnItemLongClickListener {
@@ -149,7 +148,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
         }
     }
 
-    private File path = null;
+//    private File path = null;
     private int ticknr = -1;
     private boolean showEmptyFields = false;
     private TicketModel tm = null;
@@ -297,7 +296,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
         }
     }
 
-	void display_and_refresh_ticket() {
+	private void display_and_refresh_ticket() {
 		_ticket = listener.getTicket(ticknr);
 		displayTicket();
 
@@ -476,7 +475,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 		display_and_refresh_ticket();
 	}
 
-    public void refresh_ticket() {
+    private void refresh_ticket() {
 		if (_ticket != null) {
 			listener.refreshTicket(_ticket.getTicketnr());
 		}
@@ -508,10 +507,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
     }
 
     private String getMimeType(String url) {
-        String type = null;
-
-        type = URLConnection.guessContentTypeFromName(url);
-        return type;
+        return URLConnection.guessContentTypeFromName(url);
     }
 
     private void displayTicket() {

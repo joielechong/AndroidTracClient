@@ -31,7 +31,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -48,10 +47,9 @@ public class UpdateTicketFragment extends TracClientFragment {
     private static final String UPDATE_OPTION_VAL = "optionVal";
 
     private String currentActionName = null;
-    private JSONArray _actions = null;
     private int ticknr;
 	
-	private void onMyAttach(Context activity) {
+	private void onMyAttach() {
        final Bundle args = getArguments();
 
         // tcLog.d("onAttach ");
@@ -63,13 +61,13 @@ public class UpdateTicketFragment extends TracClientFragment {
     @Override
     public void onAttach(Context activity) {
         super.onAttach(activity);
-		onMyAttach(activity);
+		onMyAttach();
     }
 	
     @Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		onMyAttach(activity);
+		onMyAttach();
 	}
 
     @Override
@@ -117,7 +115,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 
         tv.setText(text);
 
-        _actions = _ticket.getActions();
+        JSONArray _actions = _ticket.getActions();
         tcLog.d("actions = " + _actions);
         final RadioGroup rg = (RadioGroup) view.findViewById(R.id.actionblock);
 		
@@ -179,7 +177,7 @@ public class UpdateTicketFragment extends TracClientFragment {
                                         optieval.setVisibility(View.GONE);
                                         optieval.setText(null);
                                         optiesSpin.setVisibility(View.VISIBLE);
-                                        final List<Object> opties = new ArrayList<Object>();
+                                        final List<Object> opties = new ArrayList<>();
 
                                         for (int j = 0; j < ifOpties.length(); j++) {
                                             try {
@@ -188,7 +186,7 @@ public class UpdateTicketFragment extends TracClientFragment {
                                                 tcLog.e("exception adding " + ifOpties + " j=" + j,e);
                                             }
                                         }
-                                        final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<Object>(context, android.R.layout.simple_spinner_item, opties);
+                                        final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, opties);
 
                                         spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                                         optiesSpin.setAdapter(spinAdapter);
@@ -223,7 +221,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 			
 			case R.id.storeUpdate:
 			getFragmentManager().popBackStack();
-			storeUpdate(v);
+			storeUpdate();
 			break;
 		}
 	}
@@ -232,7 +230,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 	 * storeUpdate - called when the Store button is pressed
 	*/
 
-    private void storeUpdate(View v1) {
+    private void storeUpdate() {
         String w = null;
         final View view = getView();
         final RadioGroup rg = (RadioGroup) view.findViewById(R.id.actionblock);

@@ -23,9 +23,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.content.Context;
 
-public class ColoredArrayAdapter<T> extends ArrayAdapter<T> {
+class ColoredArrayAdapter<T> extends ArrayAdapter<T> {
     private static int[] colors = null;
-    Context context = null;
+    Context context;
 
     public ColoredArrayAdapter(TracStart context, int resource, List<T> list) {
         super(context, resource, list);
@@ -37,6 +37,7 @@ public class ColoredArrayAdapter<T> extends ArrayAdapter<T> {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
+//		tcLog.d("position = "+position+" convertView = "+convertView+" parent = "+parent);
 		final View view = super.getView(position, convertView, parent);
 		final int colorPos = position % colors.length;
 		view.setBackgroundColor(colors[colorPos]);

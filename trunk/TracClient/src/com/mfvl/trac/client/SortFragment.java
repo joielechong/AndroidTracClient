@@ -26,7 +26,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -88,10 +87,9 @@ public class SortFragment extends SpecFragment<SortSpec>  {
 			switch (dv.getId()) {
 				case R.id.sortup:
 				if (position > 0) {
-					final SortSpec o1 = sortItem;
 					final SortSpec o2 = items.get(position - 1);
 
-					items.set(position - 1, o1);
+					items.set(position - 1, sortItem);
 					items.set(position, o2);
 					notifyDataSetChanged();
 				}
@@ -99,10 +97,9 @@ public class SortFragment extends SpecFragment<SortSpec>  {
 
 				case R.id.sortdown:
 				if (position < items.size() - 1) {
-					final SortSpec o1 = sortItem;
 					final SortSpec o2 = items.get(position + 1);
 
-					items.set(position + 1, o1);
+					items.set(position + 1, sortItem);
 					items.set(position, o2);
 					notifyDataSetChanged();
 				}
@@ -120,7 +117,7 @@ public class SortFragment extends SpecFragment<SortSpec>  {
 		}
     }
 
-    public SortAdapter sortAdapter = null;
+    private SortAdapter sortAdapter = null;
 	private Spinner addSpinner = null;
 	
     @Override
@@ -161,7 +158,7 @@ public class SortFragment extends SpecFragment<SortSpec>  {
 
         if (addButton != null && addSpinner != null) {
 			//tcLog.d("before setAdapter, tm = "+tm+ " addSspinner = "+ addSpinner+" context = "+context);
-            addSpinner.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, tm.velden()));
+            addSpinner.setAdapter(new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, tm.velden()));
         }
 
     }

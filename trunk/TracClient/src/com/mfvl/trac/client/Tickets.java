@@ -45,7 +45,7 @@ public class Tickets {
 
     public void resetCache() {
         // tcLog.d("voor ticketMap = "+ticketMap);
-        ticketMap = new TreeMap<Integer, Ticket>();
+        ticketMap = new TreeMap<>();
         // tcLog.d("na ticketMap = "+ticketMap);
     }
 
@@ -58,6 +58,19 @@ public class Tickets {
         // tcLog.d( "ticket = "+ticket);
         ticketMap.put(ticket.getTicketnr(), ticket);
     }
+	
+	public void clear() {
+		tcLog.logCall();
+		ticketList.clear();
+        ticketContentCount = 0;
+        valid = true;
+	}
+	
+	public void add(Tickets tl) {
+		for(Ticket t: tl.ticketList) {
+			addTicket(t);
+		}
+	}
 	
 	public void addTicket(Ticket ticket) {
 		ticketList.add(ticket);

@@ -27,7 +27,7 @@ In dat geval zullen gebruikersnaam en wachtwoord van de eerst gevonden entry in 
 Het is belangrijk zich te realiseren dat een http-url niet gelijk is aan een https-url.
 <p>
 Als TracClient wordt afgesloten zal het vorige profiel weer worden gebruikt bij de volgende keer opstarten.
-<h2>Wijziging van notificatie template</h2
+<h2>Wijziging van notificatie template</h2>
 Aan het notificatie template <u>ticket_notify_email.txt</u> moet een verwijzing naar het URI worden toegevoegd. Het eenvoudigste is om onder aan het template de volgende regel toe te veoegen:
 <p>
 <code>
@@ -35,5 +35,5 @@ ${_('TracClient URL: <%(link)s>', link=ticket.link.replace('http://','http://tra
 </code>
 <p>
 Als een html-template wordt gebruikt of op webpagina's dan is het beter om de tracclient:// variant te gebruiken.
-</body>
+</p></font></body>
 </html> 

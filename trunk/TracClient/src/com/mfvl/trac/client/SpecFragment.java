@@ -23,8 +23,8 @@ import android.view.View;
 import android.widget.ListView;
 
 public class SpecFragment<T extends Spec> extends TracClientFragment {
-	protected final static String inputSpecText = "inputSpec";
-    protected final static String outputSpecText = "outputSpec";
+	private final static String inputSpecText = "inputSpec";
+    private final static String outputSpecText = "outputSpec";
 
     protected TicketModel tm;
     protected ArrayList<T> inputSpec;
@@ -76,7 +76,7 @@ public class SpecFragment<T extends Spec> extends TracClientFragment {
         }
 
 		if (outputSpec == null) {
-            outputSpec = new ArrayList<T>();
+            outputSpec = new ArrayList<>();
             if (inputSpec != null) {
                 for (final T o : inputSpec) {
                     o.setEdit(false);

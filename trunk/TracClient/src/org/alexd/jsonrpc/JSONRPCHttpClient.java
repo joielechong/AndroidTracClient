@@ -123,20 +123,6 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 		httpClient = hcb.build();
 	}
 
-	/**
-	 * Construct a JsonRPCClient with the given httpClient and service uri
-	 *
-	 * @param client
-	 *            httpClient to use
-	 * @param uri
-	 *            uri of the service
-	 */
-	// public JSONRPCHttpClient(final CloseableHttpClient client, final String
-	// uri) {
-	// httpClient = client;
-	// serviceUri = uri;
-	// }
-
 	@Override
 	protected JSONObject doJSONRequest(JSONObject jsonRequest) throws JSONRPCException {
 		// Create HTTP/POST request with a JSON entity containing the request
@@ -203,7 +189,7 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 			// Check for remote errors
 			if (jsonResponse.has("error")) {
 				final Object jsonError = jsonResponse.get("error");
-				if (!jsonError.equals(null)) {
+				if (jsonError != null) {
 					throw new JSONRPCException(((JSONObject) jsonError).get("message"));
 				}
 			}

@@ -22,7 +22,7 @@ import android.content.Context;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-public class SpecAdapter<T extends Spec> extends ArrayAdapter<T> {
+class SpecAdapter<T extends Spec> extends ArrayAdapter<T> {
 	protected final ArrayList<T> items;
 	protected ListView listView;
 

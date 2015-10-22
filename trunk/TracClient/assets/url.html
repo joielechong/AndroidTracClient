@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Calling TraccClient from an URL</title>
+<title>Calling TracClient from an URL</title>
 </head>
 <body bgcolor="#0099cc">
 <font color="#77e5e5"> 
-<h1>Calling TraccClient from an URL</h1>
+<h1>Calling TracClient from an URL</h1>
 This feature is added so it is possible to directly access a ticket from a notification email sent by the TRAC server. This requires also a modification of the notification template (see below).
 <h2>URI syntax</h2>
 TracClient will now also be started from specific URI's:
@@ -14,26 +14,26 @@ TracClient will now also be started from specific URI's:
 <li>http(s)://trac.client.mfvl.com/real.track.site.com/path/ticket/nr
 <li>tracclient(s)://real.track.site.com/path/ticket/nr
 </ul>
-The first URI is a workaround because the default email client in Android does not recognize tracclient:// as an URI scheme and will not create a link. The <u>trac.client.mfvl.com</u> hostname is a nonexisting host. TracClient will only be shown when a reference to this host is made so it is save to let TracClient always handle this URL.
+The first URI is a workaround because the default email client in Android does not recognize tracclient:// as an URI scheme and will not create a link. The <u>trac.client.mfvl.com</u> hostname is a non-existing host. TracClient will only be shown when a reference to this host is made so it is save to let TracClient always handle this URL.
 <p>
 The referenced ticket will be shown if there is a profile defined  matching 1 of the url schemes:
 <ol>
-<li>http(s)://real.track.site.com/path/login/rpc
-<li>http(s)://real.track.site.com/path/rpc
-<li>http(s)://real.track.site.com/path/
+<li>http(s)://real.trac.site.com/path/login/rpc
+<li>http(s)://real.trac.site.com/path/rpc
+<li>http(s)://real.trac.site.com/path/
 </ol>
 In  that case the username and password belonging to the first entry found in the profile database will be used.
 <p>
 It is important to note that http and https url scheme are considered to be different and an http-url will not match a https-url.
 <p>
 When the TracClient is closed and restarted in the standard way the previous profile will be used again.
-<h2>Modification of notification template</h2
-The notification template <u>ticket_notify_email.txt</u> must be modified to add a reference to the URI. The easisest way is to but the following line at the end of the template:
+<h2>Modification of notification template</h2>
+The notification template <u>ticket_notify_email.txt</u> must be modified to add a reference to the URI. The easiest way is to but the following line at the end of the template:
 <p>
 <code>
-${_('TracClient URL: <%(link)s>', link=ticket.link.replace('http://','http://trac.client.mfvl.com/').replace('https://','https://trac.client.mfvl.com/'))}     </code>
+${_('TracClient URL: <%(link)s>', link=ticket.link.replace('http://','http://trac.client.mfvl.com/').replace('https://','https://trac.client.mfvl.com/'))}
 </code>
-<p>
+</p><p>
 When using an html-template for the email the tracclient:// scheme can better be used. This one also works from html pages on the web.
-</body>
+</p></font></body>
 </html> 

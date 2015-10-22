@@ -75,26 +75,26 @@ public class TracShowWebPage extends Activity implements View.OnClickListener {
 				}
 			}
         }
-		showWebpage(null);
+		showWebpage();
     }
 	
 	public void onClick(View v) {
 		switch (v.getId()) {
 			case R.id.showchanges:
-			showWebpage(v);
+			showWebpage();
 			break;
 			
 			case R.id.showcookies:
-			showCookies(v);
+			showCookies();
 			break;
 			
 			case R.id.showdisclaimer:
-			showDisclaimer(v);
+			showDisclaimer();
 			break;
 		}
 	}
 	
-	private void showWebpage(View view) {
+	private void showWebpage() {
 		wv.setVisibility(View.VISIBLE);
 		sv.setVisibility(View.GONE);
         // wv.getSettings().setJavaScriptEnabled(true);
@@ -103,14 +103,14 @@ public class TracShowWebPage extends Activity implements View.OnClickListener {
         wv.loadUrl(filename);
 	}
 	
-	private void showDisclaimer(View view) {
+	private void showDisclaimer() {
 		sv.setVisibility(View.VISIBLE);
 		wv.setVisibility(View.GONE);
 		cv.setText(R.string.disclaimer);
 //		Credentials.setDisclaimer();
 	}
 	
-	private void showCookies(View view) {
+	private void showCookies() {
 		sv.setVisibility(View.VISIBLE);
 		wv.setVisibility(View.GONE);
 		cv.setText(R.string.cookieInform);

@@ -59,8 +59,7 @@ public class NewTicketFragment extends TracClientFragment {
         if (container == null) {
             return null;
         }
-        final View view = inflater.inflate(R.layout.newtick_view, container, false);
-        return view;
+        return inflater.inflate(R.layout.newtick_view, container, false);
     }
     
     @Override
@@ -80,7 +79,7 @@ public class NewTicketFragment extends TracClientFragment {
 			boolean first = true;
 			
             for (int i = 0; i < tm.count(); i++) {
-                View v = null;
+                View v;
                 final TicketModelVeld veld = tm.getVeld(i);
                 final String veldnaam = veld.label();
                 int extra = 0;

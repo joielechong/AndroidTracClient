@@ -25,7 +25,6 @@ import java.util.Locale;
 import java.lang.StackTraceElement;
 
 import android.app.Activity;
-import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -40,7 +39,7 @@ public class tcLog {
     }
 
 	private static String getCaller(int index) {
-		String retval = "No trace";
+		String retval;
 		try {
 			throw new Exception("debug");
 		} catch (Exception e) {

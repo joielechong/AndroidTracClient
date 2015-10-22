@@ -44,8 +44,8 @@ public class TicketModel implements Serializable {
         fieldCount = 0;
 		_tracClient = tracClient;
         _hasData = false;
-        _velden = new HashMap<String, TicketModelVeld>();
-        _volgorde = new ArrayList<String>();
+        _velden = new HashMap<>();
+        _volgorde = new ArrayList<>();
 		active = new Semaphore(1, true);   }
 
     private void loadModelData() {
@@ -113,7 +113,7 @@ public class TicketModel implements Serializable {
     }
 
     public ArrayList<String> velden() {
-        final ArrayList<String> v = new ArrayList<String>();
+        final ArrayList<String> v = new ArrayList<>();
 
         wacht();
         if (fieldCount > 0) {

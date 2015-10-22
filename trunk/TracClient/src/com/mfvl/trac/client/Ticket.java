@@ -17,20 +17,12 @@
 package com.mfvl.trac.client;
 
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.Serializable;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.Semaphore;
 
-import org.alexd.jsonrpc.JSONRPCException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import android.util.Base64;
 
 /*
 interface onTicketCompleteListener {
@@ -55,7 +47,6 @@ public class Ticket implements Serializable {
     private JSONArray _actions;
     private int _ticknr;
     private boolean _hasdata = false;
-    private boolean _isloading = false;
     private static Semaphore available = new Semaphore(1, true);
     private final Semaphore actionLock = new Semaphore(1, true);
     private String rpcerror = null;
@@ -311,10 +302,6 @@ public class Ticket implements Serializable {
 
     public boolean hasdata() {
         return _hasdata;
-    }
-
-    public boolean isloading() {
-        return _isloading;
     }
 /*
     public int create(final TracStart context, final boolean notify) throws Exception {

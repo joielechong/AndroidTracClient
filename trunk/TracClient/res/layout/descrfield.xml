@@ -21,4 +21,5 @@
     android:maxLines="10"
     android:ems="10"
     android:inputType="text|textCapSentences|textMultiLine"
-/>
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"/>

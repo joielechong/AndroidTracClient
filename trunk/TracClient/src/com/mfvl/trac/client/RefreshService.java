@@ -32,7 +32,6 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
-import android.os.Process;
 import android.os.RemoteException;
 import android.content.res.Resources;
 
@@ -141,7 +140,7 @@ public class RefreshService extends Service {
     @Override
     public void onCreate() {
         //tcLog.d( "onCreate");
-        mHandlerThread = new MyHandlerThread("ServiceHandler", Process.THREAD_PRIORITY_BACKGROUND);
+        mHandlerThread = new MyHandlerThread("ServiceHandler");
         mHandlerThread.start();
 
         // Get the HandlerThread's Looper and use it for our Handler

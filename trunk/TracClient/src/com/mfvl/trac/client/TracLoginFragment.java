@@ -99,7 +99,6 @@ public class TracLoginFragment extends TracClientFragment {
     private CheckBox sslHackBox = null;
     private TextView credWarn = null;
     private TextView credWarnSts = null;
-    private LinearLayout loadProfileBox = null;
     private Spinner loginSpinner = null;
     private Cursor c = null;
     private ProfileDatabaseHelper pdb = null;
@@ -125,9 +124,8 @@ public class TracLoginFragment extends TracClientFragment {
         if (container == null) {
             return null;
         }
-        final View view = inflater.inflate(R.layout.traclogin, container, false);
 
-        return view;
+        return inflater.inflate(R.layout.traclogin, container, false);
     }
     
     @Override
@@ -147,7 +145,7 @@ public class TracLoginFragment extends TracClientFragment {
 		credWarn = (TextView) view.findViewById(R.id.connWarn);
         credWarnSts = (TextView) view.findViewById(R.id.connWarnSts);
         sslHackBox = (CheckBox) view.findViewById(R.id.sslHack);
-        loadProfileBox = (LinearLayout) view.findViewById(R.id.loadprofile);
+        LinearLayout loadProfileBox = (LinearLayout) view.findViewById(R.id.loadprofile);
         loginSpinner = (Spinner) view.findViewById(R.id.loginspinner);
 	
         pdb = new ProfileDatabaseHelper(context);
@@ -283,20 +281,20 @@ public class TracLoginFragment extends TracClientFragment {
 	public void onClick(View v) {
 		switch (v.getId()) {
 			case R.id.okBut:
-			performLogin(v);
+			performLogin();
 			break;
 			
 			case R.id.storebutton:
-			storeProfile(v);
+			storeProfile();
 			break;
 			
 			case R.id.verBut:
-			performVerify(v);
+			performVerify();
 			break;
 		}
 	}
 
-    private void performVerify(View v) {
+    private void performVerify() {
         url = urlView.getText().toString();
         username = userView.getText().toString();
         password = pwView.getText().toString();
@@ -391,7 +389,7 @@ public class TracLoginFragment extends TracClientFragment {
         }.start();
     }
 	
-    private void performLogin(View v) {
+    private void performLogin() {
         url = urlView.getText().toString();
         username = userView.getText().toString();
         password = pwView.getText().toString();
@@ -408,7 +406,7 @@ public class TracLoginFragment extends TracClientFragment {
         listener.onLogin(url, username, password, sslHack, sslHostNameHack, SelectedProfile);
     }
 	
-    private void storeProfile(View v) {
+    private void storeProfile() {
         url = urlView.getText().toString();
         username = userView.getText().toString();
         password = pwView.getText().toString();
