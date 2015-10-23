@@ -50,7 +50,7 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
             setContentView(R.layout.activity_titlescreen);
             final TextView tv = (TextView) findViewById(R.id.version_content);
 
-            tv.setText(Credentials.getVersion());
+//            tv.setText(Credentials.getVersion());
         } catch (final Exception e) {
             tcLog.e("crash", e);
         }

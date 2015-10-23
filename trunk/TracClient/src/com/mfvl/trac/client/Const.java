@@ -61,7 +61,7 @@ final class Const {
     /*
      * Overige constanten
      */
-    static final String mimeUnknown = "application/unknown";
+    static final String mimeUnknown = "application/unknown"; // TODO nneded for attachments
 	
     static public int ticketGroupCount = 50;
 }

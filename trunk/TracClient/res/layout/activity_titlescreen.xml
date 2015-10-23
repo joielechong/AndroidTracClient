@@ -28,6 +28,7 @@
 
 	<TextView
 		style="@style/TitleScreenText"
+		android:text="@string/app_version"
 		android:id="@+id/version_content" />
 
 	<TextView
