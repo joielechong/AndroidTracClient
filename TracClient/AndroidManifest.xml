@@ -100,22 +100,6 @@
 		<service
 			android:name=".RefreshService"
 			android:exported="false" />
-
-		<receiver 
-			android:name="com.google.android.gms.analytics.AnalyticsReceiver"
-			tools:ignore="MissingRegistered,ExportedReceiver"
-			android:enabled="true">
-			<intent-filter>
-				<action android:name="com.google.android.gms.analytics.ANALYTICS_DISPATCH" />
-			</intent-filter>
-		</receiver>
-
-		<service 
-			android:name="com.google.android.gms.analytics.AnalyticsService"
-			tools:ignore="MissingRegistered"
-			android:enabled="true"
-			android:exported="false" />
-
 	</application>
 
 </manifest>

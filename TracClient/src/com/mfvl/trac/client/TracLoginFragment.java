@@ -99,6 +99,7 @@ public class TracLoginFragment extends TracClientFragment {
     private CheckBox sslHackBox = null;
     private TextView credWarn = null;
     private TextView credWarnSts = null;
+    private LinearLayout loadProfileBox = null;
     private Spinner loginSpinner = null;
     private Cursor c = null;
     private ProfileDatabaseHelper pdb = null;
@@ -124,8 +125,9 @@ public class TracLoginFragment extends TracClientFragment {
         if (container == null) {
             return null;
         }
+        final View view = inflater.inflate(R.layout.traclogin, container, false);
 
-        return inflater.inflate(R.layout.traclogin, container, false);
+        return view;
     }
     
     @Override
@@ -145,7 +147,7 @@ public class TracLoginFragment extends TracClientFragment {
 		credWarn = (TextView) view.findViewById(R.id.connWarn);
         credWarnSts = (TextView) view.findViewById(R.id.connWarnSts);
         sslHackBox = (CheckBox) view.findViewById(R.id.sslHack);
-        LinearLayout loadProfileBox = (LinearLayout) view.findViewById(R.id.loadprofile);
+        loadProfileBox = (LinearLayout) view.findViewById(R.id.loadprofile);
         loginSpinner = (Spinner) view.findViewById(R.id.loginspinner);
 	
         pdb = new ProfileDatabaseHelper(context);
@@ -226,6 +228,7 @@ public class TracLoginFragment extends TracClientFragment {
 				j.put(ERROR, e.getMessage());
 			} catch (JSONException ignored) {}
 		}
+//		tcLog.d("j = "+j);
         return j;
     }
     
@@ -310,29 +313,27 @@ public class TracLoginFragment extends TracClientFragment {
 					final String TracVersion = (String) j.get(RESULT);
 
 					tcLog.d( TracVersion);
-					setValidMessage("Success");
+					setValidMessage();
 				} catch (JSONException e) {
 					try {
 						final String errmsg = (String) j.get(ERROR);
 							
-						tcLog.d( "Exception during verify 1 " + errmsg);
+						tcLog.d( "Exception during verify 1 " + errmsg,e);
 						tcLog.toast("==" + errmsg + "==");
 						if (errmsg.startsWith("hostname in certificate didn't match:")) {
 							context.runOnUiThread(new Runnable() {
 								@Override
 								public void run() {
 									final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-
-									alertDialogBuilder.setTitle(R.string.hostnametitle);
 									final String msg = context.getString(R.string.hostnametext) + errmsg + context.getString(R.string.hostnameign);
 
 									alertDialogBuilder.setMessage(msg)
+										.setTitle(R.string.hostnametitle)
 										.setCancelable(false)
 										.setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
 										@Override
 										public void onClick(DialogInterface dialog, int id) {
 											listener.startProgressBar(R.string.checking);
-
 											new Thread() {
 												@Override
 												public void run() {
@@ -342,13 +343,13 @@ public class TracLoginFragment extends TracClientFragment {
 														final String TracVersion1 = (String) j1.get(RESULT);
 
 														tcLog.d( TracVersion1);
-														setValidMessage("Success Hostname");
+														setValidMessage();
 														sslHostNameHack = true;
 													} catch (JSONException e1) {
 														try {
 															final String errmsg1 = (String) j1.get(ERROR);
 
-															tcLog.d( "Exception during verify 2 " + errmsg1);
+															tcLog.d( "Exception during verify 2 " + errmsg1,e1);
 															// tcLog.toast("==" + errmsg1 + "==");
 															if ("NOJSON".equals(errmsg1)) {
 																setNoJSONMessage("Fail Hostname NOJSON");
@@ -583,6 +584,10 @@ public class TracLoginFragment extends TracClientFragment {
                 credWarn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_warn, 0, 0, 0);
                 credWarn.setText(R.string.noJSON);
                 credWarn.setVisibility(View.VISIBLE);
+                if (message != null) {
+                    credWarnSts.setText(message);
+                    credWarnSts.setVisibility(View.VISIBLE);
+                }
                 okButton.setEnabled(false);
                 storButton.setEnabled(false);
                 sslHostNameHack = false; // force check on hostname first
@@ -598,7 +603,11 @@ public class TracLoginFragment extends TracClientFragment {
                 credWarn.setText(R.string.invalidCred);
                 credWarn.setVisibility(View.VISIBLE);
                 if (m1 != null) {
-                    credWarnSts.setText(m1);
+					String message = m1;
+					if (m2 != null) {
+						message += "\n"+m2;
+					}
+                    credWarnSts.setText(message);
                     credWarnSts.setVisibility(View.VISIBLE);
                 }
                 okButton.setEnabled(false);
@@ -608,7 +617,7 @@ public class TracLoginFragment extends TracClientFragment {
         });
     }
     
-    private void setValidMessage(final String message) {
+    private void setValidMessage() {
         context.runOnUiThread(new Runnable() {
             @Override
             public void run() {
