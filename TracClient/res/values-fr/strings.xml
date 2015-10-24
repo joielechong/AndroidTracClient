@@ -73,7 +73,7 @@
     <string name="notify">Notifier</string>
     <string name="exportprofiles">profils d\'exportation</string>
     <string name="importprofiles">Importer des profils</string>
-    <string name="completed">Terminés</string>
+    <string name="completed">Terminé</string>
     <string name="failed">Échec</string>
     <string name="xmlwritecompleted">Exporter vers XML a réussi</string>
     <string name="xmlreadcompleted">Importation à partir de XML a réussi</string>

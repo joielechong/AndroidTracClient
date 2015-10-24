@@ -99,5 +99,6 @@
 		<item>kończy się na</item>
 		<item>nie kończy się na</item>
 	</string-array>
+	<string name="cookies">Cookies</string>
 
 </resources>
