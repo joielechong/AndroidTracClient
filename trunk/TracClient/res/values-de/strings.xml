@@ -104,5 +104,6 @@
 	<string name="hostnametext">Hostname Prüfung gescheitert beim Versuch, Verbindung zum Server. \nMessage =</string>
 	<string name="hostnameign">\nIgnore die Prüfung?</string>
 	<string name="noJSON">Kein JSON Unterstutzung auf Trac host</string>
+	<string name="cookies">Cookies</string>
 
 </resources>

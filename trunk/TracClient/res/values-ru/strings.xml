@@ -102,4 +102,5 @@
                 <item>заканчивается на</item>
                 <item>не заканчивается на</item>
         </string-array>
+        <string name="cookies">кукис </string>
 </resources>
