@@ -68,10 +68,12 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
     private static final String EMPTYFIELDS = "emptyfields";
     private static final String MODVELD = "modveld";
 
+    private static final List<String> skipFields = Arrays.asList("summary","_ts","max","page","id");
+    private static final List<String> timeFields = Arrays.asList("time","changetime");
+
     private class ModVeldMap extends HashMap<String, String> implements Serializable {
         private static final long serialVersionUID = 191019591050L;
     }
-
 
     private class modifiedString {
         private boolean _updated;
@@ -557,10 +559,8 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 					
 //					tcLog.d( "showEmptyFields = "+showEmptyFields);
 
-                    if (Arrays.asList("summary","_ts","max","page","id").contains(veld)) {
-//                    if ("summary".equals(veld) || "_ts".equals(veld) || "max".equals(veld) || "page".equals(veld) || "id".equals(veld)) {// skip
-//                    } else if ("time".equals(veld) || "changetime".equals(veld)) {
-                    } else if (Arrays.asList("time","changetime").contains(veld)){
+                    if (skipFields.contains(veld)) {
+                    } else if (timeFields.contains(veld)){
                         ms = new modifiedString(veld, toonTijd(_ticket.getJSONObject(veld)));
                     } else if (showEmptyFields || _ticket.getString(veld).length() > 0) {
                         ms = new modifiedString(veld, _ticket.getString(veld));
@@ -658,8 +658,9 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 			listener.onUpdateTicket(_ticket);
 			didUpdate = true;
 		} else {
-			final TicketModelVeld tmv = tm.getVeld(veld);
-			final LayoutInflater inflater = LayoutInflater.from(context);
+			final TicketModelVeld tmv;
+            tmv = tm.getVeld(veld);
+            final LayoutInflater inflater = LayoutInflater.from(context);
 
 			final RelativeLayout ll = (RelativeLayout) inflater.inflate(
 					tmv.options() == null ? R.layout.field_spec1 : R.layout.field_spec2, null, false);

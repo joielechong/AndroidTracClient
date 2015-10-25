@@ -21,7 +21,6 @@ import java.util.List;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.content.Context;
 
 class ColoredArrayAdapter<T> extends ArrayAdapter<T> {
     private static int[] colors = null;
