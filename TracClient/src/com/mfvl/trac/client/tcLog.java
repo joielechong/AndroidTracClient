@@ -38,27 +38,25 @@ public class tcLog {
         _c = c;
     }
 
-	private static String getCaller(int index) {
-		String retval;
-		try {
-			throw new Exception("debug");
-		} catch (Exception e) {
-			StackTraceElement[] s = e.getStackTrace();
-			retval = s[index].getClassName()+"."+s[index].getMethodName();
-		}
-		return retval;
+    private static String getCaller(int index) {
+        String retval;
+        try {
+            throw new Exception("debug");
+        } catch (Exception e) {
+            StackTraceElement[] s = e.getStackTrace();
+            retval = s[index].getClassName()+"."+s[index].getMethodName();
+        }
+        return retval;
     }
-
-
 
     public static String getDebug() {
         return debugString;
     }
-	
+
     public static void setToast(boolean value) {
-	doToast = value;
+        doToast = value;
     }
-    
+
     private static void _toast(Activity c, String string) {
         Toast.makeText(c, string, Toast.LENGTH_SHORT).show();
     }
@@ -75,7 +73,7 @@ public class tcLog {
     }
 
     private static void myLog(final String tag, final String message) {
-		myLog(tag,message,null);
+        myLog(tag,message,null);
     }
 
     private static void myLog(final String tag, final String message, Throwable tr) {
@@ -94,152 +92,120 @@ public class tcLog {
         }
     }
 
-	public static int logCall() {
-		String caller = getCaller(2);
-        final int i = Log.d(caller, "");
-
+    public static void logCall() {
+        String caller = getCaller(2);
+        Log.d(caller, "");
         myLog("D." + caller, "");
-        return i;
-	}
-	
-    public static int d(String msg) {
-		String caller = getCaller(2);
-        final int i = Log.d(caller, msg);
+    }
 
+    public static void d(String msg) {
+        String caller = getCaller(2);
+        Log.d(caller, msg);
         myLog("D." + caller, msg);
-        return i;
     }
 
-    public static int d(String msg, Throwable tr) {
-		String caller = getCaller(2);
-        final int i = Log.d(caller, msg, tr);
-
+    public static void d(String msg, Throwable tr) {
+        String caller = getCaller(2);
+        Log.d(caller, msg, tr);
         myLog("D." + caller, msg, tr);
-        return i;
     }
 
-    public static int e(String msg) {
-		String caller = getCaller(2);
-        final int i = Log.e(caller, msg);
-
+    public static void e(String msg) {
+        String caller = getCaller(2);
+        Log.e(caller, msg);
         myLog("E." + caller, msg);
-        return i;
     }
 
-    public static int e(String msg, Throwable tr) {
-		String caller = getCaller(2);
-        final int i = Log.e(caller, msg, tr);
-
+    public static void e(String msg, Throwable tr) {
+        String caller = getCaller(2);
+        Log.e(caller, msg, tr);
         myLog("E." + caller, msg, tr);
-        return i;
     }
 
-    public static int e(Throwable tr) {
-		String caller = getCaller(2);
-        final int i = Log.w(caller, tr);
-
+    public static void e(Throwable tr) {
+        String caller = getCaller(2);
+        Log.w(caller, tr);
         myLog("E." + caller, "", tr);
-        return i;
     }
 
-    public static int i(String msg) {
-		String caller = getCaller(2);
-        final int i = Log.i(caller, msg);
-
+    public static void i(String msg) {
+        String caller = getCaller(2);
+        Log.i(caller, msg);
         myLog("I." + caller, msg);
-        return i;
     }
 
-    public static int i(String msg, Throwable tr) {
-		String caller = getCaller(2);
-        final int i = Log.i(caller, msg, tr);
-
+    public static void i(String msg, Throwable tr) {
+        String caller = getCaller(2);
+        Log.i(caller, msg, tr);
         myLog("I." + caller, msg, tr);
-        return i;
     }
 
-    public static int v(String msg) {
-		String caller = getCaller(2);
-        final int i = Log.v(caller, msg);
-
+    public static void v(String msg) {
+        String caller = getCaller(2);
+        Log.v(caller, msg);
         myLog("V." + caller, msg);
-        return i;
     }
 
-    public static int v(String msg, Throwable tr) {
-		String caller = getCaller(2);
-        final int i = Log.v(caller, msg, tr);
-
+    public static void v(String msg, Throwable tr) {
+        String caller = getCaller(2);
+        Log.v(caller, msg, tr);
         myLog("V." + caller, msg);
-        return i;
     }
 
-    public static int w(Throwable tr) {
-		String caller = getCaller(2);
-        final int i = Log.w(caller, tr);
-
+    public static void w(Throwable tr) {
+        String caller = getCaller(2);
+        Log.w(caller, tr);
         myLog("W." + caller, "", tr);
-        return i;
     }
 
-    public static int w(String msg) {
-		String caller = getCaller(2);
-        final int i = Log.w(caller, msg);
-
+    public static void w(String msg) {
+        String caller = getCaller(2);
+        Log.w(caller, msg);
         myLog("W." + caller, msg);
-        return i;
     }
 
-    public static int w(String msg, Throwable tr) {
-		String caller = getCaller(2);
-        final int i = Log.w(caller, msg, tr);
-
+    public static void w(String msg, Throwable tr) {
+        String caller = getCaller(2);
+        Log.w(caller, msg, tr);
         myLog("W." + caller, msg, tr);
-        return i;
     }
 
-    public static int wtf(Throwable tr) {
-		String caller = getCaller(2);
-        final int i = Log.wtf(caller, tr);
-
+    public static void wtf(Throwable tr) {
+        String caller = getCaller(2);
+        Log.wtf(caller, tr);
         myLog("WTF." + caller, "");
-        return i;
     }
 
-    public static int wtf(String msg) {
-		String caller = getCaller(2);
-        final int i = Log.wtf(caller, msg);
-
+    public static void wtf(String msg) {
+        String caller = getCaller(2);
+        Log.wtf(caller, msg);
         myLog("WTF." + caller, msg);
-        return i;
     }
 
-    public static int wtf(String msg, Throwable tr) {
-		String caller = getCaller(2);
-        final int i = Log.wtf(caller, msg, tr);
-
+    public static void wtf(String msg, Throwable tr) {
+        String caller = getCaller(2);
+        Log.wtf(caller, msg, tr);
         myLog("WTF." + caller, msg, tr);
-        return i;
     }
 
     public static String getStackTraceString(Throwable tr) {
         return Log.getStackTraceString(tr);
     }
 
-	public static void save() {
-		String caller = getCaller(2);
-		File file = null;
-		try {
-			file = Credentials.makeExtFilePath("tc-log.txt");
-			final OutputStream os = new FileOutputStream(file);
+    public static void save() {
+        String caller = getCaller(2);
+        File file = null;
+        try {
+            file = Credentials.makeExtFilePath("tc-log.txt");
+            final OutputStream os = new FileOutputStream(file);
 
-			os.write(tcLog.getDebug().getBytes());
-			os.close();
-			Log.d(caller, "File saved  =  " + file);
-			myLog("D."+caller, "File saved  =  " + file);
-		} catch (final Exception e) {
-			Log.e(caller, "Exception while saving logfile on " + file, e);
-			myLog("E."+caller, "Exception while saving logfile on " + file, e);
-		}
-	}
+            os.write(tcLog.getDebug().getBytes());
+            os.close();
+            Log.d(caller, "File saved  =  " + file);
+            myLog("D."+caller, "File saved  =  " + file);
+        } catch (final Exception e) {
+            Log.e(caller, "Exception while saving logfile on " + file, e);
+            myLog("E."+caller, "Exception while saving logfile on " + file, e);
+        }
+    }
 }
