@@ -1,0 +1,60 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.1"
+
+    defaultConfig {
+        applicationId "com.mfvl.trac.client"
+        minSdkVersion 14
+        targetSdkVersion 23
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    signingConfigs {
+        release {
+            storeFile file("D:/Dropbox/Prive/projects/michiel.store")
+            storePassword "mikel02"
+            keyAlias "Michiel"
+            keyPassword "mikel02"
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            shrinkResources false
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            zipAlignEnabled true
+            buildConfigField "boolean", "DEBUG_LOG", "true"
+        }
+        export {
+            signingConfig signingConfigs.release
+            shrinkResources false
+            minifyEnabled true
+            proguardFile 'D:/Dropbox/Prive/StudioProjects/TracClient/app/proguard-project.txt'
+            zipAlignEnabled true
+            buildConfigField "boolean", "DEBUG_LOG", "false"
+        }
+        debug {
+            shrinkResources false
+            buildConfigField "boolean", "DEBUG_LOG", "true"
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+}
+
+dependencies {
+    compile 'com.android.support:support-v4:23.1.0'
+    compile 'com.android.support:appcompat-v7:23.1.0'
+    compile 'com.google.android.gms:play-services-base:8.1.0'
+    compile 'com.google.android.gms:play-services-ads:8.1.0'
+    compile files('libs/httpclientandroidlib-1.2.1.jar')
+}
