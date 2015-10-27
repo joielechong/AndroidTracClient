@@ -68,7 +68,6 @@ interface onFileSelectedListener {
     void onFileSelected(final String f);
 }
 
-
 /**
  * Interface for the fragments to communicate with each other and the main activity
  *
@@ -254,7 +253,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 			}
 			dataAdapter.clear();
 			dataAdapter.addAll(tl);
-			newDataAdapter(tl);
+//			newDataAdapter(tl);
 			try {
 				getTicketListFragment().dataHasChanged();
 			} catch (Exception e) {
