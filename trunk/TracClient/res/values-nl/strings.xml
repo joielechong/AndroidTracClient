@@ -39,7 +39,6 @@
     <string name="perfact">Voer actie uit</string>
     <string name="storeupd">Sla wijzigingen op</string>
     <string name="cancel">Afbreken</string>
-    <string name="invalidJson">Ongeldig JSON bericht ontvangen</string>
     <string name="noticketUnk">Geen ticket aangemaakt: onbekende reden</string>
     <string name="invtick">Ongeldig ticketnummer</string>
     <string name="noaction">Geen actie gegeven</string>

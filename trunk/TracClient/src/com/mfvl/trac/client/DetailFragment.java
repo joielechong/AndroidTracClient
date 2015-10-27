@@ -16,6 +16,19 @@
 
 package com.mfvl.trac.client;
 
+import java.io.File;
+import java.io.Serializable;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -49,19 +62,6 @@ import android.widget.RelativeLayout;
 import android.widget.ShareActionProvider;
 import android.widget.Spinner;
 import android.widget.TextView;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.Serializable;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-
 
 public class DetailFragment extends TracClientFragment implements SwipeRefreshLayout.OnRefreshListener, CompoundButton.OnCheckedChangeListener, GestureDetector.OnGestureListener, onFileSelectedListener, OnItemClickListener,OnItemLongClickListener {
 
@@ -150,7 +150,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
         }
     }
 
-//    private File path = null;
+//    private File path = null; // TODO voor attachments
     private int ticknr = -1;
     private boolean showEmptyFields = false;
     private TicketModel tm = null;
@@ -658,9 +658,8 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 			listener.onUpdateTicket(_ticket);
 			didUpdate = true;
 		} else {
-			final TicketModelVeld tmv;
-            tmv = tm.getVeld(veld);
-            final LayoutInflater inflater = LayoutInflater.from(context);
+			final TicketModelVeld tmv = tm.getVeld(veld);
+			final LayoutInflater inflater = LayoutInflater.from(context);
 
 			final RelativeLayout ll = (RelativeLayout) inflater.inflate(
 					tmv.options() == null ? R.layout.field_spec1 : R.layout.field_spec2, null, false);
@@ -847,7 +846,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 //			});
 		} catch (final Exception e) {
 			tcLog.e( "Exception during update", e);
-			showAlertBox(R.string.storerr,R.string.storerrdesc,e.getMessage());
+			showAlertBox(R.string.upderr,R.string.storerrdesc,e.getMessage());
 		}
 /*
         new Thread() {

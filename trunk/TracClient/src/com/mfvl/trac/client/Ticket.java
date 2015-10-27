@@ -17,12 +17,20 @@
 package com.mfvl.trac.client;
 
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.Semaphore;
 
+import org.alexd.jsonrpc.JSONRPCException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import android.util.Base64;
 
 /*
 interface onTicketCompleteListener {
@@ -75,14 +83,7 @@ public class Ticket implements Serializable {
         actionLock.acquireUninterruptibly();
         _hasdata = false;
 	}
-/*	
-    private void refresh(TracStart context, onTicketCompleteListener oc) {
-        tcLog.i( "refresh Ticketnr = " + _ticknr);
-        actionLock.release();
-        available.release();
-        loadTicketData(context, oc);
-    }
-*/
+
     public int getTicketnr() {
         return _ticknr;
     }
@@ -104,67 +105,6 @@ public class Ticket implements Serializable {
         }
     }
 /*
-    private void loadTicketData_x(TracStart context, final onTicketCompleteListener oc) {
-        tcLog.i( "ticketnr = " + _ticknr);
-        actionLock.acquireUninterruptibly();
-        _isloading = true;
-        new Thread("loadTicketData") {
-            @Override
-            public void run() {
-                available.acquireUninterruptibly();
-                req = TracHttpClient.getInstance();
-
-                try {
-                    final JSONArray mc = new JSONArray();
-
-                    mc.put(new TracJSONObject().makeComplexCall(TICKET_GET, "ticket.get", _ticknr));
-                    mc.put(new TracJSONObject().makeComplexCall(TICKET_CHANGE, "ticket.changeLog", _ticknr));
-                    mc.put(new TracJSONObject().makeComplexCall(TICKET_ATTACH, "ticket.listAttachments", _ticknr));
-                    mc.put(new TracJSONObject().makeComplexCall(TICKET_ACTION, "ticket.getActions", _ticknr));
-                    final JSONArray mcresult = req.callJSONArray("system.multicall", mc);
-
-                    _hasdata = false;
-                    _velden = null;
-                    _history = null;
-                    _attachments = null;
-                    _actions = null;
-                    for (int i = 0; i < mcresult.length(); i++) {
-                        try {
-                            final JSONObject res = mcresult.getJSONObject(i);
-                            final String id = res.getString("id");
-                            final JSONArray result = res.getJSONArray("result");
-
-                            if (id.equals(TICKET_GET)) {
-                                _velden = result.getJSONObject(3);
-                            } else if (id.equals(TICKET_CHANGE)) {
-                                _history = result;
-                            } else if (id.equals(TICKET_ATTACH)) {
-                                _attachments = result;
-                            } else if (id.equals(TICKET_ACTION)) {
-                                _actions = result;
-                                actionLock.release();
-                            } else {
-                                tcLog.i( "loadTicketData, unexpected response = " + result);
-                            }
-                        } catch (final Exception e1) {
-                            tcLog.e( "loadTicketData error while reading response", e1);
-                        }
-                    }
-                    _hasdata = _velden != null && _history != null && _actions != null;
-                    _isloading = false;
-                    if (oc != null) {
-                        available.release();
-                        oc.onComplete(Ticket.this);
-                    }
-                } catch (final Exception e) {
-                    tcLog.i( "loadTicketData exception", e);
-                } finally {
-                    available.release();
-                }
-            }
-        }.start();
-    }
-
     public void getAttachment(final String filename, final onAttachmentCompleteListener oc) {
         final Thread networkThread = new Thread("getAttachment") {
             @Override
@@ -303,110 +243,7 @@ public class Ticket implements Serializable {
     public boolean hasdata() {
         return _hasdata;
     }
-/*
-    public int create(final TracStart context, final boolean notify) throws Exception {
-        if (_ticknr != -1) {
-            throw new RuntimeException("Call create ticket not -1");
-        }
-        tcLog.i( "create: " + _velden.toString());
-        final String s = _velden.getString("summary");
-        final String d = _velden.getString("description");
 
-        _velden.remove("summary");
-        _velden.remove("description");
-
-        final Thread networkThread = new Thread() {
-            @Override
-            public void run() {
-                available.acquireUninterruptibly();
-                try {
-                    final int newticknr = TracHttpClient.createTicket(s, d, _velden);
-
-                    _ticknr = newticknr;
-                    actionLock.release();
-                    loadTicketData(context, null);
-                } catch (final JSONRPCException e) {
-                    try {
-                        final JSONObject o = new JSONObject(e.getMessage());
-
-                        rpcerror = o.getString("message");
-                    } catch (final JSONException e1) {
-                        tcLog.e( "create failed", e1);
-                        rpcerror = context.getString(R.string.invalidJson);
-                    }
-                }
-                available.release();
-            }
-        };
-
-        networkThread.start();
-        try {
-            networkThread.join();
-            if (rpcerror != null) {
-                throw new RuntimeException(rpcerror);
-            }
-        } catch (final Exception e) {
-            throw e;
-        }
-        if (_ticknr == -1) {
-            throw new RuntimeException(context.getString(R.string.noticketUnk));
-        }
-
-        return _ticknr;
-    }
-*/
-    // update is called from within a non UI thread
-/*
-    public void update(String action, String comment, String veld, String waarde, final boolean notify, final TracStart context,Map<String, String> modVeld) throws Exception {
-        tcLog.d( "update: " + action + " '" + comment + "' '" + veld + "' '" + waarde + "' " + modVeld);
-        // tcLog.d( "_velden voor = " + _velden);
-        if (_ticknr == -1) {
-            throw new IllegalArgumentException(context.getString(R.string.invtick) + " " + _ticknr);
-        }
-        if (action == null) {
-            throw new NullPointerException(context.getString(R.string.noaction));
-        }
-        _velden.put("action", action);
-        if (waarde != null && veld != null && !"".equals(veld) && !"".equals(waarde)) {
-            _velden.put(veld, waarde);
-        }
-        if (modVeld != null) {
-            final Iterator<Entry<String, String>> i = modVeld.entrySet().iterator();
-
-            while (i.hasNext()) {
-                final Entry<String, String> e = i.next();
-                // tcLog.d( e.toString());
-                final String v = e.getKey();
-                final String w = e.getValue();
-
-                _velden.put(v, w);
-            }
-        }
-
-        final String cmt = comment == null ? "" : comment;
-
-        _velden.remove("changetime");
-        _velden.remove("time");
-
-        available.acquireUninterruptibly();
-        try {
-            if (Tickets.url != null) {
-                TracHttpClient.updateTicket(_ticknr, cmt, _velden, notify);
-                actionLock.release();
-                loadTicketData(context, null);
-            }
-        } catch (final JSONRPCException e) {
-            tcLog.e( "JSONRPCException", e);
-            rpcerror = e.getMessage();
-        } finally {
-            available.release();
-        }
-
-        if (rpcerror != null) {
-            throw new RuntimeException(rpcerror);
-        }
-    }
-*/
     private String toonTijd(final JSONObject v) {
         try {
             return ISO8601.toCalendar(v.getJSONArray("__jsonclass__").getString(1) + "Z").getTime().toString();

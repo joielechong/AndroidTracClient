@@ -38,7 +38,6 @@
     <string name="perfact">Effectuer une action</string>
     <string name="storeupd">changements de magasins</string>
     <string name="cancel">Annuler</string>
-    <string name="invalidJson">Un message JSON valide reçu</string>
     <string name="noticketUnk">Aucun billet de création: raison inconnue</string>
     <string name="invtick">Ticketnumber invalide</string>
     <string name="noaction">Aucune action fourni</string>

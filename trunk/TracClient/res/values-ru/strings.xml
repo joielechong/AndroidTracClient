@@ -36,7 +36,6 @@
         <string name="perfact">Выполните действия</string>
         <string name="storeupd">Изменения магазин</string>
         <string name="cancel">Отмена</string>
-        <string name="invalidJson">Пришёл невалидный JSON</string>
         <string name="noticketUnk">Тикет не создан: причина неизвестна.</string>
         <string name="invtick">Неверный номер тикета</string>
         <string name="noaction">Никаких действий не поставляется</string>

@@ -55,7 +55,6 @@
 	<string name="perfact">Perform action</string>
 	<string name="storeupd">Store changes</string>
 	<string name="cancel">Cancel</string>
-	<string name="invalidJson">Invalid JSON message received</string>
 	<string name="noticketUnk">No ticket created: unknown reason</string>
 	<string name="invtick">Invalid ticketnumber</string>
 	<string name="noaction">No action supplied</string>

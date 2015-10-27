@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013,2014 Michiel van Loon
+ * Copyright (C) 2013,2014,2015 Michiel van Loon 
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ public class tcLog {
             });
         }
     }
-
+ 
     private static void myLog(final String tag, final String message) {
         myLog(tag,message,null);
     }

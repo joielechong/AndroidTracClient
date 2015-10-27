@@ -38,7 +38,6 @@
 	<string name="perfact">Aktion ausführen</string>
 	<string name="storeupd">Änderungen speichern</string>
 	<string name="cancel">Abbrechen</string>
-	<string name="invalidJson">Ungültige JSON-Nachricht empfangen</string>
 	<string name="noticketUnk">Kein Ticket erstellt: Unbekannter Grund</string>
 	<string name="invtick">Ungültige Ticketnummer</string>
 	<string name="noaction">Keine Aktion übergeben</string>
