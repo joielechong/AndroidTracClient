@@ -36,7 +36,6 @@
 	<string name="perfact">Wykonaj działanie</string>
 	<string name="storeupd">Zachowaj zmiany</string>
 	<string name="cancel">Anuluj</string>
-	<string name="invalidJson">Otrzymano nieprawidłową wiadomość JSON</string>
 	<string name="noticketUnk">Nie utworzono biletu: przyczyna nieznana</string>
 	<string name="invtick">Nieprawidłowy numer biletu</string>
 	<string name="noaction">Nie podjęto działania</string>

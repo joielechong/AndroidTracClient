@@ -37,7 +37,6 @@
     <string name="perfact">Executar ação</string>
     <string name="storeupd">Armazenar mudanças</string>
     <string name="cancel">Cancelar</string>
-    <string name="invalidJson">Recebida mensagem de JSON inválida</string>
     <string name="noticketUnk">Nenhum bilhete criado: razão desconhecida</string>
     <string name="invtick">Número de bilhete inválido</string>
     <string name="noaction">Nenhuma ação completada</string>

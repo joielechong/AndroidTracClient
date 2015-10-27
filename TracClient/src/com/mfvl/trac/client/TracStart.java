@@ -18,6 +18,7 @@ package com.mfvl.trac.client;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONException;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -176,7 +177,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	private IncomingHandler tracStartHandler = null;
 	private TicketModel tm = null;
 
-	boolean mIsBound = false;
+    boolean mIsBound = false;
     Messenger mService = null;
     private MyHandlerThread mHandlerThread = null;
     private Messenger mMessenger = null;
@@ -251,7 +252,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 				}
 				ticketsLoading = false;
 			}
-            dataAdapter.clear();
+			dataAdapter.clear();
 			dataAdapter.addAll(tl);
 			newDataAdapter(tl);
 			try {
@@ -538,7 +539,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	private String getTopFragment() {
 		try {
 			int bs = getFragmentManager().getBackStackEntryCount();
-            return getFragmentManager().getBackStackEntryAt(bs - 1).getName();
+			return getFragmentManager().getBackStackEntryAt(bs - 1).getName();
 		} catch (Exception e) {
 			return null;
 		}
@@ -613,8 +614,11 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         super.onCreate(savedInstanceState);
         tcLog.d( "savedInstanceState = " + savedInstanceState);
 
-        // FragmentManager.enableDebugLogging(true);
-		// LoaderManager.enableDebugLogging(true);
+		if (Const.DEBUG_MANAGERS) {
+			FragmentManager.enableDebugLogging(true);
+			LoaderManager.enableDebugLogging(true);
+		}
+		
 		try {
             Const.ticketGroupCount = getResources().getInteger(R.integer.ticketGroupCount);
         } catch (Exception ignored) {}
@@ -1121,12 +1125,11 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         // If the nav drawer is open, hide action items related to the content view
 		
         boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        for (int mDrawerId : mDrawerIds) {
-            try {
-                menu.findItem(mDrawerId).setVisible(!drawerOpen);
-            } catch (Exception ignored) {
-            }
-        }
+		for (int mDrawerId : mDrawerIds) {
+			try {
+				menu.findItem(mDrawerId).setVisible(!drawerOpen);
+			} catch(Exception ignored) {}
+		}
 		Intent i = null;
 	
         final MenuItem itemDebug = menu.findItem(R.id.debug);
@@ -1241,7 +1244,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     }
 	
     private void setFilter(ArrayList<FilterSpec> filter) {
-        tcLog.d("" + filter);
+        tcLog.d(filter.toString());
         String filterString = "";
 
         if (filter != null) {
@@ -1252,7 +1255,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     }
 
     private void setFilter(String filterString) {
-        tcLog.d( filterString);
+        tcLog.d(filterString);
         final ArrayList<FilterSpec> filter = new ArrayList<>();
 
         if (filterString.length() > 0) {
@@ -1274,7 +1277,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     }
 
     private void setSort(ArrayList<SortSpec> sort) {
-        tcLog.d("" + sort);
+        tcLog.d(sort.toString());
 
         String sortString = "";
 
@@ -1286,7 +1289,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     }
 
     private void setSort(String sortString) {
-        tcLog.d( sortString);
+        tcLog.d(sortString);
         final ArrayList<SortSpec> sl = new ArrayList<>();
 
         if (sortString.length() > 0) {
@@ -1509,10 +1512,10 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 		final int ticknr = t.getTicketnr();
 		
         if (ticknr == -1) {
-            throw new IllegalArgumentException("Invalid ticketnumber during update");
+            throw new IllegalArgumentException(getString(R.string.invtick) + " " + ticknr);
         }
         if (action == null) {
-            throw new IllegalArgumentException("No action supplied update ticket " + ticknr);
+            throw new NullPointerException(getString(R.string.noaction));
         }
         velden.put("action", action);
         if (waarde != null && veld != null && !"".equals(veld) && !"".equals(waarde)) {
@@ -1548,13 +1551,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 			}
 		};
 		updateThread.start();
-		try {
-			updateThread.join();
-		} catch (Exception e) {
-			tcLog.e("Exception during join in update",e);
-			showAlertBox(R.string.storerr,R.string.storerrdesc,e.getMessage());
-			return false;
-		}
+		updateThread.join();
 		return true;
 	}
 	

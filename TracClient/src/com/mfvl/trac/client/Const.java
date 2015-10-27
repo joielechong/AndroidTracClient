@@ -61,7 +61,10 @@ final class Const {
     /*
      * Overige constanten
      */
-    static final String mimeUnknown = "application/unknown"; // TODO nneded for attachments
+    static final String mimeUnknown = "application/unknown"; // TODO needed for attachments
 	
     static public int ticketGroupCount = 50;
+	
+	static final public boolean DEBUG_MANAGERS = false;
+	static final public boolean DEBUG_LOG = true;
 }

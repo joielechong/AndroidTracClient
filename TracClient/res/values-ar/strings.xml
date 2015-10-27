@@ -37,7 +37,6 @@
     <string name="perfact">تنفيذ الإجراء</string>
     <string name="storeupd">تخزين التغييرات</string>
     <string name="cancel">إلغاء</string>
-    <string name="invalidJson">غير صالحة JSON  تم استقبال رسالة</string>
     <string name="noticketUnk">لم يتم عمل تذكرة: السبب غير معروف</string>
     <string name="invtick">رقم تذكرة غير صالح</string>
     <string name="noaction">لا يوجد إجراء متوفر</string>
