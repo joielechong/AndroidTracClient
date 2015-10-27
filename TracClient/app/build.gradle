@@ -16,7 +16,7 @@ android {
 
     signingConfigs {
         release {
-            storeFile file("D:/Dropbox/Prive/projects/michiel.store")
+            storeFile file("${System.env.PROJECTHOME}/michiel.store")
             storePassword "mikel02"
             keyAlias "Michiel"
             keyPassword "mikel02"
@@ -36,7 +36,7 @@ android {
             signingConfig signingConfigs.release
             shrinkResources false
             minifyEnabled true
-            proguardFile 'D:/Dropbox/Prive/StudioProjects/TracClient/app/proguard-project.txt'
+            proguardFile "${System.env.PROJECTHOME}/TracClient/app/proguard-project.txt"
             zipAlignEnabled true
             buildConfigField "boolean", "DEBUG_LOG", "false"
         }
