@@ -253,7 +253,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 			}
 			dataAdapter.clear();
 			dataAdapter.addAll(tl);
-//			newDataAdapter(tl);
 			try {
 				getTicketListFragment().dataHasChanged();
 			} catch (Exception e) {
@@ -1452,6 +1451,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     private void newDataAdapter(Tickets tl) {
         tcLog.logCall();
         dataAdapter = new TicketListAdapter(this, R.layout.ticket_list, tl);
+		dataAdapter.setNotifyOnChange(true);
 		try {
 			getTicketListFragment().setAdapter(dataAdapter);
 		} catch (NullPointerException e) {

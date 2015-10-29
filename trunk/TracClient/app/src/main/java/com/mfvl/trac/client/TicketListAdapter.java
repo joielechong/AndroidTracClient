@@ -24,6 +24,7 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket>  {
 
     public TicketListAdapter(TracStart context, int resource, Tickets tl) {
         super(context, resource,tl!=null?tl.ticketList:null);
+		tcLog.d("context = "+context+" resource = "+ resource+" tl = "+tl);
         tcLog.d(tl != null ? tl.toString() : null);
         this.context = context;
 
@@ -43,11 +44,13 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket>  {
 	}
 	
 	public void addAll(Tickets tl) {
-        tcLog.d(tl != null ? tl.ticketList.toString() : null);
+        tcLog.d("tl = "+tl+" "+tl != null ? tl.ticketList.toString() : null);
+		tcLog.d("mTickets = "+mTickets);
 		if (tl != null) {
 			super.addAll(tl.ticketList);
 			mTickets.add(tl);
 			notifyDataSetChanged();
+			getCount();
 		}
 	}
 	
@@ -81,8 +84,16 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket>  {
 	}
 
 	public Ticket getTicket(int i) {
-//        tcLog.d( "getTicket i = " + i);
+		tcLog.d("mTickets = "+mTickets);
+        tcLog.d( "getTicket i = " + i);
 		return (mTickets!= null?mTickets.getTicket(i):null);
+	}
+	
+	public int getCount() {
+		tcLog.d("mTickets = "+mTickets);
+		int c = super.getCount();
+		tcLog.d("count = "+c+" this - "+this);
+		return c;
 	}
 	
 	public int getTicketContentCount() {

@@ -30,4 +30,18 @@ public class TicketList extends ArrayList<Ticket> {
 	public TicketList(Collection<? extends Ticket> collection) {
 		super(collection);
 	}
+	
+	public void addAll(TicketList tl) {
+        tcLog.d(tl != null ? tl.toString() : null);
+		if (tl != null) {
+			super.addAll(tl);
+		}
+	}
+	
+	public int size() {
+		int c = super.size();
+		tcLog.d("count = "+c);
+		return c;
+	}
+	
 }
