@@ -38,3 +38,5 @@
 -keepnames class * implements android.os.Parcelable {
     public static final ** CREATOR;
 }
+
+-optimizations !field/removal/writeonly,!field/marking/private,!class/merging/*,!code/allocation/variable

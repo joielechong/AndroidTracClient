@@ -27,6 +27,7 @@ class ColoredArrayAdapter<T> extends ArrayAdapter<T> {
 
     public ColoredArrayAdapter(TracStart context, int resource, List<T> list) {
         super(context, resource, list);
+		tcLog.d("context = "+context+" resource = "+ resource+" list = " +list);
         if (colors == null) {
             colors = context.getResources().getIntArray(R.array.list_col);
         }
@@ -39,5 +40,13 @@ class ColoredArrayAdapter<T> extends ArrayAdapter<T> {
 		final int colorPos = position % colors.length;
 		view.setBackgroundColor(colors[colorPos]);
 		return view;
+	} 
+	
+	public int getCount() {
+		tcLog.logCall();
+		int c = super.getCount();
+		tcLog.d("count = "+c+" this - "+this);
+		return c;
 	}
+	
 }

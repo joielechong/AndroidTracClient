@@ -50,12 +50,12 @@ public class Tickets {
     }
 
     public Ticket getTicket(final int ticknr) {
-        // tcLog.d("ticknr = "+ticknr+ " "+ticketMap.containsKey(ticknr));
+//        tcLog.d("ticknr = "+ticknr+ " "+ticketMap.containsKey(ticknr));
         return ticketMap.containsKey(ticknr) ? ticketMap.get(ticknr) : null;
     }
 
     public void putTicket(Ticket ticket) {
-        // tcLog.d( "ticket = "+ticket);
+//        tcLog.d("ticket = "+ticket);
         ticketMap.put(ticket.getTicketnr(), ticket);
     }
 	
@@ -67,18 +67,21 @@ public class Tickets {
 	}
 	
 	public void add(Tickets tl) {
+        tcLog.d("this = "+this+" size voor = "+getTicketCount()+" tl = "+tl);
 		for(Ticket t: tl.ticketList) {
 			addTicket(t);
 		}
+        tcLog.d("size na = "+getTicketCount());
 	}
 	
 	public void addTicket(Ticket ticket) {
+//		tcLog.d("ticket = "+ticket);
 		ticketList.add(ticket);
 		putTicket(ticket);
 	}
 	
 	public void delTicket(int ticknr) {
-		tcLog.d( "ticknr = "+ticknr);
+		tcLog.d("ticknr = "+ticknr);
 		if (ticketMap.containsKey(ticknr)) {
 			Ticket removed = ticketMap.remove(ticknr);
 			ticketList.remove(removed);
@@ -148,7 +151,7 @@ public class Tickets {
         try {
             return ticketList.size();
         } catch (final Exception e) {
-//            tcLog.d("Exception", e);
+            tcLog.d("Exception", e);
             return 0;
         }
     }
