@@ -65,26 +65,24 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 	private SwipeRefreshLayout swipeLayout;
 	
 	public static class MyListView extends ListView { 
-		public MyListView(Context context, AttributeSet attrs) {
-			super(context,attrs);
-			tcLog.logCall();
+		public MyListView(Context context) {
+			super(context);
+			tcLog.d("context = "+context);
 		}
 		
-		@Override
-		public void onFocusChanged(boolean gainFocus, int direction, Rect previouslyFocusedRect) {
-			tcLog.d("gainFocus = "+gainFocus+" direction = "+direction+" previouslyFocusedRect = "+previouslyFocusedRect);
-			super.onFocusChanged(gainFocus,direction,previouslyFocusedRect);
+		public MyListView(Context context, AttributeSet attrs) {
+			super(context,attrs);
+			tcLog.d("context = "+context+" attrs = "+attrs);
+		}
+		
+		public MyListView(Context context, AttributeSet attrs, int defStyleAttr) {
+			super(context,attrs,defStyleAttr);
+			tcLog.d("context = "+context+" attrs = "+attrs+" defStyleAttr = " +defStyleAttr);
 		}
 		
 		public void setAdapter(TicketListAdapter adapter) {
-			tcLog.d("adapter = "+adapter);
 			super.setAdapter(adapter);
-		}
-		
-		@Override
-		public void onVisibilityChanged(View changedView, int visibility) {
-			tcLog.d("changedView = "+changedView+" visibility = "+visibility);
-			super.onVisibilityChanged(changedView,visibility);
+			tcLog.d("adapter = "+adapter);
 		}
 	}
 	
@@ -123,6 +121,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
         final View view = inflater.inflate(R.layout.list_view, container, false);
 
         listView = (ListView) view.findViewById(R.id.listOfTickets);
+        tcLog.d("listView = " + listView);
         registerForContextMenu(listView);
         scrolling = false;
         hasScrolled = false;
@@ -147,8 +146,10 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 	}
 	
 	public void setAdapter(TicketListAdapter a) {
+		tcLog.d("a = " + a+ " listView = "+ listView );
 		dataAdapter = a;
 		listView.setAdapter(a);
+		zetZoeken();
 	}
 
     @Override
