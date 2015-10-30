@@ -94,7 +94,7 @@ public class tcLog {
 
     public static void logCall() {
         String caller = getCaller(2);
-        Log.d(caller, "");
+        Log.d(caller, "logCall");
         myLog("D." + caller, "");
     }
 
