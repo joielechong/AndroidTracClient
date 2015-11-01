@@ -341,7 +341,6 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 						if (t != null) {
 							if ((TICKET_GET + "_" + thisTicket).equals(id)) {
 								t.setFields(result.getJSONObject(3));
-								tl.incTicketContentCount();
 							} else if ((TICKET_CHANGE + "_" + thisTicket).equals(id)) {
 								t.setHistory(result);
 							} else if ((TICKET_ATTACH + "_" + thisTicket).equals(id)) {
