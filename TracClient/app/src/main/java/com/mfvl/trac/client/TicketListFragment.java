@@ -64,28 +64,6 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
  	private ShareActionProvider listShare = null;	
 	private SwipeRefreshLayout swipeLayout;
 	
-	public static class MyListView extends ListView { 
-		public MyListView(Context context) {
-			super(context);
-			tcLog.d("context = "+context);
-		}
-		
-		public MyListView(Context context, AttributeSet attrs) {
-			super(context,attrs);
-			tcLog.d("context = "+context+" attrs = "+attrs);
-		}
-		
-		public MyListView(Context context, AttributeSet attrs, int defStyleAttr) {
-			super(context,attrs,defStyleAttr);
-			tcLog.d("context = "+context+" attrs = "+attrs+" defStyleAttr = " +defStyleAttr);
-		}
-		
-		public void setAdapter(TicketListAdapter adapter) {
-			super.setAdapter(adapter);
-			tcLog.d("adapter = "+adapter);
-		}
-	}
-	
 	private void onMyAttach() {
         if (fragmentArgs != null) {
             if (fragmentArgs.containsKey("TicketArg")) {
@@ -355,6 +333,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 	public void dataHasChanged() {
 		try {
 			tcLog.d("hs = " + hs);
+			zetZoeken();
 			setStatus(listener.getTicketContentCount() + "/" + listener.getTicketCount());
 //			setAdapter(listener.getAdapter());
 			updateShareActionProvider();
@@ -363,7 +342,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 			listView.invalidate();
 			listView.invalidateViews();
 			setScroll();
-		} catch (Exception ignored) {tcLog.e(ignored);}
+		} catch (Exception ignored) {}
 	}
 	
 	public void startLoading() {
@@ -424,7 +403,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
         if (v != null) {
             final EditText filterText = (EditText) v.findViewById(R.id.search_box);
 
-            if (filterText != null && listView != null && dataAdapter != null) {
+            if (filterText != null && dataAdapter != null) {
                 if (zoeken) {
                     dataAdapter.getFilter().filter(filterText.getText());
                     filterText.setVisibility(View.VISIBLE);

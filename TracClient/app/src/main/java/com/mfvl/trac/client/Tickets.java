@@ -27,7 +27,6 @@ public class Tickets {
 
     private Tickets _instance = null;
     private int ticketGroupCount;
-    private int ticketContentCount;
     private boolean valid = false;
 
     public Tickets() {
@@ -39,7 +38,6 @@ public class Tickets {
     public void initList() {
         tcLog.logCall();
         ticketList = new TicketList();
-        ticketContentCount = 0;
         valid = true;
     }
 
@@ -62,7 +60,6 @@ public class Tickets {
 	public void clear() {
 		tcLog.logCall();
 		ticketList.clear();
-        ticketContentCount = 0;
         valid = true;
 	}
 	
@@ -93,20 +90,18 @@ public class Tickets {
         ticketGroupCount = v;
     }
 
-    public void setTicketContentCount(final int v) {
-        ticketContentCount = v;
-    }
-	
-    public void incTicketContentCount() {
-        ticketContentCount++;
-    }
-	
     public int getTicketGroupCount() {
         return ticketGroupCount;
     }
 
     public int getTicketContentCount() {
-        return ticketContentCount;
+		int c = 0;
+		for(Ticket t: ticketList) {
+			if (t.hasdata()) {
+				c=c+1;
+			}
+		}
+        return c;
     }
 
     public void setInvalid() {
@@ -155,5 +150,4 @@ public class Tickets {
             return 0;
         }
     }
-
 }
