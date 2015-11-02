@@ -45,11 +45,13 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket>  {
 	}
 	
 	public void addAll(Tickets tl) {
-//        tcLog.d("tl = "+tl+" "+tl != null ? tl.ticketList.toString() : null);
-//		tcLog.d("mTickets = "+mTickets);
+        tcLog.d("tl = "+tl+" "+tl != null ? tl.ticketList.toString() : null);
+		tcLog.d("mTickets = "+mTickets);
 		if (tl != null) {
 			super.addAll(tl.ticketList);
 			mTickets.add(tl);
+			getFilter().filter(null);
+			tcLog.d("count = "+super.getCount());
 			notifyDataSetChanged();
 		}
 	}

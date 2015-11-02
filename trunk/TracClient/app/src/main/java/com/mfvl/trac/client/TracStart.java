@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013,2014 Michiel van Loon
+ * Copyright (C) 2013,2014,2015 Michiel van Loon
  *);
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,7 +18,6 @@ package com.mfvl.trac.client;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONException;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -160,15 +159,12 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     private static final String FilterFragmentTag = "Filter_Fragment";
     private static final String SortFragmentTag = "Sort_Fragment";
 
-    private static final String TICKETLISTNAME = "ticketlistInt";
-
 	static final String BUNDLE_ISOTIJD = "ISOTIJD";
 	static final String BUNDLE_TICKET = "TICKET";
 	
     private boolean debug = false; // disable menuoption at startup
     private onFileSelectedListener _oc = null;
     private boolean dispAds = true;
-    private FragmentManager fm = null;
     private long referenceTime = 0;
     private String urlArg = null;
     private int ticketArg = -1;
@@ -184,7 +180,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	private boolean changesLoaderStarted = false;
 	private boolean listLoaderStarted = false;
 	private boolean ticketLoaderStarted = false;
-	private boolean loaderStarted = false;
 	private boolean hasTicketsLoadingBar = false;
 	private Boolean ticketsLoading = false;
 		
@@ -240,7 +235,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	}
 	
     @Override
-    public void onLoadFinished(Loader<Tickets> loader, Tickets tl) {
+    public void onLoadFinished(Loader<Tickets> loader, final Tickets tl) {
         tcLog.d( loader + " " + loader.getId() + " " + tl);
 		switch (loader.getId()) {
 			case LIST_LOADER:
@@ -557,10 +552,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 			PopupMenu p = new PopupMenu(this,findViewById(R.id.left_drawer));
 			p.inflate(R.menu.drawermenu);
 			Menu m = p.getMenu();
-			
-			ArrayList<String> s = new ArrayList<>();
-			ArrayList<Integer> id = new ArrayList<>();
-			
+
 			mDrawerTitles = new String[m.size()];
 			mDrawerIds = new int[m.size()];
 			
@@ -1128,13 +1120,11 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 				menu.findItem(mDrawerId).setVisible(!drawerOpen);
 			} catch(Exception ignored) {}
 		}
-		Intent i = null;
-	
         final MenuItem itemDebug = menu.findItem(R.id.debug);
 
         itemDebug.setVisible(debug).setEnabled(debug);
         if (debug) {
-           i = shareDebug();
+           Intent i = shareDebug();
 
 			ShareActionProvider debugShare = (ShareActionProvider)itemDebug.getActionProvider();
             tcLog.d( "item = " + itemDebug + " " + debugShare + " " + i);
@@ -1451,6 +1441,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     private void newDataAdapter(Tickets tl) {
         tcLog.logCall();
         dataAdapter = new TicketListAdapter(this, R.layout.ticket_list, tl);
+		dataAdapter.getFilter().filter(null);
 		dataAdapter.setNotifyOnChange(true);
 		try {
 			getTicketListFragment().setAdapter(dataAdapter);
