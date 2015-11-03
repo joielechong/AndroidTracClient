@@ -54,7 +54,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
     private static final String SSLHACK_ID = "sslhack";
     private SQLiteDatabase db = null;
     private boolean upgrade = false;
-    private Context _context;
+    private final Context _context;
 
     public class XMLHandler extends DefaultHandler {
 

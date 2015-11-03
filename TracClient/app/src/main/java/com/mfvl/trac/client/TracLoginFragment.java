@@ -125,9 +125,7 @@ public class TracLoginFragment extends TracClientFragment {
         if (container == null) {
             return null;
         }
-        final View view = inflater.inflate(R.layout.traclogin, container, false);
-
-        return view;
+        return inflater.inflate(R.layout.traclogin, container, false);
     }
     
     @Override

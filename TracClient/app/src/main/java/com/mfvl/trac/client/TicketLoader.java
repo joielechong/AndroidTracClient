@@ -42,7 +42,7 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 
  	TicketModel tm = null;
 	private TracHttpClient tracClient;
-	int mode;
+	final int mode;
 	String isoTijd;
 	private TicketList ticketList;
 	Tickets mTickets = null;

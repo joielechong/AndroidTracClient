@@ -133,11 +133,11 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	public static final String DATACHANGED_MESSAGE = "com.mfvl.trac.client.message.datachanged";
     private static final int REQUEST_CODE = 6384;
 
-	public static String[] mDrawerTitles = null;
-    public static int[] mDrawerIds = null;
+	private static String[] mDrawerTitles = null;
+    private static int[] mDrawerIds = null;
 	
-    public ArrayList<SortSpec> sortList = null;
-    public ArrayList<FilterSpec> filterList = null;
+    private ArrayList<SortSpec> sortList = null;
+    private ArrayList<FilterSpec> filterList = null;
 
     private String profile = null;
     private String url = null;
@@ -172,8 +172,8 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	private IncomingHandler tracStartHandler = null;
 	private TicketModel tm = null;
 
-    boolean mIsBound = false;
-    Messenger mService = null;
+    private boolean mIsBound = false;
+    private Messenger mService = null;
     private MyHandlerThread mHandlerThread = null;
     private Messenger mMessenger = null;
 	
@@ -190,7 +190,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	private static final int TICKET_LOADER = 3;
 	private static final int TICKET_LOADER_NOSHOW = 4;
 	
-	private Semaphore loadingActive = new Semaphore(1, true);	
+	private final Semaphore loadingActive = new Semaphore(1, true);
 	
     @Override
     public Loader<Tickets> onCreateLoader(int loaderID, Bundle bundle) {
@@ -826,7 +826,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         }
     }
 
-    public void shouldDisplayHomeUp() {
+    private void shouldDisplayHomeUp() {
         // Enable Up button only if there are entries in the back stack
         final boolean canBack = getFragmentManager().getBackStackEntryCount() > 1;
 
@@ -956,7 +956,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         shouldDisplayHomeUp();
     }
 	
-	TracLoginFragment newLoginFrag() {
+	private TracLoginFragment newLoginFrag() {
         final TracLoginFragment tracLoginFragment = new TracLoginFragment();
 		final Bundle args = makeArgs();
 		args.putString(Const.CURRENT_URL, url);
@@ -1387,7 +1387,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         return getFragmentManager().findFragmentByTag(tag);
     }
 
-    public void getNewTickets(final String isoTijd) {
+    private void getNewTickets(final String isoTijd) {
         tcLog.d( "tijd = "+isoTijd) ;
 		
 		Bundle args = new Bundle();
@@ -1587,7 +1587,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 		return dataAdapter.getPrevTicket(i);
 	}
 	
-    private BroadcastReceiver mBroadcastMessageReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver mBroadcastMessageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context c,Intent i) {
 //			tcLog.d( "Receive "+i);

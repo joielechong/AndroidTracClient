@@ -51,8 +51,8 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
 	
     private class FilterAdapter extends SpecAdapter<FilterSpec> implements View.OnClickListener {
 
-        public FilterAdapter(Context context, int textViewResourceId, ArrayList<FilterSpec> input) {
-            super(context, textViewResourceId, input);
+        public FilterAdapter(Context context,  ArrayList<FilterSpec> input) {
+            super(context, android.R.layout.simple_list_item_1, input);
 			if (operators == null) {
 				final Resources res = context.getResources();
 				operators = new ArrayList<>(Arrays.asList(res.getStringArray(R.array.filter2_choice)));
@@ -229,7 +229,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
         final View view = getView();
 		helpFile = R.string.filterhelpfile;
 
-        filterAdapter = new FilterAdapter(context, android.R.layout.simple_list_item_1, outputSpec);
+        filterAdapter = new FilterAdapter(context, outputSpec);
         listView.setAdapter(filterAdapter);
 
 		view.findViewById(R.id.storefilter).setOnClickListener(this);
