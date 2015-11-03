@@ -64,7 +64,7 @@ public class Credentials {
     /**
      * Load login credentials from shared preferences: server-url, username, password and profile
      */
-    public static void loadCredentials() {
+    private static void loadCredentials() {
         // tcLog.d("loadCredentials");
         _url = settings.getString(Const.PREF_URL, "");
         _username = settings.getString(Const.PREF_USER, "");

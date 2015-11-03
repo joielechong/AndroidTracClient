@@ -53,7 +53,7 @@ public class Ticket implements Serializable {
     private JSONArray _history;
     private JSONArray _attachments;
     private JSONArray _actions;
-    private int _ticknr;
+    private final int _ticknr;
     private boolean _hasdata = false;
     private static Semaphore available = new Semaphore(1, true);
     private final Semaphore actionLock = new Semaphore(1, true);

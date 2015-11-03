@@ -29,9 +29,8 @@ class JSONEntity extends StringEntity {
 	 * @param jsonObject
 	 * @param encoding
 	 *            Chosen encoding from Consts.UTF_8, ISO_8859_1 or any other supported format
-	 * @throws UnsupportedEncodingException
 	 */
-	public JSONEntity(JSONObject jsonObject, String encoding) throws UnsupportedEncodingException {
+	public JSONEntity(JSONObject jsonObject, String encoding) {
 		super(jsonObject.toString(), encoding);
 		setContentEncoding(encoding);
 	}

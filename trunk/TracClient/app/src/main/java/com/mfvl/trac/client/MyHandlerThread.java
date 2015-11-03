@@ -18,7 +18,7 @@ package com.mfvl.trac.client;
 
 import android.os.HandlerThread;
 
-public class MyHandlerThread extends HandlerThread {
+class MyHandlerThread extends HandlerThread {
 
     MyHandlerThread(String name) {
         super(name);

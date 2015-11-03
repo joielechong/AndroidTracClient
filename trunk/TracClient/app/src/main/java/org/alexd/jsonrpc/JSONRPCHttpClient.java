@@ -46,11 +46,11 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 	/**
 	 * HttpClient to issue the HTTP/POST request
 	 */
-	protected CloseableHttpClient httpClient;
+	protected final CloseableHttpClient httpClient;
 	/**
 	 * Service URI
 	 */
-	private String serviceUri;
+	private final String serviceUri;
 
 	// HTTP 1.0
 	private static final ProtocolVersion PROTOCOL_VERSION = new ProtocolVersion("HTTP", 1, 1);

@@ -139,7 +139,7 @@ public class RefreshService extends Service {
 
     @Override
     public void onCreate() {
-        //tcLog.d( "onCreate");
+        tcLog.d( "onCreate");
         mHandlerThread = new MyHandlerThread("ServiceHandler");
         mHandlerThread.start();
 

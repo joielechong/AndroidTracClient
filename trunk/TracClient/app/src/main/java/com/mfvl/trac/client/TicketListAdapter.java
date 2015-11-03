@@ -20,7 +20,7 @@ import android.content.Context;
 import android.widget.Filter;
 
 public class TicketListAdapter extends ColoredArrayAdapter<Ticket>  {
-    Context context;
+    final Context context;
 	final Tickets mTickets;
 
     public TicketListAdapter(TracStart context, int resource, Tickets tl) {
@@ -50,7 +50,6 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket>  {
 		if (tl != null) {
 			super.addAll(tl.ticketList);
 			mTickets.add(tl);
-			getFilter().filter(null);
 			tcLog.d("count = "+super.getCount());
 			notifyDataSetChanged();
 		}

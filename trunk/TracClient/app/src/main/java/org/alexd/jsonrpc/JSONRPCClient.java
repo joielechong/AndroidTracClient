@@ -68,7 +68,7 @@ public abstract class JSONRPCClient {
 		return arr;
 	}
 
-	protected JSONObject doRequest(String method, JSONObject params) throws JSONRPCException, JSONException {
+	protected JSONObject doRequest(String method, JSONObject params) throws JSONRPCException {
 		final JSONObject jsonRequest = new JSONObject();
 		try {
 			jsonRequest.put("id", UUID.randomUUID().hashCode());
@@ -109,7 +109,7 @@ public abstract class JSONRPCClient {
 */
 	}
 
-	protected JSONObject doRequest(String method, JSONArray params) throws JSONRPCException, JSONException {
+	protected JSONObject doRequest(String method, JSONArray params) throws JSONRPCException {
 		final JSONObject jsonRequest = new JSONObject();
 		try {
 			jsonRequest.put("id", UUID.randomUUID().hashCode());

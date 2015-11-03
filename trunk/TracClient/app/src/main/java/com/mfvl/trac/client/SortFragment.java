@@ -33,8 +33,8 @@ import android.widget.TextView;
 public class SortFragment extends SpecFragment<SortSpec>  {
 
     private class SortAdapter extends SpecAdapter<SortSpec>  implements View.OnClickListener {
-        public SortAdapter(Context context, int textViewResourceId, ArrayList<SortSpec> items) {
-            super(context, textViewResourceId, items);
+        public SortAdapter(Context context, ArrayList<SortSpec> items) {
+            super(context,  R.layout.sort_spec, items);
         }
 		
         @Override
@@ -147,7 +147,7 @@ public class SortFragment extends SpecFragment<SortSpec>  {
 		helpFile = R.string.sorthelpfile;
         final View view = getView();
 
-        sortAdapter = new SortAdapter(context, R.layout.sort_spec, outputSpec);
+        sortAdapter = new SortAdapter(context, outputSpec);
         listView.setAdapter(sortAdapter);
 
 		ImageButton addButton = (ImageButton) view.findViewById(R.id.addbutton);

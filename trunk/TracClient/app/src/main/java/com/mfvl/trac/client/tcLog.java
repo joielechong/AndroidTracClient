@@ -32,7 +32,7 @@ public class tcLog {
     private static Activity _c = null;
     private static boolean doToast = false;
     private static String debugString = "";
-    private static SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
+    private static final SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
 
     public static void setContext(Activity c) {
         _c = c;
@@ -188,7 +188,7 @@ public class tcLog {
         myLog("WTF." + caller, msg, tr);
     }
 
-    public static String getStackTraceString(Throwable tr) {
+    private static String getStackTraceString(Throwable tr) {
         return Log.getStackTraceString(tr);
     }
 
