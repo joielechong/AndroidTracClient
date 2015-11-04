@@ -156,7 +156,7 @@ public class SortFragment extends SpecFragment<SortSpec>  {
         addSpinner = (Spinner) view.findViewById(R.id.addspin);
 		getScreensize(addSpinner,addButton);
 
-        if (addButton != null && addSpinner != null) {
+        if (addSpinner != null) {
 			//tcLog.d("before setAdapter, tm = "+tm+ " addSspinner = "+ addSpinner+" context = "+context);
             addSpinner.setAdapter(new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, tm.velden()));
         }

@@ -313,7 +313,6 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 	protected void getScreensize(View spin,View but) {
 		DisplayMetrics metrics = new DisplayMetrics();
 		context.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-		int heightPixels = metrics.heightPixels;
 		int widthPixels = metrics.widthPixels;
 		Drawable drawable = ContextCompat.getDrawable(context,R.drawable.plus);
 		spin.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, widthPixels-drawable.getIntrinsicWidth()));

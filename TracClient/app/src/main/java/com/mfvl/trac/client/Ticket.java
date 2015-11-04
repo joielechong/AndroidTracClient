@@ -17,20 +17,12 @@
 package com.mfvl.trac.client;
 
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.Serializable;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.Semaphore;
 
-import org.alexd.jsonrpc.JSONRPCException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import android.util.Base64;
 
 /*
 interface onTicketCompleteListener {
@@ -263,7 +255,7 @@ public class Ticket implements Serializable {
             final int count = fields.length();
 
             for (int i = 0; i < count; i++) {
-                String veld = "veld " + i;
+                String veld;
 
                 try {
                     veld = fields.getString(i);

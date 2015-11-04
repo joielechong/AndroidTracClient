@@ -16,7 +16,6 @@
 
 package com.mfvl.trac.client;
 
-import java.io.File;
 import java.io.Serializable;
 import java.net.URLConnection;
 import java.util.ArrayList;

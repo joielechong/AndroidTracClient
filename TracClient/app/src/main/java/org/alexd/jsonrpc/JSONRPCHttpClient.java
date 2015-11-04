@@ -3,7 +3,6 @@ package org.alexd.jsonrpc;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.GeneralSecurityException;
-import java.util.Arrays;
 
 import javax.net.ssl.SSLException;
 
@@ -203,7 +202,7 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 			// Check for remote errors
 			if (jsonResponse.has("error")) {
 				final Object jsonError = jsonResponse.get("error");
-				if (!jsonError.equals(null)) {
+				if (jsonError != null) {
 					throw new JSONRPCException(((JSONObject) jsonError).get("message"));
 				}
 			}
