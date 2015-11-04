@@ -17,7 +17,6 @@
 package com.mfvl.trac.client;
 
 import android.content.Context;
-import android.widget.Filter;
 
 public class TicketListAdapter extends ColoredArrayAdapter<Ticket>  {
     final Context context;
@@ -45,7 +44,7 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket>  {
 	}
 	
 	public void addAll(Tickets tl) {
-        tcLog.d("tl = "+tl+" "+tl != null ? tl.ticketList.toString() : null);
+        tcLog.d("tl = "+tl+" "+(tl != null ? tl.ticketList.toString() : null));
 		tcLog.d("mTickets = "+mTickets);
 		if (tl != null) {
 			super.addAll(tl.ticketList);

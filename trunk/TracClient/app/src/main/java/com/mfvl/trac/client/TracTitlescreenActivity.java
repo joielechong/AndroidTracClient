@@ -41,19 +41,8 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
         super.onCreate(savedInstanceState);
         tcLog.setContext(this);
         tcLog.logCall();
-		
-		Thread.setDefaultUncaughtExceptionHandler (this);
-		
 		Credentials.getInstance(this);
-		
-        try {
-            setContentView(R.layout.activity_titlescreen);
-            final TextView tv = (TextView) findViewById(R.id.version_content);
-
-//            tv.setText(Credentials.getVersion());
-        } catch (final Exception e) {
-            tcLog.e("crash", e);
-        }
+        setContentView(R.layout.activity_titlescreen);
     }
 
     @Override
@@ -85,7 +74,7 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
         // adMobAvailable=false;
         launchTrac.putExtra(Const.ADMOB, adMobAvailable);
 
-        String urlstring = null;
+        String urlstring = null;  // TODO  wordt niet meer gebruikt, dat klopt niet zou in de intent moeten
 
         final Intent intent = getIntent();
 
