@@ -548,9 +548,6 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
                     }
                 });
             }
-//            final ArrayList<String> fields = tm.velden();
-//            final int count = fields.size();
-
 			for (final String veld : tm.velden()) {
 
                 try {

@@ -85,7 +85,7 @@ public class tcLog {
         final String date = s.format(new Date());
 
         debugString += "\n" + date + " " +pid +" "+tid + " " + tag
-            + ("".equals(message)?": " + message:"")
+            + ("".equals(message)?"": ": "+ message)
             + (tr != null ? "\nException thrown: " + tr.getMessage() + "\n" + getStackTraceString(tr) : "");
         if (doToast) {
             toast(tag + ": " + message);

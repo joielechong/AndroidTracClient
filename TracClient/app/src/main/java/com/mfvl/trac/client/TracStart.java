@@ -128,6 +128,10 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	static final int MSG_DISPLAY_TICKET = 26;
 	static final int MSG_ACK_START = 27;
 	static final int MSG_START_LISTLOADER = 28;
+	static final int MSG_LOGIN_PROFILE = 29;
+	static final int MSG_LOAD_TICKETS = 30;
+	static final int MSG_LOAD_FASE1 = 31;
+	static final int MSG_LOAD_FASE2 = 32;	
 	
 	public static final String PROVIDER_MESSAGE = "com.mfvl.trac.client.message.provider";
 	public static final String DATACHANGED_MESSAGE = "com.mfvl.trac.client.message.datachanged";
@@ -394,11 +398,13 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 				case MSG_SET_SORT:
 				setSort((ArrayList<SortSpec>)msg.obj);
 				refreshOverview();
+				sendMessageToService(MSG_SET_SORT,msg.obj);
 				break;
 				
 				case MSG_SET_FILTER:
 				setFilter((ArrayList<FilterSpec>)msg.obj);
 				refreshOverview();
+				sendMessageToService(MSG_SET_FILTER,msg.obj);
 				break;
 				
 				case MSG_SHOW_DIALOG:
@@ -421,6 +427,11 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 				break;
 				
 				case MSG_START_LISTLOADER:
+				sendMessageToService(MSG_LOGIN_PROFILE,new LoginProfile(url,username,password,sslHack)
+						.setSslHostNameHack(sslHostNameHack)
+						.setFilterList(filterList)
+						.setSortList(sortList));
+				sendMessageToService(MSG_LOAD_TICKETS,null); //  TODO
 				if (listLoaderStarted) {
 					getLoaderManager().restartLoader(LIST_LOADER, null, TracStart.this);
 				} else {
@@ -697,6 +708,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
                     sslHostNameHack = false; // force dialog to confirm
                     profile = null;
                 }
+				sendMessageToService(MSG_LOGIN_PROFILE,lp);
             }
         }
 		
@@ -1528,7 +1540,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 			public void run() {
 				try {
 					TracHttpClient tracClient = new TracHttpClient(url,sslHack,sslHostNameHack,username,password);
-					JSONArray retTick = tracClient.updateTicket(ticknr, cmt, velden, notify); // TODO zou nieuwe ticket retourneren en is volgende dus niet nodig
+					JSONArray retTick = tracClient.updateTicket(ticknr, cmt, velden, notify);
 					t.setFields(retTick.getJSONObject(3));
 					if (modVeld != null) {
 						modVeld.clear();

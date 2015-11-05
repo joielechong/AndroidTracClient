@@ -40,14 +40,14 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         tcLog.setContext(this);
-        tcLog.logCall();
+//        tcLog.logCall();
 		Credentials.getInstance(this);
         setContentView(R.layout.activity_titlescreen);
     }
 
     @Override
     public void onStart() {
-        tcLog.logCall();
+//        tcLog.logCall();
         super.onStart();
 
         boolean adMobAvailable = false;
@@ -74,8 +74,6 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
         // adMobAvailable=false;
         launchTrac.putExtra(Const.ADMOB, adMobAvailable);
 
-        String urlstring = null;  // TODO  wordt niet meer gebruikt, dat klopt niet zou in de intent moeten
-
         final Intent intent = getIntent();
 
         // Integer ticket = -1;
@@ -88,7 +86,7 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
                 final List<String> segments = uri.getPathSegments();
                 final String u = uri.getScheme() + "://" + uri.getHost() + "/";
 
-                urlstring = u.replace("tracclient://", "http://").replace("tracclients://", "https://");
+                String urlstring = u.replace("tracclient://", "http://").replace("tracclients://", "https://");
                 final int count = segments.size();
                 final String mustBeTicket = segments.get(count - 2);
 
@@ -102,7 +100,6 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
                             .putExtra(Const.INTENT_TICKET, (long) ticket);
                 } else {
                     tcLog.w("View intent bad Url");
-                    urlstring = null;
                 }
             }
         }
@@ -111,7 +108,7 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
 	}
 
 	private void startApp() {
-        tcLog.logCall();
+//        tcLog.logCall();
         int timerVal = getResources().getInteger(R.integer.startupTimer);
         final Timer t = new Timer();
 		t.schedule(new TimerTask() {

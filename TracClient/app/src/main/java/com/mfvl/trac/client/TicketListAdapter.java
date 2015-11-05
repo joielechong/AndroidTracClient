@@ -24,8 +24,9 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket>  {
 
     public TicketListAdapter(TracStart context, int resource, Tickets tl) {
         super(context, resource,tl!=null?tl.ticketList:null);
-		tcLog.d("context = "+context+" resource = "+ resource+" tl = "+tl);
-        tcLog.d(tl != null ? tl.toString() : null);
+		tcLog.logCall();
+//		tcLog.d("context = "+context+" resource = "+ resource+" tl = "+tl);
+//		tcLog.d(tl != null ? tl.toString() : null);
         this.context = context;
 
 		mTickets = tl;

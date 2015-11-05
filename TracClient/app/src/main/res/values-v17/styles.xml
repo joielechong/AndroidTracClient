@@ -62,12 +62,12 @@
 		<item name="android:drawableStart">@android:drawable/ic_menu_search</item>
 	</style>
 	
-	<style name="ListProgress">
+	<style name="NextToListProgress">
 		<item name="android:layout_alignParentStart">true</item>
 		<item name="android:layout_toStartOf">@id/listProgress</item>
 	</style>
 	
-	<style name="NextToListProgress">
+	<style name="ListProgress">
 		<item name="android:layout_alignParentEnd">true</item>
 	</style>
 	
