@@ -38,14 +38,14 @@
 			android:layout_height="wrap_content" >
 
 			<TextView
-				style="@style/ListProgress"
+				style="@style/NextToListProgress"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:text="@string/list_heading"
 				android:textSize="@dimen/list_textsize" />
 
 			<TextView
-				style="@style/NextToListProgress"
+				style="@style/ListProgress"
 				android:id="@+id/listProgress"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"

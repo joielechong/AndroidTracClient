@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-
 public class RefreshService extends Service {
 
     private int timerStart;
@@ -61,7 +60,7 @@ public class RefreshService extends Service {
 
         @Override
         public void handleMessage(final Message msg) {
-            //tcLog.d( "handleMessage msg = " + msg);
+            tcLog.d( "handleMessage msg = " + msg);
             final NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
             switch (msg.what) {
@@ -126,20 +125,20 @@ public class RefreshService extends Service {
     }
 
     private void sendMessageToUI(int message) {
-        //tcLog.d( ""+message);
+        //tcLog.d(""+message);
         try {
             // Send data as an Integer
             if (receiver != null) {
                 receiver.send(Message.obtain(null, message, 0, 0));
             }
         } catch (final RemoteException e) {
-            tcLog.e( "failed", e);
+            tcLog.e("failed", e);
         }
     }
 
     @Override
     public void onCreate() {
-        tcLog.d( "onCreate");
+        tcLog.logCall();
         mHandlerThread = new MyHandlerThread("ServiceHandler");
         mHandlerThread.start();
 
@@ -150,7 +149,7 @@ public class RefreshService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        //tcLog.d( "onStartCommand intent = " + intent);
+        //tcLog.d("intent = " + intent);
 
         // For each start request, send a message to start a job and deliver the
         // start ID so we know which request we're stopping when we finish the
@@ -167,13 +166,13 @@ public class RefreshService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        //tcLog.d( "onBind intent = " + intent);
+        //tcLog.d("intent = " + intent);
         return mMessenger.getBinder();
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
-        //tcLog.d( "onUnBind intent = " + intent);
+        //tcLog.d("intent = " + intent);
 		stopTimer();
         stopService(intent);
         return false;
@@ -191,12 +190,12 @@ public class RefreshService extends Service {
     }
 
     private void startTimer() {
-        //tcLog.d( "startTimer");
+        //tcLog.logCall();
         monitorTimer = new Timer("monitorTickets");
         monitorTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                //tcLog.d( "timertask started");
+                //tcLog.d("timertask started");
                 sendMessageToUI(TracStart.MSG_REQUEST_TICKET_COUNT);
             }
         }, timerStart, timerPeriod);

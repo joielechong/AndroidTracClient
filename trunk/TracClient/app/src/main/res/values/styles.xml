@@ -174,12 +174,12 @@
 		<item name="android:visibility">gone</item>
 	</style>
 	
-	<style name="ListProgress">
+	<style name="NextToListProgress">
 		<item name="android:layout_alignParentLeft">true</item>
 		<item name="android:layout_toLeftOf">@id/listProgress</item>
 	</style>
 	
-	<style name="NextToListProgress">
+	<style name="ListProgress">
 		<item name="android:layout_alignParentRight">true</item>
 	</style>
 	

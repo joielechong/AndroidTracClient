@@ -202,7 +202,8 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 			// Check for remote errors
 			if (jsonResponse.has("error")) {
 				final Object jsonError = jsonResponse.get("error");
-				if (jsonError != null) {
+				//noinspection ObjectEqualsNull
+				if (!jsonError.equals(null)) {
 					throw new JSONRPCException(((JSONObject) jsonError).get("message"));
 				}
 			}
