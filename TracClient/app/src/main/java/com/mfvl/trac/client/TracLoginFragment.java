@@ -314,6 +314,7 @@ public class TracLoginFragment extends TracClientFragment {
 					setValidMessage();
 				} catch (JSONException e) {
 					try {
+//						tcLog.d("j = "+j);
 						final String errmsg = (String) j.get(ERROR);
 							
 						tcLog.d( "Exception during verify 1 " + errmsg,e);
