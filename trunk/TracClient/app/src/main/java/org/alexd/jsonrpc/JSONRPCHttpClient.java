@@ -215,15 +215,15 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 //			tcLog.d( "SSLException in JSONRPCHTTPClient.doJSONRequest", e);
 			throw new JSONRPCException(e.getMessage());
 		} catch (final JSONException e) {
-//			tcLog.e( "JSONException in JSONRPCHTTPClient.doJSONRequest", e);
+//			tcLog.e("JSONException in JSONRPCHTTPClient.doJSONRequest", e);
+//			tcLog.d("lastResonse = "+lastResponse);
 			if (lastResponse.length() == 0) {
 				throw new JSONRPCException("JSONException: " + e.getMessage());
 			} else {
 				final int titelstart = lastResponse.indexOf("<title");
 				final int titeleind = lastResponse.indexOf("</title>");
 				if (titelstart == -1 || titeleind == -1) {
-//					tcLog.toast(lastResponse.substring(0, 20) + "==");
-//					tcLog.i( "lastResonse = "+lastResponse.substring(0, 20) + "==");
+					tcLog.toast(lastResponse.substring(0, 20) + "==");
 					if ("No protocol matching".equals(lastResponse.substring(0, 20))) {
 						throw new JSONRPCException("NOJSON");
 					} else {
