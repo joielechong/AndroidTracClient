@@ -16,20 +16,11 @@
 package com.mfvl.trac.client;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 public class TicketList extends ArrayList<Ticket> {
 	public TicketList() {
 		super();
 	} 
-	
-	public  TicketList(int capacity) {
-		super(capacity);
-	}
-	
-	public TicketList(Collection<? extends Ticket> collection) {
-		super(collection);
-	}
 	
 	public void addAll(TicketList tl) {
         tcLog.d(tl != null ? tl.toString() : null);

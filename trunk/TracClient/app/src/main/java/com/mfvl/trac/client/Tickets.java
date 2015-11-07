@@ -65,9 +65,10 @@ public class Tickets {
 	
 	public void add(Tickets tl) {
         tcLog.d("this = "+this+" size voor = "+getTicketCount()+" tl = "+tl);
-		for(Ticket t: tl.ticketList) {
-			addTicket(t);
-		}
+        this.ticketList.addAll(tl.ticketList);
+//		for(Ticket t: tl.ticketList) {
+//			addTicket(t);
+//		}
         tcLog.d("size na = "+getTicketCount());
 	}
 	
