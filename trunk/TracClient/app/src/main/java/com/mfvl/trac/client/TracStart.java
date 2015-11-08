@@ -130,8 +130,10 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	static final int MSG_START_LISTLOADER = 28;
 	static final int MSG_LOGIN_PROFILE = 29;
 	static final int MSG_LOAD_TICKETS = 30;
-	static final int MSG_LOAD_FASE1 = 31;
-	static final int MSG_LOAD_FASE2 = 32;	
+	static final int MSG_LOAD_FASE1_FINISHED = 31;
+	static final int MSG_LOAD_FASE2_FINISHED = 32;	
+	static final int MSG_GET_TICKET_MODEL = 33;	
+	static final int MSG_TICKET_MODEL_LOADED = 34;	
 	
 	public static final String PROVIDER_MESSAGE = "com.mfvl.trac.client.message.provider";
 	public static final String DATACHANGED_MESSAGE = "com.mfvl.trac.client.message.datachanged";
@@ -237,7 +239,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 		}
 		return null;
 	}
-	
+
     @Override
     public void onLoadFinished(Loader<Tickets> loader, final Tickets tl) {
         tcLog.d( loader + " " + loader.getId() + " " + tl);
@@ -261,18 +263,16 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 				loadingActive.release();
 			}
 			break;
-			
+
 			case CHANGES_LOADER:
 			List<Integer> newTickets = new ArrayList<>();
-			
 			for (Ticket t: tl.ticketList) {
 				newTickets.add(t.getTicketnr());
 			}
-			
 			sendMessageToService(MSG_SEND_NEW_TICKETS, newTickets);
 			getLoaderManager().destroyLoader(CHANGES_LOADER);
 			break;
-			
+
 			case TICKET_LOADER:
 			stopProgressBar();
 			if (tl != null ) {
@@ -501,7 +501,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         @Override
         public void onItemClick(AdapterView parent, View view, int position, long id) {
             selectItem(position);
-            //tcLog.d("onItemClick: parent = " + parent + " view = " + view + " position = " + position + " id = " + id + " mDrawerId = " + mDrawerIds[position]);
+//			tcLog.d("onItemClick: parent = " + parent + " view = " + view + " position = " + position + " id = " + id + " mDrawerId = " + mDrawerIds[position]);
         }
     }
 	
@@ -680,8 +680,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 			}
 		}
 
-
-
         if (urlArg != null) {
             final String urlArg1 = urlArg + "rpc";
             final String urlArg2 = urlArg + "login/rpc";
@@ -711,14 +709,13 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 				sendMessageToService(MSG_LOGIN_PROFILE,lp);
             }
         }
-		
+
 		newDataAdapter(new Tickets()); // empty list
-		
-		
+
 		IntentFilter intFilt = new IntentFilter(PROVIDER_MESSAGE);
 		intFilt.addAction(DATACHANGED_MESSAGE);
 		LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastMessageReceiver,intFilt);
-		
+
         getFragmentManager().addOnBackStackChangedListener(this);
         // Handle when activity is recreated like on orientation Change
         shouldDisplayHomeUp();
@@ -766,7 +763,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         mIsBound = true;
         setReferenceTime();
     }
-	
+
 	@Override
 	public void onPostCreate (Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Michiel van Loon
+ * Copyright (C) 2014,2015 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,13 +61,13 @@ public class RefreshService extends Service {
         @Override
         public void handleMessage(final Message msg) {
             tcLog.d( "handleMessage msg = " + msg);
+			receiver = msg.replyTo;
             final NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
             switch (msg.what) {
             case TracStart.MSG_START_TIMER:
                 stopTimer();
                 startTimer();
-                receiver = msg.replyTo;
                 break;
 
             case TracStart.MSG_STOP_TIMER:

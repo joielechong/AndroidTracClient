@@ -194,14 +194,12 @@ public class TracLoginFragment extends TracClientFragment implements OnItemSelec
             loginSpinner.setAdapter(adapt);
 	    
             loginSpinner.setOnItemSelectedListener(this);
-//            registerForContextMenu(loginSpinner);
         }
     }
 
     @Override
     public void onDestroyView() {
         tcLog.logCall();
-//        unregisterForContextMenu(loginSpinner);
         loginSpinner.setAdapter(null);
         if (pdbCursor != null) {
             pdbCursor.close();
@@ -251,7 +249,7 @@ public class TracLoginFragment extends TracClientFragment implements OnItemSelec
 
 	@Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        tcLog.logCall();
+//        tcLog.logCall();
         inflater.inflate(R.menu.tracloginmenu, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -287,7 +285,6 @@ public class TracLoginFragment extends TracClientFragment implements OnItemSelec
         userView.setText(username);
         pwView.setText(password);
         sslHackBox.setChecked(sslHack);
-//        checkHackBox(url);    // TODO overbodig ??
 		boolean buttonsOn = !(url == null || url.length() == 0);
         bewaarBox.setChecked(bewaren);
 		verButton.setEnabled(buttonsOn);
@@ -458,17 +455,13 @@ public class TracLoginFragment extends TracClientFragment implements OnItemSelec
                         final String profileName = input.getText().toString();
 
                         pdb.addProfile(profileName, prof);
-                        final SimpleCursorAdapter a = (SimpleCursorAdapter) loginSpinner.getAdapter();
-
-                        a.swapCursor(pdb.getProfiles());
-                        loginSpinner.postInvalidate();
+						swapSpinnerAdapter();
                     }
                 })
             .setNegativeButton(R.string.cancel, null)
             .show();
     }
- 
-	
+
     @Override
     public void onResume() {
         tcLog.logCall();
@@ -483,11 +476,18 @@ public class TracLoginFragment extends TracClientFragment implements OnItemSelec
     @Override
     public void onPause() {
         tcLog.logCall();
-        super.onPause();
         urlView.removeTextChangedListener(checkUrlInput);
         userView.removeTextChangedListener(checkUserPwInput);
         pwView.removeTextChangedListener(checkUserPwInput);
+        super.onPause();
     }
+	
+	private void swapSpinnerAdapter() {
+		final SimpleCursorAdapter a = (SimpleCursorAdapter) loginSpinner.getAdapter();
+
+		a.swapCursor(pdb.getProfiles());
+		loginSpinner.postInvalidate();
+	}
     
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -499,10 +499,6 @@ public class TracLoginFragment extends TracClientFragment implements OnItemSelec
                 pdb.open();
                 pdb.writeXML(context.getString(R.string.app_name));
 				showAlertBox(R.string.completed,R.string.xmlwritecompleted,null);
-                final SimpleCursorAdapter a = (SimpleCursorAdapter) loginSpinner.getAdapter();
-
-                a.changeCursor(pdb.getProfiles());
-                loginSpinner.postInvalidate();
             } catch (final Exception e) {
 				tcLog.e("Export failed",e);
 				showAlertBox(R.string.failed,0,e.getMessage());
@@ -511,8 +507,10 @@ public class TracLoginFragment extends TracClientFragment implements OnItemSelec
             try {
                 pdb.open();
                 pdb.readXML(context.getString(R.string.app_name));
+				swapSpinnerAdapter();
 				showAlertBox(R.string.completed,R.string.xmlreadcompleted,null);
             } catch (final Exception e) {
+				tcLog.e("Import failed",e);
 				showAlertBox(R.string.failed,0,e.getMessage());
             }
         } else {
