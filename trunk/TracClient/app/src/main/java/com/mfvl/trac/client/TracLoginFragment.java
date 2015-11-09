@@ -99,7 +99,6 @@ public class TracLoginFragment extends TracClientFragment implements OnItemSelec
     private CheckBox sslHackBox = null;
     private TextView credWarn = null;
     private TextView credWarnSts = null;
-    private LinearLayout loadProfileBox = null;
     private Spinner loginSpinner = null;
     private Cursor pdbCursor = null;
     private ProfileDatabaseHelper pdb = null;
@@ -174,7 +173,7 @@ public class TracLoginFragment extends TracClientFragment implements OnItemSelec
 		credWarn = (TextView) view.findViewById(R.id.connWarn);
         credWarnSts = (TextView) view.findViewById(R.id.connWarnSts);
         sslHackBox = (CheckBox) view.findViewById(R.id.sslHack);
-        loadProfileBox = (LinearLayout) view.findViewById(R.id.loadprofile);
+        LinearLayout loadProfileBox = (LinearLayout) view.findViewById(R.id.loadprofile);
         loginSpinner = (Spinner) view.findViewById(R.id.loginspinner);
 	
         pdb = new ProfileDatabaseHelper(context);
