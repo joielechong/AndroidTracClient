@@ -108,20 +108,12 @@ public class TracLoginFragment extends TracClientFragment implements OnItemSelec
     @Override
     public void onSaveInstanceState(Bundle savedState) {
         super.onSaveInstanceState(savedState);
-        try {
-            savedState.putString(NEW_URL, urlView.getText().toString());
-        } catch (final Exception ignored) {}
-        try {
-            savedState.putString(NEW_USERNAME, userView.getText().toString());
-        } catch (final Exception ignored) {}
-        try {
-            savedState.putString(NEW_PASSWORD, pwView.getText().toString());
-        } catch (final Exception ignored) {}
-        savedState.putBoolean(Const.CURRENT_SSLHACK, sslHackBox.isChecked());
-        savedState.putBoolean(Const.CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
-        try {
-            savedState.putBoolean(bewaarText, bewaarBox.isChecked());
-        } catch (final Exception ignored) {}
+		savedState.putString(NEW_URL, urlView.getText().toString());
+		savedState.putString(NEW_USERNAME, userView.getText().toString());
+		savedState.putString(NEW_PASSWORD, pwView.getText().toString());
+		savedState.putBoolean(Const.CURRENT_SSLHACK, sslHackBox.isChecked());
+		savedState.putBoolean(Const.CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
+		savedState.putBoolean(bewaarText, bewaarBox.isChecked());
         tcLog.d(" savedState = " + savedState);
     }
     
@@ -295,8 +287,7 @@ public class TracLoginFragment extends TracClientFragment implements OnItemSelec
         bewaarBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                debugcounter++;
-                if (debugcounter == 6) {
+                if (++debugcounter == 6) {
                     listener.enableDebug();
                 }
             }
