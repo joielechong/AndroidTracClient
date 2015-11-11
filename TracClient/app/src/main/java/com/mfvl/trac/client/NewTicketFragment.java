@@ -72,7 +72,7 @@ public class NewTicketFragment extends TracClientFragment {
 		storButton.setOnClickListener(this);
         final TableLayout tl = (TableLayout) view.findViewById(R.id.newTickTable);
 		
-        try {
+//        try {
             View e = view.findViewById(R.id.waarde);
             final LayoutParams lp = e.getLayoutParams();
             final String[] ignoreFields = getResources().getStringArray(R.array.ignorecreatefields);
@@ -101,14 +101,14 @@ public class NewTicketFragment extends TracClientFragment {
             }
             e.setVisibility(View.GONE);
             view.findViewById(R.id.veld).setVisibility(View.GONE);
-        } catch (final Exception e) {
-            tcLog.e( "Exception in createTicket", e);
-        } finally {
+//        } catch (final Exception e) {
+//            tcLog.e( "Exception in createTicket", e);
+//        } finally {
             view.invalidate();
-        }
+//        }
     }
     
-    public void onClick(View dummy) {
+    public void onClick(View ignored) {
         final JSONObject velden = new JSONObject();
         final View view = getView();
         final TableLayout tl = (TableLayout) view.findViewById(R.id.newTickTable);
