@@ -237,14 +237,14 @@ public class Credentials {
     public static String makeDbPath(String dbname) {
 
         String dbpath = dbname;
-
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-			final File extPath = Environment.getExternalStorageDirectory();
-            tcLog.d("extPath = "+extPath);
-			final File dirPath = new File(extPath,"TracClient");
-			tcLog.d("dirpath = "+dirPath);
+//			final File extPath = Environment.getExternalStorageDirectory();
+//			tcLog.d("extPath = "+extPath);
+//			final File dirPath = new File(extPath,"TracClient");
+			final File dirPath = _context.getExternalFilesDir(null);
+//			tcLog.d("dirpath = "+dirPath);
 			final File filePath = new File(dirPath,dbname);
-            tcLog.d("filePath = "+filePath);
+//			tcLog.d("filePath = "+filePath);
             final String p1 = filePath.toString();
 
             if (!isDebuggable() && !isRCVersion()) {
@@ -252,10 +252,10 @@ public class Credentials {
                     dbpath = p1;
                 }
             } else {
-				dirPath.mkdirs();
-                if (dirPath.isDirectory()) {
+//				dirPath.mkdirs();'
+//                if (dirPath.isDirectory()) {
                     dbpath = p1;
-                }
+//                }
             }
         }
         tcLog.d("dbpath = " + dbpath);
@@ -263,18 +263,23 @@ public class Credentials {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static File makeExtFilePath(String filename) throws FileNotFoundException {
-		//tcLog.d("filename = "+filename);
-        final File extPath = Environment.getExternalStorageDirectory();
-		//tcLog.d("extpath = "+extPath);
-        final File dirPath = new File(extPath,"TracClient");
-		//tcLog.d("dirpath = "+dirPath);
-		dirPath.mkdirs();
+    public static File makeExtFilePath(String filename,boolean visible) throws FileNotFoundException {
+		File dirPath;
+//		tcLog.d("filename = "+filename);
+		if (visible) {
+			final File extPath = Environment.getExternalStorageDirectory();
+//			tcLog.d("extpath = "+extPath);
+			dirPath = new File(extPath,"TracClient");
+		} else {
+			dirPath = _context.getExternalFilesDir(null);
+			dirPath.mkdirs();
+		}
+		tcLog.d("dirpath = "+dirPath);
 		if (!dirPath.isDirectory()) {
             throw new FileNotFoundException("Not a directory: "+dirPath.toString());
 		}
         final File filePath = new File(dirPath,filename);
-		//tcLog.d("filepath = "+filePath);
+		tcLog.d("filepath = "+filePath);
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             throw new FileNotFoundException(filePath.toString());
         }

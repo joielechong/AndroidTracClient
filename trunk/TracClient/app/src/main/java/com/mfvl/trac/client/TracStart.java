@@ -26,17 +26,21 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Semaphore;
 
+import android.Manifest;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -50,17 +54,11 @@ import android.app.FragmentManager.OnBackStackChangedListener;
 import android.app.FragmentTransaction;
 import android.app.LoaderManager;
 import android.content.Loader;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.PopupMenu;
 import android.widget.ShareActionProvider;
 
 interface onFileSelectedListener {
@@ -82,9 +80,6 @@ interface InterFragmentListener {
     void onUpdateTicket(Ticket ticket);
     void refreshOverview();
     void setDispAds(boolean b);
-    void setReferenceTime();
-	void showAlertBox(final int titleres, final int message, final String addit);
-	void startProgressBar(String message);
 	void startProgressBar(int resid);
 	void stopProgressBar();
 	TicketModel getTicketModel();
@@ -104,9 +99,10 @@ interface InterFragmentListener {
 	void listViewCreated();
 	boolean isFinishing();
 	Handler getHandler();
+	boolean getCanWriteSD();
 }
 
-public class TracStart extends Activity implements LoaderManager.LoaderCallbacks<Tickets>, InterFragmentListener, OnBackStackChangedListener {
+public class TracStart extends Activity implements LoaderManager.LoaderCallbacks<Tickets>, InterFragmentListener, OnBackStackChangedListener, ActivityCompat.OnRequestPermissionsResultCallback {
    
     /*
      * Constanten voor communicatie met de service en fragmenten
@@ -120,6 +116,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     static final int MSG_REQUEST_REFRESH = 6;
     static final int MSG_STOP_TIMER = 7;
     static final int MSG_REMOVE_NOTIFICATION = 8;
+
 	static final int MSG_START_PROGRESSBAR = 21;
 	static final int MSG_STOP_PROGRESSBAR = 22;
 	static final int MSG_SET_SORT = 23;
@@ -128,20 +125,21 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	static final int MSG_DISPLAY_TICKET = 26;
 	static final int MSG_ACK_START = 27;
 	static final int MSG_START_LISTLOADER = 28;
-	static final int MSG_LOGIN_PROFILE = 29;
-	static final int MSG_LOAD_TICKETS = 30;
-	static final int MSG_LOAD_FASE1_FINISHED = 31;
-	static final int MSG_LOAD_FASE2_FINISHED = 32;	
-	static final int MSG_GET_TICKET_MODEL = 33;	
-	static final int MSG_TICKET_MODEL_LOADED = 34;	
+	static final int MSG_GET_PERMISSIONS = 29;
+
+	static final int MSG_LOGIN_PROFILE = 41;
+	static final int MSG_LOAD_TICKETS = 42;
+	static final int MSG_LOAD_FASE1_FINISHED = 43;
+	static final int MSG_LOAD_FASE2_FINISHED = 44;	
+	static final int MSG_GET_TICKET_MODEL = 45;	
+	static final int MSG_TICKET_MODEL_LOADED = 46;
+    static final int MSG_GET_TICKET = 47;
 	
 	public static final String PROVIDER_MESSAGE = "com.mfvl.trac.client.message.provider";
 	public static final String DATACHANGED_MESSAGE = "com.mfvl.trac.client.message.datachanged";
-    private static final int REQUEST_CODE = 6384;
+    private static final int REQUEST_CODE_CHOOSER = 6384;
+    private static final int REQUEST_CODE_WRITE_EXT	= 6385;
 
-	private static String[] mDrawerTitles = null;
-    private static int[] mDrawerIds = null;
-	
     private ArrayList<SortSpec> sortList = null;
     private ArrayList<FilterSpec> filterList = null;
 
@@ -151,10 +149,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     private String password = null;
     private boolean sslHack = false;
     private boolean sslHostNameHack = false;
-
-    private DrawerLayout mDrawerLayout = null;
-    private ActionBarDrawerToggle mDrawerToggle = null;
-	private ListView mDrawerList = null;
     private int timerCorr = 0;
 	
     private static final String ListFragmentTag = "List_Fragment";
@@ -171,6 +165,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     private boolean debug = false; // disable menuoption at startup
     private onFileSelectedListener _oc = null;
     private boolean dispAds = true;
+	private boolean canWriteSD = false;
     private long referenceTime = 0;
     private String urlArg = null;
     private int ticketArg = -1;
@@ -337,7 +332,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
             tcLog.logCall();
         }
 
-        @Override
+		@Override
 		@SuppressWarnings("unchecked")
         public void handleMessage(Message msg) {
             tcLog.d( "msg = " + msg);
@@ -440,6 +435,15 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 				}
 				break;
 
+				case MSG_GET_PERMISSIONS:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    ActivityCompat.requestPermissions(TracStart.this,
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                    Manifest.permission.READ_EXTERNAL_STORAGE},
+                            REQUEST_CODE_WRITE_EXT);
+                }
+                break;
+
 				default:
                 super.handleMessage(msg);
             }
@@ -496,50 +500,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         }
     }
 
-    private class DrawerItemClickListener implements ListView.OnItemClickListener {
-        @SuppressWarnings("rawtypes")
-        @Override
-        public void onItemClick(AdapterView parent, View view, int position, long id) {
-            selectItem(position);
-//			tcLog.d("onItemClick: parent = " + parent + " view = " + view + " position = " + position + " id = " + id + " mDrawerId = " + mDrawerIds[position]);
-        }
-    }
-	
-	/** Swaps fragments in the main content view */
-	private void selectItem(int position) {
-				
-		switch (mDrawerIds[position]) {
-			case R.id.over:
-			showAbout();
-			break;
-			
-			case R.id.tlrefresh:
-            refreshOverview();
-			break;
-			
-			case R.id.tlnieuw:
-            onNewTicket();
-			break;
-			
-			case R.id.tlfilter:
-            onFilterSelected(filterList);
-			break;
-			
-			case R.id.tlsort:
-            onSortSelected(sortList);
-			break;
-			
-			case R.id.tlchangehost:
-            onChangeHost();
-			break;
-			
-			default:
-            tcLog.toast(getClass().getName() + " selectItem: position = " + position + " mDrawerId = " + mDrawerIds[position]);
-		}
-//		mDrawerList.setItemChecked(position, true);
-		mDrawerLayout.closeDrawer(mDrawerList);
-	}
-	
 	private String getTopFragment() {
 		try {
 			int bs = getFragmentManager().getBackStackEntryCount();
@@ -557,59 +517,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         startActivity(launchTrac);
 	}
 	
-    private void setupDrawer() {
-		ActionBar ab = getActionBar();
-		if (mDrawerTitles == null || mDrawerIds == null) {
-			PopupMenu p = new PopupMenu(this,findViewById(R.id.left_drawer));
-			p.inflate(R.menu.drawermenu);
-			Menu m = p.getMenu();
-
-			mDrawerTitles = new String[m.size()];
-			mDrawerIds = new int[m.size()];
-			
-			for (int i=0; i< m.size(); i++) {
-				mDrawerTitles[i] = m.getItem(i).getTitle().toString();
-				mDrawerIds[i] = m.getItem(i).getItemId();
-			}
-		}
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerToggle = new ActionBarDrawerToggle(
-                this,                  /* host Activity */
-                mDrawerLayout,         /* DrawerLayout object */
-                R.string.drawer_open,  /* "open drawer" description */
-                R.string.drawer_close  /* "close drawer" description */
-                ) {
-
-            /** Called when a drawer has settled in a completely closed state. */
-            public void onDrawerClosed(View view) {
-				tcLog.d("view = " + view);
-                super.onDrawerClosed(view);
-//                ab.setTitle(mTitle);
-            }
-
-            /** Called when a drawer has settled in a completely open state. */
-            public void onDrawerOpened(View drawerView) {
-				tcLog.d("drawerView = " + drawerView);
-                super.onDrawerOpened(drawerView);
-//                ab.setTitle(mDrawerTitle);
-            }
-        };
-
-        // Set the drawer toggle as the DrawerListener
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-
-        ab.setDisplayHomeAsUpEnabled(true);
-        ab.setHomeButtonEnabled(true);
-
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
-
-        // Set the adapter for the list view
-        mDrawerList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_list_item, mDrawerTitles));
-        // Set the list's click listener
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());		
-    }
-	
-	@SuppressWarnings("unchecked")	
+	@SuppressWarnings("unchecked")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -620,28 +528,41 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 			LoaderManager.enableDebugLogging(true);
 		}
 		
+		Credentials.getInstance(getApplicationContext());
+        mHandlerThread = new MyHandlerThread("IncomingHandler");
+        mHandlerThread.start();
+		tracStartHandler = new IncomingHandler(mHandlerThread.getLooper());
+		
+		if (ActivityCompat.checkSelfPermission(this,Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+			if (ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+				new AlertDialog.Builder(this)
+					.setTitle(R.string.permissiontitle)
+					.setMessage(R.string.permissiontext)
+					.setCancelable(false)
+					.setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int id) {
+							dialog.dismiss();
+							tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_GET_PERMISSIONS));
+						}
+					}).show();
+			} else {
+				tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_GET_PERMISSIONS));
+			}
+		} else {
+			canWriteSD = true;
+		}
+
 		try {
             Const.ticketGroupCount = getResources().getInteger(R.integer.ticketGroupCount);
         } catch (Exception ignored) {}
 
         timerCorr = getResources().getInteger(R.integer.timerCorr);
-
-		Credentials.getInstance(getApplicationContext());
 		
-        mHandlerThread = new MyHandlerThread("IncomingHandler");
-        mHandlerThread.start();
-
-        // Get the HandlerThread's Looper and use it for our Handler
-		tracStartHandler = new IncomingHandler(mHandlerThread.getLooper());
         mMessenger = new Messenger(tracStartHandler);
-
         startService(new Intent(this, RefreshService.class));
 		
         setContentView(R.layout.tracstart);
-        if (findViewById(R.id.left_drawer) != null) {
-            setupDrawer();
-        }
-		
         debug |= Credentials.isRCVersion();
 
         url = Credentials.getUrl();
@@ -764,13 +685,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         setReferenceTime();
     }
 
-	@Override
-	public void onPostCreate (Bundle savedInstanceState) {
-		super.onPostCreate(savedInstanceState);
-        tcLog.logCall();
-		mDrawerToggle.syncState();
-	}
-	
 	private void startListLoader() {
         tcLog.logCall();
 		tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_START_LISTLOADER,null));
@@ -893,14 +807,14 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         target.setType("*/*");
         target.addCategory(Intent.CATEGORY_OPENABLE);
         // Create the chooser Intent
-		startActivityForResult(Intent.createChooser(target, getString(R.string.chooser_title)), REQUEST_CODE);
+		startActivityForResult(Intent.createChooser(target, getString(R.string.chooser_title)), REQUEST_CODE_CHOOSER);
     }
 	
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         tcLog.d("requestcode = " + requestCode);
         switch (requestCode) {
-        case REQUEST_CODE:
+        case REQUEST_CODE_CHOOSER:
             // If the file selection was successful
             if (resultCode == RESULT_OK) {
                 if (data != null) {
@@ -1068,7 +982,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         tcLog.logCall();
 
         final NewTicketFragment newtickFragment = new NewTicketFragment();
-        // tcLog.d( "newTickFragment =" +  newtickFragment.toString());
+        // tcLog.d("newTickFragment =" +  newtickFragment.toString());
         final FragmentTransaction ft = getFragmentManager().beginTransaction();
 		final Bundle args = makeArgs();
 		args.putString(Const.CURRENT_USERNAME, username);
@@ -1082,11 +996,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        tcLog.d( "item=" + item.getTitle());
-		if (mDrawerToggle.onOptionsItemSelected(item)) {
-			tcLog.d( "hanlded by drawer: item=" + item.getTitle());
-			return true;
-		}
+        tcLog.d("item=" + item.getTitle());
         switch(item.getItemId()) {
 			case R.id.over:
 			showAbout();
@@ -1121,14 +1031,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         tcLog.logCall();
-        // If the nav drawer is open, hide action items related to the content view
-		
-        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-		for (int mDrawerId : mDrawerIds) {
-			try {
-				menu.findItem(mDrawerId).setVisible(!drawerOpen);
-			} catch(Exception ignored) {}
-		}
         final MenuItem itemDebug = menu.findItem(R.id.debug);
 
         itemDebug.setVisible(debug).setEnabled(debug);
@@ -1136,7 +1038,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
            Intent i = shareDebug();
 
 			ShareActionProvider debugShare = (ShareActionProvider)itemDebug.getActionProvider();
-            tcLog.d( "item = " + itemDebug + " " + debugShare + " " + i);
+            tcLog.d("item = " + itemDebug + " " + debugShare + " " + i);
 			if (debugShare != null && i != null) {
 				debugShare.setShareIntent(i);
 			}
@@ -1163,7 +1065,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         saveFragment(savedInstanceState, UpdFragmentTag);
         saveFragment(savedInstanceState, FilterFragmentTag);
         saveFragment(savedInstanceState, SortFragmentTag);
-        tcLog.d( "savedInstanceState = " + savedInstanceState);
+        tcLog.d("savedInstanceState = " + savedInstanceState);
     }
 
     private void onSortSelected(ArrayList<SortSpec> sortList) {
@@ -1184,15 +1086,14 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     @Override
     public void onTicketSelected(Ticket ticket) {
 		boolean isTop = (DetailFragmentTag.equals(getTopFragment()));
-        tcLog.d( "Ticket: " + ticket+" isTop = "+ isTop);
+        tcLog.d("Ticket: " + ticket+" isTop = "+ isTop);
 		
 		DetailFragment detailFragment = new DetailFragment();
         final Bundle args = makeArgs();
         args.putInt(Const.CURRENT_TICKET, ticket.getTicketnr());
         detailFragment.setArguments(args);
 	
-        // tcLog.d( "detailFragment =" +
-        // detailFragment.toString());
+ //		tcLog.d("detailFragment =" + detailFragment.toString());
         final FragmentTransaction ft = getFragmentManager().beginTransaction();
 
         ft.replace(R.id.displayList, detailFragment, DetailFragmentTag);
@@ -1206,14 +1107,14 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 
     @Override
     public void onUpdateTicket(Ticket ticket) {
-        tcLog.d( "ticket = " + ticket);
+        tcLog.d("ticket = " + ticket);
 
         final UpdateTicketFragment updtickFragment = new UpdateTicketFragment();
         final Bundle args = makeArgs();
 
         args.putInt(Const.CURRENT_TICKET, ticket.getTicketnr());
         updtickFragment.setArguments(args);
-        // tcLog.d( "updtickFragment = " + updtickFragment.toString());
+//		tcLog.d("updtickFragment = " + updtickFragment.toString());
         final FragmentTransaction ft = getFragmentManager().beginTransaction();
 
         ft.replace(R.id.displayList, updtickFragment, UpdFragmentTag);
@@ -1242,11 +1143,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	
     private void setFilter(ArrayList<FilterSpec> filter) {
         tcLog.d(filter.toString());
-        String filterString = "";
-
-        if (filter != null) {
-			filterString = Credentials.joinList(filter.toArray(),"&");
-        }
+        String filterString = Credentials.joinList(filter.toArray(),"&");
         Credentials.storeFilterString(filterString);
         filterList = filter;
     }
@@ -1276,11 +1173,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     private void setSort(ArrayList<SortSpec> sort) {
         tcLog.d(sort.toString());
 
-        String sortString = "";
-
-        if (sort != null) {
-			sortString = Credentials.joinList(sort.toArray(),"&");
-        }
+        String sortString = Credentials.joinList(sort.toArray(),"&");
         Credentials.storeSortString(sortString);
         sortList = sort;
     }
@@ -1329,7 +1222,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     @Override
     public void refreshOverview() {
         tcLog.logCall();
-//				dataAdapter.notifyDataSetChanged();
+//		dataAdapter.notifyDataSetChanged();
 		startListLoader();
 		setReferenceTime();
 	}
@@ -1375,7 +1268,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 
     @Override
     public void enableDebug() {
-        // tcLog.d( "enableDebug");
+        // tcLog.d("enableDebug");
         debug = true;
         invalidateOptionsMenu();
         tcLog.toast("Debug enabled");
@@ -1397,7 +1290,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     }
 
     private void getNewTickets(final String isoTijd) {
-        tcLog.d( "tijd = "+isoTijd) ;
+        tcLog.d("tijd = "+isoTijd) ;
 		
 		Bundle args = new Bundle();
 		args.putString(BUNDLE_ISOTIJD,isoTijd);
@@ -1409,9 +1302,8 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 		}
     }
 
-    @Override
     public void setReferenceTime() {
-        // tcLog.d( "setReferenceTime");
+        // tcLog.d("setReferenceTime");
         referenceTime = System.currentTimeMillis() - timerCorr;
         sendMessageToService(MSG_REMOVE_NOTIFICATION);
     }
@@ -1426,7 +1318,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     }
 	
     public void startProgressBar(String message) {
-        tcLog.d( message+" tracStartHandler = "+tracStartHandler);
+        tcLog.d(message+" tracStartHandler = "+tracStartHandler);
 		try {
 			tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_START_PROGRESSBAR,message));
 		} catch (NullPointerException e) {
@@ -1467,12 +1359,12 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	
 	@Override
 	public Ticket getTicket(int i) {
-        tcLog.d( "i = "+i+ " semaphore = "+ loadingActive.availablePermits());
+        tcLog.d("i = "+i+ " semaphore = "+ loadingActive.availablePermits());
 		loadingActive.acquireUninterruptibly();
 		loadingActive.release();
 
 		Ticket t = dataAdapter.getTicket(i);
-        tcLog.d( "i = "+i+ " ticket = "+ t);
+        tcLog.d("i = "+i+ " ticket = "+ t);
 		if (t != null && t.hasdata()) {
 			return t;
 		}
@@ -1522,7 +1414,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         }
         if (modVeld != null) {
 			for (Entry<String,String> e: modVeld.entrySet()) {
-                // tcLog.d( e.toString());
+//				tcLog.d(e.toString());
                 velden.put(e.getKey(), e.getValue());
             }
         }
@@ -1561,7 +1453,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         if (ticknr != -1) {
             throw new IllegalArgumentException("Call create ticket not -1");
         }
-        tcLog.i( "create: " + velden.toString());
+        tcLog.i("create: " + velden.toString());
         final String s = velden.getString("summary");
         final String d = velden.getString("description");
 
@@ -1599,10 +1491,10 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     private final BroadcastReceiver mBroadcastMessageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context c,Intent i) {
-//			tcLog.d( "Receive "+i);
+//			tcLog.d("Receive "+i);
 			switch (i.getAction()) {
 				case PROVIDER_MESSAGE:
-//				tcLog.d( "Receive PROVIDER_MESSAGE");
+//				tcLog.d("Receive PROVIDER_MESSAGE");
 				int title = i.getIntExtra("title",R.string.warning);
 				int message = i.getIntExtra("message",R.string.unknownError);
 				String addit = i.getStringExtra("additional");
@@ -1610,7 +1502,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 				break;
 
 				case DATACHANGED_MESSAGE:
-//				tcLog.d( "Receive DATACHANGED_MESSAGE");
+//				tcLog.d("Receive DATACHANGED_MESSAGE");
 				findViewById(R.id.displayList).invalidate();
 				try {
 					getTicketListFragment().dataHasChanged();
@@ -1624,4 +1516,18 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 			}
 		}
     };
+	
+	public void onRequestPermissionsResult (int requestCode, String[] permissions, int[] grantResults) {
+		tcLog.d("requestCode = "+requestCode+" permissions = "+permissions+" grantResults = "+ grantResults);
+		switch (requestCode) {
+			case REQUEST_CODE_WRITE_EXT: {
+			// If request is cancelled, the result arrays are empty.
+                canWriteSD = (grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED);
+            }
+		}
+	}
+	
+	public boolean getCanWriteSD() {
+		return canWriteSD;
+	}
 }

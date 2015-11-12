@@ -196,7 +196,7 @@ public class tcLog {
         String caller = getCaller(2);
         File file = null;
         try {
-            file = Credentials.makeExtFilePath("tc-log.txt");
+            file = Credentials.makeExtFilePath("tc-log.txt",false);
             final OutputStream os = new FileOutputStream(file);
 
             os.write(tcLog.getDebug().getBytes());

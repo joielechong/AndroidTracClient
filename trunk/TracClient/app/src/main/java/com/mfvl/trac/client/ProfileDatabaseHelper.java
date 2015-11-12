@@ -271,7 +271,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
 
     public void readXML(final String appname) throws Exception {
         open();
-        final File fileName = Credentials.makeExtFilePath(appname + ".xml");
+        final File fileName = Credentials.makeExtFilePath(appname + ".xml",true);
         final InputStream in = new BufferedInputStream(new FileInputStream(fileName));
         final XMLReader xmlR = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
 
@@ -283,7 +283,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void writeXML(final String appname) throws Exception {
-        final File fileName = Credentials.makeExtFilePath(appname + ".xml");
+        final File fileName = Credentials.makeExtFilePath(appname + ".xml",true);
         final OutputStream out = new BufferedOutputStream(new FileOutputStream(fileName));
 
         String xmlString = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n";

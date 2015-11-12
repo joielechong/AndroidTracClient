@@ -111,4 +111,6 @@
 	<string name="cookieInform">We gebruiken apparaat-ID\'s om content en advertenties te personaliseren, om functies voor social media te bieden en om ons websiteverkeer te analyseren. We delen deze ID\'s en andere informatie ook met onze partners voor social media, adverteren en analyse.</string>
     <string name="showdisclaimer">Disclaimer</string>
     <string name="showchanges">Wijizigingen overzicht</string>
+	<string name="permissiontitle">Verzoek tot toestemming</string>
+	<string name="permissiontext">Deze app moet de SD-kaart kunnen lezen en schrijven. Hier is nog geen toestemming voor gegeven. Als u ervoor kiest deze toestemming niet te geven, dan is het niet mogelijk profielen te importeren of exporteren of bijlagen vanaf de SD-kaart bij te voegen. Indien u niet zeker bent klik dan in de volgende dialoog niet op de "Dit niet meer vragen" keuze.</string>
 </resources>
