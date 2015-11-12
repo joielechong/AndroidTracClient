@@ -16,7 +16,6 @@
 
 package com.mfvl.trac.client;
 
-
 //
 // 'login' to TRAC site by sending a system.APIVersion method
 //
@@ -479,6 +478,17 @@ public class TracLoginFragment extends TracClientFragment implements OnItemSelec
 		loginSpinner.postInvalidate();
 	}
     
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        tcLog.logCall();
+        super.onPrepareOptionsMenu(menu);
+		final MenuItem importItem = menu.findItem(R.id.importprofiles);
+		final MenuItem exportItem = menu.findItem(R.id.exportprofiles);
+		tcLog.d( "canWriteSD = " + listener.getCanWriteSD());
+		importItem.setEnabled(listener.getCanWriteSD());
+		exportItem.setEnabled(listener.getCanWriteSD());
+	}
+	
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // tcLog.d("item=" + item.getTitle());
