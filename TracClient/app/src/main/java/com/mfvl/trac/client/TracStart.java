@@ -134,6 +134,8 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	static final int MSG_GET_TICKET_MODEL = 45;	
 	static final int MSG_TICKET_MODEL_LOADED = 46;
     static final int MSG_GET_TICKET = 47;
+	static final int MSG_GET_ATTACHMENT = 48;
+	static final int MSG_PUT_ATTACHMENT = 49;
 	
 	public static final String PROVIDER_MESSAGE = "com.mfvl.trac.client.message.provider";
 	public static final String DATACHANGED_MESSAGE = "com.mfvl.trac.client.message.datachanged";

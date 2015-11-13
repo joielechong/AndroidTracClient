@@ -25,7 +25,6 @@ public class Tickets {
 
     private static Map<Integer, Ticket> ticketMap = null;
 
-    static private Tickets _instance = null;
     private int ticketGroupCount;
     private boolean valid = false;
 
@@ -33,13 +32,8 @@ public class Tickets {
         tcLog.d("create");
 		initList();
         valid = ticketList != null;
-		_instance = this;
     }
 	
-	static public Tickets getInstance() {
-		return _instance;
-	}
-
     public void initList() {
         tcLog.logCall();
         ticketList = new TicketList();
