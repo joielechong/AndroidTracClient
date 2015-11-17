@@ -57,6 +57,43 @@ final class Const {
     static final String PREF_COOKIEINFORM = "CookieInform";
 	
 	static final String DisclaimerVersion = "1.0";
+	
+	/*
+	 * Messages 
+	*/
+	
+    static final int MSG_START_TIMER = 1; 
+    static final int MSG_REQUEST_TICKET_COUNT = 2;
+    static final int MSG_SEND_TICKET_COUNT = 3;
+    static final int MSG_REQUEST_NEW_TICKETS = 4;
+    static final int MSG_SEND_NEW_TICKETS = 5;
+    static final int MSG_REQUEST_REFRESH = 6;
+    static final int MSG_STOP_TIMER = 7;
+    static final int MSG_REMOVE_NOTIFICATION = 8;
+
+	static final int MSG_START_PROGRESSBAR = 21;
+	static final int MSG_STOP_PROGRESSBAR = 22;
+	static final int MSG_SET_SORT = 23;
+	static final int MSG_SET_FILTER = 24;
+	static final int MSG_SHOW_DIALOG = 25;
+	static final int MSG_DISPLAY_TICKET = 26;
+	static final int MSG_ACK_START = 27;
+	static final int MSG_START_LISTLOADER = 28;
+	static final int MSG_GET_PERMISSIONS = 29;
+
+	static final int MSG_LOGIN_PROFILE = 41;
+	static final int MSG_LOAD_TICKETS = 42;
+	static final int MSG_LOAD_FASE1_FINISHED = 43;
+	static final int MSG_LOAD_FASE2_FINISHED = 44;	
+	static final int MSG_GET_TICKET_MODEL = 45;	
+	static final int MSG_TICKET_MODEL_LOADED = 46;
+    static final int MSG_GET_TICKET = 47;
+	static final int MSG_GET_ATTACHMENT = 48;
+	static final int MSG_PUT_ATTACHMENT = 49;
+	
+	static final String PROVIDER_MESSAGE = "com.mfvl.trac.client.message.provider";
+	static final String DATACHANGED_MESSAGE = "com.mfvl.trac.client.message.datachanged";
+
 
     /*
      * Overige constanten

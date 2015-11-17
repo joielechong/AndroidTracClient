@@ -31,6 +31,7 @@ import android.widget.TextView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
+import static com.mfvl.trac.client.Const.*;
 
 public class TracTitlescreenActivity extends Activity implements Thread.UncaughtExceptionHandler {
     private Intent launchTrac = null;
@@ -72,7 +73,7 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
         launchTrac = new Intent(getApplicationContext(), TracStart.class);
 
         // adMobAvailable=false;
-        launchTrac.putExtra(Const.ADMOB, adMobAvailable);
+        launchTrac.putExtra(ADMOB, adMobAvailable);
 
         final Intent intent = getIntent();
 
@@ -96,8 +97,8 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
                     for (final String segment : segments.subList(0, count - 2)) {
                         urlstring += segment + "/";
                     }
-                    launchTrac.putExtra(Const.INTENT_URL, urlstring)
-                            .putExtra(Const.INTENT_TICKET, (long) ticket);
+                    launchTrac.putExtra(INTENT_URL, urlstring)
+                            .putExtra(INTENT_TICKET, (long) ticket);
                 } else {
                     tcLog.w("View intent bad Url");
                 }

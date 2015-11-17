@@ -39,11 +39,11 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
-
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 
+import static com.mfvl.trac.client.Const.*;
 
 abstract public class TracClientFragment extends Fragment implements OnGlobalLayoutListener, View.OnClickListener {
  
@@ -99,7 +99,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 	}
 
 	protected void showAlertBox(final int titleres, final int message, final String addit){
-		tracStartHandler.sendMessage(tracStartHandler.obtainMessage(TracStart.MSG_SHOW_DIALOG,titleres,message,addit));
+		tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_SHOW_DIALOG,titleres,message,addit));
 	}
 	
     @Override
@@ -237,8 +237,8 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
         if (itemId == R.id.help && helpFile != -1) {
 			final Intent launchTrac = new Intent(context, TracShowWebPage.class);
 			final String filename = context.getString(helpFile);
-			launchTrac.putExtra(Const.HELP_FILE, filename);
-			launchTrac.putExtra(Const.HELP_VERSION, false);
+			launchTrac.putExtra(HELP_FILE, filename);
+			launchTrac.putExtra(HELP_VERSION, false);
 			startActivity(launchTrac);
         } else {
             return super.onOptionsItemSelected(item);

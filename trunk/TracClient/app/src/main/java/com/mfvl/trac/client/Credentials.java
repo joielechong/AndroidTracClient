@@ -35,6 +35,8 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
 import android.os.Environment;
 
+import static com.mfvl.trac.client.Const.*;
+
 public class Credentials {
     private static String versie = null;
     private static String _url = "";
@@ -48,7 +50,7 @@ public class Credentials {
     private static Context _context = null;
 
     private Credentials(final Context context) {
-        settings = context.getSharedPreferences(Const.PREFS_NAME, 0);
+        settings = context.getSharedPreferences(PREFS_NAME, 0);
         _context = context;
  		versie = context.getString(R.string.app_version);
     }
@@ -66,12 +68,12 @@ public class Credentials {
      */
     private static void loadCredentials() {
         // tcLog.d("loadCredentials");
-        _url = settings.getString(Const.PREF_URL, "");
-        _username = settings.getString(Const.PREF_USER, "");
-        _password = settings.getString(Const.PREF_PASS, "");
-        _sslHack = settings.getBoolean(Const.PREF_HACK, false);
-        _sslHostNameHack = settings.getBoolean(Const.PREF_HNH, false);
-        _profile = settings.getString(Const.PREF_PROF, null);
+        _url = settings.getString(PREF_URL, "");
+        _username = settings.getString(PREF_USER, "");
+        _password = settings.getString(PREF_PASS, "");
+        _sslHack = settings.getBoolean(PREF_HACK, false);
+        _sslHostNameHack = settings.getBoolean(PREF_HNH, false);
+        _profile = settings.getString(PREF_PROF, null);
     }
 
     /**
@@ -80,12 +82,12 @@ public class Credentials {
     public static void storeCredentials() {
         // tcLog.d("storeCredentials");
         settings.edit()
-			.putString(Const.PREF_URL, _url)
-			.putString(Const.PREF_USER, _username)
-			.putString(Const.PREF_PASS, _password)
-			.putBoolean(Const.PREF_HACK, _sslHack)
-			.putBoolean(Const.PREF_HNH, _sslHostNameHack)
-			.putString(Const.PREF_PROF, _profile)
+			.putString(PREF_URL, _url)
+			.putString(PREF_USER, _username)
+			.putString(PREF_PASS, _password)
+			.putBoolean(PREF_HACK, _sslHack)
+			.putBoolean(PREF_HNH, _sslHostNameHack)
+			.putString(PREF_PROF, _profile)
 			.apply();
     }
 
@@ -136,42 +138,42 @@ public class Credentials {
 
     public static boolean checkDisclaimer() {
         //tcLog.d("checkDisclaimer");
-        final String thisRun = Const.DisclaimerVersion;
-        final String lastRun = settings.getString(Const.PREF_DISCLAIM, "");
+        final String thisRun = DisclaimerVersion;
+        final String lastRun = settings.getString(PREF_DISCLAIM, "");
 	
         return !lastRun.equals(thisRun);
     }
 	
 	public static void setDisclaimer() {
-		settings.edit().putString(Const.PREF_DISCLAIM, Const.DisclaimerVersion).apply();
+		settings.edit().putString(PREF_DISCLAIM, DisclaimerVersion).apply();
 	}
 
     public static boolean getFirstRun() {
         // tcLog.d("getFirstRun");
         final String thisRun = versie;
-        final String lastRun = settings.getString(Const.PREF_1ST, "");
-        settings.edit().putString(Const.PREF_1ST, thisRun).apply();
+        final String lastRun = settings.getString(PREF_1ST, "");
+        settings.edit().putString(PREF_1ST, thisRun).apply();
         return !lastRun.equals(thisRun);
     }
 
     public static boolean getCookieInform() {
         tcLog.logCall();
-		return settings.getBoolean(Const.PREF_COOKIEINFORM,true);
+		return settings.getBoolean(PREF_COOKIEINFORM,true);
 	}
 	
 	public static void setCookieInform(boolean val) {
         tcLog.logCall();
-		settings.edit().putBoolean(Const.PREF_COOKIEINFORM, val).apply();
+		settings.edit().putBoolean(PREF_COOKIEINFORM, val).apply();
 	}
 
     public static void storeFilterString(final String filterString) {
         //tcLog.d("Credentials", "storeFilterString: " + filterString);
-        settings.edit().putString(Const.PREF_FILTER, filterString == null ? "" : filterString).apply();
+        settings.edit().putString(PREF_FILTER, filterString == null ? "" : filterString).apply();
     }
 
     public static String getFilterString() {
         // tcLog.d("getFilterString");
-        return settings.getString(Const.PREF_FILTER, "max=500&status!=closed");
+        return settings.getString(PREF_FILTER, "max=500&status!=closed");
     }
 
     public static void removeFilterString() {
@@ -181,12 +183,12 @@ public class Credentials {
 
     public static void storeSortString(final String sortString) {
         //tcLog.d("storeSortString: " + sortString);
-        settings.edit().putString(Const.PREF_SORT, sortString == null ? "" : sortString).apply();
+        settings.edit().putString(PREF_SORT, sortString == null ? "" : sortString).apply();
     }
 
     public static String getSortString() {
         // tcLog.d("getSortString");
-        final String sortString = settings.getString(Const.PREF_SORT, "order=priority&order=modified&desc=1");
+        final String sortString = settings.getString(PREF_SORT, "order=priority&order=modified&desc=1");
 
         tcLog.d("sortString = " + sortString);
         return sortString;

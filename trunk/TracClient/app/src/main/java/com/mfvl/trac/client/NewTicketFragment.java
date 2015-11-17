@@ -34,6 +34,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import static com.mfvl.trac.client.Const.*;
 
 public class NewTicketFragment extends TracClientFragment {
     private final static int EXTRA = 1000;
@@ -46,8 +47,8 @@ public class NewTicketFragment extends TracClientFragment {
         // tcLog.d( "onCreate savedInstanceState = " + savedInstanceState);
 		helpFile = R.string.newhelpfile;
         if (fragmentArgs != null) {
-            if (fragmentArgs.containsKey(Const.CURRENT_USERNAME)) {
-                username = fragmentArgs.getString(Const.CURRENT_USERNAME);
+            if (fragmentArgs.containsKey(CURRENT_USERNAME)) {
+                username = fragmentArgs.getString(CURRENT_USERNAME);
             }
         }
         setHasOptionsMenu(true);

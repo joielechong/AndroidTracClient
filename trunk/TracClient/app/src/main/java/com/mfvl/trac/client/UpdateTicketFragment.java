@@ -40,6 +40,7 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import static com.mfvl.trac.client.Const.*;
 
 public class UpdateTicketFragment extends TracClientFragment {
     private static final String UPDATE_CURRENT_BUTTON = "currentButton";
@@ -54,7 +55,7 @@ public class UpdateTicketFragment extends TracClientFragment {
 
         // tcLog.d("onAttach ");
         if (args != null) {
-            ticknr = args.getInt(Const.CURRENT_TICKET);
+            ticknr = args.getInt(CURRENT_TICKET);
         }
 	}
 
@@ -93,8 +94,8 @@ public class UpdateTicketFragment extends TracClientFragment {
         super.onActivityCreated(savedInstanceState);
         tcLog.d("savedInstanceState = " + savedInstanceState);
         if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(Const.CURRENT_TICKET)) {
-                ticknr = savedInstanceState.getInt(Const.CURRENT_TICKET);
+            if (savedInstanceState.containsKey(CURRENT_TICKET)) {
+                ticknr = savedInstanceState.getInt(CURRENT_TICKET);
             }
             optionVal = (savedInstanceState.containsKey(UPDATE_OPTION_VAL) ?savedInstanceState.getString(UPDATE_OPTION_VAL) : null);
             spinPosition = (savedInstanceState.containsKey(UPDATE_SPIN_POSITION) ?savedInstanceState.getInt(UPDATE_SPIN_POSITION) : 0);
@@ -269,7 +270,7 @@ public class UpdateTicketFragment extends TracClientFragment {
     public void onSaveInstanceState(Bundle savedState) {
 		super.onSaveInstanceState(savedState);
 		if (_ticket != null) {
-			savedState.putInt(Const.CURRENT_TICKET, _ticket.getTicketnr());
+			savedState.putInt(CURRENT_TICKET, _ticket.getTicketnr());
 		}
 		final View view = getView();
 
