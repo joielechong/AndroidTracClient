@@ -27,6 +27,8 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 
+import static com.mfvl.trac.client.Const.*;
+
 
 public class Refresh extends Activity implements ServiceConnection {
 
@@ -41,7 +43,7 @@ public class Refresh extends Activity implements ServiceConnection {
         tcLog.d("className = " + className + " service = " + service);
         mService = new Messenger(service);
         try {
-            final Message msg = Message.obtain(null, TracStart.MSG_REQUEST_REFRESH);
+            final Message msg = Message.obtain(null, MSG_REQUEST_REFRESH);
 
 			msg.replyTo = null;
             mService.send(msg);

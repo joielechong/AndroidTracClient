@@ -49,6 +49,7 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static com.mfvl.trac.client.Const.*;
 
 public class TracLoginFragment extends TracClientFragment implements OnItemSelectedListener{
 
@@ -110,8 +111,8 @@ public class TracLoginFragment extends TracClientFragment implements OnItemSelec
 		savedState.putString(NEW_URL, urlView.getText().toString());
 		savedState.putString(NEW_USERNAME, userView.getText().toString());
 		savedState.putString(NEW_PASSWORD, pwView.getText().toString());
-		savedState.putBoolean(Const.CURRENT_SSLHACK, sslHackBox.isChecked());
-		savedState.putBoolean(Const.CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
+		savedState.putBoolean(CURRENT_SSLHACK, sslHackBox.isChecked());
+		savedState.putBoolean(CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
 		savedState.putBoolean(bewaarText, bewaarBox.isChecked());
         tcLog.d(" savedState = " + savedState);
     }
@@ -124,15 +125,15 @@ public class TracLoginFragment extends TracClientFragment implements OnItemSelec
 			currentUrl = savedInstanceState.getString(NEW_URL);
 			currentUsername = savedInstanceState.getString(NEW_USERNAME);
 			currentPassword = savedInstanceState.getString(NEW_PASSWORD);
-			currentSslHack = savedInstanceState.getBoolean(Const.CURRENT_SSLHACK);
-			currentSslHostNameHack = savedInstanceState.getBoolean(Const.CURRENT_SSLHOSTNAMEHACK);
+			currentSslHack = savedInstanceState.getBoolean(CURRENT_SSLHACK);
+			currentSslHostNameHack = savedInstanceState.getBoolean(CURRENT_SSLHOSTNAMEHACK);
 			bewaren = savedInstanceState.getBoolean(bewaarText);
 		} else {
-			currentUrl=fragmentArgs.getString(Const.CURRENT_URL);
-			currentUsername=fragmentArgs.getString(Const.CURRENT_USERNAME);
-			currentPassword=fragmentArgs.getString(Const.CURRENT_PASSWORD);
-			currentSslHack =fragmentArgs.getBoolean(Const.CURRENT_SSLHACK);
-			currentSslHostNameHack =fragmentArgs.getBoolean(Const.CURRENT_SSLHOSTNAMEHACK);
+			currentUrl=fragmentArgs.getString(CURRENT_URL);
+			currentUsername=fragmentArgs.getString(CURRENT_USERNAME);
+			currentPassword=fragmentArgs.getString(CURRENT_PASSWORD);
+			currentSslHack =fragmentArgs.getBoolean(CURRENT_SSLHACK);
+			currentSslHostNameHack =fragmentArgs.getBoolean(CURRENT_SSLHOSTNAMEHACK);
 		}
 		setHasOptionsMenu(true);
     }

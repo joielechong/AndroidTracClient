@@ -24,6 +24,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
 
+import static com.mfvl.trac.client.Const.*;
 
 public class TracShowWebPage extends Activity implements View.OnClickListener {
 	private String filename;
@@ -37,10 +38,10 @@ public class TracShowWebPage extends Activity implements View.OnClickListener {
 		Credentials.getInstance(getApplicationContext());
         tcLog.d("savedInstanceState = " + savedInstanceState);
         final Intent i = getIntent();
-        final boolean toonVersie = i.getBooleanExtra(Const.HELP_VERSION, true);
+        final boolean toonVersie = i.getBooleanExtra(HELP_VERSION, true);
 
         setContentView(R.layout.trac_about);
-        filename = "file:///android_asset/" + i.getStringExtra(Const.HELP_FILE) + ".html";
+        filename = "file:///android_asset/" + i.getStringExtra(HELP_FILE) + ".html";
 
         final View tv = findViewById(R.id.versionblock);
         tcLog.d(filename + " " + toonVersie+" "+tv);

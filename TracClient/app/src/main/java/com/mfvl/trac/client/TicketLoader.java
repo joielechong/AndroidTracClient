@@ -30,6 +30,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.alexd.jsonrpc.JSONRPCException;
 
+import static com.mfvl.trac.client.Const.*;
+
 public class TicketLoader extends AsyncTaskLoader<Tickets> {
     private final static String TICKET_GET = "GET";
     private final static String TICKET_CHANGE = "CHANGE";
@@ -313,10 +315,10 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 		tcLog.d( "count = "+count+ " "+ tl);
 		
 
-		for (int j = 0; j < count; j += Const.ticketGroupCount) {
+		for (int j = 0; j < count; j += ticketGroupCount) {
 			final JSONArray mc = new JSONArray();
 
-			for (int i = j; i < (j + Const.ticketGroupCount < count ? j + Const.ticketGroupCount : count); i++) {
+			for (int i = j; i < (j + ticketGroupCount < count ? j + ticketGroupCount : count); i++) {
 				try {
 					buildCall(mc, tl.ticketList.get(i).getTicketnr());
 				} catch (final Exception e) {
@@ -381,7 +383,7 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 	} 
 
 	private void notify_datachanged() {
-        Intent intent = new Intent(TracStart.DATACHANGED_MESSAGE);
+        Intent intent = new Intent(DATACHANGED_MESSAGE);
 		LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
 	}
 
@@ -392,10 +394,10 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 	private void popup_message(int title,int messString,String addit) {
 		/* 
 			Since we are in a Content Provider we only have an Application context. This means we cannot do a runOnUIthread call here.
-			For that reason we send a Broadcast within the app to the receiver in TracStart. There the popup will be serviced.
+			For that reason we send a Broadcast within the app to the receiver in      There the popup will be serviced.
 		*/
 		LocalBroadcastManager.getInstance(getContext())
-				.sendBroadcast(new Intent(TracStart.PROVIDER_MESSAGE)
+				.sendBroadcast(new Intent(PROVIDER_MESSAGE)
 						.putExtra("title", title)
 						.putExtra("message", messString)
 						.putExtra("additonal", addit));

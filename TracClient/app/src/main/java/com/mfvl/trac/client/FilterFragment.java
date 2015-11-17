@@ -42,6 +42,8 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import static com.mfvl.trac.client.Const.*;
+
 public class FilterFragment extends SpecFragment<FilterSpec> implements OnCheckedChangeListener {
     private FilterAdapter filterAdapter;
 	private Spinner addSpinner;
@@ -205,14 +207,14 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
     public void onAttach(Context activity) {
         super.onAttach(activity);
 //        tcLog.d("onAttach(C)");
-		onMyAttach(activity,Const.FILTERLISTNAME);
+		onMyAttach(activity,FILTERLISTNAME);
     }
 	
     @Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 //        tcLog.d("onAttach(A)");
-		onMyAttach(activity,Const.FILTERLISTNAME);
+		onMyAttach(activity,FILTERLISTNAME);
 	}
 	
     @Override
@@ -256,7 +258,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
 					items.get(i).setEdit(false);
 				}
 			}
-			sendMessageToHandler(TracStart.MSG_SET_FILTER,items);
+			sendMessageToHandler(MSG_SET_FILTER,items);
 			getFragmentManager().popBackStack();
 			break;
 			

@@ -61,6 +61,8 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.widget.ShareActionProvider;
 
+import static com.mfvl.trac.client.Const.*;
+
 interface onFileSelectedListener {
     void onFileSelected(final String f);
 }
@@ -108,37 +110,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
      * Constanten voor communicatie met de service en fragmenten
      */
 	
-    static final int MSG_START_TIMER = 1; 
-    static final int MSG_REQUEST_TICKET_COUNT = 2;
-    static final int MSG_SEND_TICKET_COUNT = 3;
-    static final int MSG_REQUEST_NEW_TICKETS = 4;
-    static final int MSG_SEND_NEW_TICKETS = 5;
-    static final int MSG_REQUEST_REFRESH = 6;
-    static final int MSG_STOP_TIMER = 7;
-    static final int MSG_REMOVE_NOTIFICATION = 8;
-
-	static final int MSG_START_PROGRESSBAR = 21;
-	static final int MSG_STOP_PROGRESSBAR = 22;
-	static final int MSG_SET_SORT = 23;
-	static final int MSG_SET_FILTER = 24;
-	static final int MSG_SHOW_DIALOG = 25;
-	static final int MSG_DISPLAY_TICKET = 26;
-	static final int MSG_ACK_START = 27;
-	static final int MSG_START_LISTLOADER = 28;
-	static final int MSG_GET_PERMISSIONS = 29;
-
-	static final int MSG_LOGIN_PROFILE = 41;
-	static final int MSG_LOAD_TICKETS = 42;
-	static final int MSG_LOAD_FASE1_FINISHED = 43;
-	static final int MSG_LOAD_FASE2_FINISHED = 44;	
-	static final int MSG_GET_TICKET_MODEL = 45;	
-	static final int MSG_TICKET_MODEL_LOADED = 46;
-    static final int MSG_GET_TICKET = 47;
-	static final int MSG_GET_ATTACHMENT = 48;
-	static final int MSG_PUT_ATTACHMENT = 49;
-	
-	public static final String PROVIDER_MESSAGE = "com.mfvl.trac.client.message.provider";
-	public static final String DATACHANGED_MESSAGE = "com.mfvl.trac.client.message.datachanged";
     private static final int REQUEST_CODE_CHOOSER = 6384;
     private static final int REQUEST_CODE_WRITE_EXT	= 6385;
 
@@ -514,8 +485,8 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	private void showAbout() {
 		//tcLog.d( "showAbout");
         final Intent launchTrac = new Intent(getApplicationContext(), TracShowWebPage.class);
-        launchTrac.putExtra(Const.HELP_FILE, getString(R.string.whatsnewhelpfile));
-        launchTrac.putExtra(Const.HELP_VERSION, true);
+        launchTrac.putExtra(HELP_FILE, getString(R.string.whatsnewhelpfile));
+        launchTrac.putExtra(HELP_VERSION, true);
         startActivity(launchTrac);
 	}
 	
@@ -525,7 +496,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         super.onCreate(savedInstanceState);
         tcLog.d( "savedInstanceState = " + savedInstanceState);
 
-		if (Const.DEBUG_MANAGERS) {
+		if (DEBUG_MANAGERS) {
 			FragmentManager.enableDebugLogging(true);
 			LoaderManager.enableDebugLogging(true);
 		}
@@ -534,7 +505,9 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         mHandlerThread = new MyHandlerThread("IncomingHandler");
         mHandlerThread.start();
 		tracStartHandler = new IncomingHandler(mHandlerThread.getLooper());
-		
+        mMessenger = new Messenger(tracStartHandler);
+        startService(new Intent(this, RefreshService.class));
+				
 		if (ActivityCompat.checkSelfPermission(this,Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 			if (ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
 				new AlertDialog.Builder(this)
@@ -556,13 +529,10 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 		}
 
 		try {
-            Const.ticketGroupCount = getResources().getInteger(R.integer.ticketGroupCount);
+            ticketGroupCount = getResources().getInteger(R.integer.ticketGroupCount);
         } catch (Exception ignored) {}
 
         timerCorr = getResources().getInteger(R.integer.timerCorr);
-		
-        mMessenger = new Messenger(tracStartHandler);
-        startService(new Intent(this, RefreshService.class));
 		
         setContentView(R.layout.tracstart);
         debug |= Credentials.isRCVersion();
@@ -578,28 +548,28 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 
         dispAds = true;
 		if (savedInstanceState != null) {
-            dispAds = savedInstanceState.getBoolean(Const.ADMOB, true);
-            url = savedInstanceState.getString(Const.CURRENT_URL);
-            username = savedInstanceState.getString(Const.CURRENT_USERNAME);
-            password = savedInstanceState.getString(Const.CURRENT_PASSWORD);
-            sslHack = savedInstanceState.getBoolean(Const.CURRENT_SSLHACK, false);
-            sslHostNameHack = savedInstanceState.getBoolean(Const.CURRENT_SSLHOSTNAMEHACK, false);
-			filterList = (ArrayList<FilterSpec>)savedInstanceState.getSerializable(Const.FILTERLISTNAME);
-			sortList = (ArrayList<SortSpec>)savedInstanceState.getSerializable(Const.SORTLISTNAME);
+            dispAds = savedInstanceState.getBoolean(ADMOB, true);
+            url = savedInstanceState.getString(CURRENT_URL);
+            username = savedInstanceState.getString(CURRENT_USERNAME);
+            password = savedInstanceState.getString(CURRENT_PASSWORD);
+            sslHack = savedInstanceState.getBoolean(CURRENT_SSLHACK, false);
+            sslHostNameHack = savedInstanceState.getBoolean(CURRENT_SSLHOSTNAMEHACK, false);
+			filterList = (ArrayList<FilterSpec>)savedInstanceState.getSerializable(FILTERLISTNAME);
+			sortList = (ArrayList<SortSpec>)savedInstanceState.getSerializable(SORTLISTNAME);
         } else {
 			// only at first start
 			if (Credentials.getFirstRun()) {
 				final Intent launchTrac = new Intent(this, TracShowWebPage.class);
-				launchTrac.putExtra(Const.HELP_FILE, getString(R.string.whatsnewhelpfile));
-				launchTrac.putExtra(Const.HELP_VERSION, false);
+				launchTrac.putExtra(HELP_FILE, getString(R.string.whatsnewhelpfile));
+				launchTrac.putExtra(HELP_VERSION, false);
 				startActivity(launchTrac);
 			}
-			if (getIntent().hasExtra(Const.ADMOB)) {
-				dispAds = getIntent().getBooleanExtra(Const.ADMOB, true);
+			if (getIntent().hasExtra(ADMOB)) {
+				dispAds = getIntent().getBooleanExtra(ADMOB, true);
 			}
-			if (getIntent().hasExtra(Const.INTENT_URL)) {
-				urlArg = getIntent().getStringExtra(Const.INTENT_URL);
-				ticketArg = (int) getIntent().getLongExtra(Const.INTENT_TICKET, -1);
+			if (getIntent().hasExtra(INTENT_URL)) {
+				urlArg = getIntent().getStringExtra(INTENT_URL);
+				ticketArg = (int) getIntent().getLongExtra(INTENT_TICKET, -1);
 			}
 		}
 
@@ -884,11 +854,11 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 	private TracLoginFragment newLoginFrag() {
         final TracLoginFragment tracLoginFragment = new TracLoginFragment();
 		final Bundle args = makeArgs();
-		args.putString(Const.CURRENT_URL, url);
-		args.putString(Const.CURRENT_USERNAME, username);
-		args.putString(Const.CURRENT_PASSWORD, password);
-		args.putBoolean(Const.CURRENT_SSLHACK, sslHack);
-		args.putBoolean(Const.CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
+		args.putString(CURRENT_URL, url);
+		args.putString(CURRENT_USERNAME, username);
+		args.putString(CURRENT_PASSWORD, password);
+		args.putBoolean(CURRENT_SSLHACK, sslHack);
+		args.putBoolean(CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
 		tracLoginFragment.setArguments(args);
 		return tracLoginFragment;
 	}
@@ -947,7 +917,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         final FilterFragment filterFragment = new FilterFragment();
 
 		final Bundle args = makeArgs();
-		args.putSerializable(Const.FILTERLISTNAME, filterList);
+		args.putSerializable(FILTERLISTNAME, filterList);
 		filterFragment.setArguments(args);
 		
         ft.replace(R.id.displayList, filterFragment, FilterFragmentTag);
@@ -987,7 +957,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         // tcLog.d("newTickFragment =" +  newtickFragment.toString());
         final FragmentTransaction ft = getFragmentManager().beginTransaction();
 		final Bundle args = makeArgs();
-		args.putString(Const.CURRENT_USERNAME, username);
+		args.putString(CURRENT_USERNAME, username);
 		newtickFragment.setArguments(args);
 
         ft.replace(R.id.displayList, newtickFragment, NewFragmentTag);
@@ -1053,13 +1023,13 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putBoolean("Admob", dispAds);
-        savedInstanceState.putSerializable(Const.SORTLISTNAME, sortList);
-        savedInstanceState.putSerializable(Const.FILTERLISTNAME, filterList);
-        savedInstanceState.putString(Const.CURRENT_URL, url);
-        savedInstanceState.putString(Const.CURRENT_USERNAME, username);
-        savedInstanceState.putString(Const.CURRENT_PASSWORD, password);
-        savedInstanceState.putBoolean(Const.CURRENT_SSLHACK, sslHack);
-        savedInstanceState.putBoolean(Const.CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
+        savedInstanceState.putSerializable(SORTLISTNAME, sortList);
+        savedInstanceState.putSerializable(FILTERLISTNAME, filterList);
+        savedInstanceState.putString(CURRENT_URL, url);
+        savedInstanceState.putString(CURRENT_USERNAME, username);
+        savedInstanceState.putString(CURRENT_PASSWORD, password);
+        savedInstanceState.putBoolean(CURRENT_SSLHACK, sslHack);
+        savedInstanceState.putBoolean(CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
         saveFragment(savedInstanceState, ListFragmentTag);
         saveFragment(savedInstanceState, LoginFragmentTag);
         saveFragment(savedInstanceState, DetailFragmentTag);
@@ -1076,7 +1046,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         final SortFragment sortFragment = new SortFragment();
 
 		final Bundle args = makeArgs();
-		args.putSerializable(Const.SORTLISTNAME, sortList);
+		args.putSerializable(SORTLISTNAME, sortList);
 		sortFragment.setArguments(args);
 
         ft.replace(R.id.displayList, sortFragment, SortFragmentTag);
@@ -1092,7 +1062,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 		
 		DetailFragment detailFragment = new DetailFragment();
         final Bundle args = makeArgs();
-        args.putInt(Const.CURRENT_TICKET, ticket.getTicketnr());
+        args.putInt(CURRENT_TICKET, ticket.getTicketnr());
         detailFragment.setArguments(args);
 	
  //		tcLog.d("detailFragment =" + detailFragment.toString());
@@ -1114,7 +1084,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         final UpdateTicketFragment updtickFragment = new UpdateTicketFragment();
         final Bundle args = makeArgs();
 
-        args.putInt(Const.CURRENT_TICKET, ticket.getTicketnr());
+        args.putInt(CURRENT_TICKET, ticket.getTicketnr());
         updtickFragment.setArguments(args);
 //		tcLog.d("updtickFragment = " + updtickFragment.toString());
         final FragmentTransaction ft = getFragmentManager().beginTransaction();

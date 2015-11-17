@@ -30,6 +30,8 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import static com.mfvl.trac.client.Const.*;
+
 public class SortFragment extends SpecFragment<SortSpec>  {
 
     private class SortAdapter extends SpecAdapter<SortSpec>  implements View.OnClickListener {
@@ -124,14 +126,14 @@ public class SortFragment extends SpecFragment<SortSpec>  {
     public void onAttach(Context activity) {
         super.onAttach(activity);
 //        tcLog.d("onAttach(C)");
-		onMyAttach(activity,Const.SORTLISTNAME);
+		onMyAttach(activity,SORTLISTNAME);
     }
 	
     @Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 //        tcLog.d("onAttach(A)");
-		onMyAttach(activity,Const.SORTLISTNAME);
+		onMyAttach(activity,SORTLISTNAME);
 	}
 	
     @Override
@@ -172,7 +174,7 @@ public class SortFragment extends SpecFragment<SortSpec>  {
 					items.remove(i);
 				}
 			}
-			sendMessageToHandler(TracStart.MSG_SET_SORT,items);
+			sendMessageToHandler(MSG_SET_SORT,items);
 			getFragmentManager().popBackStack();
 			break;
 			

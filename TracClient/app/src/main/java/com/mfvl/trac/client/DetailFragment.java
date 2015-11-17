@@ -62,6 +62,8 @@ import android.widget.ShareActionProvider;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import static com.mfvl.trac.client.Const.*;
+
 public class DetailFragment extends TracClientFragment implements SwipeRefreshLayout.OnRefreshListener, CompoundButton.OnCheckedChangeListener, GestureDetector.OnGestureListener, onFileSelectedListener, OnItemClickListener,OnItemLongClickListener {
 
     private static final String EMPTYFIELDS = "emptyfields";
@@ -178,10 +180,10 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
         super.onCreate(savedInstanceState);
         // tcLog.d( "onCreate savedInstanceState = " + savedInstanceState);
         if (fragmentArgs != null) {
-            ticknr = fragmentArgs.getInt(Const.CURRENT_TICKET);
+            ticknr = fragmentArgs.getInt(CURRENT_TICKET);
         }
-        if (savedInstanceState != null && savedInstanceState.containsKey(Const.CURRENT_TICKET)) {
-            ticknr = savedInstanceState.getInt(Const.CURRENT_TICKET, -1);
+        if (savedInstanceState != null && savedInstanceState.containsKey(CURRENT_TICKET)) {
+            ticknr = savedInstanceState.getInt(CURRENT_TICKET, -1);
         }
 
         modVeld = new ModVeldMap();
@@ -274,13 +276,13 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
             R.color.swipe_red);
         if (savedInstanceState != null) {
             showEmptyFields = savedInstanceState.getBoolean(EMPTYFIELDS, false);
-            if (savedInstanceState.containsKey(Const.CURRENT_TICKET)) {
+            if (savedInstanceState.containsKey(CURRENT_TICKET)) {
                 // tcLog.d("onActivityCreated start Loading");
                 if (savedInstanceState.containsKey(MODVELD)) {
                     modVeld = (ModVeldMap) savedInstanceState.getSerializable(MODVELD);
                 }
                 setSelect(modVeld.isEmpty());
-                ticknr = savedInstanceState.getInt(Const.CURRENT_TICKET, -1);
+                ticknr = savedInstanceState.getInt(CURRENT_TICKET, -1);
             }
         }
     }
@@ -487,9 +489,9 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
         super.onSaveInstanceState(savedState);
         tcLog.d( "_ticket = " + _ticket+ " "+ modVeld);
         if (_ticket != null) {
-            savedState.putInt(Const.CURRENT_TICKET, _ticket.getTicketnr());
+            savedState.putInt(CURRENT_TICKET, _ticket.getTicketnr());
         } else if (ticknr != -1) {
-            savedState.putInt(Const.CURRENT_TICKET, ticknr);
+            savedState.putInt(CURRENT_TICKET, ticknr);
         }
         if (!modVeld.isEmpty()) {
             savedState.putSerializable(MODVELD, modVeld);
