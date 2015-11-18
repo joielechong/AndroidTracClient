@@ -16,9 +16,6 @@
 
 package com.mfvl.trac.client;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
@@ -28,13 +25,13 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.DisplayMetrics;
 import android.support.v4.content.ContextCompat;
-import android.view.inputmethod.InputMethodManager;
+import android.util.DisplayMetrics;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -43,7 +40,12 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 
-import static com.mfvl.trac.client.Const.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.mfvl.trac.client.Const.HELP_FILE;
+import static com.mfvl.trac.client.Const.HELP_VERSION;
+import static com.mfvl.trac.client.Const.MSG_SHOW_DIALOG;
 
 abstract public class TracClientFragment extends Fragment implements OnGlobalLayoutListener, View.OnClickListener {
  
@@ -139,7 +141,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 
 			final AdRequest.Builder arb = new AdRequest.Builder();
 
-			if (adView != null && arb != null) {
+			if (adView != null) {
 				arb.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
 				if (Credentials.isDebuggable()) {
 					for (final String t : testDevices) {
@@ -150,21 +152,19 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 				arb.setGender(AdRequest.GENDER_UNKNOWN);
 				final AdRequest adRequest = arb.build();
 
-				if (adRequest != null) {
-					try {
-						adView.loadAd(adRequest);
-						adView.setLayoutParams(adViewContainer.getLayoutParams());
-						// tcLog.d( "adView size = " +adView.getHeight());
-						adViewContainer.addView(adView);
-					} catch (final Exception e) {
-						if (aboveView != null) {
-							aboveView.setPadding(0, 0, 0, 0);
-						}
-						listener.setDispAds(false);
-					}
-				}
+                try {
+                    adView.loadAd(adRequest);
+                    adView.setLayoutParams(adViewContainer.getLayoutParams());
+                    // tcLog.d( "adView size = " +adView.getHeight());
+                    adViewContainer.addView(adView);
+                } catch (final Exception e) {
+                    if (aboveView != null) {
+                        aboveView.setPadding(0, 0, 0, 0);
+                    }
+                    listener.setDispAds(false);
+                }
 			}
-			if (view != null && aboveView != null) {
+			if (aboveView != null) {
 				padTop = aboveView.getPaddingTop();
 				padRight = aboveView.getPaddingRight();
 				padBot = aboveView.getPaddingBottom();
@@ -264,7 +264,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
         }
     }
 
-    private Spinner _makeComboSpin(Context context, final String veldnaam, List<Object> waardes, boolean optional, Object w, boolean dialogWanted) {
+    private Spinner _makeComboSpin(Context context, List<Object> waardes, boolean optional, Object w, boolean dialogWanted) {
 		if (waardes == null) 
 			return null;
 		
@@ -290,11 +290,11 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
     }
 
     protected Spinner makeDialogComboSpin(Context context, final String veldnaam, List<Object> waardes, boolean optional, Object w) {
-        return _makeComboSpin(context, veldnaam, waardes, optional, w, true);
+        return _makeComboSpin(context, waardes, optional, w, true);
     }
 
     protected Spinner makeComboSpin(Context context, final String veldnaam, List<Object> waardes, boolean optional, Object w) {
-        return _makeComboSpin(context, veldnaam, waardes, optional, w, false);
+        return _makeComboSpin(context, waardes, optional, w, false);
     }
 
     protected void selectTicket(int ticknr) {
@@ -315,7 +315,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 		context.getWindowManager().getDefaultDisplay().getMetrics(metrics);
 		int widthPixels = metrics.widthPixels;
 		Drawable drawable = ContextCompat.getDrawable(context,R.drawable.plus);
-		spin.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, widthPixels-drawable.getIntrinsicWidth()));
+        spin.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, widthPixels-drawable.getIntrinsicWidth()));
 		but.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, drawable.getIntrinsicWidth()));
 	}
 
