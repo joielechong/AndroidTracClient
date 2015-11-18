@@ -18,7 +18,7 @@ package com.mfvl.trac.client;
 
 
 final class Const {
-	
+
     /*
      * Constanten voor opslaan van variablen
      */
@@ -55,14 +55,14 @@ final class Const {
     static final String PREF_SORT = "sortString";
     static final String PREF_DISCLAIM = "disclaimer";
     static final String PREF_COOKIEINFORM = "CookieInform";
-	
-	static final String DisclaimerVersion = "1.0";
+
+    static final String DisclaimerVersion = "1.0";
 	
 	/*
 	 * Messages 
 	*/
-	
-    static final int MSG_START_TIMER = 1; 
+
+    static final int MSG_START_TIMER = 1;
     static final int MSG_REQUEST_TICKET_COUNT = 2;
     static final int MSG_SEND_TICKET_COUNT = 3;
     static final int MSG_REQUEST_NEW_TICKETS = 4;
@@ -71,37 +71,48 @@ final class Const {
     static final int MSG_STOP_TIMER = 7;
     static final int MSG_REMOVE_NOTIFICATION = 8;
 
-	static final int MSG_START_PROGRESSBAR = 21;
-	static final int MSG_STOP_PROGRESSBAR = 22;
-	static final int MSG_SET_SORT = 23;
-	static final int MSG_SET_FILTER = 24;
-	static final int MSG_SHOW_DIALOG = 25;
-	static final int MSG_DISPLAY_TICKET = 26;
-	static final int MSG_ACK_START = 27;
-	static final int MSG_START_LISTLOADER = 28;
-	static final int MSG_GET_PERMISSIONS = 29;
+    static final int MSG_START_PROGRESSBAR = 21;
+    static final int MSG_STOP_PROGRESSBAR = 22;
+    static final int MSG_SET_SORT = 23;
+    static final int MSG_SET_FILTER = 24;
+    static final int MSG_SHOW_DIALOG = 25;
+    static final int MSG_DISPLAY_TICKET = 26;
+    static final int MSG_ACK_START = 27;
+    static final int MSG_START_LISTLOADER = 28;
+    static final int MSG_GET_PERMISSIONS = 29;
 
-	static final int MSG_LOGIN_PROFILE = 41;
-	static final int MSG_LOAD_TICKETS = 42;
-	static final int MSG_LOAD_FASE1_FINISHED = 43;
-	static final int MSG_LOAD_FASE2_FINISHED = 44;	
-	static final int MSG_GET_TICKET_MODEL = 45;	
-	static final int MSG_TICKET_MODEL_LOADED = 46;
+    static final int MSG_LOGIN_PROFILE = 41;
+    static final int MSG_LOAD_TICKETS = 42;
+    static final int MSG_LOAD_FASE1_FINISHED = 43;
+    static final int MSG_LOAD_FASE2_FINISHED = 44;
+    static final int MSG_GET_TICKET_MODEL = 45;
+    static final int MSG_TICKET_MODEL_LOADED = 46;
     static final int MSG_GET_TICKET = 47;
-	static final int MSG_GET_ATTACHMENT = 48;
-	static final int MSG_PUT_ATTACHMENT = 49;
-	
-	static final String PROVIDER_MESSAGE = "com.mfvl.trac.client.message.provider";
-	static final String DATACHANGED_MESSAGE = "com.mfvl.trac.client.message.datachanged";
+    static final int MSG_GET_ATTACHMENT = 48;
+    static final int MSG_PUT_ATTACHMENT = 49;
+    static final int MSG_LOAD_FAILED = 50;
+    static final int MSG_DATA_CHANGED = 51;
 
+	/* 
+	 * Broadcast messages
+	*/
+
+    static final String PROVIDER_MESSAGE = "com.mfvl.trac.client.message.provider";
+    static final String DATACHANGED_MESSAGE = "com.mfvl.trac.client.message.datachanged";
+
+    /*
+     * App private Intent actions
+    */
+    static final String ACTION_LOGIN_PROFILE = "com.mfvl.trac.client.action.LoginProfile";
+    static final String ACTION_LOAD_TICKETS = "com.mfvl.trac.client.action.LoadTickets";
 
     /*
      * Overige constanten
      */
     static final String mimeUnknown = "application/unknown"; // TODO needed for attachments
-	
+
     static public int ticketGroupCount = 50;
-	
-	static final public boolean DEBUG_MANAGERS = false;
-	static final public boolean DEBUG_LOG = true;
+
+    static final public boolean DEBUG_MANAGERS = false;
+    static final public boolean DEBUG_LOG = true;
 }
