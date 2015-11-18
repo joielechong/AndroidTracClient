@@ -16,28 +16,23 @@
 
 package com.mfvl.trac.client;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.Semaphore;
-
 import android.Manifest;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentManager.OnBackStackChangedListener;
+import android.app.FragmentTransaction;
+import android.app.LoaderManager;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.Loader;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -49,12 +44,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentManager.OnBackStackChangedListener;
-import android.app.FragmentTransaction;
-import android.app.LoaderManager;
-import android.content.Loader;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.Menu;
@@ -62,7 +51,54 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.widget.ShareActionProvider;
 
-import static com.mfvl.trac.client.Const.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.Semaphore;
+
+import static com.mfvl.trac.client.Const.ACTION_LOAD_TICKETS;
+import static com.mfvl.trac.client.Const.ACTION_LOGIN_PROFILE;
+import static com.mfvl.trac.client.Const.ADMOB;
+import static com.mfvl.trac.client.Const.CURRENT_PASSWORD;
+import static com.mfvl.trac.client.Const.CURRENT_SSLHACK;
+import static com.mfvl.trac.client.Const.CURRENT_SSLHOSTNAMEHACK;
+import static com.mfvl.trac.client.Const.CURRENT_TICKET;
+import static com.mfvl.trac.client.Const.CURRENT_URL;
+import static com.mfvl.trac.client.Const.CURRENT_USERNAME;
+import static com.mfvl.trac.client.Const.DATACHANGED_MESSAGE;
+import static com.mfvl.trac.client.Const.DEBUG_MANAGERS;
+import static com.mfvl.trac.client.Const.FILTERLISTNAME;
+import static com.mfvl.trac.client.Const.HELP_FILE;
+import static com.mfvl.trac.client.Const.HELP_VERSION;
+import static com.mfvl.trac.client.Const.INTENT_TICKET;
+import static com.mfvl.trac.client.Const.INTENT_URL;
+import static com.mfvl.trac.client.Const.MSG_DISPLAY_TICKET;
+import static com.mfvl.trac.client.Const.MSG_GET_PERMISSIONS;
+import static com.mfvl.trac.client.Const.MSG_LOAD_FASE1_FINISHED;
+import static com.mfvl.trac.client.Const.MSG_LOGIN_PROFILE;
+import static com.mfvl.trac.client.Const.MSG_REMOVE_NOTIFICATION;
+import static com.mfvl.trac.client.Const.MSG_REQUEST_NEW_TICKETS;
+import static com.mfvl.trac.client.Const.MSG_REQUEST_REFRESH;
+import static com.mfvl.trac.client.Const.MSG_REQUEST_TICKET_COUNT;
+import static com.mfvl.trac.client.Const.MSG_SEND_NEW_TICKETS;
+import static com.mfvl.trac.client.Const.MSG_SEND_TICKET_COUNT;
+import static com.mfvl.trac.client.Const.MSG_SET_FILTER;
+import static com.mfvl.trac.client.Const.MSG_SET_SORT;
+import static com.mfvl.trac.client.Const.MSG_SHOW_DIALOG;
+import static com.mfvl.trac.client.Const.MSG_START_LISTLOADER;
+import static com.mfvl.trac.client.Const.MSG_START_PROGRESSBAR;
+import static com.mfvl.trac.client.Const.MSG_START_TIMER;
+import static com.mfvl.trac.client.Const.MSG_STOP_PROGRESSBAR;
+import static com.mfvl.trac.client.Const.MSG_STOP_TIMER;
+import static com.mfvl.trac.client.Const.PROVIDER_MESSAGE;
+import static com.mfvl.trac.client.Const.SORTLISTNAME;
+import static com.mfvl.trac.client.Const.ticketGroupCount;
 
 interface onFileSelectedListener {
     void onFileSelected(final String f);
@@ -185,10 +221,13 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     private TicketModel tm = null;
     private boolean mIsBound = false;
     private Messenger mService = null;
+	private RefreshService mRefreshService = null;
+	
     private final ServiceConnection mTicketsConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             tcLog.d("className = " + className + " service = " + service);
+			mRefreshService = (RefreshService)service;
             mService = new Messenger(service);
             tcLog.d("mService = " + mService);
         }

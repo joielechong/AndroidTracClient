@@ -16,7 +16,6 @@
 
 package com.mfvl.trac.client;
 
-
 final class Const {
 
     /*
@@ -77,7 +76,7 @@ final class Const {
     static final int MSG_SET_FILTER = 24;
     static final int MSG_SHOW_DIALOG = 25;
     static final int MSG_DISPLAY_TICKET = 26;
-    static final int MSG_ACK_START = 27;
+    static final int MSG_DATA_CHANGED = 27;
     static final int MSG_START_LISTLOADER = 28;
     static final int MSG_GET_PERMISSIONS = 29;
 
@@ -91,7 +90,6 @@ final class Const {
     static final int MSG_GET_ATTACHMENT = 48;
     static final int MSG_PUT_ATTACHMENT = 49;
     static final int MSG_LOAD_FAILED = 50;
-    static final int MSG_DATA_CHANGED = 51;
 
 	/* 
 	 * Broadcast messages

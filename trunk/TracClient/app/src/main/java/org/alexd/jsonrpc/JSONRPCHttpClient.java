@@ -1,15 +1,18 @@
 package org.alexd.jsonrpc;
 
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.security.GeneralSecurityException;
+import android.net.Uri;
 
-import javax.net.ssl.SSLException;
+import com.mfvl.trac.client.tcLog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.net.Uri;
+import java.security.GeneralSecurityException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+
+import javax.net.ssl.SSLException;
+
 import ch.boye.httpclientandroidlib.Header;
 import ch.boye.httpclientandroidlib.HttpEntity;
 import ch.boye.httpclientandroidlib.HttpResponse;
@@ -30,8 +33,6 @@ import ch.boye.httpclientandroidlib.impl.client.CloseableHttpClient;
 import ch.boye.httpclientandroidlib.impl.client.HttpClientBuilder;
 import ch.boye.httpclientandroidlib.impl.client.TargetAuthenticationStrategy;
 import ch.boye.httpclientandroidlib.util.EntityUtils;
-
-import com.mfvl.trac.client.tcLog;
 
 /**
  * Implementation of JSON-RPC over HTTP/POST
@@ -78,13 +79,6 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 
 	}
 
-	/**
-	 * Construct a JsonRPCClient with the given service uri
-	 *
-	 * @param uri
-	 *            uri of the service
-	 */
-
 	public JSONRPCHttpClient(final String uri) {
 		this(uri, false, false);
 	}
@@ -121,20 +115,6 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 		hcb.setTargetAuthenticationStrategy(new TargetAuthenticationStrategy());
 		httpClient = hcb.build();
 	}
-
-	/**
-	 * Construct a JsonRPCClient with the given httpClient and service uri
-	 *
-	 * @param client
-	 *            httpClient to use
-	 * @param uri
-	 *            uri of the service
-	 */
-	// public JSONRPCHttpClient(final CloseableHttpClient client, final String
-	// uri) {
-	// httpClient = client;
-	// serviceUri = uri;
-	// }
 
 	@Override
 	protected JSONObject doJSONRequest(JSONObject jsonRequest) throws JSONRPCException {

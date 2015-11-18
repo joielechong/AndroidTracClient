@@ -1,11 +1,11 @@
 package org.alexd.jsonrpc;
 
-import java.util.UUID;
-
 import org.alexd.jsonrpc.JSONRPCParams.Versions;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.UUID;
 
 import ch.boye.httpclientandroidlib.Consts;
 
@@ -81,7 +81,7 @@ public abstract class JSONRPCClient {
 		return doJSONRequest(jsonRequest);
 	}
 
-	protected JSONObject doRequest(String method, Object[] params) throws JSONRPCException, JSONException {
+	protected JSONObject doRequest(String method, Object[] params) throws JSONRPCException {
 		// Copy method arguments in a json array
 		final JSONArray jsonParams = new JSONArray();
 		for (final Object param : params) {
@@ -139,7 +139,7 @@ public abstract class JSONRPCClient {
 			public void run() {
 				try {
 					doRequest(mMethod, mParams);
-				} catch (final JSONException | JSONRPCException ignored) {
+				} catch (final JSONRPCException ignored) {
 				}
 			}
 

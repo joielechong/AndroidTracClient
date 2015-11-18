@@ -17,21 +17,22 @@
 package com.mfvl.trac.client;
 
 
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
-import static com.mfvl.trac.client.Const.*;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import static com.mfvl.trac.client.Const.ADMOB;
+import static com.mfvl.trac.client.Const.INTENT_TICKET;
+import static com.mfvl.trac.client.Const.INTENT_URL;
 
 public class TracTitlescreenActivity extends Activity implements Thread.UncaughtExceptionHandler {
     private Intent launchTrac = null;

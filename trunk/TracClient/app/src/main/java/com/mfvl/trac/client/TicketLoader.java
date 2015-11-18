@@ -18,19 +18,20 @@ package com.mfvl.trac.client;
 import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
+
+import org.alexd.jsonrpc.JSONRPCException;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.alexd.jsonrpc.JSONRPCException;
-
-import static com.mfvl.trac.client.Const.*;
+import static com.mfvl.trac.client.Const.DATACHANGED_MESSAGE;
+import static com.mfvl.trac.client.Const.PROVIDER_MESSAGE;
+import static com.mfvl.trac.client.Const.ticketGroupCount;
 
 public class TicketLoader extends AsyncTaskLoader<Tickets> {
     private final static String TICKET_GET = "GET";
@@ -49,12 +50,7 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 	private TicketList ticketList;
 	Tickets mTickets = null;
 
-    /**
-     * Creates an empty unspecified TicketListLoader.  You must follow this with
-     * calls to {@link #setUri(Uri)}, {@link #setSelection(String)}, etc
-     * to specify the query to perform.
-     */
-    public TicketLoader(Context context) {
+     public TicketLoader(Context context) {
         super(context);
         tcLog.d( "" + context);
         mObserver = new ForceLoadContentObserver();
@@ -94,7 +90,7 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
 
    public TicketLoader(Context context, LoginProfile lp, String tijd) {
 		super(context);
-        tcLog.d( "" + context+" "+lp+"  "+tijd);
+        tcLog.d(context.toString() + " " + lp + " " + tijd);
 		mObserver = new ForceLoadContentObserver();
 		mLoginProfile = lp;
 		tracClient = null;
@@ -105,7 +101,7 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
     /* Runs on a worker thread */
     @Override
     public Tickets loadInBackground() {
-        tcLog.d( "this = "+this);
+        tcLog.d("this = "+this);
 		tracClient = new TracHttpClient(mLoginProfile);
 		tm=TicketModel.getInstance(tracClient);
 		switch (mode) {
@@ -207,7 +203,6 @@ public class TicketLoader extends AsyncTaskLoader<Tickets> {
             cursor.close();
         }
 		*/
-		tl = null;
     }
 
     @Override

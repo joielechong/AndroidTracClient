@@ -24,8 +24,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.widget.CursorAdapter;
-import android.widget.SimpleCursorAdapter;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -42,19 +40,26 @@ import android.widget.CheckBox;
 import android.widget.CheckedTextView;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.mfvl.trac.client.Const.*;
+import static com.mfvl.trac.client.Const.CURRENT_PASSWORD;
+import static com.mfvl.trac.client.Const.CURRENT_SSLHACK;
+import static com.mfvl.trac.client.Const.CURRENT_SSLHOSTNAMEHACK;
+import static com.mfvl.trac.client.Const.CURRENT_URL;
+import static com.mfvl.trac.client.Const.CURRENT_USERNAME;
 
 public class TracLoginFragment extends TracClientFragment implements OnItemSelectedListener{
 
-    public static final String RESULT = "rv";
-    public static final String ERROR = "error";
+    private static final String RESULT = "rv";
+    private static final String ERROR = "error";
 
     private static final String NEW_URL = "newURL";
     private static final String NEW_USERNAME = "newUsername";
@@ -201,7 +206,7 @@ public class TracLoginFragment extends TracClientFragment implements OnItemSelec
 
 	@Override
 	public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-		if (arg1 != null && ((CheckedTextView) arg1).getText().toString() != null) {
+		if (arg1 != null) {
 			SelectedProfile = ((CheckedTextView) arg1).getText().toString();
 			if (arg2 > 0) { // pos 0 is empty
 				final LoginProfile prof = pdb.getProfile(SelectedProfile);
