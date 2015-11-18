@@ -21,6 +21,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -75,33 +76,41 @@ interface onFileSelectedListener {
  */
 interface InterFragmentListener {
     boolean getDispAds();
-    void enableDebug();
-    void onChooserSelected(onFileSelectedListener oc);
-    void onLogin(String url, String username, String password, boolean sslHack, boolean sslHostNameHack, String profile);
-    void onTicketSelected(Ticket ticket);
-    void onUpdateTicket(Ticket ticket);
-    void refreshOverview();
+
     void setDispAds(boolean b);
-	void startProgressBar(int resid);
-	void stopProgressBar();
-	TicketModel getTicketModel();
-	TicketListAdapter getAdapter();
-	Ticket getTicket(int ticknr);
-	Ticket refreshTicket(int ticknr);
-	void putTicket(Ticket t); //TODO Implement method
-	int getNextTicket(int i);
-	int getPrevTicket(int i);
-	int getTicketCount();
-	int getTicketContentCount();
-	boolean updateTicket(Ticket t,String action, String comment, String veld, String waarde, final boolean notify, Map<String, String> modVeld) throws Exception;
-	int createTicket(Ticket t , boolean notify) throws Exception; //TODO notify not used
-	void setActionProvider(Menu menu,int resid);
-	Intent shareList();
-	Intent shareTicket(final Ticket ticket);
-	void listViewCreated();
-	boolean isFinishing();
-	Handler getHandler();
-	boolean getCanWriteSD();
+
+    void enableDebug();
+
+    void onChooserSelected(onFileSelectedListener oc);
+
+    void onLogin(String url, String username, String password, boolean sslHack, boolean sslHostNameHack, String profile);
+
+    void onTicketSelected(Ticket ticket);
+
+    void onUpdateTicket(Ticket ticket);
+
+    void refreshOverview();
+
+    void startProgressBar(int resid);
+    void stopProgressBar();
+    TicketModel getTicketModel();
+    TicketListAdapter getAdapter();
+    Ticket getTicket(int ticknr);
+    Ticket refreshTicket(int ticknr);
+    void putTicket(Ticket t); //TODO Implement method
+    int getNextTicket(int i);
+    int getPrevTicket(int i);
+    int getTicketCount();
+    int getTicketContentCount();
+    boolean updateTicket(Ticket t,String action, String comment, String veld, String waarde, final boolean notify, Map<String, String> modVeld) throws Exception;
+    int createTicket(Ticket t , boolean notify) throws Exception; //TODO notify not used
+    void setActionProvider(Menu menu,int resid);
+    Intent shareList();
+    Intent shareTicket(final Ticket ticket);
+    void listViewCreated();
+    boolean isFinishing();
+    Handler getHandler();
+    boolean getCanWriteSD();
 }
 
 public class TracStart extends Activity implements LoaderManager.LoaderCallbacks<Tickets>, InterFragmentListener, OnBackStackChangedListener, ActivityCompat.OnRequestPermissionsResultCallback {
@@ -109,21 +118,11 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     /*
      * Constanten voor communicatie met de service en fragmenten
      */
-	
+
+    private static final String BUNDLE_ISOTIJD = "ISOTIJD";
+    private static final String BUNDLE_TICKET = "TICKET";
     private static final int REQUEST_CODE_CHOOSER = 6384;
     private static final int REQUEST_CODE_WRITE_EXT	= 6385;
-
-    private ArrayList<SortSpec> sortList = null;
-    private ArrayList<FilterSpec> filterList = null;
-
-    private String profile = null;
-    private String url = null;
-    private String username = null;
-    private String password = null;
-    private boolean sslHack = false;
-    private boolean sslHostNameHack = false;
-    private int timerCorr = 0;
-	
     private static final String ListFragmentTag = "List_Fragment";
     private static final String LoginFragmentTag = "Login_Fragment";
     private static final String DetailFragmentTag = "Detail_Fragment";
@@ -131,41 +130,98 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     private static final String UpdFragmentTag = "Modify_Fragment";
     private static final String FilterFragmentTag = "Filter_Fragment";
     private static final String SortFragmentTag = "Sort_Fragment";
+    private static final int LIST_LOADER = 1;
+    private static final int CHANGES_LOADER = 2;
+    private static final int TICKET_LOADER = 3;
+    private static final int TICKET_LOADER_NOSHOW = 4;
+    static public IncomingHandler tracStartHandler = null;
+    private final Semaphore loadingActive = new Semaphore(1, true);
+    private final BroadcastReceiver mBroadcastMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context c,Intent i) {
+//			tcLog.d("Receive "+i);
+            switch (i.getAction()) {
+                case PROVIDER_MESSAGE:
+//				tcLog.d("Receive PROVIDER_MESSAGE");
+                    int title = i.getIntExtra("title",R.string.warning);
+                    int message = i.getIntExtra("message",R.string.unknownError);
+                    String addit = i.getStringExtra("additional");
+                    showAlertBox(title,message,addit);
+                    break;
 
-	static final String BUNDLE_ISOTIJD = "ISOTIJD";
-	static final String BUNDLE_TICKET = "TICKET";
-	
+                case DATACHANGED_MESSAGE:
+//				tcLog.d("Receive DATACHANGED_MESSAGE");
+                    findViewById(R.id.displayList).invalidate();
+                    try {
+                        getTicketListFragment().dataHasChanged();
+                    } catch (Exception e) {
+                        tcLog.e("cannot contact TicketListFragment");
+                    }
+                    break;
+
+                default:
+                    throw new IllegalArgumentException();
+            }
+        }
+    };
+    private Messenger mMessenger = null;
+    private ArrayList<SortSpec> sortList = null;
+    private ArrayList<FilterSpec> filterList = null;
+    private String profile = null;
+    private String url = null;
+    private String username = null;
+    private String password = null;
+    private boolean sslHack = false;
+    private boolean sslHostNameHack = false;
+    private int timerCorr = 0;
     private boolean debug = false; // disable menuoption at startup
     private onFileSelectedListener _oc = null;
     private boolean dispAds = true;
-	private boolean canWriteSD = false;
+    private boolean canWriteSD = false;
     private long referenceTime = 0;
     private String urlArg = null;
     private int ticketArg = -1;
     private boolean doNotFinish = false;
-	private IncomingHandler tracStartHandler = null;
-	private TicketModel tm = null;
-
+    private TicketModel tm = null;
     private boolean mIsBound = false;
     private Messenger mService = null;
+    private final ServiceConnection mTicketsConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            tcLog.d("className = " + className + " service = " + service);
+            mService = new Messenger(service);
+            tcLog.d("mService = " + mService);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName className) {
+            tcLog.d("className = " + className);
+            mService = null;
+        }
+    };
+    private final ServiceConnection mRefreshConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            tcLog.d("className = " + className + " service = " + service);
+            mService = new Messenger(service);
+            sendMessageToService(MSG_START_TIMER);
+            tcLog.d("mService = " + mService);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName className) {
+            tcLog.d("className = " + className);
+            mService = null;
+        }
+    };
     private MyHandlerThread mHandlerThread = null;
-    private Messenger mMessenger = null;
-	
-	private boolean changesLoaderStarted = false;
-	private boolean listLoaderStarted = false;
-	private boolean ticketLoaderStarted = false;
-	private boolean hasTicketsLoadingBar = false;
-	private Boolean ticketsLoading = false;
-		
-	private TicketListAdapter dataAdapter = null;
-	
-    private static final int LIST_LOADER = 1;
-	private static final int CHANGES_LOADER = 2;
-	private static final int TICKET_LOADER = 3;
-	private static final int TICKET_LOADER_NOSHOW = 4;
-	
-	private final Semaphore loadingActive = new Semaphore(1, true);
-	
+    private boolean changesLoaderStarted = false;
+    private boolean listLoaderStarted = false;
+    private boolean ticketLoaderStarted = false;
+    private boolean hasTicketsLoadingBar = false;
+    private Boolean ticketsLoading = false;
+    private TicketListAdapter dataAdapter = null;
+
     @Override
     public Loader<Tickets> onCreateLoader(int loaderID, Bundle bundle) {
         tcLog.d("" + loaderID + " " + bundle);
@@ -173,253 +229,111 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         /*
          * Takes action based on the ID of the Loader that's being created
          */
-		LoginProfile lp = new LoginProfile(url,username,password,sslHack)
-				.setSslHostNameHack(sslHostNameHack)
-				.setFilterList(filterList)
-				.setSortList(sortList);
+        LoginProfile lp = new LoginProfile(url,username,password,sslHack)
+                .setSslHostNameHack(sslHostNameHack)
+                .setFilterList(filterList)
+                .setSortList(sortList);
         switch (loaderID) {
-			case LIST_LOADER:
-			hasTicketsLoadingBar = false;
-            // Returns a new CursorLoader
-			try {
-				getTicketListFragment().startLoading();
-			} catch (Exception e) {
-				tcLog.e("LIST_LOADER cannot contact TicketListFragment");
-			}
-			if (ListFragmentTag.equals(getTopFragment())) {
-				startProgressBar(getString(R.string.getlist) + (profile == null ? "" : "\n" + profile));
-				hasTicketsLoadingBar = true;
-			}
-			loadingActive.acquireUninterruptibly();
-			ticketsLoading = true;
-            return new TicketLoader(this, lp);
-			
-			case CHANGES_LOADER:
-			String isoTijd = bundle.getString(BUNDLE_ISOTIJD);
-			return new TicketLoader(this,lp,isoTijd);
-			
-			case TICKET_LOADER:
-			case TICKET_LOADER_NOSHOW:
-			int ticknr = bundle.getInt(BUNDLE_TICKET);
-			startProgressBar(getString(R.string.downloading)+" "+ticknr);
-			return new TicketLoader(this,lp,new Ticket(ticknr));
-			
-		}
-		return null;
-	}
+            case LIST_LOADER:
+                hasTicketsLoadingBar = false;
+                // Returns a new CursorLoader
+                try {
+                    getTicketListFragment().startLoading();
+                } catch (Exception e) {
+                    tcLog.e("LIST_LOADER cannot contact TicketListFragment");
+                }
+                if (ListFragmentTag.equals(getTopFragment())) {
+                    startProgressBar(getString(R.string.getlist) + (profile == null ? "" : "\n" + profile));
+                    hasTicketsLoadingBar = true;
+                }
+                loadingActive.acquireUninterruptibly();
+                ticketsLoading = true;
+                return new TicketLoader(this, lp);
+
+            case CHANGES_LOADER:
+                String isoTijd = bundle.getString(BUNDLE_ISOTIJD);
+                return new TicketLoader(this,lp,isoTijd);
+
+            case TICKET_LOADER:
+            case TICKET_LOADER_NOSHOW:
+                int ticknr = bundle.getInt(BUNDLE_TICKET);
+                startProgressBar(getString(R.string.downloading)+" "+ticknr);
+                return new TicketLoader(this,lp,new Ticket(ticknr));
+
+        }
+        return null;
+    }
 
     @Override
     public void onLoadFinished(Loader<Tickets> loader, final Tickets tl) {
         tcLog.d( loader + " " + loader.getId() + " " + tl);
-		switch (loader.getId()) {
-			case LIST_LOADER:
-			synchronized(this) {
-				if (hasTicketsLoadingBar) {
-					stopProgressBar();
-					hasTicketsLoadingBar = false;
-				}
-				ticketsLoading = false;
-			}
-			dataAdapter.clear();
-			dataAdapter.addAll(tl);
-			try {
-				getTicketListFragment().dataHasChanged();
-			} catch (Exception e) {
-				tcLog.e("LIST_LOADER cannot contact TicketListFragment");
-			}
-			if (loadingActive.availablePermits() == 0) {
-				loadingActive.release();
-			}
-			break;
+        switch (loader.getId()) {
+            case LIST_LOADER:
+                synchronized(this) {
+                    if (hasTicketsLoadingBar) {
+                        stopProgressBar();
+                        hasTicketsLoadingBar = false;
+                    }
+                    ticketsLoading = false;
+                }
+                dataAdapter.clear();
+                dataAdapter.addAll(tl);
+                try {
+                    getTicketListFragment().dataHasChanged();
+                } catch (Exception e) {
+                    tcLog.e("LIST_LOADER cannot contact TicketListFragment");
+                }
+                if (loadingActive.availablePermits() == 0) {
+                    loadingActive.release();
+                }
+                break;
 
-			case CHANGES_LOADER:
-			List<Integer> newTickets = new ArrayList<>();
-			for (Ticket t: tl.ticketList) {
-				newTickets.add(t.getTicketnr());
-			}
-			sendMessageToService(MSG_SEND_NEW_TICKETS, newTickets);
-			getLoaderManager().destroyLoader(CHANGES_LOADER);
-			break;
+            case CHANGES_LOADER:
+                List<Integer> newTickets = new ArrayList<>();
+                for (Ticket t: tl.ticketList) {
+                    newTickets.add(t.getTicketnr());
+                }
+                sendMessageToService(MSG_SEND_NEW_TICKETS, newTickets);
+                getLoaderManager().destroyLoader(CHANGES_LOADER);
+                break;
 
-			case TICKET_LOADER:
-			stopProgressBar();
-			if (tl != null ) {
-				tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_DISPLAY_TICKET,tl.ticketList.get(0)));
-			} else {
-				showAlertBox(R.string.notfound,R.string.ticketnotfound,null);
-			}
-			getLoaderManager().destroyLoader(TICKET_LOADER);
-			break;
-			
-			case TICKET_LOADER_NOSHOW:
-			stopProgressBar();
-			if (tl == null ) {
-				showAlertBox(R.string.notfound,R.string.ticketnotfound,null);
-			}
-			getLoaderManager().destroyLoader(TICKET_LOADER_NOSHOW);
-			break;
-		}
-	}
+            case TICKET_LOADER:
+                stopProgressBar();
+                if (tl != null ) {
+                    tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_DISPLAY_TICKET,tl.ticketList.get(0)));
+                } else {
+                    showAlertBox(R.string.notfound,R.string.ticketnotfound,null);
+                }
+                getLoaderManager().destroyLoader(TICKET_LOADER);
+                break;
+
+            case TICKET_LOADER_NOSHOW:
+                stopProgressBar();
+                if (tl == null ) {
+                    showAlertBox(R.string.notfound,R.string.ticketnotfound,null);
+                }
+                getLoaderManager().destroyLoader(TICKET_LOADER_NOSHOW);
+                break;
+        }
+    }
 
     @Override
     public void onLoaderReset(Loader<Tickets> loader) {
         tcLog.d(loader + " " + loader.getId());
-		switch (loader.getId()) {
-			case LIST_LOADER:
-			hasTicketsLoadingBar = false;
-			ticketsLoading = false;
-			break;
-			
-			case TICKET_LOADER:
-			case TICKET_LOADER_NOSHOW:
-			ticketLoaderStarted = false;
-			break;
-			
-			case CHANGES_LOADER:
-			changesLoaderStarted = false;
-			break;
-		}
-	}
-
-    private final ServiceConnection mConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            //tcLog.d("onServiceConnected className = " + className + " service = " + service);
-            mService = new Messenger(service);
-            sendMessageToService(MSG_START_TIMER);
-            //tcLog.d("mService = " + mService);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName className) {
-            //tcLog.d("onServiceDisconnected className = " + className);
-            mService = null;
-        }
-    };
-
-    class IncomingHandler extends Handler {
-		private ProgressDialog progressBar = null;
-
-        public IncomingHandler(Looper looper) {
-            super(looper);
-            tcLog.logCall();
-        }
-
-		@Override
-		@SuppressWarnings("unchecked")
-        public void handleMessage(Message msg) {
-            tcLog.d( "msg = " + msg);
-            switch (msg.what) {
-				case MSG_REQUEST_TICKET_COUNT:
-				if (!LoginFragmentTag.equals(getTopFragment())) {
-					final int count = getTicketCount();
-					sendMessageToService(MSG_SEND_TICKET_COUNT, count);
-				}
+        switch (loader.getId()) {
+            case LIST_LOADER:
+                hasTicketsLoadingBar = false;
+                ticketsLoading = false;
                 break;
 
-				case MSG_REQUEST_NEW_TICKETS:
-				if (!LoginFragmentTag.equals(getTopFragment())) {
-					getNewTickets(ISO8601.fromUnix(referenceTime));
-				}
+            case TICKET_LOADER:
+            case TICKET_LOADER_NOSHOW:
+                ticketLoaderStarted = false;
                 break;
 
-				case MSG_REQUEST_REFRESH:
-                // tcLog.d("handleMessage msg = REFRESH");
-				runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						refreshOverview();
-					}
-				});
+            case CHANGES_LOADER:
+                changesLoaderStarted = false;
                 break;
-				
-				case MSG_START_PROGRESSBAR:
-				final String message = (String) msg.obj;
-				synchronized (this) {
-					// tcLog.d("handleMessage msg = START_PROGRESSBAR string = "+message);
-					if (progressBar == null) {
-						progressBar = new ProgressDialog(TracStart.this);
-						progressBar.setCancelable(true);
-						if (message != null) {
-							progressBar.setMessage(message);
-						}
-						progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-						if (!TracStart.this.isFinishing()) {
-							progressBar.show();
-						}
-					}
-				}
-				break;
-
-				case MSG_STOP_PROGRESSBAR:
-				synchronized (this) {
-					// tcLog.d("handleMessage msg = STOP_PROGRESSBAR");
-					if (progressBar != null) {
-						if (!TracStart.this.isFinishing()) {
-							progressBar.dismiss();
-						}
-						progressBar = null;
-					}
-				}
-				break;
-				
-				case MSG_SET_SORT:
-				setSort((ArrayList<SortSpec>)msg.obj);
-				refreshOverview();
-				sendMessageToService(MSG_SET_SORT,msg.obj);
-				break;
-				
-				case MSG_SET_FILTER:
-				setFilter((ArrayList<FilterSpec>)msg.obj);
-				refreshOverview();
-				sendMessageToService(MSG_SET_FILTER,msg.obj);
-				break;
-				
-				case MSG_SHOW_DIALOG:
-				showAlertBox(msg.arg1, msg.arg2, (String) msg.obj);
-				break;
-				
-				case MSG_DISPLAY_TICKET:
-				final Ticket t = (Ticket)msg.obj;
-				if (DetailFragmentTag.equals(getTopFragment())) {
-					runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							final DetailFragment d = (DetailFragment) getFragment(DetailFragmentTag);
-							d.setTicket(t.getTicketnr());
-						}
-					});
-				} else {
-					onTicketSelected(t);
-				}
-				break;
-				
-				case MSG_START_LISTLOADER:
-				sendMessageToService(MSG_LOGIN_PROFILE,new LoginProfile(url,username,password,sslHack)
-						.setSslHostNameHack(sslHostNameHack)
-						.setFilterList(filterList)
-						.setSortList(sortList));
-				sendMessageToService(MSG_LOAD_TICKETS,null); //  TODO
-				if (listLoaderStarted) {
-					getLoaderManager().restartLoader(LIST_LOADER, null, TracStart.this);
-				} else {
-					getLoaderManager().initLoader(LIST_LOADER, null, TracStart.this);
-					listLoaderStarted = true;
-				}
-				break;
-
-				case MSG_GET_PERMISSIONS:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    ActivityCompat.requestPermissions(TracStart.this,
-                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                    Manifest.permission.READ_EXTERNAL_STORAGE},
-                            REQUEST_CODE_WRITE_EXT);
-                }
-                break;
-
-				default:
-                super.handleMessage(msg);
-            }
         }
     }
 
@@ -459,7 +373,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 
     private void sendMessageToService(int message, Object value) {
         //tcLog.d( "sendMessageToService message = "+ message+ " value = "+value);
-         if (mIsBound && mService != null) {
+        if (mIsBound && mService != null) {
             try {
                 final Message msg = Message.obtain();
 
@@ -473,67 +387,67 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         }
     }
 
-	private String getTopFragment() {
-		try {
-			int bs = getFragmentManager().getBackStackEntryCount();
-			return getFragmentManager().getBackStackEntryAt(bs - 1).getName();
-		} catch (Exception e) {
-			return null;
-		}
-	}
+    private String getTopFragment() {
+        try {
+            int bs = getFragmentManager().getBackStackEntryCount();
+            return getFragmentManager().getBackStackEntryAt(bs - 1).getName();
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
-	private void showAbout() {
-		//tcLog.d( "showAbout");
+    private void showAbout() {
+        //tcLog.d( "showAbout");
         final Intent launchTrac = new Intent(getApplicationContext(), TracShowWebPage.class);
         launchTrac.putExtra(HELP_FILE, getString(R.string.whatsnewhelpfile));
         launchTrac.putExtra(HELP_VERSION, true);
         startActivity(launchTrac);
-	}
-	
-	@SuppressWarnings("unchecked")
+    }
+
+    @SuppressWarnings("unchecked")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         tcLog.d( "savedInstanceState = " + savedInstanceState);
 
-		if (DEBUG_MANAGERS) {
-			FragmentManager.enableDebugLogging(true);
-			LoaderManager.enableDebugLogging(true);
-		}
-		
-		Credentials.getInstance(getApplicationContext());
+        if (DEBUG_MANAGERS) {
+            FragmentManager.enableDebugLogging(true);
+            LoaderManager.enableDebugLogging(true);
+        }
+
+        Credentials.getInstance(getApplicationContext());
         mHandlerThread = new MyHandlerThread("IncomingHandler");
         mHandlerThread.start();
-		tracStartHandler = new IncomingHandler(mHandlerThread.getLooper());
+        tracStartHandler = new IncomingHandler(mHandlerThread.getLooper());
         mMessenger = new Messenger(tracStartHandler);
         startService(new Intent(this, RefreshService.class));
-				
-		if (ActivityCompat.checkSelfPermission(this,Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-			if (ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-				new AlertDialog.Builder(this)
-					.setTitle(R.string.permissiontitle)
-					.setMessage(R.string.permissiontext)
-					.setCancelable(false)
-					.setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int id) {
-							dialog.dismiss();
-							tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_GET_PERMISSIONS));
-						}
-					}).show();
-			} else {
-				tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_GET_PERMISSIONS));
-			}
-		} else {
-			canWriteSD = true;
-		}
 
-		try {
+        if (ActivityCompat.checkSelfPermission(this,Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.permissiontitle)
+                        .setMessage(R.string.permissiontext)
+                        .setCancelable(false)
+                        .setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                                tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_GET_PERMISSIONS));
+                            }
+                        }).show();
+            } else {
+                tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_GET_PERMISSIONS));
+            }
+        } else {
+            canWriteSD = true;
+        }
+
+        try {
             ticketGroupCount = getResources().getInteger(R.integer.ticketGroupCount);
         } catch (Exception ignored) {}
 
         timerCorr = getResources().getInteger(R.integer.timerCorr);
-		
+
         setContentView(R.layout.tracstart);
         debug |= Credentials.isRCVersion();
 
@@ -543,35 +457,35 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         sslHack = Credentials.getSslHack();
         sslHostNameHack = Credentials.getSslHostNameHack();
         profile = Credentials.getProfile();
-		setFilter(Credentials.getFilterString());
-		setSort(Credentials.getSortString());
+        setFilter(Credentials.getFilterString());
+        setSort(Credentials.getSortString());
 
         dispAds = true;
-		if (savedInstanceState != null) {
+        if (savedInstanceState != null) {
             dispAds = savedInstanceState.getBoolean(ADMOB, true);
             url = savedInstanceState.getString(CURRENT_URL);
             username = savedInstanceState.getString(CURRENT_USERNAME);
             password = savedInstanceState.getString(CURRENT_PASSWORD);
             sslHack = savedInstanceState.getBoolean(CURRENT_SSLHACK, false);
             sslHostNameHack = savedInstanceState.getBoolean(CURRENT_SSLHOSTNAMEHACK, false);
-			filterList = (ArrayList<FilterSpec>)savedInstanceState.getSerializable(FILTERLISTNAME);
-			sortList = (ArrayList<SortSpec>)savedInstanceState.getSerializable(SORTLISTNAME);
+            filterList = (ArrayList<FilterSpec>)savedInstanceState.getSerializable(FILTERLISTNAME);
+            sortList = (ArrayList<SortSpec>)savedInstanceState.getSerializable(SORTLISTNAME);
         } else {
-			// only at first start
-			if (Credentials.getFirstRun()) {
-				final Intent launchTrac = new Intent(this, TracShowWebPage.class);
-				launchTrac.putExtra(HELP_FILE, getString(R.string.whatsnewhelpfile));
-				launchTrac.putExtra(HELP_VERSION, false);
-				startActivity(launchTrac);
-			}
-			if (getIntent().hasExtra(ADMOB)) {
-				dispAds = getIntent().getBooleanExtra(ADMOB, true);
-			}
-			if (getIntent().hasExtra(INTENT_URL)) {
-				urlArg = getIntent().getStringExtra(INTENT_URL);
-				ticketArg = (int) getIntent().getLongExtra(INTENT_TICKET, -1);
-			}
-		}
+            // only at first start
+            if (Credentials.getFirstRun()) {
+                final Intent launchTrac = new Intent(this, TracShowWebPage.class);
+                launchTrac.putExtra(HELP_FILE, getString(R.string.whatsnewhelpfile));
+                launchTrac.putExtra(HELP_VERSION, false);
+                startActivity(launchTrac);
+            }
+            if (getIntent().hasExtra(ADMOB)) {
+                dispAds = getIntent().getBooleanExtra(ADMOB, true);
+            }
+            if (getIntent().hasExtra(INTENT_URL)) {
+                urlArg = getIntent().getStringExtra(INTENT_URL);
+                ticketArg = (int) getIntent().getLongExtra(INTENT_TICKET, -1);
+            }
+        }
 
         if (urlArg != null) {
             final String urlArg1 = urlArg + "rpc";
@@ -588,7 +502,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
                     lp = pdb.findProfile(urlArg);
                 }
                 if (lp == null) {
-					showAlertBox(R.string.wrongdb,R.string.wrongdbtext1,url + getString(R.string.wrongdbtext2) + urlArg + getString(R.string.wrongdbtext3));
+                    showAlertBox(R.string.wrongdb,R.string.wrongdbtext1,url + getString(R.string.wrongdbtext2) + urlArg + getString(R.string.wrongdbtext3));
                     urlArg = null;
                     ticketArg = -1;
                 } else {
@@ -599,15 +513,15 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
                     sslHostNameHack = false; // force dialog to confirm
                     profile = null;
                 }
-				sendMessageToService(MSG_LOGIN_PROFILE,lp);
+                sendMessageToService(MSG_LOGIN_PROFILE,lp);
             }
         }
 
-		newDataAdapter(new Tickets()); // empty list
+        newDataAdapter(new Tickets()); // empty list
 
-		IntentFilter intFilt = new IntentFilter(PROVIDER_MESSAGE);
-		intFilt.addAction(DATACHANGED_MESSAGE);
-		LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastMessageReceiver,intFilt);
+        IntentFilter intFilt = new IntentFilter(PROVIDER_MESSAGE);
+        intFilt.addAction(DATACHANGED_MESSAGE);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastMessageReceiver,intFilt);
 
         getFragmentManager().addOnBackStackChangedListener(this);
         // Handle when activity is recreated like on orientation Change
@@ -622,85 +536,85 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
             restoreFragment(savedInstanceState, FilterFragmentTag);
             restoreFragment(savedInstanceState, SortFragmentTag);
             tcLog.d("backstack restored");
-			startListLoader();
+            startListLoader();
         } else {
             final FragmentTransaction ft = getFragmentManager().beginTransaction();
 
             if (url != null && url.length() > 0) {
-				startListLoader();
+                startListLoader();
 
                 final TicketListFragment ticketListFragment = new TicketListFragment();
 
                 if (urlArg != null) {
-					tcLog.d( "select Ticket = " + ticketArg);
-					final Bundle args = makeArgs();
+                    tcLog.d( "select Ticket = " + ticketArg);
+                    final Bundle args = makeArgs();
                     args.putInt("TicketArg", ticketArg);
                     urlArg = null;
                     ticketArg = -1;
-					ticketListFragment.setArguments(args);
+                    ticketListFragment.setArguments(args);
                 }
                 ft.add(R.id.displayList, ticketListFragment, ListFragmentTag);
-				ft.addToBackStack(ListFragmentTag);
+                ft.addToBackStack(ListFragmentTag);
             } else {
                 final TracLoginFragment tracLoginFragment = newLoginFrag();
 
                 ft.add(R.id.displayList, tracLoginFragment, LoginFragmentTag);
-				ft.addToBackStack(LoginFragmentTag);
+                ft.addToBackStack(LoginFragmentTag);
             }
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
             ft.commit();
             tcLog.d("backstack initiated");
         }
 
-        bindService(new Intent(this, RefreshService.class), mConnection, Context.BIND_AUTO_CREATE);
+        bindService(new Intent(this, RefreshService.class), mRefreshConnection, Context.BIND_AUTO_CREATE);
         mIsBound = true;
         setReferenceTime();
     }
 
-	private void startListLoader() {
+    private void startListLoader() {
         tcLog.logCall();
-		tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_START_LISTLOADER,null));
-	}
+        tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_START_LISTLOADER,null));
+    }
 
-	public void showAlertBox(final int titleres, final int message, final String addit) {
+    private void showAlertBox(final int titleres, final int message, final String addit) {
         tcLog.d("titleres = "+titleres +" : "+getString(titleres));
-		if (!isFinishing()) {
-			runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					String s = (message != 0 ? getResources().getString(message)+(addit != null ? ": "+addit:"") : addit);
-					final AlertDialog ad = new AlertDialog.Builder(TracStart.this)
-						.setTitle(titleres)
-						.setMessage(s)
+        if (!isFinishing()) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    String s = (message != 0 ? getResources().getString(message)+(addit != null ? ": "+addit:"") : addit);
+                    final AlertDialog ad = new AlertDialog.Builder(TracStart.this)
+                            .setTitle(titleres)
+                            .setMessage(s)
 //						.setCancelable(false)
-						.setPositiveButton(R.string.oktext, null)
-						.create();
-					tracStartHandler.postDelayed(new Runnable() {
-						@Override
-						public void run() {
-							tcLog.d( "dismiss");
-							ad.dismiss();
-						}
-					},7500);
-					ad.show();	
-				}
-			});
-		}
-	}
+                            .setPositiveButton(R.string.oktext, null)
+                            .create();
+                    tracStartHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            tcLog.d( "dismiss");
+                            ad.dismiss();
+                        }
+                    },7500);
+                    ad.show();
+                }
+            });
+        }
+    }
 
-	@Override 
-	public int getTicketCount() {
-		return dataAdapter.getCount();
-	}
+    @Override
+    public int getTicketCount() {
+        return dataAdapter.getCount();
+    }
 
-	@Override 
-	public int getTicketContentCount() {
-		try {
-			return dataAdapter.getTicketContentCount();
-		} catch (Exception e) {
-			return 0;
-		}
-	}
+    @Override
+    public int getTicketContentCount() {
+        try {
+            return dataAdapter.getTicketContentCount();
+        } catch (Exception e) {
+            return 0;
+        }
+    }
 
     private void restoreFragment(Bundle savedInstanceState, final String tag) {
         if (savedInstanceState.containsKey(tag)) {
@@ -745,28 +659,26 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     public void onPause() {
         super.onPause();
         tcLog.logCall();
-		
-		stopProgressBar();
-
+        stopProgressBar();
         /* save logfile when exiting */
         tcLog.d("isFinishing = " + isFinishing());
         if (isFinishing() && Credentials.isRCVersion()) {
-			tcLog.save();
+            tcLog.save();
         }
     }
 
-	@Override
-	public void listViewCreated() {
-		tcLog.d("ticketsLoading = "+ticketsLoading + " hasTicketsLoadingBar = "+hasTicketsLoadingBar);
-		synchronized (this) {
-			if (ticketsLoading) {
-				if (!hasTicketsLoadingBar) {
-					startProgressBar(getString(R.string.getlist) + (profile == null ? "" : "\n" + profile));
-					hasTicketsLoadingBar = true;
-				}
-			}
-		}
-	}
+    @Override
+    public void listViewCreated() {
+        tcLog.d("ticketsLoading = "+ticketsLoading + " hasTicketsLoadingBar = "+hasTicketsLoadingBar);
+        synchronized (this) {
+            if (ticketsLoading) {
+                if (!hasTicketsLoadingBar) {
+                    startProgressBar(getString(R.string.getlist) + (profile == null ? "" : "\n" + profile));
+                    hasTicketsLoadingBar = true;
+                }
+            }
+        }
+    }
 
     @Override
     public void onChooserSelected(onFileSelectedListener oc) {
@@ -779,34 +691,34 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         target.setType("*/*");
         target.addCategory(Intent.CATEGORY_OPENABLE);
         // Create the chooser Intent
-		startActivityForResult(Intent.createChooser(target, getString(R.string.chooser_title)), REQUEST_CODE_CHOOSER);
+        startActivityForResult(Intent.createChooser(target, getString(R.string.chooser_title)), REQUEST_CODE_CHOOSER);
     }
-	
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         tcLog.d("requestcode = " + requestCode);
         switch (requestCode) {
-        case REQUEST_CODE_CHOOSER:
-            // If the file selection was successful
-            if (resultCode == RESULT_OK) {
-                if (data != null) {
-                    // Get the URI of the selected file
-                    final Uri uri = data.getData();
+            case REQUEST_CODE_CHOOSER:
+                // If the file selection was successful
+                if (resultCode == RESULT_OK) {
+                    if (data != null) {
+                        // Get the URI of the selected file
+                        final Uri uri = data.getData();
 
-                    try {
-                        // Create a file instance from the URI
-                        final File file = new File(uri.getPath());
+                        try {
+                            // Create a file instance from the URI
+                            final File file = new File(uri.getPath());
 
-                        tcLog.d( "File Selected: " + file.getAbsolutePath());
-                        if (_oc != null) {
-                            _oc.onFileSelected(file.getAbsolutePath());
+                            tcLog.d( "File Selected: " + file.getAbsolutePath());
+                            if (_oc != null) {
+                                _oc.onFileSelected(file.getAbsolutePath());
+                            }
+                        } catch (final Exception e) {
+                            tcLog.d("File select error", e);
                         }
-                    } catch (final Exception e) {
-                        tcLog.d("File select error", e);
                     }
                 }
-            }
-            break;
+                break;
         }
     }
 
@@ -814,17 +726,17 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     public void onAttachFragment(final Fragment frag) {
         tcLog.d(frag+" this = "+this);
         if (ListFragmentTag.equals(frag.getTag())) {
-			final TicketListFragment ticketListFragment = getTicketListFragment();
-			if (ticketListFragment != null) {
-				tcLog.d("ticketListFragment = " + ticketListFragment);
+            final TicketListFragment ticketListFragment = getTicketListFragment();
+            if (ticketListFragment != null) {
+                tcLog.d("ticketListFragment = " + ticketListFragment);
 
-				if (urlArg != null) {
-					tcLog.d("Ticket = " + ticketArg);
-					ticketListFragment.selectTicket(ticketArg);
-					urlArg = null;
-					ticketArg = -1;
-				}
-			}
+                if (urlArg != null) {
+                    tcLog.d("Ticket = " + ticketArg);
+                    ticketListFragment.selectTicket(ticketArg);
+                    urlArg = null;
+                    ticketArg = -1;
+                }
+            }
         }
     }
 
@@ -850,18 +762,18 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         doNotFinish = false;
         shouldDisplayHomeUp();
     }
-	
-	private TracLoginFragment newLoginFrag() {
+
+    private TracLoginFragment newLoginFrag() {
         final TracLoginFragment tracLoginFragment = new TracLoginFragment();
-		final Bundle args = makeArgs();
-		args.putString(CURRENT_URL, url);
-		args.putString(CURRENT_USERNAME, username);
-		args.putString(CURRENT_PASSWORD, password);
-		args.putBoolean(CURRENT_SSLHACK, sslHack);
-		args.putBoolean(CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
-		tracLoginFragment.setArguments(args);
-		return tracLoginFragment;
-	}
+        final Bundle args = makeArgs();
+        args.putString(CURRENT_URL, url);
+        args.putString(CURRENT_USERNAME, username);
+        args.putString(CURRENT_PASSWORD, password);
+        args.putBoolean(CURRENT_SSLHACK, sslHack);
+        args.putBoolean(CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
+        tracLoginFragment.setArguments(args);
+        return tracLoginFragment;
+    }
 
     private void onChangeHost() {
         tcLog.logCall();
@@ -874,23 +786,23 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         ft.commit();
     }
 
-	public void setActionProvider(Menu menu,int resid) {
+    public void setActionProvider(Menu menu,int resid) {
         final MenuItem item = menu.findItem(resid);
         ShareActionProvider mShareActionProvider = (ShareActionProvider)item.getActionProvider();
         if (mShareActionProvider == null) {
             tcLog.d( "create new shareActionProvider item = "+item);
             mShareActionProvider = new ShareActionProvider(this);
             item.setActionProvider(mShareActionProvider);
-       }
-		mShareActionProvider.setShareHistoryFileName("custom_share_history"+resid+".xml");
-		
-	}
+        }
+        mShareActionProvider.setShareHistoryFileName("custom_share_history"+resid+".xml");
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         tcLog.logCall();
         getMenuInflater().inflate(R.menu.tracstartmenu, menu);
-		setActionProvider(menu,R.id.debug);
+        setActionProvider(menu,R.id.debug);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -900,32 +812,31 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         if (mIsBound) {
             sendMessageToService(MSG_STOP_TIMER);
             mHandlerThread.quit();
-            unbindService(mConnection);
+            unbindService(mRefreshConnection);
+            unbindService(mTicketsConnection);
             mIsBound = false;
         }
         // stopService(new Intent(this, RefreshService.class));
-//		LocalBroadcastManager.getInstance(this).unregisterReceiver(mProviderMessageReceiver);
-//		LocalBroadcastManager.getInstance(this).unregisterReceiver(mProviderMessageReceiver);
-		LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastMessageReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastMessageReceiver);
         super.onDestroy();
     }
 
     private void onFilterSelected(ArrayList<FilterSpec> filterList) {
         tcLog.d("filterList = "+ filterList);
-		
+
         final FragmentTransaction ft = getFragmentManager().beginTransaction();
         final FilterFragment filterFragment = new FilterFragment();
 
-		final Bundle args = makeArgs();
-		args.putSerializable(FILTERLISTNAME, filterList);
-		filterFragment.setArguments(args);
-		
+        final Bundle args = makeArgs();
+        args.putSerializable(FILTERLISTNAME, filterList);
+        filterFragment.setArguments(args);
+
         ft.replace(R.id.displayList, filterFragment, FilterFragmentTag);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.addToBackStack(FilterFragmentTag);
         ft.commit();
     }
-	
+
     @Override
     public void onLogin(String newUrl, String newUser, String newPass, boolean newHack, boolean newHostNameHack, String newProfile) {
         tcLog.d(newProfile);
@@ -956,9 +867,9 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         final NewTicketFragment newtickFragment = new NewTicketFragment();
         // tcLog.d("newTickFragment =" +  newtickFragment.toString());
         final FragmentTransaction ft = getFragmentManager().beginTransaction();
-		final Bundle args = makeArgs();
-		args.putString(CURRENT_USERNAME, username);
-		newtickFragment.setArguments(args);
+        final Bundle args = makeArgs();
+        args.putString(CURRENT_USERNAME, username);
+        newtickFragment.setArguments(args);
 
         ft.replace(R.id.displayList, newtickFragment, NewFragmentTag);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -970,36 +881,36 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     public boolean onOptionsItemSelected(MenuItem item) {
         tcLog.d("item=" + item.getTitle());
         switch(item.getItemId()) {
-			case R.id.over:
-			showAbout();
-			break;
-			
-			case R.id.tlrefresh:
-            refreshOverview();
-			break;
-			
-			case R.id.tlnieuw:
-            onNewTicket();
-			break;
-			
-			case R.id.tlfilter:
-            onFilterSelected(filterList);
-			break;
-			
-			case R.id.tlsort:
-            onSortSelected(sortList);
-			break;
-			
-			case R.id.tlchangehost:
-            onChangeHost();
-			break;
-			
-			default:
-            return super.onOptionsItemSelected(item);
+            case R.id.over:
+                showAbout();
+                break;
+
+            case R.id.tlrefresh:
+                refreshOverview();
+                break;
+
+            case R.id.tlnieuw:
+                onNewTicket();
+                break;
+
+            case R.id.tlfilter:
+                onFilterSelected(filterList);
+                break;
+
+            case R.id.tlsort:
+                onSortSelected(sortList);
+                break;
+
+            case R.id.tlchangehost:
+                onChangeHost();
+                break;
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
         return true;
     }
-	
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         tcLog.logCall();
@@ -1007,16 +918,16 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 
         itemDebug.setVisible(debug).setEnabled(debug);
         if (debug) {
-           Intent i = shareDebug();
+            Intent i = shareDebug();
 
-			ShareActionProvider debugShare = (ShareActionProvider)itemDebug.getActionProvider();
+            ShareActionProvider debugShare = (ShareActionProvider)itemDebug.getActionProvider();
             tcLog.d("item = " + itemDebug + " " + debugShare + " " + i);
-			if (debugShare != null && i != null) {
-				debugShare.setShareIntent(i);
-			}
+            if (debugShare != null && i != null) {
+                debugShare.setShareIntent(i);
+            }
         }
-		
-       return true;
+
+        return true;
     }
 
     @Override
@@ -1045,9 +956,9 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         final FragmentTransaction ft = getFragmentManager().beginTransaction();
         final SortFragment sortFragment = new SortFragment();
 
-		final Bundle args = makeArgs();
-		args.putSerializable(SORTLISTNAME, sortList);
-		sortFragment.setArguments(args);
+        final Bundle args = makeArgs();
+        args.putSerializable(SORTLISTNAME, sortList);
+        sortFragment.setArguments(args);
 
         ft.replace(R.id.displayList, sortFragment, SortFragmentTag);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -1057,23 +968,23 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 
     @Override
     public void onTicketSelected(Ticket ticket) {
-		boolean isTop = (DetailFragmentTag.equals(getTopFragment()));
+        boolean isTop = (DetailFragmentTag.equals(getTopFragment()));
         tcLog.d("Ticket: " + ticket+" isTop = "+ isTop);
-		
-		DetailFragment detailFragment = new DetailFragment();
+
+        DetailFragment detailFragment = new DetailFragment();
         final Bundle args = makeArgs();
         args.putInt(CURRENT_TICKET, ticket.getTicketnr());
         detailFragment.setArguments(args);
-	
- //		tcLog.d("detailFragment =" + detailFragment.toString());
+
+        //		tcLog.d("detailFragment =" + detailFragment.toString());
         final FragmentTransaction ft = getFragmentManager().beginTransaction();
 
         ft.replace(R.id.displayList, detailFragment, DetailFragmentTag);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-		if (!isTop) {
-			ft.addToBackStack(DetailFragmentTag);
-		}
-		
+        if (!isTop) {
+            ft.addToBackStack(DetailFragmentTag);
+        }
+
         ft.commit();
     }
 
@@ -1094,25 +1005,25 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         ft.addToBackStack(UpdFragmentTag);
         ft.commit();
     }
-	
-	public Handler getHandler() {
-		return tracStartHandler;
-	}
-	
-	public TicketModel getTicketModel() {
+
+    public Handler getHandler() {
+        return tracStartHandler;
+    }
+
+    public TicketModel getTicketModel() {
         tcLog.logCall();
-		if (tm == null) {
-			startProgressBar(R.string.downloading);
-			tm = TicketModel.getInstance();
-			stopProgressBar();
-		}
-		return tm;
-	}
+        if (tm == null) {
+            startProgressBar(R.string.downloading);
+            tm = TicketModel.getInstance();
+            stopProgressBar();
+        }
+        return tm;
+    }
 
     private Bundle makeArgs() {
         return new Bundle();
     }
-	
+
     private void setFilter(ArrayList<FilterSpec> filter) {
         tcLog.d(filter.toString());
         String filterString = Credentials.joinList(filter.toArray(),"&");
@@ -1187,47 +1098,47 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 
     @Override
     public boolean getDispAds() {
-		tcLog.d("dispAds = "+dispAds);
+        tcLog.d("dispAds = "+dispAds);
         return dispAds;
     }
-
-    @Override
-    public void refreshOverview() {
-        tcLog.logCall();
-//		dataAdapter.notifyDataSetChanged();
-		startListLoader();
-		setReferenceTime();
-	}
 
     @Override
     public void setDispAds(boolean b) {
         dispAds = b;
     }
 
+    @Override
+    public void refreshOverview() {
+        tcLog.logCall();
+//		dataAdapter.notifyDataSetChanged();
+        startListLoader();
+        setReferenceTime();
+    }
+
     public Intent shareList() {
         tcLog.logCall();
         String lijst = "";
-		
-		if (dataAdapter != null ) {
-			for (Ticket t: dataAdapter.getTicketList()){
-				try {
-					lijst += t.getTicketnr() + ";" + t.getString("status") + ";" + t.getString("summary") + "\r\n";
-				} catch (final Exception e) {
-					tcLog.e( "exception", e);
-				}
-			}
-			final Intent sendIntent = new Intent(Intent.ACTION_SEND);
 
-			sendIntent.putExtra(Intent.EXTRA_TEXT, lijst);
-			sendIntent.setType("text/plain");
-			return sendIntent;
-		} else {
-			return null;
-		}
+        if (dataAdapter != null ) {
+            for (Ticket t: dataAdapter.getTicketList()){
+                try {
+                    lijst += t.getTicketnr() + ";" + t.getString("status") + ";" + t.getString("summary") + "\r\n";
+                } catch (final Exception e) {
+                    tcLog.e( "exception", e);
+                }
+            }
+            final Intent sendIntent = new Intent(Intent.ACTION_SEND);
+
+            sendIntent.putExtra(Intent.EXTRA_TEXT, lijst);
+            sendIntent.setType("text/plain");
+            return sendIntent;
+        } else {
+            return null;
+        }
 
     }
-	
-	public Intent shareTicket(final Ticket ticket) {
+
+    public Intent shareTicket(final Ticket ticket) {
         if (ticket != null && ticket.hasdata()) {
             final Intent sendIntent = new Intent(Intent.ACTION_SEND);
 
@@ -1235,7 +1146,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
             sendIntent.setType("text/plain");
             return sendIntent;
         }
-		return null;
+        return null;
     }
 
     @Override
@@ -1252,10 +1163,10 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         sendIntent.setType("text/plain");
         return sendIntent;
     }
-	
-	private TicketListFragment getTicketListFragment() {
-		return (TicketListFragment)getFragment(ListFragmentTag);
-	}
+
+    private TicketListFragment getTicketListFragment() {
+        return (TicketListFragment)getFragment(ListFragmentTag);
+    }
 
     private Fragment getFragment(final String tag) {
         return getFragmentManager().findFragmentByTag(tag);
@@ -1263,18 +1174,18 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 
     private void getNewTickets(final String isoTijd) {
         tcLog.d("tijd = "+isoTijd) ;
-		
-		Bundle args = new Bundle();
-		args.putString(BUNDLE_ISOTIJD,isoTijd);
-		if (changesLoaderStarted) {
-			getLoaderManager().restartLoader(CHANGES_LOADER,args,this);
-		} else {
-			getLoaderManager().initLoader(CHANGES_LOADER,args,this);
-			changesLoaderStarted = true;
-		}
+
+        Bundle args = new Bundle();
+        args.putString(BUNDLE_ISOTIJD,isoTijd);
+        if (changesLoaderStarted) {
+            getLoaderManager().restartLoader(CHANGES_LOADER,args,this);
+        } else {
+            getLoaderManager().initLoader(CHANGES_LOADER,args,this);
+            changesLoaderStarted = true;
+        }
     }
 
-    public void setReferenceTime() {
+    private void setReferenceTime() {
         // tcLog.d("setReferenceTime");
         referenceTime = System.currentTimeMillis() - timerCorr;
         sendMessageToService(MSG_REMOVE_NOTIFICATION);
@@ -1284,96 +1195,96 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     public boolean dispatchTouchEvent(MotionEvent ev) {
         boolean ret = super.dispatchTouchEvent(ev);
         try {
-			ret |= ((DetailFragment) getFragment(DetailFragmentTag)).dispatchTouchEvent(ev);
-		} catch (Exception ignored) {}
+            ret |= ((DetailFragment) getFragment(DetailFragmentTag)).dispatchTouchEvent(ev);
+        } catch (Exception ignored) {}
         return ret;
     }
-	
-    public void startProgressBar(String message) {
+
+    private void startProgressBar(String message) {
         tcLog.d(message+" tracStartHandler = "+tracStartHandler);
-		try {
-			tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_START_PROGRESSBAR,message));
-		} catch (NullPointerException e) {
-			tcLog.e("NullPointerException",e);
-		}
+        try {
+            tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_START_PROGRESSBAR,message));
+        } catch (NullPointerException e) {
+            tcLog.e("NullPointerException",e);
+        }
     }
 
     public void startProgressBar(int resid) {
         startProgressBar(getString(resid));
     }
 
- 	public void stopProgressBar() {
+    public void stopProgressBar() {
         tcLog.logCall();
-		try {
-			tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_STOP_PROGRESSBAR));
-		} catch (NullPointerException e) {
-			tcLog.e("NullPointerException");
-		}
-	}
-	
+        try {
+            tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_STOP_PROGRESSBAR));
+        } catch (Exception e) {
+            tcLog.e("Exception",e);
+        }
+    }
+
     private void newDataAdapter(Tickets tl) {
         tcLog.logCall();
         dataAdapter = new TicketListAdapter(this, R.layout.ticket_list, tl);
-		dataAdapter.getFilter().filter(null);
-		dataAdapter.setNotifyOnChange(true);
-		try {
-			getTicketListFragment().setAdapter(dataAdapter);
-		} catch (NullPointerException e) {
-			tcLog.e("NullPointerException");
-		}
-	}
-	
-	@Override
-	public TicketListAdapter getAdapter() {
-        tcLog.logCall();
-		return dataAdapter;
-	}
-	
-	@Override
-	public Ticket getTicket(int i) {
-        tcLog.d("i = "+i+ " semaphore = "+ loadingActive.availablePermits());
-		loadingActive.acquireUninterruptibly();
-		loadingActive.release();
+        dataAdapter.getFilter().filter(null);
+        dataAdapter.setNotifyOnChange(true);
+        try {
+            getTicketListFragment().setAdapter(dataAdapter);
+        } catch (NullPointerException e) {
+            tcLog.e("NullPointerException");
+        }
+    }
 
-		Ticket t = dataAdapter.getTicket(i);
+    @Override
+    public TicketListAdapter getAdapter() {
+        tcLog.logCall();
+        return dataAdapter;
+    }
+
+    @Override
+    public Ticket getTicket(int i) {
+        tcLog.d("i = "+i+ " semaphore = "+ loadingActive.availablePermits());
+        loadingActive.acquireUninterruptibly();
+        loadingActive.release();
+
+        Ticket t = dataAdapter.getTicket(i);
         tcLog.d("i = "+i+ " ticket = "+ t);
-		if (t != null && t.hasdata()) {
-			return t;
-		}
-		
-		return refreshTicket(i);
-	}
-	
-	@Override
-	public Ticket refreshTicket(final int i) {
-		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				Bundle args = new Bundle();
-				args.putInt(BUNDLE_TICKET,i);
-				if (ticketLoaderStarted) {
-					getLoaderManager().restartLoader(TICKET_LOADER_NOSHOW,args,TracStart.this);
-				} else {
-					getLoaderManager().initLoader(TICKET_LOADER_NOSHOW,args,TracStart.this);
-					ticketLoaderStarted = true;
-				}
-			}
-		});
-		return null;  // TODO
-	}
-	
-	@Override 
-	public void putTicket(Ticket t) {
-		//TODO
-	}
-	
-	public boolean updateTicket(final Ticket t,final String action, final String comment, final String veld, final String waarde, final boolean notify, final Map<String, String> modVeld) throws Exception{
-		final JSONObject velden = t.getVelden();
-		tcLog.d("Ticket = "+ t);
-		tcLog.d("update: " + action + " '" + comment + "' '" + veld + "' '" + waarde + "' " + modVeld);
+        if (t != null && t.hasdata()) {
+            return t;
+        }
+
+        return refreshTicket(i);
+    }
+
+    @Override
+    public Ticket refreshTicket(final int i) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Bundle args = new Bundle();
+                args.putInt(BUNDLE_TICKET,i);
+                if (ticketLoaderStarted) {
+                    getLoaderManager().restartLoader(TICKET_LOADER_NOSHOW,args,TracStart.this);
+                } else {
+                    getLoaderManager().initLoader(TICKET_LOADER_NOSHOW,args,TracStart.this);
+                    ticketLoaderStarted = true;
+                }
+            }
+        });
+        return null;  // TODO
+    }
+
+    @Override
+    public void putTicket(Ticket t) {
+        //TODO
+    }
+
+    public boolean updateTicket(final Ticket t,final String action, final String comment, final String veld, final String waarde, final boolean notify, final Map<String, String> modVeld) throws Exception{
+        final JSONObject velden = t.getVelden();
+        tcLog.d("Ticket = "+ t);
+        tcLog.d("update: " + action + " '" + comment + "' '" + veld + "' '" + waarde + "' " + modVeld);
         tcLog.d("velden voor = " + velden);
-		final int ticknr = t.getTicketnr();
-		
+        final int ticknr = t.getTicketnr();
+
         if (ticknr == -1) {
             throw new IllegalArgumentException(getString(R.string.invtick) + " " + ticknr);
         }
@@ -1385,7 +1296,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
             velden.put(veld, waarde);
         }
         if (modVeld != null) {
-			for (Entry<String,String> e: modVeld.entrySet()) {
+            for (Entry<String,String> e: modVeld.entrySet()) {
 //				tcLog.d(e.toString());
                 velden.put(e.getKey(), e.getValue());
             }
@@ -1396,32 +1307,32 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         velden.remove("changetime");
         velden.remove("time");
 
-		Thread updateThread = new Thread() {
-			@Override
-			public void run() {
-				try {
-					TracHttpClient tracClient = new TracHttpClient(url,sslHack,sslHostNameHack,username,password);
-					JSONArray retTick = tracClient.updateTicket(ticknr, cmt, velden, notify);
-					t.setFields(retTick.getJSONObject(3));
-					if (modVeld != null) {
-						modVeld.clear();
-					}
-					tcLog.d("retTicket = "+retTick);
-				} catch (final Exception e) {
-					tcLog.e("JSONRPCException", e);
-					showAlertBox(R.string.upderr,R.string.storerrdesc,e.getMessage());
-				}
-			}
-		};
-		updateThread.start();
-		updateThread.join();
-		return true;
-	}
-	
-	public int createTicket(Ticket t,boolean notify) throws Exception{
-		int ticknr = t.getTicketnr();
-		final JSONObject velden = t.getVelden();
-		
+        Thread updateThread = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    TracHttpClient tracClient = new TracHttpClient(url,sslHack,sslHostNameHack,username,password);
+                    JSONArray retTick = tracClient.updateTicket(ticknr, cmt, velden, notify);
+                    t.setFields(retTick.getJSONObject(3));
+                    if (modVeld != null) {
+                        modVeld.clear();
+                    }
+                    tcLog.d("retTicket = "+retTick);
+                } catch (final Exception e) {
+                    tcLog.e("JSONRPCException", e);
+                    showAlertBox(R.string.upderr,R.string.storerrdesc,e.getMessage());
+                }
+            }
+        };
+        updateThread.start();
+        updateThread.join();
+        return true;
+    }
+
+    public int createTicket(Ticket t,boolean notify) throws Exception{
+        int ticknr = t.getTicketnr();
+        final JSONObject velden = t.getVelden();
+
         if (ticknr != -1) {
             throw new IllegalArgumentException("Call create ticket not -1");
         }
@@ -1432,74 +1343,185 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         velden.remove("summary");
         velden.remove("description");
 
-		try {
-			TracHttpClient tracClient = new TracHttpClient(url,sslHack,sslHostNameHack,username,password);
-			final int newticknr = tracClient.createTicket(s, d, velden);
-			if (newticknr != -1) {
+        try {
+            TracHttpClient tracClient = new TracHttpClient(url,sslHack,sslHostNameHack,username,password);
+            final int newticknr = tracClient.createTicket(s, d, velden);
+            if (newticknr != -1) {
 //				reloadTicketData(new Ticket(newticknr));
-				refreshTicket(newticknr);
-				return newticknr;
-			} else {
-				showAlertBox(R.string.storerr,R.string.noticketUnk,"");
-				return -1;
-			}
-		} catch (final Exception e) {
-			tcLog.d("Exception during create",e);
-			showAlertBox(R.string.storerr,R.string.storerrdesc,e.getMessage());
-			return -1;
-		}
-	}
+                refreshTicket(newticknr);
+                return newticknr;
+            } else {
+                showAlertBox(R.string.storerr,R.string.noticketUnk,"");
+                return -1;
+            }
+        } catch (final Exception e) {
+            tcLog.d("Exception during create",e);
+            showAlertBox(R.string.storerr,R.string.storerrdesc,e.getMessage());
+            return -1;
+        }
+    }
 
-	@Override 
-	public int getNextTicket(int i) {
-		return dataAdapter.getNextTicket(i);
-	}
+    @Override
+    public int getNextTicket(int i) {
+        return dataAdapter.getNextTicket(i);
+    }
 
-	@Override 
-	public int getPrevTicket(int i) {
-		return dataAdapter.getPrevTicket(i);
-	}
-	
-    private final BroadcastReceiver mBroadcastMessageReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context c,Intent i) {
-//			tcLog.d("Receive "+i);
-			switch (i.getAction()) {
-				case PROVIDER_MESSAGE:
-//				tcLog.d("Receive PROVIDER_MESSAGE");
-				int title = i.getIntExtra("title",R.string.warning);
-				int message = i.getIntExtra("message",R.string.unknownError);
-				String addit = i.getStringExtra("additional");
-				showAlertBox(title,message,addit);
-				break;
+    @Override
+    public int getPrevTicket(int i) {
+        return dataAdapter.getPrevTicket(i);
+    }
 
-				case DATACHANGED_MESSAGE:
-//				tcLog.d("Receive DATACHANGED_MESSAGE");
-				findViewById(R.id.displayList).invalidate();
-				try {
-					getTicketListFragment().dataHasChanged();
-				} catch (Exception e) {
-					tcLog.e("cannot contact TicketListFragment");
-				}	
-				break;
-
-				default:
-				throw new IllegalArgumentException();
-			}
-		}
-    };
-	
-	public void onRequestPermissionsResult (int requestCode, String[] permissions, int[] grantResults) {
-		tcLog.d("requestCode = "+requestCode+" permissions = "+permissions+" grantResults = "+ grantResults);
-		switch (requestCode) {
-			case REQUEST_CODE_WRITE_EXT: {
-			// If request is cancelled, the result arrays are empty.
+    public void onRequestPermissionsResult (int requestCode, String[] permissions, int[] grantResults) {
+        tcLog.d("requestCode = "+requestCode+" permissions = "+Arrays.asList(permissions)+" grantResults = "+ Arrays.asList(grantResults));
+        switch (requestCode) {
+            case REQUEST_CODE_WRITE_EXT: {
+                // If request is cancelled, the result arrays are empty.
                 canWriteSD = (grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED);
             }
-		}
-	}
-	
-	public boolean getCanWriteSD() {
-		return canWriteSD;
-	}
+        }
+    }
+
+    public boolean getCanWriteSD() {
+        return canWriteSD;
+    }
+
+    class IncomingHandler extends Handler {
+        private ProgressDialog progressBar = null;
+
+        public IncomingHandler(Looper looper) {
+            super(looper);
+            tcLog.logCall();
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public void handleMessage(Message msg) {
+            tcLog.d("msg = " + msg);
+            switch (msg.what) {
+                case MSG_REQUEST_TICKET_COUNT:
+                    if (!LoginFragmentTag.equals(getTopFragment())) {
+                        final int count = getTicketCount();
+                        sendMessageToService(MSG_SEND_TICKET_COUNT, count);
+                    }
+                    break;
+
+                case MSG_REQUEST_NEW_TICKETS:
+                    if (!LoginFragmentTag.equals(getTopFragment())) {
+                        getNewTickets(ISO8601.fromUnix(referenceTime));
+                    }
+                    break;
+
+                case MSG_REQUEST_REFRESH:
+                    // tcLog.d("handleMessage msg = REFRESH");
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            refreshOverview();
+                        }
+                    });
+                    break;
+
+                case MSG_START_PROGRESSBAR:
+                    final String message = (String) msg.obj;
+                    synchronized (this) {
+                        // tcLog.d("handleMessage msg = START_PROGRESSBAR string = "+message);
+                        if (progressBar == null) {
+                            progressBar = new ProgressDialog(TracStart.this);
+                            progressBar.setCancelable(true);
+                            if (message != null) {
+                                progressBar.setMessage(message);
+                            }
+                            progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                            if (!TracStart.this.isFinishing()) {
+                                progressBar.show();
+                            }
+                        }
+                    }
+                    break;
+
+                case MSG_STOP_PROGRESSBAR:
+                    synchronized (this) {
+                        // tcLog.d("handleMessage msg = STOP_PROGRESSBAR");
+                        if (progressBar != null) {
+                            if (!TracStart.this.isFinishing()) {
+                                progressBar.dismiss();
+                            }
+                            progressBar = null;
+                        }
+                    }
+                    break;
+
+                case MSG_SET_SORT:
+                    setSort((ArrayList<SortSpec>)msg.obj);
+                    refreshOverview();
+                    sendMessageToService(MSG_SET_SORT,msg.obj);
+                    break;
+
+                case MSG_SET_FILTER:
+                    setFilter((ArrayList<FilterSpec>)msg.obj);
+                    refreshOverview();
+                    sendMessageToService(MSG_SET_FILTER,msg.obj);
+                    break;
+
+                case MSG_SHOW_DIALOG:
+                    showAlertBox(msg.arg1, msg.arg2, (String) msg.obj);
+                    break;
+
+                case MSG_DISPLAY_TICKET:
+                    final Ticket t = (Ticket)msg.obj;
+                    if (DetailFragmentTag.equals(getTopFragment())) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                final DetailFragment d = (DetailFragment) getFragment(DetailFragmentTag);
+                                d.setTicket(t.getTicketnr());
+                            }
+                        });
+                    } else {
+                        onTicketSelected(t);
+                    }
+                    break;
+
+                case MSG_START_LISTLOADER:
+                    LoginProfile lp = new LoginProfile(url,username,password,sslHack)
+                            .setSslHostNameHack(sslHostNameHack)
+                            .setFilterList(filterList)
+                            .setSortList(sortList);
+
+//				sendMessageToService(MSG_LOGIN_PROFILE,lp);
+
+                    bindService(new Intent(TracStart.this,RefreshService.class)
+                            .putExtra("LoginProfile",lp)
+                            .setAction(ACTION_LOGIN_PROFILE),mTicketsConnection,Context.BIND_AUTO_CREATE);
+//				sendMessageToService(MSG_LOAD_TICKETS,null); //  TODO
+                    bindService(new Intent(TracStart.this,RefreshService.class).setAction(ACTION_LOAD_TICKETS),mTicketsConnection,Context.BIND_AUTO_CREATE);
+
+
+                    if (listLoaderStarted) {
+                        getLoaderManager().restartLoader(LIST_LOADER, null, TracStart.this);
+                    } else {
+                        getLoaderManager().initLoader(LIST_LOADER, null, TracStart.this);
+                        listLoaderStarted = true;
+                    }
+                    break;
+
+                case MSG_GET_PERMISSIONS:
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        ActivityCompat.requestPermissions(TracStart.this,
+                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                        Manifest.permission.READ_EXTERNAL_STORAGE},
+                                REQUEST_CODE_WRITE_EXT);
+                    }
+                    break;
+
+                case MSG_LOAD_FASE1_FINISHED:
+                    Tickets tl = (Tickets)msg.obj;
+                    tcLog.d("Tickets = "+tl);
+                    break;
+
+                default:
+                    super.handleMessage(msg);
+            }
+        }
+    }
 }
