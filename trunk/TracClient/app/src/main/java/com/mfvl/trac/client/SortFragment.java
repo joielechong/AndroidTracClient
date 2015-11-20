@@ -63,18 +63,12 @@ public class SortFragment extends SpecFragment<SortSpec>  {
                 if (tt != null) {
                     tt.setText(sortItem.getVeld());
                 }
-                if (direc != null) {
-                    direc.setImageResource(sortItem.getRichting() ? R.drawable.upArrow : R.drawable.downArrow);
-                }
+				direc.setImageResource(sortItem.getRichting() ? R.drawable.upArrow : R.drawable.downArrow);
 
-                if (sortup != null) {
-                    sortup.setVisibility(position == 0 ? View.INVISIBLE : View.VISIBLE);
-                }
+				sortup.setVisibility(position == 0 ? View.INVISIBLE : View.VISIBLE);
 
-                if (sortdown != null) {
-                    sortdown.setVisibility(position == items.size() - 1 ? View.INVISIBLE : View.VISIBLE);
-                }
-            }
+				sortdown.setVisibility(position == items.size() - 1 ? View.INVISIBLE : View.VISIBLE);
+			}
             return v;
         }
 		

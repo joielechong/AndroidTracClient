@@ -66,8 +66,8 @@ public class TracHttpClient extends JSONRPCHttpClient {
         return callJSONArray(TICKET_QUERY, reqString);
     }
 
-    public int createTicket(final String s, final String d, final JSONObject _velden) throws JSONRPCException {
-        return callInt(TICKET_CREATE, s, d, _velden);
+    public int createTicket(final String s, final String d, final JSONObject _velden, boolean notify) throws JSONRPCException {
+        return callInt(TICKET_CREATE, s, d, _velden,notify);
     }
 
     public JSONArray updateTicket(final int _ticknr, final String cmt, final JSONObject _velden, final boolean notify) throws JSONRPCException {

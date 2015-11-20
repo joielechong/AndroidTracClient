@@ -43,7 +43,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
-import android.os.RemoteException;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.Menu;
@@ -62,92 +62,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Semaphore;
 
-import static com.mfvl.trac.client.Const.ACTION_LOAD_TICKETS;
-import static com.mfvl.trac.client.Const.ACTION_LOGIN_PROFILE;
-import static com.mfvl.trac.client.Const.ADMOB;
-import static com.mfvl.trac.client.Const.CURRENT_PASSWORD;
-import static com.mfvl.trac.client.Const.CURRENT_SSLHACK;
-import static com.mfvl.trac.client.Const.CURRENT_SSLHOSTNAMEHACK;
-import static com.mfvl.trac.client.Const.CURRENT_TICKET;
-import static com.mfvl.trac.client.Const.CURRENT_URL;
-import static com.mfvl.trac.client.Const.CURRENT_USERNAME;
-import static com.mfvl.trac.client.Const.DATACHANGED_MESSAGE;
-import static com.mfvl.trac.client.Const.DEBUG_MANAGERS;
-import static com.mfvl.trac.client.Const.FILTERLISTNAME;
-import static com.mfvl.trac.client.Const.HELP_FILE;
-import static com.mfvl.trac.client.Const.HELP_VERSION;
-import static com.mfvl.trac.client.Const.INTENT_TICKET;
-import static com.mfvl.trac.client.Const.INTENT_URL;
-import static com.mfvl.trac.client.Const.MSG_DISPLAY_TICKET;
-import static com.mfvl.trac.client.Const.MSG_GET_PERMISSIONS;
-import static com.mfvl.trac.client.Const.MSG_LOAD_FASE1_FINISHED;
-import static com.mfvl.trac.client.Const.MSG_LOGIN_PROFILE;
-import static com.mfvl.trac.client.Const.MSG_REMOVE_NOTIFICATION;
-import static com.mfvl.trac.client.Const.MSG_REQUEST_NEW_TICKETS;
-import static com.mfvl.trac.client.Const.MSG_REQUEST_REFRESH;
-import static com.mfvl.trac.client.Const.MSG_REQUEST_TICKET_COUNT;
-import static com.mfvl.trac.client.Const.MSG_SEND_NEW_TICKETS;
-import static com.mfvl.trac.client.Const.MSG_SEND_TICKET_COUNT;
-import static com.mfvl.trac.client.Const.MSG_SET_FILTER;
-import static com.mfvl.trac.client.Const.MSG_SET_SORT;
-import static com.mfvl.trac.client.Const.MSG_SHOW_DIALOG;
-import static com.mfvl.trac.client.Const.MSG_START_LISTLOADER;
-import static com.mfvl.trac.client.Const.MSG_START_PROGRESSBAR;
-import static com.mfvl.trac.client.Const.MSG_START_TIMER;
-import static com.mfvl.trac.client.Const.MSG_STOP_PROGRESSBAR;
-import static com.mfvl.trac.client.Const.MSG_STOP_TIMER;
-import static com.mfvl.trac.client.Const.PROVIDER_MESSAGE;
-import static com.mfvl.trac.client.Const.SORTLISTNAME;
-import static com.mfvl.trac.client.Const.ticketGroupCount;
-
-interface onFileSelectedListener {
-    void onFileSelected(final String f);
-}
-
-/**
- * Interface for the fragments to communicate with each other and the main activity
- *
- * @author Michiel
- *
- */
-interface InterFragmentListener {
-    boolean getDispAds();
-
-    void setDispAds(boolean b);
-
-    void enableDebug();
-
-    void onChooserSelected(onFileSelectedListener oc);
-
-    void onLogin(String url, String username, String password, boolean sslHack, boolean sslHostNameHack, String profile);
-
-    void onTicketSelected(Ticket ticket);
-
-    void onUpdateTicket(Ticket ticket);
-
-    void refreshOverview();
-
-    void startProgressBar(int resid);
-    void stopProgressBar();
-    TicketModel getTicketModel();
-    TicketListAdapter getAdapter();
-    Ticket getTicket(int ticknr);
-    Ticket refreshTicket(int ticknr);
-    void putTicket(Ticket t); //TODO Implement method
-    int getNextTicket(int i);
-    int getPrevTicket(int i);
-    int getTicketCount();
-    int getTicketContentCount();
-    boolean updateTicket(Ticket t,String action, String comment, String veld, String waarde, final boolean notify, Map<String, String> modVeld) throws Exception;
-    int createTicket(Ticket t , boolean notify) throws Exception; //TODO notify not used
-    void setActionProvider(Menu menu,int resid);
-    Intent shareList();
-    Intent shareTicket(final Ticket ticket);
-    void listViewCreated();
-    boolean isFinishing();
-    Handler getHandler();
-    boolean getCanWriteSD();
-}
+import static com.mfvl.trac.client.Const.*;
 
 public class TracStart extends Activity implements LoaderManager.LoaderCallbacks<Tickets>, InterFragmentListener, OnBackStackChangedListener, ActivityCompat.OnRequestPermissionsResultCallback {
    
@@ -172,6 +87,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     private static final int TICKET_LOADER_NOSHOW = 4;
     static public IncomingHandler tracStartHandler = null;
     private final Semaphore loadingActive = new Semaphore(1, true);
+	
     private final BroadcastReceiver mBroadcastMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context c,Intent i) {
@@ -200,7 +116,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
             }
         }
     };
-    private Messenger mMessenger = null;
     private ArrayList<SortSpec> sortList = null;
     private ArrayList<FilterSpec> filterList = null;
     private String profile = null;
@@ -211,7 +126,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     private boolean sslHostNameHack = false;
     private int timerCorr = 0;
     private boolean debug = false; // disable menuoption at startup
-    private onFileSelectedListener _oc = null;
+    private OnFileSelectedListener _oc = null;
     private boolean dispAds = true;
     private boolean canWriteSD = false;
     private long referenceTime = 0;
@@ -220,39 +135,28 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     private boolean doNotFinish = false;
     private TicketModel tm = null;
     private boolean mIsBound = false;
-    private Messenger mService = null;
-	private RefreshService mRefreshService = null;
-	
-    private final ServiceConnection mTicketsConnection = new ServiceConnection() {
+	private Messenger mMessenger = null;
+	private RefreshService mService = null;
+
+    private final ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             tcLog.d("className = " + className + " service = " + service);
-			mRefreshService = (RefreshService)service;
-            mService = new Messenger(service);
+            RefreshService.RefreshBinder binder = (RefreshService.RefreshBinder) service;
+            mService = binder.getService();
             tcLog.d("mService = " + mService);
-        }
+			mIsBound = true;
+       }
 
         @Override
         public void onServiceDisconnected(ComponentName className) {
             tcLog.d("className = " + className);
             mService = null;
-        }
-    };
-    private final ServiceConnection mRefreshConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            tcLog.d("className = " + className + " service = " + service);
-            mService = new Messenger(service);
-            sendMessageToService(MSG_START_TIMER);
-            tcLog.d("mService = " + mService);
-        }
+			mIsBound = false;
 
-        @Override
-        public void onServiceDisconnected(ComponentName className) {
-            tcLog.d("className = " + className);
-            mService = null;
-        }
+		}
     };
+
     private MyHandlerThread mHandlerThread = null;
     private boolean changesLoaderStarted = false;
     private boolean listLoaderStarted = false;
@@ -379,50 +283,38 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     private void sendMessageToService(int message) {
         //tcLog.d( "sendMessageToService message = "+ message+" mService = "+mService);
         if (mIsBound && mService != null) {
-            try {
-                final Message msg = Message.obtain();
+			final Message msg = Message.obtain();
 
-                msg.what = message;
-                msg.replyTo = mMessenger;
-                tcLog.d( "msg = " + msg);
-                mService.send(msg);
-            } catch (final RemoteException e) {
-                tcLog.e( "failed", e);
-            }
+			msg.what = message;
+			msg.replyTo = mMessenger;
+			tcLog.d( "msg = " + msg);
+			mService.send(msg);
         }
     }
 
     private void sendMessageToService(int message, int value) {
         //tcLog.d( "sendMessageToService message = "+ message);
         if (mIsBound && mService != null) {
-            try {
-                final Message msg = Message.obtain();
+			final Message msg = Message.obtain();
 
-                msg.what = message;
-                msg.arg1 = value;
-                msg.replyTo = mMessenger;
-                // tcLog.d(
-                // "sendMessageToService msg = " + msg);
-                mService.send(msg);
-            } catch (final RemoteException e) {
-                tcLog.e( "failed", e);
-            }
+			msg.what = message;
+			msg.arg1 = value;
+			msg.replyTo = mMessenger;
+			// tcLog.d(
+			// "sendMessageToService msg = " + msg);
+			mService.send(msg);
         }
     }
 
     private void sendMessageToService(int message, Object value) {
         //tcLog.d( "sendMessageToService message = "+ message+ " value = "+value);
         if (mIsBound && mService != null) {
-            try {
-                final Message msg = Message.obtain();
+			final Message msg = Message.obtain();
 
-                msg.what = message;
-                msg.replyTo = mMessenger;
-                msg.obj = value;
-                mService.send(msg);
-            } catch (final RemoteException e) {
-                tcLog.e( "Object failed", e);
-            }
+			msg.what = message;
+			msg.replyTo = mMessenger;
+			msg.obj = value;
+			mService.send(msg);
         }
     }
 
@@ -605,8 +497,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
             tcLog.d("backstack initiated");
         }
 
-        bindService(new Intent(this, RefreshService.class), mRefreshConnection, Context.BIND_AUTO_CREATE);
-        mIsBound = true;
+        bindService(new Intent(this, RefreshService.class).setAction(ACTION_START_TIMER), mConnection, Context.BIND_AUTO_CREATE);
         setReferenceTime();
     }
 
@@ -720,7 +611,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     }
 
     @Override
-    public void onChooserSelected(onFileSelectedListener oc) {
+    public void onChooserSelected(OnFileSelectedListener oc) {
         tcLog.logCall();
         // save callback
         _oc = oc;
@@ -851,8 +742,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         if (mIsBound) {
             sendMessageToService(MSG_STOP_TIMER);
             mHandlerThread.quit();
-            unbindService(mRefreshConnection);
-            unbindService(mTicketsConnection);
+            unbindService(mConnection);
             mIsBound = false;
         }
         // stopService(new Intent(this, RefreshService.class));
@@ -1053,7 +943,8 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         tcLog.logCall();
         if (tm == null) {
             startProgressBar(R.string.downloading);
-            tm = TicketModel.getInstance();
+//            tm = TicketModel.getInstance();
+            tm = mService.getTicketModel();
             stopProgressBar();
         }
         return tm;
@@ -1384,7 +1275,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 
         try {
             TracHttpClient tracClient = new TracHttpClient(url,sslHack,sslHostNameHack,username,password);
-            final int newticknr = tracClient.createTicket(s, d, velden);
+            final int newticknr = tracClient.createTicket(s, d, velden,notify);
             if (newticknr != -1) {
 //				reloadTicketData(new Ticket(newticknr));
                 refreshTicket(newticknr);
@@ -1410,7 +1301,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
         return dataAdapter.getPrevTicket(i);
     }
 
-    public void onRequestPermissionsResult (int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult (int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         tcLog.d("requestCode = "+requestCode+" permissions = "+Arrays.asList(permissions)+" grantResults = "+ Arrays.asList(grantResults));
         switch (requestCode) {
             case REQUEST_CODE_WRITE_EXT: {
@@ -1521,29 +1412,6 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
                     }
                     break;
 
-                case MSG_START_LISTLOADER:
-                    LoginProfile lp = new LoginProfile(url,username,password,sslHack)
-                            .setSslHostNameHack(sslHostNameHack)
-                            .setFilterList(filterList)
-                            .setSortList(sortList);
-
-//				sendMessageToService(MSG_LOGIN_PROFILE,lp);
-
-                    bindService(new Intent(TracStart.this,RefreshService.class)
-                            .putExtra("LoginProfile",lp)
-                            .setAction(ACTION_LOGIN_PROFILE),mTicketsConnection,Context.BIND_AUTO_CREATE);
-//				sendMessageToService(MSG_LOAD_TICKETS,null); //  TODO
-                    bindService(new Intent(TracStart.this,RefreshService.class).setAction(ACTION_LOAD_TICKETS),mTicketsConnection,Context.BIND_AUTO_CREATE);
-
-
-                    if (listLoaderStarted) {
-                        getLoaderManager().restartLoader(LIST_LOADER, null, TracStart.this);
-                    } else {
-                        getLoaderManager().initLoader(LIST_LOADER, null, TracStart.this);
-                        listLoaderStarted = true;
-                    }
-                    break;
-
                 case MSG_GET_PERMISSIONS:
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                         ActivityCompat.requestPermissions(TracStart.this,
@@ -1553,9 +1421,76 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
                     }
                     break;
 
+                case MSG_START_LISTLOADER:
+                    LoginProfile lp = new LoginProfile(url,username,password,sslHack)
+                            .setSslHostNameHack(sslHostNameHack)
+                            .setFilterList(filterList)
+                            .setSortList(sortList);
+
+                    hasTicketsLoadingBar = false;
+                    // Returns a new CursorLoader
+                    try {
+                        getTicketListFragment().startLoading();
+                    } catch (Exception e) {
+                        tcLog.e("LISTLOADER cannot contact TicketListFragment");
+                    }
+                    if (ListFragmentTag.equals(getTopFragment())) {
+                        startProgressBar(getString(R.string.getlist) + (profile == null ? "" : "\n" + profile));
+                        hasTicketsLoadingBar = true;
+                    }
+                    loadingActive.acquireUninterruptibly();
+                    ticketsLoading = true;
+
+                    bindService(new Intent(TracStart.this,RefreshService.class)
+                            .putExtra("LoginProfile",lp)
+                            .setAction(ACTION_LOGIN_PROFILE),mConnection,Context.BIND_AUTO_CREATE);
+//				sendMessageToService(MSG_LOAD_TICKETS,null); //  TODO
+                    bindService(new Intent(TracStart.this,RefreshService.class).setAction(ACTION_LOAD_TICKETS),mConnection,Context.BIND_AUTO_CREATE);
+
+
+//                    if (listLoaderStarted) {
+//                        getLoaderManager().restartLoader(LIST_LOADER, null, TracStart.this);
+//                    } else {
+//                        getLoaderManager().initLoader(LIST_LOADER, null, TracStart.this);
+//                        listLoaderStarted = true;
+//.                    }
+                    break;
+
                 case MSG_LOAD_FASE1_FINISHED:
-                    Tickets tl = (Tickets)msg.obj;
-                    tcLog.d("Tickets = "+tl);
+                    final Tickets tl = (Tickets)msg.obj;
+                    tcLog.d("Tickets = " + tl);
+                    synchronized(this) {
+                        if (hasTicketsLoadingBar) {
+                            stopProgressBar();
+                            hasTicketsLoadingBar = false;
+                        }
+                        ticketsLoading = false;
+                    }
+                    TracStart.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            dataAdapter.clear();
+                            dataAdapter.addAll(tl);
+//                            dataAdapter.notifyDataSetChanged();
+                            try {
+                                getTicketListFragment().dataHasChanged();
+                            } catch (Exception e) {
+                                tcLog.e("LISTLOADER cannot contact TicketListFragment");
+                            }
+                            if (loadingActive.availablePermits() == 0) {
+                                loadingActive.release();
+                            }
+                        }
+                    });
+                    break;
+
+                case MSG_LOAD_FASE2_FINISHED:
+                    TracStart.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            dataAdapter.notifyDataSetChanged();
+                        }
+                    });
                     break;
 
                 default:

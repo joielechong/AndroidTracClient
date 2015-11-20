@@ -101,9 +101,9 @@ final class Const {
     /*
      * App private Intent actions
     */
-    static final String ACTION_LOGIN_PROFILE = "com.mfvl.trac.client.action.LoginProfile";
     static final String ACTION_LOAD_TICKETS = "com.mfvl.trac.client.action.LoadTickets";
-
+    static final String ACTION_LOGIN_PROFILE = "com.mfvl.trac.client.action.LoginProfile";
+	static final String ACTION_START_TIMER = "com.mfvl.trac.client.action.StartTimer";
     /*
      * Overige constanten
      */
