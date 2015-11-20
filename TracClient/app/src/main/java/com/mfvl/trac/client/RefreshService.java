@@ -23,6 +23,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -39,23 +40,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static com.mfvl.trac.client.Const.ACTION_LOAD_TICKETS;
-import static com.mfvl.trac.client.Const.ACTION_LOGIN_PROFILE;
-import static com.mfvl.trac.client.Const.MSG_DATA_CHANGED;
-import static com.mfvl.trac.client.Const.MSG_LOAD_FASE1_FINISHED;
-import static com.mfvl.trac.client.Const.MSG_LOAD_FASE2_FINISHED;
-import static com.mfvl.trac.client.Const.MSG_LOAD_TICKETS;
-import static com.mfvl.trac.client.Const.MSG_LOGIN_PROFILE;
-import static com.mfvl.trac.client.Const.MSG_REMOVE_NOTIFICATION;
-import static com.mfvl.trac.client.Const.MSG_REQUEST_NEW_TICKETS;
-import static com.mfvl.trac.client.Const.MSG_REQUEST_REFRESH;
-import static com.mfvl.trac.client.Const.MSG_REQUEST_TICKET_COUNT;
-import static com.mfvl.trac.client.Const.MSG_SEND_NEW_TICKETS;
-import static com.mfvl.trac.client.Const.MSG_SEND_TICKET_COUNT;
-import static com.mfvl.trac.client.Const.MSG_SHOW_DIALOG;
-import static com.mfvl.trac.client.Const.MSG_START_TIMER;
-import static com.mfvl.trac.client.Const.MSG_STOP_TIMER;
-import static com.mfvl.trac.client.Const.ticketGroupCount;
+import static com.mfvl.trac.client.Const.*;
 
 public class RefreshService extends Service {
 
@@ -72,11 +57,25 @@ public class RefreshService extends Service {
 
     private MyHandlerThread mHandlerThread = null;
     private ServiceHandler mServiceHandler;
-    private Messenger mMessenger = null;
+	private Messenger mainReceiver = null;
     private LoginProfile mLoginProfile = null;
     private TracHttpClient tracClient = null;
     private NotificationManager mNotificationManager;
+    private TicketModel tm = null;
 
+    /**
+     * Class used for the client Binder.  Because we know this service always
+     * runs in the same process as its clients, we don't need to deal with IPC.
+     */
+    private final IBinder mBinder = new RefreshBinder();
+
+	public class RefreshBinder extends Binder {
+        RefreshService getService() {
+            // Return this instance of LocalService so clients can call public methods
+            return RefreshService.this;
+        }
+    }
+	
     private final class ServiceHandler extends Handler {
         public ServiceHandler(Looper looper) {
             super(looper);
@@ -148,6 +147,7 @@ public class RefreshService extends Service {
                 case MSG_LOGIN_PROFILE:
                     mLoginProfile = (LoginProfile)msg.obj;
                     tracClient = new TracHttpClient(mLoginProfile);
+                    tm=TicketModel.getInstance(tracClient);
                     break;
 
                 case MSG_LOAD_TICKETS:
@@ -187,6 +187,16 @@ public class RefreshService extends Service {
             tcLog.e("failed", e);
         }
     }
+	
+	public void setMainHandler(Handler h) {
+		mainReceiver = new Messenger(h);
+	}
+
+    public TicketModel getTicketModel() {
+        tm = TicketModel.getInstance();
+//        tcLog.d("tm = "+tm);
+        return tm;
+    }
 
     @Override
     public void onCreate() {
@@ -197,7 +207,6 @@ public class RefreshService extends Service {
 
         // Get the HandlerThread's Looper and use it for our Handler
         mServiceHandler = new ServiceHandler(mHandlerThread.getLooper());
-        mMessenger = new Messenger(mServiceHandler);
     }
 
     @Override
@@ -212,7 +221,7 @@ public class RefreshService extends Service {
         String action = intent.getAction();
         if (action != null) {
             Message msg = mServiceHandler.obtainMessage();
-            msg.replyTo = new Messenger(TracStart.tracStartHandler);
+            msg.replyTo = mainReceiver;
             switch (action) {
                 case ACTION_LOGIN_PROFILE:
                     msg.what = MSG_LOGIN_PROFILE;
@@ -224,10 +233,19 @@ public class RefreshService extends Service {
                     msg.what = MSG_LOAD_TICKETS;
                     mServiceHandler.sendMessage(msg);
                     break;
+
+                case ACTION_START_TIMER:
+                    msg.what = MSG_START_TIMER;
+                    mServiceHandler.sendMessage(msg);
+                    break;
             }
         }
-        return mMessenger.getBinder();
+        return mBinder;
     }
+	
+	public void send(Message msg) {
+        mServiceHandler.sendMessage(msg);
+	}
 
     @Override
     public boolean onUnbind(Intent intent) {

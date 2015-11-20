@@ -67,7 +67,7 @@ public class Credentials {
      * Load login credentials from shared preferences: server-url, username, password and profile
      */
     private static void loadCredentials() {
-        // tcLog.d("loadCredentials");
+//        tcLog.logCall();
         _url = settings.getString(PREF_URL, "");
         _username = settings.getString(PREF_USER, "");
         _password = settings.getString(PREF_PASS, "");
@@ -80,7 +80,7 @@ public class Credentials {
      * Store login credentials to shared preferences: server-url, username, password and profile
      */
     public static void storeCredentials() {
-        // tcLog.d("storeCredentials");
+//        tcLog.logCall();
         settings.edit()
 			.putString(PREF_URL, _url)
 			.putString(PREF_USER, _username)
@@ -93,7 +93,7 @@ public class Credentials {
 
     /** Set login credentials server-url, username, password and profile */
     public static void setCredentials(final String url, final String username, final String password, final String profile) {
-        // tcLog.d("setCredentials");
+//        tcLog.logCall();
         _url = url;
         _username = username;
         _password = password;
@@ -137,7 +137,7 @@ public class Credentials {
     }
 
     public static boolean checkDisclaimer() {
-        //tcLog.d("checkDisclaimer");
+//        tcLog.logCall();
         final String thisRun = DisclaimerVersion;
         final String lastRun = settings.getString(PREF_DISCLAIM, "");
 	
@@ -157,37 +157,37 @@ public class Credentials {
     }
 
     public static boolean getCookieInform() {
-        tcLog.logCall();
+//        tcLog.logCall();
 		return settings.getBoolean(PREF_COOKIEINFORM,true);
 	}
 	
 	public static void setCookieInform(boolean val) {
-        tcLog.logCall();
+//        tcLog.logCall();
 		settings.edit().putBoolean(PREF_COOKIEINFORM, val).apply();
 	}
 
     public static void storeFilterString(final String filterString) {
-        //tcLog.d("Credentials", "storeFilterString: " + filterString);
+        //tcLog.d(filterString);
         settings.edit().putString(PREF_FILTER, filterString == null ? "" : filterString).apply();
     }
 
     public static String getFilterString() {
-        // tcLog.d("getFilterString");
+        // tcLog.logCall();
         return settings.getString(PREF_FILTER, "max=500&status!=closed");
     }
 
     public static void removeFilterString() {
-        //tcLog.d("removeFilterString");
+        // tcLog.logCall();
 		storeFilterString("max=500&status!=closed");
     }
 
     public static void storeSortString(final String sortString) {
-        //tcLog.d("storeSortString: " + sortString);
+        //tcLog.d(sortString);
         settings.edit().putString(PREF_SORT, sortString == null ? "" : sortString).apply();
     }
 
     public static String getSortString() {
-        // tcLog.d("getSortString");
+        // tcLog.logCall();
         final String sortString = settings.getString(PREF_SORT, "order=priority&order=modified&desc=1");
 
         tcLog.d("sortString = " + sortString);
@@ -195,7 +195,7 @@ public class Credentials {
     }
 
     public static void removeSortString() {
-        //tcLog.d("removeSortString");
+        // tcLog.logCall();
         storeSortString("order=priority&order=modified&desc=1");
     }
 
@@ -240,9 +240,6 @@ public class Credentials {
 
         String dbpath = dbname;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-//			final File extPath = Environment.getExternalStorageDirectory();
-//			tcLog.d("extPath = "+extPath);
-//			final File dirPath = new File(extPath,"TracClient");
 			final File dirPath = _context.getExternalFilesDir(null);
 //			tcLog.d("dirpath = "+dirPath);
 			final File filePath = new File(dirPath,dbname);
@@ -254,10 +251,7 @@ public class Credentials {
                     dbpath = p1;
                 }
             } else {
-//				dirPath.mkdirs();'
-//                if (dirPath.isDirectory()) {
-                    dbpath = p1;
-//                }
+				dbpath = p1;
             }
         }
         tcLog.d("dbpath = " + dbpath);
@@ -276,12 +270,12 @@ public class Credentials {
 			dirPath = _context.getExternalFilesDir(null);
 			dirPath.mkdirs();
 		}
-		tcLog.d("dirpath = "+dirPath);
+//		tcLog.d("dirpath = "+dirPath);
 		if (!dirPath.isDirectory()) {
             throw new FileNotFoundException("Not a directory: "+dirPath.toString());
 		}
         final File filePath = new File(dirPath,filename);
-		tcLog.d("filepath = "+filePath);
+//		tcLog.d("filepath = "+filePath);
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             throw new FileNotFoundException(filePath.toString());
         }

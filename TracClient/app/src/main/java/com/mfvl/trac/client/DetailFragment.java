@@ -64,7 +64,7 @@ import android.widget.TextView;
 
 import static com.mfvl.trac.client.Const.*;
 
-public class DetailFragment extends TracClientFragment implements SwipeRefreshLayout.OnRefreshListener, CompoundButton.OnCheckedChangeListener, GestureDetector.OnGestureListener, onFileSelectedListener, OnItemClickListener,OnItemLongClickListener {
+public class DetailFragment extends TracClientFragment implements SwipeRefreshLayout.OnRefreshListener, CompoundButton.OnCheckedChangeListener, GestureDetector.OnGestureListener, OnFileSelectedListener, OnItemClickListener,OnItemLongClickListener {
 
     private static final String EMPTYFIELDS = "emptyfields";
     private static final String MODVELD = "modveld";
@@ -664,7 +664,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 
 			((TextView) ll.findViewById(R.id.veldnaam)).setText(veld);
 			final EditText et = (EditText) ll.findViewById(R.id.veldwaarde);
-			final Spinner spinValue = makeDialogComboSpin(getActivity(), veld, tmv.options(), tmv.optional(), waarde);
+			final Spinner spinValue = makeDialogComboSpin(getActivity(), tmv.options(), tmv.optional(), waarde);
 			final Button canBut = (Button) ll.findViewById(R.id.cancelpw);
 			canBut.setOnClickListener(this);
 			final Button storBut = (Button) ll.findViewById(R.id.okBut);

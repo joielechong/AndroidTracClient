@@ -427,7 +427,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
     @Override
     public void afterTextChanged(Editable s) {
 		tcLog.d(s.toString()+" "+dataAdapter);
-        if (dataAdapter != null && s != null) {
+        if (dataAdapter != null) {
             dataAdapter.getFilter().filter(s);
             zoektext = s.toString();
         }

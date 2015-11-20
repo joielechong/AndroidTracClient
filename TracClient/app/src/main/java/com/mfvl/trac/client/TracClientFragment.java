@@ -289,11 +289,11 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
         return valSpinner;
     }
 
-    protected Spinner makeDialogComboSpin(Context context, final String veldnaam, List<Object> waardes, boolean optional, Object w) {
+    protected Spinner makeDialogComboSpin(Context context, List<Object> waardes, boolean optional, Object w) {
         return _makeComboSpin(context, waardes, optional, w, true);
     }
 
-    protected Spinner makeComboSpin(Context context, final String veldnaam, List<Object> waardes, boolean optional, Object w) {
+    protected Spinner makeComboSpin(Context context, List<Object> waardes, boolean optional, Object w) {
         return _makeComboSpin(context, waardes, optional, w, false);
     }
 

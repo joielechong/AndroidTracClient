@@ -87,7 +87,7 @@ public class NewTicketFragment extends TracClientFragment {
 				
                 if (!Arrays.asList(ignoreFields).contains(veldnaam)) {
 					if (veld.options() != null) {
-						v = makeComboSpin(context, veldnaam, veld.options(), veld.optional(), veld.value());
+						v = makeComboSpin(context, veld.options(), veld.optional(), veld.value());
 					} else {
 						v = LayoutInflater.from(context).inflate((veldnaam.equals("Description") ? R.layout.descrfield: R.layout.stdfield), null, false);
 						extra = EXTRA;
