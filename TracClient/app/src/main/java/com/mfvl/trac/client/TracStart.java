@@ -24,15 +24,15 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentManager.OnBackStackChangedListener;
 import android.app.FragmentTransaction;
-import android.app.LoaderManager;
+//import android.app.LoaderManager;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
+//import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.Loader;
+//import android.content.Loader;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -45,7 +45,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.LocalBroadcastManager;
+//import android.support.v4.content.LocalBroadcastManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -64,7 +64,8 @@ import java.util.concurrent.Semaphore;
 
 import static com.mfvl.trac.client.Const.*;
 
-public class TracStart extends Activity implements LoaderManager.LoaderCallbacks<Tickets>, InterFragmentListener, OnBackStackChangedListener, ActivityCompat.OnRequestPermissionsResultCallback {
+//public class TracStart extends Activity implements LoaderManager.LoaderCallbacks<Tickets>, InterFragmentListener, OnBackStackChangedListener, ActivityCompat.OnRequestPermissionsResultCallback {
+public class TracStart extends Activity implements InterFragmentListener, OnBackStackChangedListener, ActivityCompat.OnRequestPermissionsResultCallback {
    
     /*
      * Constanten voor communicatie met de service en fragmenten
@@ -87,7 +88,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     private static final int TICKET_LOADER_NOSHOW = 4;
     static public IncomingHandler tracStartHandler = null;
     private final Semaphore loadingActive = new Semaphore(1, true);
-	
+/*	
     private final BroadcastReceiver mBroadcastMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context c,Intent i) {
@@ -116,6 +117,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
             }
         }
     };
+*/
     private ArrayList<SortSpec> sortList = null;
     private ArrayList<FilterSpec> filterList = null;
     private String profile = null;
@@ -164,14 +166,10 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     private boolean hasTicketsLoadingBar = false;
     private Boolean ticketsLoading = false;
     private TicketListAdapter dataAdapter = null;
-
+/*
     @Override
     public Loader<Tickets> onCreateLoader(int loaderID, Bundle bundle) {
         tcLog.d("" + loaderID + " " + bundle);
-
-        /*
-         * Takes action based on the ID of the Loader that's being created
-         */
         LoginProfile lp = new LoginProfile(url,username,password,sslHack)
                 .setSslHostNameHack(sslHostNameHack)
                 .setFilterList(filterList)
@@ -279,7 +277,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
                 break;
         }
     }
-
+*/
     private void sendMessageToService(int message) {
         //tcLog.d( "sendMessageToService message = "+ message+" mService = "+mService);
         if (mIsBound && mService != null) {
@@ -295,14 +293,28 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     private void sendMessageToService(int message, int value) {
         //tcLog.d( "sendMessageToService message = "+ message);
         if (mIsBound && mService != null) {
-			final Message msg = Message.obtain();
+            final Message msg = Message.obtain();
 
-			msg.what = message;
-			msg.arg1 = value;
-			msg.replyTo = mMessenger;
-			// tcLog.d(
-			// "sendMessageToService msg = " + msg);
-			mService.send(msg);
+            msg.what = message;
+            msg.arg1 = value;
+            msg.replyTo = mMessenger;
+            // tcLog.d(
+            // "sendMessageToService msg = " + msg);
+            mService.send(msg);
+        }
+    }
+
+    private void sendMessageToService(int message, int value,Object o) {
+        //tcLog.d( "sendMessageToService message = "+ message);
+        if (mIsBound && mService != null) {
+            final Message msg = Message.obtain();
+
+            msg.what = message;
+            msg.arg1 = value;
+            msg.obj = o;
+            msg.replyTo = mMessenger;
+            // tcLog.d("sendMessageToService msg = " + msg);
+            mService.send(msg);
         }
     }
 
@@ -343,7 +355,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 
         if (DEBUG_MANAGERS) {
             FragmentManager.enableDebugLogging(true);
-            LoaderManager.enableDebugLogging(true);
+//            LoaderManager.enableDebugLogging(true);
         }
 
         Credentials.getInstance(getApplicationContext());
@@ -450,9 +462,9 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 
         newDataAdapter(new Tickets()); // empty list
 
-        IntentFilter intFilt = new IntentFilter(PROVIDER_MESSAGE);
-        intFilt.addAction(DATACHANGED_MESSAGE);
-        LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastMessageReceiver,intFilt);
+//        IntentFilter intFilt = new IntentFilter(PROVIDER_MESSAGE);
+//        intFilt.addAction(DATACHANGED_MESSAGE);
+//        LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastMessageReceiver,intFilt);
 
         getFragmentManager().addOnBackStackChangedListener(this);
         // Handle when activity is recreated like on orientation Change
@@ -746,7 +758,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
             mIsBound = false;
         }
         // stopService(new Intent(this, RefreshService.class));
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastMessageReceiver);
+//        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastMessageReceiver);
         super.onDestroy();
     }
 
@@ -1105,13 +1117,13 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
     private void getNewTickets(final String isoTijd) {
         tcLog.d("tijd = "+isoTijd) ;
 
-        Bundle args = new Bundle();
-        args.putString(BUNDLE_ISOTIJD,isoTijd);
-        if (changesLoaderStarted) {
-            getLoaderManager().restartLoader(CHANGES_LOADER,args,this);
-        } else {
-            getLoaderManager().initLoader(CHANGES_LOADER,args,this);
-            changesLoaderStarted = true;
+//        Bundle args = new Bundle();
+//        args.putString(BUNDLE_ISOTIJD,isoTijd);
+        if (changesLoaderStarted) {  // TODO  service aanroepen
+//            getLoaderManager().restartLoader(CHANGES_LOADER,args,this);
+//        } else {
+//            getLoaderManager().initLoader(CHANGES_LOADER,args,this);
+//            changesLoaderStarted = true;
         }
     }
 
@@ -1187,7 +1199,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
 
     @Override
     public Ticket refreshTicket(final int i) {
-        runOnUiThread(new Runnable() {
+/*        runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 Bundle args = new Bundle();
@@ -1199,7 +1211,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
                     ticketLoaderStarted = true;
                 }
             }
-        });
+        }); */
         return null;  // TODO
     }
 
@@ -1331,7 +1343,7 @@ public class TracStart extends Activity implements LoaderManager.LoaderCallbacks
                 case MSG_REQUEST_TICKET_COUNT:
                     if (!LoginFragmentTag.equals(getTopFragment())) {
                         final int count = getTicketCount();
-                        sendMessageToService(MSG_SEND_TICKET_COUNT, count);
+                        sendMessageToService(MSG_SEND_TICKET_COUNT, count,ISO8601.fromUnix(referenceTime));
                     }
                     break;
 
