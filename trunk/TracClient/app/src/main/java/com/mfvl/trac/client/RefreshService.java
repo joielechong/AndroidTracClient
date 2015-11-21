@@ -112,7 +112,32 @@ public class RefreshService extends Service {
 
                 case MSG_SEND_TICKET_COUNT:
                     if (msg.arg1 > 0) {
-                        sendMessageToUI(MSG_REQUEST_NEW_TICKETS);
+//                        sendMessageToUI(MSG_REQUEST_NEW_TICKETS);
+						Tickets tl = changedTickets((String) msg.obj);
+						if (tl != null) {
+							if (tl.ticketList.size() > 0) {
+								try {
+									final Intent launchIntent = new Intent(RefreshService.this, Refresh.class);
+
+									launchIntent.setAction(refreshAction);
+									final PendingIntent pendingIntent = PendingIntent.getActivity(RefreshService.this, -1, launchIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+									final Notification notification = new NotificationCompat.Builder(RefreshService.this)
+											.setSmallIcon(R.drawable.traclogo)
+											.setAutoCancel(true)
+											.setContentTitle(RefreshService.this.getString(R.string.notifmod))
+											.setTicker(RefreshService.this.getString(R.string.foundnew))
+											.setContentText(RefreshService.this.getString(R.string.foundnew))
+											.setContentIntent(pendingIntent)
+											.setSubText(tl.ticketList.toString())
+											.build();
+									mNotificationManager.notify(notifId, notification);
+									// tcLog.d( "Notification sent");
+								} catch (final IllegalArgumentException e) {
+									tcLog.e( "IllegalArgumentException in notification", e);
+								}
+							}
+						}
                     }
                     break;
 

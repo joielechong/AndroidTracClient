@@ -25,14 +25,13 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
-import android.os.Messenger;
 
 import static com.mfvl.trac.client.Const.*;
 
 
 public class Refresh extends Activity implements ServiceConnection {
 
-    private Messenger mService = null;
+    private RefreshService mService = null;
 
 /*
  * Implementing ServiceConnection 
@@ -41,7 +40,8 @@ public class Refresh extends Activity implements ServiceConnection {
     @Override
     public void onServiceConnected(ComponentName className, IBinder service) {
         tcLog.d("className = " + className + " service = " + service);
-        mService = new Messenger(service);
+        RefreshService.RefreshBinder binder = (RefreshService.RefreshBinder) service;
+        mService = binder.getService();
         try {
             final Message msg = Message.obtain(null, MSG_REQUEST_REFRESH);
 
