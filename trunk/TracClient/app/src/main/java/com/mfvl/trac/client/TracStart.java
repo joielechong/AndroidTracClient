@@ -88,7 +88,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
     private static final int TICKET_LOADER_NOSHOW = 4;
     static public IncomingHandler tracStartHandler = null;
     private final Semaphore loadingActive = new Semaphore(1, true);
-/*	
+/*
     private final BroadcastReceiver mBroadcastMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context c,Intent i) {
@@ -121,6 +121,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
     private ArrayList<SortSpec> sortList = null;
     private ArrayList<FilterSpec> filterList = null;
     private String profile = null;
+    private LoginProfile currentLoginProfile = null;
     private String url = null;
     private String username = null;
     private String password = null;
@@ -137,6 +138,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
     private boolean doNotFinish = false;
     private TicketModel tm = null;
     private boolean mIsBound = false;
+    private boolean mTicketsBound = false;
 	private Messenger mMessenger = null;
 	private RefreshService mService = null;
 
@@ -147,22 +149,43 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
             RefreshService.RefreshBinder binder = (RefreshService.RefreshBinder) service;
             mService = binder.getService();
             tcLog.d("mService = " + mService);
-			mIsBound = true;
-       }
+            mIsBound = true;
+            mService.send(Message.obtain(null,MSG_START_TIMER));
+        }
 
         @Override
         public void onServiceDisconnected(ComponentName className) {
             tcLog.d("className = " + className);
-            mService = null;
-			mIsBound = false;
+            mIsBound = false;
+            if (!mTicketsBound) {
+                mService = null;
+            }
+        }
+    };
 
-		}
+    private final ServiceConnection mTicketsConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            tcLog.d("className = " + className + " service = " + service);
+            RefreshService.RefreshBinder binder = (RefreshService.RefreshBinder) service;
+            mService = binder.getService();
+            tcLog.d("mService = " + mService);
+            mTicketsBound = true;
+            mService.send(Message.obtain(null,MSG_LOAD_TICKETS,currentLoginProfile));
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName className) {
+            tcLog.d("className = " + className);
+            mTicketsBound = false;
+            if (!mIsBound) {
+                mService = null;
+            }
+        }
     };
 
     private MyHandlerThread mHandlerThread = null;
     private boolean changesLoaderStarted = false;
-    private boolean listLoaderStarted = false;
-    private boolean ticketLoaderStarted = false;
     private boolean hasTicketsLoadingBar = false;
     private Boolean ticketsLoading = false;
     private TicketListAdapter dataAdapter = null;
@@ -363,7 +386,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
         mHandlerThread.start();
         tracStartHandler = new IncomingHandler(mHandlerThread.getLooper());
         mMessenger = new Messenger(tracStartHandler);
-        startService(new Intent(this, RefreshService.class));
+//        startService(new Intent(this, RefreshService.class));
 
         if (ActivityCompat.checkSelfPermission(this,Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
@@ -456,7 +479,8 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
                     sslHostNameHack = false; // force dialog to confirm
                     profile = null;
                 }
-                sendMessageToService(MSG_LOGIN_PROFILE,lp);
+                currentLoginProfile = lp;
+//                sendMessageToService(MSG_LOGIN_PROFILE,lp);
             }
         }
 
@@ -479,12 +503,12 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
             restoreFragment(savedInstanceState, FilterFragmentTag);
             restoreFragment(savedInstanceState, SortFragmentTag);
             tcLog.d("backstack restored");
-            startListLoader();
+            startListLoader(true);
         } else {
             final FragmentTransaction ft = getFragmentManager().beginTransaction();
 
             if (url != null && url.length() > 0) {
-                startListLoader();
+                startListLoader(true);
 
                 final TicketListFragment ticketListFragment = new TicketListFragment();
 
@@ -513,13 +537,17 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
         setReferenceTime();
     }
 
-    private void startListLoader() {
-        tcLog.logCall();
-        tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_START_LISTLOADER,null));
+    private void startListLoader(boolean newLoad) {
+        tcLog.d("newLoad = "+newLoad);
+        if (newLoad) {
+            tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_START_LISTLOADER, null));
+        } else {
+            tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_REFRESH_LIST, null));
+        }
     }
 
     private void showAlertBox(final int titleres, final int message, final String addit) {
-        tcLog.d("titleres = "+titleres +" : "+getString(titleres));
+        tcLog.d("titleres = " + titleres + " : " + getString(titleres));
         if (!isFinishing()) {
             runOnUiThread(new Runnable() {
                 @Override
@@ -611,7 +639,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
 
     @Override
     public void listViewCreated() {
-        tcLog.d("ticketsLoading = "+ticketsLoading + " hasTicketsLoadingBar = "+hasTicketsLoadingBar);
+        tcLog.d("ticketsLoading = " + ticketsLoading + " hasTicketsLoadingBar = " + hasTicketsLoadingBar);
         synchronized (this) {
             if (ticketsLoading) {
                 if (!hasTicketsLoadingBar) {
@@ -666,7 +694,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
 
     @Override
     public void onAttachFragment(final Fragment frag) {
-        tcLog.d(frag+" this = "+this);
+        tcLog.d(frag + " this = " + this);
         if (ListFragmentTag.equals(frag.getTag())) {
             final TicketListFragment ticketListFragment = getTicketListFragment();
             if (ticketListFragment != null) {
@@ -736,7 +764,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
             mShareActionProvider = new ShareActionProvider(this);
             item.setActionProvider(mShareActionProvider);
         }
-        mShareActionProvider.setShareHistoryFileName("custom_share_history"+resid+".xml");
+        mShareActionProvider.setShareHistoryFileName("custom_share_history" + resid + ".xml");
 
     }
 
@@ -744,7 +772,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
     public boolean onCreateOptionsMenu(Menu menu) {
         tcLog.logCall();
         getMenuInflater().inflate(R.menu.tracstartmenu, menu);
-        setActionProvider(menu,R.id.debug);
+        setActionProvider(menu, R.id.debug);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -752,10 +780,15 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
     public void onDestroy() {
         tcLog.logCall();
         if (mIsBound) {
-            sendMessageToService(MSG_STOP_TIMER);
+            if (isFinishing()) {
+                unbindService(mConnection);
+            }
             mHandlerThread.quit();
-            unbindService(mConnection);
             mIsBound = false;
+        }
+        if (mTicketsBound) {
+            unbindService(mTicketsConnection);
+            mTicketsBound = false;
         }
         // stopService(new Intent(this, RefreshService.class));
 //        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastMessageReceiver);
@@ -763,7 +796,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
     }
 
     private void onFilterSelected(ArrayList<FilterSpec> filterList) {
-        tcLog.d("filterList = "+ filterList);
+        tcLog.d("filterList = " + filterList);
 
         final FragmentTransaction ft = getFragmentManager().beginTransaction();
         final FilterFragment filterFragment = new FilterFragment();
@@ -1040,7 +1073,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
 
     @Override
     public boolean getDispAds() {
-        tcLog.d("dispAds = "+dispAds);
+        tcLog.d("dispAds = " + dispAds);
         return dispAds;
     }
 
@@ -1053,7 +1086,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
     public void refreshOverview() {
         tcLog.logCall();
 //		dataAdapter.notifyDataSetChanged();
-        startListLoader();
+        startListLoader(false);
         setReferenceTime();
     }
 
@@ -1343,24 +1376,8 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
                 case MSG_REQUEST_TICKET_COUNT:
                     if (!LoginFragmentTag.equals(getTopFragment())) {
                         final int count = getTicketCount();
-                        sendMessageToService(MSG_SEND_TICKET_COUNT, count,ISO8601.fromUnix(referenceTime));
+                        sendMessageToService(MSG_SEND_TICKET_COUNT, count, ISO8601.fromUnix(referenceTime));
                     }
-                    break;
-
-                case MSG_REQUEST_NEW_TICKETS:
-                    if (!LoginFragmentTag.equals(getTopFragment())) {
-                        getNewTickets(ISO8601.fromUnix(referenceTime));
-                    }
-                    break;
-
-                case MSG_REQUEST_REFRESH:
-                    // tcLog.d("handleMessage msg = REFRESH");
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            refreshOverview();
-                        }
-                    });
                     break;
 
                 case MSG_START_PROGRESSBAR:
@@ -1434,7 +1451,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
                     break;
 
                 case MSG_START_LISTLOADER:
-                    LoginProfile lp = new LoginProfile(url,username,password,sslHack)
+                    currentLoginProfile = new LoginProfile(url,username,password,sslHack)
                             .setSslHostNameHack(sslHostNameHack)
                             .setFilterList(filterList)
                             .setSortList(sortList);
@@ -1453,11 +1470,15 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
                     loadingActive.acquireUninterruptibly();
                     ticketsLoading = true;
 
-                    bindService(new Intent(TracStart.this,RefreshService.class)
-                            .putExtra("LoginProfile",lp)
-                            .setAction(ACTION_LOGIN_PROFILE),mConnection,Context.BIND_AUTO_CREATE);
-//				sendMessageToService(MSG_LOAD_TICKETS,null); //  TODO
-                    bindService(new Intent(TracStart.this,RefreshService.class).setAction(ACTION_LOAD_TICKETS),mConnection,Context.BIND_AUTO_CREATE);
+                    if (mService == null) {
+//                        bindService(new Intent(TracStart.this, RefreshService.class)
+//                                .putExtra("LoginProfile", currentLoginProfile)
+//                                .setAction(ACTION_LOGIN_PROFILE), mTicketsConnection, Context.BIND_AUTO_CREATE);
+                        bindService(new Intent(TracStart.this, RefreshService.class).setAction(ACTION_LOAD_TICKETS), mTicketsConnection, Context.BIND_AUTO_CREATE);
+                    } else {
+//                        mService.send(Message.obtain(null,MSG_LOGIN_PROFILE,currentLoginProfile));
+                        mService.send(Message.obtain(null,MSG_LOAD_TICKETS,currentLoginProfile));
+                    }
 
 
 //                    if (listLoaderStarted) {
@@ -1466,6 +1487,10 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
 //                        getLoaderManager().initLoader(LIST_LOADER, null, TracStart.this);
 //                        listLoaderStarted = true;
 //.                    }
+                    break;
+
+                case MSG_REFRESH_LIST:
+                    mService.send(Message.obtain(null,MSG_LOAD_TICKETS,null));
                     break;
 
                 case MSG_LOAD_FASE1_FINISHED:
@@ -1501,6 +1526,10 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
                         @Override
                         public void run() {
                             dataAdapter.notifyDataSetChanged();
+                            if (mTicketsBound) {
+                                unbindService(mTicketsConnection);
+                                mTicketsBound = false;
+                            }
                         }
                     });
                     break;
