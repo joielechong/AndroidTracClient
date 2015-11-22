@@ -57,11 +57,12 @@ public class RefreshService extends Service {
 
     private MyHandlerThread mHandlerThread = null;
     private ServiceHandler mServiceHandler;
-	private Messenger mainReceiver = null;
     private LoginProfile mLoginProfile = null;
     private TracHttpClient tracClient = null;
     private NotificationManager mNotificationManager;
     private TicketModel tm = null;
+    private Tickets mTickets = null;
+    private boolean invalid = true;
 
     /**
      * Class used for the client Binder.  Because we know this service always
@@ -88,7 +89,6 @@ public class RefreshService extends Service {
         @Override
         public void handleMessage(final Message msg) {
             tcLog.d("handleMessage msg = " + msg);
-            Messenger receiver = msg.replyTo;
 
             switch (msg.what) {
                 case MSG_START_TIMER:
@@ -100,10 +100,6 @@ public class RefreshService extends Service {
                     stopTimer();
                     break;
 
-                case MSG_REQUEST_REFRESH:
-                    sendMessageToUI(MSG_REQUEST_REFRESH);
-                    break;
-
                 case MSG_REMOVE_NOTIFICATION:
                     mNotificationManager.cancel(notifId);
                     stopTimer();
@@ -112,31 +108,28 @@ public class RefreshService extends Service {
 
                 case MSG_SEND_TICKET_COUNT:
                     if (msg.arg1 > 0) {
-//                        sendMessageToUI(MSG_REQUEST_NEW_TICKETS);
 						Tickets tl = changedTickets((String) msg.obj);
-						if (tl != null) {
-							if (tl.ticketList.size() > 0) {
-								try {
-									final Intent launchIntent = new Intent(RefreshService.this, Refresh.class);
+						if (tl != null && tl.ticketList.size() > 0) {
+                            try {
+                                final Intent launchIntent = new Intent(RefreshService.this, Refresh.class);
 
-									launchIntent.setAction(refreshAction);
-									final PendingIntent pendingIntent = PendingIntent.getActivity(RefreshService.this, -1, launchIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                                launchIntent.setAction(refreshAction);
+                                final PendingIntent pendingIntent = PendingIntent.getActivity(RefreshService.this, -1, launchIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-									final Notification notification = new NotificationCompat.Builder(RefreshService.this)
-											.setSmallIcon(R.drawable.traclogo)
-											.setAutoCancel(true)
-											.setContentTitle(RefreshService.this.getString(R.string.notifmod))
-											.setTicker(RefreshService.this.getString(R.string.foundnew))
-											.setContentText(RefreshService.this.getString(R.string.foundnew))
-											.setContentIntent(pendingIntent)
-											.setSubText(tl.ticketList.toString())
-											.build();
-									mNotificationManager.notify(notifId, notification);
-									// tcLog.d( "Notification sent");
-								} catch (final IllegalArgumentException e) {
-									tcLog.e( "IllegalArgumentException in notification", e);
-								}
-							}
+                                final Notification notification = new NotificationCompat.Builder(RefreshService.this)
+                                        .setSmallIcon(R.drawable.traclogo)
+                                        .setAutoCancel(true)
+                                        .setContentTitle(RefreshService.this.getString(R.string.notifmod))
+                                        .setTicker(RefreshService.this.getString(R.string.foundnew))
+                                        .setContentText(RefreshService.this.getString(R.string.foundnew))
+                                        .setContentIntent(pendingIntent)
+                                        .setSubText(tl.ticketList.toString())
+                                        .build();
+                                mNotificationManager.notify(notifId, notification);
+                                // tcLog.d( "Notification sent");
+                    } catch (final IllegalArgumentException e) {
+                        tcLog.e("IllegalArgumentException in notification", e);
+                    }
 						}
                     }
                     break;
@@ -169,13 +162,18 @@ public class RefreshService extends Service {
                     }
                     break;
 
-                case MSG_LOGIN_PROFILE:
-                    mLoginProfile = (LoginProfile)msg.obj;
-                    tracClient = new TracHttpClient(mLoginProfile);
-                    tm=TicketModel.getInstance(tracClient);
-                    break;
-
                 case MSG_LOAD_TICKETS:
+                    LoginProfile lp = (LoginProfile)msg.obj;
+                    tcLog.d("lp = "+lp);
+                    tcLog.d("mLoginProfile = "+mLoginProfile);
+                    if (lp !=null) {
+                        invalid = !lp.equals(mLoginProfile);
+                        mLoginProfile = lp;
+                        tracClient = new TracHttpClient(mLoginProfile);
+                        tm=TicketModel.getInstance(tracClient);
+                    } else {
+                        invalid = true;
+                    }
                     loadTickets();
                     break;
 
@@ -213,10 +211,6 @@ public class RefreshService extends Service {
         }
     }
 	
-	public void setMainHandler(Handler h) {
-		mainReceiver = new Messenger(h);
-	}
-
     public TicketModel getTicketModel() {
         tm = TicketModel.getInstance();
 //        tcLog.d("tm = "+tm);
@@ -241,21 +235,21 @@ public class RefreshService extends Service {
     }
 
     @Override
-    public IBinder onBind(Intent intent) {
+    public void onRebind(Intent intent) {
         tcLog.d("intent = " + intent);
+    }
+
+    @Override
+        public IBinder onBind(Intent intent) {
+            tcLog.d("intent = " + intent);
+/*
         String action = intent.getAction();
         if (action != null) {
             Message msg = mServiceHandler.obtainMessage();
-            msg.replyTo = mainReceiver;
             switch (action) {
-                case ACTION_LOGIN_PROFILE:
-                    msg.what = MSG_LOGIN_PROFILE;
-                    msg.obj = (intent.getSerializableExtra("LoginProfile"));
-                    mServiceHandler.sendMessage(msg);
-                    break;
-
                 case ACTION_LOAD_TICKETS:
                     msg.what = MSG_LOAD_TICKETS;
+                    msg.obj = (intent.getSerializableExtra("LoginProfile"));
                     mServiceHandler.sendMessage(msg);
                     break;
 
@@ -265,6 +259,7 @@ public class RefreshService extends Service {
                     break;
             }
         }
+*/
         return mBinder;
     }
 	
@@ -275,8 +270,6 @@ public class RefreshService extends Service {
     @Override
     public boolean onUnbind(Intent intent) {
         tcLog.d("intent = " + intent);
-        stopTimer();
-        stopService(intent);
         return false;
     }
 
@@ -310,62 +303,67 @@ public class RefreshService extends Service {
 
     private void loadTickets() {
         tcLog.d(mLoginProfile.toString());
-
-        final Tickets mTickets = new Tickets();
-        mTickets.resetCache();
-        String reqString="";
-        List<FilterSpec> fl = mLoginProfile.getFilterList();
-        if (fl != null) {
-            reqString = Credentials.joinList(fl.toArray(),"&");
-        }
-        List<SortSpec> sl = mLoginProfile.getSortList();
-        if (sl != null) {
+        if (invalid) {
+            mTickets = new Tickets();
+            mTickets.resetCache();
+            String reqString = "";
+            List<FilterSpec> fl = mLoginProfile.getFilterList();
             if (fl != null) {
-                reqString += "&";
+                reqString = Credentials.joinList(fl.toArray(), "&");
             }
-            reqString += Credentials.joinList(sl.toArray(),"&");
-        }
-        if (reqString.length() == 0) {
-            reqString = "max=0";
-        }
-        tcLog.d("reqString = " + reqString);
-        try {
-            final JSONArray jsonTicketlist = tracClient.Query(reqString);
+            List<SortSpec> sl = mLoginProfile.getSortList();
+            if (sl != null) {
+                if (fl != null) {
+                    reqString += "&";
+                }
+                reqString += Credentials.joinList(sl.toArray(), "&");
+            }
+            if (reqString.length() == 0) {
+                reqString = "max=0";
+            }
+            tcLog.d("reqString = " + reqString);
+            try {
+                final JSONArray jsonTicketlist = tracClient.Query(reqString);
 
-            tcLog.d(jsonTicketlist.toString());
-            final int count = jsonTicketlist.length();
+                tcLog.d(jsonTicketlist.toString());
+                final int count = jsonTicketlist.length();
 
-            if (count > 0) {
-                int tickets[] = new int[count];
-                for (int i = 0; i < count; i++) {
-                    Ticket t = null;
+                if (count > 0) {
+                    int tickets[] = new int[count];
+                    for (int i = 0; i < count; i++) {
+                        Ticket t = null;
+                        try {
+                            tickets[i] = jsonTicketlist.getInt(i);
+                            t = new Ticket(tickets[i]);
+                            mTickets.putTicket(t);
+                        } catch (JSONException e) {
+                            tickets[i] = -1;
+                        } finally {
+                            mTickets.ticketList.add(i, t);
+                        }
+                    }
+                    tcLog.d("ticketlist loaded");
+                    sendMessageToUI(MSG_LOAD_FASE1_FINISHED, mTickets);
                     try {
-                        tickets[i] = jsonTicketlist.getInt(i);
-                        t = new Ticket(tickets[i]);
-                        mTickets.putTicket(t);
-                    } catch (JSONException e) {
-                        tickets[i] = -1;
+                        loadTicketContent(mTickets);
+                    } catch (Exception e) {
+                        tcLog.e("Exception in ticketContentLoad", e);
+                        popup_warning(R.string.connerr, e.getMessage());
                     } finally {
-                        mTickets.ticketList.add(i, t);
+                        sendMessageToUI(MSG_LOAD_FASE2_FINISHED, mTickets);
                     }
                 }
-                tcLog.d("ticketlist loaded");
-                sendMessageToUI(MSG_LOAD_FASE1_FINISHED,mTickets);
-                try {
-                    loadTicketContent(mTickets);
-                } catch (Exception e) {
-                    tcLog.e("Exception in ticketContentLoad", e);
-                    popup_warning(R.string.connerr, e.getMessage());
-                } finally {
-                    sendMessageToUI(MSG_LOAD_FASE2_FINISHED,mTickets);
-                }
+            } catch (JSONRPCException e) {
+                popup_warning(R.string.connerr, e.getMessage());
             }
-        } catch (JSONRPCException e) {
-            popup_warning(R.string.connerr,e.getMessage());
+            if (mTickets.getTicketCount() == 0) {
+                popup_warning(R.string.notickets, null);
+            }
+        } else{
+            sendMessageToUI(MSG_LOAD_FASE1_FINISHED, mTickets);
+            sendMessageToUI(MSG_LOAD_FASE2_FINISHED, mTickets);
         }
-        if (mTickets.getTicketCount() == 0) {
-            popup_warning(R.string.notickets, null);
-        }
+        invalid = false;
     }
 
     private void loadTicketContent(Tickets tl) throws RuntimeException {
@@ -456,9 +454,10 @@ public class RefreshService extends Service {
             param.put(ob);
             final JSONArray jsonTicketlist = tracClient.callJSONArray("ticket.getRecentChanges", param);
 
-            Tickets t = new Tickets();
+            Tickets t = null;
 
             if (jsonTicketlist.length() > 0) {
+                t = new Tickets();
                 for (int i = 0;i<jsonTicketlist.length();i++) {
                     int ticknr = jsonTicketlist.getInt(i);
                     t.addTicket(new Ticket(ticknr));

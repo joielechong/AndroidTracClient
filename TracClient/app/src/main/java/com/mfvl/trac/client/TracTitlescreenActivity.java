@@ -45,6 +45,7 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
 //        tcLog.logCall();
 		Credentials.getInstance(getApplicationContext());
         setContentView(R.layout.activity_titlescreen);
+        startService(new Intent(this, RefreshService.class));
     }
 
     @Override
@@ -114,20 +115,41 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
         int timerVal = getResources().getInteger(R.integer.startupTimer);
         final Timer t = new Timer();
 		t.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				handler.post(new Runnable() {
-					@Override
-					public void run() {
-						startActivity(launchTrac);
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        startActivity(launchTrac);
+                        stopService(new Intent(TracTitlescreenActivity.this, RefreshService.class));
 						finish();
-					}
-				});
-			}
-		}, timerVal);
+                    }
+                });
+            }
+        }, timerVal);
 	}
-	
-	@Override
+
+    public void onResume() {
+        tcLog.logCall();
+        super.onResume();
+    }
+    public void onPause() {
+        tcLog.logCall();
+        super.onPause();
+    }
+
+    public void onStop() {
+        tcLog.logCall();
+        super.onStop();
+    }
+
+    public void onDestroy() {
+        tcLog.logCall();
+        super.onDestroy();
+    }
+
+
+    @Override
 	public void uncaughtException(Thread thread, Throwable ex) {
 		tcLog.e("Uncaught exception in thread "+ thread,ex);
 		tcLog.save();
