@@ -88,7 +88,7 @@ public class RefreshService extends Service {
 
         @Override
         public void handleMessage(final Message msg) {
-            tcLog.d("handleMessage msg = " + msg);
+            tcLog.d("msg = " + msg);
 
             switch (msg.what) {
                 case MSG_START_TIMER:
@@ -160,6 +160,10 @@ public class RefreshService extends Service {
                             tcLog.e( "IllegalArgumentException in notification", e);
                         }
                     }
+                    break;
+
+                case MSG_GET_TICKET_MODEL:
+                    tm = getTicketModel();
                     break;
 
                 case MSG_LOAD_TICKETS:

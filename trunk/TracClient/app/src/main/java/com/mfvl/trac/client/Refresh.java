@@ -58,7 +58,7 @@ public class Refresh extends Activity implements ServiceConnection {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        tcLog.d( "savedInstanceState = " + savedInstanceState);
+        tcLog.d("savedInstanceState = " + savedInstanceState);
 
         try {
             final String action = getIntent().getAction();
@@ -66,11 +66,11 @@ public class Refresh extends Activity implements ServiceConnection {
             if (action != null) {
                 if (action.equalsIgnoreCase(RefreshService.refreshAction)) {
                     bindService(new Intent(this, RefreshService.class), this, Context.BIND_AUTO_CREATE);
-                    // tcLog.i( "Refresh sent");
+                    // tcLog.i("Refresh sent");
                 }
             }
         } catch (final Exception e) {
-            tcLog.e( "Problem consuming action from intent", e);
+            tcLog.e("Problem consuming action from intent", e);
         }
         finish();
     }
@@ -82,7 +82,7 @@ public class Refresh extends Activity implements ServiceConnection {
         try {
             unbindService(this);
         } catch (final Throwable t) {
-            tcLog.e( "Failed to unbind from the service", t);
+            tcLog.e("Failed to unbind from the service", t);
         }
     }
 }
