@@ -62,13 +62,12 @@ final class Const {
 	*/
 
     static final int MSG_START_TIMER = 1;
-    static final int MSG_REQUEST_TICKET_COUNT = 2;
-    static final int MSG_SEND_TICKET_COUNT = 3;
-//    static final int MSG_REQUEST_NEW_TICKETS = 4;
-    static final int MSG_SEND_NEW_TICKETS = 5;
-    static final int MSG_REQUEST_REFRESH = 6;
-    static final int MSG_STOP_TIMER = 7;
-    static final int MSG_REMOVE_NOTIFICATION = 8;
+    static final int MSG_STOP_TIMER = 2;
+    static final int MSG_REQUEST_TICKET_COUNT = 3;
+    static final int MSG_SEND_TICKET_COUNT = 4;
+    static final int MSG_REQUEST_REFRESH = 5;
+    static final int MSG_SEND_TICKETS = 6;
+    static final int MSG_REMOVE_NOTIFICATION = 7;
 
     static final int MSG_START_PROGRESSBAR = 21;
     static final int MSG_STOP_PROGRESSBAR = 22;
@@ -91,13 +90,6 @@ final class Const {
     static final int MSG_GET_ATTACHMENT = 48;
     static final int MSG_PUT_ATTACHMENT = 49;
     static final int MSG_LOAD_FAILED = 50;
-
-	/* 
-	 * Broadcast messages
-	*/
-
-//    static final String PROVIDER_MESSAGE = "com.mfvl.trac.client.message.provider";
-//    static final String DATACHANGED_MESSAGE = "com.mfvl.trac.client.message.datachanged";
 
     /*
      * App private Intent actions

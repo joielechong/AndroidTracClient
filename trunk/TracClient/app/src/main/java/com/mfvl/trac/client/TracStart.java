@@ -257,7 +257,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
                 for (Ticket t: tl.ticketList) {
                     newTickets.add(t.getTicketnr());
                 }
-                sendMessageToService(MSG_SEND_NEW_TICKETS, newTickets);
+                sendMessageToService(MSG_SEND_TICKETS, newTickets);
                 getLoaderManager().destroyLoader(CHANGES_LOADER);
                 break;
 
@@ -413,22 +413,10 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
         } catch (Exception ignored) {}
 
         timerCorr = getResources().getInteger(R.integer.timerCorr);
-
         setContentView(R.layout.tracstart);
         debug |= Credentials.isRCVersion();
 
-        url = Credentials.getUrl();
-        username = Credentials.getUsername();
-        password = Credentials.getPassword();
-        sslHack = Credentials.getSslHack();
-        sslHostNameHack = Credentials.getSslHostNameHack();
-        profile = Credentials.getProfile();
-        setFilter(Credentials.getFilterString());
-        setSort(Credentials.getSortString());
-
-        dispAds = true;
         if (savedInstanceState != null) {
-            dispAds = savedInstanceState.getBoolean(ADMOB, true);
             url = savedInstanceState.getString(CURRENT_URL);
             username = savedInstanceState.getString(CURRENT_USERNAME);
             password = savedInstanceState.getString(CURRENT_PASSWORD);
@@ -436,7 +424,17 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
             sslHostNameHack = savedInstanceState.getBoolean(CURRENT_SSLHOSTNAMEHACK, false);
             filterList = (ArrayList<FilterSpec>)savedInstanceState.getSerializable(FILTERLISTNAME);
             sortList = (ArrayList<SortSpec>)savedInstanceState.getSerializable(SORTLISTNAME);
+            dispAds = savedInstanceState.getBoolean(ADMOB, true);
         } else {
+            url = Credentials.getUrl();
+            username = Credentials.getUsername();
+            password = Credentials.getPassword();
+            sslHack = Credentials.getSslHack();
+            sslHostNameHack = Credentials.getSslHostNameHack();
+            profile = Credentials.getProfile();
+            setFilter(Credentials.getFilterString());
+            setSort(Credentials.getSortString());
+
             // only at first start
             if (Credentials.getFirstRun()) {
                 final Intent launchTrac = new Intent(this, TracShowWebPage.class);
@@ -444,9 +442,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
                 launchTrac.putExtra(HELP_VERSION, false);
                 startActivity(launchTrac);
             }
-            if (getIntent().hasExtra(ADMOB)) {
-                dispAds = getIntent().getBooleanExtra(ADMOB, true);
-            }
+            dispAds = !getIntent().hasExtra(ADMOB) || getIntent().getBooleanExtra(ADMOB, true);
             if (getIntent().hasExtra(INTENT_URL)) {
                 urlArg = getIntent().getStringExtra(INTENT_URL);
                 ticketArg = (int) getIntent().getLongExtra(INTENT_TICKET, -1);
@@ -646,6 +642,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
                     startProgressBar(getString(R.string.getlist) + (profile == null ? "" : "\n" + profile));
                     hasTicketsLoadingBar = true;
                 }
+				getTicketListFragment().startLoading();
             }
         }
     }
@@ -1147,19 +1144,6 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
         return getFragmentManager().findFragmentByTag(tag);
     }
 
-    private void getNewTickets(final String isoTijd) {
-        tcLog.d("tijd = "+isoTijd) ;
-
-//        Bundle args = new Bundle();
-//        args.putString(BUNDLE_ISOTIJD,isoTijd);
-        if (changesLoaderStarted) {  // TODO  service aanroepen
-//            getLoaderManager().restartLoader(CHANGES_LOADER,args,this);
-//        } else {
-//            getLoaderManager().initLoader(CHANGES_LOADER,args,this);
-//            changesLoaderStarted = true;
-        }
-    }
-
     private void setReferenceTime() {
         // tcLog.d("setReferenceTime");
         referenceTime = System.currentTimeMillis() - timerCorr;
@@ -1176,7 +1160,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
     }
 
     private void startProgressBar(String message) {
-        tcLog.d(message+" tracStartHandler = "+tracStartHandler);
+        tcLog.d(message);
         try {
             tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_START_PROGRESSBAR,message));
         } catch (NullPointerException e) {
@@ -1232,6 +1216,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
 
     @Override
     public Ticket refreshTicket(final int i) {
+		sendMessageToService(MSG_SEND_TICKETS,i,null);
 /*        runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -1512,7 +1497,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
                             try {
                                 getTicketListFragment().dataHasChanged();
                             } catch (Exception e) {
-                                tcLog.e("LISTLOADER cannot contact TicketListFragment");
+                                tcLog.e("LISTLOADER fase 1 cannot contact TicketListFragment");
                             }
                             if (loadingActive.availablePermits() == 0) {
                                 loadingActive.release();
@@ -1530,7 +1515,12 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
                                 unbindService(mTicketsConnection);
                                 mTicketsBound = false;
                             }
-                        }
+                             try {
+                                getTicketListFragment().dataHasChanged();
+                            } catch (Exception e) {
+                                tcLog.e("LISTLOADER fase 2 cannot contact TicketListFragment");
+                            }
+                       }
                     });
                     break;
 
