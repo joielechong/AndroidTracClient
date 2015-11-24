@@ -36,6 +36,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -134,11 +135,15 @@ public class RefreshService extends Service {
                     }
                     break;
 
-                case MSG_SEND_NEW_TICKETS:
-                    @SuppressWarnings("unchecked")
-                    final List<Integer> newTickets = (List<Integer>) msg.obj;
+                case MSG_SEND_TICKETS:
+					@SuppressWarnings("unchecked")
+                    List<Integer> newTickets = (List<Integer>)msg.obj;
+					if (newTickets == null) {
+						newTickets = new ArrayList<>();
+						newTickets.add(msg.arg1);
+					}
 
-                    if ((newTickets != null) && (newTickets.size() > 0)) {
+                    if (newTickets.size() > 0) {
                         try {
                             final Intent launchIntent = new Intent(RefreshService.this, Refresh.class);
 
@@ -161,7 +166,7 @@ public class RefreshService extends Service {
                         }
                     }
                     break;
-
+				
                 case MSG_GET_TICKET_MODEL:
                     tm = getTicketModel();
                     break;

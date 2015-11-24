@@ -90,12 +90,13 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket>  {
 		return (mTickets!= null?mTickets.getTicket(i):null);
 	}
 	
-//	public int getCount() {
-//		tcLog.d("mTickets = "+mTickets);
+	public int getCount() {
+		tcLog.d("mTickets = "+mTickets+", count = "+mTickets.getTicketCount());
 //		int c = super.getCount();
-//		tcLog.d("count = "+c+" this - "+this);
-//		return c;
-//	}
+		int c = mTickets.getTicketCount();
+		tcLog.d("count = "+c+" this - "+this);
+		return c;
+	}
 	
 	public int getTicketContentCount() {
 		return mTickets.getTicketContentCount();
