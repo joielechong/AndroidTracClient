@@ -43,9 +43,7 @@ import com.google.android.gms.ads.AdView;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.mfvl.trac.client.Const.HELP_FILE;
-import static com.mfvl.trac.client.Const.HELP_VERSION;
-import static com.mfvl.trac.client.Const.MSG_SHOW_DIALOG;
+import static com.mfvl.trac.client.Const.*;
 
 abstract public class TracClientFragment extends Fragment implements OnGlobalLayoutListener, View.OnClickListener {
  
