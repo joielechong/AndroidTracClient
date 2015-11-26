@@ -7,4 +7,5 @@
 	<string name="warning">!</string>
 	<string name="title_text">TRAC\nCLIENT</string>
 	<string name="auteur">Michiel van Loon</string>
+	<string name="logfile">tc-log.txt</string>
 </resources>

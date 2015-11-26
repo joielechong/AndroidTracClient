@@ -776,20 +776,18 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
     @Override
     public void onDestroy() {
         tcLog.logCall();
-        if (mIsBound) {
-            if (isFinishing()) {
+        super.onDestroy();
+        if (isFinishing()) {
+    		if (mIsBound) {
                 unbindService(mConnection);
+                mIsBound = false;
+            }
+            if (mTicketsBound) {
+                unbindService(mTicketsConnection);
+                mTicketsBound = false;
             }
             mHandlerThread.quit();
-            mIsBound = false;
         }
-        if (mTicketsBound) {
-            unbindService(mTicketsConnection);
-            mTicketsBound = false;
-        }
-        // stopService(new Intent(this, RefreshService.class));
-//        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastMessageReceiver);
-        super.onDestroy();
     }
 
     private void onFilterSelected(ArrayList<FilterSpec> filterList) {
@@ -1320,6 +1318,35 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
             return -1;
         }
     }
+	
+	@Override
+    public void getAttachment(final Ticket ticket,final String filename, final onAttachmentCompleteListener oc) {
+		final int _ticknr = ticket.getTicketnr();
+        final Thread networkThread = new Thread("getAttachment") {
+            @Override
+            public void run() {
+//                available.acquireUninterruptibly();
+                if (oc != null) {
+                    try {
+						TracHttpClient tracClient = new TracHttpClient(url,sslHack,sslHostNameHack,username,password);
+                        oc.onComplete(tracClient.getAttachment(_ticknr, filename));
+                    } catch (final Exception e) {
+                        tcLog.e("Exception during getAttachment",e);
+                    } finally {
+//                        available.release();
+                    }
+                }
+            }
+        };
+
+        networkThread.start();
+        try {
+            networkThread.join();
+//            if (rpcerror != null) {
+//                throw new RuntimeException(rpcerror);
+//            }
+        } catch (final Exception ignored) {}
+    }	
 
     @Override
     public int getNextTicket(int i) {
@@ -1331,7 +1358,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
         return dataAdapter.getPrevTicket(i);
     }
 
-    public void onRequestPermissionsResult (int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult (int requestCode, String[] permissions, int[] grantResults) {
         tcLog.d("requestCode = "+requestCode+" permissions = "+Arrays.asList(permissions)+" grantResults = "+ Arrays.asList(grantResults));
         switch (requestCode) {
             case REQUEST_CODE_WRITE_EXT: {
@@ -1497,10 +1524,23 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
                             try {
                                 getTicketListFragment().dataHasChanged();
                             } catch (Exception e) {
-                                tcLog.e("LISTLOADER fase 1 cannot contact TicketListFragment");
+                                tcLog.e("MSG_LOAD_FASE1_FINISHED cannot contact TicketListFragment");
                             }
                             if (loadingActive.availablePermits() == 0) {
                                 loadingActive.release();
+                            }
+                        }
+                    });
+                    break;
+
+                case MSG_DATA_CHANGED:
+                    TracStart.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                getTicketListFragment().dataHasChanged();
+                            } catch (Exception e) {
+                                tcLog.e("MSG_DATA_CHANGED cannot contact TicketListFragment");
                             }
                         }
                     });
@@ -1510,7 +1550,6 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
                     TracStart.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            dataAdapter.notifyDataSetChanged();
                             if (mTicketsBound) {
                                 unbindService(mTicketsConnection);
                                 mTicketsBound = false;
@@ -1518,7 +1557,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
                              try {
                                 getTicketListFragment().dataHasChanged();
                             } catch (Exception e) {
-                                tcLog.e("LISTLOADER fase 2 cannot contact TicketListFragment");
+                                tcLog.e("MSG_LOAD_FASE2_FINISHED cannot contact TicketListFragment");
                             }
                        }
                     });

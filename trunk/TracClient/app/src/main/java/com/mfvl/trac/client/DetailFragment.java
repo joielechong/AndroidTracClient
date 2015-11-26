@@ -16,6 +16,9 @@
 
 package com.mfvl.trac.client;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -33,6 +36,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -770,61 +774,55 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 
     private void selectBijlage(final int bijlagenr) {
         listener.startProgressBar(R.string.downloading);
-/* TODO
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    final String filename = _ticket.getAttachmentFile(bijlagenr - 1);
-                    final String mimeType = getMimeType(filename);
+		try {
+			final String filename = _ticket.getAttachmentFile(bijlagenr - 1);
+			final String mimeType = getMimeType(filename);
 
-                    _ticket.getAttachment(filename, new onAttachmentCompleteListener() {
-                        @Override
-                        public void onComplete(final byte[] filedata) {
-                            // tcLog.d("onComplete filedata = "
-                            // + filedata.length);
-                            try {
-                                if (path == null) {
-                                    path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-                                    path.mkdirs();
-                                }
-                                final File file = new File(path, filename);
-                                final OutputStream os = new FileOutputStream(file);
+			listener.getAttachment(_ticket,filename, new onAttachmentCompleteListener() {
+				@Override
+				public void onComplete(final byte[] filedata) {
+					// tcLog.d("onComplete filedata = "
+					// + filedata.length);
+					try {
+//						if (path == null) {
+//							path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+//							path.mkdirs();
+//						}
+//						final File file = new File(path, filename);
+						final File file = Credentials.makeCacheFilePath(filename);
+						final OutputStream os = new FileOutputStream(file);
 
-                                file.deleteOnExit();
-                                os.write(filedata);
-                                os.close();
-                                final Intent viewIntent = new Intent(Intent.ACTION_VIEW);
+						file.deleteOnExit();
+						os.write(filedata);
+						os.close();
+						final Intent viewIntent = new Intent(Intent.ACTION_VIEW);
 
-                                // tcLog.d( "file = "
-                                // + file.toString() + " mimeType = " +
-                                // mimeType);
-                                if (mimeType != null) {
-                                    viewIntent.setDataAndType(Uri.fromFile(new File(path, filename)), mimeType);
-                                    startActivity(viewIntent);
-                                } else {
-                                    viewIntent.setData(Uri.parse(file.toString()));
-                                    final Intent j = Intent.createChooser(viewIntent, context.getString(R.string.chooseapp));
+						// tcLog.d( "file = "
+						// + file.toString() + " mimeType = " +
+						// mimeType);
+						if (mimeType != null) {
+							viewIntent.setDataAndType(Uri.fromFile(file), mimeType);
+							startActivity(viewIntent);
+						} else {
+							viewIntent.setData(Uri.parse(file.toString()));
+							final Intent j = Intent.createChooser(viewIntent, context.getString(R.string.chooseapp));
 
-                                    startActivity(j);
-                                }
-                            } catch (final Exception e) {
-                                tcLog.w( context.getString(R.string.ioerror) + ": " + filename, e);
-								showAlertBox(R.string.notfound,R.string.sdcardmissing,null);
-                            } finally {
-								listener.stopProgressBar();
-                            }
-                        }
-                        ;
-                    });
+							startActivity(j);
+						}
+					} catch (final Exception e) {
+						tcLog.w(context.getString(R.string.ioerror) + ": " + filename, e);
+						showAlertBox(R.string.notfound,R.string.sdcardmissing,null);
+					} finally {
+						listener.stopProgressBar();
+					}
+				}
+				;
+			});
 
-                } catch (final JSONException e) {
-                    tcLog.e( "JSONException fetching attachment", e);
-                }
-            }
-        }.start();
-*/
-    }
+		} catch (final JSONException e) {
+			tcLog.e( "JSONException fetching attachment", e);
+		}
+	}
 
     private void updateTicket() {
         tcLog.logCall();
