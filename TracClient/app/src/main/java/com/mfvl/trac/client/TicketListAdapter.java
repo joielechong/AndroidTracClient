@@ -32,11 +32,6 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket>  {
 		mTickets = tl;
     }
 	
-//	public View getView(int position, View convertView, ViewGroup parent) {
-//		tcLog.d("position = "+position+" convertView = "+convertView+" parent = "+parent);
-//		return super.getView(position,convertView,parent);
-//	}
-	
 	public void clear() {
 		tcLog.logCall();
 		super.clear();
@@ -46,11 +41,11 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket>  {
 	
 	public void addAll(Tickets tl) {
         tcLog.d("tl = "+tl+" "+(tl != null ? tl.ticketList.toString() : null));
-		tcLog.d("mTickets = "+mTickets);
+//		tcLog.d("mTickets = "+mTickets);
 		if (tl != null) {
 			super.addAll(tl.ticketList);
 			mTickets.add(tl);
-			tcLog.d("count = "+super.getCount());
+//			tcLog.d("count = "+super.getCount());
 			notifyDataSetChanged();
 		}
 	}
@@ -91,10 +86,10 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket>  {
 	}
 	
 	public int getCount() {
-		tcLog.d("mTickets = "+mTickets+", count = "+mTickets.getTicketCount());
+//		tcLog.d("mTickets = "+mTickets+", count = "+mTickets.getTicketCount());
 //		int c = super.getCount();
 		int c = mTickets.getTicketCount();
-		tcLog.d("count = "+c+" this - "+this);
+//		tcLog.d("count = "+c+" this - "+this);
 		return c;
 	}
 	

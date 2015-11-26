@@ -33,9 +33,11 @@ public class tcLog {
     private static boolean doToast = false;
     private static String debugString = "";
     private static final SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
+	private static String logFilename;
 
     public static void setContext(Activity c) {
         _c = c;
+		logFilename = _c.getResources().getString(R.string.logfile);
     }
 
     private static String getCaller(int index) {
@@ -57,8 +59,8 @@ public class tcLog {
         doToast = value;
     }
 
-    private static void _toast(Activity c, String string) {
-        Toast.makeText(c, string, Toast.LENGTH_SHORT).show();
+    private static void _toast(String string) {
+        Toast.makeText(_c, string, Toast.LENGTH_SHORT).show();
     }
 
     public static void toast(final String string) {
@@ -66,7 +68,7 @@ public class tcLog {
             _c.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    _toast(_c, string);
+                    _toast(string);
                 }
             });
         }
@@ -196,10 +198,10 @@ public class tcLog {
         String caller = getCaller(2);
         File file = null;
         try {
-            file = Credentials.makeExtFilePath("tc-log.txt",false);
+            file = Credentials.makeExtFilePath(logFilename,false);
             final OutputStream os = new FileOutputStream(file);
 
-            os.write(tcLog.getDebug().getBytes());
+            os.write(getDebug().getBytes());
             os.close();
             Log.d(caller, "File saved  =  " + file);
             myLog("D."+caller, "File saved  =  " + file);

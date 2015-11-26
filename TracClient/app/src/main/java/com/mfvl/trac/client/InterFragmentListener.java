@@ -56,4 +56,5 @@ public interface InterFragmentListener {
     boolean isFinishing();
     Handler getHandler();
     boolean getCanWriteSD();
+	void getAttachment(Ticket t,String filename,onAttachmentCompleteListener oc);
 }

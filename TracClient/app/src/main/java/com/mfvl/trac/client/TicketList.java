@@ -28,11 +28,4 @@ public class TicketList extends ArrayList<Ticket> {
 			super.addAll(tl);
 		}
 	}
-	
-	public int size() {
-		int c = super.size();
-		tcLog.d("count = "+c);
-		return c;
-	}
-	
 }

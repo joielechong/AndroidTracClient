@@ -281,6 +281,13 @@ public class Credentials {
         }
         return filePath;
     }
+
+    public static File makeCacheFilePath(final String filename) {
+        final File extPath = _context.getExternalCacheDir();
+        final File filePath = new File(extPath,filename);
+		tcLog.d("filepath = "+filePath);
+        return filePath;
+    }
 	
     public static Boolean metaDataGetBoolean(String metaId) throws NameNotFoundException {
         return (_context != null
