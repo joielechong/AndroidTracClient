@@ -155,7 +155,6 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
         }
     }
 
-//    private File path = null; // TODO voor attachments
     private int ticknr = -1;
     private boolean showEmptyFields = false;
     private TicketModel tm = null;
@@ -405,8 +404,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 	
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // tcLog.d( "onOptionsItemSelected " +
-        // item.toString());
+        // tcLog.d(item.toString());
 
         if (item.getItemId() == R.id.dfupdate) {
             if (_ticket != null) {
@@ -456,15 +454,13 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
     }
 
 	@Override
-	public void onFileSelected(final String filename) {
-		tcLog.d("ticket = " + _ticket + " filename = " + filename);
-/*
+	public void onFileSelected(final Uri uri) {
+		tcLog.d("ticket = " + _ticket + " uri = " + uri);
 		listener.startProgressBar(R.string.uploading);
-
-		new Thread("addAttachment") {
+		new Thread() {
 			@Override
 			public void run() {
-				_ticket.addAttachment(filename, context, new onTicketCompleteListener() {
+				listener.addAttachment(_ticket,uri, new onTicketCompleteListener() {
 					@Override
 					public void onComplete(Ticket t2) {
 						refresh_ticket();
@@ -474,7 +470,6 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 
 			}
 		}.start();
-*/
 	}
 	
 	public void setTicket(int newTicket) {
@@ -784,11 +779,6 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 					// tcLog.d("onComplete filedata = "
 					// + filedata.length);
 					try {
-//						if (path == null) {
-//							path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-//							path.mkdirs();
-//						}
-//						final File file = new File(path, filename);
 						final File file = Credentials.makeCacheFilePath(filename);
 						final OutputStream os = new FileOutputStream(file);
 
@@ -797,9 +787,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 						os.close();
 						final Intent viewIntent = new Intent(Intent.ACTION_VIEW);
 
-						// tcLog.d( "file = "
-						// + file.toString() + " mimeType = " +
-						// mimeType);
+						// tcLog.d("file = "+ file.toString() + " mimeType = " + mimeType);
 						if (mimeType != null) {
 							viewIntent.setDataAndType(Uri.fromFile(file), mimeType);
 							startActivity(viewIntent);
@@ -832,45 +820,11 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 			modVeld.clear();
 			listener.stopProgressBar();
 			displayTicket();
-//			listener.refreshOverview();
-//			context.runOnUiThread(new Runnable() {
-//				@Override
-//				public void run() {
-//					setSelect(true);
-//					refresh_ticket();
-//				}
-//			});
 		} catch (final Exception e) {
 			tcLog.e( "Exception during update", e);
 			showAlertBox(R.string.upderr,R.string.storerrdesc,e.getMessage());
 		}
-/*
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    _ticket.update("leave", "", null, null, sendNotification, context, modVeld);
-                    for (final modifiedString s : values) {
-                        s.setUpdated(false);
-                    }
-                    modVeld.clear();
-                    listener.refreshOverview();
-                    context.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            setSelect(true);
-                            refresh_ticket();
-                        }
-                    });
-                } catch (final Exception e) {
-                    tcLog.e( "Exception during update", e);
-                    final String message = e.getMessage();
-					showAlertBox(R.string.storerr,R.string.storerrdesc,message);
-                }
-            }
-        }.start();
-*/
-		}
+	}
 
     @Override
     public boolean onDown(MotionEvent e) {

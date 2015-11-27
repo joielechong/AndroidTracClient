@@ -17,6 +17,7 @@
 package com.mfvl.trac.client;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Handler;
 import android.view.Menu;
 import java.util.Map;
@@ -57,4 +58,5 @@ public interface InterFragmentListener {
     Handler getHandler();
     boolean getCanWriteSD();
 	void getAttachment(Ticket t,String filename,onAttachmentCompleteListener oc);
+    void addAttachment(final Ticket ticket,final Uri uri, final onTicketCompleteListener oc);
 }

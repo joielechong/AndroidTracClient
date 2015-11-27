@@ -24,18 +24,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/*
+
 interface onTicketCompleteListener {
     void onComplete(Ticket t);
 }
-*/
+
 interface onAttachmentCompleteListener {
     void onComplete(byte[] data);
 }
 
-
 public class Ticket implements Serializable {
-
     /**
      *
      */
@@ -49,11 +47,7 @@ public class Ticket implements Serializable {
     private boolean _hasdata = false;
     private static Semaphore available = new Semaphore(1, true);
     private final Semaphore actionLock = new Semaphore(1, true);
-    private String rpcerror = null;
 
-    /* static */private TracHttpClient req = null;
-
-	
     public Ticket(final JSONObject velden) {
         tcLog.d( "Ticket = " + velden);
 
@@ -96,87 +90,6 @@ public class Ticket implements Serializable {
             return _ticknr + "";
         }
     }
-/*
-    public void getAttachment(final String filename, final onAttachmentCompleteListener oc) {
-        final Thread networkThread = new Thread("getAttachment") {
-            @Override
-            public void run() {
-                available.acquireUninterruptibly();
-                if (oc != null) {
-                    try {
-                        oc.onComplete(TracHttpClient.getAttachment(_ticknr, filename));
-                    } catch (final Exception e) {
-                        tcLog.e(getClass().getName() + "getAttachment", e.toString());
-                    } finally {
-                        available.release();
-                    }
-                }
-            }
-        };
-
-        networkThread.start();
-        try {
-            networkThread.join();
-            if (rpcerror != null) {
-                throw new RuntimeException(rpcerror);
-            }
-        } catch (final Exception ignored) {}
-    }
-
-    public void addAttachment(final String filename, final TracStart context, final onTicketCompleteListener oc) {
-        tcLog.i(this.getClass().getName() + ".addAttachment", filename);
-        new Thread() {
-            @Override
-            public void run() {
-                available.acquireUninterruptibly();
-                req = TracHttpClient.getInstance();
-                final File file = new File(filename);
-                final int bytes = (int) file.length();
-                final byte[] data = new byte[bytes];
-
-                try {
-                    final InputStream is = new FileInputStream(file);
-
-                    is.read(data);
-                    is.close();
-                    final String b64 = Base64.encodeToString(data, Base64.DEFAULT);
-                    final JSONArray ar = new JSONArray();
-
-                    ar.put(_ticknr);
-                    ar.put(file.getName());
-                    ar.put("");
-                    final JSONArray ar1 = new JSONArray();
-
-                    ar1.put("binary");
-                    ar1.put(b64);
-                    final JSONObject ob = new JSONObject();
-
-                    ob.put("__jsonclass__", ar1);
-                    ar.put(ob);
-                    ar.put(true);
-                    final String retfile = req.callString("ticket.putAttachment", ar);
-
-                    tcLog.i(this.getClass().getName() + ".putAttachment", retfile);
-                    actionLock.release();
-                    context.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            loadTicketData(context, null);
-                            if (oc != null) {
-                                oc.onComplete(Ticket.this);
-                            }
-                        }
-                    });
-                } catch (final Exception e) {
-                    tcLog.i(this.getClass().getName() + ".addAttachment", e.toString());
-                } finally {
-                    actionLock.release();
-                    available.release();
-                }
-            }
-        }.start();
-    }
-*/
     public String getString(final String veld) throws JSONException {
         try {
             return _velden.getString(veld);
@@ -240,7 +153,7 @@ public class Ticket implements Serializable {
         try {
             return ISO8601.toCalendar(v.getJSONArray("__jsonclass__").getString(1) + "Z").getTime().toString();
         } catch (final Exception e) {
-            tcLog.e( e.toString());
+            tcLog.e("Exception",e);
             return "";
         }
     }
@@ -269,7 +182,7 @@ public class Ticket implements Serializable {
                 } catch (final Exception ignored) {}
             }
         } catch (final JSONException e) {
-            tcLog.e( "toText velden failed", e);
+            tcLog.e("velden failed", e);
         }
         for (int j = 0; j < _history.length(); j++) {
             JSONArray cmt;
@@ -281,7 +194,7 @@ public class Ticket implements Serializable {
                             + "\n";
                 }
             } catch (final JSONException e) {
-                tcLog.e( "toText history failed", e);
+                tcLog.e("history failed", e);
             }
         }
         for (int j = 0; j < _attachments.length(); j++) {
@@ -292,7 +205,7 @@ public class Ticket implements Serializable {
                 tekst += "bijlage " + (j + 1) + ": " + toonTijd(bijlage.getJSONObject(3)) + " - " + bijlage.getString(4) + " - "
                         + bijlage.getString(0) + " - " + bijlage.getString(1) + "\n";
             } catch (final JSONException e) {
-                tcLog.e( "toText atachment failed", e);
+                tcLog.e("attachment failed", e);
             }
         }
         return tekst;

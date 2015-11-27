@@ -16,6 +16,8 @@
 
 package com.mfvl.trac.client;
 
+import android.net.Uri;
+
 public interface OnFileSelectedListener {
-    void onFileSelected(final String f);
+    void onFileSelected(final Uri uri);
 }
