@@ -141,28 +141,22 @@ public class RefreshService extends Service {
 						newTickets = new ArrayList<>();
 						newTickets.add(msg.arg1);
 					}
+                    tcLog.d("newTickets = "+newTickets);
 
                     if (newTickets.size() > 0) {
-                        try {
-                            final Intent launchIntent = new Intent(RefreshService.this, Refresh.class);
-
-                            launchIntent.setAction(refreshAction);
-                            final PendingIntent pendingIntent = PendingIntent.getActivity(RefreshService.this, -1, launchIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-                            final Notification notification = new NotificationCompat.Builder(RefreshService.this)
-                                    .setSmallIcon(R.drawable.traclogo)
-                                    .setAutoCancel(true)
-                                    .setContentTitle(RefreshService.this.getString(R.string.notifmod))
-                                    .setTicker(RefreshService.this.getString(R.string.foundnew))
-                                    .setContentText(RefreshService.this.getString(R.string.foundnew))
-                                    .setContentIntent(pendingIntent)
-                                    .setSubText(newTickets.toString())
-                                    .build();
-                            mNotificationManager.notify(notifId, notification);
-                            // tcLog.d( "Notification sent");
-                        } catch (final IllegalArgumentException e) {
-                            tcLog.e( "IllegalArgumentException in notification", e);
-                        }
+						Tickets tl = new Tickets();
+						for (Integer i: newTickets) {
+							tl.addTicket(new Ticket(i));
+						}
+						try {
+							loadTicketContent(tl);
+                            if (msg.arg2 != 0) {
+                                sendMessageToUI(msg.arg2,tl.getTicket(msg.arg1));
+                            }
+						} catch (Exception e) {
+							tcLog.e("MSG_SEND_TICKETS exception",e);
+							popup_warning(R.string.ticketnotfound,""+tl.ticketList);
+						}
                     }
                     break;
 				
@@ -230,7 +224,7 @@ public class RefreshService extends Service {
             tcLog.e("failed", e);
         }
     }
-	
+
     public TicketModel getTicketModel() {
         tm = TicketModel.getInstance();
 //        tcLog.d("tm = "+tm);

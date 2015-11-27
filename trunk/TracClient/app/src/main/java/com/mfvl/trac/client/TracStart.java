@@ -24,15 +24,12 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentManager.OnBackStackChangedListener;
 import android.app.FragmentTransaction;
-//import android.app.LoaderManager;
 import android.app.ProgressDialog;
-//import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-//import android.content.Loader;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -45,7 +42,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-//import android.support.v4.content.LocalBroadcastManager;
+import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -55,6 +52,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -82,42 +81,9 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
     private static final String UpdFragmentTag = "Modify_Fragment";
     private static final String FilterFragmentTag = "Filter_Fragment";
     private static final String SortFragmentTag = "Sort_Fragment";
-    private static final int LIST_LOADER = 1;
-    private static final int CHANGES_LOADER = 2;
-    private static final int TICKET_LOADER = 3;
-    private static final int TICKET_LOADER_NOSHOW = 4;
     static public IncomingHandler tracStartHandler = null;
     private final Semaphore loadingActive = new Semaphore(1, true);
-/*
-    private final BroadcastReceiver mBroadcastMessageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context c,Intent i) {
-//			tcLog.d("Receive "+i);
-            switch (i.getAction()) {
-                case PROVIDER_MESSAGE:
-//				tcLog.d("Receive PROVIDER_MESSAGE");
-                    int title = i.getIntExtra("title",R.string.warning);
-                    int message = i.getIntExtra("message",R.string.unknownError);
-                    String addit = i.getStringExtra("additional");
-                    showAlertBox(title,message,addit);
-                    break;
 
-                case DATACHANGED_MESSAGE:
-//				tcLog.d("Receive DATACHANGED_MESSAGE");
-                    findViewById(R.id.displayList).invalidate();
-                    try {
-                        getTicketListFragment().dataHasChanged();
-                    } catch (Exception e) {
-                        tcLog.e("cannot contact TicketListFragment");
-                    }
-                    break;
-
-                default:
-                    throw new IllegalArgumentException();
-            }
-        }
-    };
-*/
     private ArrayList<SortSpec> sortList = null;
     private ArrayList<FilterSpec> filterList = null;
     private String profile = null;
@@ -157,9 +123,9 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
         public void onServiceDisconnected(ComponentName className) {
             tcLog.d("className = " + className);
             mIsBound = false;
-            if (!mTicketsBound) {
-                mService = null;
-            }
+//            if (!mTicketsBound) {
+//                mService = null;
+//            }
         }
     };
 
@@ -334,6 +300,21 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
 
             msg.what = message;
             msg.arg1 = value;
+            msg.obj = o;
+            msg.replyTo = mMessenger;
+            // tcLog.d("sendMessageToService msg = " + msg);
+            mService.send(msg);
+        }
+    }
+
+    private void sendMessageToService(int message, int value,int msg_back,Object o) {
+        //tcLog.d( "sendMessageToService message = "+ message);
+        if (mIsBound && mService != null) {
+            final Message msg = Message.obtain();
+
+            msg.what = message;
+            msg.arg1 = value;
+            msg.arg2 = msg_back;
             msg.obj = o;
             msg.replyTo = mMessenger;
             // tcLog.d("sendMessageToService msg = " + msg);
@@ -534,7 +515,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
     }
 
     private void startListLoader(boolean newLoad) {
-        tcLog.d("newLoad = "+newLoad);
+        tcLog.d("newLoad = " + newLoad);
         if (newLoad) {
             tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_START_LISTLOADER, null));
         } else {
@@ -663,7 +644,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        tcLog.d("requestcode = " + requestCode);
+        tcLog.d("requestcode = " + requestCode+ " intent = "+data);
         switch (requestCode) {
             case REQUEST_CODE_CHOOSER:
                 // If the file selection was successful
@@ -671,10 +652,15 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
                     if (data != null) {
                         // Get the URI of the selected file
                         final Uri uri = data.getData();
-
+                        tcLog.d("uri = "+uri);
+                        if (_oc != null) {
+                            _oc.onFileSelected(uri);
+                        }
+/*
                         try {
                             // Create a file instance from the URI
                             final File file = new File(uri.getPath());
+                            tcLog.d("file = "+file);
 
                             tcLog.d( "File Selected: " + file.getAbsolutePath());
                             if (_oc != null) {
@@ -683,6 +669,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
                         } catch (final Exception e) {
                             tcLog.d("File select error", e);
                         }
+*/
                     }
                 }
                 break;
@@ -938,7 +925,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
     @Override
     public void onTicketSelected(Ticket ticket) {
         boolean isTop = (DetailFragmentTag.equals(getTopFragment()));
-        tcLog.d("Ticket: " + ticket+" isTop = "+ isTop);
+        tcLog.d("Ticket: " + ticket + " isTop = " + isTop);
 
         DetailFragment detailFragment = new DetailFragment();
         final Bundle args = makeArgs();
@@ -1199,12 +1186,12 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
 
     @Override
     public Ticket getTicket(int i) {
-        tcLog.d("i = "+i+ " semaphore = "+ loadingActive.availablePermits());
+        tcLog.d("i = " + i + " semaphore = " + loadingActive.availablePermits());
         loadingActive.acquireUninterruptibly();
         loadingActive.release();
 
         Ticket t = dataAdapter.getTicket(i);
-        tcLog.d("i = "+i+ " ticket = "+ t);
+        tcLog.d("i = " + i + " ticket = " + t);
         if (t != null && t.hasdata()) {
             return t;
         }
@@ -1214,7 +1201,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
 
     @Override
     public Ticket refreshTicket(final int i) {
-		sendMessageToService(MSG_SEND_TICKETS,i,null);
+		sendMessageToService(MSG_SEND_TICKETS, i, MSG_DISPLAY_TICKET, null);
 /*        runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -1321,8 +1308,9 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
 	
 	@Override
     public void getAttachment(final Ticket ticket,final String filename, final onAttachmentCompleteListener oc) {
+        tcLog.i(ticket.toString()+" "+filename);
 		final int _ticknr = ticket.getTicketnr();
-        final Thread networkThread = new Thread("getAttachment") {
+        new Thread() {
             @Override
             public void run() {
 //                available.acquireUninterruptibly();
@@ -1332,21 +1320,72 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
                         oc.onComplete(tracClient.getAttachment(_ticknr, filename));
                     } catch (final Exception e) {
                         tcLog.e("Exception during getAttachment",e);
-                    } finally {
+//                    } finally {
 //                        available.release();
                     }
                 }
             }
-        };
-
-        networkThread.start();
-        try {
-            networkThread.join();
-//            if (rpcerror != null) {
-//                throw new RuntimeException(rpcerror);
-//            }
-        } catch (final Exception ignored) {}
+        }.start();
     }	
+
+
+	/*
+	 * always executed in a thread
+	 */
+    public void addAttachment(final Ticket ticket,final Uri uri, final onTicketCompleteListener oc) {
+        tcLog.i(ticket.toString()+" "+uri);
+		final int _ticknr = ticket.getTicketnr();
+//                available.acquireUninterruptibly();
+		TracHttpClient req = new TracHttpClient(url,sslHack,sslHostNameHack,username,password);
+
+
+        final File file = new File(uri.getPath());
+        tcLog.d("file = "+file);
+        tcLog.d("file.getName = "+file.getName());
+
+        tcLog.d( "File Selected: " + file.getAbsolutePath());
+//		final File file = new File(filename);
+//		final int bytes = (int) file.length();
+        final int maxBytes = 6000;   // 6 voud vanwege Base64
+		final byte[] data = new byte[maxBytes];
+
+		try {
+			final InputStream is = getContentResolver().openInputStream(uri);
+            String b64 = "";
+            for (int nbytes = is.read(data);nbytes>=0;nbytes=is.read(data)) {
+                for (int i = nbytes+1;i<maxBytes;i++) {    // fill with zeroes
+                    data[i]=0;
+                }
+                b64 += Base64.encodeToString(data, Base64.DEFAULT);
+            }
+			is.close();
+			final JSONArray ar = new JSONArray();
+
+			ar.put(_ticknr);
+			ar.put(file.getName());
+			ar.put("");
+			final JSONArray ar1 = new JSONArray();
+
+			ar1.put("binary");
+			ar1.put(b64);
+			final JSONObject ob = new JSONObject();
+
+			ob.put("__jsonclass__", ar1);
+			ar.put(ob);
+			ar.put(true);
+			final String retfile = req.callString("ticket.putAttachment", ar);
+
+			tcLog.i("putAttachment "+retfile);
+//                    actionLock.release();
+			sendMessageToService(MSG_SEND_TICKETS,_ticknr);
+            oc.onComplete(ticket);
+		} catch (final Exception e) {
+			tcLog.i("Exception", e);
+//                } finally {
+//                    actionLock.release();
+//                    available.release();
+		}
+    }
 
     @Override
     public int getNextTicket(int i) {
@@ -1358,7 +1397,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
         return dataAdapter.getPrevTicket(i);
     }
 
-    public void onRequestPermissionsResult (int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult (int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         tcLog.d("requestCode = "+requestCode+" permissions = "+Arrays.asList(permissions)+" grantResults = "+ Arrays.asList(grantResults));
         switch (requestCode) {
             case REQUEST_CODE_WRITE_EXT: {
