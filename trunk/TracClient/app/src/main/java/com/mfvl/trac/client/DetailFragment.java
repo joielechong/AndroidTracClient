@@ -217,7 +217,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 	@Override 
 	public void onRefresh() {
 //		tcLog.d( "onRefresh");
- 		refresh_ticket();
+ 		refreshTicket();
 		swipeLayout.setRefreshing(false);
 	}
 	
@@ -310,7 +310,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 			context.runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
-					refresh_ticket();
+					refreshTicket();
 				}
 			});
 			didUpdate = false;
@@ -361,7 +361,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
             context.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    refresh_ticket();
+                    refreshTicket();
                 }
             });
             didUpdate = false;
@@ -441,7 +441,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
                 listener.onChooserSelected(this);
             }
         } else if (item.getItemId() == R.id.dfrefresh) {
-             refresh_ticket();
+             refreshTicket();
         } else if (item.getItemId() == R.id.dfempty) {
             item.setChecked(!item.isChecked());
             showEmptyFields = item.isChecked();
@@ -463,7 +463,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 				listener.addAttachment(_ticket,uri, new onTicketCompleteListener() {
 					@Override
 					public void onComplete(Ticket t2) {
-						refresh_ticket();
+						refreshTicket();
 						listener.stopProgressBar();
 					}
 				});
@@ -477,7 +477,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 		display_and_refresh_ticket();
 	}
 
-    private void refresh_ticket() {
+    private void refreshTicket() {
 		if (_ticket != null) {
 			listener.refreshTicket(_ticket.getTicketnr());
 		}
@@ -804,7 +804,6 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 						listener.stopProgressBar();
 					}
 				}
-				;
 			});
 
 		} catch (final JSONException e) {

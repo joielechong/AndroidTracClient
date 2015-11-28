@@ -70,13 +70,13 @@ public class RefreshService extends Service {
      */
     private final IBinder mBinder = new RefreshBinder();
 
-	public class RefreshBinder extends Binder {
+    public class RefreshBinder extends Binder {
         RefreshService getService() {
             // Return this instance of LocalService so clients can call public methods
             return RefreshService.this;
         }
     }
-	
+
     private final class ServiceHandler extends Handler {
         public ServiceHandler(Looper looper) {
             super(looper);
@@ -109,8 +109,8 @@ public class RefreshService extends Service {
 
                 case MSG_SEND_TICKET_COUNT:
                     if (msg.arg1 > 0) {
-						Tickets tl = changedTickets((String) msg.obj);
-						if (tl != null && tl.ticketList.size() > 0) {
+                        Tickets tl = changedTickets((String) msg.obj);
+                        if (tl != null && tl.ticketList.size() > 0) {
                             try {
                                 final Intent launchIntent = new Intent(RefreshService.this, Refresh.class);
 
@@ -128,38 +128,38 @@ public class RefreshService extends Service {
                                         .build();
                                 mNotificationManager.notify(notifId, notification);
                                 // tcLog.d( "Notification sent");
-                    } catch (final IllegalArgumentException e) {
-                        tcLog.e("IllegalArgumentException in notification", e);
-                    }
-						}
+                            } catch (final IllegalArgumentException e) {
+                                tcLog.e("IllegalArgumentException in notification", e);
+                            }
+                        }
                     }
                     break;
 
                 case MSG_SEND_TICKETS:
                     List<Integer> newTickets = (List<Integer>)msg.obj;
-					if (newTickets == null) {
-						newTickets = new ArrayList<>();
-						newTickets.add(msg.arg1);
-					}
+                    if (newTickets == null) {
+                        newTickets = new ArrayList<>();
+                        newTickets.add(msg.arg1);
+                    }
                     tcLog.d("newTickets = "+newTickets);
 
                     if (newTickets.size() > 0) {
-						Tickets tl = new Tickets();
-						for (Integer i: newTickets) {
-							tl.addTicket(new Ticket(i));
-						}
-						try {
-							loadTicketContent(tl);
+                        Tickets tl = new Tickets();
+                        for (Integer i: newTickets) {
+                            tl.addTicket(new Ticket(i));
+                        }
+                        try {
+                            loadTicketContent(tl);
                             if (msg.arg2 != 0) {
                                 sendMessageToUI(msg.arg2,tl.getTicket(msg.arg1));
                             }
-						} catch (Exception e) {
-							tcLog.e("MSG_SEND_TICKETS exception",e);
-							popup_warning(R.string.ticketnotfound,""+tl.ticketList);
-						}
+                        } catch (Exception e) {
+                            tcLog.e("MSG_SEND_TICKETS exception",e);
+                            popup_warning(R.string.ticketnotfound,""+tl.ticketList);
+                        }
                     }
                     break;
-				
+
                 case MSG_GET_TICKET_MODEL:
                     tm = getTicketModel();
                     break;
@@ -254,8 +254,8 @@ public class RefreshService extends Service {
     }
 
     @Override
-        public IBinder onBind(Intent intent) {
-            tcLog.d("intent = " + intent);
+    public IBinder onBind(Intent intent) {
+        tcLog.d("intent = " + intent);
 /*
         String action = intent.getAction();
         if (action != null) {
@@ -276,10 +276,10 @@ public class RefreshService extends Service {
 */
         return mBinder;
     }
-	
-	public void send(Message msg) {
+
+    public void send(Message msg) {
         mServiceHandler.sendMessage(msg);
-	}
+    }
 
     @Override
     public boolean onUnbind(Intent intent) {
@@ -386,55 +386,55 @@ public class RefreshService extends Service {
         int count = tl.getTicketCount();
         tcLog.d("count = " + count + " " + tl);
 
-		try {
-			for (int j = 0; j < count; j += ticketGroupCount) {
-				final JSONArray mc = new JSONArray();
+        try {
+            for (int j = 0; j < count; j += ticketGroupCount) {
+                final JSONArray mc = new JSONArray();
 
-				for (int i = j; i < (j + ticketGroupCount < count ? j + ticketGroupCount : count); i++) {
-					buildCall(mc, tl.ticketList.get(i).getTicketnr());
-				}
-				try {
-					final JSONArray mcresult = tracClient.callJSONArray("system.multicall", mc);
-					// tcLog.d( "mcresult = " + mcresult);
-					Ticket t = null;
+                for (int i = j; i < (j + ticketGroupCount < count ? j + ticketGroupCount : count); i++) {
+                    buildCall(mc, tl.ticketList.get(i).getTicketnr());
+                }
+                try {
+                    final JSONArray mcresult = tracClient.callJSONArray("system.multicall", mc);
+                    // tcLog.d( "mcresult = " + mcresult);
+                    Ticket t = null;
 
-					for (int k = 0; k < mcresult.length(); k++) {
-						try {
-							final JSONObject res = mcresult.getJSONObject(k);
-							final String id = res.getString("id");
-							final JSONArray result = res.getJSONArray("result");
-							final int startpos = id.indexOf("_") + 1;
-							final int thisTicket = Integer.parseInt(id.substring(startpos));
+                    for (int k = 0; k < mcresult.length(); k++) {
+                        try {
+                            final JSONObject res = mcresult.getJSONObject(k);
+                            final String id = res.getString("id");
+                            final JSONArray result = res.getJSONArray("result");
+                            final int startpos = id.indexOf("_") + 1;
+                            final int thisTicket = Integer.parseInt(id.substring(startpos));
 
-							if (t == null || t.getTicketnr() != thisTicket)
-								t = tl.getTicket(thisTicket);
-							if (t != null) {
-								if ((TICKET_GET + "_" + thisTicket).equals(id)) {
-									t.setFields(result.getJSONObject(3));
-								} else if ((TICKET_CHANGE + "_" + thisTicket).equals(id)) {
-									t.setHistory(result);
-								} else if ((TICKET_ATTACH + "_" + thisTicket).equals(id)) {
-									t.setAttachments(result);
-								} else if ((TICKET_ACTION + "_" + thisTicket).equals(id)) {
-									t.setActions(result);
-								} else {
-									tcLog.d( "unexpected response = " + result);
-								}
-							}
-						} catch (final JSONException e1) {
-							tcLog.e("JSONException thrown innerloop j=" + j + " k=" + k,e1);
-						}
-					}
-				} catch (final JSONRPCException e) {
-					tcLog.e("JSONRPCException thrown outerloop j=" + j,e);
-				}  finally {
-					tcLog.d("loop " + tl.getTicketContentCount());
-				}
-				notify_datachanged();
-			}
-		} catch (Exception e) {
-			tcLog.e("Exception",e);
-		}
+                            if (t == null || t.getTicketnr() != thisTicket)
+                                t = tl.getTicket(thisTicket);
+                            if (t != null) {
+                                if ((TICKET_GET + "_" + thisTicket).equals(id)) {
+                                    t.setFields(result.getJSONObject(3));
+                                } else if ((TICKET_CHANGE + "_" + thisTicket).equals(id)) {
+                                    t.setHistory(result);
+                                } else if ((TICKET_ATTACH + "_" + thisTicket).equals(id)) {
+                                    t.setAttachments(result);
+                                } else if ((TICKET_ACTION + "_" + thisTicket).equals(id)) {
+                                    t.setActions(result);
+                                } else {
+                                    tcLog.d( "unexpected response = " + result);
+                                }
+                            }
+                        } catch (final JSONException e1) {
+                            tcLog.e("JSONException thrown innerloop j=" + j + " k=" + k,e1);
+                        }
+                    }
+                } catch (final JSONRPCException e) {
+                    tcLog.e("JSONRPCException thrown outerloop j=" + j,e);
+                }  finally {
+                    tcLog.d("loop " + tl.getTicketContentCount());
+                }
+                notify_datachanged();
+            }
+        } catch (Exception e) {
+            tcLog.e("Exception",e);
+        }
     }
 
     private void notify_datachanged() {
