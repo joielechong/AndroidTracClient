@@ -65,7 +65,6 @@ final class Const {
     static final int MSG_STOP_TIMER = 2;
     static final int MSG_REQUEST_TICKET_COUNT = 3;
     static final int MSG_SEND_TICKET_COUNT = 4;
-    static final int MSG_REQUEST_REFRESH = 5;
     static final int MSG_SEND_TICKETS = 6;
     static final int MSG_REMOVE_NOTIFICATION = 7;
 
@@ -80,30 +79,20 @@ final class Const {
     static final int MSG_GET_PERMISSIONS = 29;
     static final int MSG_REFRESH_LIST = 30;
 
-    static final int MSG_LOGIN_PROFILE = 41;
     static final int MSG_LOAD_TICKETS = 42;
     static final int MSG_LOAD_FASE1_FINISHED = 43;
     static final int MSG_LOAD_FASE2_FINISHED = 44;
     static final int MSG_GET_TICKET_MODEL = 45;
-    static final int MSG_TICKET_MODEL_LOADED = 46;
-    static final int MSG_GET_TICKET = 47;
-    static final int MSG_GET_ATTACHMENT = 48;
-    static final int MSG_PUT_ATTACHMENT = 49;
-    static final int MSG_LOAD_FAILED = 50;
 
     /*
      * App private Intent actions
     */
     static final String ACTION_LOAD_TICKETS = "com.mfvl.trac.client.action.LoadTickets";
-    static final String ACTION_LOGIN_PROFILE = "com.mfvl.trac.client.action.LoginProfile";
 	static final String ACTION_START_TIMER = "com.mfvl.trac.client.action.StartTimer";
     /*
      * Overige constanten
      */
-    static final String mimeUnknown = "application/unknown"; // TODO needed for attachments
-
     static public int ticketGroupCount = 50;
 
     static final public boolean DEBUG_MANAGERS = false;
-    static final public boolean DEBUG_LOG = true;
 }

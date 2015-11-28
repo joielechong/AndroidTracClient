@@ -86,11 +86,7 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket>  {
 	}
 	
 	public int getCount() {
-//		tcLog.d("mTickets = "+mTickets+", count = "+mTickets.getTicketCount());
-//		int c = super.getCount();
-		int c = mTickets.getTicketCount();
-//		tcLog.d("count = "+c+" this - "+this);
-		return c;
+		return mTickets.getTicketCount();
 	}
 	
 	public int getTicketContentCount() {

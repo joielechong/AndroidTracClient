@@ -48,7 +48,7 @@ public interface InterFragmentListener {
     int getPrevTicket(int i);
     int getTicketCount();
     int getTicketContentCount();
-    boolean updateTicket(Ticket t,String action, String comment, String veld, String waarde, final boolean notify, Map<String, String> modVeld) throws Exception;
+    void updateTicket(Ticket t,String action, String comment, String veld, String waarde, final boolean notify, Map<String, String> modVeld) throws Exception;
     int createTicket(Ticket t , boolean notify) throws Exception;
     void setActionProvider(Menu menu,int resid);
     Intent shareList();
