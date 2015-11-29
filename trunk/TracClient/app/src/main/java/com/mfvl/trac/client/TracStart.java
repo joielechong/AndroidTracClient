@@ -53,6 +53,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,14 +64,12 @@ import java.util.concurrent.Semaphore;
 import static com.mfvl.trac.client.Const.*;
 
 //public class TracStart extends Activity implements LoaderManager.LoaderCallbacks<Tickets>, InterFragmentListener, OnBackStackChangedListener, ActivityCompat.OnRequestPermissionsResultCallback {
-public class TracStart extends Activity implements InterFragmentListener, OnBackStackChangedListener, ActivityCompat.OnRequestPermissionsResultCallback {
+public class TracStart extends Activity implements Handler.Callback, InterFragmentListener, OnBackStackChangedListener, ActivityCompat.OnRequestPermissionsResultCallback {
    
     /*
      * Constanten voor communicatie met de service en fragmenten
      */
 
-    private static final String BUNDLE_ISOTIJD = "ISOTIJD";
-    private static final String BUNDLE_TICKET = "TICKET";
     private static final int REQUEST_CODE_CHOOSER = 6384;
     private static final int REQUEST_CODE_WRITE_EXT	= 6385;
     private static final String ListFragmentTag = "List_Fragment";
@@ -80,7 +79,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
     private static final String UpdFragmentTag = "Modify_Fragment";
     private static final String FilterFragmentTag = "Filter_Fragment";
     private static final String SortFragmentTag = "Sort_Fragment";
-    static public IncomingHandler tracStartHandler = null;
+    static public Handler tracStartHandler = null;
     private final Semaphore loadingActive = new Semaphore(1, true);
 
     private ArrayList<SortSpec> sortList = null;
@@ -150,7 +149,6 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
     };
 
     private MyHandlerThread mHandlerThread = null;
-    private boolean changesLoaderStarted = false;
     private boolean hasTicketsLoadingBar = false;
     private Boolean ticketsLoading = false;
     private TicketListAdapter dataAdapter = null;
@@ -164,27 +162,22 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
     }
 
     private void sendMessageToService(int message) {
-        //tcLog.d( "sendMessageToService message = "+ message+" mService = "+mService);
         dispatchMessage(Message.obtain(null,message));
     }
 
     private void sendMessageToService(int message, int value) {
-        //tcLog.d( "sendMessageToService message = "+ message);
         dispatchMessage(Message.obtain(null, message, value));
     }
 
     private void sendMessageToService(int message, int value,Object o) {
-        //tcLog.d( "sendMessageToService message = "+ message);
         dispatchMessage(Message.obtain(null,message,value,0,o));
     }
 
     private void sendMessageToService(int message, int value,int msg_back,Object o) {
-        //tcLog.d( "sendMessageToService message = "+ message);
         dispatchMessage(Message.obtain(null, message, value, msg_back, o));
     }
 
     private void sendMessageToService(int message, Object value) {
-        //tcLog.d( "sendMessageToService message = "+ message+ " value = "+value);
         dispatchMessage(Message.obtain(null, message, value));
     }
 
@@ -209,6 +202,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        tcLog.setContext(this);
         tcLog.d( "savedInstanceState = " + savedInstanceState);
 
         if (DEBUG_MANAGERS) {
@@ -219,7 +213,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
         Credentials.getInstance(getApplicationContext());
         mHandlerThread = new MyHandlerThread("IncomingHandler");
         mHandlerThread.start();
-        tracStartHandler = new IncomingHandler(mHandlerThread.getLooper());
+        tracStartHandler = new Handler(mHandlerThread.getLooper(),this);
         mMessenger = new Messenger(tracStartHandler);
 //        startService(new Intent(this, RefreshService.class));
 
@@ -368,7 +362,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
         if (newLoad) {
             tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_START_LISTLOADER, null));
         } else {
-            tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_REFRESH_LIST, null));
+            dispatchMessage(Message.obtain(null, MSG_REFRESH_LIST));
         }
     }
 
@@ -996,7 +990,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
     private void startProgressBar(String message) {
         tcLog.d(message);
         try {
-            tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_START_PROGRESSBAR, message));
+            tracStartHandler.obtainMessage(MSG_START_PROGRESSBAR, message).sendToTarget();
         } catch (NullPointerException e) {
             tcLog.e("NullPointerException",e);
         }
@@ -1009,7 +1003,7 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
     public void stopProgressBar() {
         tcLog.logCall();
         try {
-            tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_STOP_PROGRESSBAR));
+            tracStartHandler.obtainMessage(MSG_STOP_PROGRESSBAR).sendToTarget();
         } catch (Exception e) {
             tcLog.e("Exception",e);
         }
@@ -1164,7 +1158,6 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
         }.start();
     }
 
-
     /*
      * always executed in a thread
      */
@@ -1174,41 +1167,43 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
 //                available.acquireUninterruptibly();
         TracHttpClient req = new TracHttpClient(url,sslHack,sslHostNameHack,username,password);
         String filename = null;
+        int bytes = 0;
         if (uri != null) {
             if (uri.toString().startsWith("file:")) {
                 filename = uri.getPath();
             } else {
                 Cursor c=getContentResolver().query(uri,null,null,null,null);
                 if (c != null && c.moveToFirst()) {
-                    tcLog.d("ColumnNames = "+Arrays.asList(c.getColumnNames()));
-                    int id = c.getColumnIndex(Images.Media.DATA);
+//                    tcLog.d("ColumnNames = "+Arrays.asList(c.getColumnNames()));
+                    int id = c.getColumnIndex(Images.Media.DISPLAY_NAME);
                     if (id != -1) {
                         filename = c.getString(id);
+                    }
+                    id = c.getColumnIndex(Images.Media.SIZE);
+                    if (id != -1) {
+                        bytes = c.getInt(id);
                     }
                     c.close();
                 }
             }
             tcLog.d("filename = "+filename);
-
-//		final File file = new File(uri.getPath());
-
-            final File file = new File(filename);
+            tcLog.d("bytes = "+bytes);
+            final File file = new File(filename == null ? uri.getPath():filename);
             tcLog.d("file = "+file);
             tcLog.d("File path: " + file.getAbsolutePath());
             tcLog.d("file.getName = "+ file.getName());
-            final int bytes = (int) file.length();
-            tcLog.d("bytes = "+ bytes);
-            final int maxBytes = (bytes > 0?bytes : 6000);   // 6 voud vanwege Base64
+            if (bytes == 0) {
+                bytes = (int) file.length();
+                tcLog.d("bytes = "+ bytes);
+            }
+            final int maxBytes = (bytes > 0 ? bytes : 120000);   // 6 fold because of Base64
             final byte[] data = new byte[maxBytes];
 
             try {
                 final InputStream is = getContentResolver().openInputStream(uri);
                 String b64 = "";
                 for (int nbytes = is.read(data);nbytes>=0;nbytes=is.read(data)) {
-                    for (int i = nbytes+1;i<maxBytes;i++) {    // fill with zeroes
-                        data[i]=0;
-                    }
-                    b64 += Base64.encodeToString(data, Base64.DEFAULT);
+                    b64 += Base64.encodeToString(data,0,nbytes, Base64.DEFAULT);
                 }
                 is.close();
                 final JSONArray ar = new JSONArray();
@@ -1228,10 +1223,14 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
                 final String retfile = req.callString("ticket.putAttachment", ar);
 
                 tcLog.i("putAttachment "+retfile);
-//          actionLock.release();
+//            actionLock.release();
 //            sendMessageToService(MSG_SEND_TICKETS, _ticknr, MSG_DISPLAY_TICKET, null);
+            } catch (final FileNotFoundException e) {
+                tcLog.i("Exception", e);
+                showAlertBox(R.string.warning, R.string.notfound, filename);
             } catch (final Exception e) {
                 tcLog.i("Exception", e);
+                showAlertBox(R.string.warning, R.string.failed, filename);
             } finally {
                 oc.onComplete(ticket);
 //                    actionLock.release();
@@ -1239,7 +1238,6 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
             }
         }
     }
-
 
     @Override
     public int getNextTicket(int i) {
@@ -1264,201 +1262,182 @@ public class TracStart extends Activity implements InterFragmentListener, OnBack
     public boolean getCanWriteSD() {
         return canWriteSD;
     }
+    private ProgressDialog progressBar = null;
 
-    class IncomingHandler extends Handler {
-        private ProgressDialog progressBar = null;
+    @Override
+    @SuppressWarnings("unchecked")
+    public boolean handleMessage(Message msg) {
+        tcLog.d("msg = " + msg);
+        switch (msg.what) {
+            case MSG_REQUEST_TICKET_COUNT:
+                if (!LoginFragmentTag.equals(getTopFragment())) {
+                    final int count = getTicketCount();
+                    sendMessageToService(MSG_SEND_TICKET_COUNT, count, ISO8601.fromUnix(referenceTime));
+                }
+                break;
 
-        public IncomingHandler(Looper looper) {
-            super(looper);
-            tcLog.logCall();
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public void handleMessage(Message msg) {
-            tcLog.d("msg = " + msg);
-            switch (msg.what) {
-                case MSG_REQUEST_TICKET_COUNT:
-                    if (!LoginFragmentTag.equals(getTopFragment())) {
-                        final int count = getTicketCount();
-                        sendMessageToService(MSG_SEND_TICKET_COUNT, count, ISO8601.fromUnix(referenceTime));
-                    }
-                    break;
-
-                case MSG_START_PROGRESSBAR:
-                    final String message = (String) msg.obj;
-                    synchronized (this) {
-                        // tcLog.d("handleMessage msg = START_PROGRESSBAR string = "+message);
-                        if (progressBar == null) {
-                            progressBar = new ProgressDialog(TracStart.this);
-                            progressBar.setCancelable(true);
-                            if (message != null) {
-                                progressBar.setMessage(message);
-                            }
-                            progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                            if (!TracStart.this.isFinishing()) {
-                                progressBar.show();
-                            }
+            case MSG_START_PROGRESSBAR:
+                final String message = (String) msg.obj;
+                synchronized (this) {
+                    // tcLog.d("handleMessage msg = START_PROGRESSBAR string = "+message);
+                    if (progressBar == null) {
+                        progressBar = new ProgressDialog(TracStart.this);
+                        progressBar.setCancelable(true);
+                        if (message != null) {
+                            progressBar.setMessage(message);
+                        }
+                        progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                        if (!TracStart.this.isFinishing()) {
+                            progressBar.show();
                         }
                     }
-                    break;
+                }
+                break;
 
-                case MSG_STOP_PROGRESSBAR:
-                    synchronized (this) {
-                        // tcLog.d("handleMessage msg = STOP_PROGRESSBAR");
-                        if (progressBar != null) {
-                            if (!TracStart.this.isFinishing()) {
-                                progressBar.dismiss();
-                            }
-                            progressBar = null;
+            case MSG_STOP_PROGRESSBAR:
+                synchronized (this) {
+                    // tcLog.d("handleMessage msg = STOP_PROGRESSBAR");
+                    if (progressBar != null) {
+                        if (!TracStart.this.isFinishing()) {
+                            progressBar.dismiss();
                         }
+                        progressBar = null;
                     }
-                    break;
+                }
+                break;
 
-                case MSG_SET_SORT:
-                    setSort((ArrayList<SortSpec>)msg.obj);
-                    refreshOverview();
-                    sendMessageToService(MSG_SET_SORT,msg.obj);
-                    break;
+            case MSG_SET_SORT:
+                setSort((ArrayList<SortSpec>)msg.obj);
+                refreshOverview();
+                sendMessageToService(MSG_SET_SORT,msg.obj);
+                break;
 
-                case MSG_SET_FILTER:
-                    setFilter((ArrayList<FilterSpec>)msg.obj);
-                    refreshOverview();
-                    sendMessageToService(MSG_SET_FILTER,msg.obj);
-                    break;
+            case MSG_SET_FILTER:
+                setFilter((ArrayList<FilterSpec>)msg.obj);
+                refreshOverview();
+                sendMessageToService(MSG_SET_FILTER,msg.obj);
+                break;
 
-                case MSG_SHOW_DIALOG:
-                    showAlertBox(msg.arg1, msg.arg2, (String) msg.obj);
-                    break;
+            case MSG_SHOW_DIALOG:
+                showAlertBox(msg.arg1, msg.arg2, (String) msg.obj);
+                break;
 
-                case MSG_DISPLAY_TICKET:
-                    final Ticket t = (Ticket)msg.obj;
-                    if (DetailFragmentTag.equals(getTopFragment())) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                final DetailFragment d = (DetailFragment) getFragment(DetailFragmentTag);
-                                d.setTicket(t.getTicketnr());
-                            }
-                        });
-                    } else {
-                        onTicketSelected(t);
-                    }
-                    break;
-
-                case MSG_GET_PERMISSIONS:
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                        ActivityCompat.requestPermissions(TracStart.this,
-                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                        Manifest.permission.READ_EXTERNAL_STORAGE},
-                                REQUEST_CODE_WRITE_EXT);
-                    }
-                    break;
-
-                case MSG_START_LISTLOADER:
-                    currentLoginProfile = new LoginProfile(url,username,password,sslHack)
-                            .setSslHostNameHack(sslHostNameHack)
-                            .setFilterList(filterList)
-                            .setSortList(sortList);
-
-                    hasTicketsLoadingBar = false;
-                    // Returns a new CursorLoader
-                    try {
-                        getTicketListFragment().startLoading();
-                    } catch (Exception e) {
-                        tcLog.e("LISTLOADER cannot contact TicketListFragment");
-                    }
-                    if (ListFragmentTag.equals(getTopFragment())) {
-                        startProgressBar(getString(R.string.getlist) + (profile == null ? "" : "\n" + profile));
-                        hasTicketsLoadingBar = true;
-                    }
-                    loadingActive.acquireUninterruptibly();
-                    ticketsLoading = true;
-
-                    if (mService == null) {
-//                        bindService(new Intent(TracStart.this, RefreshService.class)
-//                                .putExtra("LoginProfile", currentLoginProfile)
-//                                .setAction(ACTION_LOGIN_PROFILE), mTicketsConnection, Context.BIND_AUTO_CREATE);
-                        bindService(new Intent(TracStart.this, RefreshService.class).setAction(ACTION_LOAD_TICKETS), mTicketsConnection, Context.BIND_AUTO_CREATE);
-                    } else {
-//                        dispatchMessage(Message.obtain(null,MSG_LOGIN_PROFILE,currentLoginProfile));
-                        dispatchMessage(Message.obtain(null, MSG_LOAD_TICKETS, currentLoginProfile));
-                    }
-
-
-//                    if (listLoaderStarted) {
-//                        getLoaderManager().restartLoader(LIST_LOADER, null, TracStart.this);
-//                    } else {
-//                        getLoaderManager().initLoader(LIST_LOADER, null, TracStart.this);
-//                        listLoaderStarted = true;
-//.                    }
-                    break;
-
-                case MSG_REFRESH_LIST:
-                    dispatchMessage(Message.obtain(null, MSG_LOAD_TICKETS, null));
-                    break;
-
-                case MSG_LOAD_FASE1_FINISHED:
-                    final Tickets tl = (Tickets)msg.obj;
-                    tcLog.d("Tickets = " + tl);
-                    synchronized(this) {
-                        if (hasTicketsLoadingBar) {
-                            stopProgressBar();
-                            hasTicketsLoadingBar = false;
-                        }
-                        ticketsLoading = false;
-                    }
-                    TracStart.this.runOnUiThread(new Runnable() {
+            case MSG_DISPLAY_TICKET:
+                final Ticket t = (Ticket)msg.obj;
+                if (DetailFragmentTag.equals(getTopFragment())) {
+                    runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            dataAdapter.clear();
-                            dataAdapter.addAll(tl);
+                            final DetailFragment d = (DetailFragment) getFragment(DetailFragmentTag);
+                            d.setTicket(t.getTicketnr());
+                        }
+                    });
+                } else {
+                    onTicketSelected(t);
+                }
+                break;
+
+            case MSG_GET_PERMISSIONS:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    ActivityCompat.requestPermissions(TracStart.this,
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                    Manifest.permission.READ_EXTERNAL_STORAGE},
+                            REQUEST_CODE_WRITE_EXT);
+                }
+                break;
+
+            case MSG_START_LISTLOADER:
+                currentLoginProfile = new LoginProfile(url,username,password,sslHack)
+                        .setSslHostNameHack(sslHostNameHack)
+                        .setFilterList(filterList)
+                        .setSortList(sortList);
+
+                hasTicketsLoadingBar = false;
+                // Returns a new CursorLoader
+                try {
+                    getTicketListFragment().startLoading();
+                } catch (Exception e) {
+                    tcLog.e("LISTLOADER cannot contact TicketListFragment");
+                }
+                if (ListFragmentTag.equals(getTopFragment())) {
+                    startProgressBar(getString(R.string.getlist) + (profile == null ? "" : "\n" + profile));
+                    hasTicketsLoadingBar = true;
+                }
+                loadingActive.acquireUninterruptibly();
+                ticketsLoading = true;
+
+                if (mService == null) {
+                    bindService(new Intent(TracStart.this, RefreshService.class).setAction(ACTION_LOAD_TICKETS), mTicketsConnection, Context.BIND_AUTO_CREATE);
+                } else {
+                    dispatchMessage(Message.obtain(null, MSG_LOAD_TICKETS, currentLoginProfile));
+                }
+                break;
+
+            case MSG_REFRESH_LIST:
+                dispatchMessage(Message.obtain(null, MSG_LOAD_TICKETS, null));
+                break;
+
+            case MSG_LOAD_FASE1_FINISHED:
+                final Tickets tl = (Tickets)msg.obj;
+                tcLog.d("Tickets = " + tl);
+                synchronized(this) {
+                    if (hasTicketsLoadingBar) {
+                        stopProgressBar();
+                        hasTicketsLoadingBar = false;
+                    }
+                    ticketsLoading = false;
+                }
+                TracStart.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        dataAdapter.clear();
+                        dataAdapter.addAll(tl);
 //                            dataAdapter.notifyDataSetChanged();
-                            try {
-                                getTicketListFragment().dataHasChanged();
-                            } catch (Exception e) {
-                                tcLog.e("MSG_LOAD_FASE1_FINISHED cannot contact TicketListFragment");
-                            }
-                            if (loadingActive.availablePermits() == 0) {
-                                loadingActive.release();
-                            }
+                        try {
+                            getTicketListFragment().dataHasChanged();
+                        } catch (Exception e) {
+                            tcLog.e("MSG_LOAD_FASE1_FINISHED cannot contact TicketListFragment");
                         }
-                    });
-                    break;
-
-                case MSG_DATA_CHANGED:
-                    TracStart.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                getTicketListFragment().dataHasChanged();
-                            } catch (Exception e) {
-                                tcLog.e("MSG_DATA_CHANGED cannot contact TicketListFragment");
-                            }
+                        if (loadingActive.availablePermits() == 0) {
+                            loadingActive.release();
                         }
-                    });
-                    break;
+                    }
+                });
+                break;
 
-                case MSG_LOAD_FASE2_FINISHED:
-                    TracStart.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (mTicketsBound) {
-                                unbindService(mTicketsConnection);
-                                mTicketsBound = false;
-                            }
-                            try {
-                                getTicketListFragment().dataHasChanged();
-                            } catch (Exception e) {
-                                tcLog.e("MSG_LOAD_FASE2_FINISHED cannot contact TicketListFragment");
-                            }
+            case MSG_DATA_CHANGED:
+                TracStart.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            getTicketListFragment().dataHasChanged();
+                        } catch (Exception e) {
+                            tcLog.e("MSG_DATA_CHANGED cannot contact TicketListFragment");
                         }
-                    });
-                    break;
+                    }
+                });
+                break;
 
-                default:
-                    super.handleMessage(msg);
-            }
+            case MSG_LOAD_FASE2_FINISHED:
+                TracStart.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mTicketsBound) {
+                            unbindService(mTicketsConnection);
+                            mTicketsBound = false;
+                        }
+                        try {
+                            getTicketListFragment().dataHasChanged();
+                        } catch (Exception e) {
+                            tcLog.e("MSG_LOAD_FASE2_FINISHED cannot contact TicketListFragment");
+                        }
+                    }
+                });
+                break;
+
+            default:
+                return false;
         }
+        return true;
     }
 }

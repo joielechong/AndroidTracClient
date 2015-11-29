@@ -42,7 +42,7 @@ import java.util.TimerTask;
 
 import static com.mfvl.trac.client.Const.*;
 
-public class RefreshService extends Service {
+public class RefreshService extends Service implements Handler.Callback {
 
     private final static String TICKET_GET = "GET";
     private final static String TICKET_CHANGE = "CHANGE";
@@ -56,7 +56,7 @@ public class RefreshService extends Service {
     private static final int notifId = 1234;
 
     private MyHandlerThread mHandlerThread = null;
-    private ServiceHandler mServiceHandler;
+    private Handler mServiceHandler;
     private LoginProfile mLoginProfile = null;
     private TracHttpClient tracClient = null;
     private NotificationManager mNotificationManager;
@@ -77,152 +77,135 @@ public class RefreshService extends Service {
         }
     }
 
-    private final class ServiceHandler extends Handler {
-        public ServiceHandler(Looper looper) {
-            super(looper);
-            tcLog.logCall();
-            Resources res = getResources();
-            timerStart = res.getInteger(R.integer.timerStart);
-            timerPeriod = res.getInteger(R.integer.timerPeriod);
-        }
+    @SuppressWarnings("unchecked")
+    @Override
+    public boolean handleMessage(final Message msg) {
+        tcLog.d("msg = " + msg);
 
-        @SuppressWarnings("unchecked")
-        @Override
-        public void handleMessage(final Message msg) {
-            tcLog.d("msg = " + msg);
+        switch (msg.what) {
+            case MSG_START_TIMER:
+                stopTimer();
+                startTimer();
+                break;
 
-            switch (msg.what) {
-                case MSG_START_TIMER:
-                    stopTimer();
-                    startTimer();
-                    break;
+            case MSG_STOP_TIMER:
+                stopTimer();
+                break;
 
-                case MSG_STOP_TIMER:
-                    stopTimer();
-                    break;
+            case MSG_REMOVE_NOTIFICATION:
+                mNotificationManager.cancel(notifId);
+                stopTimer();
+                startTimer();
+                break;
 
-                case MSG_REMOVE_NOTIFICATION:
-                    mNotificationManager.cancel(notifId);
-                    stopTimer();
-                    startTimer();
-                    break;
-
-                case MSG_SEND_TICKET_COUNT:
-                    if (msg.arg1 > 0) {
-                        Tickets tl = changedTickets((String) msg.obj);
-                        if (tl != null && tl.ticketList.size() > 0) {
-                            try {
-                                final Intent launchIntent = new Intent(RefreshService.this, Refresh.class);
-
-                                launchIntent.setAction(refreshAction);
-                                final PendingIntent pendingIntent = PendingIntent.getActivity(RefreshService.this, -1, launchIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-                                final Notification notification = new NotificationCompat.Builder(RefreshService.this)
-                                        .setSmallIcon(R.drawable.traclogo)
-                                        .setAutoCancel(true)
-                                        .setContentTitle(RefreshService.this.getString(R.string.notifmod))
-                                        .setTicker(RefreshService.this.getString(R.string.foundnew))
-                                        .setContentText(RefreshService.this.getString(R.string.foundnew))
-                                        .setContentIntent(pendingIntent)
-                                        .setSubText(tl.ticketList.toString())
-                                        .build();
-                                mNotificationManager.notify(notifId, notification);
-                                // tcLog.d( "Notification sent");
-                            } catch (final IllegalArgumentException e) {
-                                tcLog.e("IllegalArgumentException in notification", e);
-                            }
-                        }
-                    }
-                    break;
-
-                case MSG_SEND_TICKETS:
-                    List<Integer> newTickets = (List<Integer>)msg.obj;
-                    if (newTickets == null) {
-                        newTickets = new ArrayList<>();
-                        newTickets.add(msg.arg1);
-                    }
-                    tcLog.d("newTickets = "+newTickets);
-
-                    if (newTickets.size() > 0) {
-                        Tickets tl = new Tickets();
-                        for (Integer i: newTickets) {
-                            tl.addTicket(new Ticket(i));
-                        }
+            case MSG_SEND_TICKET_COUNT:
+                if (msg.arg1 > 0) {
+                    Tickets tl = changedTickets((String) msg.obj);
+                    if (tl != null && tl.ticketList.size() > 0) {
                         try {
-                            loadTicketContent(tl);
-                            if (msg.arg2 != 0) {
-                                sendMessageToUI(msg.arg2,tl.getTicket(msg.arg1));
-                            }
-                        } catch (Exception e) {
-                            tcLog.e("MSG_SEND_TICKETS exception",e);
-                            popup_warning(R.string.ticketnotfound,""+tl.ticketList);
+                            final Intent launchIntent = new Intent(RefreshService.this, Refresh.class);
+
+                            launchIntent.setAction(refreshAction);
+                            final PendingIntent pendingIntent = PendingIntent.getActivity(RefreshService.this, -1, launchIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                            final Notification notification = new NotificationCompat.Builder(RefreshService.this)
+                                    .setSmallIcon(R.drawable.traclogo)
+                                    .setAutoCancel(true)
+                                    .setContentTitle(RefreshService.this.getString(R.string.notifmod))
+                                    .setTicker(RefreshService.this.getString(R.string.foundnew))
+                                    .setContentText(RefreshService.this.getString(R.string.foundnew))
+                                    .setContentIntent(pendingIntent)
+                                    .setSubText(tl.ticketList.toString())
+                                    .build();
+                            mNotificationManager.notify(notifId, notification);
+                            // tcLog.d( "Notification sent");
+                        } catch (final IllegalArgumentException e) {
+                            tcLog.e("IllegalArgumentException in notification", e);
                         }
                     }
-                    break;
+                }
+                break;
 
-                case MSG_GET_TICKET_MODEL:
-                    tm = getTicketModel();
-                    break;
+            case MSG_SEND_TICKETS:
+                List<Integer> newTickets = (List<Integer>) msg.obj;
+                if (newTickets == null) {
+                    newTickets = new ArrayList<>();
+                    newTickets.add(msg.arg1);
+                }
+                tcLog.d("newTickets = " + newTickets);
 
-                case MSG_LOAD_TICKETS:
-                    LoginProfile lp = (LoginProfile)msg.obj;
-                    tcLog.d("lp = "+lp);
-                    tcLog.d("mLoginProfile = "+mLoginProfile);
-                    if (lp !=null) {
-                        invalid = !lp.equals(mLoginProfile);
-                        mLoginProfile = lp;
-                        tracClient = new TracHttpClient(mLoginProfile);
-                        tm=TicketModel.getInstance(tracClient);
-                    } else {
-                        invalid = true;
+                if (newTickets.size() > 0) {
+                    Tickets tl = new Tickets();
+                    for (Integer i : newTickets) {
+                        tl.addTicket(new Ticket(i));
                     }
-                    loadTickets();
-                    break;
-
-                case MSG_SET_FILTER:
-                    if (mLoginProfile != null) {
-                        mLoginProfile.setFilterList((List<FilterSpec>)msg.obj);
+                    try {
+                        loadTicketContent(tl);
+                        if (msg.arg2 != 0) {
+                            sendMessageToUI(msg.arg2, tl.getTicket(msg.arg1));
+                        }
+                    } catch (Exception e) {
+                        tcLog.e("MSG_SEND_TICKETS exception", e);
+                        popup_warning(R.string.ticketnotfound, "" + tl.ticketList);
                     }
-                    break;
+                }
+                break;
 
-                case MSG_SET_SORT:
-                    if (mLoginProfile != null) {
-                        mLoginProfile.setSortList((List<SortSpec>) msg.obj);
-                    }
-                    break;
+            case MSG_GET_TICKET_MODEL:
+                tm = getTicketModel();
+                break;
 
-                default:
-                    super.handleMessage(msg);
-            }
+            case MSG_REFRESH_LIST:
+                msg.obj = null;
+            case MSG_LOAD_TICKETS:
+                LoginProfile lp = (LoginProfile) msg.obj;
+                tcLog.d("lp = " + lp);
+                tcLog.d("mLoginProfile = " + mLoginProfile);
+                if (lp != null) {
+                    invalid = !lp.equals(mLoginProfile);
+                    mLoginProfile = lp;
+                    tracClient = new TracHttpClient(mLoginProfile);
+                    tm = TicketModel.getInstance(tracClient);
+                } else {
+                    invalid = true;
+                }
+                loadTickets();
+                break;
+
+            case MSG_SET_FILTER:
+                if (mLoginProfile != null) {
+                    mLoginProfile.setFilterList((List<FilterSpec>) msg.obj);
+                }
+                break;
+
+            case MSG_SET_SORT:
+                if (mLoginProfile != null) {
+                    mLoginProfile.setSortList((List<SortSpec>) msg.obj);
+                }
+                break;
+
+            default:
+                return false;
         }
+        return true;
+    }
+
+    private void dispatchMessage(Message msg) {
+        msg.setTarget(TracStart.tracStartHandler);
+        tcLog.d(msg.toString());
+        msg.sendToTarget();
     }
 
     private void sendMessageToUI(int message) {
-        tcLog.d("" +message);
-        try {
-            // Send data as an Integer
-            Message.obtain(TracStart.tracStartHandler, message).sendToTarget();
-        } catch (final Exception e) {
-            tcLog.e("failed", e);
-        }
+        dispatchMessage(Message.obtain(null, message));
     }
 
     private void sendMessageToUI(int message,Object o) {
-        tcLog.d("" +message+" "+o);
-        try {
-            Message.obtain(TracStart.tracStartHandler, message, o).sendToTarget();
-        } catch (final Exception e) {
-            tcLog.e("failed", e);
-        }
+        dispatchMessage(Message.obtain(null, message,o));
     }
 
     private void sendMessageToUI(int message,int arg1,int arg2,Object o) {
-        tcLog.d("" +message+" "+arg1+" "+arg2+" "+o);
-        try {
-            Message.obtain(TracStart.tracStartHandler, message, arg1, arg2, o).sendToTarget();
-        } catch (final Exception e) {
-            tcLog.e("failed", e);
-        }
+        dispatchMessage(Message.obtain(null, message,arg1,arg2,o));
     }
 
     public TicketModel getTicketModel() {
@@ -234,12 +217,17 @@ public class RefreshService extends Service {
     @Override
     public void onCreate() {
         tcLog.logCall();
+
+        Resources res = getResources();
+        timerStart = res.getInteger(R.integer.timerStart);
+        timerPeriod = res.getInteger(R.integer.timerPeriod);
+
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mHandlerThread = new MyHandlerThread("ServiceHandler");
         mHandlerThread.start();
 
         // Get the HandlerThread's Looper and use it for our Handler
-        mServiceHandler = new ServiceHandler(mHandlerThread.getLooper());
+        mServiceHandler = new Handler(mHandlerThread.getLooper(),this);
     }
 
     @Override
