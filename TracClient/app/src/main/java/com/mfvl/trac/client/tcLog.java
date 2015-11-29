@@ -33,11 +33,9 @@ public class tcLog {
     private static boolean doToast = false;
     private static String debugString = "";
     private static final SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
-	private static String logFilename;
 
     public static void setContext(Activity c) {
         _c = c;
-		logFilename = _c.getResources().getString(R.string.logfile);
     }
 
     private static String getCaller(int index) {
@@ -196,6 +194,7 @@ public class tcLog {
 
     public static void save() {
         String caller = getCaller(2);
+        String logFilename = _c.getResources().getString(R.string.logfile);
         File file = null;
         try {
             file = Credentials.makeExtFilePath(logFilename,false);
