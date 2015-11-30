@@ -42,7 +42,7 @@ public interface InterFragmentListener {
     TicketModel getTicketModel();
     TicketListAdapter getAdapter();
     Ticket getTicket(int ticknr);
-    Ticket refreshTicket(int ticknr);
+    void refreshTicket(int ticknr);
     void putTicket(Ticket t); //TODO Implement method
     int getNextTicket(int i);
     int getPrevTicket(int i);
