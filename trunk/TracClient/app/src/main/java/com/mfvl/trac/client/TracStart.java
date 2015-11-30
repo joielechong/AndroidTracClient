@@ -360,7 +360,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
     private void startListLoader(boolean newLoad) {
         tcLog.d("newLoad = " + newLoad);
         if (newLoad) {
-            tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_START_LISTLOADER, null));
+            tracStartHandler.obtainMessage(MSG_START_LISTLOADER, null).sendToTarget();
         } else {
             dispatchMessage(Message.obtain(null, MSG_REFRESH_LIST));
         }
@@ -657,7 +657,8 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
             ft.addToBackStack(ListFragmentTag);
         }
         ft.commit();
-        refreshOverview();
+//        refreshOverview();
+        startListLoader(true);
     }
 
     private void onNewTicket() {
@@ -1044,14 +1045,13 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
     }
 
     @Override
-    public Ticket refreshTicket(final int i) {
+    public void refreshTicket(final int i) {
         sendMessageToService(MSG_SEND_TICKETS, i, MSG_DISPLAY_TICKET, null);
-        return null;  // TODO
-    }
+     }
 
     @Override
     public void putTicket(Ticket t) {
-        //TODO
+        // TODO
     }
 
     public void updateTicket(final Ticket t,final String action, final String comment, final String veld, final String waarde, final boolean notify, final Map<String, String> modVeld) throws Exception{
