@@ -17,12 +17,12 @@
 package com.mfvl.trac.client;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class TicketModelVeld {
@@ -47,22 +47,14 @@ public class TicketModelVeld {
         _options = null;
     }
 
-	private String getNeededField(final JSONObject v,final String field) throws RuntimeException {
-        try {
-            return v.getString(field);
-        } catch (final JSONException e) {
-            throw new RuntimeException("Missing "+field+" in field definition", e);
-        }
-	}
-
     public TicketModelVeld(final JSONObject v) throws RuntimeException {
         if (v == null) {
             throw new RuntimeException("JSONObject is null");
         }
-		
-		_name = getNeededField(v,"name");
-		_label = getNeededField(v,"label");
-		_type = getNeededField(v,"type");
+
+        _name = getNeededField(v, "name");
+        _label = getNeededField(v, "label");
+        _type = getNeededField(v, "type");
         try {
             _custom = v.getString("custom").equals("true");
         } catch (final JSONException e) {
@@ -96,12 +88,21 @@ public class TicketModelVeld {
             }
             try {
                 _value = v.getString("value");
-            } catch (final JSONException ignored) {}
+            } catch (final JSONException ignored) {
+            }
             try {
                 _optional = v.getString("optional").equals("true");
             } catch (final JSONException e) {
                 _optional = false;
             }
+        }
+    }
+
+    private String getNeededField(final JSONObject v, final String field) throws RuntimeException {
+        try {
+            return v.getString(field);
+        } catch (final JSONException e) {
+            throw new RuntimeException("Missing " + field + " in field definition", e);
         }
     }
 

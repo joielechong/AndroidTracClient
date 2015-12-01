@@ -19,16 +19,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_vertical"
-    android:orientation="horizontal" >
+    android:orientation="horizontal">
 
     <ImageButton
- 		style="@style/SortSpecImageButton"
         android:id="@+id/sortup"
+        style="@style/SortSpecImageButton"
         android:src="@android:drawable/arrow_up_float" />
 
     <ImageButton
-		style="@style/SortSpecImageButton"
         android:id="@+id/sortdown"
+        style="@style/SortSpecImageButton"
         android:src="@android:drawable/arrow_down_float" />
 
     <TextView
@@ -41,12 +41,12 @@
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <ImageButton
- 		style="@style/SortSpecImageButton8"
-        android:id="@+id/sortdirec" />
+        android:id="@+id/sortdirec"
+        style="@style/SortSpecImageButton8" />
 
     <ImageButton
- 		style="@style/SortSpecImageButton"
-		android:id="@+id/delitem"
+        android:id="@+id/delitem"
+        style="@style/SortSpecImageButton"
         android:src="@android:drawable/ic_menu_delete" />
 
 </LinearLayout>

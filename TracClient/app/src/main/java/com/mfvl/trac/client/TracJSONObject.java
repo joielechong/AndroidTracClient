@@ -27,7 +27,7 @@ public class TracJSONObject extends JSONObject {
     TracJSONObject() {
         super();
     }
-	
+
     public JSONObject makeComplexCall(String id, String method, Object... params) throws JSONException {
         this.put("method", method);
         this.put("id", id);

@@ -16,9 +16,9 @@
 
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:orientation="vertical" >
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <ScrollView
         android:id="@+id/aboveAdBlock"
@@ -26,12 +26,12 @@
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
         android:orientation="vertical"
-        android:paddingBottom="@dimen/adview_padding" >
+        android:paddingBottom="@dimen/adview_padding">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="match_parent"
@@ -44,7 +44,7 @@
                 android:id="@+id/loadprofile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal" >
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -61,12 +61,12 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" >
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal" >
+                    android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -76,23 +76,24 @@
 
                     <EditText
                         android:id="@+id/trac_URL"
+                        style="@style/EditL24"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        style="@style/EditL24"
                         android:ellipsize="none"
                         android:hint="@string/tracUrlHint"
                         android:inputType="textUri" />
                 </LinearLayout>
 
-                <CheckBox style="@style/CheckBox"
+                <CheckBox
                     android:id="@+id/sslHack"
+                    style="@style/CheckBox"
                     android:text="@string/sslHack"
                     android:visibility="gone" />
 
-					<LinearLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal" >
+                    android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -102,9 +103,9 @@
 
                     <EditText
                         android:id="@+id/trac_User"
+                        style="@style/EditL12"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        style="@style/EditL12"
                         android:ellipsize="none"
                         android:hint="@string/tracUserHint"
                         android:inputType="text" />
@@ -113,7 +114,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal" >
+                    android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -123,17 +124,18 @@
 
                     <EditText
                         android:id="@+id/trac_Pw"
+                        style="@style/EditL12"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        style="@style/EditL12"
                         android:ellipsize="none"
                         android:hint="@string/tracPwHint"
                         android:inputType="textPassword" />
                 </LinearLayout>
             </LinearLayout>
 
-            <CheckBox style="@style/CheckBox"
+            <CheckBox
                 android:id="@+id/bewaren"
+                style="@style/CheckBox"
                 android:checked="true"
                 android:text="@string/bewaren" />
 
@@ -141,7 +143,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical|center_horizontal"
-                android:orientation="vertical" >
+                android:orientation="vertical">
 
                 <Button
                     android:id="@+id/verBut"
@@ -151,15 +153,15 @@
 
                 <TextView
                     android:id="@+id/connWarn"
-					android:layout_width="match_parent"
-					android:gravity="center_vertical|center_horizontal"
+                    style="@style/TextWarn"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-					android:layout_marginTop="3dp"
+                    android:layout_marginTop="3dp"
+                    android:gravity="center_vertical|center_horizontal"
                     android:text="@string/validCred"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-					style="@style/TextWarn"
                     android:visibility="gone" />
- 
+
                 <TextView
                     android:id="@+id/connWarnSts"
                     android:layout_width="match_parent"
@@ -169,19 +171,19 @@
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:visibility="gone" />
 
-				<LinearLayout style="@style/ButtonHolder">
+                <LinearLayout style="@style/ButtonHolder">
+
                     <Button
                         android:id="@+id/storebutton"
-						style="@style/NormalButton"
+                        style="@style/NormalButton"
                         android:text="@string/storeprofile" />
 
                     <Button style="@style/OkButton" />
-				</LinearLayout>
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
 
-    <LinearLayout style="@style/AdBlockStyle">
-	</LinearLayout>
+    <LinearLayout style="@style/AdBlockStyle"></LinearLayout>
 
 </RelativeLayout>

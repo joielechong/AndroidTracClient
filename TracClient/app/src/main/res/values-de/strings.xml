@@ -1,108 +1,108 @@
 <resources>
 
-	<string name="about_button">Über TracClient</string>
-	<string name="tracUser">Benutzername</string>
-	<string name="tracUserHint">Benutzername</string>
-	<string name="tracPw">Passwort</string>
-	<string name="tracPwHint">Passwort</string>
-	<string name="bewaren">Anmeldedaten speichern</string>
-	<string name="vertext">Überprüfen</string>
-	<string name="invalidCred">Anmeldedaten nicht gültig</string>
-	<string name="validCred">Anmeldedaten gültig</string>
-	<string name="list_heading">Ticket Übersicht</string>
-	<string name="ophalen">Daten werden geladen</string>
-	<string name="tlrefresh">Liste aktualisieren</string>
-	<string name="dfrefresh">Aktualisieren Ticket</string>
-	<string name="filter">Filteroptionen</string>
-	<string name="sort">Sortieren</string>
-	<string name="changehost">Wählen Sie einen anderen Trac Host</string>
-	<string name="updateticket">Status des Tickets ändern</string>
-	<string name="nieuw">Neues Ticket</string>
-	<string name="nodata">Keine Daten</string>
-	<string name="nodatadesc">Inhalt des Tickets ist noch nicht geladen</string>
-	<string name="connerr">Verbindungsfehler</string>
-	<string name="newtick">Neues Ticket</string>
+    <string name="about_button">Über TracClient</string>
+    <string name="tracUser">Benutzername</string>
+    <string name="tracUserHint">Benutzername</string>
+    <string name="tracPw">Passwort</string>
+    <string name="tracPwHint">Passwort</string>
+    <string name="bewaren">Anmeldedaten speichern</string>
+    <string name="vertext">Überprüfen</string>
+    <string name="invalidCred">Anmeldedaten nicht gültig</string>
+    <string name="validCred">Anmeldedaten gültig</string>
+    <string name="list_heading">Ticket Übersicht</string>
+    <string name="ophalen">Daten werden geladen</string>
+    <string name="tlrefresh">Liste aktualisieren</string>
+    <string name="dfrefresh">Aktualisieren Ticket</string>
+    <string name="filter">Filteroptionen</string>
+    <string name="sort">Sortieren</string>
+    <string name="changehost">Wählen Sie einen anderen Trac Host</string>
+    <string name="updateticket">Status des Tickets ändern</string>
+    <string name="nieuw">Neues Ticket</string>
+    <string name="nodata">Keine Daten</string>
+    <string name="nodatadesc">Inhalt des Tickets ist noch nicht geladen</string>
+    <string name="connerr">Verbindungsfehler</string>
+    <string name="newtick">Neues Ticket</string>
     <string name="oktext">OK</string>
-	<string name="store">Ticket Speichern</string>
-	<string name="storerr">Fehler beim Erstellen des Tickets</string>
-	<string name="upderr">Fehler beim Ändern des Tickets</string>
-	<string name="storerrdesc">Ticket kann nicht gespeichert werden</string>
-	<string name="storok">Ticket erstellt</string>
-	<string name="storokdesc">Ticket erstellt, ID =</string>
-	<string name="comment">Kommentar hinzufügen</string>
-	<string name="attach">Anhang hinzufügen</string>
-	<string name="chooser_title">Ticket Anhang</string>
-	<string name="tlshare">Teile Liste</string>
-	<string name="dfshare">Teile Ticket</string>
-	<string name="updtick">Ändern Ticket</string>
-	<string name="perfact">Aktion ausführen</string>
-	<string name="storeupd">Änderungen speichern</string>
-	<string name="cancel">Abbrechen</string>
-	<string name="noticketUnk">Kein Ticket erstellt: Unbekannter Grund</string>
-	<string name="invtick">Ungültige Ticketnummer</string>
-	<string name="noaction">Keine Aktion übergeben</string>
-	<string name="zoekfilter">Suchbegriff eingeben</string>
-	<string name="zoek">Suche</string>
-	<string name="storefilter">Filter speichern</string>
-	<string name="storesort">Speichern Sie die Sortierreihenfolge</string>
-	<string name="help">Hilfe</string>
-	<string name="sslHack">Selbstsignierte Zertifikate akzeptieren</string>
-	<string-array name="filter_names">
-		<item>ist gleich</item>
-		<item>ist nicht gleich</item>
-		<item>enthält</item>
-		<item>enthält nicht</item>
-		<item>beginnt mit</item>
-		<item>beginnt nicht mit</item>
-		<item>endet mit</item>
-		<item>endet nicht auf</item>
-	</string-array>
-	<string name="select">Auswählen</string>
-	<string name="getlist">Ticketliste holen</string>
-	<string name="storeprofile">Profil speichern</string>
-	<string name="profiletext">Geben Sie den Profilnamen an</string>
-	<string name="loadprofile">Letztes Login-Profil</string>
-	<string name="loadprofiletext">Profil kann nicht geladen werden</string>
-	<string name="notfound">Nicht gefunden</string>
-	<string name="sdcardmissing">SD-Karte fehlt. Kann Anhang nicht speichern</string>
-	<string name="ioerror">Externer Speicher - Schreibfehler</string>
-	<string name="chooseapp">Zum öffnen eine Anwendung wählen:</string>
-	<string name="notify">Benachrichtigen</string>
-	<string name="exportprofiles">Profile exportieren</string>
-	<string name="importprofiles">Profile importieren</string>
-	<string name="completed">Abgeschlossen</string>
-	<string name="failed">Fehlgeschlagen</string>
-	<string name="xmlwritecompleted">Export nach XML erfolgreich</string>
-	<string name="xmlreadcompleted">Import von XML erfolgreich</string>
-	<string name="downloading">Herunterladen</string>
-	<string name="uploading">Hochladen</string>
-	<string name="saveupdate">Speichere Update auf dem Server</string>
-	<string name="saveticket">Speichere Ticket</string>
-	<string name="selectticket">Einzelnes Ticket wählen</string>
-	<string name="ticketnotfound">Ticket nicht gefunden</string>
-	<string name="chooseticknr">Ticketnummer eingeben</string>
-	<string name="chooseticket">Ticket wählen</string>
-	<string name="checking">Prüfe</string>
-	<string name="debug">Fehler suchen</string>
-	<string name="foundnew">Geänderte oder neue Tickets gefunden:</string>
-	<string name="notifmod">Geänderte Tickets gefunden</string>
-	<string name="tracLogin">Login bei TRAC-Server</string>
-	<string name="notickets">Keine Tickets gefunden</string>
-	<string name="nocomment">Kann Kommentar nicht ändern</string>
-	<string name="notpossible">Nicht möglich</string>
-	<string name="notchange">Sie können dieses Feld nicht verändern</string>
-	<string name="wrongdb">Falsche Datenbank</string>
-	<string name="wrongdbtext1">Aktuelle Datenbank = </string>
-	<string name="wrongdbtext3">\nZuerst korrekte Datenbank auswählen</string>
-	<string name="wrongdbtext2">\nAngeforderte Datenbank = </string>
-	<string name="showempty">Leere Felder anzeigen</string>
-	<string name="unsaved">Bildschirm verlassen und Änderungen speichern?</string>
-	<string name="nee">Nein</string>
-	<string name="ja">Ja</string>
-	<string name="hostnametitle">Ignorieren Hostname Prüfung?</string>
-	<string name="hostnametext">Hostname Prüfung gescheitert beim Versuch, Verbindung zum Server. \nMessage =</string>
-	<string name="hostnameign">\nIgnore die Prüfung?</string>
-	<string name="noJSON">Kein JSON Unterstutzung auf Trac host</string>
-	<string name="cookies">Cookies</string>
+    <string name="store">Ticket Speichern</string>
+    <string name="storerr">Fehler beim Erstellen des Tickets</string>
+    <string name="upderr">Fehler beim Ändern des Tickets</string>
+    <string name="storerrdesc">Ticket kann nicht gespeichert werden</string>
+    <string name="storok">Ticket erstellt</string>
+    <string name="storokdesc">Ticket erstellt,ID=</string>
+    <string name="comment">Kommentar hinzufügen</string>
+    <string name="attach">Anhang hinzufügen</string>
+    <string name="chooser_title">Ticket Anhang</string>
+    <string name="tlshare">Teile Liste</string>
+    <string name="dfshare">Teile Ticket</string>
+    <string name="updtick">Ändern Ticket</string>
+    <string name="perfact">Aktion ausführen</string>
+    <string name="storeupd">Änderungen speichern</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="noticketUnk">Kein Ticket erstellt:Unbekannter Grund</string>
+    <string name="invtick">Ungültige Ticketnummer</string>
+    <string name="noaction">Keine Aktion übergeben</string>
+    <string name="zoekfilter">Suchbegriff eingeben</string>
+    <string name="zoek">Suche</string>
+    <string name="storefilter">Filter speichern</string>
+    <string name="storesort">Speichern Sie die Sortierreihenfolge</string>
+    <string name="help">Hilfe</string>
+    <string name="sslHack">Selbstsignierte Zertifikate akzeptieren</string>
+    <string-array name="filter_names">
+        <item>ist gleich</item>
+        <item>ist nicht gleich</item>
+        <item>enthält</item>
+        <item>enthält nicht</item>
+        <item>beginnt mit</item>
+        <item>beginnt nicht mit</item>
+        <item>endet mit</item>
+        <item>endet nicht auf</item>
+    </string-array>
+    <string name="select">Auswählen</string>
+    <string name="getlist">Ticketliste holen</string>
+    <string name="storeprofile">Profil speichern</string>
+    <string name="profiletext">Geben Sie den Profilnamen an</string>
+    <string name="loadprofile">Letztes Login-Profil</string>
+    <string name="loadprofiletext">Profil kann nicht geladen werden</string>
+    <string name="notfound">Nicht gefunden</string>
+    <string name="sdcardmissing">SD-Karte fehlt.Kann Anhang nicht speichern</string>
+    <string name="ioerror">Externer Speicher-Schreibfehler</string>
+    <string name="chooseapp">Zum öffnen eine Anwendung wählen:</string>
+    <string name="notify">Benachrichtigen</string>
+    <string name="exportprofiles">Profile exportieren</string>
+    <string name="importprofiles">Profile importieren</string>
+    <string name="completed">Abgeschlossen</string>
+    <string name="failed">Fehlgeschlagen</string>
+    <string name="xmlwritecompleted">Export nach XML erfolgreich</string>
+    <string name="xmlreadcompleted">Import von XML erfolgreich</string>
+    <string name="downloading">Herunterladen</string>
+    <string name="uploading">Hochladen</string>
+    <string name="saveupdate">Speichere Update auf dem Server</string>
+    <string name="saveticket">Speichere Ticket</string>
+    <string name="selectticket">Einzelnes Ticket wählen</string>
+    <string name="ticketnotfound">Ticket nicht gefunden</string>
+    <string name="chooseticknr">Ticketnummer eingeben</string>
+    <string name="chooseticket">Ticket wählen</string>
+    <string name="checking">Prüfe</string>
+    <string name="debug">Fehler suchen</string>
+    <string name="foundnew">Geänderte oder neue Tickets gefunden:</string>
+    <string name="notifmod">Geänderte Tickets gefunden</string>
+    <string name="tracLogin">Login bei TRAC-Server</string>
+    <string name="notickets">Keine Tickets gefunden</string>
+    <string name="nocomment">Kann Kommentar nicht ändern</string>
+    <string name="notpossible">Nicht möglich</string>
+    <string name="notchange">Sie können dieses Feld nicht verändern</string>
+    <string name="wrongdb">Falsche Datenbank</string>
+    <string name="wrongdbtext1">Aktuelle Datenbank= </string>
+    <string name="wrongdbtext3">\nZuerst korrekte Datenbank auswählen</string>
+    <string name="wrongdbtext2">\nAngeforderte Datenbank= </string>
+    <string name="showempty">Leere Felder anzeigen</string>
+    <string name="unsaved">Bildschirm verlassen und Änderungen speichern?</string>
+    <string name="nee">Nein</string>
+    <string name="ja">Ja</string>
+    <string name="hostnametitle">Ignorieren Hostname Prüfung?</string>
+    <string name="hostnametext">Hostname Prüfung gescheitert beim Versuch,Verbindung zum Server. \nMessage=</string>
+    <string name="hostnameign">\nIgnore die Prüfung?</string>
+    <string name="noJSON">Kein JSON Unterstutzung auf Trac host</string>
+    <string name="cookies">Cookies</string>
 
 </resources>

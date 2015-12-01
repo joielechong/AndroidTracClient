@@ -19,7 +19,7 @@ package com.mfvl.trac.client;
 import java.io.Serializable;
 
 public class SortSpec extends Spec implements Cloneable, Serializable {
-	private static final long serialVersionUID = -3435259758425014514L;
+    private static final long serialVersionUID = -3435259758425014514L;
     private Boolean _richting; // true = asc false = desc
 
     public SortSpec(String veld, Boolean richting) {
@@ -31,24 +31,20 @@ public class SortSpec extends Spec implements Cloneable, Serializable {
         this(veld, true);
     }
 
-	@Override
-	public boolean equals(Object o) {
-		boolean retVal;
-		if (this == o) {
-			retVal = true;
-		} else if (! (o instanceof SortSpec)) {
-			retVal = false;
-		} else {
-			retVal = super.equals(o);
-			SortSpec f =(SortSpec)o;
-			retVal &= equalFields(_richting,f.getRichting());
-		}
+    @Override
+    public boolean equals(Object o) {
+        boolean retVal;
+        if (this == o) {
+            retVal = true;
+        } else if (!(o instanceof SortSpec)) {
+            retVal = false;
+        } else {
+            retVal = super.equals(o);
+            SortSpec f = (SortSpec) o;
+            retVal &= equalFields(_richting, f.getRichting());
+        }
 //		tcLog.d("this = "+this+" o = "+o+" retVal = "+retVal);
-		return retVal;
-	}
-
-    public void setRichting(Boolean r) {
-        _richting = r;
+        return retVal;
     }
 
     public Boolean flip() {
@@ -60,6 +56,10 @@ public class SortSpec extends Spec implements Cloneable, Serializable {
 
     public Boolean getRichting() {
         return _richting;
+    }
+
+    public void setRichting(Boolean r) {
+        _richting = r;
     }
 
     @Override

@@ -26,17 +26,17 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
 
-import static com.mfvl.trac.client.Const.*;
+import static com.mfvl.trac.client.Const.MSG_REFRESH_LIST;
 
 
 public class Refresh extends Activity implements ServiceConnection {
 
     private RefreshService mService = null;
 
-/*
- * Implementing ServiceConnection 
- *
- */
+    /*
+     * Implementing ServiceConnection
+     *
+     */
     @Override
     public void onServiceConnected(ComponentName className, IBinder service) {
         tcLog.d("className = " + className + " service = " + service);
@@ -51,10 +51,10 @@ public class Refresh extends Activity implements ServiceConnection {
         mService = null;
     }
 
-/*
- * Implementing Activity 
- *
- */
+    /*
+     * Implementing Activity
+     *
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

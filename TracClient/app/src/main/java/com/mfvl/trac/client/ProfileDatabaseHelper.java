@@ -17,6 +17,21 @@
 package com.mfvl.trac.client;
 
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -26,21 +41,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
-
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.content.res.TypedArray;
-import android.content.res.Resources;
 
 
 class ProfileDatabaseHelper extends SQLiteOpenHelper {
@@ -52,82 +52,9 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
     private static final String USERNAME_ID = "username";
     private static final String PASSWORD_ID = "password";
     private static final String SSLHACK_ID = "sslhack";
+    private final Context _context;
     private SQLiteDatabase db = null;
     private boolean upgrade = false;
-    private final Context _context;
-
-    public class XMLHandler extends DefaultHandler {
-
-        String _appname = null;
-        private int state = -1;
-        private String profileName;
-        private LoginProfile lp;
-        private final ProfileDatabaseHelper _pdb;
-
-        public XMLHandler(String appname, ProfileDatabaseHelper pdb) {
-            super();
-            _appname = appname;
-            _pdb = pdb;
-            state = 0;
-        }
-
-        @Override
-        public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException, RuntimeException {
-			switch (state) {
-				case 0:
-				if (localName.equals(_appname)) {
-					state++;
-				}
-				break;
-				
-				case 1:			
-				if (localName.equals(ProfileDatabaseHelper.TABLE_NAME)) {
-					state++;
-					_pdb.beginTransaction();
-					if (_pdb.delProfiles() == -1) {
-						throw new RuntimeException("delProfiles mislukt");
-					}
-				}
-				break;
-				
-				case 2:
-				if ("profile".equals(localName)) {
-					state++;
-					lp = new LoginProfile(attributes.getValue(ProfileDatabaseHelper.URL_ID),
-                        attributes.getValue(ProfileDatabaseHelper.USERNAME_ID),
-                        attributes.getValue(ProfileDatabaseHelper.PASSWORD_ID),
-                        "1".equals(attributes.getValue(ProfileDatabaseHelper.SSLHACK_ID)));
-					profileName = attributes.getValue(ProfileDatabaseHelper.NAME_ID);
-				}
-				break;
-            }
-        }
-
-        @Override
-        public void endElement(String uri, String localName, String qName) throws SAXException {
-			switch (state) {	
-				case 1:
-				if (localName.equals(_appname)) {
-					state--;
-				}
-				break;
-				
-				case 2:
-				if (localName.equals(ProfileDatabaseHelper.TABLE_NAME)) {
-					_pdb.endTransaction();
-					state--;
-				}
-				break;
-				
-				case 3:
-				if ("profile".equals(localName)) {
-					_pdb.addProfile(profileName, lp);
-					state--;
-				}
-				break;
-			}
-        }
-    }
 
     public ProfileDatabaseHelper(Context context) {
         super(context, Credentials.makeDbPath(DATABASE_NAME), null, DATABASE_VERSION);
@@ -146,7 +73,8 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion == 1 && newVersion == 2) {} else {
+        if (oldVersion == 1 && newVersion == 2) {
+        } else {
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
             onCreate(db);
         }
@@ -154,32 +82,32 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void open() {
-		if (db == null) {
-			db = getWritableDatabase();
-			if (upgrade) {
-				Resources res = _context.getResources();
-				TypedArray ta = res.obtainTypedArray(R.array.profiles);
-				try {
+        if (db == null) {
+            db = getWritableDatabase();
+            if (upgrade) {
+                Resources res = _context.getResources();
+                TypedArray ta = res.obtainTypedArray(R.array.profiles);
+                try {
 
-					for (int i = 0; i < ta.length(); ++i) {
-						int resId = ta.getResourceId(i, 0);
-						String[] values = res.getStringArray(resId);
-						
-						addProfile(values[0], new LoginProfile(values[1], values[2], values[3], "true".equals(values[4])));
-						// tcLog.d("i = "+i+" values = "+Arrays.asList(values));
-					}
-				} finally {
-					ta.recycle();
-				}
-				upgrade = false;
-			}
-		}
+                    for (int i = 0; i < ta.length(); ++i) {
+                        int resId = ta.getResourceId(i, 0);
+                        String[] values = res.getStringArray(resId);
+
+                        addProfile(values[0], new LoginProfile(values[1], values[2], values[3], "true".equals(values[4])));
+                        // tcLog.d("i = "+i+" values = "+Arrays.asList(values));
+                    }
+                } finally {
+                    ta.recycle();
+                }
+                upgrade = false;
+            }
+        }
     }
 
     @Override
     public void close() {
         db.close();
-		db = null;
+        db = null;
     }
 
     public void beginTransaction() {
@@ -221,7 +149,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
 
         return db.rawQuery(
                 "SELECT " + NAME_ID + "," + URL_ID + "," + USERNAME_ID + "," + PASSWORD_ID + "," + SSLHACK_ID + " from "
-                + TABLE_NAME + " WHERE " + NAME_ID + " !=''",
+                        + TABLE_NAME + " WHERE " + NAME_ID + " !=''",
                 null);
     }
 
@@ -229,14 +157,14 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
         LoginProfile profile = null;
 
         open();
-        final Cursor c = db.query(TABLE_NAME, new String[] { URL_ID, USERNAME_ID, PASSWORD_ID, SSLHACK_ID }, NAME_ID + "=?",
-                new String[] { name }, null, null, null);
+        final Cursor c = db.query(TABLE_NAME, new String[]{URL_ID, USERNAME_ID, PASSWORD_ID, SSLHACK_ID}, NAME_ID + "=?",
+                new String[]{name}, null, null, null);
 
         if (c.getCount() > 0) {
             c.moveToFirst();
             profile = new LoginProfile(c.getString(0), c.getString(1), c.getString(2), c.getInt(3) == 1);
         }
-		c.close();
+        c.close();
         return profile;
     }
 
@@ -244,34 +172,34 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
         LoginProfile profile = null;
 
         open();
-        final Cursor c = db.query(TABLE_NAME, new String[] { URL_ID, USERNAME_ID, PASSWORD_ID, SSLHACK_ID }, URL_ID + "=?",
-                new String[] { url }, null, null, null);
+        final Cursor c = db.query(TABLE_NAME, new String[]{URL_ID, USERNAME_ID, PASSWORD_ID, SSLHACK_ID}, URL_ID + "=?",
+                new String[]{url}, null, null, null);
 
         if (c.getCount() > 0) {
             c.moveToFirst();
             profile = new LoginProfile(c.getString(0), c.getString(1), c.getString(2), c.getInt(3) == 1);
         }
-		c.close();
+        c.close();
         return profile;
     }
 
     public void delProfile(String name) {
         open();
-        final String values[] = new String[] { name };
+        final String values[] = new String[]{name};
 
         db.delete(TABLE_NAME, "name=?", values);
     }
 
     public int delProfiles() {
         open();
-        final String values[] = new String[] { "" };
+        final String values[] = new String[]{""};
 
         return db.delete(TABLE_NAME, "name!=?", values);
     }
 
     public void readXML(final String appname) throws Exception {
         open();
-        final File fileName = Credentials.makeExtFilePath(appname + ".xml",true);
+        final File fileName = Credentials.makeExtFilePath(appname + ".xml", true);
         final InputStream in = new BufferedInputStream(new FileInputStream(fileName));
         final XMLReader xmlR = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
 
@@ -283,7 +211,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void writeXML(final String appname) throws Exception {
-        final File fileName = Credentials.makeExtFilePath(appname + ".xml",true);
+        final File fileName = Credentials.makeExtFilePath(appname + ".xml", true);
         final OutputStream out = new BufferedOutputStream(new FileOutputStream(fileName));
 
         String xmlString = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n";
@@ -305,5 +233,78 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
 
         out.write(bytes, 0, bytes.length);
         out.close();
+    }
+
+    public class XMLHandler extends DefaultHandler {
+
+        private final ProfileDatabaseHelper _pdb;
+        String _appname = null;
+        private int state = -1;
+        private String profileName;
+        private LoginProfile lp;
+
+        public XMLHandler(String appname, ProfileDatabaseHelper pdb) {
+            super();
+            _appname = appname;
+            _pdb = pdb;
+            state = 0;
+        }
+
+        @Override
+        public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException, RuntimeException {
+            switch (state) {
+                case 0:
+                    if (localName.equals(_appname)) {
+                        state++;
+                    }
+                    break;
+
+                case 1:
+                    if (localName.equals(ProfileDatabaseHelper.TABLE_NAME)) {
+                        state++;
+                        _pdb.beginTransaction();
+                        if (_pdb.delProfiles() == -1) {
+                            throw new RuntimeException("delProfiles mislukt");
+                        }
+                    }
+                    break;
+
+                case 2:
+                    if ("profile".equals(localName)) {
+                        state++;
+                        lp = new LoginProfile(attributes.getValue(ProfileDatabaseHelper.URL_ID),
+                                attributes.getValue(ProfileDatabaseHelper.USERNAME_ID),
+                                attributes.getValue(ProfileDatabaseHelper.PASSWORD_ID),
+                                "1".equals(attributes.getValue(ProfileDatabaseHelper.SSLHACK_ID)));
+                        profileName = attributes.getValue(ProfileDatabaseHelper.NAME_ID);
+                    }
+                    break;
+            }
+        }
+
+        @Override
+        public void endElement(String uri, String localName, String qName) throws SAXException {
+            switch (state) {
+                case 1:
+                    if (localName.equals(_appname)) {
+                        state--;
+                    }
+                    break;
+
+                case 2:
+                    if (localName.equals(ProfileDatabaseHelper.TABLE_NAME)) {
+                        _pdb.endTransaction();
+                        state--;
+                    }
+                    break;
+
+                case 3:
+                    if ("profile".equals(localName)) {
+                        _pdb.addProfile(profileName, lp);
+                        state--;
+                    }
+                    break;
+            }
+        }
     }
 }

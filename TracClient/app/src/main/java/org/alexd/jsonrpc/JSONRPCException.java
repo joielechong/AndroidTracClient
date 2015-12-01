@@ -6,17 +6,16 @@ package org.alexd.jsonrpc;
  * caused a JSONRPCException to be thrown
  *
  * @author Alexandre
- *
  */
 public class JSONRPCException extends Exception {
 
-	private static final long serialVersionUID = 4657697652848090922L;
+    private static final long serialVersionUID = 4657697652848090922L;
 
-	public JSONRPCException(Object error) {
-		super(error.toString());
-	}
+    public JSONRPCException(Object error) {
+        super(error.toString());
+    }
 
-	public JSONRPCException(String message, Throwable innerException) {
-		super(message, innerException);
-	}
+    public JSONRPCException(String message, Throwable innerException) {
+        super(message, innerException);
+    }
 }

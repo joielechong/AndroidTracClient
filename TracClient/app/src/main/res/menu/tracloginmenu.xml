@@ -15,15 +15,15 @@
  * limitations under the License.
 
 -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
         android:id="@+id/importprofiles"
         android:menuCategory="container"
-        android:title="@string/importprofiles"/>
+        android:title="@string/importprofiles" />
     <item
         android:id="@+id/exportprofiles"
         android:menuCategory="container"
-        android:title="@string/exportprofiles"/>
- 
+        android:title="@string/exportprofiles" />
+
 </menu>

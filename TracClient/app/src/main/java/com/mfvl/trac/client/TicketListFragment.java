@@ -43,7 +43,7 @@ import android.widget.ShareActionProvider;
 import android.widget.TextView;
 
 public class TicketListFragment extends TracClientFragment implements SwipeRefreshLayout.OnRefreshListener, AdapterView.OnItemClickListener, AbsListView.OnScrollListener, TextWatcher {
-	
+
     private static final String ZOEKENNAME = "zoeken";
     private static final String ZOEKTEXTNAME = "filtertext";
     private static final String SCROLLPOSITIONNAME = "scrollPosition";
@@ -57,39 +57,39 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
     private int scrollPosition = 0;
     private boolean scrolling = false;
     private boolean hasScrolled = false;
-	
- 	private ShareActionProvider listShare = null;	
-	private SwipeRefreshLayout swipeLayout;
-	
-	private void onMyAttach() {
+
+    private ShareActionProvider listShare = null;
+    private SwipeRefreshLayout swipeLayout;
+
+    private void onMyAttach() {
         if (fragmentArgs != null) {
             if (fragmentArgs.containsKey("TicketArg")) {
                 selectTicket(fragmentArgs.getInt("TicketArg"));
             }
         }
-	}
-	
+    }
+
     @Override
     public void onAttach(Context activity) {
         super.onAttach(activity);
         tcLog.d("(C)");
-		onMyAttach();
+        onMyAttach();
     }
-	
+
     @Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
         tcLog.d("(A)");
-		onMyAttach();
-	}
+        onMyAttach();
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         tcLog.d("savedInstanceState = " + savedInstanceState);
         setHasOptionsMenu(true);
-	}
-	
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         tcLog.d("savedInstanceState = " + savedInstanceState);
@@ -106,34 +106,34 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
         hs = (TextView) view.findViewById(R.id.listProgress);
         return view;
     }
-	
-	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState){
-		tcLog.d("view = " + view + " sis = " + savedInstanceState);
-		super.onViewCreated(view,savedInstanceState);
-		swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
-		swipeLayout.setOnRefreshListener(this);
-		swipeLayout.setColorSchemeResources(R.color.swipe_blue, 
-            R.color.swipe_green, 
-            R.color.swipe_orange, 
-            R.color.swipe_red);
-		listener.listViewCreated();
-	}
-	
-	public void setAdapter(TicketListAdapter a) {
-		tcLog.d("a = " + a+ " listView = "+ listView );
-		dataAdapter = a;
-		listView.setAdapter(a);
-		zetZoeken();
-	}
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        tcLog.d("view = " + view + " sis = " + savedInstanceState);
+        super.onViewCreated(view, savedInstanceState);
+        swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+        swipeLayout.setOnRefreshListener(this);
+        swipeLayout.setColorSchemeResources(R.color.swipe_blue,
+                R.color.swipe_green,
+                R.color.swipe_orange,
+                R.color.swipe_red);
+        listener.listViewCreated();
+    }
+
+    public void setAdapter(TicketListAdapter a) {
+        tcLog.d("a = " + a + " listView = " + listView);
+        dataAdapter = a;
+        listView.setAdapter(a);
+        zetZoeken();
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         tcLog.d("savedInstanceState = " + savedInstanceState);
 
-		setAdapter(listener.getAdapter());
-		
+        setAdapter(listener.getAdapter());
+
         if (savedInstanceState != null) {
             zoeken = savedInstanceState.getBoolean(ZOEKENNAME);
             zoektext = savedInstanceState.getString(ZOEKTEXTNAME);
@@ -147,7 +147,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
         } else {
             filterText.setVisibility(View.GONE);
             if (filterText.isFocused()) {
-				filterText.clearFocus();
+                filterText.clearFocus();
             }
         }
     }
@@ -156,8 +156,8 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
     public void onResume() {
         super.onResume();
         tcLog.logCall();
-		helpFile = R.string.helplistfile;
-		listView.setAdapter(listener.getAdapter());
+        helpFile = R.string.helplistfile;
+        listView.setAdapter(listener.getAdapter());
         zetZoeken();
         setScroll();
         listView.invalidate();
@@ -173,38 +173,38 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-        tcLog.d( "menu = "+menu+" view = "+v+"menuInfo = "+menuInfo);
+        tcLog.d("menu = " + menu + " view = " + v + "menuInfo = " + menuInfo);
         super.onCreateContextMenu(menu, v, menuInfo);
         if (v.getId() == R.id.listOfTickets) {
             final MenuInflater inflater = context.getMenuInflater();
             inflater.inflate(R.menu.listcontextmenu, menu);
-		}
+        }
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        tcLog.d("item = "+item);
+        tcLog.d("item = " + item);
         final AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
         final Ticket t = (Ticket) listView.getItemAtPosition(info.position);
 
-        if (t!= null && t.hasdata()) {
+        if (t != null && t.hasdata()) {
             switch (item.getItemId()) {
-            case R.id.select:
-                listener.onTicketSelected(t);
-                return true;
+                case R.id.select:
+                    listener.onTicketSelected(t);
+                    return true;
 
-            case R.id.dfupdate:
-                listener.onUpdateTicket(t);
-                return true;
+                case R.id.dfupdate:
+                    listener.onUpdateTicket(t);
+                    return true;
 
-            case R.id.dfshare:
-                Intent i = listener.shareTicket(t);
-				if (i != null) {
-					startActivity(i);
-				}
-                return true;
+                case R.id.dfshare:
+                    Intent i = listener.shareTicket(t);
+                    if (i != null) {
+                        startActivity(i);
+                    }
+                    return true;
 
-            default:
+                default:
             }
         }
         return super.onContextItemSelected(item);
@@ -221,7 +221,7 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
             listView.setAdapter(null);
             unregisterForContextMenu(listView);
             listView = null;
-		}
+        }
         super.onDestroyView();
     }
 
@@ -231,55 +231,55 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
         inflater.inflate(R.menu.ticketlistmenu, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
-	
+
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         tcLog.logCall();
         super.onPrepareOptionsMenu(menu);
-		listener.setActionProvider(menu,R.id.tlshare);
-		final MenuItem itemList = menu.findItem(R.id.tlshare);
-		if (itemList != null) {
-			tcLog.d( "item = " + itemList);
-			listShare = (ShareActionProvider) itemList.getActionProvider();
-			updateShareActionProvider();
-		}
-	}
-	
-	private void updateShareActionProvider() {
+        listener.setActionProvider(menu, R.id.tlshare);
+        final MenuItem itemList = menu.findItem(R.id.tlshare);
+        if (itemList != null) {
+            tcLog.d("item = " + itemList);
+            listShare = (ShareActionProvider) itemList.getActionProvider();
+            updateShareActionProvider();
+        }
+    }
+
+    private void updateShareActionProvider() {
         tcLog.logCall();
-		Intent i = listener.shareList();
-		tcLog.d("SAP = " + listShare + " " + i);
-		if (listShare != null && i != null) {
-			listShare.setShareIntent(i);
-			listShare.setShareHistoryFileName("custom_share_history_list.xml");
-		}
-     }
-	
+        Intent i = listener.shareList();
+        tcLog.d("SAP = " + listShare + " " + i);
+        if (listShare != null && i != null) {
+            listShare.setShareIntent(i);
+            listShare.setShareHistoryFileName("custom_share_history_list.xml");
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        tcLog.d( "item=" + item.getTitle());
+        tcLog.d("item=" + item.getTitle());
         final int itemId = item.getItemId();
 
-		if (itemId == R.id.tlselect) {
+        if (itemId == R.id.tlselect) {
             final EditText input = new EditText(context);
             input.setInputType(InputType.TYPE_CLASS_NUMBER);
-			
-            if (!listener.isFinishing()) {
-				final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-				alertDialogBuilder.setTitle(R.string.chooseticket)
-					.setMessage(R.string.chooseticknr)
-					.setView(input)
-					.setCancelable(false)
-					.setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int id) {
-							final int ticknr = Integer.parseInt(input.getText().toString());
 
-							selectTicket(ticknr);
-						}
-					})
-					.setNegativeButton(R.string.cancel, null)
-					.show();
+            if (!listener.isFinishing()) {
+                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+                alertDialogBuilder.setTitle(R.string.chooseticket)
+                        .setMessage(R.string.chooseticknr)
+                        .setView(input)
+                        .setCancelable(false)
+                        .setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                final int ticknr = Integer.parseInt(input.getText().toString());
+
+                                selectTicket(ticknr);
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, null)
+                        .show();
             }
 //        } else if (itemId == R.id.tlshare) {
 //            shareList();
@@ -294,9 +294,9 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
                 if (filterText.isFocused()) {
                     filterText.clearFocus();
                 }
-                 dataAdapter.getFilter().filter(null);
+                dataAdapter.getFilter().filter(null);
             }
-			zoektext = null;
+            zoektext = null;
             filterText.setText(null);
         } else {
             return super.onOptionsItemSelected(item);
@@ -306,49 +306,52 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
 
     @Override
     public void onSaveInstanceState(Bundle savedState) {
-        tcLog.e("in = "+ savedState);
+        tcLog.e("in = " + savedState);
         super.onSaveInstanceState(savedState);
         savedState.putBoolean(ZOEKENNAME, zoeken);
         savedState.putString(ZOEKTEXTNAME, zoektext);
-        savedState.putInt(SCROLLPOSITIONNAME,scrollPosition);
+        savedState.putInt(SCROLLPOSITIONNAME, scrollPosition);
         tcLog.d("out = " + savedState);
     }
-	
-	private void setStatus(final String s) {
-		tcLog.d("s = " + s);
-		try {
-			hs.setText(s);
-		} catch (Exception ignored) {}
-	}
 
-	private void setStatus(final int s) {
-		try {
-			hs.setText(s);
-		} catch (Exception ignored) {}
-	}
+    private void setStatus(final String s) {
+        tcLog.d("s = " + s);
+        try {
+            hs.setText(s);
+        } catch (Exception ignored) {
+        }
+    }
 
-	public void dataHasChanged() {
-		try {
-			tcLog.d("hs = " + hs);
-			zetZoeken();
-			setStatus(listener.getTicketContentCount() + "/" + listener.getTicketCount());
+    private void setStatus(final int s) {
+        try {
+            hs.setText(s);
+        } catch (Exception ignored) {
+        }
+    }
+
+    public void dataHasChanged() {
+        try {
+            tcLog.d("hs = " + hs);
+            zetZoeken();
+            setStatus(listener.getTicketContentCount() + "/" + listener.getTicketCount());
 //			setAdapter(listener.getAdapter());
-			updateShareActionProvider();
-			listener.getAdapter().notifyDataSetChanged();
-			getView().invalidate();
-			listView.invalidate();
-			listView.invalidateViews();
-			setScroll();
-		} catch (Exception ignored) {}
-	}
-	
-	public void startLoading() {
+            updateShareActionProvider();
+            listener.getAdapter().notifyDataSetChanged();
+            getView().invalidate();
+            listView.invalidate();
+            listView.invalidateViews();
+            setScroll();
+        } catch (Exception ignored) {
+        }
+    }
+
+    public void startLoading() {
 //        tcLog.d("hs = " + hs);
         setStatus(R.string.ophalen);
- 	}
+    }
 
-	// AbsListView.OnScrollListener
-	
+    // AbsListView.OnScrollListener
+
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         if (scrolling || hasScrolled) {
@@ -369,28 +372,29 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
         }
     }
 
-	// AdapterView.OnItemClickListener
-	
+    // AdapterView.OnItemClickListener
+
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         tcLog.d(parent.toString() + " " + view + " " + position + " " + id);
         switch (parent.getId()) {
-        case R.id.listOfTickets:
-            final Ticket t = dataAdapter.getItem(position);
+            case R.id.listOfTickets:
+                final Ticket t = dataAdapter.getItem(position);
 
-            if (t!= null && t.hasdata()) {
-                listener.onTicketSelected(t);
-            } else {
-				showAlertBox(R.string.nodata,R.string.nodatadesc,null);
-            }
-            break;
+                if (t != null && t.hasdata()) {
+                    listener.onTicketSelected(t);
+                } else {
+                    showAlertBox(R.string.nodata, R.string.nodatadesc, null);
+                }
+                break;
         }
     }
 
     private void setScroll() {
-		try {
+        try {
             listView.setSelection(scrollPosition);
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
     }
 
     private void zetZoeken() {
@@ -413,29 +417,31 @@ public class TicketListFragment extends TracClientFragment implements SwipeRefre
         }
     }
 
-	//SwipeRefreshLayout.OnRefreshListener
-	
-	@Override 
-	public void onRefresh() {
+    //SwipeRefreshLayout.OnRefreshListener
+
+    @Override
+    public void onRefresh() {
         tcLog.logCall();
- 		listener.refreshOverview();
-		swipeLayout.setRefreshing(false);
-	}
-	
-	// TextWatcher
+        listener.refreshOverview();
+        swipeLayout.setRefreshing(false);
+    }
+
+    // TextWatcher
 
     @Override
     public void afterTextChanged(Editable s) {
-		tcLog.d(s.toString()+" "+dataAdapter);
+        tcLog.d(s.toString() + " " + dataAdapter);
         if (dataAdapter != null) {
             dataAdapter.getFilter().filter(s);
             zoektext = s.toString();
         }
-	}
+    }
 
     @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+    }
 
     @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {}
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+    }
 }

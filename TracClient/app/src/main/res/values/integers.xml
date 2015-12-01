@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
- * Copyright (C) 2013,2014 Michiel van Loon
+ * Copyright (C) 2013,2014,2015 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,22 @@
 
 -->
 <resources>
-    <integer name="timerStart">60000</integer> <!-- 1*60*1000 1 min. -->
-	<integer name="timerPeriod">300000</integer> <!-- 5*60*1000 5 min. -->
-	<integer name="startupTimer">3000</integer> <!-- 3 sec. -->
-	<integer name="timerCorr">120000</integer> <!-- 2 * 60 * 1000 2 minuten -->
-	
-	<integer name="popupAlpha">220</integer>
-	
-	<integer name="ticketGroupCount">50</integer> <!-- number of tickets to load in 1 batch from the server -->
-	<integer name="large_move">90</integer>  <!-- number of pixels to swipe to be recognized as a large move -->
-	<integer name="extra_large_move">360</integer>  <!-- number of pixels to swipe to be recognized as an extra large move -->
-	<integer name="drawer_border">48</integer>  <!-- hypothetical border to prevent interference with the navigation drawer -->
+    <integer name="timerStart">60000</integer>
+    <!-- 1*60*1000 1 min. -->
+    <integer name="timerPeriod">300000</integer>
+    <!-- 5*60*1000 5 min. -->
+    <integer name="startupTimer">3000</integer>
+    <!-- 3 sec. -->
+    <integer name="timerCorr">120000</integer>
+    <!-- 2 * 60 * 1000 2 minuten -->
+
+    <integer name="popupAlpha">220</integer>
+
+    <integer name="ticketGroupCount">50</integer>
+    <!-- number of tickets to load in 1 batch from the server -->
+    <integer name="large_move">90</integer>
+    <!-- number of pixels to swipe to be recognized as a large move -->
+    <integer name="extra_large_move">360</integer>
+    <!-- number of pixels to swipe to be recognized as an extra large move -->
 
 </resources>

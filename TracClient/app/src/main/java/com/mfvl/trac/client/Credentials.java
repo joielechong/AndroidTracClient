@@ -16,6 +16,15 @@
 
 package com.mfvl.trac.client;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.Signature;
+import android.os.Environment;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -26,18 +35,22 @@ import java.util.Locale;
 
 import javax.security.auth.x500.X500Principal;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.pm.Signature;
-import android.os.Environment;
-
-import static com.mfvl.trac.client.Const.*;
+import static com.mfvl.trac.client.Const.DisclaimerVersion;
+import static com.mfvl.trac.client.Const.PREFS_NAME;
+import static com.mfvl.trac.client.Const.PREF_1ST;
+import static com.mfvl.trac.client.Const.PREF_COOKIEINFORM;
+import static com.mfvl.trac.client.Const.PREF_DISCLAIM;
+import static com.mfvl.trac.client.Const.PREF_FILTER;
+import static com.mfvl.trac.client.Const.PREF_HACK;
+import static com.mfvl.trac.client.Const.PREF_HNH;
+import static com.mfvl.trac.client.Const.PREF_PASS;
+import static com.mfvl.trac.client.Const.PREF_PROF;
+import static com.mfvl.trac.client.Const.PREF_SORT;
+import static com.mfvl.trac.client.Const.PREF_URL;
+import static com.mfvl.trac.client.Const.PREF_USER;
 
 public class Credentials {
+    private static final X500Principal DEBUG_DN = new X500Principal("CN=Android Debug,O=Android,C=US");
     private static String versie = null;
     private static String _url = "";
     private static String _username = "";
@@ -52,13 +65,13 @@ public class Credentials {
     private Credentials(final Context context) {
         settings = context.getSharedPreferences(PREFS_NAME, 0);
         _context = context;
- 		versie = context.getString(R.string.app_version);
+        versie = context.getString(R.string.app_version);
     }
 
     public static Credentials getInstance(final Context context) {
-        if (_instance == null ) {
+        if (_instance == null) {
             _instance = new Credentials(context);
-			loadCredentials();
+            loadCredentials();
         }
         return _instance;
     }
@@ -82,16 +95,18 @@ public class Credentials {
     public static void storeCredentials() {
 //        tcLog.logCall();
         settings.edit()
-			.putString(PREF_URL, _url)
-			.putString(PREF_USER, _username)
-			.putString(PREF_PASS, _password)
-			.putBoolean(PREF_HACK, _sslHack)
-			.putBoolean(PREF_HNH, _sslHostNameHack)
-			.putString(PREF_PROF, _profile)
-			.apply();
+                .putString(PREF_URL, _url)
+                .putString(PREF_USER, _username)
+                .putString(PREF_PASS, _password)
+                .putBoolean(PREF_HACK, _sslHack)
+                .putBoolean(PREF_HNH, _sslHostNameHack)
+                .putString(PREF_PROF, _profile)
+                .apply();
     }
 
-    /** Set login credentials server-url, username, password and profile */
+    /**
+     * Set login credentials server-url, username, password and profile
+     */
     public static void setCredentials(final String url, final String username, final String password, final String profile) {
 //        tcLog.logCall();
         _url = url;
@@ -112,41 +127,41 @@ public class Credentials {
         return _password;
     }
 
-    public static void setSslHack(boolean sslHack) {
-        _sslHack = sslHack;
-    }
-
     public static boolean getSslHack() {
         return _sslHack;
     }
 
-    public static void setSslHostNameHack(boolean sslHostNameHack) {
-        _sslHostNameHack = sslHostNameHack;
+    public static void setSslHack(boolean sslHack) {
+        _sslHack = sslHack;
     }
 
     public static boolean getSslHostNameHack() {
         return _sslHostNameHack;
     }
 
-    public static void setProfile(String profile) {
-        _profile = profile;
+    public static void setSslHostNameHack(boolean sslHostNameHack) {
+        _sslHostNameHack = sslHostNameHack;
     }
 
     public static String getProfile() {
         return _profile;
     }
 
+    public static void setProfile(String profile) {
+        _profile = profile;
+    }
+
     public static boolean checkDisclaimer() {
 //        tcLog.logCall();
         final String thisRun = DisclaimerVersion;
         final String lastRun = settings.getString(PREF_DISCLAIM, "");
-	
+
         return !lastRun.equals(thisRun);
     }
-	
-	public static void setDisclaimer() {
-		settings.edit().putString(PREF_DISCLAIM, DisclaimerVersion).apply();
-	}
+
+    public static void setDisclaimer() {
+        settings.edit().putString(PREF_DISCLAIM, DisclaimerVersion).apply();
+    }
 
     public static boolean getFirstRun() {
         // tcLog.d("getFirstRun");
@@ -158,13 +173,13 @@ public class Credentials {
 
     public static boolean getCookieInform() {
 //        tcLog.logCall();
-		return settings.getBoolean(PREF_COOKIEINFORM,true);
-	}
-	
-	public static void setCookieInform(boolean val) {
+        return settings.getBoolean(PREF_COOKIEINFORM, true);
+    }
+
+    public static void setCookieInform(boolean val) {
 //        tcLog.logCall();
-		settings.edit().putBoolean(PREF_COOKIEINFORM, val).apply();
-	}
+        settings.edit().putBoolean(PREF_COOKIEINFORM, val).apply();
+    }
 
     public static void storeFilterString(final String filterString) {
         //tcLog.d(filterString);
@@ -178,7 +193,7 @@ public class Credentials {
 
     public static void removeFilterString() {
         // tcLog.logCall();
-		storeFilterString("max=500&status!=closed");
+        storeFilterString("max=500&status!=closed");
     }
 
     public static void storeSortString(final String sortString) {
@@ -199,8 +214,6 @@ public class Credentials {
         storeSortString("order=priority&order=modified&desc=1");
     }
 
-    private static final X500Principal DEBUG_DN = new X500Principal("CN=Android Debug,O=Android,C=US");
-
     public static boolean isDebuggable() {
         boolean debuggable = false;
 
@@ -208,6 +221,8 @@ public class Credentials {
             @SuppressLint("PackageManagerGetSignatures")
             final PackageInfo pinfo = _context.getPackageManager().getPackageInfo(_context.getPackageName(),
                     PackageManager.GET_SIGNATURES);
+//			tcLog.d("pinfo = "+pinfo);
+//			tcLog.toast("pinfo.packageName = "+pinfo.packageName);
             final Signature signatures[] = pinfo.signatures;
 
             final CertificateFactory cf = CertificateFactory.getInstance("X.509");
@@ -227,12 +242,12 @@ public class Credentials {
         return debuggable;
     }
 
-	public static String getVersion() {
-		return versie;
-	}
+    public static String getVersion() {
+        return versie;
+    }
 
     public static boolean isRCVersion() {
-		return (versie != null) && (versie.toLowerCase(Locale.US).contains("rc"));
+        return (versie != null) && (versie.toLowerCase(Locale.US).contains("rc"));
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -240,9 +255,9 @@ public class Credentials {
 
         String dbpath = dbname;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-			final File dirPath = _context.getExternalFilesDir(null);
+            final File dirPath = _context.getExternalFilesDir(null);
 //			tcLog.d("dirpath = "+dirPath);
-			final File filePath = new File(dirPath,dbname);
+            final File filePath = new File(dirPath, dbname);
 //			tcLog.d("filePath = "+filePath);
             final String p1 = filePath.toString();
 
@@ -251,7 +266,7 @@ public class Credentials {
                     dbpath = p1;
                 }
             } else {
-				dbpath = p1;
+                dbpath = p1;
             }
         }
         tcLog.d("dbpath = " + dbpath);
@@ -259,22 +274,22 @@ public class Credentials {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static File makeExtFilePath(String filename,boolean visible) throws FileNotFoundException {
-		File dirPath;
+    public static File makeExtFilePath(String filename, boolean visible) throws FileNotFoundException {
+        File dirPath;
 //		tcLog.d("filename = "+filename);
-		if (visible) {
-			final File extPath = Environment.getExternalStorageDirectory();
+        if (visible) {
+            final File extPath = Environment.getExternalStorageDirectory();
 //			tcLog.d("extpath = "+extPath);
-			dirPath = new File(extPath,"TracClient");
-		} else {
-			dirPath = _context.getExternalFilesDir(null);
-			dirPath.mkdirs();
-		}
+            dirPath = new File(extPath, "TracClient");
+        } else {
+            dirPath = _context.getExternalFilesDir(null);
+            dirPath.mkdirs();
+        }
 //		tcLog.d("dirpath = "+dirPath);
-		if (!dirPath.isDirectory()) {
-            throw new FileNotFoundException("Not a directory: "+dirPath.toString());
-		}
-        final File filePath = new File(dirPath,filename);
+        if (!dirPath.isDirectory()) {
+            throw new FileNotFoundException("Not a directory: " + dirPath.toString());
+        }
+        final File filePath = new File(dirPath, filename);
 //		tcLog.d("filepath = "+filePath);
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             throw new FileNotFoundException(filePath.toString());
@@ -284,32 +299,32 @@ public class Credentials {
 
     public static File makeCacheFilePath(final String filename) {
         final File extPath = _context.getExternalCacheDir();
-        final File filePath = new File(extPath,filename);
-		tcLog.d("filepath = "+filePath);
+        final File filePath = new File(extPath, filename);
+        tcLog.d("filepath = " + filePath);
         return filePath;
     }
-	
+
     public static Boolean metaDataGetBoolean(String metaId) throws NameNotFoundException {
         return (_context != null
-                ? _context.getPackageManager().getApplicationInfo(_context.getPackageName(), PackageManager.GET_META_DATA).metaData.getBoolean(metaId): null);
+                ? _context.getPackageManager().getApplicationInfo(_context.getPackageName(), PackageManager.GET_META_DATA).metaData.getBoolean(metaId) : null);
     }
-	
+
     public static String metaDataGetString(String metaId) throws NameNotFoundException {
         return (_context != null
-                ? _context.getPackageManager().getApplicationInfo(_context.getPackageName(), PackageManager.GET_META_DATA).metaData.getString(metaId): null);
+                ? _context.getPackageManager().getApplicationInfo(_context.getPackageName(), PackageManager.GET_META_DATA).metaData.getString(metaId) : null);
     }
-	
-	public static String joinList(Object list[], final String sep) {
-		String reqString = "";
 
-		for (final Object fs : list) {
-			if (fs != null) {
-				if (reqString.length() > 0) {
-					reqString += sep;
-				}
-				reqString += fs.toString();
-			}
-		}
-		return reqString;
-	} 
+    public static String joinList(Object list[], final String sep) {
+        String reqString = "";
+
+        for (final Object fs : list) {
+            if (fs != null) {
+                if (reqString.length() > 0) {
+                    reqString += sep;
+                }
+                reqString += fs.toString();
+            }
+        }
+        return reqString;
+    }
 }

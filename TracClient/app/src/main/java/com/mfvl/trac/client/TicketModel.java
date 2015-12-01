@@ -17,41 +17,58 @@
 package com.mfvl.trac.client;
 
 
+import org.json.JSONArray;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.Semaphore;
-
-import org.json.JSONArray;
 
 public class TicketModel implements Serializable {
     private static final long serialVersionUID = 4307815225424930343L;
+    private final static List<String> extraFields = Arrays.asList("max", "page");
+    private final static List<String> extraValues = Arrays.asList("500", "0");
     private static HashMap<String, TicketModelVeld> _velden;
     private static ArrayList<String> _volgorde;
     private static int fieldCount;
     private static TicketModel _instance = null;
     private static boolean _hasData;
-	private static TracHttpClient _tracClient = null;
-	private static Semaphore active;
-	private final static List<String> extraFields = Arrays.asList("max","page");
-	private final static List<String> extraValues = Arrays.asList("500","0");
+    private static TracHttpClient _tracClient = null;
+    private static Semaphore active;
 
     private TicketModel(TracHttpClient tracClient) {
-		
+
         tcLog.logCall();
         fieldCount = 0;
-		_tracClient = tracClient;
+        _tracClient = tracClient;
         _hasData = false;
         _velden = new HashMap<>();
         _volgorde = new ArrayList<>();
-		active = new Semaphore(1, true);   }
+        active = new Semaphore(1, true);
+    }
+
+    public static TicketModel getInstance(TracHttpClient tracClient) {
+        tcLog.d("new tracClient = " + tracClient);
+        if (_instance == null || tracClient.equals(_tracClient)) {
+            _instance = new TicketModel(tracClient);
+        }
+        if (!_hasData && active.availablePermits() > 0) {
+            _instance.loadModelData();
+        }
+        return _instance;
+    }
+
+    public static TicketModel getInstance() {
+        tcLog.d("old tracClient = " + _tracClient);
+        return _instance;
+    }
 
     private void loadModelData() {
         tcLog.logCall();
         if (_tracClient != null) {
-			active.acquireUninterruptibly ();
+            active.acquireUninterruptibly();
             new Thread() {
                 @Override
                 public void run() {
@@ -66,17 +83,17 @@ public class TicketModel implements Serializable {
                             _velden.put(key, new TicketModelVeld(v.getJSONObject(i)));
                             _volgorde.add(key);
                         }
-						for (int i=0;i<extraFields.size();i++) {
-							String v1 = extraFields.get(i);
-							_velden.put(v1,new TicketModelVeld(v1,v1,extraValues.get(i)));
-							_volgorde.add(v1);
-						}
+                        for (int i = 0; i < extraFields.size(); i++) {
+                            String v1 = extraFields.get(i);
+                            _velden.put(v1, new TicketModelVeld(v1, v1, extraValues.get(i)));
+                            _volgorde.add(v1);
+                        }
                         _hasData = true;
                     } catch (final Exception e) {
-                        tcLog.e( "exception", e);
+                        tcLog.e("exception", e);
                     } finally {
-						active.release();
-						tcLog.d( "Model loaded");
+                        active.release();
+                        tcLog.d("Model loaded");
                     }
                 }
             }.start();
@@ -85,28 +102,12 @@ public class TicketModel implements Serializable {
         }
     }
 
-    public static TicketModel getInstance(TracHttpClient tracClient) {
-        tcLog.d("new tracClient = "+ tracClient);
-        if (_instance == null  || tracClient.equals(_tracClient)) {
-            _instance = new TicketModel(tracClient);
-        }
-        if (!_hasData && active.availablePermits()>0) {
-            _instance.loadModelData();
-        }
-        return _instance;
-    }
-
-    public static TicketModel getInstance() {
-        tcLog.d("old tracClient = "+ _tracClient);
-        return _instance;
-    }
-
     @Override
     public String toString() {
         wacht();
         String s = "";
 
-		for (String v: _volgorde) {
+        for (String v : _volgorde) {
             s += _velden.get(v) + "\n";
         }
         return s;
@@ -118,10 +119,10 @@ public class TicketModel implements Serializable {
         wacht();
         if (fieldCount > 0) {
             v.add("id");
-			for (String v1: _volgorde) {
-				if (!extraFields.contains(v1)) {
-					v.add(_velden.get(v1).name());
-				}
+            for (String v1 : _volgorde) {
+                if (!extraFields.contains(v1)) {
+                    v.add(_velden.get(v1).name());
+                }
             }
         }
         return v;
@@ -133,28 +134,28 @@ public class TicketModel implements Serializable {
     }
 
     public void wacht() {
-		active.acquireUninterruptibly ();
-		active.release();
+        active.acquireUninterruptibly();
+        active.release();
     }
-	
-	boolean hasData() {
-		return _hasData;
-	}
+
+    boolean hasData() {
+        return _hasData;
+    }
 
     TicketModelVeld getVeld(final String naam) {
         wacht();
-		if (_velden.containsKey(naam)) {
-			return _velden.get(naam);
-		} else if ("id".equals(naam)) {
-			return new TicketModelVeld(naam, naam, "0");
-		}
-		throw new IndexOutOfBoundsException();
+        if (_velden.containsKey(naam)) {
+            return _velden.get(naam);
+        } else if ("id".equals(naam)) {
+            return new TicketModelVeld(naam, naam, "0");
+        }
+        throw new IndexOutOfBoundsException();
     }
 
     TicketModelVeld getVeld(final int i) {
-		wacht();
-		if (i < 0 || i >= fieldCount)
-			throw new IndexOutOfBoundsException();
-		return getVeld(_volgorde.get(i));
+        wacht();
+        if (i < 0 || i >= fieldCount)
+            throw new IndexOutOfBoundsException();
+        return getVeld(_volgorde.get(i));
     }
 }

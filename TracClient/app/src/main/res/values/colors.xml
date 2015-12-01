@@ -17,28 +17,27 @@
  * extension for v14+
 -->
 <resources>
-  <color name="popup_back">#ffdddddd</color>
-  <color name="help_back">#0099cc</color>
-  <color name="help_text">#33b5e5</color>
-  <color name="about_text">#77e5e5</color>
-  
-  <color name="list_col1">#00000000</color>
-  <color name="list_col2">#30111111</color>
-  
-  <color name="popup_selected">#ff0000</color>
-  <color name="popup_unselected">#000000</color>
-  
-  <color name="swipe_blue">@android:color/holo_blue_bright</color>
-  <color name="swipe_green">@android:color/holo_green_light</color>
-  <color name="swipe_orange">@android:color/holo_orange_light</color>
-  <color name="swipe_red">@android:color/holo_red_light</color>
-  
-  <drawable name="upArrow">@android:drawable/arrow_up_float</drawable>
-  <drawable name="downArrow">@android:drawable/arrow_down_float</drawable>
-  <!-- drawable name="plus">@android:drawable/btn_plus</drawable -->
-  
-  <array name="list_col">
-    <item>@color/list_col1</item>
-    <item>@color/list_col2</item>
-  </array>
+    <color name="popup_back">#ffdddddd</color>
+    <color name="help_back">#0099cc</color>
+    <color name="help_text">#33b5e5</color>
+    <color name="about_text">#77e5e5</color>
+
+    <color name="list_col1">#00000000</color>
+    <color name="list_col2">#30111111</color>
+
+    <color name="popup_selected">#ff0000</color>
+    <color name="popup_unselected">#000000</color>
+
+    <color name="swipe_blue">@android:color/holo_blue_bright</color>
+    <color name="swipe_green">@android:color/holo_green_light</color>
+    <color name="swipe_orange">@android:color/holo_orange_light</color>
+    <color name="swipe_red">@android:color/holo_red_light</color>
+
+    <drawable name="upArrow">@android:drawable/arrow_up_float</drawable>
+    <drawable name="downArrow">@android:drawable/arrow_down_float</drawable>
+
+    <array name="list_col">
+        <item>@color/list_col1</item>
+        <item>@color/list_col2</item>
+    </array>
 </resources>

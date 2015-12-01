@@ -18,79 +18,85 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-	android:layout_gravity="top"
+    android:layout_gravity="top"
     android:gravity="top"
-    android:orientation="vertical" >
-			
-	<LinearLayout
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:gravity="center_horizontal"
-		android:id="@+id/versionblock"
-		android:orientation="vertical" >
-		
-		<TextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:gravity="center_horizontal"
-			android:text="@string/title_text"
-			android:textColor="@color/help_text"
-			android:textSize="@dimen/helphdr_textsize"
-			android:textStyle="bold" />
+    android:orientation="vertical">
 
-		<TextView
-			android:id="@+id/about_version_text"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:gravity="center_horizontal"
-			android:textColor="@color/help_text"
-			android:textSize="@dimen/help_textsize"
-			android:textStyle="bold" />
+    <LinearLayout
+        android:id="@+id/versionblock"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
 
-		<TextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:gravity="center_horizontal"
-			android:text="@string/auteur"
-			android:textColor="@color/help_text"
-			android:textSize="@dimen/help_textsize"
-			android:textStyle="bold" />
-			
-		<LinearLayout
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:id="@+id/keuzeblock"
-			android:orientation="horizontal" >
-			
-			<Button style="@style/TextViewButton"
-				android:id="@+id/showchanges"
-				android:text="@string/showchanges"
-				android:visibility="gone" />
-			<Button style="@style/TextViewButton"
-				android:id="@+id/showcookies"
-				android:text="@string/cookies"
-				android:visibility="gone" />
-			<Button style="@style/TextViewButton"
-				android:id="@+id/showdisclaimer"
-				android:text="@string/showdisclaimer"
-				android:visibility="gone" />
-		</LinearLayout>
-			
-	</LinearLayout>
-	
-	<WebView
-		android:id="@+id/webfile"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:visibility="gone" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/title_text"
+            android:textColor="@color/help_text"
+            android:textSize="@dimen/helphdr_textsize"
+            android:textStyle="bold" />
 
-	<ScrollView
-		android:id="@+id/scrollAbout"
+        <TextView
+            android:id="@+id/about_version_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:textColor="@color/help_text"
+            android:textSize="@dimen/help_textsize"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/auteur"
+            android:textColor="@color/help_text"
+            android:textSize="@dimen/help_textsize"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:id="@+id/keuzeblock"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/showchanges"
+                style="@style/TextViewButton"
+                android:text="@string/showchanges"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/showcookies"
+                style="@style/TextViewButton"
+                android:text="@string/cookies"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/showdisclaimer"
+                style="@style/TextViewButton"
+                android:text="@string/showdisclaimer"
+                android:visibility="gone" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <WebView
+        android:id="@+id/webfile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
+    <ScrollView
+        android:id="@+id/scrollAbout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-		android:visibility="gone" >
+        android:visibility="gone">
 
-		<TextView style="@style/AboutText"
-			android:id="@+id/textAbout" />
-	</ScrollView>
+        <TextView
+            android:id="@+id/textAbout"
+            style="@style/AboutText" />
+    </ScrollView>
 </LinearLayout>

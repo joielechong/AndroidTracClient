@@ -16,23 +16,22 @@
 
 package com.mfvl.trac.client;
 
+import android.app.Activity;
+import android.util.Log;
+import android.widget.Toast;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.lang.StackTraceElement;
-
-import android.app.Activity;
-import android.util.Log;
-import android.widget.Toast;
 
 public class tcLog {
+    private static final SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
     private static Activity _c = null;
     private static boolean doToast = false;
     private static String debugString = "";
-    private static final SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
 
     public static void setContext(Activity c) {
         _c = c;
@@ -44,7 +43,7 @@ public class tcLog {
             throw new Exception("debug");
         } catch (Exception e) {
             StackTraceElement[] s = e.getStackTrace();
-            retval = s[index].getClassName()+"."+s[index].getMethodName();
+            retval = s[index].getClassName() + "." + s[index].getMethodName();
         }
         return retval;
     }
@@ -71,9 +70,9 @@ public class tcLog {
             });
         }
     }
- 
+
     private static void myLog(final String tag, final String message) {
-        myLog(tag,message,null);
+        myLog(tag, message, null);
     }
 
     private static void myLog(final String tag, final String message, Throwable tr) {
@@ -84,9 +83,9 @@ public class tcLog {
         dt.setTime(System.currentTimeMillis());
         final String date = s.format(new Date());
 
-        debugString += "\n" + date + " " +pid +" "+tid + " " + tag
-            + ("".equals(message)?"": ": "+ message)
-            + (tr != null ? "\nException thrown: " + tr.getMessage() + "\n" + getStackTraceString(tr) : "");
+        debugString += "\n" + date + " " + pid + " " + tid + " " + tag
+                + ("".equals(message) ? "" : ": " + message)
+                + (tr != null ? "\nException thrown: " + tr.getMessage() + "\n" + getStackTraceString(tr) : "");
         if (doToast) {
             toast(tag + ": " + message);
         }
@@ -197,16 +196,16 @@ public class tcLog {
         String logFilename = _c.getResources().getString(R.string.logfile);
         File file = null;
         try {
-            file = Credentials.makeExtFilePath(logFilename,false);
+            file = Credentials.makeExtFilePath(logFilename, false);
             final OutputStream os = new FileOutputStream(file);
 
             os.write(getDebug().getBytes());
             os.close();
             Log.d(caller, "File saved  =  " + file);
-            myLog("D."+caller, "File saved  =  " + file);
+            myLog("D." + caller, "File saved  =  " + file);
         } catch (final Exception e) {
             Log.e(caller, "Exception while saving logfile on " + file, e);
-            myLog("E."+caller, "Exception while saving logfile on " + file, e);
+            myLog("E." + caller, "Exception while saving logfile on " + file, e);
         }
     }
 }

@@ -17,118 +17,117 @@
 -->
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="en">
 
-	<string name="about_button">About TracClient</string>
-	<string name="tracUser">Username</string>
-	<string name="tracUserHint">Username</string>
-	<string name="tracPw">Password</string>
-	<string name="tracPwHint">Password</string>
-	<string name="bewaren">Store credentials</string>
-	<string name="vertext">Verify</string>
-	<string name="invalidCred">Credentials not valid</string>
-	<string name="validCred">Credentials valid</string>
-	<string name="list_heading">Ticket Listing</string>
-	<string name="ophalen">Loading data</string>
-	<string name="tlrefresh">Refresh list</string>
-	<string name="dfrefresh">Refresh ticket</string>
-	<string name="filter">Filter options</string>
-	<string name="sort">Sort</string>
-	<string name="changehost">Select another Trac host</string>
-	<string name="updateticket">Modify status of ticket</string>
-	<string name="nieuw">New ticket</string>
-	<string name="nodata">No data</string>
-	<string name="nodatadesc">Data of this ticket is not yet loaded</string>
-	<string name="connerr">Connection error</string>
-	<string name="newtick">Create new ticket</string>
-	<string name="oktext">OK</string>
-	<string name="store">Store ticket</string>
-	<string name="storerr">Error during create ticket</string>
-	<string name="upderr">Error during update ticket</string>
-	<string name="storerrdesc">Cannot store ticket</string>
-	<string name="storok">Ticket created</string>
-	<string name="storokdesc">Ticket created, id =</string>
-	<string name="comment">Add comment</string>
-	<string name="attach">Add attachment</string>
-	<string name="chooser_title">Ticket attachment</string>
-	<string name="tlshare">Share list</string>
-	<string name="dfshare">Share ticket</string>
-	<string name="updtick">Modify ticket</string>
-	<string name="perfact">Perform action</string>
-	<string name="storeupd">Store changes</string>
-	<string name="cancel">Cancel</string>
-	<string name="noticketUnk">No ticket created: unknown reason</string>
-	<string name="invtick">Invalid ticketnumber</string>
-	<string name="noaction">No action supplied</string>
-	<string name="zoekfilter">Enter search string</string>
-	<string name="zoek">Search</string>
-	<string name="storefilter">Save filter</string>
-	<string name="storesort">Save sort order</string>
-	<string name="help">Help</string>
-	<string name="sslHack">Accept Self Signed Certificates</string>
-	<string name="select">Select</string>
-	<string name="getlist">Fetching Ticketlist</string>
-	<string name="storeprofile">Save profile</string>
-	<string name="profiletext">Enter name for the profile to be saved</string>
-	<string name="loadprofile">Load login profile</string>
-	<string name="loadprofiletext">Profile cannot be loaded</string>
-	<string name="notfound">Not found</string>
-	<string name="sdcardmissing">SDcard is missing. Cannot store attachment</string>
-	<string name="ioerror">ExternalStorage - Error writing</string>
-	<string name="chooseapp">Choose an application to open with:</string>
-	<string name="notify">Notify</string>
-	<string name="exportprofiles">Export profiles</string>
-	<string name="importprofiles">Import profiles</string>
-	<string name="completed">Completed</string>
-	<string name="failed">Failed</string>
-	<string name="xmlwritecompleted">Export to XML succeeded</string>
-	<string name="xmlreadcompleted">Import from XML succeeded</string>
-	<string name="downloading">Downloading</string>
-	<string name="uploading">Uploading</string>
-	<string name="saveupdate">Saving update on server</string>
-	<string name="saveticket">Saving ticket</string>
-	<string name="selectticket">Select individual ticket</string>
-	<string name="ticketnotfound">Ticket not found</string>
-	<string name="chooseticknr">Enter ticketnumber</string>
-	<string name="chooseticket">Choose ticket</string>
-	<string name="checking">Checking</string>
-	<string name="debug">Debug</string>
-	<string name="foundnew">Modified or new tickets found:</string>
-	<string name="notifmod">Modified tickets found</string>
-	<string name="tracLogin">Log in to TRAC server</string>
-	<string name="notickets">No tickets found</string>
-	<string name="nocomment">Cannot modify comment</string>
-	<string name="notpossible">Not possible</string>
-	<string name="notchange">You cannot modify this field</string>
-	<string name="wrongdb">Wrong database</string>
-	<string name="wrongdbtext1">Current database = </string>
-	<string name="wrongdbtext3">\nSelect the right database first</string>
-	<string name="wrongdbtext2">\nRequested database = </string>
-	<string name="showempty">Show empty fields</string>
-	<string name="unsaved">Leave screen and save changes?</string>
-	<string name="nee">No</string>
-	<string name="ja">Yes</string>
-	<string name="hostnametitle">Ignore Hostname verification?"</string>
-	<string name="hostnametext">Hostname verification failed when trying to connect to server.\nMessage = "</string>
-	<string name="hostnameign">\nIgnore the verification?</string>
-	<string name="noJSON">No JSON support on the TRAC-server</string>
-	<string name="unknownError">Unknown error occurred</string>
-	<string name="cookies">Cookies</string>
-	<string name="cookieInform">We use device IDs to personalize content and ads, to provide features for social media and to analyze our website traffic. We share these IDs and other information, with our partners for social media, advertising and analysis.</string>
-	<string name="showchanges">Change history</string>
-	<string name="showdisclaimer">Disclaimer</string>
-	<string name="disclaimer">Disclaimer</string>
-	<string name="permissiontitle">Permission request</string>
-	<string name="permissiontext">This app needs to read and write the SD-card, this permission has not been granted yet to the app. If you choose not to grant this permission it will not be possible to import or export profiles or to attach files from the SD-card. If in doubt don\'t check the "Do not ask again" checkbox in the next dialog.</string>
+    <string name="about_button">About TracClient</string>
+    <string name="tracUser">Username</string>
+    <string name="tracUserHint">Username</string>
+    <string name="tracPw">Password</string>
+    <string name="tracPwHint">Password</string>
+    <string name="bewaren">Store credentials</string>
+    <string name="vertext">Verify</string>
+    <string name="invalidCred">Credentials not valid</string>
+    <string name="validCred">Credentials valid</string>
+    <string name="list_heading">Ticket Listing</string>
+    <string name="ophalen">Loading data</string>
+    <string name="tlrefresh">Refresh list</string>
+    <string name="dfrefresh">Refresh ticket</string>
+    <string name="filter">Filter options</string>
+    <string name="sort">Sort</string>
+    <string name="changehost">Select another Trac host</string>
+    <string name="updateticket">Modify status of ticket</string>
+    <string name="nieuw">New ticket</string>
+    <string name="nodata">No data</string>
+    <string name="nodatadesc">Data of this ticket is not yet loaded</string>
+    <string name="connerr">Connection error</string>
+    <string name="newtick">Create new ticket</string>
+    <string name="oktext">OK</string>
+    <string name="store">Store ticket</string>
+    <string name="storerr">Error during create ticket</string>
+    <string name="upderr">Error during update ticket</string>
+    <string name="storerrdesc">Cannot store ticket</string>
+    <string name="storok">Ticket created</string>
+    <string name="storokdesc">Ticket created, id =</string>
+    <string name="comment">Add comment</string>
+    <string name="attach">Add attachment</string>
+    <string name="chooser_title">Ticket attachment</string>
+    <string name="tlshare">Share list</string>
+    <string name="dfshare">Share ticket</string>
+    <string name="updtick">Modify ticket</string>
+    <string name="perfact">Perform action</string>
+    <string name="storeupd">Store changes</string>
+    <string name="cancel">Cancel</string>
+    <string name="noticketUnk">No ticket created: unknown reason</string>
+    <string name="invtick">Invalid ticketnumber</string>
+    <string name="noaction">No action supplied</string>
+    <string name="zoekfilter">Enter search string</string>
+    <string name="zoek">Search</string>
+    <string name="storefilter">Save filter</string>
+    <string name="storesort">Save sort order</string>
+    <string name="help">Help</string>
+    <string name="sslHack">Accept Self Signed Certificates</string>
+    <string name="select">Select</string>
+    <string name="getlist">Fetching Ticketlist</string>
+    <string name="storeprofile">Save profile</string>
+    <string name="profiletext">Enter name for the profile to be saved</string>
+    <string name="loadprofile">Load login profile</string>
+    <string name="loadprofiletext">Profile cannot be loaded</string>
+    <string name="notfound">Not found</string>
+    <string name="sdcardmissing">SDcard is missing. Cannot store attachment</string>
+    <string name="ioerror">ExternalStorage - Error writing</string>
+    <string name="chooseapp">Choose an application to open with:</string>
+    <string name="notify">Notify</string>
+    <string name="exportprofiles">Export profiles</string>
+    <string name="importprofiles">Import profiles</string>
+    <string name="completed">Completed</string>
+    <string name="failed">Failed</string>
+    <string name="xmlwritecompleted">Export to XML succeeded</string>
+    <string name="xmlreadcompleted">Import from XML succeeded</string>
+    <string name="downloading">Downloading</string>
+    <string name="uploading">Uploading</string>
+    <string name="saveupdate">Saving update on server</string>
+    <string name="saveticket">Saving ticket</string>
+    <string name="selectticket">Select individual ticket</string>
+    <string name="ticketnotfound">Ticket not found</string>
+    <string name="chooseticknr">Enter ticketnumber</string>
+    <string name="chooseticket">Choose ticket</string>
+    <string name="checking">Checking</string>
+    <string name="debug">Debug</string>
+    <string name="foundnew">Modified or new tickets found:</string>
+    <string name="notifmod">Modified tickets found</string>
+    <string name="tracLogin">Log in to TRAC server</string>
+    <string name="notickets">No tickets found</string>
+    <string name="nocomment">Cannot modify comment</string>
+    <string name="notpossible">Not possible</string>
+    <string name="notchange">You cannot modify this field</string>
+    <string name="wrongdb">Wrong database</string>
+    <string name="wrongdbtext1">Current database = </string>
+    <string name="wrongdbtext3">\nSelect the right database first</string>
+    <string name="wrongdbtext2">\nRequested database = </string>
+    <string name="showempty">Show empty fields</string>
+    <string name="unsaved">Leave screen and save changes?</string>
+    <string name="nee">No</string>
+    <string name="ja">Yes</string>
+    <string name="hostnametitle">Ignore Hostname verification?"</string>
+    <string name="hostnametext">Hostname verification failed when trying to connect to server.\nMessage = "</string>
+    <string name="hostnameign">\nIgnore the verification?</string>
+    <string name="noJSON">No JSON support on the TRAC-server</string>
+    <string name="cookies">Cookies</string>
+    <string name="cookieInform">We use device IDs to personalize content and ads, to provide features for social media and to analyze our website traffic. We share these IDs and other information, with our partners for social media, advertising and analysis.</string>
+    <string name="showchanges">Change history</string>
+    <string name="showdisclaimer">Disclaimer</string>
+    <string name="disclaimer">Disclaimer</string>
+    <string name="permissiontitle">Permission request</string>
+    <string name="permissiontext">This app needs to read and write the SD-card, this permission has not been granted yet to the app. If you choose not to grant this permission it will not be possible to import or export profiles or to attach files from the SD-card. If in doubt don\'t check the "Do not ask again" checkbox in the next dialog.</string>
 
-	<string-array name="filter_names">
+    <string-array name="filter_names">
 
-		<item>is equal to</item>
-		<item>is not equal to</item>
-		<item>contains</item>
-		<item>does not contain</item>
-		<item>starts with</item>
-		<item>does not start with</item>
-		<item>ends on</item>
-		<item>does not end on</item>
-	</string-array>
+        <item>is equal to</item>
+        <item>is not equal to</item>
+        <item>contains</item>
+        <item>does not contain</item>
+        <item>starts with</item>
+        <item>does not start with</item>
+        <item>ends on</item>
+        <item>does not end on</item>
+    </string-array>
 
 </resources>

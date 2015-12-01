@@ -15,56 +15,54 @@
  * limitations under the License.
 
 -->
-<RelativeLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="wrap_content"
-	android:orientation="vertical" >
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
-	<LinearLayout
-		android:id="@+id/aboveAdBlock"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_alignParentTop="true"
-		android:orientation="vertical"
-		android:paddingBottom="@dimen/adview_padding" >
+    <LinearLayout
+        android:id="@+id/aboveAdBlock"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/adview_padding">
 
-		<EditText
-			style="@style/ListSearchBox"
-			android:id="@+id/search_box" />
+        <EditText
+            android:id="@+id/search_box"
+            style="@style/ListSearchBox" />
 
-		<RelativeLayout
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content" >
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-			<TextView
-				style="@style/NextToListProgress"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/list_heading"
-				android:textSize="@dimen/list_textsize" />
+            <TextView
+                style="@style/NextToListProgress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/list_heading"
+                android:textSize="@dimen/list_textsize" />
 
-			<TextView
-				style="@style/ListProgress"
-				android:id="@+id/listProgress"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:textSize="@dimen/list_textsize" />
+            <TextView
+                android:id="@+id/listProgress"
+                style="@style/ListProgress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/list_textsize" />
 
-		</RelativeLayout>
+        </RelativeLayout>
 
-		<android.support.v4.widget.SwipeRefreshLayout
-			style="@style/SwipeContainer">
+        <android.support.v4.widget.SwipeRefreshLayout style="@style/SwipeContainer">
 
-			<ListView
-				android:id="@+id/listOfTickets"
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:textSize="@dimen/list_textsize" />
+            <ListView
+                android:id="@+id/listOfTickets"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/list_textsize" />
 
-		</android.support.v4.widget.SwipeRefreshLayout>
+        </android.support.v4.widget.SwipeRefreshLayout>
 
-	</LinearLayout>
+    </LinearLayout>
 
     <LinearLayout style="@style/AdBlockStyle" />
 

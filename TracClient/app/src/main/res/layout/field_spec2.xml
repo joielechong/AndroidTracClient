@@ -19,22 +19,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp" >
+    android:padding="16dp">
 
     <LinearLayout
         android:id="@+id/veld"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
-        <TextView style="@style/FieldName"/>
+        <TextView style="@style/FieldName" />
     </LinearLayout>
 
     <LinearLayout style="@style/ButtonHolder">
+
         <Button
             android:id="@+id/cancelpw"
-			style="@style/CancelButton" />
+            style="@style/CancelButton" />
 
         <Button style="@style/OkButton" />
     </LinearLayout>

@@ -25,10 +25,10 @@
     <string name="oktext">OK</string>
     <string name="store">Sauver le billet</string>
     <string name="storerr">Erreur lors de la création de billet</string>
-	<string name="upderr">Erreur lors de la modification de billet</string>
+    <string name="upderr">Erreur lors de la modification de billet</string>
     <string name="storerrdesc">Vous ne pouvez pas stocker billet</string>
     <string name="storok">Ticket créé</string>
-    <string name="storokdesc">Billet créé, id =</string>
+    <string name="storokdesc">Billet créé,id=</string>
     <string name="comment">Ajouter un commentaire</string>
     <string name="attach">Ajouter une pièce jointe</string>
     <string name="chooser_title">fixation de billets</string>
@@ -38,7 +38,7 @@
     <string name="perfact">Effectuer une action</string>
     <string name="storeupd">changements de magasins</string>
     <string name="cancel">Annuler</string>
-    <string name="noticketUnk">Aucun billet de création: raison inconnue</string>
+    <string name="noticketUnk">Aucun billet de création:raison inconnue</string>
     <string name="invtick">Ticketnumber invalide</string>
     <string name="noaction">Aucune action fourni</string>
     <string name="zoekfilter">Entrez la chaîne de recherche</string>
@@ -66,8 +66,8 @@
     <string name="loadprofile">Profil de charge de connexion</string>
     <string name="loadprofiletext">Profil ne peut pas être chargé</string>
     <string name="notfound">Introuvable</string>
-    <string name="sdcardmissing">Carte SD est manquant. Vous ne pouvez pas stocker attachement</string>
-    <string name="ioerror">ExternalStorage - Erreur d\'écriture</string>
+    <string name="sdcardmissing">Carte SD est manquant.Vous ne pouvez pas stocker attachement</string>
+    <string name="ioerror">ExternalStorage-Erreur d\'écriture</string>
     <string name="chooseapp">Choisissez une application à ouvrir avec:</string>
     <string name="notify">Notifier</string>
     <string name="exportprofiles">profils d\'exportation</string>
@@ -94,9 +94,9 @@
     <string name="notpossible">Pas possible</string>
     <string name="notchange">Vous ne pouvez pas modifier ce champ</string>
     <string name="wrongdb">Base de données erronées</string>
-    <string name="wrongdbtext1">= Base de données actuelle </string>
+    <string name="wrongdbtext1">=Base de données actuelle </string>
     <string name="wrongdbtext3">\nSélectionnez le droit première base de données</string>
-    <string name="wrongdbtext2">\nRequested base de données = </string>
+    <string name="wrongdbtext2">\nRequested base de données= </string>
     <string name="showempty">Afficher les champs vides</string>
     <string name="unsaved">Laissez l\'écran et enregistrer les modifications?</string>
     <string name="nee">Non</string>

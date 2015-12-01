@@ -17,12 +17,12 @@
 package com.mfvl.trac.client;
 
 
-import java.io.Serializable;
-import java.util.concurrent.Semaphore;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.Serializable;
+import java.util.concurrent.Semaphore;
 
 
 interface onTicketCompleteListener {
@@ -38,18 +38,16 @@ public class Ticket implements Serializable {
      *
      */
     private static final long serialVersionUID = -3915928655754922097L;
-
+    private final int _ticknr;
+    private final Semaphore actionLock = new Semaphore(1, true);
     private JSONObject _velden;
     private JSONArray _history;
     private JSONArray _attachments;
     private JSONArray _actions;
-    private final int _ticknr;
     private boolean _hasdata = false;
-    private static Semaphore available = new Semaphore(1, true);
-    private final Semaphore actionLock = new Semaphore(1, true);
 
     public Ticket(final JSONObject velden) {
-        tcLog.d( "Ticket = " + velden);
+        tcLog.d("Ticket = " + velden);
 
         _ticknr = -1;
         _velden = velden;
@@ -60,7 +58,7 @@ public class Ticket implements Serializable {
         _hasdata = true;
     }
 
-	public Ticket(final int ticknr) {
+    public Ticket(final int ticknr) {
         _ticknr = ticknr;
         _velden = null;
         _history = null;
@@ -68,15 +66,15 @@ public class Ticket implements Serializable {
         _actions = null;
         actionLock.acquireUninterruptibly();
         _hasdata = false;
-	}
+    }
 
     public int getTicketnr() {
         return _ticknr;
     }
-	
-	public JSONObject getVelden() {
-		return _velden;
-	}
+
+    public JSONObject getVelden() {
+        return _velden;
+    }
 
     @Override
     public String toString() {
@@ -90,6 +88,7 @@ public class Ticket implements Serializable {
             return _ticknr + "";
         }
     }
+
     public String getString(final String veld) throws JSONException {
         try {
             return _velden.getString(veld);
@@ -124,13 +123,17 @@ public class Ticket implements Serializable {
         try {
             return _actions;
         } finally {
-            actionLock.release();
+            if (actionLock.availablePermits() == 0) {
+                actionLock.release();
+            }
         }
     }
 
     public void setActions(JSONArray actions) {
         _actions = actions;
-        actionLock.release();
+        if (actionLock.availablePermits() == 0) {
+            actionLock.release();
+        }
     }
 
     public JSONArray getAttachments() {
@@ -153,7 +156,7 @@ public class Ticket implements Serializable {
         try {
             return ISO8601.toCalendar(v.getJSONArray("__jsonclass__").getString(1) + "Z").getTime().toString();
         } catch (final Exception e) {
-            tcLog.e("Exception",e);
+            tcLog.e("Exception", e);
             return "";
         }
     }
@@ -179,7 +182,8 @@ public class Ticket implements Serializable {
                         tekst += veld + ":\t" + _velden.getString(veld) + "\n";
                     }
 
-                } catch (final Exception ignored) {}
+                } catch (final Exception ignored) {
+                }
             }
         } catch (final JSONException e) {
             tcLog.e("velden failed", e);

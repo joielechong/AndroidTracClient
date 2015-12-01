@@ -38,195 +38,195 @@ import ch.boye.httpclientandroidlib.util.EntityUtils;
  * Implementation of JSON-RPC over HTTP/POST
  */
 public class JSONRPCHttpClient extends JSONRPCClient {
-	private String _username;
-	private String _password;
-	public JSONObject lastJsonRequest = null;
-	public String lastResponse = null;
+    // HTTP 1.0
+    private static final ProtocolVersion PROTOCOL_VERSION = new ProtocolVersion("HTTP", 1, 1);
+    /**
+     * HttpClient to issue the HTTP/POST request
+     */
+    protected final CloseableHttpClient httpClient;
+    /**
+     * Service URI
+     */
+    private final String serviceUri;
+    public JSONObject lastJsonRequest = null;
+    public String lastResponse = null;
+    private String _username;
+    private String _password;
 
-	/**
-	 * HttpClient to issue the HTTP/POST request
-	 */
-	protected final CloseableHttpClient httpClient;
-	/**
-	 * Service URI
-	 */
-	private final String serviceUri;
+    public JSONRPCHttpClient(final String uri) {
+        this(uri, false, false);
+    }
 
-	// HTTP 1.0
-	private static final ProtocolVersion PROTOCOL_VERSION = new ProtocolVersion("HTTP", 1, 1);
-/*
-	protected class MyTrustSelfSignedStrategy implements TrustStrategy {
+    @SuppressWarnings("AllowAllHostnameVerifier")
+    public JSONRPCHttpClient(final String uri, final boolean sslHack, final boolean sslHostNameHack) {
+        serviceUri = uri;
+        final HttpClientBuilder hcb = HttpClientBuilder.create();
+        hcb.setMaxConnTotal(30);
+        hcb.setMaxConnPerRoute(30);
+        hcb.setDefaultRequestConfig(RequestConfig.custom().setSocketTimeout(getSoTimeout()).setConnectionRequestTimeout(getConnectionTimeout()).build());
 
-		@Override
-		public boolean isTrusted(final X509Certificate[] chain, final String authType) throws CertificateException {
-			if (_debug) {
-				for (final X509Certificate x : chain) {
-					tcLog.d( "cert: " + x);
-				}
-				tcLog.d( "chain = " + chain.length + " authType = " + authType);
-			}
-			return chain.length == 1;
-		}
+        final SSLContextBuilder builder = new SSLContextBuilder();
+        SSLConnectionSocketFactory sslsf;
 
-	}
-*/
-	protected class MyTrustAlwaysStrategy implements TrustStrategy {
+        if (sslHack) {
+            try {
+                builder.loadTrustMaterial(null, new MyTrustAlwaysStrategy());
+            } catch (GeneralSecurityException e) {
+                tcLog.e("Exception after sslHack", e);
+            }
+        }
 
-		@Override
-		public boolean isTrusted(final X509Certificate[] chain, final String authType) throws CertificateException {
-			return true;
-		}
+        try {
+            if (sslHostNameHack) {
+                sslsf = new SSLConnectionSocketFactory(builder.build(), new AllowAllHostnameVerifier());
+            } else {
+                sslsf = new SSLConnectionSocketFactory(builder.build());
+            }
+            hcb.setSSLSocketFactory(sslsf);
+        } catch (final GeneralSecurityException e) {
+            tcLog.e("Exception after sslHostNameHack", e);
+        }
 
-	}
+        hcb.setTargetAuthenticationStrategy(new TargetAuthenticationStrategy());
+        httpClient = hcb.build();
+    }
 
-	public JSONRPCHttpClient(final String uri) {
-		this(uri, false, false);
-	}
+    @Override
+    protected JSONObject doJSONRequest(JSONObject jsonRequest) throws JSONRPCException {
+        // Create HTTP/POST request with a JSON entity containing the request
+        try {
+            HttpResponse response;
+            String actualUri = serviceUri;
+            boolean retry;
+            int retrycount = 0;
+            do {
+                retry = false;
+                final Uri u = Uri.parse(actualUri);
+                final HttpClientContext httpContext = HttpClientContext.create();
+                if (_username != null) {
+                    final BasicCredentialsProvider cp = new BasicCredentialsProvider();
+                    cp.setCredentials(new AuthScope(u.getHost(), u.getPort()),
+                            new UsernamePasswordCredentials(_username, _password));
+                    httpContext.setCredentialsProvider(cp);
+                    httpContext.setAuthCache(new BasicAuthCache());
+                }
 
-	public JSONRPCHttpClient(final String uri, final boolean sslHack, final boolean sslHostNameHack) {
-		serviceUri = uri;
-		final HttpClientBuilder hcb = HttpClientBuilder.create();
-		hcb.setMaxConnTotal(30);
-		hcb.setMaxConnPerRoute(30);
-		hcb.setDefaultRequestConfig(RequestConfig.custom().setSocketTimeout(getSoTimeout()).setConnectionRequestTimeout(getConnectionTimeout()).build());
+                final HttpPost request = new HttpPost(actualUri);
+                lastJsonRequest = jsonRequest;
 
-		final SSLContextBuilder builder = new SSLContextBuilder();
-		SSLConnectionSocketFactory sslsf;
+                HttpEntity entity;
 
-		if (sslHack) {
-			try {
-				builder.loadTrustMaterial(null, new MyTrustAlwaysStrategy());
-			} catch (GeneralSecurityException e) {
-				tcLog.e( "Exception after sslHack", e);
-			}
-		}
+                if (encoding.length() > 0) {
+                    entity = new JSONEntity(jsonRequest, encoding);
+                } else {
+                    entity = new JSONEntity(jsonRequest);
+                }
+                request.setEntity(entity);
+                request.setProtocolVersion(PROTOCOL_VERSION);
+                response = null;
 
-		try {
-			if (sslHostNameHack) {
-				sslsf = new SSLConnectionSocketFactory(builder.build(), new AllowAllHostnameVerifier());
-			} else {
-				sslsf = new SSLConnectionSocketFactory(builder.build());
-			}
-			hcb.setSSLSocketFactory(sslsf);
-		} catch (final GeneralSecurityException e) {
-			tcLog.e( "Exception after sslHostNameHack", e);
-		}
-
-		hcb.setTargetAuthenticationStrategy(new TargetAuthenticationStrategy());
-		httpClient = hcb.build();
-	}
-
-	@Override
-	protected JSONObject doJSONRequest(JSONObject jsonRequest) throws JSONRPCException {
-		// Create HTTP/POST request with a JSON entity containing the request
-		try {
-			HttpResponse response;
-			String actualUri = serviceUri;
-			boolean retry;
-			int retrycount = 0;
-			do {
-				retry = false;
-				final Uri u = Uri.parse(actualUri);
-				final HttpClientContext httpContext = HttpClientContext.create();
-				if (_username != null) {
-					final BasicCredentialsProvider cp = new BasicCredentialsProvider();
-					cp.setCredentials(new AuthScope(u.getHost(), u.getPort()),
-							new UsernamePasswordCredentials(_username, _password));
-					httpContext.setCredentialsProvider(cp);
-					httpContext.setAuthCache(new BasicAuthCache());
-				}
-
-				final HttpPost request = new HttpPost(actualUri);
-				lastJsonRequest = jsonRequest;
-
-				HttpEntity entity;
-
-				if (encoding.length() > 0) {
-					entity = new JSONEntity(jsonRequest, encoding);
-				} else {
-					entity = new JSONEntity(jsonRequest);
-				}
-				request.setEntity(entity);
-				request.setProtocolVersion(PROTOCOL_VERSION);
-				response = null; 
-
-				// Execute the request and try to decode the JSON Response
-				try {
+                // Execute the request and try to decode the JSON Response
+                try {
 //					tcLog.d("httpClient = "+httpClient+"request = "+request+" httpContext = "+httpContext);
-					response = httpClient.execute(request, httpContext);
-					int statusCode = response.getStatusLine().getStatusCode();
-					if (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
-						final Header headers[] = response.getHeaders("Location");
-						actualUri = headers[0].getValue();
-						retry = true;
-					}
-				} catch (SSLException e) {
-					// Catch 1st 3 times
-					tcLog.w( "SSLException in 	JSONRPCHTTPClient.doJSONRequest retrycount = "+retrycount);
-					if (retrycount++ < 3) {
-						retry = true;
-					} else {
-						throw(e);
-					}
-				}
-			} while (retry);
-			
-			// response cannot be null here, if it is it is correct to throw an exception :-)
-			
-			String responseString = EntityUtils.toString(response.getEntity());
-			lastResponse = responseString;
+                    response = httpClient.execute(request, httpContext);
+                    int statusCode = response.getStatusLine().getStatusCode();
+                    if (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
+                        final Header headers[] = response.getHeaders("Location");
+                        actualUri = headers[0].getValue();
+                        retry = true;
+                    }
+                } catch (SSLException e) {
+                    // Catch 1st 3 times
+                    tcLog.w("SSLException in 	JSONRPCHTTPClient.doJSONRequest retrycount = " + retrycount);
+                    if (retrycount++ < 3) {
+                        retry = true;
+                    } else {
+                        throw (e);
+                    }
+                }
+            } while (retry);
 
-			responseString = responseString.trim();
+            // response cannot be null here, if it is it is correct to throw an exception :-)
 
-			final JSONObject jsonResponse = new JSONObject(responseString);
-			// Check for remote errors
-			if (jsonResponse.has("error")) {
-				final Object jsonError = jsonResponse.get("error");
-				//noinspection ObjectEqualsNull
-				if (!jsonError.equals(null)) {
-					throw new JSONRPCException(((JSONObject) jsonError).get("message"));
-				}
-			}
-			return jsonResponse;
-		} catch (final JSONRPCException e) {
+            String responseString = EntityUtils.toString(response.getEntity());
+            lastResponse = responseString;
+
+            responseString = responseString.trim();
+
+            final JSONObject jsonResponse = new JSONObject(responseString);
+            // Check for remote errors
+            if (jsonResponse.has("error")) {
+                final Object jsonError = jsonResponse.get("error");
+                //noinspection ObjectEqualsNull
+                if (!jsonError.equals(null)) {
+                    throw new JSONRPCException(((JSONObject) jsonError).get("message"));
+                }
+            }
+            return jsonResponse;
+        } catch (final JSONRPCException e) {
 //			tcLog.e( "JSONRPCException in JSONRPCHTTPClient.doJSONRequest", e);
-			throw e;
-			} catch (final SSLException e) { // 4th time
+            throw e;
+        } catch (final SSLException e) { // 4th time
 //			tcLog.d( "SSLException in JSONRPCHTTPClient.doJSONRequest", e);
-			throw new JSONRPCException(e.getMessage());
-		} catch (final JSONException e) {
+            throw new JSONRPCException(e.getMessage());
+        } catch (final JSONException e) {
 //			tcLog.e("JSONException in JSONRPCHTTPClient.doJSONRequest", e);
 //			tcLog.d("lastResonse = "+lastResponse);
-			if (lastResponse.length() == 0) {
-				throw new JSONRPCException("JSONException: " + e.getMessage());
-			} else {
-				final int titelstart = lastResponse.indexOf("<title");
-				final int titeleind = lastResponse.indexOf("</title>");
-				if (titelstart == -1 || titeleind == -1) {
-					tcLog.toast(lastResponse.substring(0, 20) + "==");
-					if ("No protocol matching".equals(lastResponse.substring(0, 20))) {
-						throw new JSONRPCException("NOJSON");
-					} else {
-						throw new JSONRPCException("Invalid JSON response: " + lastResponse);
-					}
-				} else {
-					final String titel = lastResponse.substring(titelstart + 7, titeleind).trim();
-					throw new JSONRPCException("Invalid JSON response: title = " + titel);
-				}
-			}
-		} catch (final Exception e) {
+            if (lastResponse.length() == 0) {
+                throw new JSONRPCException("JSONException: " + e.getMessage());
+            } else {
+                final int titelstart = lastResponse.indexOf("<title");
+                final int titeleind = lastResponse.indexOf("</title>");
+                if (titelstart == -1 || titeleind == -1) {
+                    tcLog.toast(lastResponse.substring(0, 20) + "==");
+                    if ("No protocol matching".equals(lastResponse.substring(0, 20))) {
+                        throw new JSONRPCException("NOJSON");
+                    } else {
+                        throw new JSONRPCException("Invalid JSON response: " + lastResponse);
+                    }
+                } else {
+                    final String titel = lastResponse.substring(titelstart + 7, titeleind).trim();
+                    throw new JSONRPCException("Invalid JSON response: title = " + titel);
+                }
+            }
+        } catch (final Exception e) {
 //			tcLog.e( "Exception in JSONRPCHTTPClient.doJSONRequest", e);
-			throw new JSONRPCException("Exception in doRequest: " + e.getMessage(), e);
-		}
-	}
-	
-	public void setCredentials(final String username, final String password) {
-		if (username != null && !"".equals(username)) {
-			_username = username;
-			_password = password;
-		} else {
-			_username = null;
-			_password = null;
-		}
-	}
+            throw new JSONRPCException("Exception in doRequest: " + e.getMessage(), e);
+        }
+    }
+
+    public void setCredentials(final String username, final String password) {
+        if (username != null && !"".equals(username)) {
+            _username = username;
+            _password = password;
+        } else {
+            _username = null;
+            _password = null;
+        }
+    }
+
+    /*
+        protected class MyTrustSelfSignedStrategy implements TrustStrategy {
+
+            @Override
+            public boolean isTrusted(final X509Certificate[] chain, final String authType) throws CertificateException {
+                if (_debug) {
+                    for (final X509Certificate x : chain) {
+                        tcLog.d( "cert: " + x);
+                    }
+                    tcLog.d( "chain = " + chain.length + " authType = " + authType);
+                }
+                return chain.length == 1;
+            }
+
+        }
+    */
+    protected class MyTrustAlwaysStrategy implements TrustStrategy {
+
+        @Override
+        public boolean isTrusted(final X509Certificate[] chain, final String authType) throws CertificateException {
+            return true;
+        }
+
+    }
 }

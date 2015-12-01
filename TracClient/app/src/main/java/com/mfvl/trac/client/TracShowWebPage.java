@@ -24,18 +24,19 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
 
-import static com.mfvl.trac.client.Const.*;
+import static com.mfvl.trac.client.Const.HELP_FILE;
+import static com.mfvl.trac.client.Const.HELP_VERSION;
 
 public class TracShowWebPage extends Activity implements View.OnClickListener {
-	private String filename;
-	private WebView wv;
-	private TextView cv;
-	private View sv;
+    private String filename;
+    private WebView wv;
+    private TextView cv;
+    private View sv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-		Credentials.getInstance(getApplicationContext());
+        Credentials.getInstance(getApplicationContext());
         tcLog.d("savedInstanceState = " + savedInstanceState);
         final Intent i = getIntent();
         final boolean toonVersie = i.getBooleanExtra(HELP_VERSION, true);
@@ -44,77 +45,77 @@ public class TracShowWebPage extends Activity implements View.OnClickListener {
         filename = "file:///android_asset/" + i.getStringExtra(HELP_FILE) + ".html";
 
         final View tv = findViewById(R.id.versionblock);
-        tcLog.d(filename + " " + toonVersie+" "+tv);
+        tcLog.d(filename + " " + toonVersie + " " + tv);
         wv = (WebView) findViewById(R.id.webfile);
         cv = (TextView) findViewById(R.id.textAbout);
-		sv = findViewById(R.id.scrollAbout);
+        sv = findViewById(R.id.scrollAbout);
 
         if (!toonVersie) {
             tv.setVisibility(View.GONE);
         } else {
             final TextView tv1 = (TextView) findViewById(R.id.about_version_text);
             tv1.setText(Credentials.getVersion());
-			boolean disclaimer = Credentials.checkDisclaimer();
-			boolean cookies = Credentials.getCookieInform();
-			View kb = findViewById(R.id.keuzeblock);
-			if (! disclaimer && !cookies) {
-				kb.setVisibility(View.GONE);
-			} else {
-				kb.setVisibility(View.VISIBLE);
-				TextView sch = (TextView)findViewById(R.id.showchanges);
-				sch.setVisibility(View.VISIBLE);
-				sch.setOnClickListener(this);
-				if (disclaimer) {
-					TextView v = (TextView)findViewById(R.id.showdisclaimer);
-					v.setVisibility(View.VISIBLE);
-					v.setOnClickListener(this);
-				}
-				if (cookies) {
-					TextView v = (TextView)findViewById(R.id.showcookies);
-					v.setVisibility(View.VISIBLE);
-					v.setOnClickListener(this);
-				}
-			}
+            boolean disclaimer = Credentials.checkDisclaimer();
+            boolean cookies = Credentials.getCookieInform();
+            View kb = findViewById(R.id.keuzeblock);
+            if (!disclaimer && !cookies) {
+                kb.setVisibility(View.GONE);
+            } else {
+                kb.setVisibility(View.VISIBLE);
+                TextView sch = (TextView) findViewById(R.id.showchanges);
+                sch.setVisibility(View.VISIBLE);
+                sch.setOnClickListener(this);
+                if (disclaimer) {
+                    TextView v = (TextView) findViewById(R.id.showdisclaimer);
+                    v.setVisibility(View.VISIBLE);
+                    v.setOnClickListener(this);
+                }
+                if (cookies) {
+                    TextView v = (TextView) findViewById(R.id.showcookies);
+                    v.setVisibility(View.VISIBLE);
+                    v.setOnClickListener(this);
+                }
+            }
         }
-		showWebpage();
+        showWebpage();
     }
-	
-	public void onClick(View v) {
-		switch (v.getId()) {
-			case R.id.showchanges:
-			showWebpage();
-			break;
-			
-			case R.id.showcookies:
-			showCookies();
-			break;
-			
-			case R.id.showdisclaimer:
-			showDisclaimer();
-			break;
-		}
-	}
-	
-	private void showWebpage() {
-		wv.setVisibility(View.VISIBLE);
-		sv.setVisibility(View.GONE);
+
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.showchanges:
+                showWebpage();
+                break;
+
+            case R.id.showcookies:
+                showCookies();
+                break;
+
+            case R.id.showdisclaimer:
+                showDisclaimer();
+                break;
+        }
+    }
+
+    private void showWebpage() {
+        wv.setVisibility(View.VISIBLE);
+        sv.setVisibility(View.GONE);
         // wv.getSettings().setJavaScriptEnabled(true);
         wv.setWebViewClient(new WebViewClient());
         wv.getSettings().setTextZoom(getResources().getInteger(R.integer.webzoom));
         wv.loadUrl(filename);
-	}
-	
-	private void showDisclaimer() {
-		sv.setVisibility(View.VISIBLE);
-		wv.setVisibility(View.GONE);
-		cv.setText(R.string.disclaimer);
+    }
+
+    private void showDisclaimer() {
+        sv.setVisibility(View.VISIBLE);
+        wv.setVisibility(View.GONE);
+        cv.setText(R.string.disclaimer);
 //		Credentials.setDisclaimer();
-	}
-	
-	private void showCookies() {
-		sv.setVisibility(View.VISIBLE);
-		wv.setVisibility(View.GONE);
-		cv.setText(R.string.cookieInform);
+    }
+
+    private void showCookies() {
+        sv.setVisibility(View.VISIBLE);
+        wv.setVisibility(View.GONE);
+        cv.setText(R.string.cookieInform);
 //		Credentials.setCookieInform();
-	}
+    }
 }

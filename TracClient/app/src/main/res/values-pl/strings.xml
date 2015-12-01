@@ -1,103 +1,103 @@
 <resources>
-	<string name="about_button">O TracClient</string>
-	<string name="tracUser">Nazwa użytkownika</string>
-	<string name="tracUserHint">Nazwa Użytkownika</string>
-	<string name="tracPw">Hasło</string>
-	<string name="tracPwHint">Hasło</string>
-	<string name="bewaren">Przechowaj informacje uwierzytelniające</string>
-	<string name="vertext">Potwierdź</string>
-	<string name="invalidCred">Dane uwierzytelniające nie są ważne</string>
-	<string name="validCred">Dane uwierzytelniające ważne</string>
-	<string name="list_heading">Lista Biletów</string>
-	<string name="ophalen">Ładowanie danych</string>
-	<string name="tlrefresh">Odśwież listę</string>
-	<string name="dfrefresh">Odśwież bilet</string>
-	<string name="filter">Opcje filtrowania</string>
-	<string name="sort">Sortuj</string>
-	<string name="changehost">Wybierz inny Trac host</string>
-	<string name="updateticket">Zmień status biletu</string>
-	<string name="nieuw">Nowy bilet</string>
-	<string name="nodata">Brak danych</string>
-	<string name="nodatadesc">Dane tego biletu nie zostały jeszcze załadowane</string>
-	<string name="connerr">Błąd połączenia</string>
-	<string name="newtick">Stwórz nowy bilet</string>
+    <string name="about_button">O TracClient</string>
+    <string name="tracUser">Nazwa użytkownika</string>
+    <string name="tracUserHint">Nazwa Użytkownika</string>
+    <string name="tracPw">Hasło</string>
+    <string name="tracPwHint">Hasło</string>
+    <string name="bewaren">Przechowaj informacje uwierzytelniające</string>
+    <string name="vertext">Potwierdź</string>
+    <string name="invalidCred">Dane uwierzytelniające nie są ważne</string>
+    <string name="validCred">Dane uwierzytelniające ważne</string>
+    <string name="list_heading">Lista Biletów</string>
+    <string name="ophalen">Ładowanie danych</string>
+    <string name="tlrefresh">Odśwież listę</string>
+    <string name="dfrefresh">Odśwież bilet</string>
+    <string name="filter">Opcje filtrowania</string>
+    <string name="sort">Sortuj</string>
+    <string name="changehost">Wybierz inny Trac host</string>
+    <string name="updateticket">Zmień status biletu</string>
+    <string name="nieuw">Nowy bilet</string>
+    <string name="nodata">Brak danych</string>
+    <string name="nodatadesc">Dane tego biletu nie zostały jeszcze załadowane</string>
+    <string name="connerr">Błąd połączenia</string>
+    <string name="newtick">Stwórz nowy bilet</string>
     <string name="oktext">OK</string>
-	<string name="store">Zachowaj bilet</string>
-	<string name="storerr">Wystąpił błąd podczas tworzenia biletu</string>
-	<string name="storerrdesc">Nie można zachować biletu</string>
-	<string name="storok">Bilet został utworzony</string>
-	<string name="storokdesc">Utworzono bilet, id =</string>
-	<string name="comment">Dodaj komentarz</string>
-	<string name="attach">Dodaj załącznik</string>
-	<string name="chooser_title">Załącznik biletu</string>
-	<string name="tlshare">Udostępnij listę</string>
-	<string name="dfshare">Udostępnij bilet</string>
-	<string name="updtick">Edytuj bilet</string>
-	<string name="perfact">Wykonaj działanie</string>
-	<string name="storeupd">Zachowaj zmiany</string>
-	<string name="cancel">Anuluj</string>
-	<string name="noticketUnk">Nie utworzono biletu: przyczyna nieznana</string>
-	<string name="invtick">Nieprawidłowy numer biletu</string>
-	<string name="noaction">Nie podjęto działania</string>
-	<string name="zoekfilter">Wprowadź ścieżkę wyszukiwania</string>
-	<string name="zoek">Wyszukaj</string>
-	<string name="storefilter">Zapisz filtr</string>
-	<string name="storesort">Zapisz kolejność sortowania</string>
-	<string name="help">Pomoc</string>
-	<string name="sslHack">Akceptuj Certyfikaty z Podpisem Własnym (SSC)</string>
-	<string name="select">Wybierz</string>
-	<string name="getlist">Ładuj Listę Biletów</string>
-	<string name="storeprofile">Zapisz profil</string>
-	<string name="profiletext">Wprowadź nazwę dla zapisywanego profilu</string>
-	<string name="loadprofile">Załaduj profil</string>
-	<string name="loadprofiletext">Nie można załadować profilu</string>
-	<string name="notfound">Nie znaleziono</string>
-	<string name="sdcardmissing">Brak karty SD. Nie można zachować załącznika</string>
-	<string name="ioerror">Zewnętrzne Urządzenie Magazynujące - błąd zapisu</string>
-	<string name="chooseapp">Otwórz aplikację za pomocą:</string>
-	<string name="notify">Powiadom</string>
-	<string name="exportprofiles">Wyeksportuj profile</string>
-	<string name="importprofiles">Zaimportuj profile</string>
-	<string name="completed">Zakończono</string>
-	<string name="failed">Nie powiodło się</string>
-	<string name="xmlwritecompleted">Wyeksportowanie do XML powiodło się</string>
-	<string name="xmlreadcompleted">Zaimportowanie z XML powiodło się</string>
-	<string name="downloading">Pobieranie</string>
-	<string name="uploading">Wysyłanie</string>
-	<string name="saveupdate">Trwa zapisywanie aktualizacji na serwerze</string>
-	<string name="saveticket">Trwa zapisywanie biletu</string>
-	<string name="selectticket">Wybierz określony bilet</string>
-	<string name="ticketnotfound">Nie odnaleziono biletu</string>
-	<string name="chooseticknr">Wprowadź numer biletu</string>
-	<string name="chooseticket">Wybierz bilet</string>
-	<string name="checking">Trwa sprawdzanie</string>
-	<string name="debug">Usuń błędy</string>
-	<string name="foundnew">Znaleziono nowe lub edytowane bilety:</string>
-	<string name="notifmod">Znaleziono edytowane bilety</string>
-	<string name="tracLogin">Zaloguj się na serwer TRAC</string>
-	<string name="notickets">Nie znaleziono biletów</string>
-	<string name="nocomment">Nie można edytować komentarza</string>
-	<string name="notpossible">Nie można wykonać akcji</string>
-	<string name="notchange">Nie można edytować tego pola</string>
-	<string name="wrongdb">Niewłaściwa baza danych</string>
-	<string name="wrongdbtext1">Aktualnie używana baza danych =</string>
-	<string name="wrongdbtext3">\nWybierz najpierw właściwą bazę danych</string>
-	<string name="wrongdbtext2">\nBaza danych, o którą proszono =</string>
-	<string name="showempty">Pokaż puste pola</string>
-	<string name="unsaved">Czy opuścić ekran i zapisać wprowadzone zmiany?</string>
-	<string name="nee">Nie</string>
-	<string name="ja">Tak</string>
-	
-		<string-array name="filter_names">
-		<item>jest równe</item>
-		<item>nie jest równe</item>
-		<item>zawiera</item>
-		<item>nie zawiera</item>
-		<item>zaczyna się od</item>
-		<item>nie zaczyna się od</item>
-		<item>kończy się na</item>
-		<item>nie kończy się na</item>
-	</string-array>
-	<string name="cookies">Cookies</string>
+    <string name="store">Zachowaj bilet</string>
+    <string name="storerr">Wystąpił błąd podczas tworzenia biletu</string>
+    <string name="storerrdesc">Nie można zachować biletu</string>
+    <string name="storok">Bilet został utworzony</string>
+    <string name="storokdesc">Utworzono bilet,id=</string>
+    <string name="comment">Dodaj komentarz</string>
+    <string name="attach">Dodaj załącznik</string>
+    <string name="chooser_title">Załącznik biletu</string>
+    <string name="tlshare">Udostępnij listę</string>
+    <string name="dfshare">Udostępnij bilet</string>
+    <string name="updtick">Edytuj bilet</string>
+    <string name="perfact">Wykonaj działanie</string>
+    <string name="storeupd">Zachowaj zmiany</string>
+    <string name="cancel">Anuluj</string>
+    <string name="noticketUnk">Nie utworzono biletu:przyczyna nieznana</string>
+    <string name="invtick">Nieprawidłowy numer biletu</string>
+    <string name="noaction">Nie podjęto działania</string>
+    <string name="zoekfilter">Wprowadź ścieżkę wyszukiwania</string>
+    <string name="zoek">Wyszukaj</string>
+    <string name="storefilter">Zapisz filtr</string>
+    <string name="storesort">Zapisz kolejność sortowania</string>
+    <string name="help">Pomoc</string>
+    <string name="sslHack">Akceptuj Certyfikaty z Podpisem Własnym(SSC)</string>
+    <string name="select">Wybierz</string>
+    <string name="getlist">Ładuj Listę Biletów</string>
+    <string name="storeprofile">Zapisz profil</string>
+    <string name="profiletext">Wprowadź nazwę dla zapisywanego profilu</string>
+    <string name="loadprofile">Załaduj profil</string>
+    <string name="loadprofiletext">Nie można załadować profilu</string>
+    <string name="notfound">Nie znaleziono</string>
+    <string name="sdcardmissing">Brak karty SD.Nie można zachować załącznika</string>
+    <string name="ioerror">Zewnętrzne Urządzenie Magazynujące-błąd zapisu</string>
+    <string name="chooseapp">Otwórz aplikację za pomocą:</string>
+    <string name="notify">Powiadom</string>
+    <string name="exportprofiles">Wyeksportuj profile</string>
+    <string name="importprofiles">Zaimportuj profile</string>
+    <string name="completed">Zakończono</string>
+    <string name="failed">Nie powiodło się</string>
+    <string name="xmlwritecompleted">Wyeksportowanie do XML powiodło się</string>
+    <string name="xmlreadcompleted">Zaimportowanie z XML powiodło się</string>
+    <string name="downloading">Pobieranie</string>
+    <string name="uploading">Wysyłanie</string>
+    <string name="saveupdate">Trwa zapisywanie aktualizacji na serwerze</string>
+    <string name="saveticket">Trwa zapisywanie biletu</string>
+    <string name="selectticket">Wybierz określony bilet</string>
+    <string name="ticketnotfound">Nie odnaleziono biletu</string>
+    <string name="chooseticknr">Wprowadź numer biletu</string>
+    <string name="chooseticket">Wybierz bilet</string>
+    <string name="checking">Trwa sprawdzanie</string>
+    <string name="debug">Usuń błędy</string>
+    <string name="foundnew">Znaleziono nowe lub edytowane bilety:</string>
+    <string name="notifmod">Znaleziono edytowane bilety</string>
+    <string name="tracLogin">Zaloguj się na serwer TRAC</string>
+    <string name="notickets">Nie znaleziono biletów</string>
+    <string name="nocomment">Nie można edytować komentarza</string>
+    <string name="notpossible">Nie można wykonać akcji</string>
+    <string name="notchange">Nie można edytować tego pola</string>
+    <string name="wrongdb">Niewłaściwa baza danych</string>
+    <string name="wrongdbtext1">Aktualnie używana baza danych=</string>
+    <string name="wrongdbtext3">\nWybierz najpierw właściwą bazę danych</string>
+    <string name="wrongdbtext2">\nBaza danych,o którą proszono=</string>
+    <string name="showempty">Pokaż puste pola</string>
+    <string name="unsaved">Czy opuścić ekran i zapisać wprowadzone zmiany?</string>
+    <string name="nee">Nie</string>
+    <string name="ja">Tak</string>
+
+    <string-array name="filter_names">
+        <item>jest równe</item>
+        <item>nie jest równe</item>
+        <item>zawiera</item>
+        <item>nie zawiera</item>
+        <item>zaczyna się od</item>
+        <item>nie zaczyna się od</item>
+        <item>kończy się na</item>
+        <item>nie kończy się na</item>
+    </string-array>
+    <string name="cookies">Cookies</string>
 
 </resources>
