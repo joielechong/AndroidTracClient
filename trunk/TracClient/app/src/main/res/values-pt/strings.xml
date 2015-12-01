@@ -27,7 +27,7 @@
     <string name="storerr">Falha ao criar bilhete</string>
     <string name="storerrdesc">Impossível armazenar bilhete</string>
     <string name="storok">Bilhete criado</string>
-    <string name="storokdesc">Bilhete criado, id =</string>
+    <string name="storokdesc">Bilhete criado,id=</string>
     <string name="comment">Adicionar comentário</string>
     <string name="attach">Adicionar anexo</string>
     <string name="chooser_title">Bilhete anexo</string>
@@ -37,7 +37,7 @@
     <string name="perfact">Executar ação</string>
     <string name="storeupd">Armazenar mudanças</string>
     <string name="cancel">Cancelar</string>
-    <string name="noticketUnk">Nenhum bilhete criado: razão desconhecida</string>
+    <string name="noticketUnk">Nenhum bilhete criado:razão desconhecida</string>
     <string name="invtick">Número de bilhete inválido</string>
     <string name="noaction">Nenhuma ação completada</string>
     <string name="zoekfilter">Introduzir sequência de busca</string>
@@ -65,8 +65,8 @@
     <string name="loadprofile">Carregar login do perfil</string>
     <string name="loadprofiletext">Perfil não pode ser carregado</string>
     <string name="notfound">Não encontrado</string>
-    <string name="sdcardmissing">Falta cartão SD. Impossível armazenar anexo</string>
-    <string name="ioerror">Armazenagem externa - Erro de escrita</string>
+    <string name="sdcardmissing">Falta cartão SD.Impossível armazenar anexo</string>
+    <string name="ioerror">Armazenagem externa-Erro de escrita</string>
     <string name="chooseapp">Escolha uma aplicação para abrir:</string>
     <string name="notify">Notificar</string>
     <string name="exportprofiles">Exportar perfis</string>
@@ -93,7 +93,7 @@
     <string name="notpossible">Impossível</string>
     <string name="notchange">Você não pode modificar esse campo</string>
     <string name="wrongdb">Banco de dados errado</string>
-    <string name="wrongdbtext1">Banco de dados atual =</string>
+    <string name="wrongdbtext1">Banco de dados atual=</string>
     <string name="wrongdbtext3">\nSelecionar o banco de dados correto primeiro</string>
     <string name="wrongdbtext2">\nBanco de dados requisitado</string>
     <string name="showempty">Mostrar campos vazios</string>

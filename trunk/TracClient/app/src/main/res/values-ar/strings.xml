@@ -1,4 +1,4 @@
-<resources  xmlns:tools="http://schemas.android.com/tools" tools:ignore="ExtraTranslation">
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="ExtraTranslation">
 
     <string name="about_button">عن متابع الزبائن</string>
     <string name="tracUser">إسم المستخدم</string>
@@ -27,7 +27,7 @@
     <string name="oktext">موافق</string>
     <string name="storerrdesc">لا يمكن تخزين التذكرة</string>
     <string name="storok">تم عمل التذكرة</string>
-    <string name="storokdesc">=تم عمل التذكرة. المعرف</string>
+    <string name="storokdesc">=تم عمل التذكرة.المعرف</string>
     <string name="comment">إضافة تعليق</string>
     <string name="attach">إضافة مرفق</string>
     <string name="chooser_title">مرفق تذكرة</string>
@@ -37,7 +37,7 @@
     <string name="perfact">تنفيذ الإجراء</string>
     <string name="storeupd">تخزين التغييرات</string>
     <string name="cancel">إلغاء</string>
-    <string name="noticketUnk">لم يتم عمل تذكرة: السبب غير معروف</string>
+    <string name="noticketUnk">لم يتم عمل تذكرة:السبب غير معروف</string>
     <string name="invtick">رقم تذكرة غير صالح</string>
     <string name="noaction">لا يوجد إجراء متوفر</string>
     <string name="zoekfilter">أدخل عبارة البحث</string>
@@ -65,8 +65,8 @@
     <string name="loadprofile">تحميل الدخول إلى الملف الشخصي</string>
     <string name="loadprofiletext">لا يمكن تحميل الملف الشخصي</string>
     <string name="notfound">غير موجود</string>
-    <string name="sdcardmissing">بطاقة الذاكرة الرقمية غير موجودة. لا يمكن حفظ المرفق</string>
-    <string name="ioerror">ذاكرة خارجية - خطأ في الكتابة</string>
+    <string name="sdcardmissing">بطاقة الذاكرة الرقمية غير موجودة.لا يمكن حفظ المرفق</string>
+    <string name="ioerror">ذاكرة خارجية-خطأ في الكتابة</string>
     <string name="chooseapp">إختيار ملف للفتح بواسطة</string>
     <string name="notify">أبلغ</string>
     <string name="exportprofiles">تصدير الملف الشخصي</string>
@@ -87,7 +87,7 @@
     <string name="debug">تصحيح</string>
     <string name="foundnew">تم إيجاد تذكرة جديدة أو معدلة</string>
     <string name="notifmod">تم إيجاد تذكرة معدلة</string>
-    <string name="tracLogin">تسجيل الدخول لخادم "المتابعة"</string>
+    <string name="tracLogin">تسجيل الدخول لخادم"المتابعة"</string>
     <string name="notickets">لا يوجد تذكرة</string>
     <string name="nocomment">لا يمكن تغيير التعليق</string>
     <string name="notpossible">غير ممكن</string>

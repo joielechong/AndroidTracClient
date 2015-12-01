@@ -32,15 +32,14 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.provider.MediaStore.Images;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
+import android.provider.MediaStore.Images;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Base64;
@@ -63,7 +62,7 @@ import java.util.concurrent.Semaphore;
 
 import static com.mfvl.trac.client.Const.*;
 
-//public class TracStart extends Activity implements LoaderManager.LoaderCallbacks<Tickets>, InterFragmentListener, OnBackStackChangedListener, ActivityCompat.OnRequestPermissionsResultCallback {
+
 public class TracStart extends Activity implements Handler.Callback, InterFragmentListener, OnBackStackChangedListener, ActivityCompat.OnRequestPermissionsResultCallback {
    
     /*
@@ -71,7 +70,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
      */
 
     private static final int REQUEST_CODE_CHOOSER = 6384;
-    private static final int REQUEST_CODE_WRITE_EXT	= 6385;
+    private static final int REQUEST_CODE_WRITE_EXT = 6385;
     private static final String ListFragmentTag = "List_Fragment";
     private static final String LoginFragmentTag = "Login_Fragment";
     private static final String DetailFragmentTag = "Detail_Fragment";
@@ -152,6 +151,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
     private boolean hasTicketsLoadingBar = false;
     private Boolean ticketsLoading = false;
     private TicketListAdapter dataAdapter = null;
+    private ProgressDialog progressBar = null;
 
     private void dispatchMessage(Message msg) {
         msg.replyTo = mMessenger;
@@ -162,18 +162,14 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
     }
 
     private void sendMessageToService(int message) {
-        dispatchMessage(Message.obtain(null,message));
+        dispatchMessage(Message.obtain(null, message));
     }
 
-    private void sendMessageToService(int message, int value) {
-        dispatchMessage(Message.obtain(null, message, value));
+    private void sendMessageToService(int message, int value, Object o) {
+        dispatchMessage(Message.obtain(null, message, value, 0, o));
     }
 
-    private void sendMessageToService(int message, int value,Object o) {
-        dispatchMessage(Message.obtain(null,message,value,0,o));
-    }
-
-    private void sendMessageToService(int message, int value,int msg_back,Object o) {
+    private void sendMessageToService(int message, int value, int msg_back, Object o) {
         dispatchMessage(Message.obtain(null, message, value, msg_back, o));
     }
 
@@ -203,7 +199,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         tcLog.setContext(this);
-        tcLog.d( "savedInstanceState = " + savedInstanceState);
+        tcLog.d("savedInstanceState = " + savedInstanceState);
 
         if (DEBUG_MANAGERS) {
             FragmentManager.enableDebugLogging(true);
@@ -213,12 +209,12 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
         Credentials.getInstance(getApplicationContext());
         mHandlerThread = new MyHandlerThread("IncomingHandler");
         mHandlerThread.start();
-        tracStartHandler = new Handler(mHandlerThread.getLooper(),this);
+        tracStartHandler = new Handler(mHandlerThread.getLooper(), this);
         mMessenger = new Messenger(tracStartHandler);
 //        startService(new Intent(this, RefreshService.class));
 
-        if (ActivityCompat.checkSelfPermission(this,Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 new AlertDialog.Builder(this)
                         .setTitle(R.string.permissiontitle)
                         .setMessage(R.string.permissiontext)
@@ -227,11 +223,11 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.dismiss();
-                                tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_GET_PERMISSIONS));
+                                tracStartHandler.obtainMessage(MSG_GET_PERMISSIONS).sendToTarget();
                             }
                         }).show();
             } else {
-                tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_GET_PERMISSIONS));
+                tracStartHandler.obtainMessage(MSG_GET_PERMISSIONS).sendToTarget();
             }
         } else {
             canWriteSD = true;
@@ -239,7 +235,8 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
 
         try {
             ticketGroupCount = getResources().getInteger(R.integer.ticketGroupCount);
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         timerCorr = getResources().getInteger(R.integer.timerCorr);
         setContentView(R.layout.tracstart);
@@ -251,8 +248,8 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
             password = savedInstanceState.getString(CURRENT_PASSWORD);
             sslHack = savedInstanceState.getBoolean(CURRENT_SSLHACK, false);
             sslHostNameHack = savedInstanceState.getBoolean(CURRENT_SSLHOSTNAMEHACK, false);
-            filterList = (ArrayList<FilterSpec>)savedInstanceState.getSerializable(FILTERLISTNAME);
-            sortList = (ArrayList<SortSpec>)savedInstanceState.getSerializable(SORTLISTNAME);
+            filterList = (ArrayList<FilterSpec>) savedInstanceState.getSerializable(FILTERLISTNAME);
+            sortList = (ArrayList<SortSpec>) savedInstanceState.getSerializable(SORTLISTNAME);
             dispAds = savedInstanceState.getBoolean(ADMOB, true);
         } else {
             url = Credentials.getUrl();
@@ -293,7 +290,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
                     lp = pdb.findProfile(urlArg);
                 }
                 if (lp == null) {
-                    showAlertBox(R.string.wrongdb,R.string.wrongdbtext1,url + getString(R.string.wrongdbtext2) + urlArg + getString(R.string.wrongdbtext3));
+                    showAlertBox(R.string.wrongdb, R.string.wrongdbtext1, url + getString(R.string.wrongdbtext2) + urlArg + getString(R.string.wrongdbtext3));
                     urlArg = null;
                     ticketArg = -1;
                 } else {
@@ -333,7 +330,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
                 final TicketListFragment ticketListFragment = new TicketListFragment();
 
                 if (urlArg != null) {
-                    tcLog.d( "select Ticket = " + ticketArg);
+                    tcLog.d("select Ticket = " + ticketArg);
                     final Bundle args = makeArgs();
                     args.putInt("TicketArg", ticketArg);
                     urlArg = null;
@@ -372,20 +369,19 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    String s = (message != 0 ? getResources().getString(message)+(addit != null ? ": "+addit:"") : addit);
+                    String s = (message != 0 ? getResources().getString(message) + (addit != null ? ": " + addit : "") : addit);
                     final AlertDialog ad = new AlertDialog.Builder(TracStart.this)
                             .setTitle(titleres)
                             .setMessage(s)
-//						.setCancelable(false)
                             .setPositiveButton(R.string.oktext, null)
                             .create();
                     tracStartHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            tcLog.d( "dismiss");
+                            tcLog.d("dismiss");
                             ad.dismiss();
                         }
-                    },7500);
+                    }, 7500);
                     ad.show();
                 }
             });
@@ -410,7 +406,8 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
         if (savedInstanceState.containsKey(tag)) {
             try {
                 getFragmentManager().getFragment(savedInstanceState, tag);
-            } catch (final Exception ignored) {}
+            } catch (final Exception ignored) {
+            }
         }
     }
 
@@ -495,24 +492,10 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
                     if (data != null) {
                         // Get the URI of the selected file
                         final Uri uri = data.getData();
-                        tcLog.d("uri = "+uri);
+                        tcLog.d("uri = " + uri);
                         if (_oc != null) {
                             _oc.onFileSelected(uri);
                         }
-/*
-                        try {
-                            // Create a file instance from the URI
-                            final File file = new File(uri.getPath());
-                            tcLog.d("file = "+file);
-
-                            tcLog.d( "File Selected: " + file.getAbsolutePath());
-                            if (_oc != null) {
-                                _oc.onFileSelected(file.getAbsolutePath());
-                            }
-                        } catch (final Exception e) {
-                            tcLog.d("File select error", e);
-                        }
-*/
                     }
                 }
                 break;
@@ -583,11 +566,11 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
         ft.commit();
     }
 
-    public void setActionProvider(Menu menu,int resid) {
+    public void setActionProvider(Menu menu, int resid) {
         final MenuItem item = menu.findItem(resid);
-        ShareActionProvider mShareActionProvider = (ShareActionProvider)item.getActionProvider();
+        ShareActionProvider mShareActionProvider = (ShareActionProvider) item.getActionProvider();
         if (mShareActionProvider == null) {
-            tcLog.d( "create new shareActionProvider item = "+item);
+            tcLog.d("create new shareActionProvider item = " + item);
             mShareActionProvider = new ShareActionProvider(this);
             item.setActionProvider(mShareActionProvider);
         }
@@ -638,7 +621,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
 
     @Override
     public void onLogin(String newUrl, String newUser, String newPass, boolean newHack, boolean newHostNameHack, String newProfile) {
-        tcLog.d(newProfile);
+        tcLog.d(newUrl + " " + newUser + " " + newPass + " " + newHack + " " + newHostNameHack + " " + newProfile);
         url = newUrl;
         username = newUser;
         password = newPass;
@@ -680,7 +663,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         tcLog.d("item=" + item.getTitle());
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case R.id.over:
                 showAbout();
                 break;
@@ -720,7 +703,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
         if (debug) {
             Intent i = shareDebug();
 
-            ShareActionProvider debugShare = (ShareActionProvider)itemDebug.getActionProvider();
+            ShareActionProvider debugShare = (ShareActionProvider) itemDebug.getActionProvider();
             tcLog.d("item = " + itemDebug + " " + debugShare + " " + i);
             if (debugShare != null && i != null) {
                 debugShare.setShareIntent(i);
@@ -827,7 +810,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
 
     private void setFilter(ArrayList<FilterSpec> filter) {
         tcLog.d(filter.toString());
-        String filterString = Credentials.joinList(filter.toArray(),"&");
+        String filterString = Credentials.joinList(filter.toArray(), "&");
         Credentials.storeFilterString(filterString);
         filterList = filter;
     }
@@ -857,7 +840,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
     private void setSort(ArrayList<SortSpec> sort) {
         tcLog.d(sort.toString());
 
-        String sortString = Credentials.joinList(sort.toArray(),"&");
+        String sortString = Credentials.joinList(sort.toArray(), "&");
         Credentials.storeSortString(sortString);
         sortList = sort;
     }
@@ -920,12 +903,12 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
         tcLog.logCall();
         String lijst = "";
 
-        if (dataAdapter != null ) {
-            for (Ticket t: dataAdapter.getTicketList()){
+        if (dataAdapter != null) {
+            for (Ticket t : dataAdapter.getTicketList()) {
                 try {
                     lijst += t.getTicketnr() + ";" + t.getString("status") + ";" + t.getString("summary") + "\r\n";
                 } catch (final Exception e) {
-                    tcLog.e( "exception", e);
+                    tcLog.e("exception", e);
                 }
             }
             final Intent sendIntent = new Intent(Intent.ACTION_SEND);
@@ -966,7 +949,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
     }
 
     private TicketListFragment getTicketListFragment() {
-        return (TicketListFragment)getFragment(ListFragmentTag);
+        return (TicketListFragment) getFragment(ListFragmentTag);
     }
 
     private Fragment getFragment(final String tag) {
@@ -984,7 +967,8 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
         boolean ret = super.dispatchTouchEvent(ev);
         try {
             ret |= ((DetailFragment) getFragment(DetailFragmentTag)).dispatchTouchEvent(ev);
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         return ret;
     }
 
@@ -993,7 +977,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
         try {
             tracStartHandler.obtainMessage(MSG_START_PROGRESSBAR, message).sendToTarget();
         } catch (NullPointerException e) {
-            tcLog.e("NullPointerException",e);
+            tcLog.e("NullPointerException", e);
         }
     }
 
@@ -1006,7 +990,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
         try {
             tracStartHandler.obtainMessage(MSG_STOP_PROGRESSBAR).sendToTarget();
         } catch (Exception e) {
-            tcLog.e("Exception",e);
+            tcLog.e("Exception", e);
         }
     }
 
@@ -1047,16 +1031,16 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
     @Override
     public void refreshTicket(final int i) {
         sendMessageToService(MSG_SEND_TICKETS, i, MSG_DISPLAY_TICKET, null);
-     }
+    }
 
     @Override
     public void putTicket(Ticket t) {
         // TODO
     }
 
-    public void updateTicket(final Ticket t,final String action, final String comment, final String veld, final String waarde, final boolean notify, final Map<String, String> modVeld) throws Exception{
+    public void updateTicket(final Ticket t, final String action, final String comment, final String veld, final String waarde, final boolean notify, final Map<String, String> modVeld) throws Exception {
         final JSONObject velden = t.getVelden();
-        tcLog.d("Ticket = "+ t);
+        tcLog.d("Ticket = " + t);
         tcLog.d("update: " + action + " '" + comment + "' '" + veld + "' '" + waarde + "' " + modVeld);
         tcLog.d("velden voor = " + velden);
         final int ticknr = t.getTicketnr();
@@ -1072,7 +1056,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
             velden.put(veld, waarde);
         }
         if (modVeld != null) {
-            for (Entry<String,String> e: modVeld.entrySet()) {
+            for (Entry<String, String> e : modVeld.entrySet()) {
 //				tcLog.d(e.toString());
                 velden.put(e.getKey(), e.getValue());
             }
@@ -1087,16 +1071,16 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
             @Override
             public void run() {
                 try {
-                    TracHttpClient tracClient = new TracHttpClient(url,sslHack,sslHostNameHack,username,password);
+                    TracHttpClient tracClient = new TracHttpClient(url, sslHack, sslHostNameHack, username, password);
                     JSONArray retTick = tracClient.updateTicket(ticknr, cmt, velden, notify);
                     t.setFields(retTick.getJSONObject(3));
                     if (modVeld != null) {
                         modVeld.clear();
                     }
-                    tcLog.d("retTicket = "+retTick);
+                    tcLog.d("retTicket = " + retTick);
                 } catch (final Exception e) {
                     tcLog.e("JSONRPCException", e);
-                    showAlertBox(R.string.upderr,R.string.storerrdesc,e.getMessage());
+                    showAlertBox(R.string.upderr, R.string.storerrdesc, e.getMessage());
                 }
             }
         };
@@ -1104,7 +1088,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
         updateThread.join();
     }
 
-    public int createTicket(Ticket t,boolean notify) throws Exception{
+    public int createTicket(Ticket t, boolean notify) throws Exception {
         int ticknr = t.getTicketnr();
         final JSONObject velden = t.getVelden();
 
@@ -1119,26 +1103,26 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
         velden.remove("description");
 
         try {
-            TracHttpClient tracClient = new TracHttpClient(url,sslHack,sslHostNameHack,username,password);
-            final int newticknr = tracClient.createTicket(s, d, velden,notify);
+            TracHttpClient tracClient = new TracHttpClient(url, sslHack, sslHostNameHack, username, password);
+            final int newticknr = tracClient.createTicket(s, d, velden, notify);
             if (newticknr != -1) {
 //				reloadTicketData(new Ticket(newticknr));
                 refreshTicket(newticknr);
                 return newticknr;
             } else {
-                showAlertBox(R.string.storerr,R.string.noticketUnk,"");
+                showAlertBox(R.string.storerr, R.string.noticketUnk, "");
                 return -1;
             }
         } catch (final Exception e) {
             tcLog.d("Exception during create", e);
-            showAlertBox(R.string.storerr,R.string.storerrdesc,e.getMessage());
+            showAlertBox(R.string.storerr, R.string.storerrdesc, e.getMessage());
             return -1;
         }
     }
 
     @Override
-    public void getAttachment(final Ticket ticket,final String filename, final onAttachmentCompleteListener oc) {
-        tcLog.i(ticket.toString()+" "+filename);
+    public void getAttachment(final Ticket ticket, final String filename, final onAttachmentCompleteListener oc) {
+        tcLog.i(ticket.toString() + " " + filename);
         final int _ticknr = ticket.getTicketnr();
         new Thread() {
             @Override
@@ -1146,10 +1130,10 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
 //                available.acquireUninterruptibly();
                 if (oc != null) {
                     try {
-                        TracHttpClient tracClient = new TracHttpClient(url,sslHack,sslHostNameHack,username,password);
+                        TracHttpClient tracClient = new TracHttpClient(url, sslHack, sslHostNameHack, username, password);
                         oc.onComplete(tracClient.getAttachment(_ticknr, filename));
                     } catch (final Exception e) {
-                        tcLog.e("Exception during getAttachment",e);
+                        tcLog.e("Exception during getAttachment", e);
 //                    } finally {
 //                        available.release();
                     }
@@ -1161,18 +1145,18 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
     /*
      * always executed in a thread
      */
-    public void addAttachment(final Ticket ticket,final Uri uri, final onTicketCompleteListener oc) {
-        tcLog.i(ticket.toString()+" "+uri);
+    public void addAttachment(final Ticket ticket, final Uri uri, final onTicketCompleteListener oc) {
+        tcLog.i(ticket.toString() + " " + uri);
         final int _ticknr = ticket.getTicketnr();
 //                available.acquireUninterruptibly();
-        TracHttpClient req = new TracHttpClient(url,sslHack,sslHostNameHack,username,password);
+        TracHttpClient req = new TracHttpClient(url, sslHack, sslHostNameHack, username, password);
         String filename = null;
         int bytes = 0;
         if (uri != null) {
             if (uri.toString().startsWith("file:")) {
                 filename = uri.getPath();
             } else {
-                Cursor c=getContentResolver().query(uri,null,null,null,null);
+                Cursor c = getContentResolver().query(uri, null, null, null, null);
                 if (c != null && c.moveToFirst()) {
 //                    tcLog.d("ColumnNames = "+Arrays.asList(c.getColumnNames()));
                     int id = c.getColumnIndex(Images.Media.DISPLAY_NAME);
@@ -1186,15 +1170,15 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
                     c.close();
                 }
             }
-            tcLog.d("filename = "+filename);
-            tcLog.d("bytes = "+bytes);
-            final File file = new File(filename == null ? uri.getPath():filename);
-            tcLog.d("file = "+file);
+            tcLog.d("filename = " + filename);
+            tcLog.d("bytes = " + bytes);
+            final File file = new File(filename == null ? uri.getPath() : filename);
+            tcLog.d("file = " + file);
             tcLog.d("File path: " + file.getAbsolutePath());
-            tcLog.d("file.getName = "+ file.getName());
+            tcLog.d("file.getName = " + file.getName());
             if (bytes == 0) {
                 bytes = (int) file.length();
-                tcLog.d("bytes = "+ bytes);
+                tcLog.d("bytes = " + bytes);
             }
             final int maxBytes = (bytes > 0 ? bytes : 120000);   // 6 fold because of Base64
             final byte[] data = new byte[maxBytes];
@@ -1202,8 +1186,8 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
             try {
                 final InputStream is = getContentResolver().openInputStream(uri);
                 String b64 = "";
-                for (int nbytes = is.read(data);nbytes>=0;nbytes=is.read(data)) {
-                    b64 += Base64.encodeToString(data,0,nbytes, Base64.DEFAULT);
+                for (int nbytes = is.read(data); nbytes >= 0; nbytes = is.read(data)) {
+                    b64 += Base64.encodeToString(data, 0, nbytes, Base64.DEFAULT);
                 }
                 is.close();
                 final JSONArray ar = new JSONArray();
@@ -1222,7 +1206,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
                 ar.put(true);
                 final String retfile = req.callString("ticket.putAttachment", ar);
 
-                tcLog.i("putAttachment "+retfile);
+                tcLog.i("putAttachment " + retfile);
 //            actionLock.release();
 //            sendMessageToService(MSG_SEND_TICKETS, _ticknr, MSG_DISPLAY_TICKET, null);
             } catch (final FileNotFoundException e) {
@@ -1249,8 +1233,8 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
         return dataAdapter.getPrevTicket(i);
     }
 
-    public void onRequestPermissionsResult (int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        tcLog.d("requestCode = "+requestCode+" permissions = "+Arrays.asList(permissions)+" grantResults = "+ Arrays.asList(grantResults));
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        tcLog.d("requestCode = " + requestCode + " permissions = " + Arrays.asList(permissions) + " grantResults = " + Arrays.asList(grantResults));
         switch (requestCode) {
             case REQUEST_CODE_WRITE_EXT: {
                 // If request is cancelled, the result arrays are empty.
@@ -1262,10 +1246,9 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
     public boolean getCanWriteSD() {
         return canWriteSD;
     }
-    private ProgressDialog progressBar = null;
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"InlinedAPI", "unchecked"})
     public boolean handleMessage(Message msg) {
         tcLog.d("msg = " + msg);
         switch (msg.what) {
@@ -1307,15 +1290,15 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
                 break;
 
             case MSG_SET_SORT:
-                setSort((ArrayList<SortSpec>)msg.obj);
+                setSort((ArrayList<SortSpec>) msg.obj);
                 refreshOverview();
-                sendMessageToService(MSG_SET_SORT,msg.obj);
+                sendMessageToService(MSG_SET_SORT, msg.obj);
                 break;
 
             case MSG_SET_FILTER:
-                setFilter((ArrayList<FilterSpec>)msg.obj);
+                setFilter((ArrayList<FilterSpec>) msg.obj);
                 refreshOverview();
-                sendMessageToService(MSG_SET_FILTER,msg.obj);
+                sendMessageToService(MSG_SET_FILTER, msg.obj);
                 break;
 
             case MSG_SHOW_DIALOG:
@@ -1323,7 +1306,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
                 break;
 
             case MSG_DISPLAY_TICKET:
-                final Ticket t = (Ticket)msg.obj;
+                final Ticket t = (Ticket) msg.obj;
                 if (DetailFragmentTag.equals(getTopFragment())) {
                     runOnUiThread(new Runnable() {
                         @Override
@@ -1347,7 +1330,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
                 break;
 
             case MSG_START_LISTLOADER:
-                currentLoginProfile = new LoginProfile(url,username,password,sslHack)
+                currentLoginProfile = new LoginProfile(url, username, password, sslHack)
                         .setSslHostNameHack(sslHostNameHack)
                         .setFilterList(filterList)
                         .setSortList(sortList);
@@ -1378,9 +1361,9 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
                 break;
 
             case MSG_LOAD_FASE1_FINISHED:
-                final Tickets tl = (Tickets)msg.obj;
+                final Tickets tl = (Tickets) msg.obj;
                 tcLog.d("Tickets = " + tl);
-                synchronized(this) {
+                synchronized (this) {
                     if (hasTicketsLoadingBar) {
                         stopProgressBar();
                         hasTicketsLoadingBar = false;

@@ -23,13 +23,13 @@ class MyHandlerThread extends HandlerThread {
     MyHandlerThread(String name) {
         super(name);
     }
-	
+
     @Override
     public void run() {
         try {
             super.run();
         } catch (Exception e) {
-            tcLog.e("Exception in HandlerThread "+ getThreadId()+" Run - " +getName(), e);
+            tcLog.e("Exception in HandlerThread " + getThreadId() + " Run - " + getName(), e);
         }
     }
 }

@@ -16,12 +16,13 @@
 
 package com.mfvl.trac.client;
 
+import android.util.Base64;
+
 import org.alexd.jsonrpc.JSONRPCException;
 import org.alexd.jsonrpc.JSONRPCHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import android.util.Base64;
 
 
 public class TracHttpClient extends JSONRPCHttpClient {
@@ -31,7 +32,7 @@ public class TracHttpClient extends JSONRPCHttpClient {
     final static String TICKET_UPDATE = "ticket.update";
     final static String TICKET_GETTICKETFIELDS = "ticket.getTicketFields";
     final static String TICKET_GETATTACHMENT = "ticket.getAttachment";
-	final static String TICKET_PUTATTACHMENT = "ticket.putAttachment";
+    final static String TICKET_PUTATTACHMENT = "ticket.putAttachment";
     final static String SYSTEM_GETAPIVERSION = "system.getAPIVersion";
 
     final static String _JSONCLASS = "__jsonclass__";
@@ -39,17 +40,17 @@ public class TracHttpClient extends JSONRPCHttpClient {
     private String current_url = null;
     private String current_user = null;
     private String current_pass = null;
-	private boolean current_sslHack = false;
-	private boolean current_sslHostNameHack = false;
-	
+    private boolean current_sslHack = false;
+    private boolean current_sslHostNameHack = false;
+
     public TracHttpClient(final String url, final boolean sslHack, final boolean sslHostNameHack, final String username, final String password) {
         super(url, sslHack, sslHostNameHack);
         setCredentials(username, password);
         current_url = url;
         current_user = username;
         current_pass = password;
-		current_sslHack = sslHack;
-		current_sslHostNameHack = sslHostNameHack;
+        current_sslHack = sslHack;
+        current_sslHostNameHack = sslHostNameHack;
     }
 
     public TracHttpClient(final LoginProfile lp) {
@@ -58,8 +59,8 @@ public class TracHttpClient extends JSONRPCHttpClient {
         current_url = lp.getUrl();
         current_user = lp.getUsername();
         current_pass = lp.getPassword();
-		current_sslHack = lp.getSslHack();
-		current_sslHostNameHack = lp.getSslHostNameHack();
+        current_sslHack = lp.getSslHack();
+        current_sslHostNameHack = lp.getSslHostNameHack();
     }
 
     public JSONArray Query(String reqString) throws JSONRPCException {
@@ -67,7 +68,7 @@ public class TracHttpClient extends JSONRPCHttpClient {
     }
 
     public int createTicket(final String s, final String d, final JSONObject _velden, boolean notify) throws JSONRPCException {
-        return callInt(TICKET_CREATE, s, d, _velden,notify);
+        return callInt(TICKET_CREATE, s, d, _velden, notify);
     }
 
     public JSONArray updateTicket(final int _ticknr, final String cmt, final JSONObject _velden, final boolean notify) throws JSONRPCException {

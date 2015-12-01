@@ -30,20 +30,18 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static com.mfvl.trac.client.Const.ADMOB;
-import static com.mfvl.trac.client.Const.INTENT_TICKET;
-import static com.mfvl.trac.client.Const.INTENT_URL;
+import static com.mfvl.trac.client.Const.*;
 
 public class TracTitlescreenActivity extends Activity implements Thread.UncaughtExceptionHandler {
     private Intent launchTrac = null;
-	private Handler handler = null;
-	
+    private Handler handler = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         tcLog.setContext(this);
 //        tcLog.logCall();
-		Credentials.getInstance(getApplicationContext());
+        Credentials.getInstance(getApplicationContext());
         setContentView(R.layout.activity_titlescreen);
         startService(new Intent(this, RefreshService.class));
     }
@@ -71,7 +69,7 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
         } catch (final Exception e) {
             tcLog.e("Exception while determining Google Play Services", e);
         }
-		
+
         launchTrac = new Intent(getApplicationContext(), TracStart.class);
 
         // adMobAvailable=false;
@@ -107,14 +105,14 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
             }
         }
         handler = new Handler();
-		startApp();
-	}
+        startApp();
+    }
 
-	private void startApp() {
+    private void startApp() {
 //        tcLog.logCall();
         int timerVal = getResources().getInteger(R.integer.startupTimer);
         final Timer t = new Timer();
-		t.schedule(new TimerTask() {
+        t.schedule(new TimerTask() {
             @Override
             public void run() {
                 handler.post(new Runnable() {
@@ -122,17 +120,18 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
                     public void run() {
                         startActivity(launchTrac);
                         stopService(new Intent(TracTitlescreenActivity.this, RefreshService.class));
-						finish();
+                        finish();
                     }
                 });
             }
         }, timerVal);
-	}
+    }
 
     public void onResume() {
         tcLog.logCall();
         super.onResume();
     }
+
     public void onPause() {
         tcLog.logCall();
         super.onPause();
@@ -150,9 +149,9 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
 
 
     @Override
-	public void uncaughtException(Thread thread, Throwable ex) {
-		tcLog.e("Uncaught exception in thread "+ thread,ex);
-		tcLog.save();
-		finish();
-	}
+    public void uncaughtException(Thread thread, Throwable ex) {
+        tcLog.e("Uncaught exception in thread " + thread, ex);
+        tcLog.save();
+        finish();
+    }
 }

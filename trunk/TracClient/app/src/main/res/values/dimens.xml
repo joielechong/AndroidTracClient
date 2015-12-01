@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
  * Copyright (C) 2013,2014 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,8 +17,9 @@
 <resources>
     <dimen name="adview_padding">50dp</dimen>
     <dimen name="list_textsize">18sp</dimen>
-	<dimen name="help_textsize">25sp</dimen>
-	<dimen name="helphdr_textsize">50sp</dimen>
-	<dimen name="helpsml_textsize">16sp</dimen>	
-	<integer name="webzoom">120</integer> <!-- zoom factor to be used on webpages -->
+    <dimen name="help_textsize">25sp</dimen>
+    <dimen name="helphdr_textsize">50sp</dimen>
+    <dimen name="helpsml_textsize">16sp</dimen>
+    <integer name="webzoom">120</integer>
+    <!-- zoom factor to be used on webpages -->
 </resources>

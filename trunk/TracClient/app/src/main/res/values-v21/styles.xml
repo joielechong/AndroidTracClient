@@ -18,10 +18,16 @@
  * v21+ material style
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-  <style name="AppBaseTheme" parent="android:Theme.Material.Light" />
-  <style name="FullscreenThemeBase" parent="android:Theme.Material.Light.NoActionBar.Fullscreen" />
-  <style name="AlertDialogStyle" parent="android:style/Theme.Material.Dialog.Alert" />
-  <style name="ButtonBarBase" parent="android:Widget.Material.ButtonBar" />
-  <style name="ButtonBarButton" parent="android:Widget.Material.Light.SegmentedButton" />
-  <style name="MyStyle" parent="android:Theme.Material.Light.DarkActionBar"/>
+
+    <style name="AppBaseTheme" parent="android:Theme.Material.Light" />
+
+    <style name="FullscreenThemeBase" parent="android:Theme.Material.Light.NoActionBar.Fullscreen" />
+
+    <style name="AlertDialogStyle" parent="android:style/Theme.Material.Dialog.Alert" />
+
+    <style name="ButtonBarBase" parent="android:Widget.Material.ButtonBar" />
+
+    <style name="ButtonBarButton" parent="android:Widget.Material.Light.SegmentedButton" />
+
+    <style name="MyStyle" parent="android:Theme.Material.Light.DarkActionBar" />
 </resources>

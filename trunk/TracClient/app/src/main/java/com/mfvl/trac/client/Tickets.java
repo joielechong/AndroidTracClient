@@ -21,19 +21,17 @@ import java.util.TreeMap;
 
 public class Tickets {
 
-    public TicketList ticketList = null;
-
     private static Map<Integer, Ticket> ticketMap = null;
-
+    public TicketList ticketList = null;
     private int ticketGroupCount;
     private boolean valid = false;
 
     public Tickets() {
         tcLog.d("create");
-		initList();
+        initList();
         valid = ticketList != null;
     }
-	
+
     public void initList() {
         tcLog.logCall();
         ticketList = new TicketList();
@@ -55,52 +53,52 @@ public class Tickets {
 //        tcLog.d("ticket = "+ticket);
         ticketMap.put(ticket.getTicketnr(), ticket);
     }
-	
-	public void clear() {
-		tcLog.logCall();
-		ticketList.clear();
+
+    public void clear() {
+        tcLog.logCall();
+        ticketList.clear();
         valid = true;
-	}
-	
-	public void add(Tickets tl) {
-        tcLog.d("this = "+this+" size voor = "+getTicketCount()+" tl = "+tl);
+    }
+
+    public void add(Tickets tl) {
+        tcLog.d("this = " + this + " size voor = " + getTicketCount() + " tl = " + tl);
         this.ticketList.addAll(tl.ticketList);
 //		for(Ticket t: tl.ticketList) {
 //			addTicket(t);
 //		}
-        tcLog.d("size na = "+getTicketCount());
-	}
-	
-	public void addTicket(Ticket ticket) {
+        tcLog.d("size na = " + getTicketCount());
+    }
+
+    public void addTicket(Ticket ticket) {
 //		tcLog.d("ticket = "+ticket);
-		ticketList.add(ticket);
-		putTicket(ticket);
-	}
-	
-	public void delTicket(int ticknr) {
-		tcLog.d("ticknr = "+ticknr);
-		if (ticketMap.containsKey(ticknr)) {
-			Ticket removed = ticketMap.remove(ticknr);
-			ticketList.remove(removed);
-			tcLog.d( "removed = "+removed);
-		}
-	}
-	
-    public void setTicketGroupCount(final int v) {
-        ticketGroupCount = v;
+        ticketList.add(ticket);
+        putTicket(ticket);
+    }
+
+    public void delTicket(int ticknr) {
+        tcLog.d("ticknr = " + ticknr);
+        if (ticketMap.containsKey(ticknr)) {
+            Ticket removed = ticketMap.remove(ticknr);
+            ticketList.remove(removed);
+            tcLog.d("removed = " + removed);
+        }
     }
 
     public int getTicketGroupCount() {
         return ticketGroupCount;
     }
 
+    public void setTicketGroupCount(final int v) {
+        ticketGroupCount = v;
+    }
+
     public int getTicketContentCount() {
-		int c = 0;
-		for(Ticket t: ticketList) {
-			if (t.hasdata()) {
-				c=c+1;
-			}
-		}
+        int c = 0;
+        for (Ticket t : ticketList) {
+            if (t.hasdata()) {
+                c = c + 1;
+            }
+        }
         return c;
     }
 

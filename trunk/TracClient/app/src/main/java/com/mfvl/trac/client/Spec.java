@@ -21,27 +21,27 @@ import java.io.Serializable;
 abstract public class Spec extends TcObject implements Serializable, Cloneable {
     private static final long serialVersionUID = -4398082467476637503L;
     protected String _veld;
-	
+
     public Spec(String veld) {
         _veld = veld;
     }
-	
-	@Override
-	public boolean equals(Object o) {
-		boolean retVal;
-		if (this == o) {
-			retVal = true;
-		} else if (! (o instanceof Spec)) {
-			retVal = false;
-		} else {
-			retVal = super.equals(o);
-		
-			Spec f =(Spec)o;
-			retVal &= equalFields(_veld,f.getVeld());
-		}
+
+    @Override
+    public boolean equals(Object o) {
+        boolean retVal;
+        if (this == o) {
+            retVal = true;
+        } else if (!(o instanceof Spec)) {
+            retVal = false;
+        } else {
+            retVal = super.equals(o);
+
+            Spec f = (Spec) o;
+            retVal &= equalFields(_veld, f.getVeld());
+        }
 //		tcLog.d("this = "+this+" o = "+o+" retVal = "+retVal);
-		return retVal;
-	}
+        return retVal;
+    }
 
     public String getVeld() {
         return _veld;
@@ -51,8 +51,8 @@ abstract public class Spec extends TcObject implements Serializable, Cloneable {
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
-	
+
     public Spec setEdit(final boolean edited) { //no-op
-		return this;
+        return this;
     }
 }

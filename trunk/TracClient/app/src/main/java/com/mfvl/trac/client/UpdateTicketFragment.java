@@ -17,12 +17,6 @@
 package com.mfvl.trac.client;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -40,6 +34,12 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.mfvl.trac.client.Const.*;
 
 public class UpdateTicketFragment extends TracClientFragment {
@@ -49,34 +49,34 @@ public class UpdateTicketFragment extends TracClientFragment {
 
     private String currentActionName = null;
     private int ticknr;
-	
-	private void onMyAttach() {
-       final Bundle args = getArguments();
+
+    private void onMyAttach() {
+        final Bundle args = getArguments();
 
         // tcLog.d("onAttach ");
         if (args != null) {
             ticknr = args.getInt(CURRENT_TICKET);
         }
-	}
+    }
 
     @Override
     public void onAttach(Context activity) {
         super.onAttach(activity);
-		onMyAttach();
+        onMyAttach();
     }
-	
+
     @Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-		onMyAttach();
-	}
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        onMyAttach();
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // tcLog.d("onCreate savedInstanceState = " + savedInstanceState );
         setHasOptionsMenu(true);
-		helpFile = R.string.updatehelpfile;
+        helpFile = R.string.updatehelpfile;
     }
 
     @Override
@@ -97,9 +97,9 @@ public class UpdateTicketFragment extends TracClientFragment {
             if (savedInstanceState.containsKey(CURRENT_TICKET)) {
                 ticknr = savedInstanceState.getInt(CURRENT_TICKET);
             }
-            optionVal = (savedInstanceState.containsKey(UPDATE_OPTION_VAL) ?savedInstanceState.getString(UPDATE_OPTION_VAL) : null);
-            spinPosition = (savedInstanceState.containsKey(UPDATE_SPIN_POSITION) ?savedInstanceState.getInt(UPDATE_SPIN_POSITION) : 0);
-			button = (savedInstanceState.containsKey(UPDATE_CURRENT_BUTTON) ? savedInstanceState.getInt(UPDATE_CURRENT_BUTTON) :0);
+            optionVal = (savedInstanceState.containsKey(UPDATE_OPTION_VAL) ? savedInstanceState.getString(UPDATE_OPTION_VAL) : null);
+            spinPosition = (savedInstanceState.containsKey(UPDATE_SPIN_POSITION) ? savedInstanceState.getInt(UPDATE_SPIN_POSITION) : 0);
+            button = (savedInstanceState.containsKey(UPDATE_CURRENT_BUTTON) ? savedInstanceState.getInt(UPDATE_CURRENT_BUTTON) : 0);
         } else {
             button = 0;
             optionVal = null;
@@ -108,7 +108,7 @@ public class UpdateTicketFragment extends TracClientFragment {
         _ticket = listener.getTicket(ticknr);
         displayView(button, spinPosition, optionVal);
     }
-	
+
     private void displayView(final int checkedButton, final int spinPosition, final String optionVal) {
         final View view = getView();
         final TextView tv = (TextView) view.findViewById(R.id.titel);
@@ -119,7 +119,7 @@ public class UpdateTicketFragment extends TracClientFragment {
         JSONArray _actions = _ticket.getActions();
         tcLog.d("actions = " + _actions);
         final RadioGroup rg = (RadioGroup) view.findViewById(R.id.actionblock);
-		
+
         try {
             for (int i = 0; i < _actions.length(); i++) {
                 final JSONArray actie = _actions.getJSONArray(i);
@@ -127,8 +127,8 @@ public class UpdateTicketFragment extends TracClientFragment {
 
                 ll.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                 ll.setOrientation(LinearLayout.VERTICAL);
-				setListener(R.id.canBut);
-				setListener(R.id.storeUpdate);
+                setListener(R.id.canBut);
+                setListener(R.id.storeUpdate);
                 final TextView explain = (TextView) view.findViewById(R.id.explaintxt);
                 final RadioButton rb = new RadioButton(context);
                 final String hintText = actie.getString(2);
@@ -146,10 +146,10 @@ public class UpdateTicketFragment extends TracClientFragment {
                     optieval.setVisibility(View.GONE);
                     optieval.setText(null);
                 }
-				if (i == checkedButton) {
-					optiesSpin.setSelection(spinPosition);
+                if (i == checkedButton) {
+                    optiesSpin.setSelection(spinPosition);
                     optieval.setText(optionVal);
-				}
+                }
                 rb.setText(actie.getString(0));
                 // rb.setTextSize(context.getResources().getDimensionPixelSize(R.dimen.list_textsize));
                 rb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -184,7 +184,7 @@ public class UpdateTicketFragment extends TracClientFragment {
                                             try {
                                                 opties.add(ifOpties.getString(j));
                                             } catch (final JSONException e) {
-                                                tcLog.e("exception adding " + ifOpties + " j=" + j,e);
+                                                tcLog.e("exception adding " + ifOpties + " j=" + j, e);
                                             }
                                         }
                                         final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, opties);
@@ -212,24 +212,24 @@ public class UpdateTicketFragment extends TracClientFragment {
         rg.check(checkedButton);
     }
 
-	@Override
-	public void onClick(View v) {
-		switch (v.getId()) {
-			case R.id.canBut:
-			tcLog.d("cancel pressed v = " + v);
-			getFragmentManager().popBackStack();
-			break;
-			
-			case R.id.storeUpdate:
-			getFragmentManager().popBackStack();
-			storeUpdate();
-			break;
-		}
-	}
-	
-	/**
-	 * storeUpdate - called when the Store button is pressed
-	*/
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.canBut:
+                tcLog.d("cancel pressed v = " + v);
+                getFragmentManager().popBackStack();
+                break;
+
+            case R.id.storeUpdate:
+                getFragmentManager().popBackStack();
+                storeUpdate();
+                break;
+        }
+    }
+
+    /**
+     * storeUpdate - called when the Store button is pressed
+     */
 
     private void storeUpdate() {
         String w = null;
@@ -255,42 +255,42 @@ public class UpdateTicketFragment extends TracClientFragment {
         }
         final String waarde = w;
         listener.startProgressBar(R.string.saveupdate);
-		try {
-			final boolean notify = updNotify != null && updNotify.isChecked();
-			listener.updateTicket(_ticket,action, comment, currentActionName, waarde, notify, null);
-		} catch (final Exception e) {
-			tcLog.e( "update failed", e);
-			showAlertBox(R.string.storerr,R.string.storerrdesc,e.getMessage());
-		} finally {
-			listener.stopProgressBar();
-		}
-	}
+        try {
+            final boolean notify = updNotify != null && updNotify.isChecked();
+            listener.updateTicket(_ticket, action, comment, currentActionName, waarde, notify, null);
+        } catch (final Exception e) {
+            tcLog.e("update failed", e);
+            showAlertBox(R.string.storerr, R.string.storerrdesc, e.getMessage());
+        } finally {
+            listener.stopProgressBar();
+        }
+    }
 
     @Override
     public void onSaveInstanceState(Bundle savedState) {
-		super.onSaveInstanceState(savedState);
-		if (_ticket != null) {
-			savedState.putInt(CURRENT_TICKET, _ticket.getTicketnr());
-		}
-		final View view = getView();
+        super.onSaveInstanceState(savedState);
+        if (_ticket != null) {
+            savedState.putInt(CURRENT_TICKET, _ticket.getTicketnr());
+        }
+        final View view = getView();
 
-		if (view != null) {
-			final RadioGroup rg = (RadioGroup) view.findViewById(R.id.actionblock);
+        if (view != null) {
+            final RadioGroup rg = (RadioGroup) view.findViewById(R.id.actionblock);
 
-			if (rg != null) {
-				savedState.putInt(UPDATE_CURRENT_BUTTON, rg.getCheckedRadioButtonId());
-			}
-			final Spinner optiesSpin = (Spinner) view.findViewById(R.id.opties);
+            if (rg != null) {
+                savedState.putInt(UPDATE_CURRENT_BUTTON, rg.getCheckedRadioButtonId());
+            }
+            final Spinner optiesSpin = (Spinner) view.findViewById(R.id.opties);
 
-			if (optiesSpin != null) {
-				savedState.putInt(UPDATE_SPIN_POSITION, optiesSpin.getSelectedItemPosition());
-			}
-			final EditText optieVal = (EditText) view.findViewById(R.id.optieval);
+            if (optiesSpin != null) {
+                savedState.putInt(UPDATE_SPIN_POSITION, optiesSpin.getSelectedItemPosition());
+            }
+            final EditText optieVal = (EditText) view.findViewById(R.id.optieval);
 
-			if (optieVal != null) {
-				savedState.putString(UPDATE_OPTION_VAL, optieVal.getText().toString());
-			}
-		}
-		tcLog.d("savedState = " + savedState);
-	}
+            if (optieVal != null) {
+                savedState.putString(UPDATE_OPTION_VAL, optieVal.getText().toString());
+            }
+        }
+        tcLog.d("savedState = " + savedState);
+    }
 }

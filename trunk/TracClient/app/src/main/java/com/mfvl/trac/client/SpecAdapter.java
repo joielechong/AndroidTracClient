@@ -16,24 +16,24 @@
 
 package com.mfvl.trac.client;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-class SpecAdapter<T extends Spec> extends ArrayAdapter<T> {
-	protected final ArrayList<T> items;
-	protected ListView listView;
+import java.util.ArrayList;
 
-	public SpecAdapter(Context context, int textViewResourceId, ArrayList<T> items) {
-		super(context, textViewResourceId, items);
+class SpecAdapter<T extends Spec> extends ArrayAdapter<T> {
+    protected final ArrayList<T> items;
+    protected ListView listView;
+
+    public SpecAdapter(Context context, int textViewResourceId, ArrayList<T> items) {
+        super(context, textViewResourceId, items);
 //		tcLog.logCall();
-		this.items = items;
-	}
-	
-	public ArrayList<T> getItems() {
+        this.items = items;
+    }
+
+    public ArrayList<T> getItems() {
 //		tcLog.logCall();
-		return items;
-	}
+        return items;
+    }
 }

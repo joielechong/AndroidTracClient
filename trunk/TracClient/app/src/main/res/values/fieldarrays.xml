@@ -32,15 +32,15 @@
         <item>comment</item>
         <item>resolution</item>
     </string-array>
-	
-<!-- These are not the internal field names but the displaylabels -->
-	
-	<string-array name="ignorecreatefields" translatable="false">
+
+    <!-- These are not the internal field names but the displaylabels -->
+
+    <string-array name="ignorecreatefields" translatable="false">
         <item>Owner</item>
         <item>Status</item>
         <item>Resolution</item>
         <item>Modified</item>
         <item>Reporter</item>
         <item>Created</item>
-	</string-array>
+    </string-array>
 </resources>

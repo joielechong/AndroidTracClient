@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_version">0.6.2-rc5</string>
-	<string name="app_name">TracClient</string>
-	<string name="tracUrl">TRAC url</string>
-	<string name="tracUrlHint">http://host/trac/login/rpc</string>
-	<string name="warning">!</string>
-	<string name="title_text">TRAC\nCLIENT</string>
-	<string name="auteur">Michiel van Loon</string>
-	<string name="logfile">tc-log.txt</string>
+    <string name="app_name">TracClient</string>
+    <string name="tracUrl">TRAC url</string>
+    <string name="tracUrlHint">http://host/trac/login/rpc</string>
+    <string name="warning">!</string>
+    <string name="title_text">TRAC\nCLIENT</string>
+    <string name="auteur">Michiel van Loon</string>
+    <string name="logfile">tc-log.txt</string>
 </resources>

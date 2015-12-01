@@ -26,7 +26,6 @@ import android.content.res.Resources;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.os.Message;
 import android.support.v4.app.NotificationCompat;
 
@@ -40,21 +39,39 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static com.mfvl.trac.client.Const.*;
+import static com.mfvl.trac.client.Const.MSG_DATA_CHANGED;
+import static com.mfvl.trac.client.Const.MSG_GET_TICKET_MODEL;
+import static com.mfvl.trac.client.Const.MSG_LOAD_FASE1_FINISHED;
+import static com.mfvl.trac.client.Const.MSG_LOAD_FASE2_FINISHED;
+import static com.mfvl.trac.client.Const.MSG_LOAD_TICKETS;
+import static com.mfvl.trac.client.Const.MSG_REFRESH_LIST;
+import static com.mfvl.trac.client.Const.MSG_REMOVE_NOTIFICATION;
+import static com.mfvl.trac.client.Const.MSG_REQUEST_TICKET_COUNT;
+import static com.mfvl.trac.client.Const.MSG_SEND_TICKETS;
+import static com.mfvl.trac.client.Const.MSG_SEND_TICKET_COUNT;
+import static com.mfvl.trac.client.Const.MSG_SET_FILTER;
+import static com.mfvl.trac.client.Const.MSG_SET_SORT;
+import static com.mfvl.trac.client.Const.MSG_SHOW_DIALOG;
+import static com.mfvl.trac.client.Const.MSG_START_TIMER;
+import static com.mfvl.trac.client.Const.MSG_STOP_TIMER;
+import static com.mfvl.trac.client.Const.ticketGroupCount;
 
 public class RefreshService extends Service implements Handler.Callback {
 
+    public static final String refreshAction = "LIST_REFRESH";
     private final static String TICKET_GET = "GET";
     private final static String TICKET_CHANGE = "CHANGE";
     private final static String TICKET_ATTACH = "ATTACH";
     private final static String TICKET_ACTION = "ACTION";
-
+    private static final int notifId = 1234;
     private static int timerStart;
     private static int timerPeriod;
-    public static final String refreshAction = "LIST_REFRESH";
+    /**
+     * Class used for the client Binder.  Because we know this service always
+     * runs in the same process as its clients, we don't need to deal with IPC.
+     */
+    private final IBinder mBinder = new RefreshBinder();
     private Timer monitorTimer = null;
-    private static final int notifId = 1234;
-
     private MyHandlerThread mHandlerThread = null;
     private Handler mServiceHandler;
     private LoginProfile mLoginProfile = null;
@@ -63,19 +80,6 @@ public class RefreshService extends Service implements Handler.Callback {
     private TicketModel tm = null;
     private Tickets mTickets = null;
     private boolean invalid = true;
-
-    /**
-     * Class used for the client Binder.  Because we know this service always
-     * runs in the same process as its clients, we don't need to deal with IPC.
-     */
-    private final IBinder mBinder = new RefreshBinder();
-
-    public class RefreshBinder extends Binder {
-        RefreshService getService() {
-            // Return this instance of LocalService so clients can call public methods
-            return RefreshService.this;
-        }
-    }
 
     @SuppressWarnings("unchecked")
     @Override
@@ -200,12 +204,12 @@ public class RefreshService extends Service implements Handler.Callback {
         dispatchMessage(Message.obtain(null, message));
     }
 
-    private void sendMessageToUI(int message,Object o) {
-        dispatchMessage(Message.obtain(null, message,o));
+    private void sendMessageToUI(int message, Object o) {
+        dispatchMessage(Message.obtain(null, message, o));
     }
 
-    private void sendMessageToUI(int message,int arg1,int arg2,Object o) {
-        dispatchMessage(Message.obtain(null, message,arg1,arg2,o));
+    private void sendMessageToUI(int message, int arg1, int arg2, Object o) {
+        dispatchMessage(Message.obtain(null, message, arg1, arg2, o));
     }
 
     public TicketModel getTicketModel() {
@@ -227,7 +231,7 @@ public class RefreshService extends Service implements Handler.Callback {
         mHandlerThread.start();
 
         // Get the HandlerThread's Looper and use it for our Handler
-        mServiceHandler = new Handler(mHandlerThread.getLooper(),this);
+        mServiceHandler = new Handler(mHandlerThread.getLooper(), this);
     }
 
     @Override
@@ -362,7 +366,7 @@ public class RefreshService extends Service implements Handler.Callback {
             if (mTickets.getTicketCount() == 0) {
                 popup_warning(R.string.notickets, null);
             }
-        } else{
+        } else {
             sendMessageToUI(MSG_LOAD_FASE1_FINISHED, mTickets);
             sendMessageToUI(MSG_LOAD_FASE2_FINISHED, mTickets);
         }
@@ -406,22 +410,22 @@ public class RefreshService extends Service implements Handler.Callback {
                                 } else if ((TICKET_ACTION + "_" + thisTicket).equals(id)) {
                                     t.setActions(result);
                                 } else {
-                                    tcLog.d( "unexpected response = " + result);
+                                    tcLog.d("unexpected response = " + result);
                                 }
                             }
                         } catch (final JSONException e1) {
-                            tcLog.e("JSONException thrown innerloop j=" + j + " k=" + k,e1);
+                            tcLog.e("JSONException thrown innerloop j=" + j + " k=" + k, e1);
                         }
                     }
                 } catch (final JSONRPCException e) {
-                    tcLog.e("JSONRPCException thrown outerloop j=" + j,e);
-                }  finally {
+                    tcLog.e("JSONRPCException thrown outerloop j=" + j, e);
+                } finally {
                     tcLog.d("loop " + tl.getTicketContentCount());
                 }
                 notify_datachanged();
             }
         } catch (Exception e) {
-            tcLog.e("Exception",e);
+            tcLog.e("Exception", e);
         }
     }
 
@@ -459,7 +463,7 @@ public class RefreshService extends Service implements Handler.Callback {
 
             if (jsonTicketlist.length() > 0) {
                 t = new Tickets();
-                for (int i = 0;i<jsonTicketlist.length();i++) {
+                for (int i = 0; i < jsonTicketlist.length(); i++) {
                     int ticknr = jsonTicketlist.getInt(i);
                     t.addTicket(new Ticket(ticknr));
                 }
@@ -467,8 +471,15 @@ public class RefreshService extends Service implements Handler.Callback {
             }
             return t;
         } catch (Exception e) {
-            tcLog.d("getChanges exception",e);
+            tcLog.d("getChanges exception", e);
         }
         return null;
+    }
+
+    public class RefreshBinder extends Binder {
+        RefreshService getService() {
+            // Return this instance of LocalService so clients can call public methods
+            return RefreshService.this;
+        }
     }
 }

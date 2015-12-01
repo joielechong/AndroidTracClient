@@ -52,31 +52,35 @@ public class FilterSpec extends Spec implements Serializable, Cloneable {
             }
         }
     }
-	
-	@Override
-	public boolean equals(Object o) {
-		boolean retVal;
-		if (this == o) {
-			retVal = true;
-		} else if (! (o instanceof FilterSpec)) {
-			retVal = false;
-		} else {
-			retVal = super.equals(o);
-			FilterSpec f =(FilterSpec)o;
-			retVal &= equalFields(_operator,f.getOperator());
-			retVal &= equalFields(_waarde,f.getWaarde());
-		}
-//		tcLog.d("this = "+this+" o = "+o+" retVal = "+retVal);
-		return retVal;
-	}
 
-    public FilterSpec setOperator(final String o) {
-        _operator = o;
-		return this;
+    @Override
+    public boolean equals(Object o) {
+        boolean retVal;
+        if (this == o) {
+            retVal = true;
+        } else if (!(o instanceof FilterSpec)) {
+            retVal = false;
+        } else {
+            retVal = super.equals(o);
+            FilterSpec f = (FilterSpec) o;
+            retVal &= equalFields(_operator, f.getOperator());
+            retVal &= equalFields(_waarde, f.getWaarde());
+        }
+//		tcLog.d("this = "+this+" o = "+o+" retVal = "+retVal);
+        return retVal;
     }
 
     public String getOperator() {
         return _operator;
+    }
+
+    public FilterSpec setOperator(final String o) {
+        _operator = o;
+        return this;
+    }
+
+    public String getWaarde() {
+        return _edited ? _newwaarde : _waarde;
     }
 
     public FilterSpec setWaarde(final String w) {
@@ -85,14 +89,14 @@ public class FilterSpec extends Spec implements Serializable, Cloneable {
         } else {
             _waarde = w;
         }
-		return this;
+        return this;
     }
 
-    public String getWaarde() {
-        return _edited ? _newwaarde : _waarde;
+    public boolean getEdit() {
+        return _edited;
     }
 
-	@Override
+    @Override
     public FilterSpec setEdit(final boolean edited) {
         // tcLog.i( "setEdit veld = " + _veld + " edited = " + edited);
         if (edited != _edited) {
@@ -103,11 +107,7 @@ public class FilterSpec extends Spec implements Serializable, Cloneable {
                 _waarde = _newwaarde;
             }
         }
-		return this;
-    }
-
-    public boolean getEdit() {
-        return _edited;
+        return this;
     }
 
     @Override

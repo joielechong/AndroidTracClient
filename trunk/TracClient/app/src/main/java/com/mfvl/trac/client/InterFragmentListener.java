@@ -20,43 +20,72 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
 import android.view.Menu;
+
 import java.util.Map;
 
 /**
  * Interface for the fragments to communicate with each other and the main activity
  *
  * @author Michiel
- *
  */
 public interface InterFragmentListener {
     boolean getDispAds();
+
     void setDispAds(boolean b);
+
     void enableDebug();
+
     void onChooserSelected(OnFileSelectedListener oc);
+
     void onLogin(String url, String username, String password, boolean sslHack, boolean sslHostNameHack, String profile);
+
     void onTicketSelected(Ticket ticket);
+
     void onUpdateTicket(Ticket ticket);
+
     void refreshOverview();
+
     void startProgressBar(int resid);
+
     void stopProgressBar();
+
     TicketModel getTicketModel();
+
     TicketListAdapter getAdapter();
+
     Ticket getTicket(int ticknr);
+
     void refreshTicket(int ticknr);
+
     void putTicket(Ticket t); //TODO Implement method
+
     int getNextTicket(int i);
+
     int getPrevTicket(int i);
+
     int getTicketCount();
+
     int getTicketContentCount();
-    void updateTicket(Ticket t,String action, String comment, String veld, String waarde, final boolean notify, Map<String, String> modVeld) throws Exception;
-    int createTicket(Ticket t , boolean notify) throws Exception;
-    void setActionProvider(Menu menu,int resid);
+
+    void updateTicket(Ticket t, String action, String comment, String veld, String waarde, final boolean notify, Map<String, String> modVeld) throws Exception;
+
+    int createTicket(Ticket t, boolean notify) throws Exception;
+
+    void setActionProvider(Menu menu, int resid);
+
     Intent shareList();
+
     Intent shareTicket(final Ticket ticket);
+
     void listViewCreated();
+
     boolean isFinishing();
+
     Handler getHandler();
+
     boolean getCanWriteSD();
-	void getAttachment(Ticket t,String filename,onAttachmentCompleteListener oc);
-    void addAttachment(final Ticket ticket,final Uri uri, final onTicketCompleteListener oc);
+
+    void getAttachment(Ticket t, String filename, onAttachmentCompleteListener oc);
+
+    void addAttachment(final Ticket ticket, final Uri uri, final onTicketCompleteListener oc);
 }

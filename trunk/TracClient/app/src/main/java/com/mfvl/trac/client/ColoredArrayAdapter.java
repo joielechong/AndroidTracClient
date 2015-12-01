@@ -16,11 +16,11 @@
 
 package com.mfvl.trac.client;
 
-import java.util.List;
-
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+
+import java.util.List;
 
 class ColoredArrayAdapter<T> extends ArrayAdapter<T> {
     private static int[] colors = null;
@@ -33,12 +33,11 @@ class ColoredArrayAdapter<T> extends ArrayAdapter<T> {
         }
     }
 
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
 //		tcLog.d("position = "+position+" convertView = "+convertView+" parent = "+parent);
-		final View view = super.getView(position, convertView, parent);
-		final int colorPos = position % colors.length;
-		view.setBackgroundColor(colors[colorPos]);
-		return view;
-	} 
+        final View view = super.getView(position, convertView, parent);
+        view.setBackgroundColor(colors[position % colors.length]);
+        return view;
+    }
 }

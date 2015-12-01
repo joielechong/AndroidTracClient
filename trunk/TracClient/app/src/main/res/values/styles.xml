@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
  * Copyright (C) 2012 Paul Burke
  *               2015 Michiel van Loon
  *
@@ -16,215 +15,216 @@
  * limitations under the License.
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-	<style name="AppBaseTheme" parent="android:Theme.Holo.Light" />
 
-	<style name="AppTheme" parent="@style/AppBaseTheme" />
+    <style name="AppBaseTheme" parent="android:Theme.Holo.Light" />
 
-	<style name="FullscreenThemeBase" parent="android:Theme.Holo.Light.NoActionBar.Fullscreen" />
+    <style name="AppTheme" parent="@style/AppBaseTheme" />
 
-	<style name="FullscreenThemeBase.1">
-		<item name="android:alertDialogTheme">@style/AlertDialogStyle</item>
-	</style>
+    <style name="FullscreenThemeBase" parent="android:Theme.Holo.Light.NoActionBar.Fullscreen" />
 
-	<style name="AlertDialogStyle" parent="android:style/Theme.DeviceDefault.Dialog.Alert" />
+    <style name="FullscreenThemeBase.1">
+        <item name="android:alertDialogTheme">@style/AlertDialogStyle</item>
+    </style>
 
-	<style name="FullscreenTheme" parent="@style/FullscreenThemeBase">
-		<item name="android:windowContentOverlay">@null</item>
-		<item name="android:background">@color/help_back</item>
-		<item name="android:windowBackground">@null</item>
-		<item name="android:buttonBarStyle">@style/ButtonBar</item>
-		<item name="android:buttonBarButtonStyle">@style/ButtonBarButton</item>
-	</style>
+    <style name="AlertDialogStyle" parent="android:style/Theme.DeviceDefault.Dialog.Alert" />
 
-	<style name="TitleScreenText" parent="android:Widget.TextView">
-		<item name="android:layout_width">match_parent</item>
-		<item name="android:layout_height">wrap_content</item>
-		<item name="android:textColor">@color/help_text</item>
-		<item name="android:gravity">center</item>
-		<item name="android:textSize">@dimen/help_textsize</item>
-		<item name="android:textStyle">bold</item>
-	</style>
+    <style name="FullscreenTheme" parent="@style/FullscreenThemeBase">
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:background">@color/help_back</item>
+        <item name="android:windowBackground">@null</item>
+        <item name="android:buttonBarStyle">@style/ButtonBar</item>
+        <item name="android:buttonBarButtonStyle">@style/ButtonBarButton</item>
+    </style>
 
-	<style name="TitleScreenText.Big">
-		<item name="android:textSize">@dimen/helphdr_textsize</item>
-	</style>
-
-	<style name="ButtonBarBase" parent="android:Holo.ButtonBar" />
-
-	<style name="ButtonBarBase.1">
-		<item name="android:paddingLeft">2dp</item>
-		<item name="android:paddingRight">2dp</item>
-	</style>
-
-	<style name="ButtonBar" parrent="@style/ButtonBarBase.1">
-		<item name="android:paddingTop">5dp</item>
-		<item name="android:paddingBottom">0dp</item>
-		<item name="android:background">@android:drawable/bottom_bar</item>
-	</style>
-
-	<style name="ButtonBarButton" parent="android:Holo.Light.SegmentedButton" />
-
-	<style name="NormalButton" parent="android:Widget.Button">
-		<item name="android:layout_width">0dip</item>
-        <item name="android:layout_marginBottom">3dp</item>
-        <item name="android:layout_marginTop">3dp</item>
-		<item name="android:layout_height">wrap_content</item>
-		<item name="android:layout_weight">1</item>
-	</style>
-	
-	<style name="OkButton" parent="@style/NormalButton">
-        <item name="android:id">@id/okBut</item>
-        <item name="android:text">@string/oktext</item>
-	</style>
-
-	<style name="CancelButton" parent="@style/NormalButton">
-        <item name="android:id">@id/canBut</item>
-        <item name="android:text">@string/cancel</item>
-	</style>
-
-	<style name="MyStyle" parent="android:Theme.Holo.Light.DarkActionBar" />
-
-	<style name="AdBlockStyle">
-        <item name="android:id">@id/adBlock</item>
-		<item name="android:layout_width">match_parent</item>
-		<item name="android:layout_height">wrap_content</item>
-		<item name="android:layout_alignParentBottom">true</item>
-		<item name="android:orientation">vertical</item>
-	</style>
-	
-	<style name="TextWarn">
-		<item name="android:drawableLeft">@drawable/ic_warn</item>
-	</style>
-	
-	<style name="EditL12">
-		<item name="android:layout_marginLeft">12dp</item>
-	</style>
-
-	<style name="EditL24">
-		<item name="android:layout_marginLeft">24dp</item>
-	</style>
-	
-	<style name="DrawerBase">
-		<item name="android:paddingLeft">16dp</item>
-		<item name="android:paddingRight">16dp</item>
-	</style>
-	
-	<style name="Drawer" parent="DrawerBase">
-		<item name="android:layout_width">match_parent</item>
-		<item name="android:layout_height">wrap_content</item>
-		<item name="android:background">@color/popup_back</item>
-		<item name="android:textColor">@color/help_back</item>
-		<item name="android:gravity">center_vertical</item>
-		<item name="android:id">@android:id/text1</item>
-		<item name="android:textAppearance">?android:attr/textAppearanceListItemSmall</item>
-		<item name="android:minHeight">?android:attr/listPreferredItemHeightSmall</item>
-	</style>
-	
-	<style name="SortSpecImageButtonBase">
-		<item name="android:layout_marginLeft">4dp</item>
-		<item name="android:layout_marginRight">4dp</item>
-	</style>
-	
-	<style name="SortSpecImageButtonBase8" parent="SortSpecImageButtonBase">
-		<item name="android:layout_marginRight">8dp</item>
-	</style>
-	
-	<style name="SortSpecImageButton" parent="SortSpecImageButtonBase">
-		<item name="android:layout_width">0dp</item>
-		<item name="android:layout_height">wrap_content</item>
-		<item name="android:layout_weight">1</item>
-	</style>
-	
-	<style name="SortSpecImageButton8" parent="SortSpecImageButtonBase8">
-		<item name="android:layout_width">0dp</item>
-		<item name="android:layout_height">wrap_content</item>
-		<item name="android:layout_weight">1</item>
-	</style>
-	
-	<style name="ActionBlockBase">
-		<item name="android:layout_alignParentLeft">true</item>
-	</style>
-	
-	<style name="ActionBlock" parent="ActionBlockBase">
-		<item name="android:layout_width">wrap_content</item>
-		<item name="android:layout_height">wrap_content</item>
-	</style>
-	
-	<style name="OptionsBlockBase">
-		<item name="android:layout_toRightOf">@id/actionblock</item>
-	</style>
-	
-	<style name="OptionsBlock" parent="OptionsBlockBase">
+    <style name="TitleScreenText" parent="android:Widget.TextView">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-		<item name="android:layout_alignParentRight">true</item>
+        <item name="android:textColor">@color/help_text</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/help_textsize</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TitleScreenText.Big">
+        <item name="android:textSize">@dimen/helphdr_textsize</item>
+    </style>
+
+    <style name="ButtonBarBase" parent="android:Holo.ButtonBar" />
+
+    <style name="ButtonBarBase.1">
+        <item name="android:paddingLeft">2dp</item>
+        <item name="android:paddingRight">2dp</item>
+    </style>
+
+    <style name="ButtonBar" parrent="@style/ButtonBarBase.1">
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:background">@android:drawable/bottom_bar</item>
+    </style>
+
+    <style name="ButtonBarButton" parent="android:Holo.Light.SegmentedButton" />
+
+    <style name="NormalButton" parent="android:Widget.Button">
+        <item name="android:layout_width">0dip</item>
+        <item name="android:layout_marginBottom">3dp</item>
+        <item name="android:layout_marginTop">3dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="OkButton" parent="@style/NormalButton">
+        <item name="android:id">@id/okBut</item>
+        <item name="android:text">@string/oktext</item>
+    </style>
+
+    <style name="CancelButton" parent="@style/NormalButton">
+        <item name="android:id">@id/canBut</item>
+        <item name="android:text">@string/cancel</item>
+    </style>
+
+    <style name="MyStyle" parent="android:Theme.Holo.Light.DarkActionBar" />
+
+    <style name="AdBlockStyle">
+        <item name="android:id">@id/adBlock</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentBottom">true</item>
         <item name="android:orientation">vertical</item>
-	</style>
-	
-	<style name="ListSearchBoxBase">
-		<item name="android:drawableLeft">@android:drawable/ic_menu_search</item>
-	</style>
-	
-	<style name="ListSearchBox" parent="ListSearchBoxBase">
-		<item name="android:layout_width">match_parent</item>
-		<item name="android:layout_height">wrap_content</item>
-		<item name="android:hint">@string/zoekfilter</item>
-		<item name="android:inputType">text</item>
-		<item name="android:textSize">@dimen/list_textsize</item>
-		<item name="android:visibility">gone</item>
-	</style>
-	
-	<style name="NextToListProgress">
-		<item name="android:layout_alignParentLeft">true</item>
-		<item name="android:layout_toLeftOf">@id/listProgress</item>
-	</style>
-	
-	<style name="ListProgress">
-		<item name="android:layout_alignParentRight">true</item>
-	</style>
-	
-	<style name="SwipeContainer">
-		<item name="android:id">@id/swipe_container</item>
-		<item name="android:layout_width">match_parent</item>
-		<item name="android:layout_height">match_parent</item>
-	</style>
-	
-	<style name="FieldName">
+    </style>
+
+    <style name="TextWarn">
+        <item name="android:drawableLeft">@drawable/ic_warn</item>
+    </style>
+
+    <style name="EditL12">
+        <item name="android:layout_marginLeft">12dp</item>
+    </style>
+
+    <style name="EditL24">
+        <item name="android:layout_marginLeft">24dp</item>
+    </style>
+
+    <style name="DrawerBase">
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+    </style>
+
+    <style name="Drawer" parent="DrawerBase">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@color/popup_back</item>
+        <item name="android:textColor">@color/help_back</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:id">@android:id/text1</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceListItemSmall</item>
+        <item name="android:minHeight">?android:attr/listPreferredItemHeightSmall</item>
+    </style>
+
+    <style name="SortSpecImageButtonBase">
+        <item name="android:layout_marginLeft">4dp</item>
+        <item name="android:layout_marginRight">4dp</item>
+    </style>
+
+    <style name="SortSpecImageButtonBase8" parent="SortSpecImageButtonBase">
+        <item name="android:layout_marginRight">8dp</item>
+    </style>
+
+    <style name="SortSpecImageButton" parent="SortSpecImageButtonBase">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="SortSpecImageButton8" parent="SortSpecImageButtonBase8">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="ActionBlockBase">
+        <item name="android:layout_alignParentLeft">true</item>
+    </style>
+
+    <style name="ActionBlock" parent="ActionBlockBase">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="OptionsBlockBase">
+        <item name="android:layout_toRightOf">@id/actionblock</item>
+    </style>
+
+    <style name="OptionsBlock" parent="OptionsBlockBase">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="ListSearchBoxBase">
+        <item name="android:drawableLeft">@android:drawable/ic_menu_search</item>
+    </style>
+
+    <style name="ListSearchBox" parent="ListSearchBoxBase">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:hint">@string/zoekfilter</item>
+        <item name="android:inputType">text</item>
+        <item name="android:textSize">@dimen/list_textsize</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="NextToListProgress">
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:layout_toLeftOf">@id/listProgress</item>
+    </style>
+
+    <style name="ListProgress">
+        <item name="android:layout_alignParentRight">true</item>
+    </style>
+
+    <style name="SwipeContainer">
+        <item name="android:id">@id/swipe_container</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="FieldName">
         <item name="android:id">@id/veldnaam</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">@dimen/list_textsize</item>
         <item name="android:textStyle">bold</item>
-	</style>
-	
-	<style name="ButtonHolder">
+    </style>
+
+    <style name="ButtonHolder">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">center</item>
         <item name="android:layout_alignParentBottom">true</item>
         <item name="android:orientation">horizontal</item>
-	</style>
-	
-	<style name="CheckBox">
+    </style>
+
+    <style name="CheckBox">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:checked">false</item>
-	</style>
-	
-	<style name="TextViewButton">
-		<item name="android:layout_width">wrap_content</item>
-		<item name="android:layout_height">wrap_content</item>
-		<item name="android:textColor">@color/help_text</item>
-		<item name="android:paddingLeft">8dp</item>
+    </style>
+
+    <style name="TextViewButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/help_text</item>
+        <item name="android:paddingLeft">8dp</item>
         <item name="android:textSize">@dimen/helpsml_textsize</item>
-		<item name="android:paddingRight">8dp</item>
-		<item name="android:clickable">true</item>
-	</style>
-	
-	<style name="AboutText" parent="TitleScreenText">
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:clickable">true</item>
+    </style>
+
+    <style name="AboutText" parent="TitleScreenText">
         <item name="android:textSize">@dimen/helpsml_textsize</item>
-		<item name="android:textColor">@color/about_text</item>
-		<item name="android:gravity">left</item>
-	</style>
-	
+        <item name="android:textColor">@color/about_text</item>
+        <item name="android:gravity">left</item>
+    </style>
+
 </resources>

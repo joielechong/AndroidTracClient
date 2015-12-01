@@ -43,16 +43,23 @@ import com.google.android.gms.ads.AdView;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.mfvl.trac.client.Const.*;
+import static com.mfvl.trac.client.Const.HELP_FILE;
+import static com.mfvl.trac.client.Const.HELP_VERSION;
+import static com.mfvl.trac.client.Const.MSG_SHOW_DIALOG;
 
 abstract public class TracClientFragment extends Fragment implements OnGlobalLayoutListener, View.OnClickListener {
- 
+
     public Ticket _ticket = null;
     public TracStart context;
+    public InterFragmentListener listener = null;
+    protected int large_move;
+    protected int extra_large_move;
+    protected Handler tracStartHandler = null;
+    protected int helpFile = -1;
+    protected Bundle fragmentArgs = null;
     private AdView adView = null;
     private View aboveView;
     private LinearLayout adViewContainer = null;
-    public InterFragmentListener listener = null;
     private boolean adsVisible = true;
     private int padTop;
     private int padRight;
@@ -60,52 +67,50 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
     private int padLeft;
     private String adUnitId;
     private String[] testDevices;
-    protected int large_move;
-    protected int extra_large_move;
-    protected int drawer_border;
-	protected Handler tracStartHandler;
-	protected int helpFile = -1;
-	protected Bundle fragmentArgs = null;
-	
-	private void onMyAttach(Context activity) {
+
+    public static void hideSoftKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+    }
+
+    private void onMyAttach(Context activity) {
         context = (TracStart) activity;
-		Credentials.getInstance(context.getApplicationContext());
+        Credentials.getInstance(context.getApplicationContext());
         listener = (InterFragmentListener) activity;
- 		tracStartHandler = listener.getHandler();
-		large_move = context.getResources().getInteger(R.integer.large_move);
+        tracStartHandler = listener.getHandler();
+        large_move = context.getResources().getInteger(R.integer.large_move);
         extra_large_move = context.getResources().getInteger(R.integer.extra_large_move);
-        drawer_border = context.getResources().getInteger(R.integer.drawer_border);
-		fragmentArgs = getArguments();
-	}
+        fragmentArgs = getArguments();
+    }
 
     @Override
     public void onAttach(Context activity) {
         super.onAttach(activity);
-        tcLog.d( "(C) ");
-		onMyAttach(activity);
+        tcLog.d("(C) ");
+        onMyAttach(activity);
     }
-	
-	@SuppressWarnings("deprecation")
+
+    @SuppressWarnings("deprecation")
     @Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-        tcLog.d( "(A) ");
-		onMyAttach(activity);
-	}
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        tcLog.d("(A) ");
+        onMyAttach(activity);
+    }
 
-	protected void sendMessageToHandler(int msg,Object o) {
-        tcLog.d( "msg = " + msg+ " o = "+o);
-		tracStartHandler.sendMessage(tracStartHandler.obtainMessage(msg,o));
-	}
+    protected void sendMessageToHandler(int msg, Object o) {
+        tcLog.d("msg = " + msg + " o = " + o);
+        tracStartHandler.obtainMessage(msg, o).sendToTarget();
+    }
 
-	protected void showAlertBox(final int titleres, final int message, final String addit){
-		tracStartHandler.sendMessage(tracStartHandler.obtainMessage(MSG_SHOW_DIALOG,titleres,message,addit));
-	}
-	
+    protected void showAlertBox(final int titleres, final int message, final String addit) {
+        tracStartHandler.obtainMessage(MSG_SHOW_DIALOG, titleres, message, addit).sendToTarget();
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        tcLog.d( "savedInstanceState = " + savedInstanceState);
+        tcLog.d("savedInstanceState = " + savedInstanceState);
         try {
             adUnitId = context.getString(R.string.adUnitId);
             final String t = Credentials.metaDataGetString("com.mfvl.trac.client.testDevices");
@@ -117,7 +122,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
                 testDevices[0] = t;
             }
         } catch (final Exception e) {
-            tcLog.e( "Problem retrieving Admod information", e);
+            tcLog.e("Problem retrieving Admod information", e);
             listener.setDispAds(false);
             adUnitId = "";
             testDevices = new String[1];
@@ -130,25 +135,25 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
         super.onViewCreated(view, savedInstanceState);
 //        tcLog.d( "view = "+view);
         aboveView = view.findViewById(R.id.aboveAdBlock);
-		adViewContainer = (LinearLayout) view.findViewById(R.id.adBlock);
- 
+        adViewContainer = (LinearLayout) view.findViewById(R.id.adBlock);
+
         if (listener.getDispAds() && adViewContainer != null) {
-			adView = new AdView(context);
-			adView.setAdUnitId(adUnitId);
-			adView.setAdSize(AdSize.SMART_BANNER);
+            adView = new AdView(context);
+            adView.setAdUnitId(adUnitId);
+            adView.setAdSize(AdSize.SMART_BANNER);
 
-			final AdRequest.Builder arb = new AdRequest.Builder();
+            final AdRequest.Builder arb = new AdRequest.Builder();
 
-			if (adView != null) {
-				arb.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
-				if (Credentials.isDebuggable()) {
-					for (final String t : testDevices) {
-						tcLog.d( "testDevice = " + t);
-						arb.addTestDevice(t);
-					} 
-				}
-				arb.setGender(AdRequest.GENDER_UNKNOWN);
-				final AdRequest adRequest = arb.build();
+            if (adView != null) {
+                arb.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
+                if (Credentials.isDebuggable()) {
+                    for (final String t : testDevices) {
+                        tcLog.d("testDevice = " + t);
+                        arb.addTestDevice(t);
+                    }
+                }
+                arb.setGender(AdRequest.GENDER_UNKNOWN);
+                final AdRequest adRequest = arb.build();
 
                 try {
                     adView.loadAd(adRequest);
@@ -161,20 +166,28 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
                     }
                     listener.setDispAds(false);
                 }
-			}
-			if (aboveView != null) {
-				padTop = aboveView.getPaddingTop();
-				padRight = aboveView.getPaddingRight();
-				padBot = aboveView.getPaddingBottom();
-				padLeft = aboveView.getPaddingLeft();
-				adsVisible = true;
-				view.getViewTreeObserver().addOnGlobalLayoutListener(this);
-			}
+            }
+            if (aboveView != null) {
+                padTop = aboveView.getPaddingTop();
+                padRight = aboveView.getPaddingRight();
+                padBot = aboveView.getPaddingBottom();
+                padLeft = aboveView.getPaddingLeft();
+                adsVisible = true;
+                view.getViewTreeObserver().addOnGlobalLayoutListener(this);
+            }
         } else {
             if (aboveView != null) {
                 aboveView.setPadding(0, 0, 0, 0);
             }
         }
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        tcLog.d("savedInstanceState = " + savedInstanceState);
+
+        tracStartHandler = listener.getHandler();
     }
 
     @Override
@@ -229,15 +242,15 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        tcLog.d( "item=" + item+ " "+ helpFile);
+        tcLog.d("item=" + item + " " + helpFile);
         final int itemId = item.getItemId();
 
         if (itemId == R.id.help && helpFile != -1) {
-			final Intent launchTrac = new Intent(context, TracShowWebPage.class);
-			final String filename = context.getString(helpFile);
-			launchTrac.putExtra(HELP_FILE, filename);
-			launchTrac.putExtra(HELP_VERSION, false);
-			startActivity(launchTrac);
+            final Intent launchTrac = new Intent(context, TracShowWebPage.class);
+            final String filename = context.getString(helpFile);
+            launchTrac.putExtra(HELP_FILE, filename);
+            launchTrac.putExtra(HELP_VERSION, false);
+            startActivity(launchTrac);
         } else {
             return super.onOptionsItemSelected(item);
         }
@@ -263,18 +276,18 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
     }
 
     private Spinner _makeComboSpin(Context context, List<Object> waardes, boolean optional, Object w, boolean dialogWanted) {
-		if (waardes == null) 
-			return null;
-		
+        if (waardes == null)
+            return null;
+
         final List<Object> spinValues = new ArrayList<>();
 
         if (optional) {
             spinValues.add("");
         }
 
-		for (final Object o: waardes) {
-			spinValues.add(o);
-		}
+        for (final Object o : waardes) {
+            spinValues.add(o);
+        }
 
         final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, spinValues);
         spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -296,40 +309,36 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
     }
 
     protected void selectTicket(int ticknr) {
-        tcLog.d( "ticknr = " + ticknr);
+        tcLog.d("ticknr = " + ticknr);
         final Ticket t = listener.getTicket(ticknr);
-		if (t != null  && t.hasdata()) {
-			listener.onTicketSelected(t);
-		}
+        if (t != null && t.hasdata()) {
+            listener.onTicketSelected(t);
+        }
     }
-	
-	public static void hideSoftKeyboard(Activity activity) {
-		InputMethodManager inputMethodManager = (InputMethodManager)  activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-		inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
-	}
 
-	protected void getScreensize(View spin,View but) {
-		DisplayMetrics metrics = new DisplayMetrics();
-		context.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-		int widthPixels = metrics.widthPixels;
-		Drawable drawable = ContextCompat.getDrawable(context,R.drawable.plus);
-        spin.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, widthPixels-drawable.getIntrinsicWidth()));
-		but.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, drawable.getIntrinsicWidth()));
-	}
+    protected void getScreensize(View spin, View but) {
+        DisplayMetrics metrics = new DisplayMetrics();
+        context.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        int widthPixels = metrics.widthPixels;
+        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.plus);
+        spin.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, widthPixels - drawable.getIntrinsicWidth()));
+        but.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, drawable.getIntrinsicWidth()));
+    }
 
-	protected void setListener(int resid){
-		setListener(resid,this.getView(),this);
-	}
-	
-	protected void setListener(int resid,View v,View.OnClickListener c) {
+    protected void setListener(int resid) {
+        setListener(resid, this.getView(), this);
+    }
+
+    protected void setListener(int resid, View v, View.OnClickListener c) {
 //		tcLog.d( "resid = "+resid+" v = "+v+" c =" + c);
-		try {
-			v.findViewById(resid).setOnClickListener(c);
-		} catch (Exception ignored) {}
-	}
-	
-	@Override
-	public void onClick(View v) {
-		tcLog.d( "v =" + v);
-	}
+        try {
+            v.findViewById(resid).setOnClickListener(c);
+        } catch (Exception ignored) {
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        tcLog.d("v =" + v);
+    }
 }
