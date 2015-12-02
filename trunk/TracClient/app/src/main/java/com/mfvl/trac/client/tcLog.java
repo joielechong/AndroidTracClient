@@ -196,7 +196,7 @@ public class tcLog {
         String logFilename = _c.getResources().getString(R.string.logfile);
         File file = null;
         try {
-            file = Credentials.makeExtFilePath(logFilename, false);
+            file = TracGlobal.makeExtFilePath(logFilename, false);
             final OutputStream os = new FileOutputStream(file);
 
             os.write(getDebug().getBytes());

@@ -75,7 +75,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 
     private void onMyAttach(Context activity) {
         context = (TracStart) activity;
-        Credentials.getInstance(context.getApplicationContext());
+        TracGlobal.getInstance(context.getApplicationContext());
         listener = (InterFragmentListener) activity;
         tracStartHandler = listener.getHandler();
         large_move = context.getResources().getInteger(R.integer.large_move);
@@ -113,7 +113,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
         tcLog.d("savedInstanceState = " + savedInstanceState);
         try {
             adUnitId = context.getString(R.string.adUnitId);
-            final String t = Credentials.metaDataGetString("com.mfvl.trac.client.testDevices");
+            final String t = TracGlobal.metaDataGetString("com.mfvl.trac.client.testDevices");
 
             try {
                 testDevices = t.split(",");
@@ -146,7 +146,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 
             if (adView != null) {
                 arb.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
-                if (Credentials.isDebuggable()) {
+                if (TracGlobal.isDebuggable()) {
                     for (final String t : testDevices) {
                         tcLog.d("testDevice = " + t);
                         arb.addTestDevice(t);

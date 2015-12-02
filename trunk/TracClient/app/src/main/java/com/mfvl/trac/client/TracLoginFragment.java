@@ -462,13 +462,13 @@ public class TracLoginFragment extends TracClientFragment implements OnItemSelec
         bewaren = bewaarBox.isChecked();
         sslHack = sslHackBox.isChecked();
         if (bewaren) {
-            Credentials.setCredentials(url, username, password, SelectedProfile);
-            Credentials.setSslHack(sslHack);
-            Credentials.setSslHostNameHack(sslHostNameHack);
-            Credentials.storeCredentials();
+            TracGlobal.setCredentials(url, username, password, SelectedProfile);
+            TracGlobal.setSslHack(sslHack);
+            TracGlobal.setSslHostNameHack(sslHostNameHack);
+            TracGlobal.storeCredentials();
         }
-        Credentials.removeFilterString();
-        Credentials.removeSortString();
+        TracGlobal.removeFilterString();
+        TracGlobal.removeSortString();
         listener.onLogin(url, username, password, sslHack, sslHostNameHack, SelectedProfile);
     }
 

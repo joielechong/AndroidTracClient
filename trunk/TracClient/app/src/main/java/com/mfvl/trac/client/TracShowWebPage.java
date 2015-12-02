@@ -36,7 +36,7 @@ public class TracShowWebPage extends Activity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Credentials.getInstance(getApplicationContext());
+        TracGlobal.getInstance(getApplicationContext());
         tcLog.d("savedInstanceState = " + savedInstanceState);
         final Intent i = getIntent();
         final boolean toonVersie = i.getBooleanExtra(HELP_VERSION, true);
@@ -54,9 +54,9 @@ public class TracShowWebPage extends Activity implements View.OnClickListener {
             tv.setVisibility(View.GONE);
         } else {
             final TextView tv1 = (TextView) findViewById(R.id.about_version_text);
-            tv1.setText(Credentials.getVersion());
-            boolean disclaimer = Credentials.checkDisclaimer();
-            boolean cookies = Credentials.getCookieInform();
+            tv1.setText(TracGlobal.getVersion());
+            boolean disclaimer = TracGlobal.checkDisclaimer();
+            boolean cookies = TracGlobal.getCookieInform();
             View kb = findViewById(R.id.keuzeblock);
             if (!disclaimer && !cookies) {
                 kb.setVisibility(View.GONE);
@@ -109,13 +109,13 @@ public class TracShowWebPage extends Activity implements View.OnClickListener {
         sv.setVisibility(View.VISIBLE);
         wv.setVisibility(View.GONE);
         cv.setText(R.string.disclaimer);
-//		Credentials.setDisclaimer();
+//		TracGlobal.setDisclaimer();
     }
 
     private void showCookies() {
         sv.setVisibility(View.VISIBLE);
         wv.setVisibility(View.GONE);
         cv.setText(R.string.cookieInform);
-//		Credentials.setCookieInform();
+//		TracGlobal.setCookieInform();
     }
 }

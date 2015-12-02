@@ -206,7 +206,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
 //            LoaderManager.enableDebugLogging(true);
         }
 
-        Credentials.getInstance(getApplicationContext());
+        TracGlobal.getInstance(getApplicationContext());
         mHandlerThread = new MyHandlerThread("IncomingHandler");
         mHandlerThread.start();
         tracStartHandler = new Handler(mHandlerThread.getLooper(), this);
@@ -234,13 +234,13 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
         }
 
         try {
-            ticketGroupCount = getResources().getInteger(R.integer.ticketGroupCount);
+            TracGlobal.ticketGroupCount = getResources().getInteger(R.integer.ticketGroupCount);
         } catch (Exception ignored) {
         }
 
         timerCorr = getResources().getInteger(R.integer.timerCorr);
         setContentView(R.layout.tracstart);
-        debug |= Credentials.isRCVersion();
+        debug |= TracGlobal.isRCVersion();
 
         if (savedInstanceState != null) {
             url = savedInstanceState.getString(CURRENT_URL);
@@ -252,17 +252,17 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
             sortList = (ArrayList<SortSpec>) savedInstanceState.getSerializable(SORTLISTNAME);
             dispAds = savedInstanceState.getBoolean(ADMOB, true);
         } else {
-            url = Credentials.getUrl();
-            username = Credentials.getUsername();
-            password = Credentials.getPassword();
-            sslHack = Credentials.getSslHack();
-            sslHostNameHack = Credentials.getSslHostNameHack();
-            profile = Credentials.getProfile();
-            setFilter(Credentials.getFilterString());
-            setSort(Credentials.getSortString());
+            url = TracGlobal.getUrl();
+            username = TracGlobal.getUsername();
+            password = TracGlobal.getPassword();
+            sslHack = TracGlobal.getSslHack();
+            sslHostNameHack = TracGlobal.getSslHostNameHack();
+            profile = TracGlobal.getProfile();
+            setFilter(TracGlobal.getFilterString());
+            setSort(TracGlobal.getSortString());
 
             // only at first start
-            if (Credentials.getFirstRun()) {
+            if (TracGlobal.getFirstRun()) {
                 final Intent launchTrac = new Intent(this, TracShowWebPage.class);
                 launchTrac.putExtra(HELP_FILE, getString(R.string.whatsnewhelpfile));
                 launchTrac.putExtra(HELP_VERSION, false);
@@ -449,7 +449,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
         stopProgressBar();
         /* save logfile when exiting */
         tcLog.d("isFinishing = " + isFinishing());
-        if (isFinishing() && Credentials.isRCVersion()) {
+        if (isFinishing() && TracGlobal.isRCVersion()) {
             tcLog.save();
         }
     }
@@ -810,8 +810,8 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
 
     private void setFilter(ArrayList<FilterSpec> filter) {
         tcLog.d(filter.toString());
-        String filterString = Credentials.joinList(filter.toArray(), "&");
-        Credentials.storeFilterString(filterString);
+        String filterString = TracGlobal.joinList(filter.toArray(), "&");
+        TracGlobal.storeFilterString(filterString);
         filterList = filter;
     }
 
@@ -840,8 +840,8 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
     private void setSort(ArrayList<SortSpec> sort) {
         tcLog.d(sort.toString());
 
-        String sortString = Credentials.joinList(sort.toArray(), "&");
-        Credentials.storeSortString(sortString);
+        String sortString = TracGlobal.joinList(sort.toArray(), "&");
+        TracGlobal.storeSortString(sortString);
         sortList = sort;
     }
 
@@ -1148,8 +1148,6 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
     public void addAttachment(final Ticket ticket, final Uri uri, final onTicketCompleteListener oc) {
         tcLog.i(ticket.toString() + " " + uri);
         final int _ticknr = ticket.getTicketnr();
-//                available.acquireUninterruptibly();
-        TracHttpClient req = new TracHttpClient(url, sslHack, sslHostNameHack, username, password);
         String filename = null;
         int bytes = 0;
         if (uri != null) {
@@ -1190,25 +1188,10 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
                     b64 += Base64.encodeToString(data, 0, nbytes, Base64.DEFAULT);
                 }
                 is.close();
-                final JSONArray ar = new JSONArray();
 
-                ar.put(_ticknr);
-                ar.put(file.getName());
-                ar.put("");
-                final JSONArray ar1 = new JSONArray();
+                new TracHttpClient(url, sslHack, sslHostNameHack, username, password)
+                        .putAttachment(_ticknr,file.getName(),b64);
 
-                ar1.put("binary");
-                ar1.put(b64);
-                final JSONObject ob = new JSONObject();
-
-                ob.put("__jsonclass__", ar1);
-                ar.put(ob);
-                ar.put(true);
-                final String retfile = req.callString("ticket.putAttachment", ar);
-
-                tcLog.i("putAttachment " + retfile);
-//            actionLock.release();
-//            sendMessageToService(MSG_SEND_TICKETS, _ticknr, MSG_DISPLAY_TICKET, null);
             } catch (final FileNotFoundException e) {
                 tcLog.i("Exception", e);
                 showAlertBox(R.string.warning, R.string.notfound, filename);
@@ -1217,8 +1200,6 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
                 showAlertBox(R.string.warning, R.string.failed, filename);
             } finally {
                 oc.onComplete(ticket);
-//                    actionLock.release();
-//                    available.release();
             }
         }
     }

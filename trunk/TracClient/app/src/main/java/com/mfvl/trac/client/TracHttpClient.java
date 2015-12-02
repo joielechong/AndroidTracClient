@@ -38,29 +38,17 @@ public class TracHttpClient extends JSONRPCHttpClient {
     final static String _JSONCLASS = "__jsonclass__";
 
     private String current_url = null;
-    private String current_user = null;
-    private String current_pass = null;
-    private boolean current_sslHack = false;
-    private boolean current_sslHostNameHack = false;
 
     public TracHttpClient(final String url, final boolean sslHack, final boolean sslHostNameHack, final String username, final String password) {
         super(url, sslHack, sslHostNameHack);
         setCredentials(username, password);
         current_url = url;
-        current_user = username;
-        current_pass = password;
-        current_sslHack = sslHack;
-        current_sslHostNameHack = sslHostNameHack;
     }
 
     public TracHttpClient(final LoginProfile lp) {
         super(lp.getUrl(), lp.getSslHack(), lp.getSslHostNameHack());
         setCredentials(lp.getUsername(), lp.getPassword());
         current_url = lp.getUrl();
-        current_user = lp.getUsername();
-        current_pass = lp.getPassword();
-        current_sslHack = lp.getSslHack();
-        current_sslHostNameHack = lp.getSslHostNameHack();
     }
 
     public JSONArray Query(String reqString) throws JSONRPCException {
@@ -91,5 +79,25 @@ public class TracHttpClient extends JSONRPCHttpClient {
     public byte[] getAttachment(int ticknr, String filename) throws JSONException, JSONRPCException {
         return Base64.decode(callJSONObject(TICKET_GETATTACHMENT, ticknr, filename).getJSONArray(_JSONCLASS).getString(1),
                 Base64.DEFAULT);
+    }
+
+    public void putAttachment(final int ticknr,String filename,String base64Content) throws JSONException,JSONRPCException {
+        final JSONArray ar = new JSONArray();
+
+        ar.put(ticknr);
+        ar.put(filename);
+        ar.put("");
+        final JSONArray ar1 = new JSONArray();
+
+        ar1.put("binary");
+        ar1.put(base64Content);
+        final JSONObject ob = new JSONObject();
+
+        ob.put("__jsonclass__", ar1);
+        ar.put(ob);
+        ar.put(true);
+        final String retfile = callString(TICKET_PUTATTACHMENT, ar);
+
+        tcLog.i("putAttachment " + retfile);
     }
 }

@@ -703,7 +703,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
                     // tcLog.d("onComplete filedata = "
                     // + filedata.length);
                     try {
-                        final File file = Credentials.makeCacheFilePath(filename);
+                        final File file = TracGlobal.makeCacheFilePath(filename);
                         final OutputStream os = new FileOutputStream(file);
 
                         file.deleteOnExit();

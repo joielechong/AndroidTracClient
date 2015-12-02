@@ -49,8 +49,10 @@ import static com.mfvl.trac.client.Const.PREF_SORT;
 import static com.mfvl.trac.client.Const.PREF_URL;
 import static com.mfvl.trac.client.Const.PREF_USER;
 
-public class Credentials {
+public class TracGlobal {
     private static final X500Principal DEBUG_DN = new X500Principal("CN=Android Debug,O=Android,C=US");
+
+    static public int ticketGroupCount = 50;
     private static String versie = null;
     private static String _url = "";
     private static String _username = "";
@@ -59,18 +61,18 @@ public class Credentials {
     private static boolean _sslHostNameHack = false;
     private static String _profile = null;
     private static SharedPreferences settings = null;
-    private static Credentials _instance = null;
+    private static TracGlobal _instance = null;
     private static Context _context = null;
 
-    private Credentials(final Context context) {
+    private TracGlobal(final Context context) {
         settings = context.getSharedPreferences(PREFS_NAME, 0);
         _context = context;
         versie = context.getString(R.string.app_version);
     }
 
-    public static Credentials getInstance(final Context context) {
+    public static TracGlobal getInstance(final Context context) {
         if (_instance == null) {
-            _instance = new Credentials(context);
+            _instance = new TracGlobal(context);
             loadCredentials();
         }
         return _instance;
@@ -302,11 +304,6 @@ public class Credentials {
         final File filePath = new File(extPath, filename);
         tcLog.d("filepath = " + filePath);
         return filePath;
-    }
-
-    public static Boolean metaDataGetBoolean(String metaId) throws NameNotFoundException {
-        return (_context != null
-                ? _context.getPackageManager().getApplicationInfo(_context.getPackageName(), PackageManager.GET_META_DATA).metaData.getBoolean(metaId) : null);
     }
 
     public static String metaDataGetString(String metaId) throws NameNotFoundException {

@@ -39,22 +39,9 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static com.mfvl.trac.client.Const.MSG_DATA_CHANGED;
-import static com.mfvl.trac.client.Const.MSG_GET_TICKET_MODEL;
-import static com.mfvl.trac.client.Const.MSG_LOAD_FASE1_FINISHED;
-import static com.mfvl.trac.client.Const.MSG_LOAD_FASE2_FINISHED;
-import static com.mfvl.trac.client.Const.MSG_LOAD_TICKETS;
-import static com.mfvl.trac.client.Const.MSG_REFRESH_LIST;
-import static com.mfvl.trac.client.Const.MSG_REMOVE_NOTIFICATION;
-import static com.mfvl.trac.client.Const.MSG_REQUEST_TICKET_COUNT;
-import static com.mfvl.trac.client.Const.MSG_SEND_TICKETS;
-import static com.mfvl.trac.client.Const.MSG_SEND_TICKET_COUNT;
-import static com.mfvl.trac.client.Const.MSG_SET_FILTER;
-import static com.mfvl.trac.client.Const.MSG_SET_SORT;
-import static com.mfvl.trac.client.Const.MSG_SHOW_DIALOG;
-import static com.mfvl.trac.client.Const.MSG_START_TIMER;
-import static com.mfvl.trac.client.Const.MSG_STOP_TIMER;
-import static com.mfvl.trac.client.Const.ticketGroupCount;
+import static com.mfvl.trac.client.Const.*;
+
+import static com.mfvl.trac.client.TracGlobal.ticketGroupCount;
 
 public class RefreshService extends Service implements Handler.Callback {
 
@@ -316,14 +303,14 @@ public class RefreshService extends Service implements Handler.Callback {
             String reqString = "";
             List<FilterSpec> fl = mLoginProfile.getFilterList();
             if (fl != null) {
-                reqString = Credentials.joinList(fl.toArray(), "&");
+                reqString = TracGlobal.joinList(fl.toArray(), "&");
             }
             List<SortSpec> sl = mLoginProfile.getSortList();
             if (sl != null) {
                 if (fl != null) {
                     reqString += "&";
                 }
-                reqString += Credentials.joinList(sl.toArray(), "&");
+                reqString += TracGlobal.joinList(sl.toArray(), "&");
             }
             if (reqString.length() == 0) {
                 reqString = "max=0";
