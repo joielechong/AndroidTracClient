@@ -81,8 +81,4 @@ final class Const {
     */
     static final String ACTION_LOAD_TICKETS = "com.mfvl.trac.client.action.LoadTickets";
     static final String ACTION_START_TIMER = "com.mfvl.trac.client.action.StartTimer";
-    /*
-     * Overige constanten
-     */
-    static public int ticketGroupCount = 50;
 }
