@@ -35,6 +35,7 @@
 
     <drawable name="upArrow">@android:drawable/arrow_up_float</drawable>
     <drawable name="downArrow">@android:drawable/arrow_down_float</drawable>
+	<drawable name="plus">@android:drawable/ic_input_add</drawable>
 
     <array name="list_col">
         <item>@color/list_col1</item>

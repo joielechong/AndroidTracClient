@@ -346,12 +346,13 @@ public class RefreshService extends Service implements Handler.Callback {
                     } finally {
                         sendMessageToUI(MSG_LOAD_FASE2_FINISHED, mTickets);
                     }
+                } else {
+                    sendMessageToUI(MSG_LOAD_FASE1_FINISHED, mTickets);
+                    sendMessageToUI(MSG_LOAD_FASE2_FINISHED, mTickets);
+                    popup_warning(R.string.notickets, null);
                 }
             } catch (JSONRPCException e) {
                 popup_warning(R.string.connerr, e.getMessage());
-            }
-            if (mTickets.getTicketCount() == 0) {
-                popup_warning(R.string.notickets, null);
             }
         } else {
             sendMessageToUI(MSG_LOAD_FASE1_FINISHED, mTickets);

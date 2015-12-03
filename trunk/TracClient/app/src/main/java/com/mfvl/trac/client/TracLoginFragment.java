@@ -47,8 +47,7 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.alexd.jsonrpc.JSONRPCException;
 
 import static com.mfvl.trac.client.Const.CURRENT_PASSWORD;
 import static com.mfvl.trac.client.Const.CURRENT_SSLHACK;
@@ -57,9 +56,6 @@ import static com.mfvl.trac.client.Const.CURRENT_URL;
 import static com.mfvl.trac.client.Const.CURRENT_USERNAME;
 
 public class TracLoginFragment extends TracClientFragment implements OnItemSelectedListener {
-
-    private static final String RESULT = "rv";
-    private static final String ERROR = "error";
 
     private static final String NEW_URL = "newURL";
     private static final String NEW_USERNAME = "newUsername";
@@ -293,21 +289,6 @@ public class TracLoginFragment extends TracClientFragment implements OnItemSelec
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    private JSONObject verifyHost(final String url, final boolean sslHack, final boolean sslHostNameHack, final String username, final String password) {
-        JSONObject j = new JSONObject();
-        try {
-            TracHttpClient tc = new TracHttpClient(url, sslHack, sslHostNameHack, username, password);
-            j.put(RESULT, tc.verifyHost());
-        } catch (Exception e) {
-            try {
-                j.put(ERROR, e.getMessage());
-            } catch (JSONException ignored) {
-            }
-        }
-//		tcLog.d("j = "+j);
-        return j;
-    }
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -371,83 +352,71 @@ public class TracLoginFragment extends TracClientFragment implements OnItemSelec
         new Thread() {
             @Override
             public void run() {
-                JSONObject j = verifyHost(url, sslHack, sslHostNameHack, username, password);
+                TracHttpClient tc = new TracHttpClient(url, sslHack, sslHostNameHack, username, password);
                 try {
-                    final String TracVersion = (String) j.get(RESULT);
-
+                    final String TracVersion = tc.verifyHost();
                     tcLog.d(TracVersion);
                     setValidMessage();
-                } catch (JSONException e) {
-                    try {
-//						tcLog.d("j = "+j);
-                        final String errmsg = (String) j.get(ERROR);
+                } catch (JSONRPCException e) {
+                    final String errmsg = e.getMessage();
 
-                        tcLog.d("Exception during verify 1 " + errmsg, e);
-                        tcLog.toast("==" + errmsg + "==");
-                        if (errmsg.startsWith("hostname in certificate didn't match:")) {
-                            context.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-                                    final String msg = context.getString(R.string.hostnametext) + errmsg + context.getString(R.string.hostnameign);
+                    tcLog.d("Exception during verify 1 " + errmsg, e);
+                    tcLog.toast("==" + errmsg + "==");
+                    if (errmsg.startsWith("hostname in certificate didn't match:")) {
+                        context.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+                                final String msg = context.getString(R.string.hostnametext) + errmsg + context.getString(R.string.hostnameign);
 
-                                    alertDialogBuilder.setMessage(msg)
-                                            .setTitle(R.string.hostnametitle)
-                                            .setCancelable(false)
-                                            .setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    listener.startProgressBar(R.string.checking);
-                                                    new Thread() {
-                                                        @Override
-                                                        public void run() {
-                                                            final JSONObject j1 = verifyHost(url, sslHack, true, username, password);
+                                alertDialogBuilder.setMessage(msg)
+                                        .setTitle(R.string.hostnametitle)
+                                        .setCancelable(false)
+                                        .setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                listener.startProgressBar(R.string.checking);
+                                                new Thread() {
+                                                    @Override
+                                                    public void run() {
+                                                        TracHttpClient tc1 = new TracHttpClient(url, sslHack, sslHostNameHack, username, password);
+                                                        try {
+                                                            final String TracVersion1 = tc1.verifyHost();
+                                                            tcLog.d(TracVersion1);
+                                                            setValidMessage();
+                                                            sslHostNameHack = true;
+                                                        } catch (JSONRPCException e1) {
+                                                            final String errmsg1 = e1.getMessage();
 
-                                                            try {
-                                                                final String TracVersion1 = (String) j1.get(RESULT);
-
-                                                                tcLog.d(TracVersion1);
-                                                                setValidMessage();
-                                                                sslHostNameHack = true;
-                                                            } catch (JSONException e1) {
-                                                                try {
-                                                                    final String errmsg1 = (String) j1.get(ERROR);
-
-                                                                    tcLog.d("Exception during verify 2 " + errmsg1, e1);
-                                                                    // tcLog.toast("==" + errmsg1 + "==");
-                                                                    if ("NOJSON".equals(errmsg1)) {
-                                                                        setNoJSONMessage("Fail Hostname NOJSON");
-                                                                    } else {
-                                                                        setInvalidMessage(errmsg1, "Fail Invalidmessage Hostname");
-                                                                        sslHostNameHack = false;
-                                                                    }
-                                                                } catch (JSONException e2) {
-                                                                    setNoJSONMessage("Fail Hostname NOJSON fase 2");
-                                                                }
+                                                            tcLog.d("Exception during verify 2 " + errmsg1, e1);
+                                                            // tcLog.toast("==" + errmsg1 + "==");
+                                                            if ("NOJSON".equals(errmsg1)) {
+                                                                setNoJSONMessage("Fail Hostname NOJSON");
+                                                            } else {
+                                                                setInvalidMessage(errmsg1, "Fail Invalidmessage Hostname");
+                                                                sslHostNameHack = false;
                                                             }
-                                                            listener.stopProgressBar();
                                                         }
-                                                    }.start();
-                                                }
-                                            });
-                                    alertDialogBuilder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            setInvalidMessage(errmsg, "Fail UserCancel Hostname");
-                                            sslHostNameHack = false;
-                                        }
-                                    });
-                                    alertDialogBuilder.show();
-                                }
-                            });
-                        } else if ("NOJSON".equals(errmsg)) {
-                            setNoJSONMessage("Fail NOJSON");
-                        } else {
-                            setInvalidMessage(errmsg, "Fail Invalidmessage");
-                            sslHostNameHack = false;
-                        }
-                    } catch (JSONException e1) {
-                        setNoJSONMessage("Fail Hostname NOJSON fase 1");
+                                                        listener.stopProgressBar();
+                                                    }
+                                                }.start();
+                                            }
+                                        });
+                                alertDialogBuilder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        setInvalidMessage(errmsg, "Fail UserCancel Hostname");
+                                        sslHostNameHack = false;
+                                    }
+                                });
+                                alertDialogBuilder.show();
+                            }
+                        });
+                    } else if ("NOJSON".equals(errmsg)) {
+                        setNoJSONMessage("Fail NOJSON");
+                    } else {
+                        setInvalidMessage(errmsg, "Fail Invalidmessage");
+                        sslHostNameHack = false;
                     }
                 }
                 listener.stopProgressBar();

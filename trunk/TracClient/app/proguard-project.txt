@@ -23,7 +23,7 @@
 -dontwarn android.support.**
 -dontwarn com.google.android.gms.**
 -keep class * extends java.util.ListResourceBundle {
-    protected Object[][] getContents();
+    protected java.lang.Object[][] getContents();
 }
 
 -keep public class com.google.android.gms.common.internal.safeparcel.SafeParcelable {

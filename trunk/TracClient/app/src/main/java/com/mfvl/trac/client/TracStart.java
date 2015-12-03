@@ -641,6 +641,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
         }
         ft.commit();
 //        refreshOverview();
+        dataAdapter.clear();
         startListLoader(true);
     }
 
