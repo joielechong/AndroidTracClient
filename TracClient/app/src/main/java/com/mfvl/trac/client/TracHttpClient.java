@@ -64,7 +64,7 @@ public class TracHttpClient extends JSONRPCHttpClient {
         return callJSONArray(TICKET_UPDATE, _ticknr, cmt, _velden, notify);
     }
 
-    public String verifyHost() throws Exception {
+    public String verifyHost() throws JSONRPCException {
         return callJSONArray(SYSTEM_GETAPIVERSION).toString();
     }
 
