@@ -340,6 +340,34 @@ public class TracLoginFragment extends TracClientFragment implements OnItemSelec
                 break;
         }
     }
+	
+	private void verifyHostNameHack() {
+		listener.startProgressBar(R.string.checking);
+		new Thread() {
+			@Override
+			public void run() {
+				TracHttpClient tc = new TracHttpClient(url, sslHack, sslHostNameHack, username, password);
+				try {
+					final String TracVersion = tc.verifyHost();
+					tcLog.d(TracVersion);
+					setValidMessage();
+					sslHostNameHack = true;
+				} catch (JSONRPCException e) {
+					final String errmsg = e.getMessage();
+
+					tcLog.d("Exception during verify 2 " + errmsg, e);
+					tcLog.toast("==" + errmsg + "==");
+					if ("NOJSON".equals(errmsg)) {
+						setNoJSONMessage("Fail Hostname NOJSON");
+					} else {
+						setInvalidMessage(errmsg, "Fail Invalidmessage Hostname");
+						sslHostNameHack = false;
+					}
+				}
+				listener.stopProgressBar();
+			}
+		}.start();
+	}
 
     private void performVerify() {
         url = urlView.getText().toString();
@@ -363,53 +391,29 @@ public class TracLoginFragment extends TracClientFragment implements OnItemSelec
                     tcLog.d("Exception during verify 1 " + errmsg, e);
                     tcLog.toast("==" + errmsg + "==");
                     if (errmsg.startsWith("hostname in certificate didn't match:")) {
+						listener.stopProgressBar();
                         context.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
                                 final String msg = context.getString(R.string.hostnametext) + errmsg + context.getString(R.string.hostnameign);
-
-                                alertDialogBuilder.setMessage(msg)
+                                new AlertDialog.Builder(context)
+										.setMessage(msg)
                                         .setTitle(R.string.hostnametitle)
                                         .setCancelable(false)
                                         .setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int id) {
-                                                listener.startProgressBar(R.string.checking);
-                                                new Thread() {
-                                                    @Override
-                                                    public void run() {
-                                                        TracHttpClient tc1 = new TracHttpClient(url, sslHack, sslHostNameHack, username, password);
-                                                        try {
-                                                            final String TracVersion1 = tc1.verifyHost();
-                                                            tcLog.d(TracVersion1);
-                                                            setValidMessage();
-                                                            sslHostNameHack = true;
-                                                        } catch (JSONRPCException e1) {
-                                                            final String errmsg1 = e1.getMessage();
-
-                                                            tcLog.d("Exception during verify 2 " + errmsg1, e1);
-                                                            // tcLog.toast("==" + errmsg1 + "==");
-                                                            if ("NOJSON".equals(errmsg1)) {
-                                                                setNoJSONMessage("Fail Hostname NOJSON");
-                                                            } else {
-                                                                setInvalidMessage(errmsg1, "Fail Invalidmessage Hostname");
-                                                                sslHostNameHack = false;
-                                                            }
-                                                        }
-                                                        listener.stopProgressBar();
-                                                    }
-                                                }.start();
+												verifyHostNameHack();
                                             }
-                                        });
-                                alertDialogBuilder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        setInvalidMessage(errmsg, "Fail UserCancel Hostname");
-                                        sslHostNameHack = false;
-                                    }
-                                });
-                                alertDialogBuilder.show();
+                                        })
+										.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+											@Override
+											public void onClick(DialogInterface dialog, int id) {
+												setInvalidMessage(errmsg, "Fail UserCancel Hostname");
+												sslHostNameHack = false;
+											}
+										})
+										.show();
                             }
                         });
                     } else if ("NOJSON".equals(errmsg)) {
