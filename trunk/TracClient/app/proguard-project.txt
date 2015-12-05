@@ -19,7 +19,7 @@
 #   public *;
 #}
 -dontobfuscate
--dontnote android.support.**
+#-dontnote android.support.**
 -dontwarn android.support.**
 -dontwarn com.google.android.gms.**
 -keep class * extends java.util.ListResourceBundle {
