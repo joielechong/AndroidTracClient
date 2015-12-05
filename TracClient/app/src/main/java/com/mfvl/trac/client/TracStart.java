@@ -1273,14 +1273,14 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
 
             case MSG_SET_SORT:
                 setSort((ArrayList<SortSpec>) msg.obj);
-                refreshOverview();
                 sendMessageToService(MSG_SET_SORT, msg.obj);
+				refreshOverview();
                 break;
 
             case MSG_SET_FILTER:
                 setFilter((ArrayList<FilterSpec>) msg.obj);
-                refreshOverview();
                 sendMessageToService(MSG_SET_FILTER, msg.obj);
+				refreshOverview();
                 break;
 
             case MSG_SHOW_DIALOG:
