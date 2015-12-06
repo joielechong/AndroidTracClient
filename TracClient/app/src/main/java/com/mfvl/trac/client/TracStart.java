@@ -42,11 +42,17 @@ import android.os.Messenger;
 import android.provider.MediaStore.Images;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.CursorAdapter;
+import android.widget.ListView;
 import android.widget.ShareActionProvider;
+import android.widget.SimpleCursorAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -104,6 +110,10 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
     private boolean mTicketsBound = false;
     private Messenger mMessenger = null;
     private RefreshService mService = null;
+
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
+
 
     private final ServiceConnection mConnection = new ServiceConnection() {
         @Override
@@ -242,6 +252,23 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
         setContentView(R.layout.tracstart);
         debug |= TracGlobal.isRCVersion();
 
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        // Set the adapter for the list view
+        ProfileDatabaseHelper pdb = new ProfileDatabaseHelper(this);
+        Cursor pdbCursor = pdb.getProfiles();
+        final String[] columns = new String[]{"name"};
+        final int[] to = new int[]{android.R.id.text1};
+        mDrawerList.setAdapter(new SimpleCursorAdapter(this,android.R.layout.simple_spinner_dropdown_item, pdbCursor,
+                columns, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER));
+        // Set the list's click listener
+        mDrawerList.setOnItemClickListener(new ListView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView parent, View view, int position, long id) {
+
+            }
+        });
+
         if (savedInstanceState != null) {
             url = savedInstanceState.getString(CURRENT_URL);
             username = savedInstanceState.getString(CURRENT_USERNAME);
@@ -280,7 +307,6 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
             final String urlArg2 = urlArg + "login/rpc";
 
             if (!(urlArg.equals(url) || urlArg1.equals(url) || urlArg2.equals(url))) {
-                final ProfileDatabaseHelper pdb = new ProfileDatabaseHelper(this);
                 LoginProfile lp = pdb.findProfile(urlArg2);
 
                 if (lp == null) {

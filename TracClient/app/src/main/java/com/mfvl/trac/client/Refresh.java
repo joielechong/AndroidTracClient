@@ -26,7 +26,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
 
-import static com.mfvl.trac.client.Const.MSG_REFRESH_LIST;
+import static com.mfvl.trac.client.Const.*;
 
 
 public class Refresh extends Activity implements ServiceConnection {

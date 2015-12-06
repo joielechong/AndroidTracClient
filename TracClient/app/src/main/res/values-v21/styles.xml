@@ -29,5 +29,5 @@
 
     <style name="ButtonBarButton" parent="android:Widget.Material.Light.SegmentedButton" />
 
-    <style name="MyStyle" parent="android:Theme.Material.Light.DarkActionBar" />
+    <style name="MyBaseStyle" parent="android:Theme.Material.Light.DarkActionBar" />
 </resources>

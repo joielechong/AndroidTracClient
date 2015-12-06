@@ -375,7 +375,7 @@ public class RefreshService extends Service implements Handler.Callback {
                 }
                 try {
                     final JSONArray mcresult = tracClient.callJSONArray("system.multicall", mc);
-                    // tcLog.d( "mcresult = " + mcresult);
+                    // tcLog.d("mcresult = " + mcresult);
                     Ticket t = null;
 
                     for (int k = 0; k < mcresult.length(); k++) {
