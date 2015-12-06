@@ -82,7 +82,9 @@
         <item name="android:text">@string/cancel</item>
     </style>
 
-    <style name="MyStyle" parent="android:Theme.Holo.Light.DarkActionBar" />
+    <style name="MyBaseStyle" parent="android:Theme.Holo.Light.DarkActionBar" />
+
+    <style name="MyStyle" parent="@style/MyBaseStyle" />
 
     <style name="AdBlockStyle">
         <item name="android:id">@id/adBlock</item>
