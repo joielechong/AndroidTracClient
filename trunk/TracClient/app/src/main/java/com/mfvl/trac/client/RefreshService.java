@@ -40,8 +40,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import static com.mfvl.trac.client.Const.*;
-
-import static com.mfvl.trac.client.TracGlobal.ticketGroupCount;
+import static com.mfvl.trac.client.TracGlobal.*;
 
 public class RefreshService extends Service implements Handler.Callback {
 
@@ -67,6 +66,7 @@ public class RefreshService extends Service implements Handler.Callback {
     private TicketModel tm = null;
     private Tickets mTickets = null;
     private boolean invalid = true;
+    private Thread ltThread = null;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -160,7 +160,7 @@ public class RefreshService extends Service implements Handler.Callback {
                 } else {
                     invalid = true;
                 }
-                loadTickets();
+                startLoadTickets();
                 break;
 
             case MSG_SET_FILTER:
@@ -293,6 +293,31 @@ public class RefreshService extends Service implements Handler.Callback {
             monitorTimer.cancel();
         }
         monitorTimer = null;
+    }
+
+    private void startLoadTickets() {
+        tcLog.d("ltThread = " + ltThread);
+        if (ltThread != null) {
+            ltThread.interrupt();
+            try {
+                ltThread.join();
+            } catch (Exception ignored) {
+            }
+        }
+        ltThread = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    loadTickets();
+                } catch (Exception e) {
+                    tcLog.d("Exception", e);
+                } finally {
+                    ltThread = null;
+                }
+
+            }
+        };
+        ltThread.start();
     }
 
     private void loadTickets() {

@@ -39,17 +39,20 @@ public class Tickets {
     }
 
     public void resetCache() {
-        // tcLog.d("voor ticketMap = "+ticketMap);
+        tcLog.logCall();
+        // tcLog.d("voor: ticketMap = "+ticketMap);
         ticketMap = new TreeMap<>();
-        // tcLog.d("na ticketMap = "+ticketMap);
+        // tcLog.d("na: ticketMap = "+ticketMap);
     }
 
     public Ticket getTicket(final int ticknr) {
+//        tcLog.d("ticketMap = "+ticketMap);
 //        tcLog.d("ticknr = "+ticknr+ " "+ticketMap.containsKey(ticknr));
         return ticketMap.containsKey(ticknr) ? ticketMap.get(ticknr) : null;
     }
 
     public void putTicket(Ticket ticket) {
+//        tcLog.d("ticketMap = "+ticketMap);
 //        tcLog.d("ticket = "+ticket);
         ticketMap.put(ticket.getTicketnr(), ticket);
     }

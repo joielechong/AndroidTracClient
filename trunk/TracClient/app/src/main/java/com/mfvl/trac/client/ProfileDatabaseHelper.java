@@ -138,10 +138,12 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public Cursor getProfiles() {
+    public Cursor getProfiles(boolean addBlank) {
+        tcLog.d("addBlank = " + addBlank);
         open();
-
-        return db.rawQuery("SELECT rowid as _id,name from " + TABLE_NAME + " ORDER BY name", null);
+        String query = "SELECT rowid as _id,name from " + TABLE_NAME + (!addBlank ? " WHERE "+NAME_ID+" !=''" : "")+" ORDER BY name";
+        tcLog.d("query = "+query);
+        return db.rawQuery(query, null);
     }
 
     public Cursor getAllProfiles() {
