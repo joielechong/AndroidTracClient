@@ -184,6 +184,6 @@
         </LinearLayout>
     </ScrollView>
 
-    <LinearLayout style="@style/AdBlockStyle"></LinearLayout>
+    <LinearLayout style="@style/AdBlockStyle"/>
 
 </RelativeLayout>

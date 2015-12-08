@@ -44,6 +44,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Base64;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -53,6 +54,7 @@ import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.ShareActionProvider;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -113,6 +115,8 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
 
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
+    private ProfileDatabaseHelper pdb = null;
+    private Cursor pdbCursor;
 
 
     private final ServiceConnection mConnection = new ServiceConnection() {
@@ -243,31 +247,16 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
             canWriteSD = true;
         }
 
-        try {
-            TracGlobal.ticketGroupCount = getResources().getInteger(R.integer.ticketGroupCount);
-        } catch (Exception ignored) {
-        }
-
+        TracGlobal.ticketGroupCount = getResources().getInteger(R.integer.ticketGroupCount);
         timerCorr = getResources().getInteger(R.integer.timerCorr);
         setContentView(R.layout.tracstart);
         debug |= TracGlobal.isRCVersion();
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
-        // Set the adapter for the list view
-        ProfileDatabaseHelper pdb = new ProfileDatabaseHelper(this);
-        Cursor pdbCursor = pdb.getProfiles();
-        final String[] columns = new String[]{"name"};
-        final int[] to = new int[]{android.R.id.text1};
-        mDrawerList.setAdapter(new SimpleCursorAdapter(this,android.R.layout.simple_spinner_dropdown_item, pdbCursor,
-                columns, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER));
-        // Set the list's click listener
-        mDrawerList.setOnItemClickListener(new ListView.OnItemClickListener(){
-            @Override
-            public void onItemClick(AdapterView parent, View view, int position, long id) {
-
-            }
-        });
+        TextView  tv = (TextView)getLayoutInflater().inflate(R.layout.ticket_list,null);
+        tv.setText(R.string.changehost);
+        mDrawerList.addHeaderView(tv);
 
         if (savedInstanceState != null) {
             url = savedInstanceState.getString(CURRENT_URL);
@@ -302,6 +291,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
             }
         }
 
+        pdb = new ProfileDatabaseHelper(this);
         if (urlArg != null) {
             final String urlArg1 = urlArg + "rpc";
             final String urlArg2 = urlArg + "login/rpc";
@@ -328,7 +318,6 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
                     profile = null;
                 }
                 currentLoginProfile = lp;
-//                sendMessageToService(MSG_LOGIN_PROFILE,lp);
             }
         }
 
@@ -466,6 +455,39 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
         // This method is called when the up button is pressed. Just the pop back stack.
         getFragmentManager().popBackStack();
         return true;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        tcLog.logCall();
+        // Set the adapter for the list view
+        pdbCursor = pdb.getProfiles(false);
+        final String[] columns = new String[]{"name"};
+        final int[] to = new int[]{android.R.id.text1};
+        mDrawerList.setAdapter(new SimpleCursorAdapter(this,R.layout.drawer_list_item, pdbCursor,columns, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER));
+        // Set the list's click listener
+        mDrawerList.setOnItemClickListener(new ListView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView parent, View view, int position, long id) {
+                tcLog.d("parent = "+parent+" view = "+ view+" position = "+position);
+                String newProfile = ((TextView)view).getText().toString();
+                tcLog.d(newProfile);
+                LoginProfile lp = pdb.getProfile(newProfile);
+                tcLog.d(lp);
+                if (lp != null) {
+                    onLogin(lp.getUrl(), lp.getUsername(), lp.getPassword(), lp.getSslHack(), lp.getSslHostNameHack(), newProfile);
+                }
+                mDrawerLayout.closeDrawer(mDrawerList);
+            }
+        });
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        tcLog.logCall();
+        pdbCursor.close();
     }
 
     @Override
@@ -657,15 +679,17 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
         TicketListFragment ticketListFragment = (TicketListFragment) getFragment(ListFragmentTag);
         final FragmentTransaction ft = getFragmentManager().beginTransaction();
 
-        getFragmentManager().popBackStack();
-        if (ticketListFragment == null) {
-            ticketListFragment = new TicketListFragment();
-            doNotFinish = true;
-            ft.replace(R.id.displayList, ticketListFragment, ListFragmentTag);
-            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-            ft.addToBackStack(ListFragmentTag);
+        if (!ListFragmentTag.equals(getTopFragment())) {
+            getFragmentManager().popBackStack();
+            if (ticketListFragment == null) {
+                ticketListFragment = new TicketListFragment();
+                doNotFinish = true;
+                ft.replace(R.id.displayList, ticketListFragment, ListFragmentTag);
+                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                ft.addToBackStack(ListFragmentTag);
+            }
+            ft.commit();
         }
-        ft.commit();
 //        refreshOverview();
         dataAdapter.clear();
         startListLoader(true);
@@ -1287,7 +1311,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
 
             case MSG_STOP_PROGRESSBAR:
                 synchronized (this) {
-                    // tcLog.d("handleMessage msg = STOP_PROGRESSBAR");
+                    tcLog.d("handleMessage msg = STOP_PROGRESSBAR "+progressBar+" "+TracStart.this.isFinishing());
                     if (progressBar != null) {
                         if (!TracStart.this.isFinishing()) {
                             progressBar.dismiss();
@@ -1300,13 +1324,13 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
             case MSG_SET_SORT:
                 setSort((ArrayList<SortSpec>) msg.obj);
                 sendMessageToService(MSG_SET_SORT, msg.obj);
-				refreshOverview();
+                refreshOverview();
                 break;
 
             case MSG_SET_FILTER:
                 setFilter((ArrayList<FilterSpec>) msg.obj);
                 sendMessageToService(MSG_SET_FILTER, msg.obj);
-				refreshOverview();
+                refreshOverview();
                 break;
 
             case MSG_SHOW_DIALOG:
@@ -1383,14 +1407,13 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
                     public void run() {
                         dataAdapter.clear();
                         dataAdapter.addAll(tl);
-//                            dataAdapter.notifyDataSetChanged();
+                        if (loadingActive.availablePermits() == 0) {
+                            loadingActive.release();
+                        }
                         try {
                             getTicketListFragment().dataHasChanged();
                         } catch (Exception e) {
                             tcLog.e("MSG_LOAD_FASE1_FINISHED cannot contact TicketListFragment");
-                        }
-                        if (loadingActive.availablePermits() == 0) {
-                            loadingActive.release();
                         }
                     }
                 });

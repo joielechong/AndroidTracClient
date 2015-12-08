@@ -97,10 +97,10 @@ public class tcLog {
         myLog("D." + caller, "");
     }
 
-    public static void d(String msg) {
+    public static void d(Object msg) {
         String caller = getCaller(2);
-        Log.d(caller, msg);
-        myLog("D." + caller, msg);
+        Log.d(caller, msg.toString());
+        myLog("D." + caller, msg.toString());
     }
 
     public static void d(String msg, Throwable tr) {

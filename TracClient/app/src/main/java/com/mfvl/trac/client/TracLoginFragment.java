@@ -213,7 +213,7 @@ public class TracLoginFragment extends TracClientFragment implements OnItemSelec
 
         pdb = new ProfileDatabaseHelper(context);
         pdb.open();
-        pdbCursor = pdb.getProfiles();
+        pdbCursor = pdb.getProfiles(true);
         if (pdbCursor.getCount() < 2) {
             loadProfileBox.setVisibility(View.GONE);
         } else {
@@ -498,7 +498,7 @@ public class TracLoginFragment extends TracClientFragment implements OnItemSelec
     private void swapSpinnerAdapter() {
         final SimpleCursorAdapter a = (SimpleCursorAdapter) loginSpinner.getAdapter();
 
-        a.swapCursor(pdb.getProfiles());
+        a.swapCursor(pdb.getProfiles(true));
         loginSpinner.postInvalidate();
     }
 
