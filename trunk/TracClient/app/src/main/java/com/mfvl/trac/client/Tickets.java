@@ -23,19 +23,15 @@ public class Tickets {
 
     private static Map<Integer, Ticket> ticketMap = null;
     public TicketList ticketList = null;
-    private int ticketGroupCount;
-    private boolean valid = false;
 
     public Tickets() {
         tcLog.d("create");
         initList();
-        valid = ticketList != null;
     }
 
     public void initList() {
         tcLog.logCall();
         ticketList = new TicketList();
-        valid = true;
     }
 
     public void resetCache() {
@@ -60,7 +56,6 @@ public class Tickets {
     public void clear() {
         tcLog.logCall();
         ticketList.clear();
-        valid = true;
     }
 
     public void add(Tickets tl) {
@@ -78,23 +73,6 @@ public class Tickets {
         putTicket(ticket);
     }
 
-    public void delTicket(int ticknr) {
-        tcLog.d("ticknr = " + ticknr);
-        if (ticketMap.containsKey(ticknr)) {
-            Ticket removed = ticketMap.remove(ticknr);
-            ticketList.remove(removed);
-            tcLog.d("removed = " + removed);
-        }
-    }
-
-    public int getTicketGroupCount() {
-        return ticketGroupCount;
-    }
-
-    public void setTicketGroupCount(final int v) {
-        ticketGroupCount = v;
-    }
-
     public int getTicketContentCount() {
         int c = 0;
         for (Ticket t : ticketList) {
@@ -103,14 +81,6 @@ public class Tickets {
             }
         }
         return c;
-    }
-
-    public void setInvalid() {
-        valid = false;
-    }
-
-    public boolean isValid() {
-        return valid;
     }
 
     public int getNextTicket(final int ticket) {

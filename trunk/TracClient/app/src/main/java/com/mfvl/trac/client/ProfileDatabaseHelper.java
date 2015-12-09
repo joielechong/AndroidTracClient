@@ -116,7 +116,6 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void endTransaction() {
-        open();
         db.setTransactionSuccessful();
         db.endTransaction();
     }
@@ -141,14 +140,11 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
     public Cursor getProfiles(boolean addBlank) {
         tcLog.d("addBlank = " + addBlank);
         open();
-        String query = "SELECT rowid as _id,name from " + TABLE_NAME + (!addBlank ? " WHERE "+NAME_ID+" !=''" : "")+" ORDER BY name";
-        tcLog.d("query = "+query);
-        return db.rawQuery(query, null);
+        return db.rawQuery("SELECT rowid as _id,name from " + TABLE_NAME + (!addBlank ? " WHERE "+NAME_ID+" !=''" : "")+" ORDER BY name", null);
     }
 
     public Cursor getAllProfiles() {
         open();
-
         return db.rawQuery(
                 "SELECT " + NAME_ID + "," + URL_ID + "," + USERNAME_ID + "," + PASSWORD_ID + "," + SSLHACK_ID + " from "
                         + TABLE_NAME + " WHERE " + NAME_ID + " !=''",
