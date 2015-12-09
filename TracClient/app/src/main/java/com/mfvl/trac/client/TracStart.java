@@ -439,6 +439,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
 
     private void shouldDisplayHomeUp() {
         // Enable Up button only if there are entries in the back stack
+        tcLog.d("entry count = " + getFragmentManager().getBackStackEntryCount());
         final boolean canBack = getFragmentManager().getBackStackEntryCount() > 1;
 
         tcLog.d("canBack = " + canBack);
@@ -465,13 +466,13 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
         pdbCursor = pdb.getProfiles(false);
         final String[] columns = new String[]{"name"};
         final int[] to = new int[]{android.R.id.text1};
-        mDrawerList.setAdapter(new SimpleCursorAdapter(this,R.layout.drawer_list_item, pdbCursor,columns, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER));
+        mDrawerList.setAdapter(new SimpleCursorAdapter(this, R.layout.drawer_list_item, pdbCursor, columns, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER));
         // Set the list's click listener
-        mDrawerList.setOnItemClickListener(new ListView.OnItemClickListener(){
+        mDrawerList.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView parent, View view, int position, long id) {
-                tcLog.d("parent = "+parent+" view = "+ view+" position = "+position);
-                String newProfile = ((TextView)view).getText().toString();
+                tcLog.d("parent = " + parent + " view = " + view + " position = " + position);
+                String newProfile = ((TextView) view).getText().toString();
                 tcLog.d(newProfile);
                 LoginProfile lp = pdb.getProfile(newProfile);
                 tcLog.d(lp);
@@ -677,18 +678,18 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
         sslHostNameHack = newHostNameHack;
         profile = newProfile;
         TicketListFragment ticketListFragment = (TicketListFragment) getFragment(ListFragmentTag);
-        final FragmentTransaction ft = getFragmentManager().beginTransaction();
 
-        if (!ListFragmentTag.equals(getTopFragment())) {
-            getFragmentManager().popBackStack();
-            if (ticketListFragment == null) {
-                ticketListFragment = new TicketListFragment();
-                doNotFinish = true;
-                ft.replace(R.id.displayList, ticketListFragment, ListFragmentTag);
-                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                ft.addToBackStack(ListFragmentTag);
-            }
+        if (ticketListFragment == null) {
+            getFragmentManager().popBackStackImmediate(LoginFragmentTag,FragmentManager.POP_BACK_STACK_INCLUSIVE );
+            ticketListFragment = new TicketListFragment();
+            doNotFinish = true;
+            final FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.add(R.id.displayList, ticketListFragment, ListFragmentTag);
+            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            ft.addToBackStack(ListFragmentTag);
             ft.commit();
+        } else {
+            getFragmentManager().popBackStackImmediate(ListFragmentTag,0);
         }
 //        refreshOverview();
         dataAdapter.clear();
@@ -714,7 +715,16 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         tcLog.d("item=" + item.getTitle());
+
         switch (item.getItemId()) {
+            case android.R.id.home:
+                if (getFragmentManager().getBackStackEntryCount() == 1) {
+                    mDrawerLayout.openDrawer(mDrawerList);
+                } else {
+                    return false;
+                }
+                break;
+
             case R.id.over:
                 showAbout();
                 break;
@@ -1410,11 +1420,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
                         if (loadingActive.availablePermits() == 0) {
                             loadingActive.release();
                         }
-                        try {
-                            getTicketListFragment().dataHasChanged();
-                        } catch (Exception e) {
-                            tcLog.e("MSG_LOAD_FASE1_FINISHED cannot contact TicketListFragment");
-                        }
+						notifyTicketListFragment();
                     }
                 });
                 break;
@@ -1423,11 +1429,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
                 TracStart.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        try {
-                            getTicketListFragment().dataHasChanged();
-                        } catch (Exception e) {
-                            tcLog.e("MSG_DATA_CHANGED cannot contact TicketListFragment");
-                        }
+						notifyTicketListFragment();
                     }
                 });
                 break;
@@ -1440,11 +1442,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
                             unbindService(mTicketsConnection);
                             mTicketsBound = false;
                         }
-                        try {
-                            getTicketListFragment().dataHasChanged();
-                        } catch (Exception e) {
-                            tcLog.e("MSG_LOAD_FASE2_FINISHED cannot contact TicketListFragment");
-                        }
+						notifyTicketListFragment();
                     }
                 });
                 break;
@@ -1454,4 +1452,12 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
         }
         return true;
     }
+	
+	private void notifyTicketListFragment() {
+		try {
+			getTicketListFragment().dataHasChanged();
+		} catch (Exception e) {
+			tcLog.e("Cannot contact TicketListFragment");
+		}
+	}
 }
