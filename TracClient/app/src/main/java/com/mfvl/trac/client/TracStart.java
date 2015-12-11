@@ -44,7 +44,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Base64;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -210,7 +209,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
 
     @SuppressWarnings("unchecked")
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         tcLog.setContext(this);
         tcLog.d("savedInstanceState = " + savedInstanceState);
@@ -459,7 +458,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
     }
 
     @Override
-    public void onStart() {
+    protected void onStart() {
         super.onStart();
         tcLog.logCall();
         // Set the adapter for the list view
@@ -485,14 +484,14 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
     }
 
     @Override
-    public void onStop() {
+    protected void onStop() {
         super.onStop();
         tcLog.logCall();
         pdbCursor.close();
     }
 
     @Override
-    public void onPause() {
+    protected void onPause() {
         super.onPause();
         tcLog.logCall();
         stopProgressBar();
@@ -636,7 +635,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
     }
 
     @Override
-    public void onDestroy() {
+    protected void onDestroy() {
         tcLog.logCall();
         super.onDestroy();
         if (isFinishing()) {
@@ -775,7 +774,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
     }
 
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putBoolean("Admob", dispAds);
         savedInstanceState.putSerializable(SORTLISTNAME, sortList);
@@ -1092,11 +1091,6 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
     @Override
     public void refreshTicket(final int i) {
         sendMessageToService(MSG_SEND_TICKETS, i, MSG_DISPLAY_TICKET, null);
-    }
-
-    @Override
-    public void putTicket(Ticket t) {
-        // TODO
     }
 
     public void updateTicket(final Ticket t, final String action, final String comment, final String veld, final String waarde, final boolean notify, final Map<String, String> modVeld) throws Exception {

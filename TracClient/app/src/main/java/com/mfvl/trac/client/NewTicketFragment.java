@@ -158,7 +158,6 @@ public class NewTicketFragment extends TracClientFragment {
                     if (newtick < 0) {
                         throw new RuntimeException("Ticket == -1 ontvangen");
                     }
-                    listener.putTicket(t);
                     listener.stopProgressBar();
                     showAlertBox(R.string.storok, R.string.storokdesc, "" + newtick);
                     listener.refreshOverview();

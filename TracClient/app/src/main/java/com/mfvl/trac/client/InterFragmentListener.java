@@ -57,8 +57,6 @@ public interface InterFragmentListener {
 
     void refreshTicket(int ticknr);
 
-    void putTicket(Ticket t); //TODO Implement method
-
     int getNextTicket(int i);
 
     int getPrevTicket(int i);
