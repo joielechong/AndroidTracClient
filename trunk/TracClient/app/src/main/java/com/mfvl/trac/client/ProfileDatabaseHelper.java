@@ -181,13 +181,6 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
         return profile;
     }
 
-    public void delProfile(String name) {
-        open();
-        final String values[] = new String[]{name};
-
-        db.delete(TABLE_NAME, "name=?", values);
-    }
-
     public int delProfiles() {
         open();
         final String values[] = new String[]{""};
