@@ -17,16 +17,18 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <style name="AppBaseTheme" parent="android:Theme.Holo.Light" />
+    <style name="FullscreenThemeBase" parent="android:Theme.Holo.Light.NoActionBar.Fullscreen" />
+    <style name="AlertDialogStyle" parent="android:Holo.Light.ButtonBar.AlertDialog" />
+    <style name="ButtonBarBase" parent="android:Holo.Light.ButtonBar" />
+    <style name="ButtonBarButton" parent="android:Holo.Light.SegmentedButton" />
+    <style name="MyBaseStyle" parent="android:Theme.Holo.Light.DarkActionBar" />
+    <style name="NormalButtonBase" parent="android:Widget.Holo.Light.Button" />
 
     <style name="AppTheme" parent="@style/AppBaseTheme" />
-
-    <style name="FullscreenThemeBase" parent="android:Theme.Holo.Light.NoActionBar.Fullscreen" />
 
     <style name="FullscreenThemeBase.1">
         <item name="android:alertDialogTheme">@style/AlertDialogStyle</item>
     </style>
-
-    <style name="AlertDialogStyle" parent="android:style/Theme.DeviceDefault.Dialog.Alert" />
 
     <style name="FullscreenTheme" parent="@style/FullscreenThemeBase">
         <item name="android:windowContentOverlay">@null</item>
@@ -49,8 +51,6 @@
         <item name="android:textSize">@dimen/helphdr_textsize</item>
     </style>
 
-    <style name="ButtonBarBase" parent="android:Holo.ButtonBar" />
-
     <style name="ButtonBarBase.1">
         <item name="android:paddingLeft">2dp</item>
         <item name="android:paddingRight">2dp</item>
@@ -62,9 +62,7 @@
         <item name="android:background">@android:drawable/bottom_bar</item>
     </style>
 
-    <style name="ButtonBarButton" parent="android:Holo.Light.SegmentedButton" />
-
-    <style name="NormalButton" parent="android:Widget.Button">
+    <style name="NormalButton" parent="NormalButtonBase">
         <item name="android:layout_width">0dip</item>
         <item name="android:layout_marginBottom">3dp</item>
         <item name="android:layout_marginTop">3dp</item>
@@ -82,7 +80,6 @@
         <item name="android:text">@string/cancel</item>
     </style>
 
-    <style name="MyBaseStyle" parent="android:Theme.Holo.Light.DarkActionBar" />
 
     <style name="MyStyle" parent="@style/MyBaseStyle" />
 
