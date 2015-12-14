@@ -30,7 +30,6 @@ import java.util.Locale;
 public class tcLog {
     private static final SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
     private static Activity _c = null;
-    private static boolean doToast = false;
     private static String debugString = "";
 
     public static void setContext(Activity c) {
@@ -50,10 +49,6 @@ public class tcLog {
 
     public static String getDebug() {
         return debugString;
-    }
-
-    public static void setToast(boolean value) {
-        doToast = value;
     }
 
     private static void _toast(String string) {
@@ -86,9 +81,6 @@ public class tcLog {
         debugString += "\n" + date + " " + pid + " " + tid + " " + tag
                 + ("".equals(message) ? "" : ": " + message)
                 + (tr != null ? "\nException thrown: " + tr.getMessage() + "\n" + getStackTraceString(tr) : "");
-        if (doToast) {
-            toast(tag + ": " + message);
-        }
     }
 
     public static void logCall() {
@@ -167,24 +159,6 @@ public class tcLog {
         String caller = getCaller(2);
         Log.w(caller, msg, tr);
         myLog("W." + caller, msg, tr);
-    }
-
-    public static void wtf(Throwable tr) {
-        String caller = getCaller(2);
-        Log.wtf(caller, tr);
-        myLog("WTF." + caller, "");
-    }
-
-    public static void wtf(String msg) {
-        String caller = getCaller(2);
-        Log.wtf(caller, msg);
-        myLog("WTF." + caller, msg);
-    }
-
-    public static void wtf(String msg, Throwable tr) {
-        String caller = getCaller(2);
-        Log.wtf(caller, msg, tr);
-        myLog("WTF." + caller, msg, tr);
     }
 
     private static String getStackTraceString(Throwable tr) {
