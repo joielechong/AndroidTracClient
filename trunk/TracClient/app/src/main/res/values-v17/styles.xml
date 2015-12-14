@@ -17,15 +17,6 @@
  * v17+  RTL differences
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-<!--
-    <style name="AppBaseTheme" parent="android:Theme.DeviceDefault.Light" />
-    <style name="FullscreenThemeBase" parent="android:Theme.DeviceDefault.Light.NoActionBar.Fullscreen" />
-    <style name="AlertDialogStyle" parent="android:Theme.DeviceDefault.Light.Dialog" />
-    <style name="ButtonBarBase" parent="android:DeviceDefault.Light.ButtonBar" />
-    <style name="ButtonBarButton" parent="android:DeviceDefault.Light.SegmentedButton" />
-    <style name="MyBaseStyle" parent="android:Theme.DeviceDefault.Light.DarkActionBar" />
-    <style name="NormalButtonBase" parent="android:Widget.DeviceDefault.Light.Button"/>
--->
     <style name="ButtonBarBase.1">
         <item name="android:paddingStart">2dp</item>
         <item name="android:paddingEnd">2dp</item>

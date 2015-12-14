@@ -33,7 +33,7 @@ public class SpecFragment<T extends Spec> extends TracClientFragment {
     protected ListView listView;
 
     @SuppressWarnings("unchecked")
-    protected void onMyAttach(Context activity, String keyName) {
+    protected void onMyAttach(String keyName) {
         inputSpec = null;
 
         final Bundle args = getArguments();

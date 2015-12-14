@@ -42,14 +42,14 @@ public class SortFragment extends SpecFragment<SortSpec> {
     public void onAttach(Context activity) {
         super.onAttach(activity);
 //        tcLog.d("onAttach(C)");
-        onMyAttach(activity, SORTLISTNAME);
+        onMyAttach(SORTLISTNAME);
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 //        tcLog.d("onAttach(A)");
-        onMyAttach(activity, SORTLISTNAME);
+        onMyAttach(SORTLISTNAME);
     }
 
     @Override

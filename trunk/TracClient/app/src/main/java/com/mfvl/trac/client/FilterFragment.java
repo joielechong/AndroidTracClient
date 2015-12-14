@@ -55,14 +55,14 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
     public void onAttach(Context activity) {
         super.onAttach(activity);
 //        tcLog.d("onAttach(C)");
-        onMyAttach(activity, FILTERLISTNAME);
+        onMyAttach(FILTERLISTNAME);
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 //        tcLog.d("onAttach(A)");
-        onMyAttach(activity, FILTERLISTNAME);
+        onMyAttach(FILTERLISTNAME);
     }
 
     @Override
