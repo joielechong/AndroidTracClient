@@ -91,7 +91,7 @@ public class tcLog {
 
     public static void d(Object msg) {
         String caller = getCaller(2);
-        Log.d(caller, msg.toString());
+        Log.d(caller, (msg == null?null:msg.toString()));
         myLog("D." + caller, msg.toString());
     }
 

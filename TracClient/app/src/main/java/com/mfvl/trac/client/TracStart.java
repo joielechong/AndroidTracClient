@@ -253,9 +253,9 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
-        TextView  tv = (TextView)getLayoutInflater().inflate(R.layout.ticket_list,null);
+        TextView  tv = (TextView)getLayoutInflater().inflate(R.layout.ticket_list,mDrawerList,false);
         tv.setText(R.string.changehost);
-        mDrawerList.addHeaderView(tv);
+        mDrawerList.addHeaderView(tv,null,false);
 
         if (savedInstanceState != null) {
             url = savedInstanceState.getString(CURRENT_URL);
@@ -471,13 +471,13 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
             @Override
             public void onItemClick(AdapterView parent, View view, int position, long id) {
                 tcLog.d("parent = " + parent + " view = " + view + " position = " + position);
-                String newProfile = ((TextView) view).getText().toString();
-                tcLog.d(newProfile);
-                LoginProfile lp = pdb.getProfile(newProfile);
-                tcLog.d(lp);
-                if (lp != null) {
-                    onLogin(lp.getUrl(), lp.getUsername(), lp.getPassword(), lp.getSslHack(), lp.getSslHostNameHack(), newProfile);
-                }
+				String newProfile = ((TextView) view).getText().toString();
+				tcLog.d(newProfile);
+				LoginProfile lp = pdb.getProfile(newProfile);
+				tcLog.d(lp);
+				if (lp != null) {
+					onLogin(lp.getUrl(), lp.getUsername(), lp.getPassword(), lp.getSslHack(), lp.getSslHostNameHack(), newProfile);
+				}
                 mDrawerLayout.closeDrawer(mDrawerList);
             }
         });
