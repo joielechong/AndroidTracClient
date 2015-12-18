@@ -296,10 +296,12 @@ public class RefreshService extends Service implements Handler.Callback {
     }
 
     private void startLoadTickets() {
-        tcLog.d("ltThread = " + ltThread);
-        if (ltThread != null) {
+        tcLog.d("ltThread = " + ltThread+ (ltThread != null && ltThread.isAlive()?"":" not")+" running");
+        if (ltThread != null && ltThread.isAlive()) {
+			tcLog.d("send interrupt to " + ltThread);
             ltThread.interrupt();
-            try {
+ 			tcLog.d("sent interrupt to " + ltThread);
+           try {
                 ltThread.join();
             } catch (Exception ignored) {
             }
@@ -319,6 +321,12 @@ public class RefreshService extends Service implements Handler.Callback {
         };
         ltThread.start();
     }
+	
+	private void check_interrupt() throws InterruptedException {
+		if (Thread.currentThread().isInterrupted()) {
+			throw new InterruptedException();
+		}
+	}
 
     private void loadTickets() {
         tcLog.d(mLoginProfile.toString());
@@ -343,7 +351,7 @@ public class RefreshService extends Service implements Handler.Callback {
             tcLog.d("reqString = " + reqString);
             try {
                 final JSONArray jsonTicketlist = tracClient.Query(reqString);
-
+				check_interrupt();
                 tcLog.d(jsonTicketlist.toString());
                 final int count = jsonTicketlist.length();
 
@@ -378,7 +386,9 @@ public class RefreshService extends Service implements Handler.Callback {
                 }
             } catch (JSONRPCException e) {
                 popup_warning(R.string.connerr, e.getMessage());
-            }
+            } catch (Exception e) {
+				tcLog.d("Exception",e);
+			}
         } else {
             sendMessageToUI(MSG_LOAD_FASE1_FINISHED, mTickets);
             sendMessageToUI(MSG_LOAD_FASE2_FINISHED, mTickets);
@@ -401,6 +411,7 @@ public class RefreshService extends Service implements Handler.Callback {
                 try {
                     final JSONArray mcresult = tracClient.callJSONArray("system.multicall", mc);
                     // tcLog.d("mcresult = " + mcresult);
+					check_interrupt();
                     Ticket t = null;
 
                     for (int k = 0; k < mcresult.length(); k++) {
@@ -426,6 +437,7 @@ public class RefreshService extends Service implements Handler.Callback {
                                     tcLog.d("unexpected response = " + result);
                                 }
                             }
+							check_interrupt();
                         } catch (final JSONException e1) {
                             tcLog.e("JSONException thrown innerloop j=" + j + " k=" + k, e1);
                         }
