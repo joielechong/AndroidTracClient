@@ -67,6 +67,7 @@ public class RefreshService extends Service implements Handler.Callback {
     private Tickets mTickets = null;
     private boolean invalid = true;
     private Thread ltThread = null;
+	private boolean stopPending = false;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -296,30 +297,38 @@ public class RefreshService extends Service implements Handler.Callback {
     }
 
     private void startLoadTickets() {
-        tcLog.d("ltThread = " + ltThread+ (ltThread != null && ltThread.isAlive()?"":" not")+" running");
-        if (ltThread != null && ltThread.isAlive()) {
-			tcLog.d("send interrupt to " + ltThread);
-            ltThread.interrupt();
- 			tcLog.d("sent interrupt to " + ltThread);
-           try {
-                ltThread.join();
-            } catch (Exception ignored) {
-            }
-        }
-        ltThread = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    loadTickets();
-                } catch (Exception e) {
-                    tcLog.d("Exception", e);
-                } finally {
-                    ltThread = null;
-                }
+        tcLog.d("ltThread = " + ltThread+ (ltThread != null && ltThread.isAlive()?"":" not")+" running stopPending = "+stopPending);
+		if(stopPending) {
+			tcLog.toast("Operation already in progress");
+		} else {
+			if (ltThread != null && ltThread.isAlive()) {
+				tcLog.d("send interrupt to " + ltThread);
+				stopPending = true;
+				ltThread.interrupt();
+				tcLog.d("sent interrupt to " + ltThread);
+			   try {
+					ltThread.join();
+				} catch (Exception ignored) {
+				} finally {
+					tcLog.d("interrupt processed by " + ltThread);
+					stopPending=false;
+				}
+			}
+			ltThread = new Thread() {
+				@Override
+				public void run() {
+					try {
+						loadTickets();
+					} catch (Exception e) {
+						tcLog.d("Exception", e);
+					} finally {
+						ltThread = null;
+					}
 
-            }
-        };
-        ltThread.start();
+				}
+			};
+			ltThread.start();
+		}
     }
 	
 	private void check_interrupt() throws InterruptedException {
