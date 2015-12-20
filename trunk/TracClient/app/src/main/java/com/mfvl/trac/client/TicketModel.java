@@ -138,10 +138,6 @@ public class TicketModel implements Serializable {
         active.release();
     }
 
-    boolean hasData() {
-        return _hasData;
-    }
-
     TicketModelVeld getVeld(final String naam) {
         wacht();
         if (_velden.containsKey(naam)) {
