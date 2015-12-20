@@ -19,7 +19,6 @@ package com.mfvl.trac.client;
 import android.content.Context;
 
 public class TicketListAdapter extends ColoredArrayAdapter<Ticket> {
-    final Context context;
     final Tickets mTickets;
 
     public TicketListAdapter(TracStart context, int resource, Tickets tl) {
@@ -27,7 +26,6 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket> {
         tcLog.logCall();
 //		tcLog.d("context = "+context+" resource = "+ resource+" tl = "+tl);
 //		tcLog.d(tl != null ? tl.toString() : null);
-        this.context = context;
 
         mTickets = tl;
     }

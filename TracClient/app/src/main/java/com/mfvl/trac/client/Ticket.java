@@ -101,10 +101,6 @@ public class Ticket implements Serializable {
         return _velden.getJSONObject(veld);
     }
 
-    public JSONArray getFields() {
-        return _velden.names();
-    }
-
     public void setFields(JSONObject velden) {
         _velden = velden;
         _hasdata = true;
