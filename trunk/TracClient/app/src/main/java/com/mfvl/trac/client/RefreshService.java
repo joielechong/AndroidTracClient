@@ -38,11 +38,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static com.mfvl.trac.client.Const.*;
 import static com.mfvl.trac.client.TracGlobal.*;
 
 public class RefreshService extends Service implements Handler.Callback {
+
+    private class TicketLoaderLock extends ReentrantLock {
+        TicketLoaderLock() {
+            super();
+            tcLog.logCall();
+        }
+
+        public void killOwner() {
+            tcLog.logCall();
+            Thread t = super.getOwner();
+            t.interrupt();
+        }
+    }
 
     public static final String refreshAction = "LIST_REFRESH";
     private final static String TICKET_GET = "GET";
@@ -66,8 +80,7 @@ public class RefreshService extends Service implements Handler.Callback {
     private TicketModel tm = null;
     private Tickets mTickets = null;
     private boolean invalid = true;
-    private Thread ltThread = null;
-	private boolean stopPending = false;
+    private TicketLoaderLock loadLock = null;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -214,6 +227,8 @@ public class RefreshService extends Service implements Handler.Callback {
         timerStart = res.getInteger(R.integer.timerStart);
         timerPeriod = res.getInteger(R.integer.timerPeriod);
 
+        loadLock = new TicketLoaderLock();
+
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mHandlerThread = new MyHandlerThread("ServiceHandler");
         mHandlerThread.start();
@@ -297,38 +312,26 @@ public class RefreshService extends Service implements Handler.Callback {
     }
 
     private void startLoadTickets() {
-        tcLog.d("ltThread = " + ltThread+ (ltThread != null && ltThread.isAlive()?"":" not")+" running stopPending = "+stopPending);
-		if(stopPending) {
-			tcLog.toast("Operation already in progress");
-		} else {
-			if (ltThread != null && ltThread.isAlive()) {
-				tcLog.d("send interrupt to " + ltThread);
-				stopPending = true;
-				ltThread.interrupt();
-				tcLog.d("sent interrupt to " + ltThread);
-			   try {
-					ltThread.join();
-				} catch (Exception ignored) {
-				} finally {
-					tcLog.d("interrupt processed by " + ltThread);
-					stopPending=false;
-				}
-			}
-			ltThread = new Thread() {
-				@Override
-				public void run() {
-					try {
-						loadTickets();
-					} catch (Exception e) {
-						tcLog.d("Exception", e);
-					} finally {
-						ltThread = null;
-					}
+        tcLog.d("loadLock = "+loadLock+ " invalid = "+invalid);
+        new Thread() {
+            @Override
+            public void run() {
+                if (!loadLock.tryLock()) {
+                    loadLock.killOwner();
+                    loadLock.lock();
+                }
+                tcLog.d("locked");
+                try {
+                    loadTickets();
+                } catch (Exception e) {
+                    tcLog.d("Exception", e);
+                } finally {
+                    loadLock.unlock();
+                    tcLog.d("unlock");
+                }
 
-				}
-			};
-			ltThread.start();
-		}
+            }
+        }.start();
     }
 	
 	private void check_interrupt() throws InterruptedException {
@@ -339,6 +342,7 @@ public class RefreshService extends Service implements Handler.Callback {
 
     private void loadTickets() {
         tcLog.d(mLoginProfile.toString());
+        tcLog.d("invalid = "+invalid);
         if (invalid) {
             mTickets = new Tickets();
             mTickets.resetCache();
@@ -394,15 +398,18 @@ public class RefreshService extends Service implements Handler.Callback {
                     popup_warning(R.string.notickets, null);
                 }
             } catch (JSONRPCException e) {
+                tcLog.d("Exception",e);
                 popup_warning(R.string.connerr, e.getMessage());
+            } catch (InterruptedException e) {
+                tcLog.toast("Load interrupted");
             } catch (Exception e) {
-				tcLog.d("Exception",e);
+                tcLog.d("Exception",e);
 			}
         } else {
             sendMessageToUI(MSG_LOAD_FASE1_FINISHED, mTickets);
             sendMessageToUI(MSG_LOAD_FASE2_FINISHED, mTickets);
         }
-        invalid = false;
+//        invalid = false;
     }
 
     private void loadTicketContent(Tickets tl) throws RuntimeException {
