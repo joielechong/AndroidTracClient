@@ -104,5 +104,7 @@
     <string name="hostnameign">\nIgnore die Prüfung?</string>
     <string name="noJSON">Kein JSON Unterstutzung auf Trac host</string>
     <string name="cookies">Cookies</string>
+    <string name="permissiontitle"> Antrag auf Genehmigung</string>
+    <string name="showdisclaimer">Haftungsausschluss</string>
 
 </resources>

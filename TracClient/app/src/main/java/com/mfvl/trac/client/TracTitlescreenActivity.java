@@ -24,7 +24,7 @@ import android.os.Bundle;
 import android.os.Handler;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.GoogleApiAvailability;
 
 import java.util.List;
 import java.util.Timer;
@@ -53,15 +53,17 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
 
         boolean adMobAvailable = false;
 
+        GoogleApiAvailability googleAvail = GoogleApiAvailability.getInstance();
+
         try {
-            final int isAvailable = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+            final int isAvailable =  googleAvail.isGooglePlayServicesAvailable(this);
 
             tcLog.d("Google Play Services available? : " + isAvailable);
             if (isAvailable == ConnectionResult.SUCCESS) {
                 adMobAvailable = true;
             } else {
-                if (GooglePlayServicesUtil.isUserRecoverableError(isAvailable)) {
-                    GooglePlayServicesUtil.getErrorDialog(isAvailable, this, 123456).show();
+                if (googleAvail.isUserResolvableError(isAvailable)) {
+                    googleAvail.getErrorDialog(this,isAvailable,123456).show();
                 } else {
                     tcLog.d("Hoe kom je hier");
                 }

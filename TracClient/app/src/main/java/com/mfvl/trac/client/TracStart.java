@@ -55,11 +55,14 @@ import android.widget.ShareActionProvider;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
+import org.alexd.jsonrpc.JSONRPCException;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -471,13 +474,13 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
             @Override
             public void onItemClick(AdapterView parent, View view, int position, long id) {
                 tcLog.d("parent = " + parent + " view = " + view + " position = " + position);
-				String newProfile = ((TextView) view).getText().toString();
-				tcLog.d(newProfile);
-				LoginProfile lp = pdb.getProfile(newProfile);
-				tcLog.d(lp);
-				if (lp != null) {
-					onLogin(lp.getUrl(), lp.getUsername(), lp.getPassword(), lp.getSslHack(), lp.getSslHostNameHack(), newProfile);
-				}
+                String newProfile = ((TextView) view).getText().toString();
+                tcLog.d(newProfile);
+                LoginProfile lp = pdb.getProfile(newProfile);
+                tcLog.d(lp);
+                if (lp != null) {
+                    onLogin(lp.getUrl(), lp.getUsername(), lp.getPassword(), lp.getSslHack(), lp.getSslHostNameHack(), newProfile);
+                }
                 mDrawerLayout.closeDrawer(mDrawerList);
             }
         });
@@ -1210,47 +1213,45 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
                 filename = uri.getPath();
             } else {
                 Cursor c = getContentResolver().query(uri, null, null, null, null);
-                if (c != null && c.moveToFirst()) {
+                if (c != null) {
+                    if ( c.moveToFirst()) {
 //                    tcLog.d("ColumnNames = "+Arrays.asList(c.getColumnNames()));
-                    int id = c.getColumnIndex(Images.Media.DISPLAY_NAME);
-                    if (id != -1) {
-                        filename = c.getString(id);
-                    }
-                    id = c.getColumnIndex(Images.Media.SIZE);
-                    if (id != -1) {
-                        bytes = c.getInt(id);
+                        int id = c.getColumnIndex(Images.Media.DISPLAY_NAME);
+                        if (id != -1) {
+                            filename = c.getString(id);
+                        }
+                        id = c.getColumnIndex(Images.Media.SIZE);
+                        if (id != -1) {
+                            bytes = c.getInt(id);
+                        }
                     }
                     c.close();
                 }
             }
-            tcLog.d("filename = " + filename);
-            tcLog.d("bytes = " + bytes);
             final File file = new File(filename == null ? uri.getPath() : filename);
-            tcLog.d("file = " + file);
-            tcLog.d("File path: " + file.getAbsolutePath());
-            tcLog.d("file.getName = " + file.getName());
             if (bytes == 0) {
                 bytes = (int) file.length();
-                tcLog.d("bytes = " + bytes);
             }
             final int maxBytes = (bytes > 0 ? bytes : 120000);   // 6 fold because of Base64
             final byte[] data = new byte[maxBytes];
 
             try {
                 final InputStream is = getContentResolver().openInputStream(uri);
-                String b64 = "";
-                for (int nbytes = is.read(data); nbytes >= 0; nbytes = is.read(data)) {
-                    b64 += Base64.encodeToString(data, 0, nbytes, Base64.DEFAULT);
+                if (is != null) {
+                    String b64 = "";
+                    for (int nbytes = is.read(data); nbytes >= 0; nbytes = is.read(data)) {
+                        b64 += Base64.encodeToString(data, 0, nbytes, Base64.DEFAULT);
+                    }
+                    is.close();
+                    new TracHttpClient(url, sslHack, sslHostNameHack, username, password).putAttachment(_ticknr, file.getName(), b64);
+                } else {
+                    tcLog.i("Cannot open"+ uri);
+                    showAlertBox(R.string.warning, R.string.notfound, filename);
                 }
-                is.close();
-
-                new TracHttpClient(url, sslHack, sslHostNameHack, username, password)
-                        .putAttachment(_ticknr,file.getName(),b64);
-
             } catch (final FileNotFoundException e) {
                 tcLog.i("Exception", e);
                 showAlertBox(R.string.warning, R.string.notfound, filename);
-            } catch (final Exception e) {
+            } catch (final NullPointerException|IOException|JSONRPCException|JSONException e) {
                 tcLog.i("Exception", e);
                 showAlertBox(R.string.warning, R.string.failed, filename);
             } finally {
