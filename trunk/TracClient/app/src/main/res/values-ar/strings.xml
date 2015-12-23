@@ -100,5 +100,7 @@
     <string name="unsaved">مغادرة الشاشة وحفظ التغييرات؟</string>
     <string name="nee">لا</string>
     <string name="ja">نعم</string>
+    <string name="permissiontitle"> طلب للحصول على إذن</string>
+    <string name="showdisclaimer">إخلاء مسؤولية</string>
 
 </resources>

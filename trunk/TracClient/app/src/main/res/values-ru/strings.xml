@@ -102,4 +102,6 @@
         <item>не заканчивается на</item>
     </string-array>
     <string name="cookies">кукис </string>
+    <string name="permissiontitle">Запрос разрешения</string>
+    <string name="showdisclaimer">Отказ</string>
 </resources>

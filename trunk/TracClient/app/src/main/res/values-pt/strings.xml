@@ -100,5 +100,7 @@
     <string name="unsaved">Deixar a tela e salvar as modificações?</string>
     <string name="nee">Não</string>
     <string name="ja">Sim</string>
+    <string name="permissiontitle"> Pedido de autorização</string>
+    <string name="showdisclaimer">Aviso Legal</string>
 
 </resources>
