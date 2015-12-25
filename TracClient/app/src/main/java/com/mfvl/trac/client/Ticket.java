@@ -22,7 +22,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 interface onTicketCompleteListener {
@@ -39,7 +39,7 @@ public class Ticket implements Serializable {
      */
     private static final long serialVersionUID = -3915928655754922097L;
     private final int _ticknr;
-    private final Semaphore actionLock = new Semaphore(1, true);
+    private final ReentrantLock actionLock = new ReentrantLock();
     private JSONObject _velden;
     private JSONArray _history;
     private JSONArray _attachments;
@@ -54,7 +54,7 @@ public class Ticket implements Serializable {
         _history = null;
         _attachments = null;
         _actions = null;
-        actionLock.acquireUninterruptibly();
+        actionLock.lock();
         _hasdata = true;
     }
 
@@ -64,7 +64,7 @@ public class Ticket implements Serializable {
         _history = null;
         _attachments = null;
         _actions = null;
-        actionLock.acquireUninterruptibly();
+        actionLock.lock();
         _hasdata = false;
     }
 
@@ -115,20 +115,18 @@ public class Ticket implements Serializable {
     }
 
     public JSONArray getActions() {
-        actionLock.acquireUninterruptibly();
+        actionLock.lock();
         try {
             return _actions;
         } finally {
-            if (actionLock.availablePermits() == 0) {
-                actionLock.release();
-            }
+            actionLock.unlock();
         }
     }
 
     public void setActions(JSONArray actions) {
         _actions = actions;
-        if (actionLock.availablePermits() == 0) {
-            actionLock.release();
+        if (actionLock.isLocked()) {
+            actionLock.unlock();
         }
     }
 

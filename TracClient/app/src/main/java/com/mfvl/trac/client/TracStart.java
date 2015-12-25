@@ -68,7 +68,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static com.mfvl.trac.client.Const.*;
 
@@ -89,7 +89,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
     private static final String FilterFragmentTag = "Filter_Fragment";
     private static final String SortFragmentTag = "Sort_Fragment";
     static public Handler tracStartHandler = null;
-    private final Semaphore loadingActive = new Semaphore(1, true);
+    private final ReentrantLock loadingActive = new ReentrantLock();
 
     private ArrayList<SortSpec> sortList = null;
     private ArrayList<FilterSpec> filterList = null;
@@ -1077,9 +1077,11 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
 
     @Override
     public Ticket getTicket(int i) {
-        tcLog.d("i = " + i + " semaphore = " + loadingActive.availablePermits());
-        loadingActive.acquireUninterruptibly();
-        loadingActive.release();
+        tcLog.d("i = " + i + " semaphore = " + loadingActive);
+
+        if (loadingActive.isLocked()) {
+            loadingActive.unlock();
+        }
 
         Ticket t = dataAdapter.getTicket(i);
         tcLog.d("i = " + i + " ticket = " + t);
@@ -1383,7 +1385,7 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
                     startProgressBar(getString(R.string.getlist) + (profile == null ? "" : "\n" + profile));
                     hasTicketsLoadingBar = true;
                 }
-                loadingActive.acquireUninterruptibly();
+                loadingActive.lock();
                 ticketsLoading = true;
 
                 if (mService == null) {
@@ -1407,14 +1409,14 @@ public class TracStart extends Activity implements Handler.Callback, InterFragme
                     }
                     ticketsLoading = false;
                 }
+                if (loadingActive.isLocked() ) {
+                    loadingActive.unlock();
+                }
                 TracStart.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         dataAdapter.clear();
                         dataAdapter.addAll(tl);
-                        if (loadingActive.availablePermits() == 0) {
-                            loadingActive.release();
-                        }
 						notifyTicketListFragment();
                     }
                 });
