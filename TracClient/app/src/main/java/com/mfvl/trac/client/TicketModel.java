@@ -134,8 +134,10 @@ public class TicketModel implements Serializable {
     }
 
     public void wacht() {
-        active.acquireUninterruptibly();
-        active.release();
+        if (active.availablePermits() == 0) {
+            active.acquireUninterruptibly();
+            active.release();
+        }
     }
 
     TicketModelVeld getVeld(final String naam) {
