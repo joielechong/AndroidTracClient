@@ -23,8 +23,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
+//import com.google.android.gms.common.ConnectionResult;
+//import com.google.android.gms.common.GoogleApiAvailability;
 
 import java.util.List;
 import java.util.Timer;
@@ -51,8 +51,9 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
 //        tcLog.logCall();
         super.onStart();
 
-        boolean adMobAvailable = false;
-
+//        boolean adMobAvailable = false;
+        boolean adMobAvailable = true;
+/*
         GoogleApiAvailability googleAvail = GoogleApiAvailability.getInstance();
 
         try {
@@ -71,7 +72,7 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
         } catch (final Exception e) {
             tcLog.e("Exception while determining Google Play Services", e);
         }
-
+*/
         launchTrac = new Intent(getApplicationContext(), TracStart.class);
 
         // adMobAvailable=false;
