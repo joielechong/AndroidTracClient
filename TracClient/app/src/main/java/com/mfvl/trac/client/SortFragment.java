@@ -30,8 +30,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import static com.mfvl.trac.client.Const.MSG_SET_SORT;
-import static com.mfvl.trac.client.Const.SORTLISTNAME;
+import static com.mfvl.trac.client.Const.*;
 
 public class SortFragment extends SpecFragment<SortSpec> {
 

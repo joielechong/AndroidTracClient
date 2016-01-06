@@ -144,29 +144,29 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 
             final AdRequest.Builder arb = new AdRequest.Builder();
 
-            if (adView != null) {
-                arb.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
-                if (TracGlobal.isDebuggable()) {
-                    for (final String t : testDevices) {
-                        tcLog.d("testDevice = " + t);
-                        arb.addTestDevice(t);
-                    }
-                }
-                arb.setGender(AdRequest.GENDER_UNKNOWN);
-                final AdRequest adRequest = arb.build();
+			arb.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
+			if (TracGlobal.isDebuggable()) {
+				for (final String t : testDevices) {
+					tcLog.d("testDevice = " + t);
+					arb.addTestDevice(t);
+				}
+			}
+			arb.setGender(AdRequest.GENDER_UNKNOWN);
+			final AdRequest adRequest = arb.build();
 
-                try {
-                    adView.loadAd(adRequest);
-                    adView.setLayoutParams(adViewContainer.getLayoutParams());
-                    // tcLog.d( "adView size = " +adView.getHeight());
-                    adViewContainer.addView(adView);
-                } catch (final Exception e) {
-                    if (aboveView != null) {
-                        aboveView.setPadding(0, 0, 0, 0);
-                    }
-                    listener.setDispAds(false);
-                }
-            }
+			try {
+				adView.loadAd(adRequest);
+				adView.setLayoutParams(adViewContainer.getLayoutParams());
+				// tcLog.d( "adView size = " +adView.getHeight());
+				adViewContainer.addView(adView);
+			} catch (final Exception e) {
+				tcLog.e("Problem loading AdRequest", e);
+				if (aboveView != null) {
+					aboveView.setPadding(0, 0, 0, 0);
+				}
+				listener.setDispAds(false);
+			}
+			
             if (aboveView != null) {
                 padTop = aboveView.getPaddingTop();
                 padRight = aboveView.getPaddingRight();

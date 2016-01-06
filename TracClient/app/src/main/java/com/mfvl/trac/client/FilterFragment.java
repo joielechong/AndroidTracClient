@@ -42,8 +42,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static com.mfvl.trac.client.Const.FILTERLISTNAME;
-import static com.mfvl.trac.client.Const.MSG_SET_FILTER;
+import static com.mfvl.trac.client.Const.*;
 
 public class FilterFragment extends SpecFragment<FilterSpec> implements OnCheckedChangeListener {
     private static ArrayList<String> operators = null;
