@@ -668,9 +668,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
                 context.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        final AlertDialog.Builder alert = new AlertDialog.Builder(context);
-
-                        alert
+                        new AlertDialog.Builder(context)
                                 .setTitle(R.string.warning)
                                 .setMessage(R.string.unsaved)
                                 .setPositiveButton(R.string.ja, new DialogInterface.OnClickListener() {

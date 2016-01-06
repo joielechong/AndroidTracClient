@@ -41,7 +41,7 @@ import java.util.TimerTask;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static com.mfvl.trac.client.Const.*;
-import static com.mfvl.trac.client.TracGlobal.*;
+import static com.mfvl.trac.client.TracGlobal.ticketGroupCount;
 
 public class RefreshService extends Service implements Handler.Callback {
 
@@ -55,6 +55,7 @@ public class RefreshService extends Service implements Handler.Callback {
             tcLog.logCall();
             Thread t = super.getOwner();
             t.interrupt();
+            tcLog.toast("Trying to interrupt ticketlist loading");
         }
     }
 
@@ -107,26 +108,18 @@ public class RefreshService extends Service implements Handler.Callback {
                 if (msg.arg1 > 0) {
                     Tickets tl = changedTickets((String) msg.obj);
                     if (tl != null && tl.ticketList.size() > 0) {
-                        try {
-                            final Intent launchIntent = new Intent(RefreshService.this, Refresh.class);
-
-                            launchIntent.setAction(refreshAction);
-                            final PendingIntent pendingIntent = PendingIntent.getActivity(RefreshService.this, -1, launchIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-                            final Notification notification = new NotificationCompat.Builder(RefreshService.this)
-                                    .setSmallIcon(R.drawable.traclogo)
-                                    .setAutoCancel(true)
-                                    .setContentTitle(RefreshService.this.getString(R.string.notifmod))
-                                    .setTicker(RefreshService.this.getString(R.string.foundnew))
-                                    .setContentText(RefreshService.this.getString(R.string.foundnew))
-                                    .setContentIntent(pendingIntent)
-                                    .setSubText(tl.ticketList.toString())
-                                    .build();
-                            mNotificationManager.notify(notifId, notification);
-                            // tcLog.d( "Notification sent");
-                        } catch (final IllegalArgumentException e) {
-                            tcLog.e("IllegalArgumentException in notification", e);
-                        }
+                        mNotificationManager.notify(notifId, new NotificationCompat.Builder(this)
+                                .setSmallIcon(R.drawable.traclogo)
+                                .setAutoCancel(true)
+                                .setContentTitle(RefreshService.this.getString(R.string.notifmod))
+                                .setTicker(RefreshService.this.getString(R.string.foundnew))
+                                .setContentText(RefreshService.this.getString(R.string.foundnew))
+                                .setContentIntent(PendingIntent.getActivity(this, -1,
+                                        new Intent(this, Refresh.class).setAction(refreshAction),
+                                        PendingIntent.FLAG_UPDATE_CURRENT))
+                                .setSubText(tl.ticketList.toString())
+                                .build());
+                        // tcLog.d( "Notification sent");
                     }
                 }
                 break;
@@ -214,6 +207,7 @@ public class RefreshService extends Service implements Handler.Callback {
     }
 
     public TicketModel getTicketModel() {
+        tcLog.logCall();
         tm = TicketModel.getInstance();
 //        tcLog.d("tm = "+tm);
         return tm;
@@ -251,24 +245,6 @@ public class RefreshService extends Service implements Handler.Callback {
     @Override
     public IBinder onBind(Intent intent) {
         tcLog.d("intent = " + intent);
-/*
-        String action = intent.getAction();
-        if (action != null) {
-            Message msg = mServiceHandler.obtainMessage();
-            switch (action) {
-                case ACTION_LOAD_TICKETS:
-                    msg.what = MSG_LOAD_TICKETS;
-                    msg.obj = (intent.getSerializableExtra("LoginProfile"));
-                    mServiceHandler.sendMessage(msg);
-                    break;
-
-                case ACTION_START_TIMER:
-                    msg.what = MSG_START_TIMER;
-                    mServiceHandler.sendMessage(msg);
-                    break;
-            }
-        }
-*/
         return mBinder;
     }
 
@@ -288,31 +264,35 @@ public class RefreshService extends Service implements Handler.Callback {
         stopTimer();
         mHandlerThread.interrupt();
         mHandlerThread.quit();
+        mHandlerThread = null;
         mNotificationManager.cancel(notifId);
         super.onDestroy();
     }
 
     private void startTimer() {
-        //tcLog.logCall();
+        tcLog.logCall();
         monitorTimer = new Timer("monitorTickets");
         monitorTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                //tcLog.d("timertask started");
+                tcLog.d("timertask started");
                 sendMessageToUI(MSG_REQUEST_TICKET_COUNT);
             }
         }, timerStart, timerPeriod);
     }
 
     private void stopTimer() {
+        tcLog.logCall();
         if (monitorTimer != null) {
             monitorTimer.cancel();
+            tcLog.d("timertask stopped");
         }
         monitorTimer = null;
     }
 
     private void startLoadTickets() {
-        tcLog.d("loadLock = "+loadLock+ " invalid = "+invalid);
+        tcLog.d("loadLock = " + loadLock + " invalid = " + invalid);
+        stopTimer();
         new Thread() {
             @Override
             public void run() {
@@ -333,16 +313,16 @@ public class RefreshService extends Service implements Handler.Callback {
             }
         }.start();
     }
-	
-	private void check_interrupt() throws InterruptedException {
-		if (Thread.currentThread().isInterrupted()) {
-			throw new InterruptedException();
-		}
-	}
+
+    private void check_interrupt() throws InterruptedException {
+        if (Thread.currentThread().isInterrupted()) {
+            throw new InterruptedException();
+        }
+    }
 
     private void loadTickets() {
         tcLog.d(mLoginProfile.toString());
-        tcLog.d("invalid = "+invalid);
+        tcLog.d("invalid = " + invalid);
         if (invalid) {
             mTickets = new Tickets();
             mTickets.resetCache();
@@ -364,7 +344,7 @@ public class RefreshService extends Service implements Handler.Callback {
             tcLog.d("reqString = " + reqString);
             try {
                 final JSONArray jsonTicketlist = tracClient.Query(reqString);
-				check_interrupt();
+                check_interrupt();
                 tcLog.d(jsonTicketlist.toString());
                 final int count = jsonTicketlist.length();
 
@@ -386,6 +366,9 @@ public class RefreshService extends Service implements Handler.Callback {
                     sendMessageToUI(MSG_LOAD_FASE1_FINISHED, mTickets);
                     try {
                         loadTicketContent(mTickets);
+                        mServiceHandler.obtainMessage(MSG_START_TIMER).sendToTarget();
+                    } catch (InterruptedException e) {
+                        tcLog.toast("Loadcontent interrupted");
                     } catch (Exception e) {
                         tcLog.e("Exception in ticketContentLoad", e);
                         popup_warning(R.string.connerr, e.getMessage());
@@ -398,13 +381,15 @@ public class RefreshService extends Service implements Handler.Callback {
                     popup_warning(R.string.notickets, null);
                 }
             } catch (JSONRPCException e) {
-                tcLog.d("Exception",e);
+                tcLog.d("JSONRPCException", e);
                 popup_warning(R.string.connerr, e.getMessage());
             } catch (InterruptedException e) {
-                tcLog.toast("Load interrupted");
+                tcLog.d("InterruptedException", e);
+                tcLog.toast("Loadlist interrupted");
+                sendMessageToUI(MSG_LOAD_ABORTED, mTickets);
             } catch (Exception e) {
-                tcLog.d("Exception",e);
-			}
+                tcLog.d("Exception", e);
+            }
         } else {
             sendMessageToUI(MSG_LOAD_FASE1_FINISHED, mTickets);
             sendMessageToUI(MSG_LOAD_FASE2_FINISHED, mTickets);
@@ -412,61 +397,57 @@ public class RefreshService extends Service implements Handler.Callback {
 //        invalid = false;
     }
 
-    private void loadTicketContent(Tickets tl) throws RuntimeException {
+    private void loadTicketContent(Tickets tl) throws Exception {
         tcLog.logCall();
         int count = tl.getTicketCount();
         tcLog.d("count = " + count + " " + tl);
 
-        try {
-            for (int j = 0; j < count; j += ticketGroupCount) {
-                final JSONArray mc = new JSONArray();
+        for (int j = 0; j < count; j += ticketGroupCount) {
+            final JSONArray mc = new JSONArray();
 
-                for (int i = j; i < (j + ticketGroupCount < count ? j + ticketGroupCount : count); i++) {
-                    buildCall(mc, tl.ticketList.get(i).getTicketnr());
-                }
-                try {
-                    final JSONArray mcresult = tracClient.callJSONArray("system.multicall", mc);
-                    // tcLog.d("mcresult = " + mcresult);
-					check_interrupt();
-                    Ticket t = null;
-
-                    for (int k = 0; k < mcresult.length(); k++) {
-                        try {
-                            final JSONObject res = mcresult.getJSONObject(k);
-                            final String id = res.getString("id");
-                            final JSONArray result = res.getJSONArray("result");
-                            final int startpos = id.indexOf("_") + 1;
-                            final int thisTicket = Integer.parseInt(id.substring(startpos));
-
-                            if (t == null || t.getTicketnr() != thisTicket)
-                                t = tl.getTicket(thisTicket);
-                            if (t != null) {
-                                if ((TICKET_GET + "_" + thisTicket).equals(id)) {
-                                    t.setFields(result.getJSONObject(3));
-                                } else if ((TICKET_CHANGE + "_" + thisTicket).equals(id)) {
-                                    t.setHistory(result);
-                                } else if ((TICKET_ATTACH + "_" + thisTicket).equals(id)) {
-                                    t.setAttachments(result);
-                                } else if ((TICKET_ACTION + "_" + thisTicket).equals(id)) {
-                                    t.setActions(result);
-                                } else {
-                                    tcLog.d("unexpected response = " + result);
-                                }
-                            }
-							check_interrupt();
-                        } catch (final JSONException e1) {
-                            tcLog.e("JSONException thrown innerloop j=" + j + " k=" + k, e1);
-                        }
-                    }
-                } catch (final JSONRPCException e) {
-                    tcLog.e("JSONRPCException thrown outerloop j=" + j, e);
-                } finally {
-                    tcLog.d("loop " + tl.getTicketContentCount());
-                }
-                notify_datachanged();
+            for (int i = j; i < (j + ticketGroupCount < count ? j + ticketGroupCount : count); i++) {
+                buildCall(mc, tl.ticketList.get(i).getTicketnr());
             }
-        } catch (Exception e) {
-            tcLog.e("Exception", e);
+            try {
+                final JSONArray mcresult = tracClient.callJSONArray("system.multicall", mc);
+                // tcLog.d("mcresult = " + mcresult);
+                check_interrupt();
+                Ticket t = null;
+
+                for (int k = 0; k < mcresult.length(); k++) {
+                    try {
+                        final JSONObject res = mcresult.getJSONObject(k);
+                        final String id = res.getString("id");
+                        final JSONArray result = res.getJSONArray("result");
+                        final int startpos = id.indexOf("_") + 1;
+                        final int thisTicket = Integer.parseInt(id.substring(startpos));
+
+                        if (t == null || t.getTicketnr() != thisTicket)
+                            t = tl.getTicket(thisTicket);
+                        if (t != null) {
+                            if ((TICKET_GET + "_" + thisTicket).equals(id)) {
+                                t.setFields(result.getJSONObject(3));
+                            } else if ((TICKET_CHANGE + "_" + thisTicket).equals(id)) {
+                                t.setHistory(result);
+                            } else if ((TICKET_ATTACH + "_" + thisTicket).equals(id)) {
+                                t.setAttachments(result);
+                            } else if ((TICKET_ACTION + "_" + thisTicket).equals(id)) {
+                                t.setActions(result);
+                            } else {
+                                tcLog.d("unexpected response = " + result);
+                            }
+                        }
+                        check_interrupt();
+                    } catch (final JSONException e1) {
+                        tcLog.e("JSONException thrown innerloop j=" + j + " k=" + k, e1);
+                    }
+                }
+            } catch (final JSONRPCException e) {
+                tcLog.e("JSONRPCException thrown outerloop j=" + j, e);
+            } finally {
+                tcLog.d("loop " + tl.getTicketContentCount());
+            }
+            notify_datachanged();
         }
     }
 

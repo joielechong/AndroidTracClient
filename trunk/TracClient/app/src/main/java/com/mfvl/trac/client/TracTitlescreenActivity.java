@@ -38,12 +38,11 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+//        tcLog.logCall();
         super.onCreate(savedInstanceState);
         tcLog.setContext(this);
-//        tcLog.logCall();
         TracGlobal.getInstance(getApplicationContext());
         setContentView(R.layout.activity_titlescreen);
-        startService(new Intent(this, RefreshService.class));
     }
 
     @Override
@@ -53,26 +52,6 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
 
 //        boolean adMobAvailable = false;
         boolean adMobAvailable = true;
-/*
-        GoogleApiAvailability googleAvail = GoogleApiAvailability.getInstance();
-
-        try {
-            final int isAvailable =  googleAvail.isGooglePlayServicesAvailable(this);
-
-            tcLog.d("Google Play Services available? : " + isAvailable);
-            if (isAvailable == ConnectionResult.SUCCESS) {
-                adMobAvailable = true;
-            } else {
-                if (googleAvail.isUserResolvableError(isAvailable)) {
-                    googleAvail.getErrorDialog(this,isAvailable,123456).show();
-                } else {
-                    tcLog.d("Hoe kom je hier");
-                }
-            }
-        } catch (final Exception e) {
-            tcLog.e("Exception while determining Google Play Services", e);
-        }
-*/
         launchTrac = new Intent(getApplicationContext(), TracStart.class);
 
         // adMobAvailable=false;

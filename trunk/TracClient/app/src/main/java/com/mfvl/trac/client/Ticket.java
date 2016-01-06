@@ -22,8 +22,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.util.concurrent.locks.ReentrantLock;
-
+import java.util.concurrent.Semaphore;
 
 interface onTicketCompleteListener {
     void onComplete(Ticket t);
@@ -39,7 +38,7 @@ public class Ticket implements Serializable {
      */
     private static final long serialVersionUID = -3915928655754922097L;
     private final int _ticknr;
-    private final ReentrantLock actionLock = new ReentrantLock();
+    private final Semaphore actionLock = new Semaphore(1, true);
     private JSONObject _velden;
     private JSONArray _history;
     private JSONArray _attachments;
@@ -54,7 +53,7 @@ public class Ticket implements Serializable {
         _history = null;
         _attachments = null;
         _actions = null;
-        actionLock.lock();
+        actionLock.acquireUninterruptibly();
         _hasdata = true;
     }
 
@@ -64,7 +63,7 @@ public class Ticket implements Serializable {
         _history = null;
         _attachments = null;
         _actions = null;
-        actionLock.lock();
+        actionLock.acquireUninterruptibly();
         _hasdata = false;
     }
 
@@ -82,7 +81,7 @@ public class Ticket implements Serializable {
             return _ticknr + "";
         }
         try {
-            return _ticknr + (_attachments.length() > 0 ? "+" : "") + " - " + _velden.getString("status") + " - "
+            return _ticknr + (_attachments != null && _attachments.length() > 0 ? "+" : "") + " - " + _velden.getString("status") + " - "
                     + _velden.getString("summary");
         } catch (final JSONException e) {
             return _ticknr + "";
@@ -115,18 +114,17 @@ public class Ticket implements Serializable {
     }
 
     public JSONArray getActions() {
-        actionLock.lock();
-        try {
-            return _actions;
-        } finally {
-            actionLock.unlock();
+        if (actionLock.availablePermits() == 0) {
+            actionLock.acquireUninterruptibly();
+            actionLock.release();
         }
+        return _actions;
     }
 
     public void setActions(JSONArray actions) {
         _actions = actions;
-        if (actionLock.isLocked()) {
-            actionLock.unlock();
+        if (actionLock.availablePermits() == 0) {
+            actionLock.release();
         }
     }
 
