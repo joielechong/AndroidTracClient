@@ -16,7 +16,6 @@
 
 package com.mfvl.trac.client;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -41,23 +40,9 @@ import java.util.TimerTask;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static com.mfvl.trac.client.Const.*;
-import static com.mfvl.trac.client.TracGlobal.ticketGroupCount;
+import static com.mfvl.trac.client.TracGlobal.*;
 
 public class RefreshService extends Service implements Handler.Callback {
-
-    private class TicketLoaderLock extends ReentrantLock {
-        TicketLoaderLock() {
-            super();
-            tcLog.logCall();
-        }
-
-        public void killOwner() {
-            tcLog.logCall();
-            Thread t = super.getOwner();
-            t.interrupt();
-            tcLog.toast("Trying to interrupt ticketlist loading");
-        }
-    }
 
     public static final String refreshAction = "LIST_REFRESH";
     private final static String TICKET_GET = "GET";
@@ -347,7 +332,8 @@ public class RefreshService extends Service implements Handler.Callback {
                 check_interrupt();
                 tcLog.d(jsonTicketlist.toString());
                 final int count = jsonTicketlist.length();
-
+                tcLog.d("ticketlist loaded");
+				
                 if (count > 0) {
                     int tickets[] = new int[count];
                     for (int i = 0; i < count; i++) {
@@ -362,19 +348,10 @@ public class RefreshService extends Service implements Handler.Callback {
                             mTickets.ticketList.add(i, t);
                         }
                     }
-                    tcLog.d("ticketlist loaded");
                     sendMessageToUI(MSG_LOAD_FASE1_FINISHED, mTickets);
-                    try {
-                        loadTicketContent(mTickets);
-                        mServiceHandler.obtainMessage(MSG_START_TIMER).sendToTarget();
-                    } catch (InterruptedException e) {
-                        tcLog.toast("Loadcontent interrupted");
-                    } catch (Exception e) {
-                        tcLog.e("Exception in ticketContentLoad", e);
-                        popup_warning(R.string.connerr, e.getMessage());
-                    } finally {
-                        sendMessageToUI(MSG_LOAD_FASE2_FINISHED, mTickets);
-                    }
+					loadTicketContent(mTickets);
+					mServiceHandler.obtainMessage(MSG_START_TIMER).sendToTarget();
+					sendMessageToUI(MSG_LOAD_FASE2_FINISHED, mTickets);
                 } else {
                     sendMessageToUI(MSG_LOAD_FASE1_FINISHED, mTickets);
                     sendMessageToUI(MSG_LOAD_FASE2_FINISHED, mTickets);
@@ -385,10 +362,12 @@ public class RefreshService extends Service implements Handler.Callback {
                 popup_warning(R.string.connerr, e.getMessage());
             } catch (InterruptedException e) {
                 tcLog.d("InterruptedException", e);
-                tcLog.toast("Loadlist interrupted");
+                tcLog.toast("Ticketload interrupted");
                 sendMessageToUI(MSG_LOAD_ABORTED, mTickets);
             } catch (Exception e) {
                 tcLog.d("Exception", e);
+                sendMessageToUI(MSG_LOAD_ABORTED, mTickets);
+                popup_warning(R.string.connerr, e.getMessage());
             }
         } else {
             sendMessageToUI(MSG_LOAD_FASE1_FINISHED, mTickets);
@@ -496,6 +475,20 @@ public class RefreshService extends Service implements Handler.Callback {
             tcLog.d("getChanges exception", e);
         }
         return null;
+    }
+
+    private class TicketLoaderLock extends ReentrantLock {
+        TicketLoaderLock() {
+            super();
+            tcLog.logCall();
+        }
+
+        public void killOwner() {
+            tcLog.logCall();
+            Thread t = super.getOwner();
+            t.interrupt();
+            tcLog.toast("Trying to interrupt ticketlist loading");
+        }
     }
 
     public class RefreshBinder extends Binder {

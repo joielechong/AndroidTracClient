@@ -77,10 +77,8 @@ final class Const {
     static final int MSG_LOAD_FASE2_FINISHED = 44;
     static final int MSG_GET_TICKET_MODEL = 45;
     static final int MSG_LOAD_ABORTED = 46;
-    static final int MSG_ABORT_LOAD = 47;
     /*
      * App private Intent actions
     */
     static final String ACTION_LOAD_TICKETS = "com.mfvl.trac.client.action.LoadTickets";
-    static final String ACTION_START_TIMER = "com.mfvl.trac.client.action.StartTimer";
 }

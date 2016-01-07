@@ -3,10 +3,10 @@
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <link rel="stylesheet" type="text/css" href="tc.css" >
     <title>Aanroepen van TraccClient via een URL</title>
 </head>
-<P bgcolor="#0099cc">
-< color="#77e5e5">
+<body>
     <h1>Aanroepen van TraccClient via een URL</h1>
     Deze functie is toegevoegd zodat ghet mogelijk is om een ticket direct te openen van uit een
     notificatie email verzonden door de TRAC server. Dit vereist ook een wijziging van notificatie
@@ -25,14 +25,16 @@
     <p>
         Het in de URI genoemde ticket zal alleen worden getoond als er in de voorgedefinieerde
         profielen een van de volgende url schema's is:
+    </p>
     <ol>
         <li>http(s)://real.track.site.com/path/login/rpc
         <li>http(s)://real.track.site.com/path/rpc
         <li>http(s)://real.track.site.com/path/
     </ol>
+    <p>
     In dat geval zullen gebruikersnaam en wachtwoord van de eerst gevonden entry in de profiel
     database worden gebrukikt.
-    </P>
+    </p>
     <p>
         Het is belangrijk zich te realiseren dat een http-url niet gelijk is aan een https-url.
     </p>
@@ -54,6 +56,5 @@
         Als een html-template wordt gebruikt of op webpagina's dan is het beter om de tracclient://
         variant te gebruiken.
     </p>
-</font>
 </body>
 </html> 
