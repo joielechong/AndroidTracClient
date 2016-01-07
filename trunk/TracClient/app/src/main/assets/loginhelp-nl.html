@@ -3,10 +3,10 @@
 <html lang="nl">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <link rel="stylesheet" type="text/css" href="tc.css" >
     <title>Specificeer TRAC server</title>
 </head>
-<body bgcolor="#0099cc">
-<font color="#77e5e5">
+<body>
     <h1>Specificeer TRAC server</h1>
     Voor meer informatie over het starten van TracClient vanuit een URL zie <a href="url-nl.html">deze
     pagina</a>.
@@ -20,23 +20,21 @@
         Als opgeslagen informatie beschikbaar is dan wordt een dropdown box getoond om een van de
         opgeslagen profielen te selecteren.
     </p>
-
     <p>
         Indien login informatie vereist is dan kan deze ook ingevoerd worden.
     </p>
-
     <p>
         Gebruik de <b>Verifieer</b> knop om te controleren of de app verbinding kan maken met de
         server.
         Met <b>OK</b> wordt de server informatie opgeslagen.
     </p>
-
     <p>
         Normaal gesproken is de in te vullen URL het adres van de TRAC site aangevuld met
         <code>/rpc</code> als er geen login informatie nodig en <code>/login/rpc</code> indien deze
         wel vereist is.
         <br>
         Een paar voorbeeld URLs:
+    </p>
     <ul>
         <li>TracClient RO: http://van-loon.xs4all.nl/TracClient/rpc
             <br>Geen gebruikersnaam en wachtwoord nodig
@@ -44,22 +42,18 @@
             <br> Een geldige gebruikersnaam en wachtwoord zijn nodig ook moet voor deze site het
             certificaat vinkje gezet worden.
     </ul>
-    </p>
     <p>Via het menu kunnen de opgeslagen profielen worden gexporteerd naar de SD-kaart.
         Dan wordt het file TracClient.XML geschreven in de TracClient folder.
         Met de importeer functie kan dit file weer worden ingelezen, de oude informatie wordt
         overschreven.
         Let op ook de wachtwoorden leesbaar worden geexporteerd.
     </p>
-
     <p>
         De sorteervolgorde wordt op <code>priority&amp;modified&amp;desc=1</code> gezet.
         <br>
         Het filter wordt op <code>max=500&amp;status!=closed</code> gezet.
     </p>
-
     <h2>SSL overwegingen</h2>
-
     <h3>Self Signed Certificaten</h3>
     Als je de fout <u>No peer certificate</u> of <u>Trust anchor for certification path not
     found</u> krijgt,
@@ -71,6 +65,5 @@
     Dit zal worden herkend en je wordt gevraagd om de hostname verificatie fout negeren. Dit breekt
     ook de bescherming door SSL, maar kunt u de site te gebruiken.
     Ik ben nog op zoek naar een veilige oplossing.
-</font>
 </body>
 </html> 

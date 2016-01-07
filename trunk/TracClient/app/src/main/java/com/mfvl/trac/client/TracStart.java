@@ -91,7 +91,8 @@ public class TracStart extends Activity implements Handler.Callback,
     private static final String FilterFragmentTag = "Filter_Fragment";
     private static final String SortFragmentTag = "Sort_Fragment";
     static public Handler tracStartHandler = null;
-
+    final private Semaphore waitForService = new Semaphore(1,true);
+    final private Semaphore loadingActive = new Semaphore(1,true);
     private ArrayList<SortSpec> sortList = null;
     private ArrayList<FilterSpec> filterList = null;
     private String profile = null;
@@ -112,19 +113,8 @@ public class TracStart extends Activity implements Handler.Callback,
     private boolean doNotFinish = false;
     private TicketModel tm = null;
     private boolean mIsBound = false;
-    private boolean mTicketsBound = false;
     private Messenger mMessenger = null;
     private RefreshService mService = null;
-
-    private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
-    private ProfileDatabaseHelper pdb = null;
-    private Cursor pdbCursor;
-    final private Semaphore waitForService = new Semaphore(1,true);
-    final private Semaphore loadingActive = new Semaphore(1,true);
-    private Intent serviceIntent;
-
-
     private final ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -145,7 +135,6 @@ public class TracStart extends Activity implements Handler.Callback,
             mIsBound = false;
         }
     };
-
     private final ServiceConnection mTicketsConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -157,20 +146,22 @@ public class TracStart extends Activity implements Handler.Callback,
                 waitForService.release();
             }
             tcLog.d("mTicketsConnection mService = " + mService);
-            mTicketsBound = true;
             dispatchMessage(Message.obtain(null, MSG_LOAD_TICKETS, currentLoginProfile));
         }
 
         @Override
         public void onServiceDisconnected(ComponentName className) {
             tcLog.d("className = " + className);
-            mTicketsBound = false;
             if (!mIsBound) {
                 mService = null;
             }
         }
     };
-
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
+    private ProfileDatabaseHelper pdb = null;
+    private Cursor pdbCursor;
+    private Intent serviceIntent;
     private MyHandlerThread mHandlerThread = null;
     private boolean hasTicketsLoadingBar = false;
     private Boolean ticketsLoading = false;
@@ -1097,6 +1088,7 @@ public class TracStart extends Activity implements Handler.Callback,
         tcLog.d("i = " + i + " semaphore = " + loadingActive);
 
         if (loadingActive.availablePermits() == 0) {
+            loadingActive.acquireUninterruptibly();
             loadingActive.release();
         }
 
@@ -1402,7 +1394,7 @@ public class TracStart extends Activity implements Handler.Callback,
                     startProgressBar(getString(R.string.getlist) + (profile == null ? "" : "\n" + profile));
                     hasTicketsLoadingBar = true;
                 }
-                if (loadingActive.availablePermits()==0) {
+                if (loadingActive.availablePermits()==0) {  // release semaphore if in use
                     loadingActive.release();
                 }
                 loadingActive.acquireUninterruptibly();
@@ -1431,18 +1423,17 @@ public class TracStart extends Activity implements Handler.Callback,
                 if (loadingActive.availablePermits() == 0 ) {
                     loadingActive.release();
                 }
+                notifyTicketListFragment();
                 break;
 
             case MSG_LOAD_FASE1_FINISHED:
                 final Tickets tl = (Tickets) msg.obj;
                 tcLog.d("Tickets = " + tl);
-                synchronized (this) {
-                    if (hasTicketsLoadingBar) {
-                        stopProgressBar();
-                        hasTicketsLoadingBar = false;
-                    }
-                    ticketsLoading = false;
-                }
+				if (hasTicketsLoadingBar) {
+					stopProgressBar();
+					hasTicketsLoadingBar = false;
+				}
+				ticketsLoading = false;
                 if (loadingActive.availablePermits() == 0 ) {
                     loadingActive.release();
                 }

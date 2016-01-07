@@ -16,8 +16,6 @@
 
 package com.mfvl.trac.client;
 
-import android.content.Context;
-
 public class TicketListAdapter extends ColoredArrayAdapter<Ticket> {
     final Tickets mTickets;
 
