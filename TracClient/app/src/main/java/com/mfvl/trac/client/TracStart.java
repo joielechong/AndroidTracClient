@@ -113,8 +113,10 @@ public class TracStart extends Activity implements Handler.Callback,
     private boolean doNotFinish = false;
     private TicketModel tm = null;
     private boolean mIsBound = false;
+    private boolean mIsTicketBound = false;
     private Messenger mMessenger = null;
     private RefreshService mService = null;
+	
     private final ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -122,9 +124,10 @@ public class TracStart extends Activity implements Handler.Callback,
             RefreshService.RefreshBinder binder = (RefreshService.RefreshBinder) service;
             mService = binder.getService();
             if (waitForService.availablePermits() == 0) {
-				tcLog.d("mConnection signal sertvice started");
+				tcLog.d("mConnection signal service started");
                 waitForService.release();
             }
+			mIsBound = true;
             tcLog.d("mConnection mService = " + mService);
             unbindService(this);
         }
@@ -135,6 +138,7 @@ public class TracStart extends Activity implements Handler.Callback,
             mIsBound = false;
         }
     };
+
     private final ServiceConnection mTicketsConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -145,6 +149,7 @@ public class TracStart extends Activity implements Handler.Callback,
 				tcLog.d("mTicketsConnection signal service started");
                 waitForService.release();
             }
+			mIsTicketBound = true;
             tcLog.d("mTicketsConnection mService = " + mService);
             dispatchMessage(Message.obtain(null, MSG_LOAD_TICKETS, currentLoginProfile));
         }
@@ -152,11 +157,13 @@ public class TracStart extends Activity implements Handler.Callback,
         @Override
         public void onServiceDisconnected(ComponentName className) {
             tcLog.d("className = " + className);
-            if (!mIsBound) {
+            if (!mIsTicketBound) {
                 mService = null;
+				mIsTicketBound = false;
             }
         }
     };
+
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ProfileDatabaseHelper pdb = null;
@@ -648,6 +655,9 @@ public class TracStart extends Activity implements Handler.Callback,
         tcLog.logCall();
         super.onDestroy();
         if (isFinishing()) {
+			if (mIsTicketBound) {
+				unbindService(mTicketsConnection);
+			}
             stopService(serviceIntent);
             mHandlerThread.quit();
         }
@@ -681,9 +691,9 @@ public class TracStart extends Activity implements Handler.Callback,
         TicketListFragment ticketListFragment = (TicketListFragment) getFragment(ListFragmentTag);
 
         if (ticketListFragment == null) {
+            doNotFinish = true;
             getFragmentManager().popBackStackImmediate(LoginFragmentTag,FragmentManager.POP_BACK_STACK_INCLUSIVE );
             ticketListFragment = new TicketListFragment();
-            doNotFinish = true;
             final FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.add(R.id.displayList, ticketListFragment, ListFragmentTag);
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
