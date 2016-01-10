@@ -29,6 +29,14 @@
         android:layout_height="wrap_content">
 
     </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/displayAd"
+        android:layout_height="@dimen/adview_padding"
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true">
+    </FrameLayout>
+
     <!-- The navigation drawer -->
     <ListView android:id="@+id/left_drawer"
         android:layout_width="240dp"
