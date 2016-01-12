@@ -21,5 +21,6 @@
     <dimen name="helphdr_textsize">50sp</dimen>
     <dimen name="helpsml_textsize">16sp</dimen>
     <integer name="webzoom">120</integer>
+	<dimen name="drawer_width">240dp</dimen>
     <!-- zoom factor to be used on webpages -->
 </resources>

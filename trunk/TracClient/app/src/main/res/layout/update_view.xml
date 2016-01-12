@@ -15,126 +15,114 @@
  * limitations under the License.
 
 -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
 
-    <ScrollView
-        android:id="@+id/aboveAdBlock"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:paddingBottom="@dimen/adview_padding">
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+		<TextView
+			android:id="@+id/titel"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:padding="5dp"
+			android:text="@string/updtick"
+			android:textAppearance="?android:attr/textAppearanceLarge" />
 
-            <TextView
-                android:id="@+id/titel"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="5dp"
-                android:text="@string/updtick"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_margin="4dp"
+				android:padding="5dp"
+				android:text="@string/perfact"
+				android:textAppearance="?android:attr/textAppearanceMedium" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="4dp"
-                    android:padding="5dp"
-                    android:text="@string/perfact"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+			<RelativeLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal">
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+				<RadioGroup
+					android:id="@+id/actionblock"
+					style="@style/ActionBlock" />
 
-                    <RadioGroup
-                        android:id="@+id/actionblock"
-                        style="@style/ActionBlock" />
+				<LinearLayout style="@style/OptionsBlock">
 
-                    <LinearLayout style="@style/OptionsBlock">
+					<TextView
+						android:id="@+id/explaintxt"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_margin="4dp"
+						android:padding="10dp"
+						android:textAppearance="?android:attr/textAppearanceMedium" />
 
-                        <TextView
-                            android:id="@+id/explaintxt"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="4dp"
-                            android:padding="10dp"
-                            android:textAppearance="?android:attr/textAppearanceMedium" />
+					<EditText
+						android:id="@+id/optieval"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_margin="4dp"
+						android:inputType="text"
+						android:padding="10dp"
+						android:textAppearance="?android:attr/textAppearanceMedium" />
 
-                        <EditText
-                            android:id="@+id/optieval"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="4dp"
-                            android:inputType="text"
-                            android:padding="10dp"
-                            android:textAppearance="?android:attr/textAppearanceMedium" />
+					<Spinner
+						android:id="@+id/opties"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_margin="4dp"
+						android:padding="10dp" />
+				</LinearLayout>
+			</RelativeLayout>
+		</LinearLayout>
 
-                        <Spinner
-                            android:id="@+id/opties"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="4dp"
-                            android:padding="10dp" />
-                    </LinearLayout>
-                </RelativeLayout>
-            </LinearLayout>
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="0dp"
+				android:layout_margin="4dp"
+				android:layout_weight="1"
+				android:padding="5dp"
+				android:text="@string/comment"
+				android:textAppearance="?android:attr/textAppearanceMedium" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_margin="4dp"
-                    android:layout_weight="1"
-                    android:padding="5dp"
-                    android:text="@string/comment"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+			<EditText
+				android:id="@+id/comment"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_margin="4dp"
+				android:layout_weight="1"
+				android:inputType="textMultiLine|textCapSentences"
+				android:maxLines="6"
+				android:minLines="1"
+				android:padding="10dp"
+				android:textAppearance="?android:attr/textAppearanceMedium" />
+		</LinearLayout>
 
-                <EditText
-                    android:id="@+id/comment"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="4dp"
-                    android:layout_weight="1"
-                    android:inputType="textMultiLine|textCapSentences"
-                    android:maxLines="6"
-                    android:minLines="1"
-                    android:padding="10dp"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
-            </LinearLayout>
+		<CheckBox
+			android:id="@+id/updNotify"
+			style="@style/CheckBox"
+			android:text="@string/notify" />
 
-            <CheckBox
-                android:id="@+id/updNotify"
-                style="@style/CheckBox"
-                android:text="@string/notify" />
+		<LinearLayout style="@style/ButtonHolder">
 
-            <LinearLayout style="@style/ButtonHolder">
+			<Button style="@style/CancelButton" />
 
-                <Button style="@style/CancelButton" />
-
-                <Button
-                    android:id="@+id/storeUpdate"
-                    style="@style/NormalButton"
-                    android:text="@string/storeupd" />
-            </LinearLayout>
-        </LinearLayout>
-    </ScrollView>
-
-    <LinearLayout style="@style/AdBlockStyle" />
-
-</RelativeLayout>
+			<Button
+				android:id="@+id/storeUpdate"
+				style="@style/NormalButton"
+				android:text="@string/storeupd" />
+		</LinearLayout>
+	</LinearLayout>
+</ScrollView>

@@ -15,175 +15,163 @@
  * limitations under the License.
 
 -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical">
 
-    <ScrollView
-        android:id="@+id/aboveAdBlock"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:orientation="vertical"
-        android:paddingBottom="@dimen/adview_padding">
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+		<TextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_vertical|center_horizontal"
+			android:text="@string/tracLogin"
+			android:textAppearance="?android:attr/textAppearanceLarge" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|center_horizontal"
-                android:text="@string/tracLogin"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+		<LinearLayout
+			android:id="@+id/loadprofile"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal">
 
-            <LinearLayout
-                android:id="@+id/loadprofile"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/loadprofile"
+				android:textAppearance="?android:attr/textAppearanceMedium" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/loadprofile"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+			<Spinner
+				android:id="@+id/loginspinner"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content" />
+		</LinearLayout>
 
-                <Spinner
-                    android:id="@+id/loginspinner"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/tracUrl"
+					android:textAppearance="?android:attr/textAppearanceMedium" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tracUrl"
-                        android:textAppearance="?android:attr/textAppearanceMedium" />
+				<EditText
+					android:id="@+id/trac_URL"
+					style="@style/EditL24"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:ellipsize="none"
+					android:hint="@string/tracUrlHint"
+					android:inputType="textUri" />
+			</LinearLayout>
 
-                    <EditText
-                        android:id="@+id/trac_URL"
-                        style="@style/EditL24"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="none"
-                        android:hint="@string/tracUrlHint"
-                        android:inputType="textUri" />
-                </LinearLayout>
+			<CheckBox
+				android:id="@+id/sslHack"
+				style="@style/CheckBox"
+				android:text="@string/sslHack"
+				android:visibility="gone" />
 
-                <CheckBox
-                    android:id="@+id/sslHack"
-                    style="@style/CheckBox"
-                    android:text="@string/sslHack"
-                    android:visibility="gone" />
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/tracUser"
+					android:textAppearance="?android:attr/textAppearanceMedium" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tracUser"
-                        android:textAppearance="?android:attr/textAppearanceMedium" />
+				<EditText
+					android:id="@+id/trac_User"
+					style="@style/EditL12"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:ellipsize="none"
+					android:hint="@string/tracUserHint"
+					android:inputType="text" />
+			</LinearLayout>
 
-                    <EditText
-                        android:id="@+id/trac_User"
-                        style="@style/EditL12"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="none"
-                        android:hint="@string/tracUserHint"
-                        android:inputType="text" />
-                </LinearLayout>
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/tracPw"
+					android:textAppearance="?android:attr/textAppearanceMedium" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tracPw"
-                        android:textAppearance="?android:attr/textAppearanceMedium" />
+				<EditText
+					android:id="@+id/trac_Pw"
+					style="@style/EditL12"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:ellipsize="none"
+					android:hint="@string/tracPwHint"
+					android:inputType="textPassword" />
+			</LinearLayout>
+		</LinearLayout>
 
-                    <EditText
-                        android:id="@+id/trac_Pw"
-                        style="@style/EditL12"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="none"
-                        android:hint="@string/tracPwHint"
-                        android:inputType="textPassword" />
-                </LinearLayout>
-            </LinearLayout>
+		<CheckBox
+			android:id="@+id/bewaren"
+			style="@style/CheckBox"
+			android:checked="true"
+			android:text="@string/bewaren" />
 
-            <CheckBox
-                android:id="@+id/bewaren"
-                style="@style/CheckBox"
-                android:checked="true"
-                android:text="@string/bewaren" />
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center_vertical|center_horizontal"
+			android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical|center_horizontal"
-                android:orientation="vertical">
+			<Button
+				android:id="@+id/verBut"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/vertext" />
 
-                <Button
-                    android:id="@+id/verBut"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/vertext" />
+			<TextView
+				android:id="@+id/connWarn"
+				style="@style/TextWarn"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="3dp"
+				android:gravity="center_vertical|center_horizontal"
+				android:text="@string/validCred"
+				android:textAppearance="?android:attr/textAppearanceMedium"
+				android:visibility="gone" />
 
-                <TextView
-                    android:id="@+id/connWarn"
-                    style="@style/TextWarn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="3dp"
-                    android:gravity="center_vertical|center_horizontal"
-                    android:text="@string/validCred"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:visibility="gone" />
+			<TextView
+				android:id="@+id/connWarnSts"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_margin="3dp"
+				android:gravity="center_horizontal"
+				android:textAppearance="?android:attr/textAppearanceSmall"
+				android:visibility="gone" />
 
-                <TextView
-                    android:id="@+id/connWarnSts"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="3dp"
-                    android:gravity="center_horizontal"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:visibility="gone" />
+			<LinearLayout style="@style/ButtonHolder">
 
-                <LinearLayout style="@style/ButtonHolder">
+				<Button
+					android:id="@+id/storebutton"
+					style="@style/NormalButton"
+					android:text="@string/storeprofile" />
 
-                    <Button
-                        android:id="@+id/storebutton"
-                        style="@style/NormalButton"
-                        android:text="@string/storeprofile" />
-
-                    <Button style="@style/OkButton" />
-                </LinearLayout>
-            </LinearLayout>
-        </LinearLayout>
-    </ScrollView>
-
-    <LinearLayout style="@style/AdBlockStyle"/>
-
-</RelativeLayout>
+				<Button style="@style/OkButton" />
+			</LinearLayout>
+		</LinearLayout>
+	</LinearLayout>
+</ScrollView>

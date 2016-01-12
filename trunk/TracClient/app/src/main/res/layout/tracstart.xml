@@ -22,24 +22,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <!-- The main content view -->
+	<RelativeLayout 
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
 
-    <FrameLayout
-        android:id="@+id/displayList"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+		<FrameLayout
+			android:id="@+id/displayList"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_above="@+id/displayAd"
+			android:layout_alignParentTop="true">
+		</FrameLayout>
 
-    </FrameLayout>
-
-    <FrameLayout
-        android:id="@+id/displayAd"
-        android:layout_height="@dimen/adview_padding"
-        android:layout_width="match_parent"
-        android:layout_alignParentBottom="true">
-    </FrameLayout>
+		<FrameLayout
+			android:id="@+id/displayAd"
+			android:layout_height="@dimen/adview_padding"
+			android:layout_width="match_parent"
+			android:layout_alignParentBottom="true">
+		</FrameLayout>
+	</RelativeLayout>
 
     <!-- The navigation drawer -->
     <ListView android:id="@+id/left_drawer"
-        android:layout_width="240dp"
+        android:layout_width="@dimen/drawer_width"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:choiceMode="singleChoice"

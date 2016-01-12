@@ -83,14 +83,6 @@
 
     <style name="MyStyle" parent="@style/MyBaseStyle" />
 
-    <style name="AdBlockStyle">
-        <item name="android:id">@id/adBlock</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_alignParentBottom">true</item>
-        <item name="android:orientation">vertical</item>
-    </style>
-
     <style name="TextWarn">
         <item name="android:drawableLeft">@drawable/ic_warn</item>
     </style>
