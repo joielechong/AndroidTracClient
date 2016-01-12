@@ -36,10 +36,6 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,6 +53,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
     protected Handler tracStartHandler = null;
     protected int helpFile = -1;
     protected Bundle fragmentArgs = null;
+/*
     private AdView adView = null;
     private View aboveView;
     private LinearLayout adViewContainer = null;
@@ -67,6 +64,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
     private int padLeft;
     private String adUnitId;
     private String[] testDevices;
+*/
 
     public static void hideSoftKeyboard(Activity activity) {
         InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
@@ -111,6 +109,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         tcLog.d("savedInstanceState = " + savedInstanceState);
+/*
         try {
             adUnitId = context.getString(R.string.adUnitId);
             final String t = TracGlobal.metaDataGetString("com.mfvl.trac.client.testDevices");
@@ -128,10 +127,12 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
             testDevices = new String[1];
             testDevices[0] = "";
         }
-    }
+*/
+	}
 
-    @Override
-    public void onViewCreated(final View view, Bundle savedInstanceState) {
+/*
+//    @Override
+    private void onViewCreated_deprec(final View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 //        tcLog.d( "view = "+view);
         aboveView = view.findViewById(R.id.aboveAdBlock);
@@ -181,7 +182,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
             }
         }
     }
-
+*/
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -205,23 +206,27 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 
             if (heightDiff > 100) { // if more than 100 pixels,
                 // its probably a keyboard...
+/*
                 if (adsVisible) {
                     adViewContainer.setVisibility(View.GONE);
                     aboveView.setPadding(padLeft, padTop, padRight, 0);
                     adsVisible = false;
                 }
+*/
                 ab.hide();
             } else {
+/*
                 if (!adsVisible) {
                     adViewContainer.setVisibility(View.VISIBLE);
                     aboveView.setPadding(padLeft, padTop, padRight, padBot);
                     adsVisible = true;
                 }
+*/
                 ab.show();
             }
         }
     }
-
+/*
     @Override
     public void onPause() {
         tcLog.logCall();
@@ -239,7 +244,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
             adView.resume();
         }
     }
-
+*/
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         tcLog.d("item=" + item + " " + helpFile);
@@ -256,7 +261,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
         }
         return true;
     }
-
+/*
     @Override
     public void onDestroy() {
         tcLog.logCall();
@@ -266,7 +271,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
         adView = null;
         super.onDestroy();
     }
-
+*/
     private Spinner makeDialogSpinner(Context context, boolean dialogWanted) {
         if (dialogWanted) {
             return new Spinner(context, Spinner.MODE_DIALOG);

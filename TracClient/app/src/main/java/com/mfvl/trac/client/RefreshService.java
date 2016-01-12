@@ -255,7 +255,7 @@ public class RefreshService extends Service implements Handler.Callback {
     }
 
     private void startTimer() {
-        tcLog.logCall();
+//        tcLog.logCall();
         monitorTimer = new Timer("monitorTickets");
         monitorTimer.schedule(new TimerTask() {
             @Override
@@ -267,7 +267,7 @@ public class RefreshService extends Service implements Handler.Callback {
     }
 
     private void stopTimer() {
-        tcLog.logCall();
+//        tcLog.logCall();
         if (monitorTimer != null) {
             monitorTimer.cancel();
             tcLog.d("timertask stopped");
@@ -276,7 +276,7 @@ public class RefreshService extends Service implements Handler.Callback {
     }
 
     private void startLoadTickets() {
-        tcLog.d("loadLock = " + loadLock + " invalid = " + invalid);
+        tcLog.d("loadLock = " + loadLock);
         stopTimer();
         new Thread() {
             @Override
@@ -285,14 +285,14 @@ public class RefreshService extends Service implements Handler.Callback {
                     loadLock.killOwner();
                     loadLock.lock();
                 }
-                tcLog.d("locked");
+                tcLog.d("locked: "+loadLock);
                 try {
                     loadTickets();
                 } catch (Exception e) {
                     tcLog.d("Exception", e);
                 } finally {
                     loadLock.unlock();
-                    tcLog.d("unlock");
+                    tcLog.d("unlock: "+loadLock);
                 }
 
             }
@@ -377,7 +377,7 @@ public class RefreshService extends Service implements Handler.Callback {
     }
 
     private void loadTicketContent(Tickets tl) throws Exception {
-        tcLog.logCall();
+//        tcLog.logCall();
         int count = tl.getTicketCount();
         tcLog.d("count = " + count + " " + tl);
 

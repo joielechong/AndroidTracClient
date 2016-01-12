@@ -15,53 +15,41 @@
  * limitations under the License.
 
 -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/aboveAdBlock"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:orientation="vertical"
-        android:paddingBottom="@dimen/adview_padding">
+	<Button
+		android:id="@+id/storefilter"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center_horizontal"
+		android:text="@string/storefilter" />
 
-        <Button
-            android:id="@+id/storefilter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="@string/storefilter" />
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+		<Spinner
+			android:id="@+id/addspin"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="19" />
 
-            <Spinner
-                android:id="@+id/addspin"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="19" />
+		<ImageButton
+			android:id="@+id/addbutton"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="5"
+			android:src="@drawable/plus" />
 
-            <ImageButton
-                android:id="@+id/addbutton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="5"
-				android:src="@drawable/plus" />
+	</LinearLayout>
 
-        </LinearLayout>
-
-        <ListView
-            android:id="@+id/itemlist"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="5dp" />
-    </LinearLayout>
-
-    <LinearLayout style="@style/AdBlockStyle" />
-
-</RelativeLayout>
+	<ListView
+		android:id="@+id/itemlist"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_marginBottom="5dp" />
+</LinearLayout>

@@ -50,10 +50,15 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.ShareActionProvider;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
 
 import org.alexd.jsonrpc.JSONRPCException;
 import org.json.JSONArray;
@@ -90,6 +95,18 @@ public class TracStart extends Activity implements Handler.Callback,
     private static final String UpdFragmentTag = "Modify_Fragment";
     private static final String FilterFragmentTag = "Filter_Fragment";
     private static final String SortFragmentTag = "Sort_Fragment";
+	
+    private AdView adView = null;
+    private boolean dispAds = true;
+    private FrameLayout adViewContainer = null;
+    private boolean adsVisible = true;
+    private int padTop;
+    private int padRight;
+    private int padBot;
+    private int padLeft;
+    private String adUnitId;
+    private String[] testDevices;
+
     static public Handler tracStartHandler = null;
     final private Semaphore waitForService = new Semaphore(1,true);
     final private Semaphore loadingActive = new Semaphore(1,true);
@@ -105,7 +122,7 @@ public class TracStart extends Activity implements Handler.Callback,
     private int timerCorr = 0;
     private boolean debug = false; // disable menuoption at startup
     private OnFileSelectedListener _oc = null;
-    private boolean dispAds = true;
+	
     private boolean canWriteSD = false;
     private long referenceTime = 0;
     private String urlArg = null;
@@ -303,6 +320,8 @@ public class TracStart extends Activity implements Handler.Callback,
                 ticketArg = (int) getIntent().getLongExtra(INTENT_TICKET, -1);
             }
         }
+		
+		initAds();
 
         pdb = new ProfileDatabaseHelper(this);
         if (urlArg != null) {
@@ -381,6 +400,78 @@ public class TracStart extends Activity implements Handler.Callback,
 //        bindService(new Intent(this, RefreshService.class).setAction(ACTION_START_TIMER), mConnection, Context.BIND_AUTO_CREATE);
         setReferenceTime();
     }
+	
+	private void initAds() {
+        try {
+            adUnitId = getString(R.string.adUnitId);
+            final String t = TracGlobal.metaDataGetString("com.mfvl.trac.client.testDevices");
+
+            try {
+                testDevices = t.split(",");
+            } catch (final IllegalArgumentException e) { // only 1
+                testDevices = new String[1];
+                testDevices[0] = t;
+            }
+        } catch (final Exception e) {
+            tcLog.e("Problem retrieving Admod information", e);
+            setDispAds(false);
+            adUnitId = "";
+            testDevices = new String[1];
+            testDevices[0] = "";
+        }
+        adViewContainer = (FrameLayout) findViewById(R.id.displayAd);
+
+        if (getDispAds() && adViewContainer != null) {
+            adView = new AdView(this);
+            adView.setAdUnitId(adUnitId);
+            adView.setAdSize(AdSize.SMART_BANNER);
+
+            final AdRequest.Builder arb = new AdRequest.Builder();
+
+			arb.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
+			if (TracGlobal.isDebuggable()) {
+				for (final String t : testDevices) {
+					tcLog.d("testDevice = " + t);
+					arb.addTestDevice(t);
+				}
+			}
+			arb.setGender(AdRequest.GENDER_UNKNOWN);
+			final AdRequest adRequest = arb.build();
+
+			try {
+				adView.loadAd(adRequest);
+				adView.setLayoutParams(adViewContainer.getLayoutParams());
+				// tcLog.d( "adView size = " +adView.getHeight());
+				adViewContainer.addView(adView);
+			} catch (final Exception e) {
+				tcLog.e("Problem loading AdRequest", e);
+/*
+				if (aboveView != null) {
+					aboveView.setPadding(0, 0, 0, 0);
+				}
+*/
+				setDispAds(false);
+			}
+/*			
+            if (aboveView != null) {
+                padTop = aboveView.getPaddingTop();
+                padRight = aboveView.getPaddingRight();
+                padBot = aboveView.getPaddingBottom();
+                padLeft = aboveView.getPaddingLeft();
+                adsVisible = true;
+                view.getViewTreeObserver().addOnGlobalLayoutListener(this);
+            }
+
+        } else {
+            if (aboveView != null) {
+                aboveView.setPadding(0, 0, 0, 0);
+            }
+*/
+        }
+		if ( !dispAds ) {
+			adViewContainer.setVisibility(View.GONE);
+		}
+	}
 
     private void startListLoader(boolean newLoad) {
         tcLog.d("newLoad = " + newLoad);
@@ -505,11 +596,23 @@ public class TracStart extends Activity implements Handler.Callback,
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        tcLog.logCall();
+        if (adView != null) {
+            adView.resume();
+        }
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         tcLog.logCall();
         stopProgressBar();
         /* save logfile when exiting */
+        if (adView != null) {
+            adView.pause();
+        }
         tcLog.d("isFinishing = " + isFinishing());
         if (isFinishing() && TracGlobal.isRCVersion()) {
             tcLog.save();
@@ -1089,7 +1192,7 @@ public class TracStart extends Activity implements Handler.Callback,
 
     @Override
     public TicketListAdapter getAdapter() {
-        tcLog.logCall();
+        tcLog.d("dataAdapter = "+ dataAdapter);
         return dataAdapter;
     }
 
@@ -1119,9 +1222,8 @@ public class TracStart extends Activity implements Handler.Callback,
 
     public void updateTicket(final Ticket t, final String action, final String comment, final String veld, final String waarde, final boolean notify, final Map<String, String> modVeld) throws Exception {
         final JSONObject velden = t.getVelden();
-        tcLog.d("Ticket = " + t);
-        tcLog.d("update: " + action + " '" + comment + "' '" + veld + "' '" + waarde + "' " + modVeld);
-        tcLog.d("velden voor = " + velden);
+        tcLog.d("Ticket = " + t+"update: " + action + " '" + comment + "' '" + veld + "' '" + waarde + "' " + modVeld);
+//        tcLog.d("velden voor = " + velden);
         final int ticknr = t.getTicketnr();
 
         if (ticknr == -1) {
@@ -1146,7 +1248,7 @@ public class TracStart extends Activity implements Handler.Callback,
         velden.remove("changetime");
         velden.remove("time");
 
-        Thread updateThread = new Thread() {
+        new Thread() {
             @Override
             public void run() {
                 try {
@@ -1158,13 +1260,11 @@ public class TracStart extends Activity implements Handler.Callback,
                     }
                     tcLog.d("retTicket = " + retTick);
                 } catch (final Exception e) {
-                    tcLog.e("JSONRPCException", e);
+                    tcLog.e("Exception during update", e);
                     showAlertBox(R.string.upderr, R.string.storerrdesc, e.getMessage());
                 }
             }
-        };
-        updateThread.start();
-        updateThread.join();
+        }.start();
     }
 
     public int createTicket(Ticket t, boolean notify) throws Exception {
@@ -1193,7 +1293,7 @@ public class TracStart extends Activity implements Handler.Callback,
                 return -1;
             }
         } catch (final Exception e) {
-            tcLog.d("Exception during create", e);
+            tcLog.e("Exception during create", e);
             showAlertBox(R.string.storerr, R.string.storerrdesc, e.getMessage());
             return -1;
         }
@@ -1201,7 +1301,7 @@ public class TracStart extends Activity implements Handler.Callback,
 
     @Override
     public void getAttachment(final Ticket ticket, final String filename, final onAttachmentCompleteListener oc) {
-        tcLog.i(ticket.toString() + " " + filename);
+        tcLog.d(ticket.toString() + " " + filename);
         final int _ticknr = ticket.getTicketnr();
         new Thread() {
             @Override
@@ -1266,14 +1366,14 @@ public class TracStart extends Activity implements Handler.Callback,
                     is.close();
                     new TracHttpClient(url, sslHack, sslHostNameHack, username, password).putAttachment(_ticknr, file.getName(), b64);
                 } else {
-                    tcLog.i("Cannot open"+ uri);
+                    tcLog.e("Cannot open"+ uri);
                     showAlertBox(R.string.warning, R.string.notfound, filename);
                 }
             } catch (final FileNotFoundException e) {
-                tcLog.i("Exception", e);
+                tcLog.e("Exception", e);
                 showAlertBox(R.string.warning, R.string.notfound, filename);
             } catch (final NullPointerException|IOException|JSONRPCException|JSONException e) {
-                tcLog.i("Exception", e);
+                tcLog.e("Exception during addAttachment", e);
                 showAlertBox(R.string.warning, R.string.failed, filename);
             } finally {
                 oc.onComplete(ticket);
@@ -1337,7 +1437,7 @@ public class TracStart extends Activity implements Handler.Callback,
 
             case MSG_STOP_PROGRESSBAR:
                 synchronized (this) {
-                    tcLog.d("handleMessage msg = STOP_PROGRESSBAR "+progressBar+" "+TracStart.this.isFinishing());
+                    // tcLog.d("handleMessage msg = STOP_PROGRESSBAR "+progressBar+" "+TracStart.this.isFinishing());
                     if (progressBar != null) {
                         if (!TracStart.this.isFinishing()) {
                             progressBar.dismiss();
@@ -1438,7 +1538,7 @@ public class TracStart extends Activity implements Handler.Callback,
 
             case MSG_LOAD_FASE1_FINISHED:
                 final Tickets tl = (Tickets) msg.obj;
-                tcLog.d("Tickets = " + tl);
+                // tcLog.d("Tickets = " + tl);
 				if (hasTicketsLoadingBar) {
 					stopProgressBar();
 					hasTicketsLoadingBar = false;
