@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="adBlock" type="id" />
     <item name="okBut" type="id" />
     <item name="canBut" type="id" />
     <item name="swipe_container" type="id" />
