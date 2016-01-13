@@ -29,10 +29,6 @@ import java.util.Map;
  * @author Michiel
  */
 public interface InterFragmentListener {
-    boolean getDispAds();
-
-    void setDispAds(boolean b);
-
     void enableDebug();
 
     void onChooserSelected(OnFileSelectedListener oc);

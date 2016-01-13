@@ -53,18 +53,6 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
     protected Handler tracStartHandler = null;
     protected int helpFile = -1;
     protected Bundle fragmentArgs = null;
-/*
-    private AdView adView = null;
-    private View aboveView;
-    private LinearLayout adViewContainer = null;
-    private boolean adsVisible = true;
-    private int padTop;
-    private int padRight;
-    private int padBot;
-    private int padLeft;
-    private String adUnitId;
-    private String[] testDevices;
-*/
 
     public static void hideSoftKeyboard(Activity activity) {
         InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
@@ -106,84 +94,6 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        tcLog.d("savedInstanceState = " + savedInstanceState);
-/*
-        try {
-            adUnitId = context.getString(R.string.adUnitId);
-            final String t = TracGlobal.metaDataGetString("com.mfvl.trac.client.testDevices");
-
-            try {
-                testDevices = t.split(",");
-            } catch (final IllegalArgumentException e) { // only 1
-                testDevices = new String[1];
-                testDevices[0] = t;
-            }
-        } catch (final Exception e) {
-            tcLog.e("Problem retrieving Admod information", e);
-            listener.setDispAds(false);
-            adUnitId = "";
-            testDevices = new String[1];
-            testDevices[0] = "";
-        }
-*/
-	}
-
-/*
-//    @Override
-    private void onViewCreated_deprec(final View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-//        tcLog.d( "view = "+view);
-        aboveView = view.findViewById(R.id.aboveAdBlock);
-        adViewContainer = (LinearLayout) view.findViewById(R.id.adBlock);
-
-        if (listener.getDispAds() && adViewContainer != null) {
-            adView = new AdView(context);
-            adView.setAdUnitId(adUnitId);
-            adView.setAdSize(AdSize.SMART_BANNER);
-
-            final AdRequest.Builder arb = new AdRequest.Builder();
-
-			arb.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
-			if (TracGlobal.isDebuggable()) {
-				for (final String t : testDevices) {
-					tcLog.d("testDevice = " + t);
-					arb.addTestDevice(t);
-				}
-			}
-			arb.setGender(AdRequest.GENDER_UNKNOWN);
-			final AdRequest adRequest = arb.build();
-
-			try {
-				adView.loadAd(adRequest);
-				adView.setLayoutParams(adViewContainer.getLayoutParams());
-				// tcLog.d( "adView size = " +adView.getHeight());
-				adViewContainer.addView(adView);
-			} catch (final Exception e) {
-				tcLog.e("Problem loading AdRequest", e);
-				if (aboveView != null) {
-					aboveView.setPadding(0, 0, 0, 0);
-				}
-				listener.setDispAds(false);
-			}
-			
-            if (aboveView != null) {
-                padTop = aboveView.getPaddingTop();
-                padRight = aboveView.getPaddingRight();
-                padBot = aboveView.getPaddingBottom();
-                padLeft = aboveView.getPaddingLeft();
-                adsVisible = true;
-                view.getViewTreeObserver().addOnGlobalLayoutListener(this);
-            }
-        } else {
-            if (aboveView != null) {
-                aboveView.setPadding(0, 0, 0, 0);
-            }
-        }
-    }
-*/
-    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         tcLog.d("savedInstanceState = " + savedInstanceState);
@@ -206,45 +116,13 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
 
             if (heightDiff > 100) { // if more than 100 pixels,
                 // its probably a keyboard...
-/*
-                if (adsVisible) {
-                    adViewContainer.setVisibility(View.GONE);
-                    aboveView.setPadding(padLeft, padTop, padRight, 0);
-                    adsVisible = false;
-                }
-*/
                 ab.hide();
             } else {
-/*
-                if (!adsVisible) {
-                    adViewContainer.setVisibility(View.VISIBLE);
-                    aboveView.setPadding(padLeft, padTop, padRight, padBot);
-                    adsVisible = true;
-                }
-*/
                 ab.show();
             }
         }
     }
-/*
-    @Override
-    public void onPause() {
-        tcLog.logCall();
-        if (adView != null) {
-            adView.pause();
-        }
-        super.onPause();
-    }
 
-    @Override
-    public void onResume() {
-        tcLog.logCall();
-        super.onResume();
-        if (adView != null) {
-            adView.resume();
-        }
-    }
-*/
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         tcLog.d("item=" + item + " " + helpFile);
@@ -261,17 +139,7 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
         }
         return true;
     }
-/*
-    @Override
-    public void onDestroy() {
-        tcLog.logCall();
-        if (getView() != null && adView != null) {
-            adView.destroy();
-        }
-        adView = null;
-        super.onDestroy();
-    }
-*/
+
     private Spinner makeDialogSpinner(Context context, boolean dialogWanted) {
         if (dialogWanted) {
             return new Spinner(context, Spinner.MODE_DIALOG);

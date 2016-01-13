@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013,2014,2015 Michiel van Loon
+ * Copyright (C) 2013-2016 Michiel van Loon
  *);
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -98,12 +98,6 @@ public class TracStart extends Activity implements Handler.Callback,
 	
     private AdView adView = null;
     private boolean dispAds = true;
-    private FrameLayout adViewContainer = null;
-    private boolean adsVisible = true;
-    private int padTop;
-    private int padRight;
-    private int padBot;
-    private int padLeft;
     private String adUnitId;
     private String[] testDevices;
 
@@ -402,31 +396,30 @@ public class TracStart extends Activity implements Handler.Callback,
     }
 	
 	private void initAds() {
-        try {
-            adUnitId = getString(R.string.adUnitId);
-            final String t = TracGlobal.metaDataGetString("com.mfvl.trac.client.testDevices");
+		if (dispAds) {
+			try {
+				adUnitId = getString(R.string.adUnitId);
+				final String t = TracGlobal.metaDataGetString("com.mfvl.trac.client.testDevices");
+				try {
+					testDevices = t.split(",");
+				} catch (final IllegalArgumentException e) { // only 1 in split
+					testDevices = new String[1];
+					testDevices[0] = t;
+				}
+			} catch (final Exception e) {
+				tcLog.e("Problem retrieving Admod information", e);
+				dispAds = false;
+				adUnitId = "";
+			}
+		}
+		
+		final FrameLayout adViewContainer = (FrameLayout) findViewById(R.id.displayAd);
+		if (dispAds && adViewContainer != null) {
+			adView = new AdView(this);
+			adView.setAdUnitId(adUnitId);
+			adView.setAdSize(AdSize.SMART_BANNER);
 
-            try {
-                testDevices = t.split(",");
-            } catch (final IllegalArgumentException e) { // only 1
-                testDevices = new String[1];
-                testDevices[0] = t;
-            }
-        } catch (final Exception e) {
-            tcLog.e("Problem retrieving Admod information", e);
-            setDispAds(false);
-            adUnitId = "";
-            testDevices = new String[1];
-            testDevices[0] = "";
-        }
-        adViewContainer = (FrameLayout) findViewById(R.id.displayAd);
-
-        if (getDispAds() && adViewContainer != null) {
-            adView = new AdView(this);
-            adView.setAdUnitId(adUnitId);
-            adView.setAdSize(AdSize.SMART_BANNER);
-
-            final AdRequest.Builder arb = new AdRequest.Builder();
+			final AdRequest.Builder arb = new AdRequest.Builder();
 
 			arb.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
 			if (TracGlobal.isDebuggable()) {
@@ -445,30 +438,14 @@ public class TracStart extends Activity implements Handler.Callback,
 				adViewContainer.addView(adView);
 			} catch (final Exception e) {
 				tcLog.e("Problem loading AdRequest", e);
-/*
-				if (aboveView != null) {
-					aboveView.setPadding(0, 0, 0, 0);
-				}
-*/
-				setDispAds(false);
+				dispAds = false;
 			}
-/*			
-            if (aboveView != null) {
-                padTop = aboveView.getPaddingTop();
-                padRight = aboveView.getPaddingRight();
-                padBot = aboveView.getPaddingBottom();
-                padLeft = aboveView.getPaddingLeft();
-                adsVisible = true;
-                view.getViewTreeObserver().addOnGlobalLayoutListener(this);
-            }
+		} else {
+			dispAds = false;
+		}
 
-        } else {
-            if (aboveView != null) {
-                aboveView.setPadding(0, 0, 0, 0);
-            }
-*/
-        }
 		if ( !dispAds ) {
+			tcLog.i("Not displaying ads");
 			adViewContainer.setVisibility(View.GONE);
 		}
 	}
@@ -1061,18 +1038,6 @@ public class TracStart extends Activity implements Handler.Callback,
             }
         }
         setSort(sl);
-    }
-
-    @Override
-    public boolean getDispAds() {
-        tcLog.d("dispAds = " + dispAds);
-        return dispAds;
-    }
-
-    @Override
-    public void setDispAds(boolean b) {
-        dispAds = b;
-        tcLog.d("setDdispAds = " + dispAds);
     }
 
     @Override
