@@ -61,7 +61,7 @@
     <string name="getlist">Ticketliste holen</string>
     <string name="storeprofile">Profil speichern</string>
     <string name="profiletext">Geben Sie den Profilnamen an</string>
-    <string name="loadprofile">Letztes Login-Profil</string>
+    <string name="loadprofile">Laden Login-Profil</string>
     <string name="loadprofiletext">Profil kann nicht geladen werden</string>
     <string name="notfound">Nicht gefunden</string>
     <string name="sdcardmissing">SD-Karte fehlt.Kann Anhang nicht speichern</string>
