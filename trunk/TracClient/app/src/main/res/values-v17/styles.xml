@@ -69,4 +69,20 @@
         <item name="android:layout_alignParentEnd">true</item>
     </style>
 
+    <style name="SpinnerCaptionBase">
+        <item name="android:layout_gravity">start</item>
+    </style>
+
+    <style name="SpinnerSpinBase">
+        <item name="android:layout_gravity">end</item>
+    </style>
+
+    <style name="LoginStoreButton" parent="NormalButton">
+        <item name="android:layout_gravity">start</item>
+    </style>
+
+    <style name="LoginOkButton" parent="OkButton">
+        <item name="android:layout_gravity">end</item>
+    </style>
+
 </resources>

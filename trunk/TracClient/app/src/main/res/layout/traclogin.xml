@@ -39,15 +39,15 @@
 			android:orientation="horizontal">
 
 			<TextView
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/loadprofile"
-				android:textAppearance="?android:attr/textAppearanceMedium" />
+				style="@style/SpinnerCaption"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+				android:text="@string/loadprofile" />
 
-			<Spinner
-				android:id="@+id/loginspinner"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content" />
+           <Spinner
+                style="@style/SpinnerSpin"
+                android:gravity="center_vertical"
+				android:id="@+id/loginspinner" />
 		</LinearLayout>
 
 		<LinearLayout
@@ -141,7 +141,8 @@
 				android:id="@+id/verBut"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="@string/vertext" />
+				android:text="@string/vertext"
+				android:gravity="center" />
 
 			<TextView
 				android:id="@+id/connWarn"
@@ -164,13 +165,17 @@
 				android:visibility="gone" />
 
 			<LinearLayout style="@style/ButtonHolder">
-
 				<Button
 					android:id="@+id/storebutton"
-					style="@style/NormalButton"
-					android:text="@string/storeprofile" />
+					style="@style/LoginStoreButton"
+					android:text="@string/storeprofile"
+                    android:gravity="center"
+					android:layout_weight="40" />
 
-				<Button style="@style/OkButton" />
+                <Button style="@style/LoginOkButton"
+                    android:layout_height="match_parent"
+					android:gravity="center"
+					android:layout_weight="40" />
 			</LinearLayout>
 		</LinearLayout>
 	</LinearLayout>
