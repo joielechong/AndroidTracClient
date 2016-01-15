@@ -55,163 +55,163 @@ abstract public class TracClientFragment extends Fragment implements OnGlobalLay
     protected Bundle fragmentArgs = null;
 
     public static void hideSoftKeyboard(Activity activity) {
-        InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
-    }
-
-    private void onMyAttach(Context activity) {
-        context = (TracStart) activity;
-        TracGlobal.getInstance(context.getApplicationContext());
-        listener = (InterFragmentListener) activity;
-        tracStartHandler = listener.getHandler();
-        large_move = context.getResources().getInteger(R.integer.large_move);
-        extra_large_move = context.getResources().getInteger(R.integer.extra_large_move);
-        fragmentArgs = getArguments();
+	InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+	inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
     }
 
     @Override
     public void onAttach(Context activity) {
-        super.onAttach(activity);
-        tcLog.d("(C) ");
-        onMyAttach(activity);
+	super.onAttach(activity);
+	tcLog.d("(C) ");
+	onMyAttach(activity);
+    }
+
+    private void onMyAttach(Context activity) {
+	context = (TracStart) activity;
+	TracGlobal.getInstance(context.getApplicationContext());
+	listener = (InterFragmentListener) activity;
+	tracStartHandler = listener.getHandler();
+	large_move = context.getResources().getInteger(R.integer.large_move);
+	extra_large_move = context.getResources().getInteger(R.integer.extra_large_move);
+	fragmentArgs = getArguments();
     }
 
     @SuppressWarnings("deprecation")
     @Override
     public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        tcLog.d("(A) ");
-        onMyAttach(activity);
-    }
-
-    protected void sendMessageToHandler(int msg, Object o) {
-        tcLog.d("msg = " + msg + " o = " + o);
-        tracStartHandler.obtainMessage(msg, o).sendToTarget();
-    }
-
-    protected void showAlertBox(final int titleres, final int message, final String addit) {
-        tracStartHandler.obtainMessage(MSG_SHOW_DIALOG, titleres, message, addit).sendToTarget();
+	super.onAttach(activity);
+	tcLog.d("(A) ");
+	onMyAttach(activity);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        tcLog.d("savedInstanceState = " + savedInstanceState);
+	super.onActivityCreated(savedInstanceState);
+	tcLog.d("savedInstanceState = " + savedInstanceState);
 
-        tracStartHandler = listener.getHandler();
-    }
-
-    @Override
-    public void onGlobalLayout() {
-        final View view = getView();
-
-        if (view != null) {
-            final ActionBar ab = context.getActionBar();
-            final Rect r = new Rect();
-
-            // r will be populated with the coordinates of your view that area still visible.
-            view.getWindowVisibleDisplayFrame(r);
-
-            final int heightDiff = view.getRootView().getHeight() - (r.bottom - r.top);
-
-            if (heightDiff > 100) { // if more than 100 pixels,
-                // its probably a keyboard...
-                ab.hide();
-            } else {
-                ab.show();
-            }
-        }
+	tracStartHandler = listener.getHandler();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        tcLog.d("item=" + item + " " + helpFile);
-        final int itemId = item.getItemId();
+	tcLog.d("item=" + item + " " + helpFile);
+	final int itemId = item.getItemId();
 
-        if (itemId == R.id.help && helpFile != -1) {
-            final Intent launchTrac = new Intent(context, TracShowWebPage.class);
-            final String filename = context.getString(helpFile);
-            launchTrac.putExtra(HELP_FILE, filename);
-            launchTrac.putExtra(HELP_VERSION, false);
-            startActivity(launchTrac);
-        } else {
-            return super.onOptionsItemSelected(item);
-        }
-        return true;
+	if (itemId == R.id.help && helpFile != -1) {
+	    final Intent launchTrac = new Intent(context, TracShowWebPage.class);
+	    final String filename = context.getString(helpFile);
+	    launchTrac.putExtra(HELP_FILE, filename);
+	    launchTrac.putExtra(HELP_VERSION, false);
+	    startActivity(launchTrac);
+	} else {
+	    return super.onOptionsItemSelected(item);
+	}
+	return true;
     }
 
-    private Spinner makeDialogSpinner(Context context, boolean dialogWanted) {
-        if (dialogWanted) {
-            return new Spinner(context, Spinner.MODE_DIALOG);
-        } else {
-            return new Spinner(context);
-        }
+    protected void sendMessageToHandler(int msg, Object o) {
+	tcLog.d("msg = " + msg + " o = " + o);
+	tracStartHandler.obtainMessage(msg, o).sendToTarget();
     }
 
-    private Spinner _makeComboSpin(Context context, List<Object> waardes, boolean optional, Object w, boolean dialogWanted) {
-        if (waardes == null)
-            return null;
+    protected void showAlertBox(final int titleres, final int message, final String addit) {
+	tracStartHandler.obtainMessage(MSG_SHOW_DIALOG, titleres, message, addit).sendToTarget();
+    }
 
-        final List<Object> spinValues = new ArrayList<>();
+    @Override
+    public void onGlobalLayout() {
+	final View view = getView();
 
-        if (optional) {
-            spinValues.add("");
-        }
+	if (view != null) {
+	    final ActionBar ab = context.getActionBar();
+	    final Rect r = new Rect();
 
-        for (final Object o : waardes) {
-            spinValues.add(o);
-        }
+	    // r will be populated with the coordinates of your view that area still visible.
+	    view.getWindowVisibleDisplayFrame(r);
 
-        final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, spinValues);
-        spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        final Spinner valSpinner = makeDialogSpinner(context, dialogWanted);
+	    final int heightDiff = view.getRootView().getHeight() - (r.bottom - r.top);
 
-        valSpinner.setAdapter(spinAdapter);
-        if (w != null && !"".equals(w)) {
-            valSpinner.setSelection(waardes.indexOf(w) + (optional ? 1 : 0), true);
-        }
-        return valSpinner;
+	    if (heightDiff > 100) { // if more than 100 pixels,
+		// its probably a keyboard...
+		ab.hide();
+	    } else {
+		ab.show();
+	    }
+	}
     }
 
     protected Spinner makeDialogComboSpin(Context context, List<Object> waardes, boolean optional, Object w) {
-        return _makeComboSpin(context, waardes, optional, w, true);
+	return _makeComboSpin(context, waardes, optional, w, true);
+    }
+
+    private Spinner _makeComboSpin(Context context, List<Object> waardes, boolean optional, Object w, boolean dialogWanted) {
+	if (waardes == null)
+	    return null;
+
+	final List<Object> spinValues = new ArrayList<>();
+
+	if (optional) {
+	    spinValues.add("");
+	}
+
+	for (final Object o : waardes) {
+	    spinValues.add(o);
+	}
+
+	final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, spinValues);
+	spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+	final Spinner valSpinner = makeDialogSpinner(context, dialogWanted);
+
+	valSpinner.setAdapter(spinAdapter);
+	if (w != null && !"".equals(w)) {
+	    valSpinner.setSelection(waardes.indexOf(w) + (optional ? 1 : 0), true);
+	}
+	return valSpinner;
+    }
+
+    private Spinner makeDialogSpinner(Context context, boolean dialogWanted) {
+	if (dialogWanted) {
+	    return new Spinner(context, Spinner.MODE_DIALOG);
+	} else {
+	    return new Spinner(context);
+	}
     }
 
     protected Spinner makeComboSpin(Context context, List<Object> waardes, boolean optional, Object w) {
-        return _makeComboSpin(context, waardes, optional, w, false);
+	return _makeComboSpin(context, waardes, optional, w, false);
     }
 
     protected void selectTicket(int ticknr) {
-        tcLog.d("ticknr = " + ticknr);
-        final Ticket t = listener.getTicket(ticknr);
-        if (t != null && t.hasdata()) {
-            listener.onTicketSelected(t);
-        }
+	tcLog.d("ticknr = " + ticknr);
+	final Ticket t = listener.getTicket(ticknr);
+	if (t != null && t.hasdata()) {
+	    listener.onTicketSelected(t);
+	}
     }
 
     protected void getScreensize(View spin, View but) {
-        DisplayMetrics metrics = new DisplayMetrics();
-        context.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        int widthPixels = metrics.widthPixels;
-        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.plus);
-        spin.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, widthPixels - drawable.getIntrinsicWidth()));
-        but.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, drawable.getIntrinsicWidth()));
+	DisplayMetrics metrics = new DisplayMetrics();
+	context.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+	int widthPixels = metrics.widthPixels;
+	Drawable drawable = ContextCompat.getDrawable(context, R.drawable.plus);
+	spin.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, widthPixels - drawable.getIntrinsicWidth()));
+	but.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, drawable.getIntrinsicWidth()));
     }
 
     protected void setListener(int resid) {
-        setListener(resid, this.getView(), this);
+	setListener(resid, this.getView(), this);
     }
 
     protected void setListener(int resid, View v, View.OnClickListener c) {
 //		tcLog.d( "resid = "+resid+" v = "+v+" c =" + c);
-        try {
-            v.findViewById(resid).setOnClickListener(c);
-        } catch (Exception ignored) {
-        }
+	try {
+	    v.findViewById(resid).setOnClickListener(c);
+	} catch (Exception ignored) {
+	}
     }
 
     @Override
     public void onClick(View v) {
-        tcLog.d("v =" + v);
+	tcLog.d("v =" + v);
     }
 }

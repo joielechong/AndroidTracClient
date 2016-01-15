@@ -32,82 +32,82 @@ public class LoginProfile extends TcObject implements Serializable, Cloneable {
     private List<SortSpec> sortList = null;
 
     public LoginProfile(String url, String username, String password, boolean sslHack) {
-        _url = url;
-        _username = username;
-        _password = password;
-        _sslHack = sslHack;
+	_url = url;
+	_username = username;
+	_password = password;
+	_sslHack = sslHack;
     }
 
     @Override
     public boolean equals(Object o) {
 //		tcLog.d("this = "+this+" o = "+o);
-        if (this == o) {
-            return true;
-        }
+	if (this == o) {
+	    return true;
+	}
 
-        if (!(o instanceof LoginProfile)) {
-            return false;
-        }
-        boolean retVal = super.equals(o);
+	if (!(o instanceof LoginProfile)) {
+	    return false;
+	}
+	boolean retVal = super.equals(o);
 
-        LoginProfile f = (LoginProfile) o;
+	LoginProfile f = (LoginProfile) o;
 //		tcLog.d("this = "+this+" f = "+f + " "+retVal);
-        retVal &= equalFields(_url, f.getUrl());
-        retVal &= equalFields(_username, f.getUsername());
-        retVal &= equalFields(_password, f.getPassword());
-        retVal &= equalFields(filterList, f.getFilterList());
-        retVal &= equalFields(sortList, f.getSortList());
-        retVal &= (_sslHack == f.getSslHack());
-        retVal &= (_sslHostNameHack == f.getSslHostNameHack());
+	retVal &= equalFields(_url, f.getUrl());
+	retVal &= equalFields(_username, f.getUsername());
+	retVal &= equalFields(_password, f.getPassword());
+	retVal &= equalFields(filterList, f.getFilterList());
+	retVal &= equalFields(sortList, f.getSortList());
+	retVal &= (_sslHack == f.getSslHack());
+	retVal &= (_sslHostNameHack == f.getSslHostNameHack());
 //		tcLog.d(""+retVal);
-        return retVal;
+	return retVal;
     }
 
     public String getUrl() {
-        return _url;
+	return _url;
     }
 
     public String getUsername() {
-        return _username;
+	return _username;
     }
 
     public String getPassword() {
-        return _password;
+	return _password;
     }
 
     public boolean getSslHack() {
-        return _sslHack;
+	return _sslHack;
     }
 
     public boolean getSslHostNameHack() {
-        return _sslHostNameHack;
+	return _sslHostNameHack;
     }
 
     public LoginProfile setSslHostNameHack(boolean v) {
-        _sslHostNameHack = v;
-        return this;
+	_sslHostNameHack = v;
+	return this;
     }
 
     public List<FilterSpec> getFilterList() {
-        return filterList;
+	return filterList;
     }
 
     public LoginProfile setFilterList(List<FilterSpec> fl) {
-        filterList = fl;
-        return this;
+	filterList = fl;
+	return this;
     }
 
     public List<SortSpec> getSortList() {
-        return sortList;
+	return sortList;
     }
 
     public LoginProfile setSortList(List<SortSpec> sl) {
-        sortList = sl;
-        return this;
+	sortList = sl;
+	return this;
     }
 
     @Override
     public String toString() {
-        return "url: " + _url + " username: " + _username + " password: " + _password + " sslHack: " + _sslHack + " sslHostNameHack: " + _sslHostNameHack + " filterList: " + filterList + " sortList: " + sortList;
+	return "url: " + _url + " username: " + _username + " password: " + _password + " sslHack: " + _sslHack + " sslHostNameHack: " + _sslHostNameHack + " filterList: " + filterList + " sortList: " + sortList;
     }
 }

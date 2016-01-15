@@ -25,18 +25,18 @@ import org.json.JSONObject;
 public class TracJSONObject extends JSONObject {
 
     TracJSONObject() {
-        super();
+	super();
     }
 
     public JSONObject makeComplexCall(String id, String method, Object... params) throws JSONException {
-        this.put("method", method);
-        this.put("id", id);
-        final JSONArray args = new JSONArray();
+	this.put("method", method);
+	this.put("id", id);
+	final JSONArray args = new JSONArray();
 
-        for (final Object o : params) {
-            args.put(o);
-        }
-        this.put("params", args);
-        return this;
+	for (final Object o : params) {
+	    args.put(o);
+	}
+	this.put("params", args);
+	return this;
     }
 }

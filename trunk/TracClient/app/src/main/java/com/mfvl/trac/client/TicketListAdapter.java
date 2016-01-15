@@ -20,72 +20,72 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket> {
     final Tickets mTickets;
 
     public TicketListAdapter(TracStart context, int resource, Tickets tl) {
-        super(context, resource, tl != null ? tl.ticketList : null);
-        tcLog.logCall();
+	super(context, resource, tl != null ? tl.ticketList : null);
+	tcLog.logCall();
 //		tcLog.d("context = "+context+" resource = "+ resource+" tl = "+tl);
 //		tcLog.d(tl != null ? tl.toString() : null);
 
-        mTickets = tl;
+	mTickets = tl;
     }
 
     public void clear() {
-        tcLog.logCall();
-        super.clear();
-        mTickets.clear();
-        notifyDataSetChanged();
+	tcLog.logCall();
+	super.clear();
+	mTickets.clear();
+	notifyDataSetChanged();
     }
 
-    public void addAll(Tickets tl) {
-        tcLog.d("tl = " + tl + " " + (tl != null ? tl.ticketList.toString() : null));
-//		tcLog.d("mTickets = "+mTickets);
-        if (tl != null) {
-            super.addAll(tl.ticketList);
-            mTickets.add(tl);
-//			tcLog.d("count = "+super.getCount());
-            notifyDataSetChanged();
-        }
-    }
-
-    public TicketList getTicketList() {
-        return mTickets.ticketList;
-    }
-
-    @Override
-    public boolean hasStableIds() {
-//        tcLog.d( "hasStableIds");
-        return true;
+    public int getCount() {
+	return mTickets.getTicketCount();
     }
 
     @Override
     public Ticket getItem(int position) {
 //        tcLog.d( "getItem " + position);
-        try {
-            //			tcLog.d( "getItem o = " + o);
-            return mTickets.ticketList.get(position);
-        } catch (Exception e) {
-            return null;
-        }
+	try {
+	    //			tcLog.d( "getItem o = " + o);
+	    return mTickets.ticketList.get(position);
+	} catch (Exception e) {
+	    return null;
+	}
+    }
+
+    public void addAll(Tickets tl) {
+	tcLog.d("tl = " + tl + " " + (tl != null ? tl.ticketList.toString() : null));
+//		tcLog.d("mTickets = "+mTickets);
+	if (tl != null) {
+	    super.addAll(tl.ticketList);
+	    mTickets.add(tl);
+//			tcLog.d("count = "+super.getCount());
+	    notifyDataSetChanged();
+	}
+    }
+
+    public TicketList getTicketList() {
+	return mTickets.ticketList;
+    }
+
+    @Override
+    public boolean hasStableIds() {
+//        tcLog.d( "hasStableIds");
+	return true;
     }
 
     public int getNextTicket(int pos) {
-        return mTickets.getNextTicket(pos);
+	return mTickets.getNextTicket(pos);
     }
 
     public int getPrevTicket(int pos) {
-        return mTickets.getPrevTicket(pos);
+	return mTickets.getPrevTicket(pos);
     }
 
     public Ticket getTicket(int i) {
-        tcLog.d("mTickets = " + mTickets);
-        tcLog.d("getTicket i = " + i);
-        return (mTickets != null ? mTickets.getTicket(i) : null);
-    }
-
-    public int getCount() {
-        return mTickets.getTicketCount();
+	tcLog.d("mTickets = " + mTickets);
+	tcLog.d("getTicket i = " + i);
+	return (mTickets != null ? mTickets.getTicket(i) : null);
     }
 
     public int getTicketContentCount() {
-        return mTickets.getTicketContentCount();
+	return mTickets.getTicketContentCount();
     }
 }

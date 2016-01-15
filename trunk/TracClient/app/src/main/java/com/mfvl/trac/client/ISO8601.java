@@ -16,7 +16,6 @@
 
 package com.mfvl.trac.client;
 
-
 /**
  * Helper class for handling ISO 8601 strings of the following format:
  * "2008-03-01T13:00:00+01:00". It also supports parsing the "Z" timezone.
@@ -35,30 +34,30 @@ final class ISO8601 {
      * Transform Calendar to ISO 8601 string.
      */
     public static String fromUnix(final long tijd) {
-        final Date date = new Date();
+	final Date date = new Date();
 
-        date.setTime(tijd);
-        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
+	date.setTime(tijd);
+	final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
 
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return sdf.format(date);
+	sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+	return sdf.format(date);
     }
 
     /**
      * Transform ISO 8601 string to Calendar.
      */
     public static Calendar toCalendar(final String iso8601string) throws ParseException {
-        final Calendar calendar = Calendar.getInstance();
-        String s = iso8601string.replace("Z", "+00:00");
+	final Calendar calendar = Calendar.getInstance();
+	String s = iso8601string.replace("Z", "+00:00");
 
-        try {
-            s = s.substring(0, 22) + s.substring(23);
-        } catch (final IndexOutOfBoundsException e) {
-            throw new ParseException("Invalid length", 0);
-        }
-        final Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.US).parse(s);
+	try {
+	    s = s.substring(0, 22) + s.substring(23);
+	} catch (final IndexOutOfBoundsException e) {
+	    throw new ParseException("Invalid length", 0);
+	}
+	final Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.US).parse(s);
 
-        calendar.setTime(date);
-        return calendar;
+	calendar.setTime(date);
+	return calendar;
     }
 }

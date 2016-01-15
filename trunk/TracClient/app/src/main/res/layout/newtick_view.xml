@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
  * Copyright (C) 2013,2014 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,79 +15,79 @@
 
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-	<LinearLayout style="@style/ButtonHolder">
+    <LinearLayout style="@style/ButtonHolder">
 
-		<Button
-			android:id="@+id/storebutton"
-			style="@style/NormalButton"
-			android:text="@string/store" />
-	</LinearLayout>
+        <Button
+            android:id="@+id/storebutton"
+            style="@style/NormalButton"
+            android:text="@string/store" />
+    </LinearLayout>
 
-	<ScrollView
-		android:layout_width="match_parent"
-		android:layout_height="match_parent">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-		<LinearLayout
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-			<TableLayout
-				android:id="@+id/newTickTable"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:stretchColumns="1">
+            <TableLayout
+                android:id="@+id/newTickTable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:stretchColumns="1">
 
-				<TableRow
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content">
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-					<TextView
-						android:id="@+id/titel"
-						android:layout_width="0dip"
-						android:layout_margin="4dip"
-						android:layout_weight="1"
-						android:padding="5dp"
-						android:text="@string/newtick"
-						android:textAppearance="?android:attr/textAppearanceLarge" />
-				</TableRow>
-				<!-- just draw a red line -->
+                    <TextView
+                        android:id="@+id/titel"
+                        android:layout_width="0dip"
+                        android:layout_margin="4dip"
+                        android:layout_weight="1"
+                        android:padding="5dp"
+                        android:text="@string/newtick"
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
+                </TableRow>
+                <!-- just draw a red line -->
 
-				<View
-					android:layout_width="match_parent"
-					android:layout_height="2dp"
-					android:background="#FF0000" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="#FF0000" />
 
-				<TableRow>
+                <TableRow>
 
-					<TextView
-						android:id="@+id/veld"
-						android:layout_width="0dp"
-						android:layout_margin="4dp"
-						android:layout_weight="1"
-						android:textAppearance="?android:attr/textAppearanceMedium" />
-				</TableRow>
+                    <TextView
+                        android:id="@+id/veld"
+                        android:layout_width="0dp"
+                        android:layout_margin="4dp"
+                        android:layout_weight="1"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+                </TableRow>
 
-				<TableRow>
+                <TableRow>
 
-					<EditText
-						android:id="@+id/waarde"
-						android:layout_width="0dp"
-						android:layout_margin="4dp"
-						android:layout_weight="1"
-						android:inputType="text"
-						android:textAppearance="?android:attr/textAppearanceMedium" />
-				</TableRow>
-			</TableLayout>
+                    <EditText
+                        android:id="@+id/waarde"
+                        android:layout_width="0dp"
+                        android:layout_margin="4dp"
+                        android:layout_weight="1"
+                        android:inputType="text"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+                </TableRow>
+            </TableLayout>
 
-			<CheckBox
-				android:id="@+id/updNotify"
-				style="@style/CheckBox"
-				android:text="@string/notify" />
-		</LinearLayout>
-	</ScrollView>
+            <CheckBox
+                android:id="@+id/updNotify"
+                style="@style/CheckBox"
+                android:text="@string/notify" />
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

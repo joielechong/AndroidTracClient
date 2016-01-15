@@ -16,11 +16,17 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <style name="AppBaseTheme" parent="android:Theme.Holo.Light" />
+
     <style name="FullscreenThemeBase" parent="android:Theme.Holo.Light.NoActionBar.Fullscreen" />
+
     <style name="AlertDialogStyle" parent="android:Holo.Light.ButtonBar.AlertDialog" />
+
     <style name="ButtonBarBase" parent="android:Holo.Light.ButtonBar" />
+
     <style name="ButtonBarButton" parent="android:Holo.Light.SegmentedButton" />
+
     <style name="MyBaseStyle" parent="android:Theme.Holo.Light.DarkActionBar" />
+
     <style name="NormalButtonBase" parent="android:Widget.Holo.Light.Button" />
 
     <style name="AppTheme" parent="@style/AppBaseTheme" />

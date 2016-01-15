@@ -35,87 +35,87 @@ public class TracShowWebPage extends Activity implements View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        TracGlobal.getInstance(getApplicationContext());
-        tcLog.d("savedInstanceState = " + savedInstanceState);
-        final Intent i = getIntent();
-        final boolean toonVersie = i.getBooleanExtra(HELP_VERSION, true);
+	super.onCreate(savedInstanceState);
+	TracGlobal.getInstance(getApplicationContext());
+	tcLog.d("savedInstanceState = " + savedInstanceState);
+	final Intent i = getIntent();
+	final boolean toonVersie = i.getBooleanExtra(HELP_VERSION, true);
 
-        setContentView(R.layout.trac_about);
-        filename = "file:///android_asset/" + i.getStringExtra(HELP_FILE) + ".html";
+	setContentView(R.layout.trac_about);
+	filename = "file:///android_asset/" + i.getStringExtra(HELP_FILE) + ".html";
 
-        final View tv = findViewById(R.id.versionblock);
-        tcLog.d(filename + " " + toonVersie + " " + tv);
-        wv = (WebView) findViewById(R.id.webfile);
-        cv = (TextView) findViewById(R.id.textAbout);
-        sv = findViewById(R.id.scrollAbout);
+	final View tv = findViewById(R.id.versionblock);
+	tcLog.d(filename + " " + toonVersie + " " + tv);
+	wv = (WebView) findViewById(R.id.webfile);
+	cv = (TextView) findViewById(R.id.textAbout);
+	sv = findViewById(R.id.scrollAbout);
 
-        if (!toonVersie) {
-            tv.setVisibility(View.GONE);
-        } else {
-            final TextView tv1 = (TextView) findViewById(R.id.about_version_text);
-            tv1.setText(TracGlobal.getVersion());
-            boolean disclaimer = TracGlobal.checkDisclaimer();
-            boolean cookies = TracGlobal.getCookieInform();
-            View kb = findViewById(R.id.keuzeblock);
-            if (!disclaimer && !cookies) {
-                kb.setVisibility(View.GONE);
-            } else {
-                kb.setVisibility(View.VISIBLE);
-                TextView sch = (TextView) findViewById(R.id.showchanges);
-                sch.setVisibility(View.VISIBLE);
-                sch.setOnClickListener(this);
-                if (disclaimer) {
-                    TextView v = (TextView) findViewById(R.id.showdisclaimer);
-                    v.setVisibility(View.VISIBLE);
-                    v.setOnClickListener(this);
-                }
-                if (cookies) {
-                    TextView v = (TextView) findViewById(R.id.showcookies);
-                    v.setVisibility(View.VISIBLE);
-                    v.setOnClickListener(this);
-                }
-            }
-        }
-        showWebpage();
-    }
-
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.showchanges:
-                showWebpage();
-                break;
-
-            case R.id.showcookies:
-                showCookies();
-                break;
-
-            case R.id.showdisclaimer:
-                showDisclaimer();
-                break;
-        }
+	if (!toonVersie) {
+	    tv.setVisibility(View.GONE);
+	} else {
+	    final TextView tv1 = (TextView) findViewById(R.id.about_version_text);
+	    tv1.setText(TracGlobal.getVersion());
+	    boolean disclaimer = TracGlobal.checkDisclaimer();
+	    boolean cookies = TracGlobal.getCookieInform();
+	    View kb = findViewById(R.id.keuzeblock);
+	    if (!disclaimer && !cookies) {
+		kb.setVisibility(View.GONE);
+	    } else {
+		kb.setVisibility(View.VISIBLE);
+		TextView sch = (TextView) findViewById(R.id.showchanges);
+		sch.setVisibility(View.VISIBLE);
+		sch.setOnClickListener(this);
+		if (disclaimer) {
+		    TextView v = (TextView) findViewById(R.id.showdisclaimer);
+		    v.setVisibility(View.VISIBLE);
+		    v.setOnClickListener(this);
+		}
+		if (cookies) {
+		    TextView v = (TextView) findViewById(R.id.showcookies);
+		    v.setVisibility(View.VISIBLE);
+		    v.setOnClickListener(this);
+		}
+	    }
+	}
+	showWebpage();
     }
 
     private void showWebpage() {
-        wv.setVisibility(View.VISIBLE);
-        sv.setVisibility(View.GONE);
-        // wv.getSettings().setJavaScriptEnabled(true);
-        wv.setWebViewClient(new WebViewClient());
-        wv.getSettings().setTextZoom(getResources().getInteger(R.integer.webzoom));
-        wv.loadUrl(filename);
+	wv.setVisibility(View.VISIBLE);
+	sv.setVisibility(View.GONE);
+	// wv.getSettings().setJavaScriptEnabled(true);
+	wv.setWebViewClient(new WebViewClient());
+	wv.getSettings().setTextZoom(getResources().getInteger(R.integer.webzoom));
+	wv.loadUrl(filename);
+    }
+
+    public void onClick(View v) {
+	switch (v.getId()) {
+	    case R.id.showchanges:
+		showWebpage();
+		break;
+
+	    case R.id.showcookies:
+		showCookies();
+		break;
+
+	    case R.id.showdisclaimer:
+		showDisclaimer();
+		break;
+	}
     }
 
     private void showDisclaimer() {
-        sv.setVisibility(View.VISIBLE);
-        wv.setVisibility(View.GONE);
-        cv.setText(R.string.disclaimer);
+	sv.setVisibility(View.VISIBLE);
+	wv.setVisibility(View.GONE);
+	cv.setText(R.string.disclaimer);
 //		TracGlobal.setDisclaimer();
     }
 
     private void showCookies() {
-        sv.setVisibility(View.VISIBLE);
-        wv.setVisibility(View.GONE);
-        cv.setText(R.string.cookieInform);
+	sv.setVisibility(View.VISIBLE);
+	wv.setVisibility(View.GONE);
+	cv.setText(R.string.cookieInform);
 //		TracGlobal.setCookieInform();
     }
 }

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
  * Copyright (C) 2012 Paul Burke
  *               2015 Michiel van Loon
  *
@@ -18,11 +17,18 @@
  * v21+ material style
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
+
     <style name="AppBaseTheme" parent="android:Theme.Material.Light" />
+
     <style name="FullscreenThemeBase" parent="android:Theme.Material.Light.NoActionBar.Fullscreen" />
+
     <style name="AlertDialogStyle" parent="android:Theme.Material.Light.Dialog.Alert" />
+
     <style name="ButtonBarBase" parent="android:Widget.Material.Light.ButtonBar" />
+
     <style name="ButtonBarButton" parent="android:Widget.Material.Light.SegmentedButton" />
+
     <style name="MyBaseStyle" parent="android:Theme.Material.Light.DarkActionBar" />
-    <style name="NormalButtonBase" parent="android:Widget.Material.Light.Button"/>
+
+    <style name="NormalButtonBase" parent="android:Widget.Material.Light.Button" />
 </resources>

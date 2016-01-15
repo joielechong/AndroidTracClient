@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
  * Copyright (C) 2013,2014 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -53,6 +52,6 @@
         android:id="@+id/filtercheck"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"/>
+        android:orientation="vertical" />
 
 </LinearLayout>

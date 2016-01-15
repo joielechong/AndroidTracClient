@@ -21,16 +21,16 @@ import android.os.HandlerThread;
 class MyHandlerThread extends HandlerThread {
 
     MyHandlerThread(String name) {
-        super(name);
+	super(name);
     }
 
     @Override
     public void run() {
-        try {
-            super.run();
-        } catch (Exception e) {
-            tcLog.e("Exception in HandlerThread " + getThreadId() + " Run - " + getName(), e);
-        }
+	try {
+	    super.run();
+	} catch (Exception e) {
+	    tcLog.e("Exception in HandlerThread " + getThreadId() + " Run - " + getName(), e);
+	}
     }
 }
 

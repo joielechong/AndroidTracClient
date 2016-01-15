@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
  * Copyright (C) 2013,2014 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,9 +14,12 @@
  * limitations under the License.
 
 -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:alpha="220"
+    android:background="@color/popup_back"
     android:orientation="vertical"
     android:padding="16dp">
 
@@ -28,16 +30,16 @@
         android:layout_alignParentTop="true"
         android:orientation="vertical">
 
-        <TextView style="@style/FieldName" />
+        <TextView style="@style/FieldName"/>
     </LinearLayout>
 
     <LinearLayout style="@style/ButtonHolder">
 
         <Button
             android:id="@+id/cancelpw"
-            style="@style/CancelButton" />
+            style="@style/CancelButton"/>
 
-        <Button style="@style/OkButton" />
+        <Button style="@style/OkButton"/>
     </LinearLayout>
 
 </RelativeLayout>

@@ -26,18 +26,18 @@ class ColoredArrayAdapter<T> extends ArrayAdapter<T> {
     private static int[] colors = null;
 
     public ColoredArrayAdapter(TracStart context, int resource, List<T> list) {
-        super(context, resource, list);
+	super(context, resource, list);
 //		tcLog.d("context = "+context+" resource = "+ resource+" list = " +list);
-        if (colors == null) {
-            colors = context.getResources().getIntArray(R.array.list_col);
-        }
+	if (colors == null) {
+	    colors = context.getResources().getIntArray(R.array.list_col);
+	}
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 //		tcLog.d("position = "+position+" convertView = "+convertView+" parent = "+parent);
-        final View view = super.getView(position, convertView, parent);
-        view.setBackgroundColor(colors[position % colors.length]);
-        return view;
+	final View view = super.getView(position, convertView, parent);
+	view.setBackgroundColor(colors[position % colors.length]);
+	return view;
     }
 }
