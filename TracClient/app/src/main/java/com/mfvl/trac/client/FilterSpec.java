@@ -29,84 +29,84 @@ public class FilterSpec extends Spec implements Serializable, Cloneable {
     private Boolean _edited = false;
 
     public FilterSpec(final String veld, final String operator, final String waarde) {
-        super(veld);
-        _operator = operator;
-        _waarde = waarde;
-        _newwaarde = waarde;
+	super(veld);
+	_operator = operator;
+	_waarde = waarde;
+	_newwaarde = waarde;
     }
 
     public FilterSpec(final String string, final String[] operators) {
-        super(null);
-        _operator = null;
-        _waarde = null;
-        for (int i = operators.length - 1; i >= 0; i--) {
-            final String op = operators[i];
-            final int index = string.indexOf(op);
+	super(null);
+	_operator = null;
+	_waarde = null;
+	for (int i = operators.length - 1; i >= 0; i--) {
+	    final String op = operators[i];
+	    final int index = string.indexOf(op);
 
-            if (index > 0) {
-                _veld = string.substring(0, index);
-                _operator = op;
-                _waarde = string.substring(index + op.length());
-                _newwaarde = _waarde;
-                i = 0;
-            }
-        }
+	    if (index > 0) {
+		_veld = string.substring(0, index);
+		_operator = op;
+		_waarde = string.substring(index + op.length());
+		_newwaarde = _waarde;
+		i = 0;
+	    }
+	}
     }
 
     @Override
     public boolean equals(Object o) {
-        boolean retVal;
-        retVal = (this == o)
-                || (o instanceof FilterSpec
-                    && super.equals(o)
-                    && equalFields(_operator, ((FilterSpec) o).getOperator())
-                    && equalFields(_waarde, ((FilterSpec) o).getWaarde()));
+	boolean retVal;
+	retVal = (this == o)
+	    || (o instanceof FilterSpec
+	    && super.equals(o)
+	    && equalFields(_operator, ((FilterSpec) o).getOperator())
+	    && equalFields(_waarde, ((FilterSpec) o).getWaarde()));
 //		tcLog.d("this = "+this+" o = "+o+" retVal = "+retVal);
-        return retVal;
+	return retVal;
     }
 
     public String getOperator() {
-        return _operator;
+	return _operator;
     }
 
     public FilterSpec setOperator(final String o) {
-        _operator = o;
-        return this;
+	_operator = o;
+	return this;
     }
 
     public String getWaarde() {
-        return _edited ? _newwaarde : _waarde;
+	return _edited ? _newwaarde : _waarde;
     }
 
     public FilterSpec setWaarde(final String w) {
-        if (_edited) {
-            _newwaarde = w;
-        } else {
-            _waarde = w;
-        }
-        return this;
+	if (_edited) {
+	    _newwaarde = w;
+	} else {
+	    _waarde = w;
+	}
+	return this;
     }
 
     public boolean getEdit() {
-        return _edited;
+	return _edited;
     }
 
     @Override
     public FilterSpec setEdit(final boolean edited) {
-        // tcLog.i( "setEdit veld = " + _veld + " edited = " + edited);
-        if (edited != _edited) {
-            _edited = edited;
-            if (_edited) {
-                _newwaarde = _waarde;
-            } else {
-                _waarde = _newwaarde;
-            }
-        }
-        return this;
+	// tcLog.i( "setEdit veld = " + _veld + " edited = " + edited);
+	if (edited != _edited) {
+	    _edited = edited;
+	    if (_edited) {
+		_newwaarde = _waarde;
+	    } else {
+		_waarde = _newwaarde;
+	    }
+	}
+	return this;
     }
 
     @Override
     public String toString() {
-        return _edited ? _veld : _veld + (_operator != null ? _operator : "") + (_waarde != null ? _waarde : "");
+	return _edited ? _veld : _veld + (_operator != null ? _operator : "") + (_waarde != null ? _waarde : "");
     }
 }

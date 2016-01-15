@@ -26,75 +26,60 @@ public abstract class JSONRPCClient {
      * @return a JSONRPCClient instance acting as a proxy for the web service
      */
     public static JSONRPCClient create(String uri, Versions version) {
-        final JSONRPCClient client = new JSONRPCHttpClient(uri);
-        client.version = version;
-        return client;
+	final JSONRPCClient client = new JSONRPCHttpClient(uri);
+	client.version = version;
+	return client;
     }
 
     protected static JSONArray getJSONArray(Object[] array) {
-        final JSONArray arr = new JSONArray();
-        for (final Object item : array) {
-            if (item.getClass().isArray()) {
-                arr.put(getJSONArray((Object[]) item));
-            } else {
-                arr.put(item);
-            }
-        }
-        return arr;
+	final JSONArray arr = new JSONArray();
+	for (final Object item : array) {
+	    if (item.getClass().isArray()) {
+		arr.put(getJSONArray((Object[]) item));
+	    } else {
+		arr.put(item);
+	    }
+	}
+	return arr;
     }
 
     /**
      * Get the debugging mode
      */
     public boolean isDebug() {
-        return _debug;
+	return _debug;
     }
 
     /**
      * Setting the _debugging mode (ON / OFF -> FALSE / TRUE
      */
     public void setDebug(boolean _debug) {
-        this._debug = _debug;
+	this._debug = _debug;
     }
 
     public void setEncoding(String encoding) {
-        this.encoding = encoding;
+	this.encoding = encoding;
     }
 
     public void delEncoding() {
-        this.encoding = "";
-    }
-
-    protected abstract JSONObject doJSONRequest(JSONObject request) throws JSONRPCException;
-
-    protected JSONObject doRequest(String method, JSONObject params) throws JSONRPCException {
-        final JSONObject jsonRequest = new JSONObject();
-        try {
-            jsonRequest.put("id", UUID.randomUUID().hashCode());
-            jsonRequest.put("method", method);
-            jsonRequest.put("params", params);
-            jsonRequest.put("jsonrpc", "2.0");
-        } catch (final JSONException e1) {
-            throw new JSONRPCException("Invalid JSON request", e1);
-        }
-        return doJSONRequest(jsonRequest);
+	this.encoding = "";
     }
 
     protected JSONObject doRequest(String method, Object[] params) throws JSONRPCException {
-        // Copy method arguments in a json array
-        final JSONArray jsonParams = new JSONArray();
-        for (final Object param : params) {
-            if (param.getClass().isArray()) {
-                final JSONArray ar = getJSONArray((Object[]) param);
+	// Copy method arguments in a json array
+	final JSONArray jsonParams = new JSONArray();
+	for (final Object param : params) {
+	    if (param.getClass().isArray()) {
+		final JSONArray ar = getJSONArray((Object[]) param);
 
-                jsonParams.put(ar);
-            }
-            jsonParams.put(param);
-        }
+		jsonParams.put(ar);
+	    }
+	    jsonParams.put(param);
+	}
 
-        return doRequest(method, jsonParams);
+	return doRequest(method, jsonParams);
 /*
-        // Create the json request object
+	// Create the json request object
 		final JSONObject jsonRequest = new JSONObject();
 		try {
 			jsonRequest.put("id", UUID.randomUUID().hashCode());
@@ -108,53 +93,39 @@ public abstract class JSONRPCClient {
 */
     }
 
-    protected JSONObject doRequest(String method, JSONArray params) throws JSONRPCException {
-        final JSONObject jsonRequest = new JSONObject();
-        try {
-            jsonRequest.put("id", UUID.randomUUID().hashCode());
-            jsonRequest.put("method", method);
-            jsonRequest.put("params", params);
-            jsonRequest.put("jsonrpc", "2.0");
-        } catch (final JSONException e1) {
-            throw new JSONRPCException("Invalid JSON request", e1);
-        }
-        return doJSONRequest(jsonRequest);
-    }
-
     //
     public Object beginCall(String method, final Object... params) {
-        // Handler
-        class RequestThread extends Thread {
-            String mMethod;
-            Object[] mParams;
+	// Handler
+	class RequestThread extends Thread {
+	    String mMethod;
+	    Object[] mParams;
 
-            public RequestThread(String method, Object[] params) {
-                mMethod = method;
-                mParams = params;
-            }
+	    public RequestThread(String method, Object[] params) {
+		mMethod = method;
+		mParams = params;
+	    }
 
-            @Override
-            public void run() {
-                try {
-                    doRequest(mMethod, mParams);
-                } catch (final JSONRPCException ignored) {
-                }
-            }
+	    @Override
+	    public void run() {
+		try {
+		    doRequest(mMethod, mParams);
+		} catch (final JSONRPCException ignored) {
+		}
+	    }
 
-        }
+	}
 
-        final RequestThread requestThread = new RequestThread(method, params);
-        requestThread.start();
+	final RequestThread requestThread = new RequestThread(method, params);
+	requestThread.start();
 
-        return null;
+	return null;
     }
-//
 
     /**
      * Get the socket operation timeout in milliseconds
      */
     public int getSoTimeout() {
-        return soTimeout;
+	return soTimeout;
     }
 
     /**
@@ -163,15 +134,16 @@ public abstract class JSONRPCClient {
      * @param soTimeout timeout in milliseconds
      */
     public void setSoTimeout(int soTimeout) {
-        this.soTimeout = soTimeout;
+	this.soTimeout = soTimeout;
     }
 
     /**
      * Get the connection timeout in milliseconds
      */
     public int getConnectionTimeout() {
-        return connectionTimeout;
+	return connectionTimeout;
     }
+//
 
     /**
      * Set the connection timeout
@@ -179,7 +151,7 @@ public abstract class JSONRPCClient {
      * @param connectionTimeout timeout in milliseconds
      */
     public void setConnectionTimeout(int connectionTimeout) {
-        this.connectionTimeout = connectionTimeout;
+	this.connectionTimeout = connectionTimeout;
     }
 
     /**
@@ -191,11 +163,11 @@ public abstract class JSONRPCClient {
      * @throws JSONRPCException if an error is encountered during JSON-RPC method call
      */
     public Object call(String method, Object... params) throws JSONRPCException {
-        try {
-            return doRequest(method, params).get("result");
-        } catch (final JSONException e) {
-            throw new JSONRPCException("Cannot convert result", e);
-        }
+	try {
+	    return doRequest(method, params).get("result");
+	} catch (final JSONException e) {
+	    throw new JSONRPCException("Cannot convert result", e);
+	}
     }
 
     /**
@@ -207,19 +179,47 @@ public abstract class JSONRPCClient {
      * @throws JSONRPCException if an error is encountered during JSON-RPC method call
      */
     public Object call(String method, JSONObject params) throws JSONRPCException {
-        try {
-            return doRequest(method, params).get("result");
-        } catch (final JSONException e) {
-            throw new JSONRPCException("Cannot convert result to String", e);
-        }
+	try {
+	    return doRequest(method, params).get("result");
+	} catch (final JSONException e) {
+	    throw new JSONRPCException("Cannot convert result to String", e);
+	}
     }
 
+    protected JSONObject doRequest(String method, JSONObject params) throws JSONRPCException {
+	final JSONObject jsonRequest = new JSONObject();
+	try {
+	    jsonRequest.put("id", UUID.randomUUID().hashCode());
+	    jsonRequest.put("method", method);
+	    jsonRequest.put("params", params);
+	    jsonRequest.put("jsonrpc", "2.0");
+	} catch (final JSONException e1) {
+	    throw new JSONRPCException("Invalid JSON request", e1);
+	}
+	return doJSONRequest(jsonRequest);
+    }
+
+    protected abstract JSONObject doJSONRequest(JSONObject request) throws JSONRPCException;
+
     public Object call(String method, JSONArray params) throws JSONRPCException {
-        try {
-            return doRequest(method, params).get("result");
-        } catch (final JSONException e) {
-            throw new JSONRPCException("Cannot convert result to String", e);
-        }
+	try {
+	    return doRequest(method, params).get("result");
+	} catch (final JSONException e) {
+	    throw new JSONRPCException("Cannot convert result to String", e);
+	}
+    }
+
+    protected JSONObject doRequest(String method, JSONArray params) throws JSONRPCException {
+	final JSONObject jsonRequest = new JSONObject();
+	try {
+	    jsonRequest.put("id", UUID.randomUUID().hashCode());
+	    jsonRequest.put("method", method);
+	    jsonRequest.put("params", params);
+	    jsonRequest.put("jsonrpc", "2.0");
+	} catch (final JSONException e1) {
+	    throw new JSONRPCException("Invalid JSON request", e1);
+	}
+	return doJSONRequest(jsonRequest);
     }
 
     /**
@@ -231,11 +231,11 @@ public abstract class JSONRPCClient {
      * @throws JSONRPCException if an error is encountered during JSON-RPC method call
      */
     public String callString(String method, Object... params) throws JSONRPCException {
-        try {
-            return doRequest(method, params).getString("result");
-        } catch (final JSONRPCException | JSONException e) {
-            throw new JSONRPCException("Cannot convert result to String", e);
-        }
+	try {
+	    return doRequest(method, params).getString("result");
+	} catch (final JSONRPCException | JSONException e) {
+	    throw new JSONRPCException("Cannot convert result to String", e);
+	}
     }
 
     /**
@@ -247,19 +247,19 @@ public abstract class JSONRPCClient {
      * @throws JSONRPCException if an error is encountered during JSON-RPC method call
      */
     public String callString(String method, JSONObject params) throws JSONRPCException {
-        try {
-            return doRequest(method, params).getString("result");
-        } catch (final Exception e) {
-            throw new JSONRPCException("Cannot convert result to String", e);
-        }
+	try {
+	    return doRequest(method, params).getString("result");
+	} catch (final Exception e) {
+	    throw new JSONRPCException("Cannot convert result to String", e);
+	}
     }
 
     public String callString(String method, JSONArray params) throws JSONRPCException {
-        try {
-            return doRequest(method, params).getString("result");
-        } catch (final Exception e) {
-            throw new JSONRPCException("Cannot convert result to String", e);
-        }
+	try {
+	    return doRequest(method, params).getString("result");
+	} catch (final Exception e) {
+	    throw new JSONRPCException("Cannot convert result to String", e);
+	}
     }
 
     /**
@@ -271,20 +271,20 @@ public abstract class JSONRPCClient {
      * @throws JSONRPCException if an error is encountered during JSON-RPC method call
      */
     public int callInt(String method, Object... params) throws JSONRPCException {
-        JSONObject response = null;
-        try {
-            response = doRequest(method, params);
-            if (response == null) {
-                throw new JSONRPCException("Cannot call method: " + method);
-            }
-            return response.getInt("result");
-        } catch (final JSONException e) {
-            try {
-                return Integer.parseInt(response.getString("result"));
-            } catch (final NumberFormatException | JSONException e1) {
-                throw new JSONRPCException("Cannot convert result to int", e1);
-            }
-        }
+	JSONObject response = null;
+	try {
+	    response = doRequest(method, params);
+	    if (response == null) {
+		throw new JSONRPCException("Cannot call method: " + method);
+	    }
+	    return response.getInt("result");
+	} catch (final JSONException e) {
+	    try {
+		return Integer.parseInt(response.getString("result"));
+	    } catch (final NumberFormatException | JSONException e1) {
+		throw new JSONRPCException("Cannot convert result to int", e1);
+	    }
+	}
     }
 
     /**
@@ -296,37 +296,37 @@ public abstract class JSONRPCClient {
      * @throws JSONRPCException if an error is encountered during JSON-RPC method call
      */
     public Object callInt(String method, JSONObject params) throws JSONRPCException {
-        JSONObject response = null;
-        try {
-            response = doRequest(method, params);
-            if (response == null) {
-                throw new JSONRPCException("Cannot call method: " + method);
-            }
-            return response.getInt("result");
-        } catch (final JSONException e) {
-            try {
-                return Integer.parseInt(response.getString("result"));
-            } catch (final NumberFormatException | JSONException e1) {
-                throw new JSONRPCException("Cannot convert result to int", e1);
-            }
-        }
+	JSONObject response = null;
+	try {
+	    response = doRequest(method, params);
+	    if (response == null) {
+		throw new JSONRPCException("Cannot call method: " + method);
+	    }
+	    return response.getInt("result");
+	} catch (final JSONException e) {
+	    try {
+		return Integer.parseInt(response.getString("result"));
+	    } catch (final NumberFormatException | JSONException e1) {
+		throw new JSONRPCException("Cannot convert result to int", e1);
+	    }
+	}
     }
 
     public Object callInt(String method, JSONArray params) throws JSONRPCException {
-        JSONObject response = null;
-        try {
-            response = doRequest(method, params);
-            if (response == null) {
-                throw new JSONRPCException("Cannot call method: " + method);
-            }
-            return response.getInt("result");
-        } catch (final JSONException e) {
-            try {
-                return Integer.parseInt(response.getString("result"));
-            } catch (final NumberFormatException | JSONException e1) {
-                throw new JSONRPCException("Cannot convert result to int", e1);
-            }
-        }
+	JSONObject response = null;
+	try {
+	    response = doRequest(method, params);
+	    if (response == null) {
+		throw new JSONRPCException("Cannot call method: " + method);
+	    }
+	    return response.getInt("result");
+	} catch (final JSONException e) {
+	    try {
+		return Integer.parseInt(response.getString("result"));
+	    } catch (final NumberFormatException | JSONException e1) {
+		throw new JSONRPCException("Cannot convert result to int", e1);
+	    }
+	}
     }
 
     /**
@@ -338,20 +338,20 @@ public abstract class JSONRPCClient {
      * @throws JSONRPCException if an error is encountered during JSON-RPC method call
      */
     public long callLong(String method, Object... params) throws JSONRPCException {
-        JSONObject response = null;
-        try {
-            response = doRequest(method, params);
-            if (response == null) {
-                throw new JSONRPCException("Cannot call method: " + method);
-            }
-            return response.getLong("result");
-        } catch (final JSONException e) {
-            try {
-                return Long.parseLong(response.getString("result"));
-            } catch (final NumberFormatException | JSONException e1) {
-                throw new JSONRPCException("Cannot convert result to long", e);
-            }
-        }
+	JSONObject response = null;
+	try {
+	    response = doRequest(method, params);
+	    if (response == null) {
+		throw new JSONRPCException("Cannot call method: " + method);
+	    }
+	    return response.getLong("result");
+	} catch (final JSONException e) {
+	    try {
+		return Long.parseLong(response.getString("result"));
+	    } catch (final NumberFormatException | JSONException e1) {
+		throw new JSONRPCException("Cannot convert result to long", e);
+	    }
+	}
     }
 
     /**
@@ -363,39 +363,39 @@ public abstract class JSONRPCClient {
      * @throws JSONRPCException if an error is encountered during JSON-RPC method call
      */
     public long callLong(String method, JSONObject params) throws JSONRPCException {
-        JSONObject response = null;
-        try {
-            response = doRequest(method, params);
-            if (response == null) {
-                throw new JSONRPCException("Cannot call method: " + method);
-            }
-            return response.getLong("result");
-        } catch (final JSONException e) {
-            try {
-                return Long.parseLong(response.getString("result"));
-            } catch (final NumberFormatException | JSONException e1) {
-                throw new JSONRPCException("Cannot convert result to long", e);
-            }
+	JSONObject response = null;
+	try {
+	    response = doRequest(method, params);
+	    if (response == null) {
+		throw new JSONRPCException("Cannot call method: " + method);
+	    }
+	    return response.getLong("result");
+	} catch (final JSONException e) {
+	    try {
+		return Long.parseLong(response.getString("result"));
+	    } catch (final NumberFormatException | JSONException e1) {
+		throw new JSONRPCException("Cannot convert result to long", e);
+	    }
 
-        }
+	}
     }
 
     public long callLong(String method, JSONArray params) throws JSONRPCException {
-        JSONObject response = null;
-        try {
-            response = doRequest(method, params);
-            if (response == null) {
-                throw new JSONRPCException("Cannot call method: " + method);
-            }
-            return response.getLong("result");
-        } catch (final JSONException e) {
-            try {
-                return Long.parseLong(response.getString("result"));
-            } catch (final NumberFormatException | JSONException e1) {
-                throw new JSONRPCException("Cannot convert result to long", e);
-            }
+	JSONObject response = null;
+	try {
+	    response = doRequest(method, params);
+	    if (response == null) {
+		throw new JSONRPCException("Cannot call method: " + method);
+	    }
+	    return response.getLong("result");
+	} catch (final JSONException e) {
+	    try {
+		return Long.parseLong(response.getString("result"));
+	    } catch (final NumberFormatException | JSONException e1) {
+		throw new JSONRPCException("Cannot convert result to long", e);
+	    }
 
-        }
+	}
     }
 
     /**
@@ -407,22 +407,22 @@ public abstract class JSONRPCClient {
      * @throws JSONRPCException if an error is encountered during JSON-RPC method call
      */
     public boolean callBoolean(String method, Object... params) throws JSONRPCException {
-        JSONObject response = null;
-        try {
-            response = doRequest(method, params);
-            if (response == null) {
-                throw new JSONRPCException("Cannot call method: " + method);
-            }
+	JSONObject response = null;
+	try {
+	    response = doRequest(method, params);
+	    if (response == null) {
+		throw new JSONRPCException("Cannot call method: " + method);
+	    }
 
-            return response.getBoolean("result");
-        } catch (final JSONException e) {
-            try {
-                return Boolean.parseBoolean(response.getString("result"));
-            } catch (final NumberFormatException | JSONException e1) {
-                throw new JSONRPCException("Cannot convert result to boolean", e1);
-            }
+	    return response.getBoolean("result");
+	} catch (final JSONException e) {
+	    try {
+		return Boolean.parseBoolean(response.getString("result"));
+	    } catch (final NumberFormatException | JSONException e1) {
+		throw new JSONRPCException("Cannot convert result to boolean", e1);
+	    }
 
-        }
+	}
     }
 
     /**
@@ -434,41 +434,41 @@ public abstract class JSONRPCClient {
      * @throws JSONRPCException if an error is encountered during JSON-RPC method call
      */
     public boolean callBoolean(String method, JSONObject params) throws JSONRPCException {
-        JSONObject response = null;
-        try {
-            response = doRequest(method, params);
-            if (response == null) {
-                throw new JSONRPCException("Cannot call method: " + method);
-            }
+	JSONObject response = null;
+	try {
+	    response = doRequest(method, params);
+	    if (response == null) {
+		throw new JSONRPCException("Cannot call method: " + method);
+	    }
 
-            return response.getBoolean("result");
-        } catch (final JSONException e) {
-            try {
-                return Boolean.parseBoolean(response.getString("result"));
-            } catch (final NumberFormatException | JSONException e1) {
-                throw new JSONRPCException("Cannot convert result to boolean", e);
-            }
+	    return response.getBoolean("result");
+	} catch (final JSONException e) {
+	    try {
+		return Boolean.parseBoolean(response.getString("result"));
+	    } catch (final NumberFormatException | JSONException e1) {
+		throw new JSONRPCException("Cannot convert result to boolean", e);
+	    }
 
-        }
+	}
     }
 
     public boolean callBoolean(String method, JSONArray params) throws JSONRPCException {
-        JSONObject response = null;
-        try {
-            response = doRequest(method, params);
-            if (response == null) {
-                throw new JSONRPCException("Cannot call method: " + method);
-            }
+	JSONObject response = null;
+	try {
+	    response = doRequest(method, params);
+	    if (response == null) {
+		throw new JSONRPCException("Cannot call method: " + method);
+	    }
 
-            return response.getBoolean("result");
-        } catch (final JSONException e) {
-            try {
-                return Boolean.parseBoolean(response.getString("result"));
-            } catch (final NumberFormatException | JSONException e1) {
-                throw new JSONRPCException("Cannot convert result to boolean", e);
-            }
+	    return response.getBoolean("result");
+	} catch (final JSONException e) {
+	    try {
+		return Boolean.parseBoolean(response.getString("result"));
+	    } catch (final NumberFormatException | JSONException e1) {
+		throw new JSONRPCException("Cannot convert result to boolean", e);
+	    }
 
-        }
+	}
     }
 
     /**
@@ -480,22 +480,22 @@ public abstract class JSONRPCClient {
      * @throws JSONRPCException if an error is encountered during JSON-RPC method call
      */
     public double callDouble(String method, Object... params) throws JSONRPCException {
-        JSONObject response = null;
-        try {
-            response = doRequest(method, params);
-            if (response == null) {
-                throw new JSONRPCException("Cannot call method: " + method);
-            }
+	JSONObject response = null;
+	try {
+	    response = doRequest(method, params);
+	    if (response == null) {
+		throw new JSONRPCException("Cannot call method: " + method);
+	    }
 
-            return response.getDouble("result");
-        } catch (final JSONException e) {
-            try {
-                return Double.parseDouble(response.getString("result"));
-            } catch (final NumberFormatException | JSONException e1) {
-                throw new JSONRPCException("Cannot convert result to double", e);
-            }
+	    return response.getDouble("result");
+	} catch (final JSONException e) {
+	    try {
+		return Double.parseDouble(response.getString("result"));
+	    } catch (final NumberFormatException | JSONException e1) {
+		throw new JSONRPCException("Cannot convert result to double", e);
+	    }
 
-        }
+	}
     }
 
     /**
@@ -507,41 +507,41 @@ public abstract class JSONRPCClient {
      * @throws JSONRPCException if an error is encountered during JSON-RPC method call
      */
     public double callDouble(String method, JSONObject params) throws JSONRPCException {
-        JSONObject response = null;
-        try {
-            response = doRequest(method, params);
-            if (response == null) {
-                throw new JSONRPCException("Cannot call method: " + method);
-            }
+	JSONObject response = null;
+	try {
+	    response = doRequest(method, params);
+	    if (response == null) {
+		throw new JSONRPCException("Cannot call method: " + method);
+	    }
 
-            return response.getDouble("result");
-        } catch (final JSONException e) {
-            try {
-                return Double.parseDouble(response.getString("result"));
-            } catch (final NumberFormatException | JSONException e1) {
-                throw new JSONRPCException("Cannot convert result to double", e);
-            }
+	    return response.getDouble("result");
+	} catch (final JSONException e) {
+	    try {
+		return Double.parseDouble(response.getString("result"));
+	    } catch (final NumberFormatException | JSONException e1) {
+		throw new JSONRPCException("Cannot convert result to double", e);
+	    }
 
-        }
+	}
     }
 
     public double callDouble(String method, JSONArray params) throws JSONRPCException {
-        JSONObject response = null;
-        try {
-            response = doRequest(method, params);
-            if (response == null) {
-                throw new JSONRPCException("Cannot call method: " + method);
-            }
+	JSONObject response = null;
+	try {
+	    response = doRequest(method, params);
+	    if (response == null) {
+		throw new JSONRPCException("Cannot call method: " + method);
+	    }
 
-            return response.getDouble("result");
-        } catch (final JSONException e) {
-            try {
-                return Double.parseDouble(response.getString("result"));
-            } catch (final NumberFormatException | JSONException e1) {
-                throw new JSONRPCException("Cannot convert result to double", e);
-            }
+	    return response.getDouble("result");
+	} catch (final JSONException e) {
+	    try {
+		return Double.parseDouble(response.getString("result"));
+	    } catch (final NumberFormatException | JSONException e1) {
+		throw new JSONRPCException("Cannot convert result to double", e);
+	    }
 
-        }
+	}
     }
 
     /**
@@ -553,43 +553,43 @@ public abstract class JSONRPCClient {
      * @throws JSONRPCException if an error is encountered during JSON-RPC method call
      */
     public JSONObject callJSONObject(String method, JSONObject params) throws JSONRPCException {
-        JSONObject response = null;
-        try {
-            response = doRequest(method, params);
-            if (response == null) {
-                throw new JSONRPCException("Cannot call method: " + method);
-            }
+	JSONObject response = null;
+	try {
+	    response = doRequest(method, params);
+	    if (response == null) {
+		throw new JSONRPCException("Cannot call method: " + method);
+	    }
 
-            return response.getJSONObject("result");
+	    return response.getJSONObject("result");
 //		} catch (final JSONRPCException e) {
 //			throw e;
-        } catch (final JSONException e) {
-            try {
-                return new JSONObject(response.getString("result"));
-            } catch (final NumberFormatException | JSONException e1) {
-                throw new JSONRPCException("Cannot convert result to JSONObject", e);
-            }
-        }
+	} catch (final JSONException e) {
+	    try {
+		return new JSONObject(response.getString("result"));
+	    } catch (final NumberFormatException | JSONException e1) {
+		throw new JSONRPCException("Cannot convert result to JSONObject", e);
+	    }
+	}
     }
 
     public JSONObject callJSONObject(String method, JSONArray params) throws JSONRPCException {
-        JSONObject response = null;
-        try {
-            response = doRequest(method, params);
-            if (response == null) {
-                throw new JSONRPCException("Cannot call method: " + method);
-            }
+	JSONObject response = null;
+	try {
+	    response = doRequest(method, params);
+	    if (response == null) {
+		throw new JSONRPCException("Cannot call method: " + method);
+	    }
 
-            return response.getJSONObject("result");
+	    return response.getJSONObject("result");
 //		} catch (final JSONRPCException e) {
 //			throw e;
-        } catch (final JSONException e) {
-            try {
-                return new JSONObject().put("result", response.getString("result"));
-            } catch (final NumberFormatException | JSONException e1) {
-                throw new JSONRPCException("Cannot convert result to JSONObject", e);
-            }
-        }
+	} catch (final JSONException e) {
+	    try {
+		return new JSONObject().put("result", response.getString("result"));
+	    } catch (final NumberFormatException | JSONException e1) {
+		throw new JSONRPCException("Cannot convert result to JSONObject", e);
+	    }
+	}
     }
 
     /**
@@ -601,23 +601,23 @@ public abstract class JSONRPCClient {
      * @throws JSONRPCException if an error is encountered during JSON-RPC method call
      */
     public JSONObject callJSONObject(String method, Object... params) throws JSONRPCException {
-        JSONObject response = null;
-        try {
-            response = doRequest(method, params);
-            if (response == null) {
-                throw new JSONRPCException("Cannot call method: " + method);
-            }
+	JSONObject response = null;
+	try {
+	    response = doRequest(method, params);
+	    if (response == null) {
+		throw new JSONRPCException("Cannot call method: " + method);
+	    }
 
-            return response.getJSONObject("result");
+	    return response.getJSONObject("result");
 //		} catch (final JSONRPCException e) {
 //			throw e;
-        } catch (final JSONException e) {
-            try {
-                return new JSONObject(response.getString("result"));
-            } catch (final NumberFormatException | JSONException e1) {
-                throw new JSONRPCException("Cannot convert result to JSONObject", e);
-            }
-        }
+	} catch (final JSONException e) {
+	    try {
+		return new JSONObject(response.getString("result"));
+	    } catch (final NumberFormatException | JSONException e1) {
+		throw new JSONRPCException("Cannot convert result to JSONObject", e);
+	    }
+	}
     }
 
     /**
@@ -629,23 +629,23 @@ public abstract class JSONRPCClient {
      * @throws JSONRPCException if an error is encountered during JSON-RPC method call
      */
     public JSONArray callJSONArray(String method, Object... params) throws JSONRPCException {
-        JSONObject response = null;
-        try {
-            response = doRequest(method, params);
-            if (response == null) {
-                throw new JSONRPCException("Cannot call method: " + method);
-            }
+	JSONObject response = null;
+	try {
+	    response = doRequest(method, params);
+	    if (response == null) {
+		throw new JSONRPCException("Cannot call method: " + method);
+	    }
 
-            return response.getJSONArray("result");
+	    return response.getJSONArray("result");
 //		} catch (final JSONRPCException e) {
 //			throw e;
-        } catch (final JSONException e) {
-            try {
-                return new JSONArray(response.getString("result"));
-            } catch (final NumberFormatException | JSONException e1) {
-                throw new JSONRPCException("Cannot convert result to JSONArray", e);
-            }
-        }
+	} catch (final JSONException e) {
+	    try {
+		return new JSONArray(response.getString("result"));
+	    } catch (final NumberFormatException | JSONException e1) {
+		throw new JSONRPCException("Cannot convert result to JSONArray", e);
+	    }
+	}
     }
 
     /**
@@ -657,42 +657,42 @@ public abstract class JSONRPCClient {
      * @throws JSONRPCException if an error is encountered during JSON-RPC method call
      */
     public JSONArray callJSONArray(String method, JSONObject params) throws JSONRPCException {
-        JSONObject response = null;
-        try {
-            response = doRequest(method, params);
-            if (response == null) {
-                throw new JSONRPCException("Cannot call method: " + method);
-            }
+	JSONObject response = null;
+	try {
+	    response = doRequest(method, params);
+	    if (response == null) {
+		throw new JSONRPCException("Cannot call method: " + method);
+	    }
 
-            return response.getJSONArray("result");
+	    return response.getJSONArray("result");
 //		} catch (final JSONRPCException e) {
 //			throw e;
-        } catch (final JSONException e) {
-            try {
-                return new JSONArray(response.getString("result"));
-            } catch (final NumberFormatException | JSONException e1) {
-                throw new JSONRPCException("Cannot convert result to JSONArray", e);
-            }
-        }
+	} catch (final JSONException e) {
+	    try {
+		return new JSONArray(response.getString("result"));
+	    } catch (final NumberFormatException | JSONException e1) {
+		throw new JSONRPCException("Cannot convert result to JSONArray", e);
+	    }
+	}
     }
 
     public JSONArray callJSONArray(String method, JSONArray params) throws JSONRPCException {
-        JSONObject response = null;
-        try {
-            response = doRequest(method, params);
-            if (response == null) {
-                throw new JSONRPCException("Cannot call method: " + method);
-            }
+	JSONObject response = null;
+	try {
+	    response = doRequest(method, params);
+	    if (response == null) {
+		throw new JSONRPCException("Cannot call method: " + method);
+	    }
 
-            return response.getJSONArray("result");
+	    return response.getJSONArray("result");
 //		} catch (final JSONRPCException e) {
 //			throw e;
-        } catch (final JSONException e) {
-            try {
-                return new JSONArray(response.getString("result"));
-            } catch (final NumberFormatException | JSONException e1) {
-                throw new JSONRPCException("Cannot convert result to JSONArray", e);
-            }
-        }
+	} catch (final JSONException e) {
+	    try {
+		return new JSONArray(response.getString("result"));
+	    } catch (final NumberFormatException | JSONException e1) {
+		throw new JSONRPCException("Cannot convert result to JSONArray", e);
+	    }
+	}
     }
 }

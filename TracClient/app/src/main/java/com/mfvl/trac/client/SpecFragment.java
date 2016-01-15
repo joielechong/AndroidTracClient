@@ -33,83 +33,83 @@ public class SpecFragment<T extends Spec> extends TracClientFragment {
 
     @SuppressWarnings("unchecked")
     protected void onMyAttach(String keyName) {
-        inputSpec = null;
+	inputSpec = null;
 
-        final Bundle args = getArguments();
-        if (args != null) {
-            if (args.containsKey(keyName)) {
-                inputSpec = (ArrayList<T>) args.getSerializable(keyName);
-            }
-        }
-        //tcLog.d("onMyAttach inputSpec = "+inputSpec);
+	final Bundle args = getArguments();
+	if (args != null) {
+	    if (args.containsKey(keyName)) {
+		inputSpec = (ArrayList<T>) args.getSerializable(keyName);
+	    }
+	}
+	//tcLog.d("onMyAttach inputSpec = "+inputSpec);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        tcLog.d("savedInstanceState = " + savedInstanceState);
-        setHasOptionsMenu(true);
+	super.onCreate(savedInstanceState);
+	tcLog.d("savedInstanceState = " + savedInstanceState);
+	setHasOptionsMenu(true);
     }
 
     @Override
     public void onViewCreated(final View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        tcLog.d("view = " + view + " savedInstanceState = " + savedInstanceState);
-        listView = (ListView) view.findViewById(R.id.itemlist);
-        tcLog.d("view = " + view + " listView = " + listView + " savedInstanceState = " + savedInstanceState);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        tcLog.d("savedInstanceState = " + savedInstanceState);
-        tm = listener.getTicketModel();
-
-        if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(inputSpecText)) {
-                inputSpec = (ArrayList<T>) savedInstanceState.getSerializable(inputSpecText);
-            }
-            if (savedInstanceState.containsKey(outputSpecText)) {
-                outputSpec = (ArrayList<T>) savedInstanceState.getSerializable(outputSpecText);
-            }
-        }
-
-        if (outputSpec == null) {
-            outputSpec = new ArrayList<>();
-            if (inputSpec != null) {
-                for (final T o : inputSpec) {
-                    o.setEdit(false);
-                    try {
-                        outputSpec.add((T) o.clone());
-                    } catch (final Exception e) {
-                        outputSpec.add(o);
-                    }
-                }
-            }
-        }
+	super.onViewCreated(view, savedInstanceState);
+	tcLog.d("view = " + view + " savedInstanceState = " + savedInstanceState);
+	listView = (ListView) view.findViewById(R.id.itemlist);
+	tcLog.d("view = " + view + " listView = " + listView + " savedInstanceState = " + savedInstanceState);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void onSaveInstanceState(Bundle savedState) {
-        super.onSaveInstanceState(savedState);
-        tcLog.logCall();
-        if (inputSpec != null) {
-            tcLog.d("inputSpec = " + inputSpec);
-            savedState.putSerializable(inputSpecText, inputSpec);
-        }
+	super.onSaveInstanceState(savedState);
+	tcLog.logCall();
+	if (inputSpec != null) {
+	    tcLog.d("inputSpec = " + inputSpec);
+	    savedState.putSerializable(inputSpecText, inputSpec);
+	}
 
-        SpecAdapter<T> adapter = (SpecAdapter<T>) listView.getAdapter();
+	SpecAdapter<T> adapter = (SpecAdapter<T>) listView.getAdapter();
 
-        if (adapter != null) {
-            final ArrayList<T> outputSpec = adapter.getItems();
+	if (adapter != null) {
+	    final ArrayList<T> outputSpec = adapter.getItems();
 
-            if (outputSpec != null) {
-                tcLog.d("outputSpec = " + outputSpec);
-                savedState.putSerializable(outputSpecText, outputSpec);
-            }
-        }
-        tcLog.d("super savedState = " + savedState);
+	    if (outputSpec != null) {
+		tcLog.d("outputSpec = " + outputSpec);
+		savedState.putSerializable(outputSpecText, outputSpec);
+	    }
+	}
+	tcLog.d("super savedState = " + savedState);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+	super.onActivityCreated(savedInstanceState);
+	tcLog.d("savedInstanceState = " + savedInstanceState);
+	tm = listener.getTicketModel();
+
+	if (savedInstanceState != null) {
+	    if (savedInstanceState.containsKey(inputSpecText)) {
+		inputSpec = (ArrayList<T>) savedInstanceState.getSerializable(inputSpecText);
+	    }
+	    if (savedInstanceState.containsKey(outputSpecText)) {
+		outputSpec = (ArrayList<T>) savedInstanceState.getSerializable(outputSpecText);
+	    }
+	}
+
+	if (outputSpec == null) {
+	    outputSpec = new ArrayList<>();
+	    if (inputSpec != null) {
+		for (final T o : inputSpec) {
+		    o.setEdit(false);
+		    try {
+			outputSpec.add((T) o.clone());
+		    } catch (final Exception e) {
+			outputSpec.add(o);
+		    }
+		}
+	    }
+	}
     }
 }

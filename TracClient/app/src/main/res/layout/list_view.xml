@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
  * Copyright (C) 2013-2016 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,42 +15,42 @@
 
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="wrap_content"
-	android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
-	<EditText
-		android:id="@+id/search_box"
-		style="@style/ListSearchBox" />
+    <EditText
+        android:id="@+id/search_box"
+        style="@style/ListSearchBox" />
 
-	<RelativeLayout
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-		<TextView
-			style="@style/NextToListProgress"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="@string/list_heading"
-			android:textSize="@dimen/list_textsize" />
+        <TextView
+            style="@style/NextToListProgress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/list_heading"
+            android:textSize="@dimen/list_textsize" />
 
-		<TextView
-			android:id="@+id/listProgress"
-			style="@style/ListProgress"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:textSize="@dimen/list_textsize" />
+        <TextView
+            android:id="@+id/listProgress"
+            style="@style/ListProgress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/list_textsize" />
 
-	</RelativeLayout>
+    </RelativeLayout>
 
-	<android.support.v4.widget.SwipeRefreshLayout style="@style/SwipeContainer">
+    <android.support.v4.widget.SwipeRefreshLayout style="@style/SwipeContainer">
 
-		<ListView
-			android:id="@+id/listOfTickets"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:textSize="@dimen/list_textsize" />
+        <ListView
+            android:id="@+id/listOfTickets"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="@dimen/list_textsize" />
 
-	</android.support.v4.widget.SwipeRefreshLayout>
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </LinearLayout>

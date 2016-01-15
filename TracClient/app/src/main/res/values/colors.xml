@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
  * Copyright (C) 2013,2014 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,7 +34,7 @@
 
     <drawable name="upArrow">@android:drawable/arrow_up_float</drawable>
     <drawable name="downArrow">@android:drawable/arrow_down_float</drawable>
-	<drawable name="plus">@android:drawable/ic_input_add</drawable>
+    <drawable name="plus">@android:drawable/ic_input_add</drawable>
 
     <array name="list_col">
         <item>@color/list_col1</item>

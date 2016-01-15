@@ -39,101 +39,101 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 //        tcLog.logCall();
-        super.onCreate(savedInstanceState);
-        tcLog.setContext(this);
-        TracGlobal.getInstance(getApplicationContext());
-        setContentView(R.layout.activity_titlescreen);
+	super.onCreate(savedInstanceState);
+	tcLog.setContext(this);
+	TracGlobal.getInstance(getApplicationContext());
+	setContentView(R.layout.activity_titlescreen);
     }
 
     @Override
     public void onStart() {
 //        tcLog.logCall();
-        super.onStart();
+	super.onStart();
 
 //        boolean adMobAvailable = false;
-        boolean adMobAvailable = true;
-        launchTrac = new Intent(getApplicationContext(), TracStart.class);
+	boolean adMobAvailable = true;
+	launchTrac = new Intent(getApplicationContext(), TracStart.class);
 
-        // adMobAvailable=false;
-        launchTrac.putExtra(ADMOB, adMobAvailable);
+	// adMobAvailable=false;
+	launchTrac.putExtra(ADMOB, adMobAvailable);
 
-        final Intent intent = getIntent();
+	final Intent intent = getIntent();
 
-        // Integer ticket = -1;
-        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-            final String contentString = intent.getDataString();
+	// Integer ticket = -1;
+	if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+	    final String contentString = intent.getDataString();
 
-            // tcLog.d("View intent data = " + contentString);
-            if (contentString != null) {
-                final Uri uri = Uri.parse(contentString.replace("trac.client.mfvl.com/", ""));
-                final List<String> segments = uri.getPathSegments();
-                final String u = uri.getScheme() + "://" + uri.getHost() + "/";
+	    // tcLog.d("View intent data = " + contentString);
+	    if (contentString != null) {
+		final Uri uri = Uri.parse(contentString.replace("trac.client.mfvl.com/", ""));
+		final List<String> segments = uri.getPathSegments();
+		final String u = uri.getScheme() + "://" + uri.getHost() + "/";
 
-                String urlstring = u.replace("tracclient://", "http://").replace("tracclients://", "https://");
-                final int count = segments.size();
-                final String mustBeTicket = segments.get(count - 2);
+		String urlstring = u.replace("tracclient://", "http://").replace("tracclients://", "https://");
+		final int count = segments.size();
+		final String mustBeTicket = segments.get(count - 2);
 
-                if ("ticket".equals(mustBeTicket)) {
-                    final int ticket = Integer.parseInt(segments.get(count - 1));
+		if ("ticket".equals(mustBeTicket)) {
+		    final int ticket = Integer.parseInt(segments.get(count - 1));
 
-                    for (final String segment : segments.subList(0, count - 2)) {
-                        urlstring += segment + "/";
-                    }
-                    launchTrac.putExtra(INTENT_URL, urlstring)
-                            .putExtra(INTENT_TICKET, (long) ticket);
-                } else {
-                    tcLog.w("View intent bad Url");
-                }
-            }
-        }
-        handler = new Handler();
-        startApp();
+		    for (final String segment : segments.subList(0, count - 2)) {
+			urlstring += segment + "/";
+		    }
+		    launchTrac.putExtra(INTENT_URL, urlstring)
+			.putExtra(INTENT_TICKET, (long) ticket);
+		} else {
+		    tcLog.w("View intent bad Url");
+		}
+	    }
+	}
+	handler = new Handler();
+	startApp();
     }
 
     private void startApp() {
 //        tcLog.logCall();
-        int timerVal = getResources().getInteger(R.integer.startupTimer);
-        final Timer t = new Timer();
-        t.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        startActivity(launchTrac);
-                        stopService(new Intent(TracTitlescreenActivity.this, RefreshService.class));
-                        finish();
-                    }
-                });
-            }
-        }, timerVal);
+	int timerVal = getResources().getInteger(R.integer.startupTimer);
+	final Timer t = new Timer();
+	t.schedule(new TimerTask() {
+	    @Override
+	    public void run() {
+		handler.post(new Runnable() {
+		    @Override
+		    public void run() {
+			startActivity(launchTrac);
+			stopService(new Intent(TracTitlescreenActivity.this, RefreshService.class));
+			finish();
+		    }
+		});
+	    }
+	}, timerVal);
     }
 
     public void onResume() {
-        tcLog.logCall();
-        super.onResume();
+	tcLog.logCall();
+	super.onResume();
     }
 
     public void onPause() {
-        tcLog.logCall();
-        super.onPause();
+	tcLog.logCall();
+	super.onPause();
     }
 
     public void onStop() {
-        tcLog.logCall();
-        super.onStop();
+	tcLog.logCall();
+	super.onStop();
     }
 
     public void onDestroy() {
-        tcLog.logCall();
-        super.onDestroy();
+	tcLog.logCall();
+	super.onDestroy();
     }
 
 
     @Override
     public void uncaughtException(Thread thread, Throwable ex) {
-        tcLog.e("Uncaught exception in thread " + thread, ex);
-        tcLog.save();
-        finish();
+	tcLog.e("Uncaught exception in thread " + thread, ex);
+	tcLog.save();
+	finish();
     }
 }

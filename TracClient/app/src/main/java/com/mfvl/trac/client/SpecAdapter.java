@@ -27,13 +27,13 @@ class SpecAdapter<T extends Spec> extends ArrayAdapter<T> {
     protected ListView listView;
 
     public SpecAdapter(Context context, int textViewResourceId, ArrayList<T> items) {
-        super(context, textViewResourceId, items);
+	super(context, textViewResourceId, items);
 //		tcLog.logCall();
-        this.items = items;
+	this.items = items;
     }
 
     public ArrayList<T> getItems() {
 //		tcLog.logCall();
-        return items;
+	return items;
     }
 }

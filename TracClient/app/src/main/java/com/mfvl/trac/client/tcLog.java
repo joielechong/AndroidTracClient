@@ -33,153 +33,153 @@ public class tcLog {
     private static String debugString = "";
 
     public static void setContext(Activity c) {
-        _c = c;
-    }
-
-    private static String getCaller(int index) {
-        String retval;
-        try {
-            throw new Exception("debug");
-        } catch (Exception e) {
-            StackTraceElement[] s = e.getStackTrace();
-            retval = s[index].getClassName() + "." + s[index].getMethodName();
-        }
-        return retval;
+	_c = c;
     }
 
     public static String getDebug() {
-        return debugString;
-    }
-
-    private static void _toast(String string) {
-        Toast.makeText(_c, string, Toast.LENGTH_SHORT).show();
+	return debugString;
     }
 
     public static void toast(final String string) {
-        if (_c != null) {
-            _c.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    _toast(string);
-                }
-            });
-        }
+	if (_c != null) {
+	    _c.runOnUiThread(new Runnable() {
+		@Override
+		public void run() {
+		    _toast(string);
+		}
+	    });
+	}
     }
 
-    private static void myLog(final String tag, final String message) {
-        myLog(tag, message, null);
-    }
-
-    private static void myLog(final String tag, final String message, Throwable tr) {
-        final Date dt = new Date();
-        int tid = android.os.Process.myTid();
-        int pid = android.os.Process.myPid();
-
-        dt.setTime(System.currentTimeMillis());
-        final String date = s.format(new Date());
-
-        debugString += "\n" + date + " " + pid + " " + tid + " " + tag
-                + ("".equals(message) ? "" : ": " + message)
-                + (tr != null ? "\nException thrown: " + tr.getMessage() + "\n" + getStackTraceString(tr) : "");
+    private static void _toast(String string) {
+	Toast.makeText(_c, string, Toast.LENGTH_SHORT).show();
     }
 
     public static void logCall() {
-        String caller = getCaller(2);
-        Log.d(caller, "logCall");
-        myLog("D." + caller, "");
+	String caller = getCaller(2);
+	Log.d(caller, "logCall");
+	myLog("D." + caller, "");
     }
 
-    public static void d(Object msg) {
-        String caller = getCaller(2);
-        Log.d(caller, (msg == null?null:msg.toString()));
-        myLog("D." + caller, msg.toString());
+    private static String getCaller(int index) {
+	String retval;
+	try {
+	    throw new Exception("debug");
+	} catch (Exception e) {
+	    StackTraceElement[] s = e.getStackTrace();
+	    retval = s[index].getClassName() + "." + s[index].getMethodName();
+	}
+	return retval;
     }
 
-    public static void d(String msg, Throwable tr) {
-        String caller = getCaller(2);
-        Log.d(caller, msg, tr);
-        myLog("D." + caller, msg, tr);
+    private static void myLog(final String tag, final String message) {
+	myLog(tag, message, null);
     }
 
-    public static void e(String msg) {
-        String caller = getCaller(2);
-        Log.e(caller, msg);
-        myLog("E." + caller, msg);
-    }
+    private static void myLog(final String tag, final String message, Throwable tr) {
+	final Date dt = new Date();
+	int tid = android.os.Process.myTid();
+	int pid = android.os.Process.myPid();
 
-    public static void e(String msg, Throwable tr) {
-        String caller = getCaller(2);
-        Log.e(caller, msg, tr);
-        myLog("E." + caller, msg, tr);
-    }
+	dt.setTime(System.currentTimeMillis());
+	final String date = s.format(new Date());
 
-    public static void e(Throwable tr) {
-        String caller = getCaller(2);
-        Log.w(caller, tr);
-        myLog("E." + caller, "", tr);
-    }
-
-    public static void i(String msg) {
-        String caller = getCaller(2);
-        Log.i(caller, msg);
-        myLog("I." + caller, msg);
-    }
-
-    public static void i(String msg, Throwable tr) {
-        String caller = getCaller(2);
-        Log.i(caller, msg, tr);
-        myLog("I." + caller, msg, tr);
-    }
-
-    public static void v(String msg) {
-        String caller = getCaller(2);
-        Log.v(caller, msg);
-        myLog("V." + caller, msg);
-    }
-
-    public static void v(String msg, Throwable tr) {
-        String caller = getCaller(2);
-        Log.v(caller, msg, tr);
-        myLog("V." + caller, msg);
-    }
-
-    public static void w(Throwable tr) {
-        String caller = getCaller(2);
-        Log.w(caller, tr);
-        myLog("W." + caller, "", tr);
-    }
-
-    public static void w(String msg) {
-        String caller = getCaller(2);
-        Log.w(caller, msg);
-        myLog("W." + caller, msg);
-    }
-
-    public static void w(String msg, Throwable tr) {
-        String caller = getCaller(2);
-        Log.w(caller, msg, tr);
-        myLog("W." + caller, msg, tr);
+	debugString += "\n" + date + " " + pid + " " + tid + " " + tag
+	    + ("".equals(message) ? "" : ": " + message)
+	    + (tr != null ? "\nException thrown: " + tr.getMessage() + "\n" + getStackTraceString(tr) : "");
     }
 
     private static String getStackTraceString(Throwable tr) {
-        return Log.getStackTraceString(tr);
+	return Log.getStackTraceString(tr);
+    }
+
+    public static void d(Object msg) {
+	String caller = getCaller(2);
+	Log.d(caller, (msg == null ? null : msg.toString()));
+	myLog("D." + caller, msg.toString());
+    }
+
+    public static void d(String msg, Throwable tr) {
+	String caller = getCaller(2);
+	Log.d(caller, msg, tr);
+	myLog("D." + caller, msg, tr);
+    }
+
+    public static void e(String msg) {
+	String caller = getCaller(2);
+	Log.e(caller, msg);
+	myLog("E." + caller, msg);
+    }
+
+    public static void e(String msg, Throwable tr) {
+	String caller = getCaller(2);
+	Log.e(caller, msg, tr);
+	myLog("E." + caller, msg, tr);
+    }
+
+    public static void e(Throwable tr) {
+	String caller = getCaller(2);
+	Log.w(caller, tr);
+	myLog("E." + caller, "", tr);
+    }
+
+    public static void i(String msg) {
+	String caller = getCaller(2);
+	Log.i(caller, msg);
+	myLog("I." + caller, msg);
+    }
+
+    public static void i(String msg, Throwable tr) {
+	String caller = getCaller(2);
+	Log.i(caller, msg, tr);
+	myLog("I." + caller, msg, tr);
+    }
+
+    public static void v(String msg) {
+	String caller = getCaller(2);
+	Log.v(caller, msg);
+	myLog("V." + caller, msg);
+    }
+
+    public static void v(String msg, Throwable tr) {
+	String caller = getCaller(2);
+	Log.v(caller, msg, tr);
+	myLog("V." + caller, msg);
+    }
+
+    public static void w(Throwable tr) {
+	String caller = getCaller(2);
+	Log.w(caller, tr);
+	myLog("W." + caller, "", tr);
+    }
+
+    public static void w(String msg) {
+	String caller = getCaller(2);
+	Log.w(caller, msg);
+	myLog("W." + caller, msg);
+    }
+
+    public static void w(String msg, Throwable tr) {
+	String caller = getCaller(2);
+	Log.w(caller, msg, tr);
+	myLog("W." + caller, msg, tr);
     }
 
     public static void save() {
-        String caller = getCaller(2);
-        String logFilename = _c.getResources().getString(R.string.logfile);
-        File file = null;
-        try {
-            file = TracGlobal.makeExtFilePath(logFilename, false);
-            final OutputStream os = new FileOutputStream(file);
+	String caller = getCaller(2);
+	String logFilename = _c.getResources().getString(R.string.logfile);
+	File file = null;
+	try {
+	    file = TracGlobal.makeExtFilePath(logFilename, false);
+	    final OutputStream os = new FileOutputStream(file);
 
-            os.write(getDebug().getBytes());
-            os.close();
-            Log.d(caller, "File saved  =  " + file);
-            myLog("D." + caller, "File saved  =  " + file);
-        } catch (final Exception e) {
-            Log.e(caller, "Exception while saving logfile on " + file, e);
-            myLog("E." + caller, "Exception while saving logfile on " + file, e);
-        }
+	    os.write(getDebug().getBytes());
+	    os.close();
+	    Log.d(caller, "File saved  =  " + file);
+	    myLog("D." + caller, "File saved  =  " + file);
+	} catch (final Exception e) {
+	    Log.e(caller, "Exception while saving logfile on " + file, e);
+	    myLog("E." + caller, "Exception while saving logfile on " + file, e);
+	}
     }
 }

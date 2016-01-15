@@ -105,501 +105,501 @@ public class TracLoginFragment extends TracClientFragment implements OnItemSelec
     private ProfileDatabaseHelper pdb = null;
     private String SelectedProfile = null;
     private final TextWatcher checkUrlInput = new TextWatcher() {
-        @Override
-        public void afterTextChanged(Editable s) {
-        }
+	@Override
+	public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+	}	@Override
+	public void afterTextChanged(Editable s) {
+	}
 
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        }
 
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            credWarn.setVisibility(View.GONE);
-            credWarnSts.setVisibility(View.GONE);
-            verButton.setEnabled(false);
-            okButton.setEnabled(false);
-            storButton.setEnabled(false);
-            if (s != null && s.length() != 0) {
-                verButton.setEnabled(true);
-                checkHackBox(s.toString());
-            }
-            SelectedProfile = null;
-        }
+
+	@Override
+	public void onTextChanged(CharSequence s, int start, int before, int count) {
+	    credWarn.setVisibility(View.GONE);
+	    credWarnSts.setVisibility(View.GONE);
+	    verButton.setEnabled(false);
+	    okButton.setEnabled(false);
+	    storButton.setEnabled(false);
+	    if (s != null && s.length() != 0) {
+		verButton.setEnabled(true);
+		checkHackBox(s.toString());
+	    }
+	    SelectedProfile = null;
+	}
     };
     private final TextWatcher checkUserPwInput = new TextWatcher() {
-        @Override
-        public void afterTextChanged(Editable s) {
-        }
+	@Override
+	public void afterTextChanged(Editable s) {
+	}
 
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        }
+	@Override
+	public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+	}
 
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            credWarn.setVisibility(View.GONE);
-            credWarnSts.setVisibility(View.GONE);
-            verButton.setEnabled(true);
-            okButton.setEnabled(false);
-            storButton.setEnabled(false);
-            SelectedProfile = null;
-        }
+	@Override
+	public void onTextChanged(CharSequence s, int start, int before, int count) {
+	    credWarn.setVisibility(View.GONE);
+	    credWarnSts.setVisibility(View.GONE);
+	    verButton.setEnabled(true);
+	    okButton.setEnabled(false);
+	    storButton.setEnabled(false);
+	    SelectedProfile = null;
+	}
     };
     private int debugcounter = 0;
 
     @Override
-    public void onSaveInstanceState(Bundle savedState) {
-        super.onSaveInstanceState(savedState);
-        savedState.putString(NEW_URL, urlView.getText().toString());
-        savedState.putString(NEW_USERNAME, userView.getText().toString());
-        savedState.putString(NEW_PASSWORD, pwView.getText().toString());
-        savedState.putBoolean(CURRENT_SSLHACK, sslHackBox.isChecked());
-        savedState.putBoolean(CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
-        savedState.putBoolean(bewaarText, bewaarBox.isChecked());
-        tcLog.d(" savedState = " + savedState);
-    }
-
-    @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        tcLog.d("savedInstanceState = " + savedInstanceState);
-        if (savedInstanceState != null) {
-            currentUrl = savedInstanceState.getString(NEW_URL);
-            currentUsername = savedInstanceState.getString(NEW_USERNAME);
-            currentPassword = savedInstanceState.getString(NEW_PASSWORD);
-            currentSslHack = savedInstanceState.getBoolean(CURRENT_SSLHACK);
-            currentSslHostNameHack = savedInstanceState.getBoolean(CURRENT_SSLHOSTNAMEHACK);
-            bewaren = savedInstanceState.getBoolean(bewaarText);
-        } else {
-            currentUrl = fragmentArgs.getString(CURRENT_URL);
-            currentUsername = fragmentArgs.getString(CURRENT_USERNAME);
-            currentPassword = fragmentArgs.getString(CURRENT_PASSWORD);
-            currentSslHack = fragmentArgs.getBoolean(CURRENT_SSLHACK);
-            currentSslHostNameHack = fragmentArgs.getBoolean(CURRENT_SSLHOSTNAMEHACK);
-        }
-        setHasOptionsMenu(true);
+	super.onCreate(savedInstanceState);
+	tcLog.d("savedInstanceState = " + savedInstanceState);
+	if (savedInstanceState != null) {
+	    currentUrl = savedInstanceState.getString(NEW_URL);
+	    currentUsername = savedInstanceState.getString(NEW_USERNAME);
+	    currentPassword = savedInstanceState.getString(NEW_PASSWORD);
+	    currentSslHack = savedInstanceState.getBoolean(CURRENT_SSLHACK);
+	    currentSslHostNameHack = savedInstanceState.getBoolean(CURRENT_SSLHOSTNAMEHACK);
+	    bewaren = savedInstanceState.getBoolean(bewaarText);
+	} else {
+	    currentUrl = fragmentArgs.getString(CURRENT_URL);
+	    currentUsername = fragmentArgs.getString(CURRENT_USERNAME);
+	    currentPassword = fragmentArgs.getString(CURRENT_PASSWORD);
+	    currentSslHack = fragmentArgs.getBoolean(CURRENT_SSLHACK);
+	    currentSslHostNameHack = fragmentArgs.getBoolean(CURRENT_SSLHOSTNAMEHACK);
+	}
+	setHasOptionsMenu(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        tcLog.d("savedInstanceState = " + savedInstanceState);
-        // tcLog.d("container = " + (container == null ? "null" : "not null"));
-        if (container == null) {
-            return null;
-        }
-        return inflater.inflate(R.layout.traclogin, container, false);
+	tcLog.d("savedInstanceState = " + savedInstanceState);
+	// tcLog.d("container = " + (container == null ? "null" : "not null"));
+	if (container == null) {
+	    return null;
+	}
+	return inflater.inflate(R.layout.traclogin, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        tcLog.logCall();
-        urlView = (EditText) view.findViewById(R.id.trac_URL);
-        userView = (EditText) view.findViewById(R.id.trac_User);
-        pwView = (EditText) view.findViewById(R.id.trac_Pw);
-        bewaarBox = (CheckBox) view.findViewById(R.id.bewaren);
-        okButton = (Button) view.findViewById(R.id.okBut);
-        okButton.setOnClickListener(this);
-        verButton = (Button) view.findViewById(R.id.verBut);
-        verButton.setOnClickListener(this);
-        storButton = (Button) view.findViewById(R.id.storebutton);
-        storButton.setOnClickListener(this);
-        credWarn = (TextView) view.findViewById(R.id.connWarn);
-        credWarnSts = (TextView) view.findViewById(R.id.connWarnSts);
-        sslHackBox = (CheckBox) view.findViewById(R.id.sslHack);
-        LinearLayout loadProfileBox = (LinearLayout) view.findViewById(R.id.loadprofile);
-        loginSpinner = (Spinner) view.findViewById(R.id.loginspinner);
+	super.onViewCreated(view, savedInstanceState);
+	tcLog.logCall();
+	urlView = (EditText) view.findViewById(R.id.trac_URL);
+	userView = (EditText) view.findViewById(R.id.trac_User);
+	pwView = (EditText) view.findViewById(R.id.trac_Pw);
+	bewaarBox = (CheckBox) view.findViewById(R.id.bewaren);
+	okButton = (Button) view.findViewById(R.id.okBut);
+	okButton.setOnClickListener(this);
+	verButton = (Button) view.findViewById(R.id.verBut);
+	verButton.setOnClickListener(this);
+	storButton = (Button) view.findViewById(R.id.storebutton);
+	storButton.setOnClickListener(this);
+	credWarn = (TextView) view.findViewById(R.id.connWarn);
+	credWarnSts = (TextView) view.findViewById(R.id.connWarnSts);
+	sslHackBox = (CheckBox) view.findViewById(R.id.sslHack);
+	LinearLayout loadProfileBox = (LinearLayout) view.findViewById(R.id.loadprofile);
+	loginSpinner = (Spinner) view.findViewById(R.id.loginspinner);
 
-        pdb = new ProfileDatabaseHelper(context);
-        pdb.open();
-        pdbCursor = pdb.getProfiles(true);
-        if (pdbCursor.getCount() < 2) {
-            loadProfileBox.setVisibility(View.GONE);
-        } else {
-            final String[] columns = new String[]{"name"};
-            final int[] to = new int[]{android.R.id.text1};
+	pdb = new ProfileDatabaseHelper(context);
+	pdb.open();
+	pdbCursor = pdb.getProfiles(true);
+	if (pdbCursor.getCount() < 2) {
+	    loadProfileBox.setVisibility(View.GONE);
+	} else {
+	    final String[] columns = new String[]{"name"};
+	    final int[] to = new int[]{android.R.id.text1};
 
-            loadProfileBox.setVisibility(View.VISIBLE);
-            final SimpleCursorAdapter adapt = new SimpleCursorAdapter(context, android.R.layout.simple_spinner_dropdown_item, pdbCursor,
-                    columns, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+	    loadProfileBox.setVisibility(View.VISIBLE);
+	    final SimpleCursorAdapter adapt = new SimpleCursorAdapter(context, android.R.layout.simple_spinner_dropdown_item, pdbCursor,
+		columns, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
-            adapt.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            loginSpinner.setAdapter(adapt);
+	    adapt.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+	    loginSpinner.setAdapter(adapt);
 
-            loginSpinner.setOnItemSelectedListener(this);
-        }
+	    loginSpinner.setOnItemSelectedListener(this);
+	}
+    }
+
+    @Override
+    public void onResume() {
+	tcLog.logCall();
+	super.onResume();
+	helpFile = R.string.loginhelpfile;
+	urlView.addTextChangedListener(checkUrlInput);
+	userView.addTextChangedListener(checkUserPwInput);
+	pwView.addTextChangedListener(checkUserPwInput);
+	checkHackBox(urlView.getText().toString());
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedState) {
+	super.onSaveInstanceState(savedState);
+	savedState.putString(NEW_URL, urlView.getText().toString());
+	savedState.putString(NEW_USERNAME, userView.getText().toString());
+	savedState.putString(NEW_PASSWORD, pwView.getText().toString());
+	savedState.putBoolean(CURRENT_SSLHACK, sslHackBox.isChecked());
+	savedState.putBoolean(CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
+	savedState.putBoolean(bewaarText, bewaarBox.isChecked());
+	tcLog.d(" savedState = " + savedState);
+    }
+
+    @Override
+    public void onPause() {
+	tcLog.logCall();
+	urlView.removeTextChangedListener(checkUrlInput);
+	userView.removeTextChangedListener(checkUserPwInput);
+	pwView.removeTextChangedListener(checkUserPwInput);
+	super.onPause();
     }
 
     @Override
     public void onDestroyView() {
-        tcLog.logCall();
-        loginSpinner.setAdapter(null);
-        if (pdbCursor != null) {
-            pdbCursor.close();
-        }
-        pdb.close();
-        super.onDestroyView();
+	tcLog.logCall();
+	loginSpinner.setAdapter(null);
+	if (pdbCursor != null) {
+	    pdbCursor.close();
+	}
+	pdb.close();
+	super.onDestroyView();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//        tcLog.logCall();
+	inflater.inflate(R.menu.tracloginmenu, menu);
+	super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+	tcLog.logCall();
+	super.onPrepareOptionsMenu(menu);
+	final MenuItem importItem = menu.findItem(R.id.importprofiles);
+	final MenuItem exportItem = menu.findItem(R.id.exportprofiles);
+	tcLog.d("canWriteSD = " + listener.getCanWriteSD());
+	importItem.setEnabled(listener.getCanWriteSD());
+	exportItem.setEnabled(listener.getCanWriteSD());
     }
 
     @Override
     public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-        if (arg1 != null) {
-            SelectedProfile = ((CheckedTextView) arg1).getText().toString();
-            if (arg2 > 0) { // pos 0 is empty
-                final LoginProfile prof = pdb.getProfile(SelectedProfile);
+	if (arg1 != null) {
+	    SelectedProfile = ((CheckedTextView) arg1).getText().toString();
+	    if (arg2 > 0) { // pos 0 is empty
+		final LoginProfile prof = pdb.getProfile(SelectedProfile);
 
-                if (prof != null) {
-                    urlView.removeTextChangedListener(checkUrlInput);
-                    userView.removeTextChangedListener(checkUserPwInput);
-                    pwView.removeTextChangedListener(checkUserPwInput);
+		if (prof != null) {
+		    urlView.removeTextChangedListener(checkUrlInput);
+		    userView.removeTextChangedListener(checkUserPwInput);
+		    pwView.removeTextChangedListener(checkUserPwInput);
 
-                    url = prof.getUrl();
-                    urlView.setText(url);
-                    sslHack = prof.getSslHack();
-                    sslHackBox.setChecked(sslHack);
-                    username = prof.getUsername();
-                    userView.setText(username);
-                    password = prof.getPassword();
-                    pwView.setText(password);
-                    checkHackBox(url);
+		    url = prof.getUrl();
+		    urlView.setText(url);
+		    sslHack = prof.getSslHack();
+		    sslHackBox.setChecked(sslHack);
+		    username = prof.getUsername();
+		    userView.setText(username);
+		    password = prof.getPassword();
+		    pwView.setText(password);
+		    checkHackBox(url);
 
-                    urlView.addTextChangedListener(checkUrlInput);
-                    userView.addTextChangedListener(checkUserPwInput);
-                    pwView.addTextChangedListener(checkUserPwInput);
-                    verButton.setEnabled(true);
-                    okButton.setEnabled(false);
-                    storButton.setEnabled(false);
-                    credWarn.setVisibility(View.GONE);
-                } else {
-                    showAlertBox(R.string.notfound, R.string.loadprofiletext, SelectedProfile);
-                }
-            }
-        }
+		    urlView.addTextChangedListener(checkUrlInput);
+		    userView.addTextChangedListener(checkUserPwInput);
+		    pwView.addTextChangedListener(checkUserPwInput);
+		    verButton.setEnabled(true);
+		    okButton.setEnabled(false);
+		    storButton.setEnabled(false);
+		    credWarn.setVisibility(View.GONE);
+		} else {
+		    showAlertBox(R.string.notfound, R.string.loadprofiletext, SelectedProfile);
+		}
+	    }
+	}
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> arg0) {
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//        tcLog.logCall();
-        inflater.inflate(R.menu.tracloginmenu, menu);
-        super.onCreateOptionsMenu(menu, inflater);
+    private void checkHackBox(String s) {
+	if (sslHackBox != null && s != null) {
+	    sslHackBox.setVisibility(s.length() >= 6 && s.substring(0, 6).equals("https:") ? View.VISIBLE : View.GONE);
+	}
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        tcLog.d("savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+	super.onActivityCreated(savedInstanceState);
+	tcLog.d("savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 
-        if (url == null) {
-            url = currentUrl;
-            username = currentUsername;
-            password = currentPassword;
-            sslHack = currentSslHack;
-            sslHostNameHack = currentSslHostNameHack;
-        }
-
-        urlView.setText(url);
-        userView.setText(username);
-        pwView.setText(password);
-        sslHackBox.setChecked(sslHack);
-        boolean buttonsOn = !(url == null || url.length() == 0);
-        bewaarBox.setChecked(bewaren);
-        verButton.setEnabled(buttonsOn);
-        okButton.setEnabled(buttonsOn);
-        storButton.setEnabled(buttonsOn);
-
-        checkHackBox(urlView.getText().toString());
-
-        bewaarBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (++debugcounter == 6) {
-                    listener.enableDebug();
-                }
-            }
-        });
-
-    }
-
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.okBut:
-                performLogin();
-                break;
-
-            case R.id.storebutton:
-                storeProfile();
-                break;
-
-            case R.id.verBut:
-                performVerify();
-                break;
-        }
-    }
-	
-	private void verifyHostNameHack() {
-		listener.startProgressBar(R.string.checking);
-		new Thread() {
-			@Override
-			public void run() {
-				TracHttpClient tc = new TracHttpClient(url, sslHack, sslHostNameHack, username, password);
-				try {
-					final String TracVersion = tc.verifyHost();
-					tcLog.d(TracVersion);
-					setValidMessage();
-					sslHostNameHack = true;
-				} catch (JSONRPCException e) {
-					final String errmsg = e.getMessage();
-
-					tcLog.d("Exception during verify 2 " + errmsg, e);
-					tcLog.toast("==" + errmsg + "==");
-					if ("NOJSON".equals(errmsg)) {
-						setNoJSONMessage("Fail Hostname NOJSON");
-					} else {
-						setInvalidMessage(errmsg, "Fail Invalidmessage Hostname");
-						sslHostNameHack = false;
-					}
-				}
-				listener.stopProgressBar();
-			}
-		}.start();
+	if (url == null) {
+	    url = currentUrl;
+	    username = currentUsername;
+	    password = currentPassword;
+	    sslHack = currentSslHack;
+	    sslHostNameHack = currentSslHostNameHack;
 	}
 
-    private void performVerify() {
-        url = urlView.getText().toString();
-        username = userView.getText().toString();
-        password = pwView.getText().toString();
-        sslHack = sslHackBox.isChecked();
-        sslHostNameHack = false; // force check on hostname first
-        listener.startProgressBar(R.string.checking);
+	urlView.setText(url);
+	userView.setText(username);
+	pwView.setText(password);
+	sslHackBox.setChecked(sslHack);
+	boolean buttonsOn = !(url == null || url.length() == 0);
+	bewaarBox.setChecked(bewaren);
+	verButton.setEnabled(buttonsOn);
+	okButton.setEnabled(buttonsOn);
+	storButton.setEnabled(buttonsOn);
 
-        new Thread() {
-            @Override
-            public void run() {
-                TracHttpClient tc = new TracHttpClient(url, sslHack, sslHostNameHack, username, password);
-                try {
-                    final String TracVersion = tc.verifyHost();
-                    tcLog.d(TracVersion);
-                    setValidMessage();
-                } catch (JSONRPCException e) {
-                    final String errmsg = e.getMessage();
+	checkHackBox(urlView.getText().toString());
 
-                    tcLog.d("Exception during verify 1 " + errmsg, e);
-                    tcLog.toast("==" + errmsg + "==");
-                    if (errmsg.startsWith("hostname in certificate didn't match:")) {
-						listener.stopProgressBar();
-                        context.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                final String msg = context.getString(R.string.hostnametext) + errmsg + context.getString(R.string.hostnameign);
-                                new AlertDialog.Builder(context)
-										.setMessage(msg)
-                                        .setTitle(R.string.hostnametitle)
-                                        .setCancelable(false)
-                                        .setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int id) {
-												verifyHostNameHack();
-                                            }
-                                        })
-										.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-											@Override
-											public void onClick(DialogInterface dialog, int id) {
-												setInvalidMessage(errmsg, "Fail UserCancel Hostname");
-												sslHostNameHack = false;
-											}
-										})
-										.show();
-                            }
-                        });
-                    } else if ("NOJSON".equals(errmsg)) {
-                        setNoJSONMessage("Fail NOJSON");
-                    } else {
-                        setInvalidMessage(errmsg, "Fail Invalidmessage");
-                        sslHostNameHack = false;
-                    }
-                }
-                listener.stopProgressBar();
-            }
-        }.start();
-    }
+	bewaarBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+	    @Override
+	    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+		if (++debugcounter == 6) {
+		    listener.enableDebug();
+		}
+	    }
+	});
 
-    private void performLogin() {
-        url = urlView.getText().toString();
-        username = userView.getText().toString();
-        password = pwView.getText().toString();
-        bewaren = bewaarBox.isChecked();
-        sslHack = sslHackBox.isChecked();
-        if (bewaren) {
-            TracGlobal.setCredentials(url, username, password, SelectedProfile);
-            TracGlobal.setSslHack(sslHack);
-            TracGlobal.setSslHostNameHack(sslHostNameHack);
-            TracGlobal.storeCredentials();
-        }
-        TracGlobal.removeFilterString();
-        TracGlobal.removeSortString();
-        listener.onLogin(url, username, password, sslHack, sslHostNameHack, SelectedProfile);
-    }
-
-    private void storeProfile() {
-        url = urlView.getText().toString();
-        username = userView.getText().toString();
-        password = pwView.getText().toString();
-        sslHack = sslHackBox.isChecked();
-        final LoginProfile prof = new LoginProfile(url, username, password, sslHack);
-
-        final AlertDialog.Builder alert = new AlertDialog.Builder(context);
-
-        // Set an EditText view to get user input
-        final EditText input = new EditText(context);
-        final LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-
-        input.setLayoutParams(lp);
-        alert.setTitle(R.string.storeprofile)
-                .setMessage(R.string.profiletext)
-                .setView(input)
-                .setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        final String profileName = input.getText().toString();
-
-                        pdb.addProfile(profileName, prof);
-                        swapSpinnerAdapter();
-                    }
-                })
-                .setNegativeButton(R.string.cancel, null)
-                .show();
-    }
-
-    @Override
-    public void onResume() {
-        tcLog.logCall();
-        super.onResume();
-        helpFile = R.string.loginhelpfile;
-        urlView.addTextChangedListener(checkUrlInput);
-        userView.addTextChangedListener(checkUserPwInput);
-        pwView.addTextChangedListener(checkUserPwInput);
-        checkHackBox(urlView.getText().toString());
-    }
-
-    @Override
-    public void onPause() {
-        tcLog.logCall();
-        urlView.removeTextChangedListener(checkUrlInput);
-        userView.removeTextChangedListener(checkUserPwInput);
-        pwView.removeTextChangedListener(checkUserPwInput);
-        super.onPause();
-    }
-
-    private void swapSpinnerAdapter() {
-        final SimpleCursorAdapter a = (SimpleCursorAdapter) loginSpinner.getAdapter();
-
-        a.swapCursor(pdb.getProfiles(true));
-        loginSpinner.postInvalidate();
-    }
-
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        tcLog.logCall();
-        super.onPrepareOptionsMenu(menu);
-        final MenuItem importItem = menu.findItem(R.id.importprofiles);
-        final MenuItem exportItem = menu.findItem(R.id.exportprofiles);
-        tcLog.d("canWriteSD = " + listener.getCanWriteSD());
-        importItem.setEnabled(listener.getCanWriteSD());
-        exportItem.setEnabled(listener.getCanWriteSD());
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // tcLog.d("item=" + item.getTitle());
-        final int itemId = item.getItemId();
+	// tcLog.d("item=" + item.getTitle());
+	final int itemId = item.getItemId();
 
-        if (itemId == R.id.exportprofiles) {
-            try {
-                pdb.open();
-                pdb.writeXML(context.getString(R.string.app_name));
-                showAlertBox(R.string.completed, R.string.xmlwritecompleted, null);
-            } catch (final Exception e) {
-                tcLog.e("Export failed", e);
-                showAlertBox(R.string.failed, 0, e.getMessage());
-            }
-        } else if (itemId == R.id.importprofiles) {
-            try {
-                pdb.open();
-                pdb.readXML(context.getString(R.string.app_name));
-                swapSpinnerAdapter();
-                showAlertBox(R.string.completed, R.string.xmlreadcompleted, null);
-            } catch (final Exception e) {
-                tcLog.e("Import failed", e);
-                showAlertBox(R.string.failed, 0, e.getMessage());
-            }
-        } else {
-            return super.onOptionsItemSelected(item);
-        }
-        return true;
+	if (itemId == R.id.exportprofiles) {
+	    try {
+		pdb.open();
+		pdb.writeXML(context.getString(R.string.app_name));
+		showAlertBox(R.string.completed, R.string.xmlwritecompleted, null);
+	    } catch (final Exception e) {
+		tcLog.e("Export failed", e);
+		showAlertBox(R.string.failed, 0, e.getMessage());
+	    }
+	} else if (itemId == R.id.importprofiles) {
+	    try {
+		pdb.open();
+		pdb.readXML(context.getString(R.string.app_name));
+		swapSpinnerAdapter();
+		showAlertBox(R.string.completed, R.string.xmlreadcompleted, null);
+	    } catch (final Exception e) {
+		tcLog.e("Import failed", e);
+		showAlertBox(R.string.failed, 0, e.getMessage());
+	    }
+	} else {
+	    return super.onOptionsItemSelected(item);
+	}
+	return true;
     }
 
-    private void checkHackBox(String s) {
-        if (sslHackBox != null && s != null) {
-            sslHackBox.setVisibility(s.length() >= 6 && s.substring(0, 6).equals("https:") ? View.VISIBLE : View.GONE);
-        }
+    public void onClick(View v) {
+	switch (v.getId()) {
+	    case R.id.okBut:
+		performLogin();
+		break;
+
+	    case R.id.storebutton:
+		storeProfile();
+		break;
+
+	    case R.id.verBut:
+		performVerify();
+		break;
+	}
+    }
+
+    private void performVerify() {
+	url = urlView.getText().toString();
+	username = userView.getText().toString();
+	password = pwView.getText().toString();
+	sslHack = sslHackBox.isChecked();
+	sslHostNameHack = false; // force check on hostname first
+	listener.startProgressBar(R.string.checking);
+
+	new Thread() {
+	    @Override
+	    public void run() {
+		TracHttpClient tc = new TracHttpClient(url, sslHack, sslHostNameHack, username, password);
+		try {
+		    final String TracVersion = tc.verifyHost();
+		    tcLog.d(TracVersion);
+		    setValidMessage();
+		} catch (JSONRPCException e) {
+		    final String errmsg = e.getMessage();
+
+		    tcLog.d("Exception during verify 1 " + errmsg, e);
+		    tcLog.toast("==" + errmsg + "==");
+		    if (errmsg.startsWith("hostname in certificate didn't match:")) {
+			listener.stopProgressBar();
+			context.runOnUiThread(new Runnable() {
+			    @Override
+			    public void run() {
+				final String msg = context.getString(R.string.hostnametext) + errmsg + context.getString(R.string.hostnameign);
+				new AlertDialog.Builder(context)
+				    .setMessage(msg)
+				    .setTitle(R.string.hostnametitle)
+				    .setCancelable(false)
+				    .setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int id) {
+					    verifyHostNameHack();
+					}
+				    })
+				    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int id) {
+					    setInvalidMessage(errmsg, "Fail UserCancel Hostname");
+					    sslHostNameHack = false;
+					}
+				    })
+				    .show();
+			    }
+			});
+		    } else if ("NOJSON".equals(errmsg)) {
+			setNoJSONMessage("Fail NOJSON");
+		    } else {
+			setInvalidMessage(errmsg, "Fail Invalidmessage");
+			sslHostNameHack = false;
+		    }
+		}
+		listener.stopProgressBar();
+	    }
+	}.start();
+    }
+
+    private void verifyHostNameHack() {
+	listener.startProgressBar(R.string.checking);
+	new Thread() {
+	    @Override
+	    public void run() {
+		TracHttpClient tc = new TracHttpClient(url, sslHack, sslHostNameHack, username, password);
+		try {
+		    final String TracVersion = tc.verifyHost();
+		    tcLog.d(TracVersion);
+		    setValidMessage();
+		    sslHostNameHack = true;
+		} catch (JSONRPCException e) {
+		    final String errmsg = e.getMessage();
+
+		    tcLog.d("Exception during verify 2 " + errmsg, e);
+		    tcLog.toast("==" + errmsg + "==");
+		    if ("NOJSON".equals(errmsg)) {
+			setNoJSONMessage("Fail Hostname NOJSON");
+		    } else {
+			setInvalidMessage(errmsg, "Fail Invalidmessage Hostname");
+			sslHostNameHack = false;
+		    }
+		}
+		listener.stopProgressBar();
+	    }
+	}.start();
     }
 
     private void setNoJSONMessage(final String message) {
-        context.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                credWarn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_warn, 0, 0, 0);
-                credWarn.setText(R.string.noJSON);
-                credWarn.setVisibility(View.VISIBLE);
-                if (message != null) {
-                    credWarnSts.setText(message);
-                    credWarnSts.setVisibility(View.VISIBLE);
-                }
-                okButton.setEnabled(false);
-                storButton.setEnabled(false);
-                sslHostNameHack = false; // force check on hostname first
-            }
-        });
+	context.runOnUiThread(new Runnable() {
+	    @Override
+	    public void run() {
+		credWarn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_warn, 0, 0, 0);
+		credWarn.setText(R.string.noJSON);
+		credWarn.setVisibility(View.VISIBLE);
+		if (message != null) {
+		    credWarnSts.setText(message);
+		    credWarnSts.setVisibility(View.VISIBLE);
+		}
+		okButton.setEnabled(false);
+		storButton.setEnabled(false);
+		sslHostNameHack = false; // force check on hostname first
+	    }
+	});
     }
 
     private void setInvalidMessage(final String m1, final String m2) {
-        context.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                credWarn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_warn, 0, 0, 0);
-                credWarn.setText(R.string.invalidCred);
-                credWarn.setVisibility(View.VISIBLE);
-                if (m1 != null) {
-                    String message = m1;
-                    if (m2 != null) {
-                        message += "\n" + m2;
-                    }
-                    credWarnSts.setText(message);
-                    credWarnSts.setVisibility(View.VISIBLE);
-                }
-                okButton.setEnabled(false);
-                storButton.setEnabled(false);
-                sslHostNameHack = false; // force check on hostname first
-            }
-        });
+	context.runOnUiThread(new Runnable() {
+	    @Override
+	    public void run() {
+		credWarn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_warn, 0, 0, 0);
+		credWarn.setText(R.string.invalidCred);
+		credWarn.setVisibility(View.VISIBLE);
+		if (m1 != null) {
+		    String message = m1;
+		    if (m2 != null) {
+			message += "\n" + m2;
+		    }
+		    credWarnSts.setText(message);
+		    credWarnSts.setVisibility(View.VISIBLE);
+		}
+		okButton.setEnabled(false);
+		storButton.setEnabled(false);
+		sslHostNameHack = false; // force check on hostname first
+	    }
+	});
     }
 
     private void setValidMessage() {
-        context.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                credWarn.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-                credWarn.setText(R.string.validCred);
-                credWarn.setVisibility(View.VISIBLE);
-                credWarnSts.setVisibility(View.GONE);
-                okButton.setEnabled(true);
-                storButton.setEnabled(true);
-            }
-        });
+	context.runOnUiThread(new Runnable() {
+	    @Override
+	    public void run() {
+		credWarn.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+		credWarn.setText(R.string.validCred);
+		credWarn.setVisibility(View.VISIBLE);
+		credWarnSts.setVisibility(View.GONE);
+		okButton.setEnabled(true);
+		storButton.setEnabled(true);
+	    }
+	});
+    }
+
+    private void performLogin() {
+	url = urlView.getText().toString();
+	username = userView.getText().toString();
+	password = pwView.getText().toString();
+	bewaren = bewaarBox.isChecked();
+	sslHack = sslHackBox.isChecked();
+	if (bewaren) {
+	    TracGlobal.setCredentials(url, username, password, SelectedProfile);
+	    TracGlobal.setSslHack(sslHack);
+	    TracGlobal.setSslHostNameHack(sslHostNameHack);
+	    TracGlobal.storeCredentials();
+	}
+	TracGlobal.removeFilterString();
+	TracGlobal.removeSortString();
+	listener.onLogin(url, username, password, sslHack, sslHostNameHack, SelectedProfile);
+    }
+
+    private void storeProfile() {
+	url = urlView.getText().toString();
+	username = userView.getText().toString();
+	password = pwView.getText().toString();
+	sslHack = sslHackBox.isChecked();
+	final LoginProfile prof = new LoginProfile(url, username, password, sslHack);
+
+	final AlertDialog.Builder alert = new AlertDialog.Builder(context);
+
+	// Set an EditText view to get user input
+	final EditText input = new EditText(context);
+	final LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+
+	input.setLayoutParams(lp);
+	alert.setTitle(R.string.storeprofile)
+	    .setMessage(R.string.profiletext)
+	    .setView(input)
+	    .setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
+		@Override
+		public void onClick(DialogInterface dialog, int whichButton) {
+		    final String profileName = input.getText().toString();
+
+		    pdb.addProfile(profileName, prof);
+		    swapSpinnerAdapter();
+		}
+	    })
+	    .setNegativeButton(R.string.cancel, null)
+	    .show();
+    }
+
+    private void swapSpinnerAdapter() {
+	final SimpleCursorAdapter a = (SimpleCursorAdapter) loginSpinner.getAdapter();
+
+	a.swapCursor(pdb.getProfiles(true));
+	loginSpinner.postInvalidate();
     }
 }
