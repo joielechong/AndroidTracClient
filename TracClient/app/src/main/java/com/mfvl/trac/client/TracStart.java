@@ -595,13 +595,9 @@ public class TracStart extends Activity implements Handler.Callback,
     @Override
     public void onBackPressed() {
 	tcLog.logCall();
-	final DetailFragment df = (DetailFragment) getFragment(DetailFragmentTag);
-	final boolean callSuper = df == null || !df.onBackPressed();
 
 	if (mDrawerLayout.isDrawerOpen(mDrawerList)) {
 	    mDrawerLayout.closeDrawer(mDrawerList);
-	} else if (callSuper) {
-	    super.onBackPressed();
 	}
     }
 

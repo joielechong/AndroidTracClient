@@ -29,11 +29,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:orientation="vertical">
-
-        <TextView style="@style/FieldName"/>
     </LinearLayout>
 
-    <LinearLayout style="@style/ButtonHolder">
+    <LinearLayout
+        android:layout_alignParentBottom="true"
+        style="@style/ButtonHolder">
 
         <Button
             android:id="@+id/cancelpw"
