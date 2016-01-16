@@ -18,19 +18,14 @@ package com.mfvl.trac.client;
 
 import android.app.AlertDialog;
 import android.app.DialogFragment;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.InputType;
 import android.view.GestureDetector;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -48,9 +43,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
-import android.widget.ShareActionProvider;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -83,7 +75,6 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
     private boolean showEmptyFields = false;
     private TicketModel tm = null;
     private ModVeldMap modVeld;
-    private PopupWindow pw = null;
     private boolean sendNotification = false;
     private boolean didUpdate = false;
     private String[] notModified;
@@ -93,6 +84,7 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
     private int popup_selected_color = 0;
     private int popup_unselected_color = 0;
     private SwipeRefreshLayout swipeLayout;
+    private View currentView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -122,15 +114,29 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
     }
 
     @Override
+    public void onRefresh() {
+//	tcLog.d( "onRefresh");
+	refreshTicket();
+	swipeLayout.setRefreshing(false);
+    }
+
+    @Override
     public void onResume() {
 	super.onResume();
 	helpFile = R.string.helpdetailfile;
 	gestureDetector = new GestureDetector(context, this);
+	
+	currentView = getView();
 	if (ticknr != -1) {
 	    display_and_refresh_ticket();
 	} else {
 	    getFragmentManager().popBackStack();
 	}
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+	sendNotification = isChecked;
     }
 
     private void display_and_refresh_ticket() {
@@ -148,67 +154,10 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 	}
 
 	try {
-	    getView().findViewById(R.id.modveld).setVisibility(modVeld.isEmpty() ? View.GONE : View.VISIBLE);
+	    currentView.findViewById(R.id.modveld).setVisibility(modVeld.isEmpty() ? View.GONE : View.VISIBLE);
 	} catch (NullPointerException ignored) {
 	}
 	setSelect(modVeld.isEmpty());
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle savedState) {
-	super.onSaveInstanceState(savedState);
-	tcLog.d("_ticket = " + _ticket + " " + modVeld);
-	if (_ticket != null) {
-	    savedState.putInt(CURRENT_TICKET, _ticket.getTicketnr());
-	} else if (ticknr != -1) {
-	    savedState.putInt(CURRENT_TICKET, ticknr);
-	}
-	if (!modVeld.isEmpty()) {
-	    savedState.putSerializable(MODVELD, modVeld);
-	}
-	savedState.putBoolean(EMPTYFIELDS, showEmptyFields);
-	// tcLog.d( "onSaveInstanceState = " + savedState);
-    }
-
-    @Override
-    public void onPause() {
-	super.onPause();
-	gestureDetector = null;
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-	// tcLog.d( "onCreateOptionsMenu");
-	inflater.inflate(R.menu.detailmenu, menu);
-	super.onCreateOptionsMenu(menu, inflater);
-	selectItem = menu.findItem(R.id.dfselect);
-	setSelect(true);
-    }
-
-    private void setSelect(final boolean value) {
-	tcLog.d(String.format(Locale.US, "%b", value));
-	if (selectItem != null) {
-	    selectItem.setEnabled(value);
-	}
-    }
-
-
-    @Override
-    public void onRefresh() {
-//	tcLog.d( "onRefresh");
-	refreshTicket();
-	swipeLayout.setRefreshing(false);
-    }
-
-    private void refreshTicket() {
-	if (_ticket != null) {
-	    listener.refreshTicket(_ticket.getTicketnr());
-	}
-    }
-
-    @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-	sendNotification = isChecked;
     }
 
     @Override
@@ -239,6 +188,22 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 		ticknr = savedInstanceState.getInt(CURRENT_TICKET, -1);
 	    }
 	}
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedState) {
+	super.onSaveInstanceState(savedState);
+	tcLog.d("_ticket = " + _ticket + " " + modVeld);
+	if (_ticket != null) {
+	    savedState.putInt(CURRENT_TICKET, _ticket.getTicketnr());
+	} else if (ticknr != -1) {
+	    savedState.putInt(CURRENT_TICKET, ticknr);
+	}
+	if (!modVeld.isEmpty()) {
+	    savedState.putSerializable(MODVELD, modVeld);
+	}
+	savedState.putBoolean(EMPTYFIELDS, showEmptyFields);
+	// tcLog.d( "onSaveInstanceState = " + savedState);
     }
 
     @Override
@@ -293,6 +258,12 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
     }
 
     @Override
+    public void onPause() {
+	super.onPause();
+	gestureDetector = null;
+    }
+
+    @Override
     public void onClick(View v) {
 	switch (v.getId()) {
 	    case R.id.canBut:
@@ -304,20 +275,23 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 	    case R.id.updBut:
 		updateTicket();
 		try {
-		    getView().findViewById(R.id.modveld).setVisibility(View.GONE);
+		    currentView.findViewById(R.id.modveld).setVisibility(View.GONE);
 		} catch (NullPointerException ignored) {
-		}
-		break;
-
-	    case R.id.cancelpw:
-		if (pw != null && !listener.isFinishing()) {
-		    pw.dismiss();
 		}
 		break;
 
 	    default:
 
 	}
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+	// tcLog.d( "onCreateOptionsMenu");
+	inflater.inflate(R.menu.detailmenu, menu);
+	super.onCreateOptionsMenu(menu, inflater);
+	selectItem = menu.findItem(R.id.dfselect);
+	setSelect(true);
     }
 
     private void updateTicket() {
@@ -334,220 +308,10 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 	}
     }
 
-    private void displayTicket() {
-	tcLog.d("ticket = " + _ticket);
-	if (_ticket != null) {
-	    final View v = getView();
-
-	    if (v == null) {
-		return;
-	    }
-	    final ListView listView = (ListView) getView().findViewById(R.id.listofFields);
-
-	    listView.setAdapter(null);
-	    values.clear();
-	    final TextView tickText = (TextView) v.findViewById(R.id.ticknr);
-
-	    if (tickText != null) {
-		tickText.setText(String.format(Locale.US, "Ticket %d", _ticket.getTicketnr()));
-		try {
-		    String summ = _ticket.getString("summary");
-
-		    tickText.setTextColor(popup_unselected_color);
-		    if (modVeld.containsKey("summary")) {
-			summ = modVeld.get("summary");
-			tickText.setTextColor(popup_selected_color);
-		    }
-		    tickText.append(" : " + summ);
-		} catch (final JSONException ignored) {
-//                    tcLog.e( "JSONException fetching summary");
-		}
-		tickText.setOnLongClickListener(new View.OnLongClickListener() {
-		    @Override
-		    public boolean onLongClick(View view) {
-			selectField("summary", ((TextView) view).getText().toString(), tickText);
-			tcLog.d("tickText modVeld = " + modVeld);
-			return true;
-		    }
-		});
-	    }
-	    for (final String veld : tm.velden()) {
-
-		try {
-		    modifiedString ms = null;
-
-//					tcLog.d( "showEmptyFields = "+showEmptyFields);
-
-		    if (skipFields.contains(veld)) {
-		    } else if (timeFields.contains(veld)) {
-			ms = new modifiedString(veld, toonTijd(_ticket.getJSONObject(veld)));
-		    } else if (showEmptyFields || _ticket.getString(veld).length() > 0) {
-			ms = new modifiedString(veld, _ticket.getString(veld));
-		    }
-		    if (ms != null) {
-			if (modVeld.containsKey(veld)) {
-			    ms.setUpdated(true);
-			    ms.setWaarde(modVeld.get(veld));
-			    setSelect(false);
-			}
-			values.add(ms);
-		    }
-		} catch (final Exception e) {
-//                    tcLog.e( "JSONException fetching field " + veld);
-		    values.add(new modifiedString(veld, ""));
-		}
-	    }
-	    final JSONArray history = _ticket.getHistory();
-
-	    if (history != null) {
-		for (int j = 0; j < history.length(); j++) {
-		    JSONArray cmt;
-
-		    try {
-			cmt = history.getJSONArray(j);
-			if ("comment".equals(cmt.getString(2)) && cmt.getString(4).length() > 0) {
-			    values.add(
-				new modifiedString("comment",
-				    toonTijd(cmt.getJSONObject(0)) + " - " + cmt.getString(1) + " - " + cmt.getString(4)));
-			}
-		    } catch (final JSONException e) {
-			tcLog.e("JSONException in displayTicket loading history");
-		    }
-		}
-	    }
-	    final JSONArray attachments = _ticket.getAttachments();
-
-	    if (attachments != null) {
-		for (int j = 0; j < attachments.length(); j++) {
-		    JSONArray bijlage;
-
-		    try {
-			bijlage = attachments.getJSONArray(j);
-			values.add(
-			    new modifiedString("bijlage " + (j + 1),
-				toonTijd(bijlage.getJSONObject(3)) + " - " + bijlage.getString(4) + " - " + bijlage.getString(0)
-				    + " - " + bijlage.getString(1)));
-
-		    } catch (final JSONException e) {
-			tcLog.e("JSONException in displayTicket loading attachments", e);
-		    }
-		}
-	    }
-	    listView.setOnItemLongClickListener(this);
-	    listView.setOnItemClickListener(this);
-	    final ModifiedStringArrayAdapter dataAdapter = new ModifiedStringArrayAdapter(context, R.layout.ticket_list, values);
-
-	    listView.setAdapter(dataAdapter);
-	}
-    }
-
-    private String toonTijd(final JSONObject v) {
-	try {
-	    return ISO8601.toCalendar(v.getJSONArray("__jsonclass__").getString(1) + "Z").getTime().toString();
-	} catch (final Exception e) {
-	    tcLog.e("Error converting time", e);
-	    return "";
-	}
-    }
-
-    private void selectField(final String veld, final String waarde, final View dataView) {
-	if (Arrays.asList(notModified).contains(veld)) {
-	    showAlertBox(R.string.notpossible, R.string.notchange, null);
-	} else if (Arrays.asList(isStatusUpd).contains(veld)) {
-	    listener.onUpdateTicket(_ticket);
-	    didUpdate = true;
-	} else {
-	    final TicketModelVeld tmv = tm.getVeld(veld);
-	    final LayoutInflater inflater = LayoutInflater.from(context);
-
-	    final RelativeLayout ll = (RelativeLayout) inflater.inflate(
-		tmv.options() == null ? R.layout.field_spec1 : R.layout.field_spec2, null, false);
-
-	    ((TextView) ll.findViewById(R.id.veldnaam)).setText(veld);
-	    final EditText et = (EditText) ll.findViewById(R.id.veldwaarde);
-	    final Spinner spinValue = makeDialogComboSpin(getActivity(), tmv.options(), tmv.optional(), waarde);
-	    final Button canBut = (Button) ll.findViewById(R.id.cancelpw);
-	    canBut.setOnClickListener(this);
-	    final Button storBut = (Button) ll.findViewById(R.id.okBut);
-	    final ListView parent = (ListView) getView().findViewById(R.id.listofFields);
-
-	    if (et != null) {
-		et.setText(waarde);
-		et.requestFocus();
-	    }
-
-	    try {
-		spinValue.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-		((LinearLayout) ll.findViewById(R.id.veld)).addView(spinValue);
-	    } catch (final Exception ignored) {
-	    }
-
-	    storBut.setOnClickListener(new View.OnClickListener() {
-		@Override
-		public void onClick(View v) {
-		    String newValue = null;
-
-		    if (spinValue != null) {
-			newValue = spinValue.getSelectedItem().toString();
-		    }
-		    if (et != null) {
-			newValue = et.getText().toString();
-		    }
-		    if (newValue != null && !newValue.equals(waarde) || newValue == null && waarde != null) {
-			if ("summary".equals(veld)) {
-			    ((TextView) dataView).setText(newValue);
-			    ((TextView) dataView).setTextColor(popup_selected_color);
-			    tcLog.d("tickText na postInvalidate + " + dataView);
-			    final String[] parsed = newValue.split(":", 2);
-
-			    modVeld.put("summary", parsed[1].trim());
-			} else {
-			    final int pos = ((ModifiedStringArrayAdapter) parent.getAdapter()).getPosition(
-				new modifiedString(veld, newValue));
-
-			    if (pos >= 0) {
-				final modifiedString ms = values.get(pos);
-
-				ms.setWaarde(newValue);
-				ms.setUpdated(true);
-				values.set(pos, ms);
-				((ModifiedStringArrayAdapter) parent.getAdapter()).notifyDataSetChanged();
-			    }
-			    modVeld.put(veld, newValue);
-			}
-			setSelect(false);
-		    }
-		    final LinearLayout mv = (LinearLayout) getView().findViewById(R.id.modveld);
-
-		    if (mv != null && !modVeld.isEmpty()) {
-			mv.setVisibility(View.VISIBLE);
-		    }
-		    if (pw != null && !listener.isFinishing()) {
-			pw.dismiss();
-		    }
-		}
-	    });
-/*
-	    pw = new PopupWindow(ll, getView().getWidth() * 9 / 10, getView().getHeight() * 4 / 5, true);
-	    final Drawable drw = new ColorDrawable(ContextCompat.getColor(context, R.color.popup_back));
-	    drw.setAlpha(context.getResources().getInteger(R.integer.popupAlpha));
-	    pw.setBackgroundDrawable(drw);
-	    pw.showAtLocation(parent, Gravity.CENTER, 0, 0);
-*/
-	    FragmentTransaction ft = getFragmentManager().beginTransaction();
-	    Fragment prev = getFragmentManager().findFragmentByTag("dialog");
-	    if (prev != null) {
-		ft.remove(prev);
-	    }
-	    ft.addToBackStack(null);
-
-	    // Create and show the dialog.
-	    DialogFragment newFragment = new EditFieldFragment();
-	    Bundle args = new Bundle();
-	    args.putString("veld",veld);
-	    newFragment.setArguments(args);
-	    newFragment.show(ft, "dialog");
-
+    private void setSelect(final boolean value) {
+	tcLog.d(String.format(Locale.US, "%b", value));
+	if (selectItem != null) {
+	    selectItem.setEnabled(value);
 	}
     }
 
@@ -582,9 +346,15 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 	} else {
 	    final String[] parsed = t.split(":", 2);
 
-	    selectField(parsed[0], parsed[1].trim(), null);
+	    selectField(parsed[0], parsed[1].trim());
 	}
 	return true;
+    }
+
+    private void refreshTicket() {
+	if (_ticket != null) {
+	    listener.refreshTicket(_ticket.getTicketnr());
+	}
     }
 
     @Override
@@ -648,39 +418,6 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 	return URLConnection.guessContentTypeFromName(url);
     }
 
-    public boolean onBackPressed() {
-	tcLog.logCall();
-	try {
-	    if (pw.isShowing() && !listener.isFinishing()) {
-		pw.dismiss();
-		return true;
-	    }
-	} catch (Exception e) {
-	    if (!modVeld.isEmpty()) {
-		context.runOnUiThread(new Runnable() {
-		    @Override
-		    public void run() {
-			new AlertDialog.Builder(context)
-			    .setTitle(R.string.warning)
-			    .setMessage(R.string.unsaved)
-			    .setPositiveButton(R.string.ja, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-				    getFragmentManager().popBackStack();
-				    updateTicket();
-				}
-			    })
-			    .setNegativeButton(R.string.nee, null)
-			    .show();
-		    }
-		});
-		return true;
-	    }
-	}
-	tcLog.d("returned false");
-	return false;
-    }
-
     @Override
     public boolean onDown(MotionEvent e) {
 	return false;
@@ -695,13 +432,147 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 	return false;
     }
 
+    private void displayTicket() {
+	tcLog.d("ticket = " + _ticket);
+	if (_ticket != null) {
+
+	    if (currentView == null) {
+		return;
+	    }
+	    final ListView listView = (ListView) currentView.findViewById(R.id.listofFields);
+
+	    listView.setAdapter(null);
+	    values.clear();
+	    final TextView tickText = (TextView) currentView.findViewById(R.id.ticknr);
+
+	    if (tickText != null) {
+		tickText.setText(String.format(Locale.US, "Ticket %d", _ticket.getTicketnr()));
+		try {
+		    String summ = _ticket.getString("summary");
+
+		    tickText.setTextColor(popup_unselected_color);
+		    if (modVeld.containsKey("summary")) {
+			summ = modVeld.get("summary");
+			tickText.setTextColor(popup_selected_color);
+		    }
+		    tickText.append(" : " + summ);
+		} catch (final JSONException ignored) {
+//                    tcLog.e( "JSONException fetching summary");
+		}
+		tickText.setOnLongClickListener(new View.OnLongClickListener() {
+		    @Override
+		    public boolean onLongClick(View view) {
+			selectField("summary", ((TextView) view).getText().toString());
+			tcLog.d("tickText modVeld = " + modVeld);
+			return true;
+		    }
+		});
+	    }
+	    for (final String veld : tm.velden()) {
+
+		try {
+		    modifiedString ms = null;
+
+		    //tcLog.d( "showEmptyFields = "+showEmptyFields);
+
+		    if (!skipFields.contains(veld)) {
+			if (timeFields.contains(veld)) {
+			    ms = new modifiedString(veld, toonTijd(_ticket.getJSONObject(veld)));
+			} else if (showEmptyFields || _ticket.getString(veld).length() > 0) {
+			    ms = new modifiedString(veld, _ticket.getString(veld));
+			}
+		    }
+
+		    if (ms != null) {
+			if (modVeld.containsKey(veld)) {
+			    ms.setUpdated();
+			    ms.setWaarde(modVeld.get(veld));
+			    setSelect(false);
+			}
+			values.add(ms);
+		    }
+		} catch (final JSONException e) {
+//                    tcLog.e( "JSONException fetching field " + veld);
+		    values.add(new modifiedString(veld, ""));
+		}
+	    }
+	    final JSONArray history = _ticket.getHistory();
+
+	    if (history != null) {
+		for (int j = 0; j < history.length(); j++) {
+		    JSONArray cmt;
+
+		    try {
+			cmt = history.getJSONArray(j);
+			if ("comment".equals(cmt.getString(2)) && cmt.getString(4).length() > 0) {
+			    values.add(
+				new modifiedString("comment",
+				    toonTijd(cmt.getJSONObject(0)) + " - " + cmt.getString(1) + " - " + cmt.getString(4)));
+			}
+		    } catch (final JSONException e) {
+			tcLog.e("JSONException in displayTicket loading history");
+		    }
+		}
+	    }
+	    final JSONArray attachments = _ticket.getAttachments();
+
+	    if (attachments != null) {
+		for (int j = 0; j < attachments.length(); j++) {
+		    JSONArray bijlage;
+
+		    try {
+			bijlage = attachments.getJSONArray(j);
+			values.add(
+			    new modifiedString("bijlage " + (j + 1),
+				toonTijd(bijlage.getJSONObject(3)) + " - " + bijlage.getString(4) + " - " + bijlage.getString(0)
+				    + " - " + bijlage.getString(1)));
+
+		    } catch (final JSONException e) {
+			tcLog.e("JSONException in displayTicket loading attachments", e);
+		    }
+		}
+	    }
+	    listView.setOnItemLongClickListener(this);
+	    listView.setOnItemClickListener(this);
+	    final ModifiedStringArrayAdapter dataAdapter = new ModifiedStringArrayAdapter(context, R.layout.ticket_list, values);
+
+	    listView.setAdapter(dataAdapter);
+	}
+    }
+
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
 	return false;
     }
 
+    private String toonTijd(final JSONObject v) {
+	try {
+	    return ISO8601.toCalendar(v.getJSONArray("__jsonclass__").getString(1) + "Z").getTime().toString();
+	} catch (final Exception e) {
+	    tcLog.e("Error converting time", e);
+	    return "";
+	}
+    }
+
     @Override
     public void onLongPress(MotionEvent e) {
+    }
+
+    private void selectField(final String veld, final String waarde) {
+	if (Arrays.asList(notModified).contains(veld)) {
+	    showAlertBox(R.string.notpossible, R.string.notchange, null);
+	} else if (Arrays.asList(isStatusUpd).contains(veld)) {
+	    listener.onUpdateTicket(_ticket);
+	    didUpdate = true;
+	} else {
+	    // Create and show the dialog.
+	    EditFieldFragment editFieldFragment = new EditFieldFragment();
+	    Bundle args = new Bundle();
+	    args.putString("veld", veld);
+	    args.putString("waarde", waarde);
+	    editFieldFragment.setArguments(args);
+	    editFieldFragment.show(getFragmentManager(), "editfield");
+	}
     }
 
     @Override
@@ -735,6 +606,40 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
     public boolean dispatchTouchEvent(MotionEvent ev) {
 	return gestureDetector != null && gestureDetector.onTouchEvent(ev);
     }
+/*
+    public boolean onBackPressed() {
+	tcLog.logCall();
+	try {
+	    if (pw.isShowing() && !listener.isFinishing()) {
+		pw.dismiss();
+		return true;
+	    }
+	} catch (Exception e) {
+	    if (!modVeld.isEmpty()) {
+		context.runOnUiThread(new Runnable() {
+		    @Override
+		    public void run() {
+			new AlertDialog.Builder(context)
+			    .setTitle(R.string.warning)
+			    .setMessage(R.string.unsaved)
+			    .setPositiveButton(R.string.ja, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+				    getFragmentManager().popBackStack();
+				    updateTicket();
+				}
+			    })
+			    .setNegativeButton(R.string.nee, null)
+			    .show();
+		    }
+		});
+		return true;
+	    }
+	}
+	tcLog.d("returned false");
+	return false;
+    }
+*/
 
     private class ModVeldMap extends HashMap<String, String> implements Serializable {
 	private static final long serialVersionUID = 191019591050L;
@@ -755,8 +660,8 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 	    return _updated;
 	}
 
-	public void setUpdated(boolean u) {
-	    _updated = u;
+	public void setUpdated() {
+	    _updated = true;
 	}
 
 	public int length() {
@@ -813,24 +718,109 @@ public class DetailFragment extends TracClientFragment implements SwipeRefreshLa
 	    }
 	}
     }
-    
+
     public class EditFieldFragment extends DialogFragment {
-
 	private String veld;
+	private String waarde;
 
-	private EditText mEditText;
+	EditFieldFragment() {
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				 Bundle savedInstanceState) {
+	    tcLog.logCall();
 	    veld = getArguments().getString("veld");
+	    waarde = getArguments().getString("waarde");
 	    final TicketModelVeld tmv = tm.getVeld(veld);
 
-	    View view = inflater.inflate(tmv.options() == null ? R.layout.field_spec1 : R.layout.field_spec2, container);
-	    ((TextView) view.findViewById(R.id.veldnaam)).setText(veld);
+	    View ll = inflater.inflate(tmv.options() == null ? R.layout.field_spec1 : R.layout.field_spec2, container);
 	    getDialog().setTitle(veld);
+	    final EditText et = (EditText) ll.findViewById(R.id.veldwaarde);
+	    final Spinner spinValue = makeDialogComboSpin(getActivity(), tmv.options(), tmv.optional(), waarde);
+	    final Button canBut = (Button) ll.findViewById(R.id.cancelpw);
+	    canBut.setOnClickListener(new View.OnClickListener() {
+		@Override
 
-	    return view;
+		public void onClick(View v) {
+		    tcLog.logCall();
+		    switch (v.getId()) {
+			case R.id.cancelpw:
+			    getFragmentManager().popBackStack();
+			    break;
+
+			default:
+
+		    }
+		}
+	    });
+	    final Button storBut = (Button) ll.findViewById(R.id.okBut);
+
+	    if (et != null) {
+		et.setText(waarde);
+		et.requestFocus();
+	    }
+
+	    try {
+		spinValue.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+		((LinearLayout) ll.findViewById(R.id.veld)).addView(spinValue);
+	    } catch (final Exception ignored) {
+	    }
+
+	    storBut.setOnClickListener(new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+		    tcLog.logCall();
+		    String newValue = null;
+
+		    if (spinValue != null) {
+			newValue = spinValue.getSelectedItem().toString();
+		    }
+		    if (et != null) {
+			newValue = et.getText().toString();
+		    }
+
+		    setModVeld(veld, waarde, newValue);
+		    getFragmentManager().popBackStack();
+		}
+	    });
+
+	    return ll;
+	}
+
+    }
+
+    private void setModVeld(final String veld, final String waarde, final String newValue) {
+	tcLog.d("veld = "+ veld+" waarde = "+ waarde+ "newValue = "+newValue);
+	final ListView parent = (ListView) currentView.findViewById(R.id.listofFields);
+	if (newValue != null && !newValue.equals(waarde) || newValue == null && waarde != null) {
+	    if ("summary".equals(veld)) {
+		final TextView dataView = (TextView) currentView.findViewById(R.id.ticknr);
+		dataView.setText(newValue);
+		dataView.setTextColor(popup_selected_color);
+		tcLog.d("tickText na postInvalidate + " + dataView);
+		final String[] parsed = newValue.split(":", 2);
+		modVeld.put("summary", parsed[1].trim());
+	    } else {
+		final int pos = ((ModifiedStringArrayAdapter) parent.getAdapter()).getPosition(
+		    new modifiedString(veld, newValue));
+
+		if (pos >= 0) {
+		    final modifiedString ms = values.get(pos);
+
+		    ms.setWaarde(newValue);
+		    ms.setUpdated();
+		    values.set(pos, ms);
+		    ((ModifiedStringArrayAdapter) parent.getAdapter()).notifyDataSetChanged();
+		}
+		modVeld.put(veld, newValue);
+	    }
+	    setSelect(false);
+	}
+	final LinearLayout mv = (LinearLayout) currentView.findViewById(R.id.modveld);
+
+	if (mv != null && !modVeld.isEmpty()) {
+	    mv.setVisibility(View.VISIBLE);
 	}
     }
 }
