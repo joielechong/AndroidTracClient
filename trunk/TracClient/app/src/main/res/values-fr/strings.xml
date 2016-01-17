@@ -107,5 +107,6 @@
     <string name="noJSON">Pas de support de JSON sur le TRAC-serveur</string>
     <string name="permissiontitle"> Demande d\'autorisation</string>
     <string name="showdisclaimer">Avertissement</string>
+    <string name="doubleback">Cliquez sur \'Retour\' de nouveau pour sortir</string>
 
 </resources>

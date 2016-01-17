@@ -106,5 +106,6 @@
     <string name="cookies">Cookies</string>
     <string name="permissiontitle"> Antrag auf Genehmigung</string>
     <string name="showdisclaimer">Haftungsausschluss</string>
+    <string name="doubleback"> Bitte klicken Sie nochmals auf"BACK"zum Beenden</string>
 
 </resources>

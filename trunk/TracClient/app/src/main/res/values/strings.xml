@@ -128,5 +128,6 @@
         <item>ends on</item>
         <item>does not end on</item>
     </string-array>
+    <string name="doubleback">Please click BACK again to exit</string>
 
 </resources>
