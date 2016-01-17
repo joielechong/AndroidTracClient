@@ -29,13 +29,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/displayAd"
-            android:layout_alignParentTop="true"></FrameLayout>
+            android:layout_alignParentTop="true"/>
 
         <FrameLayout
             android:id="@+id/displayAd"
             android:layout_width="match_parent"
             android:layout_height="@dimen/adview_padding"
-            android:layout_alignParentBottom="true"></FrameLayout>
+            android:layout_alignParentBottom="true"/>
     </RelativeLayout>
 
     <!-- The navigation drawer -->
