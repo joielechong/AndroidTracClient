@@ -19,13 +19,13 @@ import java.util.ArrayList;
 
 public class TicketList extends ArrayList<Ticket> {
     public TicketList() {
-	super();
+        super();
     }
 
     public void addAll(TicketList tl) {
-	tcLog.d(tl != null ? tl.toString() : null);
-	if (tl != null) {
-	    super.addAll(tl);
-	}
+        tcLog.d(tl != null ? tl.toString() : null);
+        if (tl != null) {
+            super.addAll(tl);
+        }
     }
 }

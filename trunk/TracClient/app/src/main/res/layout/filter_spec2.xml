@@ -15,9 +15,9 @@
 
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -30,21 +30,21 @@
             android:layout_height="wrap_content"
             android:layout_weight="12"
             android:clickable="true"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
 
         <ImageButton
             android:id="@+id/stopedit"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@android:drawable/arrow_up_float" />
+            android:src="@android:drawable/arrow_up_float"/>
 
         <ImageButton
             android:id="@+id/delitem"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@android:drawable/ic_menu_delete" />
+            android:src="@android:drawable/ic_menu_delete"/>
     </LinearLayout>
 
     <LinearLayout
@@ -56,7 +56,7 @@
             android:id="@+id/filter_choice_spin"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="5" />
+            android:layout_weight="5"/>
 
         <EditText
             android:id="@+id/filtervaltext"
@@ -64,7 +64,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="9"
             android:inputType="text"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
     </LinearLayout>
 
 </LinearLayout>

@@ -15,22 +15,22 @@
 
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="AppCompatResource">
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:ignore="AppCompatResource">
     <item
         android:id="@+id/help"
         android:icon="@android:drawable/ic_menu_help"
         android:menuCategory="container"
         android:orderInCategory="9997"
         android:showAsAction="ifRoom"
-        android:title="@string/help" />
+        android:title="@string/help"/>
     <item
         android:id="@+id/over"
         android:icon="@android:drawable/ic_menu_info_details"
         android:menuCategory="container"
         android:orderInCategory="9998"
         android:showAsAction="ifRoom"
-        android:title="@string/about_button" />
+        android:title="@string/about_button"/>
     <item
         android:id="@+id/debug"
         android:actionProviderClass="android.widget.ShareActionProvider"
@@ -38,6 +38,6 @@
         android:menuCategory="container"
         android:orderInCategory="9999"
         android:title="@string/debug"
-        android:visible="false" />
+        android:visible="false"/>
 
 </menu>

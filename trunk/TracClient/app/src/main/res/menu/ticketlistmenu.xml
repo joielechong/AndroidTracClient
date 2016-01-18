@@ -15,49 +15,49 @@
 
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="AppCompatResource">
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:ignore="AppCompatResource">
     <item
         android:id="@+id/tlnieuw"
         android:icon="@android:drawable/ic_menu_add"
         android:menuCategory="container"
-        android:title="@string/nieuw" />
+        android:title="@string/nieuw"/>
     <item
         android:id="@+id/tlchangehost"
         android:menuCategory="container"
-        android:title="@string/changehost" />
+        android:title="@string/changehost"/>
     <item
         android:id="@+id/tlrefresh"
         android:icon="@android:drawable/ic_popup_sync"
         android:menuCategory="container"
         android:showAsAction="ifRoom"
-        android:title="@string/tlrefresh" />
+        android:title="@string/tlrefresh"/>
     <item
         android:id="@+id/tlshare"
         android:actionProviderClass="android.widget.ShareActionProvider"
         android:icon="@android:drawable/ic_menu_share"
         android:menuCategory="container"
         android:showAsAction="ifRoom"
-        android:title="@string/tlshare" />
+        android:title="@string/tlshare"/>
     <item
         android:id="@+id/tlzoek"
         android:icon="@android:drawable/ic_menu_search"
         android:menuCategory="container"
         android:showAsAction="ifRoom"
         android:title="@string/zoek"
-        android:visibility="gone" />
+        android:visibility="gone"/>
     <item
         android:id="@+id/tlfilter"
         android:menuCategory="container"
-        android:title="@string/filter" />
+        android:title="@string/filter"/>
     <item
         android:id="@+id/tlsort"
         android:icon="@android:drawable/ic_menu_sort_by_size"
         android:menuCategory="container"
-        android:title="@string/sort" />
+        android:title="@string/sort"/>
     <item
         android:id="@+id/tlselect"
         android:menuCategory="container"
-        android:title="@string/selectticket" />
+        android:title="@string/selectticket"/>
 
 </menu> 

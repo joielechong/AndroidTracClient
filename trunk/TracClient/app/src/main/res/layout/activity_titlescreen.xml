@@ -15,21 +15,21 @@
 
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical">
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:gravity="center"
+              android:orientation="vertical">
 
     <TextView
         style="@style/TitleScreenText.Big"
-        android:text="@string/title_text" />
+        android:text="@string/title_text"/>
 
     <TextView
         style="@style/TitleScreenText"
-        android:text="@string/app_version" />
+        android:text="@string/app_version"/>
 
     <TextView
         style="@style/TitleScreenText"
-        android:text="@string/auteur" />
+        android:text="@string/auteur"/>
 
 </LinearLayout>

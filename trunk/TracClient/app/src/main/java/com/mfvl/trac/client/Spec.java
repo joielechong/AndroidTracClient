@@ -23,36 +23,36 @@ abstract public class Spec extends TcObject implements Serializable, Cloneable {
     protected String _veld;
 
     public Spec(String veld) {
-	_veld = veld;
+        _veld = veld;
     }
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-	return super.clone();
+        return super.clone();
     }
 
     @Override
     public boolean equals(Object o) {
-	boolean retVal;
-	if (this == o) {
-	    retVal = true;
-	} else if (!(o instanceof Spec)) {
-	    retVal = false;
-	} else {
-	    retVal = super.equals(o);
+        boolean retVal;
+        if (this == o) {
+            retVal = true;
+        } else if (!(o instanceof Spec)) {
+            retVal = false;
+        } else {
+            retVal = super.equals(o);
 
-	    Spec f = (Spec) o;
-	    retVal &= equalFields(_veld, f.getVeld());
-	}
+            Spec f = (Spec) o;
+            retVal &= equalFields(_veld, f.getVeld());
+        }
 //		tcLog.d("this = "+this+" o = "+o+" retVal = "+retVal);
-	return retVal;
+        return retVal;
     }
 
     public String getVeld() {
-	return _veld;
+        return _veld;
     }
 
     public Spec setEdit(final boolean edited) { //no-op
-	return this;
+        return this;
     }
 }

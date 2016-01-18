@@ -52,288 +52,294 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
 
     @Override
     public void onAttach(Context activity) {
-	super.onAttach(activity);
+        super.onAttach(activity);
 //        tcLog.d("onAttach(C)");
-	onMyAttach(FILTERLISTNAME);
+        onMyAttach(FILTERLISTNAME);
     }
 
     @Override
     public void onAttach(Activity activity) {
-	super.onAttach(activity);
+        super.onAttach(activity);
 //        tcLog.d("onAttach(A)");
-	onMyAttach(FILTERLISTNAME);
+        onMyAttach(FILTERLISTNAME);
     }
 
     public void onClick(View v1) {
-	switch (v1.getId()) {
-	    case R.id.storefilter:
-		final ArrayList<FilterSpec> items = filterAdapter.items;
+        switch (v1.getId()) {
+            case R.id.storefilter:
+                final ArrayList<FilterSpec> items = filterAdapter.items;
 
-		for (int i = items.size() - 1; i >= 0; i--) {
-		    if (items.get(i).getOperator() == null || items.get(i).getOperator().equals("")
-			|| items.get(i).getWaarde() == null || items.get(i).getWaarde().equals("")) {
-			items.remove(i);
-		    } else {
-			items.get(i).setEdit(false);
-		    }
-		}
-		sendMessageToHandler(MSG_SET_FILTER, items);
-		getFragmentManager().popBackStack();
-		break;
+                for (int i = items.size() - 1; i >= 0; i--) {
+                    if (items.get(i).getOperator() == null || items.get(i).getOperator().equals("")
+                            || items.get(i).getWaarde() == null || items.get(i).getWaarde().equals(
+                            "")) {
+                        items.remove(i);
+                    } else {
+                        items.get(i).setEdit(false);
+                    }
+                }
+                sendMessageToHandler(MSG_SET_FILTER, items);
+                getFragmentManager().popBackStack();
+                break;
 
-	    case R.id.addbutton:
+            case R.id.addbutton:
 //			final String veld = tm.velden().get((int) addSpinner.getSelectedItemId());
-		final String veld = (String) addSpinner.getSelectedItem();
-		final FilterSpec o = new FilterSpec(veld, "=", "");
+                final String veld = (String) addSpinner.getSelectedItem();
+                final FilterSpec o = new FilterSpec(veld, "=", "");
 
-		filterAdapter.add(o);
-		filterAdapter.notifyDataSetChanged();
-		break;
-	}
+                filterAdapter.add(o);
+                filterAdapter.notifyDataSetChanged();
+                break;
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-	tcLog.d("savedInstanceState = " + savedInstanceState);
+        tcLog.d("savedInstanceState = " + savedInstanceState);
 
-	return inflater.inflate(R.layout.filter_view, container, false);
+        return inflater.inflate(R.layout.filter_view, container, false);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-	super.onActivityCreated(savedInstanceState); // must be called first
-	tcLog.d("savedInstanceState = " + savedInstanceState);
-	final View view = getView();
-	helpFile = R.string.filterhelpfile;
+        super.onActivityCreated(savedInstanceState); // must be called first
+        tcLog.d("savedInstanceState = " + savedInstanceState);
+        helpFile = R.string.filterhelpfile;
 
-	filterAdapter = new FilterAdapter(context, outputSpec);
-	listView.setAdapter(filterAdapter);
+        filterAdapter = new FilterAdapter(context, outputSpec);
+        listView.setAdapter(filterAdapter);
 
-	view.findViewById(R.id.storefilter).setOnClickListener(this);
-	final ImageButton addButton = (ImageButton) view.findViewById(R.id.addbutton);
-	addButton.setOnClickListener(this);
-	addSpinner = (Spinner) view.findViewById(R.id.addspin);
-	getScreensize(addSpinner, addButton);
-	final ArrayList<String> velden = tm.velden();
-	Collections.sort(velden);
-	final ArrayAdapter<String> spinAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, velden);
-	addSpinner.setAdapter(spinAdapter);
+        currentView.findViewById(R.id.storefilter).setOnClickListener(this);
+        final ImageButton addButton = (ImageButton) currentView.findViewById(R.id.addbutton);
+        addButton.setOnClickListener(this);
+        addSpinner = (Spinner) currentView.findViewById(R.id.addspin);
+        getScreensize(addSpinner, addButton);
+        final ArrayList<String> velden = tm.velden();
+        Collections.sort(velden);
+        final ArrayAdapter<String> spinAdapter = new ArrayAdapter<>(context,
+                                                                    android.R.layout.simple_spinner_item,
+                                                                    velden);
+        addSpinner.setAdapter(spinAdapter);
     }
 
     private LinearLayout makeCheckBoxes(final FilterSpec o) {
-	final String veldnaam = o.getVeld();
-	List<Object> waardes = tm.getVeld(veldnaam).options();
-	final String w = o.getWaarde();
-	final String op = o.getOperator();
-	final boolean omgekeerd = op != null && op.equals("!=");
+        final String veldnaam = o.getVeld();
+        List<Object> waardes = tm.getVeld(veldnaam).options();
+        final String w = o.getWaarde();
+        final String op = o.getOperator();
+        final boolean omgekeerd = op != null && op.equals("!=");
 
-	tcLog.d(veldnaam + " " + w + " " + omgekeerd);
-	LinearLayout valCheckBoxes = new LinearLayout(context);
+        tcLog.d(veldnaam + " " + w + " " + omgekeerd);
+        LinearLayout valCheckBoxes = new LinearLayout(context);
 
-	valCheckBoxes.setOrientation(LinearLayout.VERTICAL);
-	String[] ws;
+        valCheckBoxes.setOrientation(LinearLayout.VERTICAL);
+        String[] ws;
 
-	try {
-	    ws = w == null ? null : w.split("\\|");
-	} catch (final IllegalArgumentException e) {
-	    ws = new String[1];
-	    ws[0] = w;
-	}
+        try {
+            ws = w == null ? null : w.split("\\|");
+        } catch (final IllegalArgumentException e) {
+            ws = new String[1];
+            ws[0] = w;
+        }
 
-	for (int i = 0; i < waardes.size(); i++) {
-	    final CheckBox rb = new CheckBox(context);
+        for (int i = 0; i < waardes.size(); i++) {
+            final CheckBox rb = new CheckBox(context);
 
-	    rb.setText((String) waardes.get(i));
-	    rb.setId(i);
-	    rb.setChecked(omgekeerd);
-	    if (w != null) {
-		for (final String w1 : ws) {
-		    if (w1.equals(waardes.get(i))) {
-			rb.setChecked(!omgekeerd);
-		    }
-		}
-	    }
-	    rb.setTag(o);
-	    rb.setOnCheckedChangeListener(this);
-	    valCheckBoxes.addView(rb);
-	}
-	return valCheckBoxes;
+            rb.setText((String) waardes.get(i));
+            rb.setId(i);
+            rb.setChecked(omgekeerd);
+            if (w != null) {
+                for (final String w1 : ws) {
+                    if (w1.equals(waardes.get(i))) {
+                        rb.setChecked(!omgekeerd);
+                    }
+                }
+            }
+            rb.setTag(o);
+            rb.setOnCheckedChangeListener(this);
+            valCheckBoxes.addView(rb);
+        }
+        return valCheckBoxes;
     }
 
     @Override
     public void onCheckedChanged(CompoundButton cb0, boolean isChecked) {
 //		tcLog.d("cb0 = "+cb0+" parent = "+ cb0.getParent());
-	String temp = null;
-	ViewGroup parent = (ViewGroup) cb0.getParent();
+        String temp = null;
+        ViewGroup parent = (ViewGroup) cb0.getParent();
 
-	for (int j = 0; j < parent.getChildCount(); j++) {
-	    final CheckBox cb = (CheckBox) parent.getChildAt(j);
+        for (int j = 0; j < parent.getChildCount(); j++) {
+            final CheckBox cb = (CheckBox) parent.getChildAt(j);
 //			tcLog.d("cb = "+cb+" j = "+ j);
 
-	    if (cb != null && cb.isChecked()) {
-		if (temp == null) {
-		    temp = cb.getText().toString();
-		} else {
-		    temp += "|" + cb.getText();
-		}
-	    }
-	}
-	FilterSpec o = (FilterSpec) cb0.getTag();
-	o.setOperator("=").setWaarde(temp);
+            if (cb != null && cb.isChecked()) {
+                if (temp == null) {
+                    temp = cb.getText().toString();
+                } else {
+                    temp += "|" + cb.getText();
+                }
+            }
+        }
+        FilterSpec o = (FilterSpec) cb0.getTag();
+        o.setOperator("=").setWaarde(temp);
     }
 
     private class FilterAdapter extends SpecAdapter<FilterSpec> implements View.OnClickListener {
 
-	public FilterAdapter(Context context, ArrayList<FilterSpec> input) {
-	    super(context, android.R.layout.simple_list_item_1, input);
-	    if (operators == null) {
-		final Resources res = context.getResources();
-		operators = new ArrayList<>(Arrays.asList(res.getStringArray(R.array.filter2_choice)));
-		operatornames = new ArrayList<>(Arrays.asList(res.getStringArray(R.array.filter_names)));
-	    }
-	}
+        public FilterAdapter(Context context, ArrayList<FilterSpec> input) {
+            super(context, android.R.layout.simple_list_item_1, input);
+            if (operators == null) {
+                final Resources res = context.getResources();
+                operators = new ArrayList<>(
+                        Arrays.asList(res.getStringArray(R.array.filter2_choice)));
+                operatornames = new ArrayList<>(
+                        Arrays.asList(res.getStringArray(R.array.filter_names)));
+            }
+        }
 
-	@Override
-	public View getView(final int position, View convertView, final ViewGroup parent) {
-	    //tcLog.d( "getView pos=" + position + " " + convertView + " " + parent);
+        @Override
+        public View getView(final int position, View convertView, final ViewGroup parent) {
+            //tcLog.d( "getView pos=" + position + " " + convertView + " " + parent);
 
-	    int p = (position >= items.size() || position < 0 ? 0 : position);
-	    final FilterSpec filterItem = items.get(p);
-	    final TicketModelVeld tmv = tm.getVeld(filterItem.getVeld());
-	    //tcLog.d( "getView pos=" + position +" " + filterItem + " " + tmv);
-	    final int resid = (filterItem.getEdit() ? (tmv.options() == null ? R.layout.filter_spec2 : R.layout.filter_spec3) : R.layout.filter_spec1);
+            int p = (position >= items.size() || position < 0 ? 0 : position);
+            final FilterSpec filterItem = items.get(p);
+            final TicketModelVeld tmv = tm.getVeld(filterItem.getVeld());
+            //tcLog.d( "getView pos=" + position +" " + filterItem + " " + tmv);
+            final int resid = (filterItem.getEdit() ? (tmv.options() == null ? R.layout.filter_spec2 : R.layout.filter_spec3) : R.layout.filter_spec1);
 
-	    View v = convertView;
+            View v = convertView;
 
-	    final int curid = convertView == null ? -1 : convertView.getId();
+            final int curid = convertView == null ? -1 : convertView.getId();
 
-	    //tcLog.d("getView pos = " + position + " curid = " + curid + " resid=" + resid + " veld = " + filterItem.getVeld());
-	    if (curid != resid) {
-		v = LayoutInflater.from(context).inflate(resid, null);
-		//noinspection ResourceType
-		v.setId(resid); // hack hack
-		parent.requestLayout();
-	    }
-	    v.setTag(filterItem);
+            //tcLog.d("getView pos = " + position + " curid = " + curid + " resid=" + resid + " veld = " + filterItem.getVeld());
+            if (curid != resid) {
+                v = LayoutInflater.from(context).inflate(resid, null);
+                //noinspection ResourceType
+                v.setId(resid); // hack hack
+                parent.requestLayout();
+            }
+            v.setTag(filterItem);
 
-	    final TextView filterNaam = (TextView) v.findViewById(R.id.filternaam);
-	    setListener(R.id.filternaam, v, this);
-	    setListener(R.id.startedit, v, this);
-	    setListener(R.id.stopedit, v, this);
-	    setListener(R.id.delitem, v, this);
-	    final Spinner spin = (Spinner) v.findViewById(R.id.filter_choice_spin);
-	    final EditText et = (EditText) v.findViewById(R.id.filtervaltext);
-	    final LinearLayout filterCheck = (LinearLayout) v.findViewById(R.id.filtercheck);
+            final TextView filterNaam = (TextView) v.findViewById(R.id.filternaam);
+            setListener(R.id.filternaam, v, this);
+            setListener(R.id.startedit, v, this);
+            setListener(R.id.stopedit, v, this);
+            setListener(R.id.delitem, v, this);
+            final Spinner spin = (Spinner) v.findViewById(R.id.filter_choice_spin);
+            final EditText et = (EditText) v.findViewById(R.id.filtervaltext);
+            final LinearLayout filterCheck = (LinearLayout) v.findViewById(R.id.filtercheck);
 
-	    filterNaam.setText((filterItem.getEdit() ? filterItem.getVeld() : filterItem.toString()));
+            filterNaam.setText(
+                    (filterItem.getEdit() ? filterItem.getVeld() : filterItem.toString()));
 
-	    if (spin != null) {
-		final ArrayAdapter<String> spinAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item,
-		    operatornames);
+            if (spin != null) {
+                final ArrayAdapter<String> spinAdapter = new ArrayAdapter<>(context,
+                                                                            android.R.layout.simple_spinner_item,
+                                                                            operatornames);
 
-		spin.setAdapter(spinAdapter);
-		spin.setSelection(operators.indexOf(filterItem.getOperator()));
-		spin.setOnItemSelectedListener(new OnItemSelectedListener() {
-		    @Override
-		    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-			filterItem.setOperator(operators.get(position));
-		    }
+                spin.setAdapter(spinAdapter);
+                spin.setSelection(operators.indexOf(filterItem.getOperator()));
+                spin.setOnItemSelectedListener(new OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        filterItem.setOperator(operators.get(position));
+                    }
 
-		    @Override
-		    public void onNothingSelected(AdapterView<?> parent) {
-		    }
-		});
-	    }
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                    }
+                });
+            }
 
-	    if (et != null) {
-		et.setText(filterItem.getWaarde());
-		et.requestFocus();
-		et.addTextChangedListener(new TextWatcher() {
+            if (et != null) {
+                et.setText(filterItem.getWaarde());
+                et.requestFocus();
+                et.addTextChangedListener(new TextWatcher() {
 
-		    @Override
-		    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-		    }
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    }
 
-		    @Override
-		    public void onTextChanged(CharSequence s, int start, int before, int count) {
-			filterItem.setWaarde(s.toString());
-		    }
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        filterItem.setWaarde(s.toString());
+                    }
 
-		    @Override
-		    public void afterTextChanged(Editable arg0) {
-		    }
+                    @Override
+                    public void afterTextChanged(Editable arg0) {
+                    }
 
-		});
-	    }
+                });
+            }
 
-	    if (filterCheck != null && filterCheck.getChildCount() == 0) {
-		filterCheck.addView(makeCheckBoxes(filterItem));
-	    }
+            if (filterCheck != null && filterCheck.getChildCount() == 0) {
+                filterCheck.addView(makeCheckBoxes(filterItem));
+            }
 
-	    parent.invalidate();
+            parent.invalidate();
 
-	    return v;
-	}
+            return v;
+        }
 
-	@Override
-	public void onClick(View v) {
-	    tcLog.d("v =" + v);
-	    FilterSpec filterItem = getItem(v);
-	    switch (v.getId()) {
-		case R.id.filternaam:
-		    //			tcLog.d( "toggleEdit filterItem =" + filterItem);
-		    if (filterItem.getEdit()) {
-			View v1 = (View) v.getParent();
-			final Spinner spin = (Spinner) v1.findViewById(R.id.filter_choice_spin);
-			stopEditItem(filterItem, spin);
-		    } else {
-			startEditItem(filterItem);
-		    }
-		    break;
+        @Override
+        public void onClick(View v) {
+            tcLog.d("v =" + v);
+            FilterSpec filterItem = getItem(v);
+            switch (v.getId()) {
+                case R.id.filternaam:
+                    //			tcLog.d( "toggleEdit filterItem =" + filterItem);
+                    if (filterItem.getEdit()) {
+                        View v1 = (View) v.getParent();
+                        final Spinner spin = (Spinner) v1.findViewById(R.id.filter_choice_spin);
+                        stopEditItem(filterItem, spin);
+                    } else {
+                        startEditItem(filterItem);
+                    }
+                    break;
 
-		case R.id.startedit:
-		    startEditItem(filterItem);
-		    break;
+                case R.id.startedit:
+                    startEditItem(filterItem);
+                    break;
 
-		case R.id.stopedit:
-		    View v1 = (View) v.getParent();
-		    final Spinner spin = (Spinner) v1.findViewById(R.id.filter_choice_spin);
-		    stopEditItem(filterItem, spin);
-		    break;
+                case R.id.stopedit:
+                    View v1 = (View) v.getParent();
+                    final Spinner spin = (Spinner) v1.findViewById(R.id.filter_choice_spin);
+                    stopEditItem(filterItem, spin);
+                    break;
 
-		case R.id.delitem:
-		    remove(filterItem);
-		    notifyDataSetChanged();
-		    break;
-	    }
-	}
+                case R.id.delitem:
+                    remove(filterItem);
+                    notifyDataSetChanged();
+                    break;
+            }
+        }
 
-	private FilterSpec getItem(View v1) {
+        private FilterSpec getItem(View v1) {
 //			tcLog.d("getItem v1 =" + v1);
-	    View parent = (View) v1.getParent();
+            View parent = (View) v1.getParent();
 //			tcLog.d("getItem parent =" + parent);
-	    if (parent.getTag() == null) {
-		parent = (View) parent.getParent();
-	    }
+            if (parent.getTag() == null) {
+                parent = (View) parent.getParent();
+            }
 //			tcLog.d("getItem parent2 =" + parent);
-	    FilterSpec o = (FilterSpec) parent.getTag();
-	    tcLog.d("getItem filterItem = " + o);
-	    return o;
-	}
+            FilterSpec o = (FilterSpec) parent.getTag();
+            tcLog.d("getItem filterItem = " + o);
+            return o;
+        }
 
-	private void startEditItem(FilterSpec filterItem) {
+        private void startEditItem(FilterSpec filterItem) {
 //			tcLog.d("startEditItem filterItem =" + filterItem);
-	    filterItem.setEdit(true);
-	    notifyDataSetChanged();
-	}
+            filterItem.setEdit(true);
+            notifyDataSetChanged();
+        }
 
-	private void stopEditItem(FilterSpec filterItem, Spinner spin) {
+        private void stopEditItem(FilterSpec filterItem, Spinner spin) {
 //			tcLog.d("stopEditItem filterItem =" + filterItem + " spin = " + spin);
-	    filterItem.setEdit(false);
-	    if (spin != null) {
-		filterItem.setOperator(operators.get(spin.getSelectedItemPosition()));
-	    }
-	    notifyDataSetChanged();
-	}
+            filterItem.setEdit(false);
+            if (spin != null) {
+                filterItem.setOperator(operators.get(spin.getSelectedItemPosition()));
+            }
+            notifyDataSetChanged();
+        }
     }
 }

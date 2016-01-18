@@ -90,7 +90,7 @@ public class TracStart extends Activity implements Handler.Callback,
     private static final int REQUEST_CODE_WRITE_EXT = 6385;
     private static final String ListFragmentTag = "List_Fragment";
     private static final String LoginFragmentTag = "Login_Fragment";
-    private static final String DetailFragmentTag = "Detail_Fragment";
+    public static final String DetailFragmentTag = "Detail_Fragment";
     private static final String NewFragmentTag = "New_Fragment";
     private static final String UpdFragmentTag = "Modify_Fragment";
     private static final String FilterFragmentTag = "Filter_Fragment";
@@ -121,7 +121,6 @@ public class TracStart extends Activity implements Handler.Callback,
     private int ticketArg = -1;
     private boolean doNotFinish = false;
     private TicketModel tm = null;
-    private boolean mIsBound = false;
     private boolean mIsTicketBound = false;
     private Messenger mMessenger = null;
     private RefreshService mService = null;
@@ -135,7 +134,6 @@ public class TracStart extends Activity implements Handler.Callback,
                 tcLog.d("mConnection signal service started");
                 waitForService.release();
             }
-            mIsBound = true;
             tcLog.d("mConnection mService = " + mService);
             unbindService(this);
         }
@@ -143,7 +141,6 @@ public class TracStart extends Activity implements Handler.Callback,
         @Override
         public void onServiceDisconnected(ComponentName className) {
             tcLog.d("className = " + className);
-            mIsBound = false;
         }
     };
     private final ServiceConnection mTicketsConnection = new ServiceConnection() {
@@ -610,7 +607,7 @@ public class TracStart extends Activity implements Handler.Callback,
         } else {
             boolean processed = false;
             if (DetailFragmentTag.equals(getTopFragment())) {
-                processed |= dt.onBackPressed();
+                processed = dt.onBackPressed();
             }
             if (!processed) {
                 if (getFragmentManager().getBackStackEntryCount() > 1 || doubleBackToExitPressedOnce) {
@@ -998,7 +995,6 @@ public class TracStart extends Activity implements Handler.Callback,
         } else {
             getFragmentManager().popBackStackImmediate(ListFragmentTag, 0);
         }
-//        refreshOverview();
         dataAdapter.clear();
         startListLoader(true);
     }

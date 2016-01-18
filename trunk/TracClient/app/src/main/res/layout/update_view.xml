@@ -15,8 +15,8 @@
 
 -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,7 +29,7 @@
             android:layout_height="match_parent"
             android:padding="5dp"
             android:text="@string/updtick"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -42,7 +42,7 @@
                 android:layout_margin="4dp"
                 android:padding="5dp"
                 android:text="@string/perfact"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -51,7 +51,7 @@
 
                 <RadioGroup
                     android:id="@+id/actionblock"
-                    style="@style/ActionBlock" />
+                    style="@style/ActionBlock"/>
 
                 <LinearLayout style="@style/OptionsBlock">
 
@@ -61,7 +61,7 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="4dp"
                         android:padding="10dp"
-                        android:textAppearance="?android:attr/textAppearanceMedium" />
+                        android:textAppearance="?android:attr/textAppearanceMedium"/>
 
                     <EditText
                         android:id="@+id/optieval"
@@ -70,14 +70,14 @@
                         android:layout_margin="4dp"
                         android:inputType="text"
                         android:padding="10dp"
-                        android:textAppearance="?android:attr/textAppearanceMedium" />
+                        android:textAppearance="?android:attr/textAppearanceMedium"/>
 
                     <Spinner
                         android:id="@+id/opties"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="4dp"
-                        android:padding="10dp" />
+                        android:padding="10dp"/>
                 </LinearLayout>
             </RelativeLayout>
         </LinearLayout>
@@ -94,7 +94,7 @@
                 android:layout_weight="1"
                 android:padding="5dp"
                 android:text="@string/comment"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
 
             <EditText
                 android:id="@+id/comment"
@@ -106,22 +106,22 @@
                 android:maxLines="6"
                 android:minLines="1"
                 android:padding="10dp"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
         </LinearLayout>
 
         <CheckBox
             android:id="@+id/updNotify"
             style="@style/CheckBox"
-            android:text="@string/notify" />
+            android:text="@string/notify"/>
 
         <LinearLayout style="@style/ButtonHolder">
 
-            <Button style="@style/CancelButton" />
+            <Button style="@style/CancelButton"/>
 
             <Button
                 android:id="@+id/storeUpdate"
                 style="@style/NormalButton"
-                android:text="@string/storeupd" />
+                android:text="@string/storeupd"/>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>
