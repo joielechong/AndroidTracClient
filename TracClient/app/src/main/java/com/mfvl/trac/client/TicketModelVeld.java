@@ -40,103 +40,103 @@ public class TicketModelVeld {
     private boolean _custom;
 
     public TicketModelVeld(String name, String label, String value) {
-	_name = name;
-	_label = label;
-	_value = value;
-	_optional = false;
-	_options = null;
+        _name = name;
+        _label = label;
+        _value = value;
+        _optional = false;
+        _options = null;
     }
 
     public TicketModelVeld(final JSONObject v) throws RuntimeException {
-	if (v == null) {
-	    throw new RuntimeException("JSONObject is null");
-	}
+        if (v == null) {
+            throw new RuntimeException("JSONObject is null");
+        }
 
-	_name = getNeededField(v, "name");
-	_label = getNeededField(v, "label");
-	_type = getNeededField(v, "type");
-	try {
-	    _custom = v.getString("custom").equals("true");
-	} catch (final JSONException e) {
-	    _custom = false;
-	}
-	try {
-	    _order = Integer.parseInt(v.getString("order"));
-	} catch (final JSONException e) {
-	    _order = 0;
-	}
+        _name = getNeededField(v, "name");
+        _label = getNeededField(v, "label");
+        _type = getNeededField(v, "type");
+        try {
+            _custom = v.getString("custom").equals("true");
+        } catch (final JSONException e) {
+            _custom = false;
+        }
+        try {
+            _order = Integer.parseInt(v.getString("order"));
+        } catch (final JSONException e) {
+            _order = 0;
+        }
 
-	if (_type.equals("text")) {
-	    try {
-		_format = v.getString("format");
-	    } catch (final JSONException e) {
-		_format = "plain";
-	    }
-	}
+        if (_type.equals("text")) {
+            try {
+                _format = v.getString("format");
+            } catch (final JSONException e) {
+                _format = "plain";
+            }
+        }
 
-	if (_type.equals("select") || _type.equals("radio")) {
-	    try {
-		final JSONArray ja = v.getJSONArray("options");
-		final int count = ja.length();
+        if (_type.equals("select") || _type.equals("radio")) {
+            try {
+                final JSONArray ja = v.getJSONArray("options");
+                final int count = ja.length();
 
-		_options = new ArrayList<>();
-		for (int i = 0; i < count; i++) {
-		    _options.add(ja.getString(i));
-		}
-	    } catch (final JSONException e) {
-		throw new RuntimeException("No options", e);
-	    }
-	    try {
-		_value = v.getString("value");
-	    } catch (final JSONException ignored) {
-	    }
-	    try {
-		_optional = v.getString("optional").equals("true");
-	    } catch (final JSONException e) {
-		_optional = false;
-	    }
-	}
+                _options = new ArrayList<>();
+                for (int i = 0; i < count; i++) {
+                    _options.add(ja.getString(i));
+                }
+            } catch (final JSONException e) {
+                throw new RuntimeException("No options", e);
+            }
+            try {
+                _value = v.getString("value");
+            } catch (final JSONException ignored) {
+            }
+            try {
+                _optional = v.getString("optional").equals("true");
+            } catch (final JSONException e) {
+                _optional = false;
+            }
+        }
     }
 
     private String getNeededField(final JSONObject v, final String field) throws RuntimeException {
-	try {
-	    return v.getString(field);
-	} catch (final JSONException e) {
-	    throw new RuntimeException("Missing " + field + " in field definition", e);
-	}
+        try {
+            return v.getString(field);
+        } catch (final JSONException e) {
+            throw new RuntimeException("Missing " + field + " in field definition", e);
+        }
     }
 
     @Override
     public String toString() {
-	return _name + " (" + _label + ")[" + _format + "]";
+        return _name + " (" + _label + ")[" + _format + "]";
     }
 
     public String name() {
-	return _name;
+        return _name;
     }
 
     public String label() {
-	return _label;
+        return _label;
     }
 
     public String type() {
-	return _type;
+        return _type;
     }
 
     public String format() {
-	return _format;
+        return _format;
     }
 
     public String value() {
-	return _value;
+        return _value;
     }
 
     public List<Object> options() {
-	return _options;
+        return _options;
     }
 
     public boolean optional() {
-	return _optional;
+        return _optional;
     }
 
 }

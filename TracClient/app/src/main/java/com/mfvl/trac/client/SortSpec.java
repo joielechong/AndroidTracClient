@@ -23,37 +23,37 @@ public class SortSpec extends Spec implements Cloneable, Serializable {
     private Boolean _richting; // true = asc false = desc
 
     public SortSpec(String veld) {
-	this(veld, true);
+        this(veld, true);
     }
 
     public SortSpec(String veld, Boolean richting) {
-	super(veld);
-	_richting = richting;
+        super(veld);
+        _richting = richting;
     }
 
     @Override
     public boolean equals(Object o) {
-	boolean retVal;
-	retVal = (this == o)
-	    || (o instanceof SortSpec && super.equals(o)
-	    && equalFields(_richting, ((SortSpec) o).getRichting()));
+        boolean retVal;
+        retVal = (this == o)
+                || (o instanceof SortSpec && super.equals(o)
+                && equalFields(_richting, ((SortSpec) o).getRichting()));
 //		tcLog.d("this = "+this+" o = "+o+" retVal = "+retVal);
-	return retVal;
+        return retVal;
     }
 
     public Boolean getRichting() {
-	return _richting;
+        return _richting;
     }
 
     public Boolean flip() {
-	if (_richting != null) {
-	    _richting = !_richting;
-	}
-	return _richting;
+        if (_richting != null) {
+            _richting = !_richting;
+        }
+        return _richting;
     }
 
     @Override
     public String toString() {
-	return "order=" + _veld + (_richting ? "" : "&desc=1");
+        return "order=" + _veld + (_richting ? "" : "&desc=1");
     }
 }

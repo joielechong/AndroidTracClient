@@ -15,11 +15,11 @@
 
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_gravity="top"
-    android:gravity="top"
-    android:orientation="vertical">
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:layout_gravity="top"
+              android:gravity="top"
+              android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/versionblock"
@@ -35,7 +35,7 @@
             android:text="@string/title_text"
             android:textColor="@color/help_text"
             android:textSize="@dimen/helphdr_textsize"
-            android:textStyle="bold" />
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/about_version_text"
@@ -44,7 +44,7 @@
             android:gravity="center_horizontal"
             android:textColor="@color/help_text"
             android:textSize="@dimen/help_textsize"
-            android:textStyle="bold" />
+            android:textStyle="bold"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -53,7 +53,7 @@
             android:text="@string/auteur"
             android:textColor="@color/help_text"
             android:textSize="@dimen/help_textsize"
-            android:textStyle="bold" />
+            android:textStyle="bold"/>
 
         <LinearLayout
             android:id="@+id/keuzeblock"
@@ -65,19 +65,19 @@
                 android:id="@+id/showchanges"
                 style="@style/TextViewButton"
                 android:text="@string/showchanges"
-                android:visibility="gone" />
+                android:visibility="gone"/>
 
             <Button
                 android:id="@+id/showcookies"
                 style="@style/TextViewButton"
                 android:text="@string/cookies"
-                android:visibility="gone" />
+                android:visibility="gone"/>
 
             <Button
                 android:id="@+id/showdisclaimer"
                 style="@style/TextViewButton"
                 android:text="@string/showdisclaimer"
-                android:visibility="gone" />
+                android:visibility="gone"/>
         </LinearLayout>
 
     </LinearLayout>
@@ -86,7 +86,7 @@
         android:id="@+id/webfile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone" />
+        android:visibility="gone"/>
 
     <ScrollView
         android:id="@+id/scrollAbout"
@@ -96,6 +96,6 @@
 
         <TextView
             android:id="@+id/textAbout"
-            style="@style/AboutText" />
+            style="@style/AboutText"/>
     </ScrollView>
 </LinearLayout>

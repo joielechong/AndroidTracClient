@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <lint>
-	<issue id="UnusedIds" severity="warning" />
-	<issue id="NewerVersionAvailable" severity="info"/>
+    <issue id="UnusedIds" severity="warning"/>
+    <issue id="NewerVersionAvailable" severity="info"/>
 
-	<!-- Disable this given check in this project  -->
-	<issue id="ContentDescription" severity="ignore" />
+    <!-- Disable this given check in this project  -->
+    <issue id="ContentDescription" severity="ignore"/>
 
-	<issue id="ExtraTranslation">
-		<ignore path="res/values-pt/strings.xml" />
-		<ignore path="res/values-ar/strings.xml" />
-     </issue>
+    <issue id="ExtraTranslation">
+        <ignore path="res/values-pt/strings.xml"/>
+        <ignore path="res/values-ar/strings.xml"/>
+    </issue>
 
-	<issue id="ExportedContentProvider">
-		<ignore path="AndroidManifest.xml" />
-	</issue>
-    <issue id="MissingTranslation" severity="warning" />
+    <issue id="ExportedContentProvider">
+        <ignore path="AndroidManifest.xml"/>
+    </issue>
+    <issue id="MissingTranslation" severity="warning"/>
 </lint>

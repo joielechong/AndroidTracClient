@@ -14,16 +14,16 @@ import ch.boye.httpclientandroidlib.protocol.HTTP;
  */
 class JSONEntity extends StringEntity {
     public JSONEntity(JSONObject jsonObject) throws UnsupportedEncodingException {
-	super(jsonObject.toString());
+        super(jsonObject.toString());
     }
 
     public JSONEntity(JSONObject jsonObject, String encoding) {
-	super(jsonObject.toString(), encoding);
-	setContentEncoding(encoding);
+        super(jsonObject.toString(), encoding);
+        setContentEncoding(encoding);
     }
 
     @Override
     public Header getContentType() {
-	return new BasicHeader(HTTP.CONTENT_TYPE, "application/json");
+        return new BasicHeader(HTTP.CONTENT_TYPE, "application/json");
     }
 }

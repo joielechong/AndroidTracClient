@@ -39,16 +39,16 @@ public class Refresh extends Activity implements ServiceConnection {
      */
     @Override
     public void onServiceConnected(ComponentName className, IBinder service) {
-	tcLog.d("className = " + className + " service = " + service);
-	RefreshService.RefreshBinder binder = (RefreshService.RefreshBinder) service;
-	mService = binder.getService();
-	mService.send(Message.obtain(null, MSG_REFRESH_LIST));
+        tcLog.d("className = " + className + " service = " + service);
+        RefreshService.RefreshBinder binder = (RefreshService.RefreshBinder) service;
+        mService = binder.getService();
+        mService.send(Message.obtain(null, MSG_REFRESH_LIST));
     }
 
     @Override
     public void onServiceDisconnected(ComponentName className) {
-	tcLog.d("className = " + className);
-	mService = null;
+        tcLog.d("className = " + className);
+        mService = null;
     }
 
     /*
@@ -57,32 +57,33 @@ public class Refresh extends Activity implements ServiceConnection {
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-	super.onCreate(savedInstanceState);
-	tcLog.d("savedInstanceState = " + savedInstanceState);
+        super.onCreate(savedInstanceState);
+        tcLog.d("savedInstanceState = " + savedInstanceState);
 
-	try {
-	    final String action = getIntent().getAction();
+        try {
+            final String action = getIntent().getAction();
 
-	    if (action != null) {
-		if (action.equalsIgnoreCase(RefreshService.refreshAction)) {
-		    bindService(new Intent(this, RefreshService.class), this, Context.BIND_AUTO_CREATE);
-		    // tcLog.i("Refresh sent");
-		}
-	    }
-	} catch (final Exception e) {
-	    tcLog.e("Problem consuming action from intent", e);
-	}
-	finish();
+            if (action != null) {
+                if (action.equalsIgnoreCase(RefreshService.refreshAction)) {
+                    bindService(new Intent(this, RefreshService.class), this,
+                                Context.BIND_AUTO_CREATE);
+                    // tcLog.i("Refresh sent");
+                }
+            }
+        } catch (final Exception e) {
+            tcLog.e("Problem consuming action from intent", e);
+        }
+        finish();
     }
 
     @Override
     public void onDestroy() {
-	tcLog.logCall();
-	super.onDestroy();
-	try {
-	    unbindService(this);
-	} catch (final Throwable t) {
-	    tcLog.e("Failed to unbind from the service", t);
-	}
+        tcLog.logCall();
+        super.onDestroy();
+        try {
+            unbindService(this);
+        } catch (final Throwable t) {
+            tcLog.e("Failed to unbind from the service", t);
+        }
     }
 }

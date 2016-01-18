@@ -40,64 +40,70 @@ public class TracHttpClient extends JSONRPCHttpClient {
     private String current_url = null;
 
     public TracHttpClient(final String url, final boolean sslHack, final boolean sslHostNameHack, final String username, final String password) {
-	super(url, sslHack, sslHostNameHack);
-	setCredentials(username, password);
-	current_url = url;
+        super(url, sslHack, sslHostNameHack);
+        setCredentials(username, password);
+        current_url = url;
     }
 
     public TracHttpClient(final LoginProfile lp) {
-	super(lp.getUrl(), lp.getSslHack(), lp.getSslHostNameHack());
-	setCredentials(lp.getUsername(), lp.getPassword());
-	current_url = lp.getUrl();
+        super(lp.getUrl(), lp.getSslHack(), lp.getSslHostNameHack());
+        setCredentials(lp.getUsername(), lp.getPassword());
+        current_url = lp.getUrl();
     }
 
     public JSONArray Query(String reqString) throws JSONRPCException {
-	return callJSONArray(TICKET_QUERY, reqString);
+        return callJSONArray(TICKET_QUERY, reqString);
     }
 
-    public int createTicket(final String s, final String d, final JSONObject _velden, boolean notify) throws JSONRPCException {
-	return callInt(TICKET_CREATE, s, d, _velden, notify);
+    public int createTicket(final String s, final String d, final JSONObject _velden, boolean notify) throws
+                                                                                                      JSONRPCException {
+        return callInt(TICKET_CREATE, s, d, _velden, notify);
     }
 
-    public JSONArray updateTicket(final int _ticknr, final String cmt, final JSONObject _velden, final boolean notify) throws JSONRPCException {
-	// tcLog.d( "_velden call = " + _velden);
-	return callJSONArray(TICKET_UPDATE, _ticknr, cmt, _velden, notify);
+    public JSONArray updateTicket(final int _ticknr, final String cmt, final JSONObject _velden, final boolean notify) throws
+                                                                                                                       JSONRPCException {
+        // tcLog.d( "_velden call = " + _velden);
+        return callJSONArray(TICKET_UPDATE, _ticknr, cmt, _velden, notify);
     }
 
     public String verifyHost() throws JSONRPCException {
-	return callJSONArray(SYSTEM_GETAPIVERSION).toString();
+        return callJSONArray(SYSTEM_GETAPIVERSION).toString();
     }
 
     public JSONArray getModel() throws Exception {
-	if (current_url == null) {
-	    return null;
-	} else {
-	    return callJSONArray(TICKET_GETTICKETFIELDS);
-	}
+        if (current_url == null) {
+            return null;
+        } else {
+            return callJSONArray(TICKET_GETTICKETFIELDS);
+        }
     }
 
-    public byte[] getAttachment(int ticknr, String filename) throws JSONException, JSONRPCException {
-	return Base64.decode(callJSONObject(TICKET_GETATTACHMENT, ticknr, filename).getJSONArray(_JSONCLASS).getString(1),
-	    Base64.DEFAULT);
+    public byte[] getAttachment(int ticknr, String filename) throws JSONException,
+                                                                    JSONRPCException {
+        return Base64.decode(callJSONObject(TICKET_GETATTACHMENT, ticknr, filename).getJSONArray(
+                _JSONCLASS).getString(1),
+                             Base64.DEFAULT);
     }
 
-    public void putAttachment(final int ticknr, String filename, String base64Content) throws JSONException, JSONRPCException {
-	final JSONArray ar = new JSONArray();
+    public void putAttachment(final int ticknr, String filename, String base64Content) throws
+                                                                                       JSONException,
+                                                                                       JSONRPCException {
+        final JSONArray ar = new JSONArray();
 
-	ar.put(ticknr);
-	ar.put(filename);
-	ar.put("");
-	final JSONArray ar1 = new JSONArray();
+        ar.put(ticknr);
+        ar.put(filename);
+        ar.put("");
+        final JSONArray ar1 = new JSONArray();
 
-	ar1.put("binary");
-	ar1.put(base64Content);
-	final JSONObject ob = new JSONObject();
+        ar1.put("binary");
+        ar1.put(base64Content);
+        final JSONObject ob = new JSONObject();
 
-	ob.put("__jsonclass__", ar1);
-	ar.put(ob);
-	ar.put(true);
-	final String retfile = callString(TICKET_PUTATTACHMENT, ar);
+        ob.put("__jsonclass__", ar1);
+        ar.put(ob);
+        ar.put(true);
+        final String retfile = callString(TICKET_PUTATTACHMENT, ar);
 
-	tcLog.i("putAttachment " + retfile);
+        tcLog.i("putAttachment " + retfile);
     }
 }

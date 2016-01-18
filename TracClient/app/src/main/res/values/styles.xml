@@ -15,28 +15,27 @@
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="AppBaseTheme" parent="android:Theme.Holo.Light" />
+    <style name="AppBaseTheme" parent="android:Theme.Holo.Light"/>
 
-    <style name="FullscreenThemeBase" parent="android:Theme.Holo.Light.NoActionBar.Fullscreen" />
+    <style name="FullscreenThemeBase" parent="android:Theme.Holo.Light.NoActionBar.Fullscreen"/>
 
-    <style name="AlertDialogStyle" parent="android:Holo.Light.ButtonBar.AlertDialog" />
+    <style name="AlertDialogStyle" parent="android:Holo.Light.ButtonBar.AlertDialog"/>
 
-    <style name="ButtonBarBase" parent="android:Holo.Light.ButtonBar" />
+    <style name="ButtonBarBase" parent="android:Holo.Light.ButtonBar"/>
 
-    <style name="ButtonBarButton" parent="android:Holo.Light.SegmentedButton" />
+    <style name="ButtonBarButton" parent="android:Holo.Light.SegmentedButton"/>
 
-    <style name="MyBaseStyle" parent="android:Theme.Holo.Light.DarkActionBar" />
+    <style name="MyBaseStyle" parent="android:Theme.Holo.Light.DarkActionBar"/>
 
-    <style name="NormalButtonBase" parent="android:Widget.Holo.Light.Button" />
+    <style name="NormalButtonBase" parent="android:Widget.Holo.Light.Button"/>
 
-    <style name="AppTheme" parent="@style/AppBaseTheme" />
+    <style name="AppTheme" parent="@style/AppBaseTheme"/>
 
-    <style name="EditFieldTheme" parent="@style/AppBaseTheme" >
+    <style name="EditFieldTheme" parent="@style/AppBaseTheme">
         <item name="android:colorBackground">@color/popup_back</item>
         <item name="android:alpha">@integer/popupAlpha</item>
         <item name="android:padding">6dp</item>
     </style>
-
 
     <style name="FullscreenThemeBase.1">
         <item name="android:alertDialogTheme">@style/AlertDialogStyle</item>
@@ -101,7 +100,7 @@
     </style>
 
 
-    <style name="MyStyle" parent="@style/MyBaseStyle" />
+    <style name="MyStyle" parent="@style/MyBaseStyle"/>
 
     <style name="TextWarn">
         <item name="android:drawableLeft">@drawable/ic_warn</item>

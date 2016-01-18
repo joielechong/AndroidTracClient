@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013,2014 Michiel van Loon
+ * Copyright (C) 2013-2016 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -66,7 +67,9 @@ import java.util.Locale;
 import static com.mfvl.trac.client.Const.*;
 
 public class DetailFragment extends TracClientFragment
-        implements SwipeRefreshLayout.OnRefreshListener, CompoundButton.OnCheckedChangeListener, GestureDetector.OnGestureListener, OnFileSelectedListener, OnItemClickListener, OnItemLongClickListener {
+        implements SwipeRefreshLayout.OnRefreshListener, CompoundButton.OnCheckedChangeListener,
+                   GestureDetector.OnGestureListener, OnFileSelectedListener, OnItemClickListener,
+                   OnItemLongClickListener {
 
     private static final String EMPTYFIELDS = "emptyfields";
     private static final String MODVELD = "modveld";
@@ -481,7 +484,7 @@ public class DetailFragment extends TracClientFragment
         return gestureDetector != null && gestureDetector.onTouchEvent(ev);
     }
 
-    private void setModVeld(final String veld, final String waarde, final String newValue) {
+    public void setModVeld(final String veld, final String waarde, final String newValue) {
         tcLog.d("veld = " + veld + " waarde = " + waarde + "newValue = " + newValue);
         final ListView parent = (ListView) currentView.findViewById(R.id.listofFields);
         if (newValue != null && !newValue.equals(waarde) || newValue == null && waarde != null) {
@@ -513,10 +516,6 @@ public class DetailFragment extends TracClientFragment
         if (mv != null && !modVeld.isEmpty()) {
             mv.setVisibility(View.VISIBLE);
         }
-    }
-
-    private class ModVeldMap extends HashMap<String, String> implements Serializable {
-//	private static final long serialVersionUID = 191019591050L;
     }
 
     private void displayTicket() {
@@ -633,6 +632,71 @@ public class DetailFragment extends TracClientFragment
         }
     }
 
+    private String toonTijd(final JSONObject v) {
+        try {
+            return ISO8601.toCalendar(
+                    v.getJSONArray("__jsonclass__").getString(1) + "Z").getTime().toString();
+        } catch (final Exception e) {
+            tcLog.e("Error converting time", e);
+            return "";
+        }
+    }
+
+    private void selectField(final String veld, final String waarde) {
+        if (Arrays.asList(notModified).contains(veld)) {
+            showAlertBox(R.string.notpossible, R.string.notchange, null);
+        } else if (Arrays.asList(isStatusUpd).contains(veld)) {
+            listener.onUpdateTicket(_ticket);
+            didUpdate = true;
+        } else {
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            Fragment prev = getFragmentManager().findFragmentByTag("editfield");
+            if (prev != null) {
+                ft.remove(prev);
+            }
+            ft.addToBackStack(null);
+            // Create and show the dialog.
+            EditFieldFragment editFieldFragment = new EditFieldFragment();
+            Bundle args = new Bundle();
+            args.putString("veld", veld);
+            args.putString("waarde", waarde);
+            args.putSerializable("tm", tm);
+            editFieldFragment.setArguments(args);
+            editFieldFragment.show(ft, "editfield");
+        }
+    }
+
+    public boolean onBackPressed() {
+        tcLog.logCall();
+        if (!modVeld.isEmpty()) {
+            context.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    new AlertDialog.Builder(context)
+                            .setTitle(R.string.warning)
+                            .setMessage(R.string.unsaved)
+                            .setPositiveButton(R.string.ja, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    getFragmentManager().popBackStack();
+                                    updateTicket();
+                                }
+                            })
+                            .setNegativeButton(R.string.nee, null)
+                            .show();
+                }
+            });
+            return true;
+        } else {
+            tcLog.d("returned false");
+            return false;
+        }
+    }
+
+    private class ModVeldMap extends HashMap<String, String> implements Serializable {
+//	private static final long serialVersionUID = 191019591050L;
+    }
+
     private class modifiedString {
         private final String _veld;
         private boolean _updated;
@@ -708,136 +772,4 @@ public class DetailFragment extends TracClientFragment
             }
         }
     }
-
-    private String toonTijd(final JSONObject v) {
-        try {
-            return ISO8601.toCalendar(
-                    v.getJSONArray("__jsonclass__").getString(1) + "Z").getTime().toString();
-        } catch (final Exception e) {
-            tcLog.e("Error converting time", e);
-            return "";
-        }
-    }
-
-    public class EditFieldFragment extends DialogFragment {
-
-        EditFieldFragment(){}
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            tcLog.logCall();
-            final String veld = getArguments().getString("veld");
-            final String waarde = getArguments().getString("waarde");
-            final TicketModelVeld tmv = tm.getVeld(veld);
-
-            View ll = inflater.inflate(
-                    tmv.options() == null ? R.layout.field_spec1 : R.layout.field_spec2, container);
-            getDialog().setTitle(veld);
-            final EditText et = (EditText) ll.findViewById(R.id.veldwaarde);
-            final Spinner spinValue = makeDialogComboSpin(getActivity(), tmv.options(),
-                                                          tmv.optional(), waarde);
-            final Button canBut = (Button) ll.findViewById(R.id.cancelpw);
-            canBut.setOnClickListener(new View.OnClickListener() {
-                @Override
-
-                public void onClick(View v) {
-                    tcLog.logCall();
-                    switch (v.getId()) {
-                        case R.id.cancelpw:
-                            getFragmentManager().popBackStack();
-                            break;
-
-                        default:
-
-                    }
-                }
-            });
-            final Button storBut = (Button) ll.findViewById(R.id.okBut);
-
-            if (et != null) {
-                et.setText(waarde);
-                et.requestFocus();
-            }
-
-            try {
-                spinValue.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                                           ViewGroup.LayoutParams.WRAP_CONTENT));
-                ((LinearLayout) ll.findViewById(R.id.veld)).addView(spinValue);
-            } catch (final Exception ignored) {
-            }
-
-            storBut.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    tcLog.logCall();
-                    String newValue = null;
-
-                    if (spinValue != null) {
-                        newValue = spinValue.getSelectedItem().toString();
-                    }
-                    if (et != null) {
-                        newValue = et.getText().toString();
-                    }
-
-                    setModVeld(veld, waarde, newValue);
-                    getFragmentManager().popBackStack();
-                }
-            });
-
-            return ll;
-        }
-
-    }
-
-    private void selectField(final String veld, final String waarde) {
-        if (Arrays.asList(notModified).contains(veld)) {
-            showAlertBox(R.string.notpossible, R.string.notchange, null);
-        } else if (Arrays.asList(isStatusUpd).contains(veld)) {
-            listener.onUpdateTicket(_ticket);
-            didUpdate = true;
-        } else {
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-            Fragment prev = getFragmentManager().findFragmentByTag("editfield");
-            if (prev != null) {
-                ft.remove(prev);
-            }
-            ft.addToBackStack(null);
-            // Create and show the dialog.
-            EditFieldFragment editFieldFragment = new EditFieldFragment();
-            Bundle args = new Bundle();
-            args.putString("veld", veld);
-            args.putString("waarde", waarde);
-            editFieldFragment.setArguments(args);
-            editFieldFragment.show(ft, "editfield");
-        }
-    }
-
-    public boolean onBackPressed() {
-        tcLog.logCall();
-        if (!modVeld.isEmpty()) {
-            context.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    new AlertDialog.Builder(context)
-                            .setTitle(R.string.warning)
-                            .setMessage(R.string.unsaved)
-                            .setPositiveButton(R.string.ja, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    getFragmentManager().popBackStack();
-                                    updateTicket();
-                                }
-                            })
-                            .setNegativeButton(R.string.nee, null)
-                            .show();
-                }
-            });
-            return true;
-        } else {
-            tcLog.d("returned false");
-            return false;
-        }
-    }
-
 }
