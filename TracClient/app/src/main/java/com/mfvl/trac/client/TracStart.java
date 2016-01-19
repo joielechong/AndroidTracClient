@@ -549,11 +549,11 @@ public class TracStart extends Activity implements Handler.Callback,
         super.onPause();
         tcLog.logCall();
         stopProgressBar();
-    /* save logfile when exiting */
         if (adView != null) {
             adView.pause();
         }
         tcLog.d("isFinishing = " + isFinishing());
+    /* save logfile when exiting */
         if (isFinishing() && TracGlobal.isRCVersion()) {
             tcLog.save();
         }

@@ -43,7 +43,7 @@ import android.widget.ShareActionProvider;
 import android.widget.TextView;
 
 public class TicketListFragment extends TracClientFragment
-        implements SwipeRefreshLayout.OnRefreshListener, AdapterView.OnItemClickListener, AbsListView.OnScrollListener, TextWatcher {
+        implements SwipeRefreshLayout.OnRefreshListener, AdapterView.OnItemClickListener, AbsListView.OnScrollListener {
 
     private static final String ZOEKENNAME = "zoeken";
     private static final String ZOEKTEXTNAME = "filtertext";
@@ -100,7 +100,7 @@ public class TicketListFragment extends TracClientFragment
         if (zoeken) {
             filterText.setVisibility(View.VISIBLE);
             filterText.setText(zoektext);
-            filterText.addTextChangedListener(this);
+            filterText.addTextChangedListener(filterTextWatcher);
         } else {
             filterText.setVisibility(View.GONE);
             if (filterText.isFocused()) {
@@ -167,10 +167,10 @@ public class TicketListFragment extends TracClientFragment
         } else if (itemId == R.id.tlzoek) {
             zoeken = !zoeken;
             if (zoeken) {
-                filterText.addTextChangedListener(this);
+                filterText.addTextChangedListener(filterTextWatcher);
                 filterText.setVisibility(View.VISIBLE);
             } else {
-                filterText.removeTextChangedListener(this);
+                filterText.removeTextChangedListener(filterTextWatcher);
                 filterText.setVisibility(View.GONE);
                 if (filterText.isFocused()) {
                     filterText.clearFocus();
@@ -255,7 +255,7 @@ public class TicketListFragment extends TracClientFragment
     public void onDestroyView() {
         tcLog.logCall();
         if (filterText != null && zoeken) {
-            filterText.removeTextChangedListener(this);
+            filterText.removeTextChangedListener(filterTextWatcher);
         }
         if (listView != null) {
             listView.invalidateViews();
@@ -429,20 +429,22 @@ public class TicketListFragment extends TracClientFragment
 
     // TextWatcher
 
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-    }
+    private final TextWatcher filterTextWatcher = new TextWatcher() {
 
-    @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
-    }
-
-    @Override
-    public void afterTextChanged(Editable s) {
-        tcLog.d(s.toString() + " " + dataAdapter);
-        if (dataAdapter != null) {
-            dataAdapter.getFilter().filter(s);
-            zoektext = s.toString();
+        @Override
+        public void afterTextChanged(Editable s) {
         }
-    }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if (dataAdapter != null && s != null) {
+                dataAdapter.getFilter().filter(s);
+                zoektext = s.toString();
+            }
+        }
+    };
 }
