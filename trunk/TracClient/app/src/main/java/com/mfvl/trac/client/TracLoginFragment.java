@@ -175,19 +175,18 @@ public class TracLoginFragment extends TracClientFragment
         credWarn = (TextView) view.findViewById(R.id.connWarn);
         credWarnSts = (TextView) view.findViewById(R.id.connWarnSts);
         sslHackBox = (CheckBox) view.findViewById(R.id.sslHack);
-        LinearLayout loadProfileBox = (LinearLayout) view.findViewById(R.id.loadprofile);
         loginSpinner = (Spinner) view.findViewById(R.id.loginspinner);
 
         pdb = new ProfileDatabaseHelper(context);
         pdb.open();
         pdbCursor = pdb.getProfiles(true);
         if (pdbCursor.getCount() < 2) {
-            loadProfileBox.setVisibility(View.GONE);
+            loginSpinner.setVisibility(View.GONE);
         } else {
             final String[] columns = new String[]{"name"};
             final int[] to = new int[]{android.R.id.text1};
 
-            loadProfileBox.setVisibility(View.VISIBLE);
+            loginSpinner.setVisibility(View.VISIBLE);
             final SimpleCursorAdapter adapt = new SimpleCursorAdapter(context,
                                                                       android.R.layout.simple_spinner_dropdown_item,
                                                                       pdbCursor,
@@ -350,7 +349,7 @@ public class TracLoginFragment extends TracClientFragment
         verButton.setEnabled(buttonsOn);
         okButton.setEnabled(buttonsOn);
         storButton.setEnabled(buttonsOn);
-        checkHackBox(url==null?"":url.toString());
+        checkHackBox(url==null?"":url);
         bewaarBox.setChecked(bewaren);
         bewaarBox.setOnCheckedChangeListener(this);
     }
@@ -613,4 +612,5 @@ public class TracLoginFragment extends TracClientFragment
         a.swapCursor(pdb.getProfiles(true));
         loginSpinner.postInvalidate();
     }
+
 }

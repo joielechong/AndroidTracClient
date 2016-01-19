@@ -164,17 +164,6 @@ abstract public class TracClientFragment extends Fragment
         return spinAdapter;
     }
 
-    protected Spinner makeComboSpin(Context context, List<Object> waardes, boolean optional, Object w) {
-
-        final Spinner valSpinner = new Spinner(context);
-
-        valSpinner.setAdapter(makeComboAdapter(context,waardes,optional));
-        if (w != null && !"".equals(w)) {
-            valSpinner.setSelection(waardes.indexOf(w) + (optional ? 1 : 0), true);
-        }
-        return valSpinner;
-    }
-
     protected void selectTicket(int ticknr) {
         tcLog.d("ticknr = " + ticknr);
         final Ticket t = listener.getTicket(ticknr);

@@ -17,6 +17,7 @@
 package com.mfvl.trac.client;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +34,7 @@ import android.widget.TextView;
 import org.json.JSONObject;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static com.mfvl.trac.client.Const.CURRENT_USERNAME;
 
@@ -110,6 +112,18 @@ public class NewTicketFragment extends TracClientFragment {
 //        }
     }
 
+    private Spinner makeComboSpin(Context context, List<Object> waardes, boolean optional, Object w) {
+
+        final Spinner valSpinner = new Spinner(context);
+
+        valSpinner.setAdapter(makeComboAdapter(context,waardes,optional));
+        if (w != null && !"".equals(w)) {
+            valSpinner.setSelection(waardes.indexOf(w) + (optional ? 1 : 0), true);
+        }
+        return valSpinner;
+    }
+
+	@Override
     public void onClick(View ignored) {
         final JSONObject velden = new JSONObject();
         final View view = getView();
@@ -191,4 +205,5 @@ public class NewTicketFragment extends TracClientFragment {
         tr2.addView(tv2);
         tl.addView(tr2);
     }
+	
 }
