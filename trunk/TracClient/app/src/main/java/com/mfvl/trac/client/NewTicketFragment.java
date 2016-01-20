@@ -68,14 +68,13 @@ public class NewTicketFragment extends TracClientFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        tcLog.d("sis = " + savedInstanceState);
+        //tcLog.d("sis = " + savedInstanceState);
         View view = getView();
         tm = listener.getTicketModel();
         final Button storButton = (Button) view.findViewById(R.id.storebutton);
         storButton.setOnClickListener(this);
         final TableLayout tl = (TableLayout) view.findViewById(R.id.newTickTable);
 
-//        try {
         View e = view.findViewById(R.id.waarde);
         final LayoutParams lp = e.getLayoutParams();
         final String[] ignoreFields = getResources().getStringArray(R.array.ignorecreatefields);
@@ -105,11 +104,7 @@ public class NewTicketFragment extends TracClientFragment {
         }
         e.setVisibility(View.GONE);
         view.findViewById(R.id.veld).setVisibility(View.GONE);
-//        } catch (final Exception e) {
-//            tcLog.e( "Exception in createTicket", e);
-//        } finally {
         view.invalidate();
-//        }
     }
 
     private Spinner makeComboSpin(Context context, List<Object> waardes, boolean optional, Object w) {
@@ -125,6 +120,7 @@ public class NewTicketFragment extends TracClientFragment {
 
 	@Override
     public void onClick(View ignored) {
+        // Only store button
         final JSONObject velden = new JSONObject();
         final View view = getView();
         final TableLayout tl = (TableLayout) view.findViewById(R.id.newTickTable);
@@ -179,9 +175,8 @@ public class NewTicketFragment extends TracClientFragment {
                     getFragmentManager().popBackStack();
                 } catch (final Exception e) {
                     tcLog.e("Exception in createTicket", e);
-                    final String message = e.getMessage();
                     listener.stopProgressBar();
-                    showAlertBox(R.string.storerr, R.string.storerrdesc, message);
+                    showAlertBox(R.string.storerr, R.string.storerrdesc, e.getMessage());
                 }
             }
         }.start();

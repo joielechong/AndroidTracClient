@@ -51,6 +51,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -67,6 +68,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.FrameLayout;
@@ -80,7 +82,7 @@ import static com.mfvl.trac.client.Const.*;
 
 public class TracStart extends Activity implements Handler.Callback,
                                                    InterFragmentListener, OnBackStackChangedListener,
-                                                   ActivityCompat.OnRequestPermissionsResultCallback {
+                                                   ActivityCompat.OnRequestPermissionsResultCallback, ViewTreeObserver.OnGlobalLayoutListener {
    
     /*
      * Constanten voor communicatie met de service en fragmenten
@@ -99,6 +101,7 @@ public class TracStart extends Activity implements Handler.Callback,
     final private Semaphore waitForService = new Semaphore(1, true);
     final private Semaphore loadingActive = new Semaphore(1, true);
     boolean doubleBackToExitPressedOnce = false;
+    private FrameLayout adViewContainer;
     private AdView adView = null;
     private boolean dispAds = true;
     private String adUnitId;
@@ -370,7 +373,7 @@ public class TracStart extends Activity implements Handler.Callback,
             }
         }
 
-        final FrameLayout adViewContainer = (FrameLayout) findViewById(R.id.displayAd);
+        adViewContainer = (FrameLayout) findViewById(R.id.displayAd);
         if (dispAds && adViewContainer != null) {
             adView = new AdView(this);
             adView.setAdUnitId(adUnitId);
@@ -399,6 +402,9 @@ public class TracStart extends Activity implements Handler.Callback,
             }
         } else {
             dispAds = false;
+            if (adViewContainer!=null){
+                adViewContainer.setVisibility(View.GONE);
+            }
         }
 
         if (!dispAds) {
@@ -510,6 +516,7 @@ public class TracStart extends Activity implements Handler.Callback,
         if (adView != null) {
             adView.resume();
         }
+        findViewById(R.id.displayList).getViewTreeObserver().addOnGlobalLayoutListener(this);
     }
 
     @Override
@@ -549,6 +556,7 @@ public class TracStart extends Activity implements Handler.Callback,
         super.onPause();
         tcLog.logCall();
         stopProgressBar();
+        findViewById(R.id.displayList).getViewTreeObserver().removeOnGlobalLayoutListener(this);
         if (adView != null) {
             adView.pause();
         }
@@ -1581,5 +1589,32 @@ public class TracStart extends Activity implements Handler.Callback,
                 }
             }
         });
+    }
+
+    @Override
+    public void onGlobalLayout() {
+        final View view = findViewById(android.R.id.content);
+
+        if (view != null) {
+            final ActionBar ab = getActionBar();
+            final Rect r = new Rect();
+
+            // r will be populated with the coordinates of your view that area still visible.
+            view.getWindowVisibleDisplayFrame(r);
+
+            final int heightDiff = view.getRootView().getHeight() - (r.bottom - r.top);
+            if (heightDiff > 100) { // if more than 100 pixels,
+                // its probably a keyboard...
+                ab.hide();
+                if (dispAds){
+                    adViewContainer.setVisibility(View.GONE);
+                }
+            } else {
+                if (dispAds){
+                    adViewContainer.setVisibility(View.VISIBLE);
+                }
+                ab.show();
+            }
+        }
     }
 }

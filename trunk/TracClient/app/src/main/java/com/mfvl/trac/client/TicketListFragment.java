@@ -165,11 +165,15 @@ public class TicketListFragment extends TracClientFragment
 //        } else if (itemId == R.id.tlshare) {
 //            shareList();
         } else if (itemId == R.id.tlzoek) {
+            tcLog.d("zoeken ="+zoeken);
             zoeken = !zoeken;
             if (zoeken) {
+                tcLog.d("Filter wordt gezet");
                 filterText.addTextChangedListener(filterTextWatcher);
                 filterText.setVisibility(View.VISIBLE);
+                dataAdapter.getFilter().filter("");
             } else {
+                tcLog.d("Filter wordt verwijderd");
                 filterText.removeTextChangedListener(filterTextWatcher);
                 filterText.setVisibility(View.GONE);
                 if (filterText.isFocused()) {
@@ -441,9 +445,11 @@ public class TicketListFragment extends TracClientFragment
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
+            tcLog.d("s="+s+" start="+start+" before="+before+" count="+count+" dataAdapter="+dataAdapter);
             if (dataAdapter != null && s != null) {
                 dataAdapter.getFilter().filter(s);
                 zoektext = s.toString();
+                tcLog.d("zoektext="+zoektext);
             }
         }
     };
