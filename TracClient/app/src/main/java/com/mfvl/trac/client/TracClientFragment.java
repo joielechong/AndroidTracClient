@@ -16,12 +16,10 @@
 
 package com.mfvl.trac.client;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,22 +28,17 @@ import android.util.DisplayMetrics;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.mfvl.trac.client.Const.HELP_FILE;
-import static com.mfvl.trac.client.Const.HELP_VERSION;
-import static com.mfvl.trac.client.Const.MSG_SHOW_DIALOG;
+import static com.mfvl.trac.client.Const.*;
 
-abstract public class TracClientFragment extends Fragment
-        implements OnGlobalLayoutListener, View.OnClickListener {
+abstract public class TracClientFragment extends Fragment implements View.OnClickListener {
 
     public Ticket _ticket = null;
     public TracStart context;
@@ -119,28 +112,6 @@ abstract public class TracClientFragment extends Fragment
 
     protected void showAlertBox(final int titleres, final int message, final String addit) {
         tracStartHandler.obtainMessage(MSG_SHOW_DIALOG, titleres, message, addit).sendToTarget();
-    }
-
-    @Override
-    public void onGlobalLayout() {
-        final View view = getView();
-
-        if (view != null) {
-            final ActionBar ab = context.getActionBar();
-            final Rect r = new Rect();
-
-            // r will be populated with the coordinates of your view that area still visible.
-            view.getWindowVisibleDisplayFrame(r);
-
-            final int heightDiff = view.getRootView().getHeight() - (r.bottom - r.top);
-
-            if (heightDiff > 100) { // if more than 100 pixels,
-                // its probably a keyboard...
-                ab.hide();
-            } else {
-                ab.show();
-            }
-        }
     }
 
     protected SpinnerAdapter makeComboAdapter(Context context, List<Object> waardes, boolean optional) {
