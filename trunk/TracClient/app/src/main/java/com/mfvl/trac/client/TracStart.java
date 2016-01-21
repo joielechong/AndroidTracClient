@@ -359,7 +359,8 @@ public class TracStart extends Activity implements Handler.Callback,
         if (dispAds) {
             try {
                 adUnitId = getString(R.string.adUnitId);
-                final String t = TracGlobal.metaDataGetString("com.mfvl.trac.client.testDevices");
+//                final String t = TracGlobal.metaDataGetString("com.mfvl.trac.client.testDevices");
+                final String t = getString(R.string.testDevice1);
                 try {
                     testDevices = t.split(",");
                 } catch (final IllegalArgumentException e) { // only 1 in split
@@ -551,12 +552,17 @@ public class TracStart extends Activity implements Handler.Callback,
         }
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     protected void onPause() {
         super.onPause();
         tcLog.logCall();
         stopProgressBar();
-        findViewById(R.id.displayList).getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            findViewById(R.id.displayList).getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        } else {
+            findViewById(R.id.displayList).getViewTreeObserver().removeGlobalOnLayoutListener(this);
+        }
         if (adView != null) {
             adView.pause();
         }
@@ -1447,7 +1453,7 @@ public class TracStart extends Activity implements Handler.Callback,
                 break;
 
             case MSG_SHOW_DIALOG:
-                showAlertBox(msg.arg1, msg.arg2, (String) msg.obj);
+                showAlertBox(msg.arg1, msg.arg2, (String)msg.obj);
                 break;
 
             case MSG_DISPLAY_TICKET:
@@ -1605,7 +1611,9 @@ public class TracStart extends Activity implements Handler.Callback,
             final int heightDiff = view.getRootView().getHeight() - (r.bottom - r.top);
             if (heightDiff > 100) { // if more than 100 pixels,
                 // its probably a keyboard...
-                ab.hide();
+                if (ab != null) {
+                    ab.hide();
+                }
                 if (dispAds){
                     adViewContainer.setVisibility(View.GONE);
                 }
@@ -1613,7 +1621,9 @@ public class TracStart extends Activity implements Handler.Callback,
                 if (dispAds){
                     adViewContainer.setVisibility(View.VISIBLE);
                 }
-                ab.show();
+                if (ab != null) {
+                    ab.show();
+                }
             }
         }
     }

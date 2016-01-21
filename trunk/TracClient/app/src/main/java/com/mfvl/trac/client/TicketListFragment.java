@@ -445,11 +445,9 @@ public class TicketListFragment extends TracClientFragment
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            tcLog.d("s="+s+" start="+start+" before="+before+" count="+count+" dataAdapter="+dataAdapter);
             if (dataAdapter != null && s != null) {
                 dataAdapter.getFilter().filter(s);
                 zoektext = s.toString();
-                tcLog.d("zoektext="+zoektext);
             }
         }
     };

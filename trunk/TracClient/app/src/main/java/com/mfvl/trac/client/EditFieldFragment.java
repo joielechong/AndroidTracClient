@@ -52,7 +52,6 @@ public class EditFieldFragment extends DialogFragment {
             @Override
 
             public void onClick(View v) {
-                tcLog.logCall();
                 getFragmentManager().popBackStack();
             }
         });
