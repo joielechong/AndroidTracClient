@@ -227,14 +227,12 @@ public class TracGlobal {
 
         String dbpath = dbname;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            final File dirPath = _context.getExternalFilesDir(null);
-//			tcLog.d("dirpath = "+dirPath);
-            final File filePath = new File(dirPath, dbname);
+            final File filePath = new File(_context.getExternalFilesDir(null), dbname);
 //			tcLog.d("filePath = "+filePath);
             final String p1 = filePath.toString();
 
             if (!isDebuggable() && !isRCVersion()) {
-                if (new File(p1).exists()) {
+                if (filePath.exists()) {
                     dbpath = p1;
                 }
             } else {
@@ -280,8 +278,7 @@ public class TracGlobal {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static File makeExtFilePath(String filename, boolean visible) throws
-                                                                         FileNotFoundException {
+    public static File makeExtFilePath(String filename, boolean visible) throws FileNotFoundException {
         File dirPath;
 //		tcLog.d("filename = "+filename);
         if (visible) {
@@ -305,17 +302,9 @@ public class TracGlobal {
     }
 
     public static File makeCacheFilePath(final String filename) {
-        final File extPath = _context.getExternalCacheDir();
-        final File filePath = new File(extPath, filename);
+        final File filePath = new File(_context.getExternalCacheDir(), filename);
         tcLog.d("filepath = " + filePath);
         return filePath;
-    }
-
-    public static String metaDataGetString(String metaId) throws NameNotFoundException {
-        return (_context != null
-                ? _context.getPackageManager().getApplicationInfo(_context.getPackageName(),
-                                                                  PackageManager.GET_META_DATA).metaData.getString(
-                metaId) : null);
     }
 
     public static String joinList(Object list[], final String sep) {
