@@ -349,7 +349,7 @@ public class TracLoginFragment extends TracClientFragment
         verButton.setEnabled(buttonsOn);
         okButton.setEnabled(buttonsOn);
         storButton.setEnabled(buttonsOn);
-        checkHackBox(url==null?"":url);
+        checkHackBox(url == null ? "" : url);
         bewaarBox.setChecked(bewaren);
         bewaarBox.setOnCheckedChangeListener(this);
     }

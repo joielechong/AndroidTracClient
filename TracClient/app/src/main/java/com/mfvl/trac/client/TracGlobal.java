@@ -278,7 +278,8 @@ public class TracGlobal {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static File makeExtFilePath(String filename, boolean visible) throws FileNotFoundException {
+    public static File makeExtFilePath(String filename, boolean visible) throws
+                                                                         FileNotFoundException {
         File dirPath;
 //		tcLog.d("filename = "+filename);
         if (visible) {

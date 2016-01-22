@@ -62,26 +62,7 @@
                     android:layout_height="2dp"
                     android:background="#FF0000"/>
 
-                <TableRow>
 
-                    <TextView
-                        android:id="@+id/veld"
-                        android:layout_width="0dp"
-                        android:layout_margin="4dp"
-                        android:layout_weight="1"
-                        android:textAppearance="?android:attr/textAppearanceMedium"/>
-                </TableRow>
-
-                <TableRow>
-
-                    <EditText
-                        android:id="@+id/waarde"
-                        android:layout_width="0dp"
-                        android:layout_margin="4dp"
-                        android:layout_weight="1"
-                        android:inputType="text"
-                        android:textAppearance="?android:attr/textAppearanceMedium"/>
-                </TableRow>
             </TableLayout>
 
             <CheckBox

@@ -102,5 +102,9 @@
     <string name="ja">نعم</string>
     <string name="permissiontitle"> طلب للحصول على إذن</string>
     <string name="showdisclaimer">إخلاء مسؤولية</string>
+    <string name="chooseoption"> اختيار الخيار</string>
+    <string name="choosefield"> اختيار الحقل</string>
+    <string name="doubleback"> يرجى الضغط مرة أخرى للخروج</string>
+    <string name="noJSON">أي دعم JSON على خادم TRAC</string>
 
 </resources>

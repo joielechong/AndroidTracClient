@@ -38,7 +38,7 @@ public class EditFieldFragment extends DialogFragment {
         tcLog.logCall();
         final String veld = getArguments().getString("veld");
         final String waarde = getArguments().getString("waarde");
-        final TicketModel tm = (TicketModel)getArguments().getSerializable("tm");
+        final TicketModel tm = (TicketModel) getArguments().getSerializable("tm");
         final TicketModelVeld tmv = tm.getVeld(veld);
 
         View ll = inflater.inflate(
@@ -90,7 +90,8 @@ public class EditFieldFragment extends DialogFragment {
                     newValue = et.getText().toString();
                 }
 
-                DetailFragment dt = (DetailFragment)(getFragmentManager().findFragmentByTag(TracStart.DetailFragmentTag));
+                DetailFragment dt = (DetailFragment) (getFragmentManager().findFragmentByTag(
+                        TracStart.DetailFragmentTag));
                 dt.setModVeld(veld, waarde, newValue);
                 getFragmentManager().popBackStack();
             }

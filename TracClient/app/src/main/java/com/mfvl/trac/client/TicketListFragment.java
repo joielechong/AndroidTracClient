@@ -55,10 +55,27 @@ public class TicketListFragment extends TracClientFragment
     private TextView hs = null;
     private boolean zoeken = false;
     private String zoektext = "";
+    private final TextWatcher filterTextWatcher = new TextWatcher() {
+
+        @Override
+        public void afterTextChanged(Editable s) {
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if (dataAdapter != null && s != null) {
+                dataAdapter.getFilter().filter(s);
+                zoektext = s.toString();
+            }
+        }
+    };
     private int scrollPosition = 0;
     private boolean scrolling = false;
     private boolean hasScrolled = false;
-
     private ShareActionProvider listShare = null;
     private SwipeRefreshLayout swipeLayout;
 
@@ -165,7 +182,7 @@ public class TicketListFragment extends TracClientFragment
 //        } else if (itemId == R.id.tlshare) {
 //            shareList();
         } else if (itemId == R.id.tlzoek) {
-            tcLog.d("zoeken ="+zoeken);
+            tcLog.d("zoeken =" + zoeken);
             zoeken = !zoeken;
             if (zoeken) {
                 tcLog.d("Filter wordt gezet");
@@ -370,8 +387,6 @@ public class TicketListFragment extends TracClientFragment
         }
     }
 
-    // AbsListView.OnScrollListener
-
     public void startLoading() {
 //        tcLog.d("hs = " + hs);
         setStatus(R.string.ophalen);
@@ -383,8 +398,6 @@ public class TicketListFragment extends TracClientFragment
         } catch (Exception ignored) {
         }
     }
-
-    // AdapterView.OnItemClickListener
 
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -422,33 +435,10 @@ public class TicketListFragment extends TracClientFragment
         }
     }
 
-    //SwipeRefreshLayout.OnRefreshListener
-
     @Override
     public void onRefresh() {
         tcLog.logCall();
         listener.refreshOverview();
         swipeLayout.setRefreshing(false);
     }
-
-    // TextWatcher
-
-    private final TextWatcher filterTextWatcher = new TextWatcher() {
-
-        @Override
-        public void afterTextChanged(Editable s) {
-        }
-
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if (dataAdapter != null && s != null) {
-                dataAdapter.getFilter().filter(s);
-                zoektext = s.toString();
-            }
-        }
-    };
 }
