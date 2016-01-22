@@ -81,7 +81,7 @@ public class TracHttpClient extends JSONRPCHttpClient {
     public byte[] getAttachment(int ticknr, String filename) throws JSONException,
                                                                     JSONRPCException {
         return Base64.decode(callJSONObject(TICKET_GETATTACHMENT, ticknr, filename).getJSONArray(
-                _JSONCLASS).getString(1),
+                                     _JSONCLASS).getString(1),
                              Base64.DEFAULT);
     }
 

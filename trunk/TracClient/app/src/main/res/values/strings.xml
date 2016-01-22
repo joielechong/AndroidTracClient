@@ -129,5 +129,7 @@
         <item>does not end on</item>
     </string-array>
     <string name="doubleback">Please click BACK again to exit</string>
+    <string name="chooseoption">Choose option</string>
+    <string name="choosefield">Choose field</string>
 
 </resources>

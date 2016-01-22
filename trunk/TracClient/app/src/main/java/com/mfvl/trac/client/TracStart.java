@@ -88,11 +88,11 @@ public class TracStart extends Activity implements Handler.Callback,
      * Constanten voor communicatie met de service en fragmenten
      */
 
+    public static final String DetailFragmentTag = "Detail_Fragment";
     private static final int REQUEST_CODE_CHOOSER = 6384;
     private static final int REQUEST_CODE_WRITE_EXT = 6385;
     private static final String ListFragmentTag = "List_Fragment";
     private static final String LoginFragmentTag = "Login_Fragment";
-    public static final String DetailFragmentTag = "Detail_Fragment";
     private static final String NewFragmentTag = "New_Fragment";
     private static final String UpdFragmentTag = "Modify_Fragment";
     private static final String FilterFragmentTag = "Filter_Fragment";
@@ -403,7 +403,7 @@ public class TracStart extends Activity implements Handler.Callback,
             }
         } else {
             dispAds = false;
-            if (adViewContainer!=null){
+            if (adViewContainer != null) {
                 adViewContainer.setVisibility(View.GONE);
             }
         }
@@ -1453,7 +1453,7 @@ public class TracStart extends Activity implements Handler.Callback,
                 break;
 
             case MSG_SHOW_DIALOG:
-                showAlertBox(msg.arg1, msg.arg2, (String)msg.obj);
+                showAlertBox(msg.arg1, msg.arg2, (String) msg.obj);
                 break;
 
             case MSG_DISPLAY_TICKET:
@@ -1614,11 +1614,11 @@ public class TracStart extends Activity implements Handler.Callback,
                 if (ab != null) {
                     ab.hide();
                 }
-                if (dispAds){
+                if (dispAds) {
                     adViewContainer.setVisibility(View.GONE);
                 }
             } else {
-                if (dispAds){
+                if (dispAds) {
                     adViewContainer.setVisibility(View.VISIBLE);
                 }
                 if (ab != null) {

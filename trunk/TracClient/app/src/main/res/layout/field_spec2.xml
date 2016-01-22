@@ -29,10 +29,10 @@
         android:orientation="vertical">
 
         <Spinner
+            android:id="@+id/spinval"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:spinnerMode="dialog"
-            android:id="@+id/spinval" />
+            android:spinnerMode="dialog"/>
     </LinearLayout>
 
     <LinearLayout

@@ -35,7 +35,9 @@
             android:id="@+id/addspin"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="19"/>
+            android:layout_weight="19"
+            android:prompt="@string/choosefield"
+            android:spinnerMode="dialog"/>
 
         <ImageButton
             android:id="@+id/addbutton"

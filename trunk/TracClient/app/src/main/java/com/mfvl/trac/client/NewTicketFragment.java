@@ -75,8 +75,6 @@ public class NewTicketFragment extends TracClientFragment {
         storButton.setOnClickListener(this);
         final TableLayout tl = (TableLayout) view.findViewById(R.id.newTickTable);
 
-        View e = view.findViewById(R.id.waarde);
-        final LayoutParams lp = e.getLayoutParams();
         final String[] ignoreFields = getResources().getStringArray(R.array.ignorecreatefields);
         boolean first = true;
 
@@ -88,13 +86,21 @@ public class NewTicketFragment extends TracClientFragment {
 
             if (!Arrays.asList(ignoreFields).contains(veldnaam)) {
                 if (veld.options() != null) {
-                    v = makeComboSpin(context, veld.options(), veld.optional(), veld.value());
+                    List<Object> waardes = veld.options();
+                    Object waarde = veld.value();
+                    boolean optional = veld.optional();
+
+                    final Spinner v1 = (Spinner) LayoutInflater.from(context).inflate(
+                            R.layout.spinfield, null, false);
+                    v1.setPrompt(veldnaam);
+                    v1.setAdapter(makeComboAdapter(context, waardes, optional));
+
+                    v = v1;
                 } else {
                     v = LayoutInflater.from(context).inflate((veldnaam.equals(
                             "Description") ? R.layout.descrfield : R.layout.stdfield), null, false);
                     extra = EXTRA;
                 }
-                v.setLayoutParams(lp);
                 if (first) {
                     v.requestFocus();
                     first = false;
@@ -102,23 +108,10 @@ public class NewTicketFragment extends TracClientFragment {
                 makeRow(tl, veldnaam, v, i + extra);
             }
         }
-        e.setVisibility(View.GONE);
-        view.findViewById(R.id.veld).setVisibility(View.GONE);
         view.invalidate();
     }
 
-    private Spinner makeComboSpin(Context context, List<Object> waardes, boolean optional, Object w) {
-
-        final Spinner valSpinner = new Spinner(context);
-
-        valSpinner.setAdapter(makeComboAdapter(context,waardes,optional));
-        if (w != null && !"".equals(w)) {
-            valSpinner.setSelection(waardes.indexOf(w) + (optional ? 1 : 0), true);
-        }
-        return valSpinner;
-    }
-
-	@Override
+    @Override
     public void onClick(View ignored) {
         // Only store button
         final JSONObject velden = new JSONObject();
@@ -200,5 +193,5 @@ public class NewTicketFragment extends TracClientFragment {
         tr2.addView(tv2);
         tl.addView(tr2);
     }
-	
+
 }
