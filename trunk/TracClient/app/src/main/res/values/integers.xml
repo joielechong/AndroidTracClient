@@ -25,7 +25,6 @@
     <!-- 2 * 60 * 1000 2 minuten -->
 
     <integer name="popupAlpha">220</integer>
-
     <integer name="ticketGroupCount">50</integer>
     <!-- number of tickets to load in 1 batch from the server -->
     <integer name="large_move">90</integer>
