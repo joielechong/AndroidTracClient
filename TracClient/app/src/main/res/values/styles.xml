@@ -32,13 +32,9 @@
     <style name="AppTheme" parent="@style/AppBaseTheme"/>
 
     <style name="EditFieldTheme" parent="@style/AppBaseTheme">
-        <item name="android:colorBackground">@color/popup_back</item>
-        <item name="android:alpha">@integer/popupAlpha</item>
+        <!-- item name="android:colorBackground">@color/popup_back</item>
+        <item name="android:alpha">0.7</item -->
         <item name="android:padding">6dp</item>
-    </style>
-
-    <style name="FullscreenThemeBase.1">
-        <item name="android:alertDialogTheme">@style/AlertDialogStyle</item>
     </style>
 
     <style name="FullscreenTheme" parent="@style/FullscreenThemeBase">
