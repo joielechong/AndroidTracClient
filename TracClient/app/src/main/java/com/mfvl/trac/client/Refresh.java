@@ -31,8 +31,6 @@ import static com.mfvl.trac.client.Const.*;
 
 public class Refresh extends Activity implements ServiceConnection {
 
-    private RefreshService mService = null;
-
     /*
      * Implementing ServiceConnection
      *
@@ -41,14 +39,12 @@ public class Refresh extends Activity implements ServiceConnection {
     public void onServiceConnected(ComponentName className, IBinder service) {
         tcLog.d("className = " + className + " service = " + service);
         RefreshService.RefreshBinder binder = (RefreshService.RefreshBinder) service;
-        mService = binder.getService();
-        mService.send(Message.obtain(null, MSG_REFRESH_LIST));
+        binder.getService().send(Message.obtain(null, MSG_REFRESH_LIST));
     }
 
     @Override
     public void onServiceDisconnected(ComponentName className) {
         tcLog.d("className = " + className);
-        mService = null;
     }
 
     /*

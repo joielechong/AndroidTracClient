@@ -9,8 +9,6 @@ package org.alexd.jsonrpc;
  */
 public class JSONRPCException extends Exception {
 
-    private static final long serialVersionUID = 4657697652848090922L;
-
     public JSONRPCException(Object error) {
         super(error.toString());
     }

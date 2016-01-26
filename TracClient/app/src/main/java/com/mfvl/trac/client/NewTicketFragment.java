@@ -17,12 +17,10 @@
 package com.mfvl.trac.client;
 
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -87,18 +85,17 @@ public class NewTicketFragment extends TracClientFragment {
             if (!Arrays.asList(ignoreFields).contains(veldnaam)) {
                 if (veld.options() != null) {
                     List<Object> waardes = veld.options();
-                    Object waarde = veld.value();
                     boolean optional = veld.optional();
 
                     final Spinner v1 = (Spinner) LayoutInflater.from(context).inflate(
-                            R.layout.spinfield, null, false);
+                            R.layout.spinfield, tl, false);
                     v1.setPrompt(veldnaam);
                     v1.setAdapter(makeComboAdapter(context, waardes, optional));
 
                     v = v1;
                 } else {
                     v = LayoutInflater.from(context).inflate((veldnaam.equals(
-                            "Description") ? R.layout.descrfield : R.layout.stdfield), null, false);
+                            "Description") ? R.layout.descrfield : R.layout.stdfield), tl, false);
                     extra = EXTRA;
                 }
                 if (first) {

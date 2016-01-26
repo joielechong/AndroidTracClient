@@ -1406,7 +1406,7 @@ public class TracStart extends Activity implements Handler.Callback,
                 if (!LoginFragmentTag.equals(getTopFragment())) {
                     final int count = getTicketCount();
                     sendMessageToService(MSG_SEND_TICKET_COUNT, count,
-                                         ISO8601.fromUnix(referenceTime));
+                                         TracGlobal.fromUnix(referenceTime));
                 }
                 break;
 

@@ -24,12 +24,9 @@
     <integer name="timerCorr">120000</integer>
     <!-- 2 * 60 * 1000 2 minuten -->
 
-    <integer name="popupAlpha">220</integer>
     <integer name="ticketGroupCount">50</integer>
     <!-- number of tickets to load in 1 batch from the server -->
     <integer name="large_move">90</integer>
     <!-- number of pixels to swipe to be recognized as a large move -->
-    <integer name="extra_large_move">360</integer>
-    <!-- number of pixels to swipe to be recognized as an extra large move -->
 
 </resources>

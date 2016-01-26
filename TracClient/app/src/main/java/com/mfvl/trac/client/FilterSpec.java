@@ -22,7 +22,6 @@ import java.io.Serializable;
 
 public class FilterSpec extends Spec implements Serializable, Cloneable {
 
-    private static final long serialVersionUID = 552288154328397222L;
     private String _operator;
     private String _waarde;
     private String _newwaarde;

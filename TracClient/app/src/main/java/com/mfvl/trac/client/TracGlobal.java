@@ -31,7 +31,12 @@ import java.io.FileNotFoundException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import javax.security.auth.x500.X500Principal;
 
@@ -320,5 +325,36 @@ public class TracGlobal {
             }
         }
         return reqString;
+    }
+
+    /**
+     * Transform Calendar to ISO 8601 string.
+     */
+    public static String fromUnix(final long tijd) {
+        final Date date = new Date();
+
+        date.setTime(tijd);
+        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
+
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return sdf.format(date);
+    }
+
+    /**
+     * Transform ISO 8601 string to Calendar.
+     */
+    public static Calendar toCalendar(final String iso8601string) throws ParseException {
+        final Calendar calendar = Calendar.getInstance();
+        String s = iso8601string.replace("Z", "+00:00");
+
+        try {
+            s = s.substring(0, 22) + s.substring(23);
+        } catch (final IndexOutOfBoundsException e) {
+            throw new ParseException("Invalid length", 0);
+        }
+        final Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.US).parse(s);
+
+        calendar.setTime(date);
+        return calendar;
     }
 }

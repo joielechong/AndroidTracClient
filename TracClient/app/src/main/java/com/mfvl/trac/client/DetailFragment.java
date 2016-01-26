@@ -629,7 +629,7 @@ public class DetailFragment extends TracClientFragment
 
     private String toonTijd(final JSONObject v) {
         try {
-            return ISO8601.toCalendar(
+            return TracGlobal.toCalendar(
                     v.getJSONArray("__jsonclass__").getString(1) + "Z").getTime().toString();
         } catch (final Exception e) {
             tcLog.e("Error converting time", e);

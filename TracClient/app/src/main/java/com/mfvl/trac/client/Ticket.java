@@ -36,7 +36,6 @@ public class Ticket implements Serializable {
     /**
      *
      */
-    private static final long serialVersionUID = -3915928655754922097L;
     private final int _ticknr;
     private final Semaphore actionLock = new Semaphore(1, true);
     private JSONObject _velden;
@@ -203,7 +202,7 @@ public class Ticket implements Serializable {
 
     private String toonTijd(final JSONObject v) {
         try {
-            return ISO8601.toCalendar(
+            return TracGlobal.toCalendar(
                     v.getJSONArray("__jsonclass__").getString(1) + "Z").getTime().toString();
         } catch (final Exception e) {
             tcLog.e("Exception", e);
