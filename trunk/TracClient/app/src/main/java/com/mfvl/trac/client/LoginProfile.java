@@ -21,8 +21,6 @@ import java.util.List;
 
 
 public class LoginProfile extends TcObject implements Serializable, Cloneable {
-    private static final long serialVersionUID = 7810597345256080395L;
-
     private final String _url;
     private final String _username;
     private final String _password;

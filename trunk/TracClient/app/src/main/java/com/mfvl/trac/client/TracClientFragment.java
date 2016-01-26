@@ -44,7 +44,6 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
     public TracStart context;
     public InterFragmentListener listener = null;
     protected int large_move;
-    protected int extra_large_move;
     protected Handler tracStartHandler = null;
     protected int helpFile = -1;
     protected Bundle fragmentArgs = null;
@@ -68,7 +67,6 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
         listener = (InterFragmentListener) activity;
         tracStartHandler = listener.getHandler();
         large_move = context.getResources().getInteger(R.integer.large_move);
-        extra_large_move = context.getResources().getInteger(R.integer.extra_large_move);
         fragmentArgs = getArguments();
     }
 

@@ -109,7 +109,6 @@
     <string name="doubleback"> Bitte klicken Sie nochmals auf"BACK"zum Beenden</string>
     <string name="chooseoption">Option wählen</string>
     <string name="showchanges">Änderungshistorie</string>
-    <string name="cookieInform"></string>
     <string name="choosefield">Feld wählen</string>
     <string name="permissiontext">Diese App braucht die SD-Karte lesen und schreiben zu können.Dazu gibt es jetz noch keine Permission.Ohne diesePermission ist es nicht möglich Profilen zu importieren oder exportieren oder Anhänge von der SD-Karte anzuschließen.Wenn Sie nicht sicher sind,klicken Sie in dem folgenden Dialog dann nicht auf"Fragen Sie nicht mehr"Wahl.</string>
 </resources>
