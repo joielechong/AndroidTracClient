@@ -18,4 +18,6 @@
     <dimen name="adview_padding">90dp</dimen>
     <dimen name="list_textsize">20sp</dimen>
     <!-- zoom factor to be used on webpages -->
+    <dimen name="popup_width">800dp</dimen>
+    <dimen name="popup_height">600dp</dimen>
 </resources>
