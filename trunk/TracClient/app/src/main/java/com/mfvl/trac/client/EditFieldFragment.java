@@ -31,6 +31,15 @@ public class EditFieldFragment extends DialogFragment {
 
     public EditFieldFragment() {
     }
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		int width = getResources().getDimensionPixelSize(R.dimen.popup_width);
+		int height = getResources().getDimensionPixelSize(R.dimen.popup_height);        
+		getDialog().getWindow().setLayout(width, height);
+//		getView().setAlpha(0.7f);
+	}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -44,24 +53,14 @@ public class EditFieldFragment extends DialogFragment {
         View ll = inflater.inflate(
                 tmv.options() == null ? R.layout.field_spec1 : R.layout.field_spec2, container);
         getDialog().setTitle(veld);
+
         final EditText et = (EditText) ll.findViewById(R.id.veldwaarde);
-
-        final Spinner spinValue = (Spinner) ll.findViewById(R.id.spinval);
-        final Button canBut = (Button) ll.findViewById(R.id.cancelpw);
-        canBut.setOnClickListener(new View.OnClickListener() {
-            @Override
-
-            public void onClick(View v) {
-                getFragmentManager().popBackStack();
-            }
-        });
-        final Button storBut = (Button) ll.findViewById(R.id.okBut);
-
         if (et != null) {
             et.setText(waarde);
             et.requestFocus();
         }
 
+        final Spinner spinValue = (Spinner) ll.findViewById(R.id.spinval);
         if (spinValue != null) {
             final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<>(getActivity(),
                                                                         android.R.layout.simple_spinner_item);
@@ -77,6 +76,16 @@ public class EditFieldFragment extends DialogFragment {
             }
         }
 
+        final Button canBut = (Button) ll.findViewById(R.id.cancelpw);
+        canBut.setOnClickListener(new View.OnClickListener() {
+            @Override
+
+            public void onClick(View v) {
+                getFragmentManager().popBackStack();
+            }
+        });
+
+        final Button storBut = (Button) ll.findViewById(R.id.okBut);
         storBut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

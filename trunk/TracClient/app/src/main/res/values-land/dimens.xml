@@ -24,4 +24,6 @@
 
     <integer name="webzoom">110</integer>
     <!-- zoom factor to be used on webpages -->
+    <dimen name="popup_width">450dp</dimen>
+    <dimen name="popup_height">280dp</dimen>
 </resources>
