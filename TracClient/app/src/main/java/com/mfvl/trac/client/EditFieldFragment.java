@@ -31,15 +31,15 @@ public class EditFieldFragment extends DialogFragment {
 
     public EditFieldFragment() {
     }
-	
-	@Override
-	public void onResume() {
-		super.onResume();
-		int width = getResources().getDimensionPixelSize(R.dimen.popup_width);
-		int height = getResources().getDimensionPixelSize(R.dimen.popup_height);        
-		getDialog().getWindow().setLayout(width, height);
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        int width = getResources().getDimensionPixelSize(R.dimen.popup_width);
+        int height = getResources().getDimensionPixelSize(R.dimen.popup_height);
+        getDialog().getWindow().setLayout(width, height);
 //		getView().setAlpha(0.7f);
-	}
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

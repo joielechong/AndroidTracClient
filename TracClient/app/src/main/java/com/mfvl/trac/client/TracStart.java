@@ -146,6 +146,7 @@ public class TracStart extends Activity implements Handler.Callback,
             tcLog.d("className = " + className);
         }
     };
+
     private final ServiceConnection mTicketsConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -202,8 +203,7 @@ public class TracStart extends Activity implements Handler.Callback,
 
         if (ActivityCompat.checkSelfPermission(this,
                                                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                                                                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 new AlertDialog.Builder(this)
                         .setTitle(R.string.permissiontitle)
                         .setMessage(R.string.permissiontext)
@@ -229,8 +229,7 @@ public class TracStart extends Activity implements Handler.Callback,
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
-        TextView tv = (TextView) getLayoutInflater().inflate(R.layout.ticket_list, mDrawerList,
-                                                             false);
+        TextView tv = (TextView) getLayoutInflater().inflate(R.layout.ticket_list, mDrawerList, false);
         tv.setText(R.string.changehost);
         mDrawerList.addHeaderView(tv, null, false);
 
@@ -246,8 +245,7 @@ public class TracStart extends Activity implements Handler.Callback,
             dispAds = savedInstanceState.getBoolean(ADMOB, true);
             tcLog.d("restoreService " + mService + " " + waitForService);
             waitForService.acquireUninterruptibly();
-            bindService(((Intent) (serviceIntent.clone())).setAction("Test"), mConnection,
-                        Context.BIND_AUTO_CREATE);
+            bindService(((Intent) (serviceIntent.clone())).setAction("Test"), mConnection, Context.BIND_AUTO_CREATE);
         } else {
             startService(serviceIntent);
             url = TracGlobal.getUrl();
@@ -290,8 +288,7 @@ public class TracStart extends Activity implements Handler.Callback,
                     lp = pdb.findProfile(urlArg);
                 }
                 if (lp == null) {
-                    showAlertBox(R.string.wrongdb, R.string.wrongdbtext1,
-                                 url + getString(R.string.wrongdbtext2) + urlArg + getString(
+                    showAlertBox(R.string.wrongdb, R.string.wrongdbtext1, url + getString(R.string.wrongdbtext2) + urlArg + getString(
                                          R.string.wrongdbtext3));
                     urlArg = null;
                     ticketArg = -1;
@@ -1215,8 +1212,7 @@ public class TracStart extends Activity implements Handler.Callback,
         velden.remove("description");
 
         try {
-            TracHttpClient tracClient = new TracHttpClient(url, sslHack, sslHostNameHack, username,
-                                                           password);
+            TracHttpClient tracClient = new TracHttpClient(url, sslHack, sslHostNameHack, username, password);
             final int newticknr = tracClient.createTicket(s, d, velden, notify);
             if (newticknr != -1) {
 //				reloadTicketData(new Ticket(newticknr));
@@ -1252,8 +1248,7 @@ public class TracStart extends Activity implements Handler.Callback,
         if (dataAdapter != null) {
             for (Ticket t : dataAdapter.getTicketList()) {
                 try {
-                    lijst += t.getTicketnr() + ";" + t.getString("status") + ";" + t.getString(
-                            "summary") + "\r\n";
+                    lijst += t.getTicketnr() + ";" + t.getString("status") + ";" + t.getString("summary") + "\r\n";
                 } catch (final Exception e) {
                     tcLog.e("exception", e);
                 }
@@ -1286,8 +1281,7 @@ public class TracStart extends Activity implements Handler.Callback,
         synchronized (this) {
             if (ticketsLoading) {
                 if (!hasTicketsLoadingBar) {
-                    startProgressBar(
-                            getString(R.string.getlist) + (profile == null ? "" : "\n" + profile));
+                    startProgressBar(getString(R.string.getlist) + (profile == null ? "" : "\n" + profile));
                     hasTicketsLoadingBar = true;
                 }
                 getTicketListFragment().startLoading();
@@ -1313,9 +1307,7 @@ public class TracStart extends Activity implements Handler.Callback,
 //                available.acquireUninterruptibly();
                 if (oc != null) {
                     try {
-                        TracHttpClient tracClient = new TracHttpClient(url, sslHack,
-                                                                       sslHostNameHack, username,
-                                                                       password);
+                        TracHttpClient tracClient = new TracHttpClient(url, sslHack, sslHostNameHack, username, password);
                         oc.onComplete(tracClient.getAttachment(_ticknr, filename));
                     } catch (final Exception e) {
                         tcLog.e("Exception during getAttachment", e);
@@ -1405,8 +1397,7 @@ public class TracStart extends Activity implements Handler.Callback,
             case MSG_REQUEST_TICKET_COUNT:
                 if (!LoginFragmentTag.equals(getTopFragment())) {
                     final int count = getTicketCount();
-                    sendMessageToService(MSG_SEND_TICKET_COUNT, count,
-                                         TracGlobal.fromUnix(referenceTime));
+                    sendMessageToService(MSG_SEND_TICKET_COUNT, count, TracGlobal.fromUnix(referenceTime));
                 }
                 break;
 
@@ -1462,8 +1453,7 @@ public class TracStart extends Activity implements Handler.Callback,
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            final DetailFragment d = (DetailFragment) getFragment(
-                                    DetailFragmentTag);
+                            final DetailFragment d = (DetailFragment) getFragment(DetailFragmentTag);
                             d.setTicket(t.getTicketnr());
                         }
                     });
@@ -1476,8 +1466,7 @@ public class TracStart extends Activity implements Handler.Callback,
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                     ActivityCompat.requestPermissions(TracStart.this,
                                                       new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                                              Manifest.permission.READ_EXTERNAL_STORAGE},
-                                                      REQUEST_CODE_WRITE_EXT);
+                                                              Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE_WRITE_EXT);
                 }
                 break;
 
