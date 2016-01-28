@@ -64,15 +64,14 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
         onMyAttach(FILTERLISTNAME);
     }
 
-    public void onClick(View v1) {
-        switch (v1.getId()) {
+    public void onClick(View v) {
+        switch (v.getId()) {
             case R.id.storefilter:
                 final ArrayList<FilterSpec> items = filterAdapter.items;
 
                 for (int i = items.size() - 1; i >= 0; i--) {
                     if (items.get(i).getOperator() == null || items.get(i).getOperator().equals("")
-                            || items.get(i).getWaarde() == null || items.get(i).getWaarde().equals(
-                            "")) {
+                            || items.get(i).getWaarde() == null || items.get(i).getWaarde().equals("")) {
                         items.remove(i);
                     } else {
                         items.get(i).setEdit(false);
@@ -115,9 +114,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
         getScreensize(addSpinner, addButton);
         final ArrayList<String> velden = tm.velden();
         Collections.sort(velden);
-        final ArrayAdapter<String> spinAdapter = new ArrayAdapter<>(context,
-                                                                    android.R.layout.simple_spinner_item,
-                                                                    velden);
+        final ArrayAdapter<String> spinAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, velden);
         addSpinner.setAdapter(spinAdapter);
     }
 
