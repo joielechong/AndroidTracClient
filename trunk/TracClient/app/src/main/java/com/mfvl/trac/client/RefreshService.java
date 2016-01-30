@@ -218,6 +218,9 @@ public class RefreshService extends Service implements Handler.Callback {
         mServiceHandler = new Handler(mHandlerThread.getLooper(), this);
     }
 
+    /**
+     * This is to start the Service. It will remain inactive until bound from TracStart.
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         tcLog.d("intent = " + intent);

@@ -43,6 +43,7 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
         tcLog.setContext(this);
         TracGlobal.getInstance(getApplicationContext());
         setContentView(R.layout.activity_titlescreen);
+        startService(new Intent(this, RefreshService.class));
     }
 
     @Override
@@ -101,8 +102,8 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
+                        tcLog.logCall();
                         startActivity(launchTrac);
-                        stopService(new Intent(TracTitlescreenActivity.this, RefreshService.class));
                         finish();
                     }
                 });

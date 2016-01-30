@@ -83,7 +83,7 @@ import static com.mfvl.trac.client.Const.*;
 public class TracStart extends Activity implements Handler.Callback,
                                                    InterFragmentListener, OnBackStackChangedListener,
                                                    ActivityCompat.OnRequestPermissionsResultCallback, ViewTreeObserver.OnGlobalLayoutListener {
-   
+
     /*
      * Constanten voor communicatie met de service en fragmenten
      */
@@ -199,7 +199,6 @@ public class TracStart extends Activity implements Handler.Callback,
         mHandlerThread.start();
         tracStartHandler = new Handler(mHandlerThread.getLooper(), this);
         mMessenger = new Messenger(tracStartHandler);
-//        startService(new Intent(this, RefreshService.class));
 
         if (ActivityCompat.checkSelfPermission(this,
                                                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -245,9 +244,12 @@ public class TracStart extends Activity implements Handler.Callback,
             dispAds = savedInstanceState.getBoolean(ADMOB, true);
             tcLog.d("restoreService " + mService + " " + waitForService);
             waitForService.acquireUninterruptibly();
-            bindService(((Intent) (serviceIntent.clone())).setAction("Test"), mConnection, Context.BIND_AUTO_CREATE);
+            if (!bindService((new Intent(this, RefreshService.class)).setAction("Test"), mConnection, Context.BIND_AUTO_CREATE)) {
+                tcLog.toast("Cannot contact service");
+                waitForService.release();
+            }
         } else {
-            startService(serviceIntent);
+//            startService(serviceIntent);
             url = TracGlobal.getUrl();
             username = TracGlobal.getUsername();
             password = TracGlobal.getPassword();
@@ -579,7 +581,7 @@ public class TracStart extends Activity implements Handler.Callback,
 
     @Override
     protected void onDestroy() {
-        tcLog.logCall();
+        tcLog.d("isFinishing = "+isFinishing());
         super.onDestroy();
         if (isFinishing()) {
             if (mIsTicketBound) {
@@ -1078,9 +1080,9 @@ public class TracStart extends Activity implements Handler.Callback,
 //            tm = TicketModel.getInstance();
             if (mService == null) {
                 tcLog.d("Service not yet started");
-                if (waitForService.availablePermits() == 0) {
-                    tcLog.d("Waiting for service to be started up");
-                    waitForService.acquireUninterruptibly();
+                waitForService.acquireUninterruptibly();
+                if (!bindService((new Intent(this, RefreshService.class)).setAction("Test"), mConnection, Context.BIND_AUTO_CREATE)) {
+                    tcLog.toast("Cannot contact service");
                     waitForService.release();
                 }
             }
