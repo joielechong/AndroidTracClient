@@ -37,7 +37,6 @@ import java.util.concurrent.Semaphore;
 
 import android.Manifest;
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -63,6 +62,8 @@ import android.provider.MediaStore.Images;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -80,7 +81,7 @@ import android.widget.TextView;
 import static com.mfvl.trac.client.Const.*;
 
 
-public class TracStart extends Activity implements Handler.Callback,
+public class TracStart extends AppCompatActivity implements Handler.Callback,
                                                    InterFragmentListener, OnBackStackChangedListener,
                                                    ActivityCompat.OnRequestPermissionsResultCallback, ViewTreeObserver.OnGlobalLayoutListener {
 
@@ -224,6 +225,8 @@ public class TracStart extends Activity implements Handler.Callback,
         TracGlobal.ticketGroupCount = getResources().getInteger(R.integer.ticketGroupCount);
         timerCorr = getResources().getInteger(R.integer.timerCorr);
         setContentView(R.layout.tracstart);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         debug |= TracGlobal.isRCVersion();
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
