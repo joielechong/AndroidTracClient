@@ -38,26 +38,23 @@ public class LoginProfile extends TcObject implements Serializable, Cloneable {
 
     @Override
     public boolean equals(Object o) {
-//		tcLog.d("this = "+this+" o = "+o);
+		boolean retVal;
         if (this == o) {
-            return true;
-        }
-
-        if (!(o instanceof LoginProfile)) {
-            return false;
-        }
-        boolean retVal = super.equals(o);
-
-        LoginProfile f = (LoginProfile) o;
-//		tcLog.d("this = "+this+" f = "+f + " "+retVal);
-        retVal &= equalFields(_url, f.getUrl());
-        retVal &= equalFields(_username, f.getUsername());
-        retVal &= equalFields(_password, f.getPassword());
-        retVal &= equalFields(filterList, f.getFilterList());
-        retVal &= equalFields(sortList, f.getSortList());
-        retVal &= (_sslHack == f.getSslHack());
-        retVal &= (_sslHostNameHack == f.getSslHostNameHack());
-//		tcLog.d(""+retVal);
+            retVal = true;
+        } else if (!(o instanceof LoginProfile)) {
+            retVal = false;
+        } else {
+			LoginProfile f = (LoginProfile) o;
+//			tcLog.d("this = "+this+" f = "+f + " "+retVal);
+			retVal = equalFields(_url, f.getUrl());
+			retVal &= equalFields(_username, f.getUsername());
+			retVal &= equalFields(_password, f.getPassword());
+			retVal &= equalFields(filterList, f.getFilterList());
+			retVal &= equalFields(sortList, f.getSortList());
+			retVal &= (_sslHack == f.getSslHack());
+			retVal &= (_sslHostNameHack == f.getSslHostNameHack());
+		}
+//
         return retVal;
     }
 

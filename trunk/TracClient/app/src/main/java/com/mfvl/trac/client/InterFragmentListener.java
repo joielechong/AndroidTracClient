@@ -16,10 +16,8 @@
 
 package com.mfvl.trac.client;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
-import android.view.Menu;
 
 import java.util.Map;
 
@@ -30,57 +28,26 @@ import java.util.Map;
  */
 public interface InterFragmentListener {
     void enableDebug();
-
     void onChooserSelected(OnFileSelectedListener oc);
-
     void onLogin(String url, String username, String password, boolean sslHack, boolean sslHostNameHack, String profile);
-
     void onTicketSelected(Ticket ticket);
-
     void onUpdateTicket(Ticket ticket);
-
     void refreshOverview();
-
     void startProgressBar(int resid);
-
     void stopProgressBar();
-
-    TicketModel getTicketModel();
-
     TicketListAdapter getAdapter();
-
-    Ticket getTicket(int ticknr);
-
+    void getTicket(int ticknr,OnTicketLoadedListener oc);
     void refreshTicket(int ticknr);
-
     int getNextTicket(int i);
-
     int getPrevTicket(int i);
-
     int getTicketCount();
-
     int getTicketContentCount();
-
-    void updateTicket(Ticket t, String action, String comment, String veld, String waarde, final boolean notify, Map<String, String> modVeld) throws
-                                                                                                                                              Exception;
-
+    void updateTicket(Ticket t, String action, String comment, String veld, String waarde, final boolean notify, Map<String, String> modVeld) throws Exception;
     int createTicket(Ticket t, boolean notify) throws Exception;
-
-    void setActionProvider(Menu menu, int resid);
-
-    Intent shareList();
-
-    Intent shareTicket(final Ticket ticket);
-
     void listViewCreated();
-
     boolean isFinishing();
-
     Handler getHandler();
-
     boolean getCanWriteSD();
-
     void getAttachment(Ticket t, String filename, onAttachmentCompleteListener oc);
-
     void addAttachment(final Ticket ticket, final Uri uri, final onTicketCompleteListener oc);
 }

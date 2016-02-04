@@ -14,12 +14,32 @@
  * limitations under the License.
 
 -->
-<EditText xmlns:android="http://schemas.android.com/apk/res/android"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_margin="4dp"
-          android:ems="10"
-          android:inputType="text|textCapSentences|textMultiLine"
-          android:maxLines="10"
-          android:minLines="1"
-          android:textAppearance="?android:attr/textAppearanceMedium"/>
+<TableRow
+          xmlns:android="http://schemas.android.com/apk/res/android"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@id/nt_nm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+        <EditText
+            android:id="@id/nt_val"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:ems="10"
+            android:inputType="text|textCapSentences|textMultiLine"
+            android:maxLines="10"
+            android:minLines="1"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+    </LinearLayout>
+
+</TableRow>

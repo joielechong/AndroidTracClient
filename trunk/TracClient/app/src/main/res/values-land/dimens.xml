@@ -15,13 +15,10 @@
 
 -->
 <resources>
-    <dimen name="adview_padding">32dp</dimen>
     <dimen name="list_textsize">16sp</dimen>
-
     <dimen name="help_textsize">20sp</dimen>
     <dimen name="helphdr_textsize">35sp</dimen>
     <dimen name="helpsml_textsize">14sp</dimen>
-
     <integer name="webzoom">110</integer>
     <!-- zoom factor to be used on webpages -->
     <dimen name="popup_width">450dp</dimen>

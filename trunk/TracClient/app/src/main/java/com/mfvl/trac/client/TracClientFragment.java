@@ -16,6 +16,7 @@
 
 package com.mfvl.trac.client;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
@@ -47,6 +48,7 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
     protected Handler tracStartHandler = null;
     protected int helpFile = -1;
     protected Bundle fragmentArgs = null;
+    protected TicketModel tm = null;
 
     public static void hideSoftKeyboard(Activity activity) {
         InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(
@@ -54,20 +56,12 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
         inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
     }
 
+    @TargetApi(23)
     @Override
     public void onAttach(Context activity) {
         super.onAttach(activity);
         tcLog.d("(C) ");
         onMyAttach(activity);
-    }
-
-    private void onMyAttach(Context activity) {
-        context = (TracStart) activity;
-        TracGlobal.getInstance(context.getApplicationContext());
-        listener = (InterFragmentListener) activity;
-        tracStartHandler = listener.getHandler();
-        large_move = context.getResources().getInteger(R.integer.large_move);
-        fragmentArgs = getArguments();
     }
 
     @SuppressWarnings("deprecation")
@@ -78,11 +72,19 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
         onMyAttach(activity);
     }
 
+    protected void onMyAttach(Context activity) {
+        context = (TracStart) activity;
+        TracGlobal.getInstance(context.getApplicationContext());
+        listener = (InterFragmentListener) activity;
+        tracStartHandler = listener.getHandler();
+        large_move = context.getResources().getInteger(R.integer.large_move);
+        fragmentArgs = getArguments();
+    }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        tcLog.d("savedInstanceState = " + savedInstanceState);
-
+        tcLog.logCall();
         tracStartHandler = listener.getHandler();
     }
 
@@ -113,6 +115,7 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
     }
 
     protected SpinnerAdapter makeComboAdapter(Context context, List<Object> waardes, boolean optional) {
+        tcLog.d("waardes = "+waardes+" optional = "+optional);
         if (waardes == null) {
             return null;
         }
@@ -135,10 +138,14 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
 
     protected void selectTicket(int ticknr) {
         tcLog.d("ticknr = " + ticknr);
-        final Ticket t = listener.getTicket(ticknr);
-        if (t != null && t.hasdata()) {
-            listener.onTicketSelected(t);
-        }
+        listener.getTicket(ticknr,new OnTicketLoadedListener() {
+			@Override
+			public void onTicketLoaded(Ticket t) {
+				if (t != null && t.hasdata()) {
+					listener.onTicketSelected(t);
+				}				
+			}
+		});
     }
 
     protected void getScreensize(View spin, View but) {
@@ -169,5 +176,10 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
     @Override
     public void onClick(View v) {
         tcLog.d("v =" + v);
+    }
+
+    protected void onNewTicketModel(TicketModel newTm) {
+        tcLog.logCall();
+        tm = newTm;
     }
 }

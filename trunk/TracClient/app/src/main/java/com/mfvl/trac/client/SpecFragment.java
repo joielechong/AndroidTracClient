@@ -16,30 +16,34 @@
 
 package com.mfvl.trac.client;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 
 import java.util.ArrayList;
 
-public class SpecFragment<T extends Spec> extends TracClientFragment {
+abstract public class SpecFragment<T extends Spec> extends TracClientFragment {
     private final static String inputSpecText = "inputSpec";
     private final static String outputSpecText = "outputSpec";
 
-    protected TicketModel tm;
     protected ArrayList<T> inputSpec;
     protected ArrayList<T> outputSpec = null;
     protected ListView listView;
     protected View currentView;
 
+    abstract public String keyName();
+
     @SuppressWarnings("unchecked")
-    protected void onMyAttach(String keyName) {
+    protected void onMyAttach(Context activity) {
+        tcLog.d("keyName = "+keyName());
+        super.onMyAttach(activity);
         inputSpec = null;
 
         final Bundle args = getArguments();
         if (args != null) {
-            if (args.containsKey(keyName)) {
-                inputSpec = (ArrayList<T>) args.getSerializable(keyName);
+            if (args.containsKey(keyName())) {
+                inputSpec = (ArrayList<T>) args.getSerializable(keyName());
             }
         }
         //tcLog.d("onMyAttach inputSpec = "+inputSpec);
@@ -89,7 +93,7 @@ public class SpecFragment<T extends Spec> extends TracClientFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         tcLog.d("savedInstanceState = " + savedInstanceState);
-        tm = listener.getTicketModel();
+//        tm = listener.getTicketModel();
 
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(inputSpecText)) {

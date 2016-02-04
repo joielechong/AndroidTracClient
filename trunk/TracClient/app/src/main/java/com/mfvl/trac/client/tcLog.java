@@ -32,13 +32,16 @@ public class tcLog {
                                                                    Locale.US);
     private static Activity _c = null;
     private static String debugString = "";
+    final static Object o=null;
 
     public static void setContext(Activity c) {
         _c = c;
     }
 
     public static String getDebug() {
-        return debugString;
+		synchronized (o) {
+			return debugString;
+		}
     }
 
     public static void toast(final String string) {
@@ -78,17 +81,18 @@ public class tcLog {
     }
 
     private static void myLog(final String tag, final String message, Throwable tr) {
-        final Date dt = new Date();
-        int tid = android.os.Process.myTid();
-        int pid = android.os.Process.myPid();
+		synchronized(o) {
+			final Date dt = new Date();
+			int tid = android.os.Process.myTid();
+			int pid = android.os.Process.myPid();
 
-        dt.setTime(System.currentTimeMillis());
-        final String date = s.format(new Date());
+			dt.setTime(System.currentTimeMillis());
+			final String date = s.format(new Date());
 
-        debugString += "\n" + date + " " + pid + " " + tid + " " + tag
-                + ("".equals(message) ? "" : ": " + message)
-                + (tr != null ? "\nException thrown: " + tr.getMessage() + "\n" + getStackTraceString(
-                tr) : "");
+			debugString += "\n" + date + " " + pid + " " + tid + " " + tag
+					+ ("".equals(message) ? "" : ": " + message)
+					+ (tr != null ? "\nException thrown: " + tr.getMessage() + "\n" + getStackTraceString(tr) : "");
+		}
     }
 
     private static String getStackTraceString(Throwable tr) {

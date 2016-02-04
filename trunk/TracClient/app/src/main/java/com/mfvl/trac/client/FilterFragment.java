@@ -51,18 +51,15 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
     private Spinner addSpinner;
 
     @Override
-    public void onAttach(Context activity) {
-        super.onAttach(activity);
-//        tcLog.d("onAttach(C)");
-        onMyAttach(FILTERLISTNAME);
-    }
+    public String keyName() {return FILTERLISTNAME;}
 
+/*
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-//        tcLog.d("onAttach(A)");
-        onMyAttach(FILTERLISTNAME);
+    public void onMyAttach(Context activity) {
+        tcLog.logCall();
+        super.onMyAttach(activity);
     }
+*/
 
     public void onClick(View v) {
         switch (v.getId()) {

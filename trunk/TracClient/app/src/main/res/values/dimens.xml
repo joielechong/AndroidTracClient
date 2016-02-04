@@ -15,7 +15,6 @@
 
 -->
 <resources>
-    <dimen name="adview_padding">50dp</dimen>
     <dimen name="list_textsize">18sp</dimen>
     <dimen name="help_textsize">25sp</dimen>
     <dimen name="helphdr_textsize">50sp</dimen>
