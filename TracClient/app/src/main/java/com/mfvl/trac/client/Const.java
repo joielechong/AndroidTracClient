@@ -32,6 +32,10 @@ final class Const {
     static final String FILTERLISTNAME = "filterlist";
     static final String SORTLISTNAME = "sortlist";
     static final String INTENT_URL = "url";
+    static final String INTENT_CMD = "cmd";
+    static final String INTENT_ARG1 = "arg1";
+    static final String INTENT_ARG2 = "arg2";
+    static final String INTENT_OBJ = "obj";
     static final String INTENT_TICKET = "ticket";
     static final String HELP_FILE = "file";
 
@@ -75,8 +79,8 @@ final class Const {
     static final int MSG_LOAD_TICKETS = 42;
     static final int MSG_LOAD_FASE1_FINISHED = 43;
     static final int MSG_LOAD_FASE2_FINISHED = 44;
-    static final int MSG_GET_TICKET_MODEL = 45;
     static final int MSG_LOAD_ABORTED = 46;
+    static final int MSG_SET_TICKET_MODEL = 47;
     /*
      * App private Intent actions
     */

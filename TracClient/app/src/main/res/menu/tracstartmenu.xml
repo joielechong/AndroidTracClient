@@ -33,7 +33,6 @@
         android:title="@string/about_button"/>
     <item
         android:id="@+id/debug"
-        android:actionProviderClass="android.widget.ShareActionProvider"
         android:enabled="false"
         android:menuCategory="container"
         android:orderInCategory="9999"

@@ -14,10 +14,29 @@
  * limitations under the License.
 
 -->
-<Spinner xmlns:android="http://schemas.android.com/apk/res/android"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_margin="4dp"
-         android:ems="10"
-         android:spinnerMode="dialog"
-         android:textAppearance="?android:attr/textAppearanceMedium"/>
+<TableRow xmlns:android="http://schemas.android.com/apk/res/android"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@id/nt_nm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+        <Spinner
+            android:id="@id/nt_val"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:ems="10"
+            android:spinnerMode="dialog"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+    </LinearLayout>
+
+</TableRow>

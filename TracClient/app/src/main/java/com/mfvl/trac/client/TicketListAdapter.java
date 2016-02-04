@@ -22,9 +22,6 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket> {
     public TicketListAdapter(TracStart context, int resource, Tickets tl) {
         super(context, resource, tl != null ? tl.ticketList : null);
         tcLog.logCall();
-//		tcLog.d("context = "+context+" resource = "+ resource+" tl = "+tl);
-//		tcLog.d(tl != null ? tl.toString() : null);
-
         mTickets = tl;
     }
 
@@ -43,7 +40,6 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket> {
     public Ticket getItem(int position) {
 //        tcLog.d( "getItem " + position);
         try {
-            //			tcLog.d( "getItem o = " + o);
             return mTickets.ticketList.get(position);
         } catch (Exception e) {
             return null;
@@ -52,11 +48,9 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket> {
 
     public void addAll(Tickets tl) {
         tcLog.d("tl = " + tl + " " + (tl != null ? tl.ticketList.toString() : null));
-//		tcLog.d("mTickets = "+mTickets);
         if (tl != null) {
             super.addAll(tl.ticketList);
             mTickets.add(tl);
-//			tcLog.d("count = "+super.getCount());
             notifyDataSetChanged();
         }
     }
@@ -67,7 +61,7 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket> {
 
     @Override
     public boolean hasStableIds() {
-//        tcLog.d( "hasStableIds");
+//        tcLog.logCall();
         return true;
     }
 
@@ -80,8 +74,7 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket> {
     }
 
     public Ticket getTicket(int i) {
-        tcLog.d("mTickets = " + mTickets);
-        tcLog.d("getTicket i = " + i);
+        tcLog.d("getTicket i = " + i+" mTickets = " + mTickets);
         return (mTickets != null ? mTickets.getTicket(i) : null);
     }
 

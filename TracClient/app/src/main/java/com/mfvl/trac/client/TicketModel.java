@@ -48,13 +48,22 @@ public class TicketModel implements Serializable {
         active = new Semaphore(1, true);
     }
 
-    public static TicketModel getInstance(TracHttpClient tracClient) {
+    public static TicketModel getInstance(TracHttpClient tracClient,final OnTicketModelListener oc) {
         tcLog.d("new tracClient = " + tracClient);
         if (_instance == null || tracClient.equals(_tracClient)) {
             _instance = new TicketModel(tracClient);
         }
-        if (!_hasData && active.availablePermits() > 0) {
-            _instance.loadModelData();
+        if (_hasData) {
+            oc.onTicketModelLoaded(_instance);
+        } else {
+            if (active.availablePermits() > 0) {
+                _instance.loadModelData();
+            } else {
+                active.acquireUninterruptibly();
+                active.release();
+                oc.onTicketModelLoaded(_instance);
+            }
+            oc.onTicketModelLoaded(_instance);
         }
         return _instance;
     }

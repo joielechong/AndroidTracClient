@@ -25,7 +25,7 @@ public class Tickets {
     public TicketList ticketList = null;
 
     public Tickets() {
-        tcLog.d("create");
+        tcLog.logCall();
         initList();
     }
 

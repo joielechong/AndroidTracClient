@@ -38,19 +38,15 @@ public class SortFragment extends SpecFragment<SortSpec> {
     private Spinner addSpinner = null;
 
     @Override
-    public void onAttach(Context activity) {
-        super.onAttach(activity);
-//        tcLog.d("onAttach(C)");
-        onMyAttach(SORTLISTNAME);
-    }
+    public String keyName() {return SORTLISTNAME;}
 
+/*
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-//        tcLog.d("onAttach(A)");
-        onMyAttach(SORTLISTNAME);
+    public void onMyAttach(Context activity) {
+        keyName=SORTLISTNAME;
+        onMyAttach(activity);
     }
-
+*/
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.storebutton:

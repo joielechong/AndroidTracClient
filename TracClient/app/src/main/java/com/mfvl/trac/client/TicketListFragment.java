@@ -39,7 +39,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.ShareActionProvider;
 import android.widget.TextView;
 
 public class TicketListFragment extends TracClientFragment
@@ -76,29 +75,16 @@ public class TicketListFragment extends TracClientFragment
     private int scrollPosition = 0;
     private boolean scrolling = false;
     private boolean hasScrolled = false;
-    private ShareActionProvider listShare = null;
     private SwipeRefreshLayout swipeLayout;
 
-    @Override
-    public void onAttach(Context activity) {
-        super.onAttach(activity);
-        tcLog.d("(C)");
-        onMyAttach();
-    }
-
-    private void onMyAttach() {
+    public void onMyAttach(Context activity) {
+        tcLog.logCall();
+        super.onMyAttach(activity);
         if (fragmentArgs != null) {
             if (fragmentArgs.containsKey("TicketArg")) {
                 selectTicket(fragmentArgs.getInt("TicketArg"));
             }
         }
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        tcLog.d("(A)");
-        onMyAttach();
     }
 
     @Override
@@ -112,7 +98,6 @@ public class TicketListFragment extends TracClientFragment
             zoeken = savedInstanceState.getBoolean(ZOEKENNAME);
             zoektext = savedInstanceState.getString(ZOEKTEXTNAME);
             scrollPosition = savedInstanceState.getInt(SCROLLPOSITIONNAME);
-            // tcLog.d("scrollPosition <= "+scrollPosition);
         }
         if (zoeken) {
             filterText.setVisibility(View.VISIBLE);
@@ -156,9 +141,9 @@ public class TicketListFragment extends TracClientFragment
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         tcLog.d("item=" + item.getTitle());
-        final int itemId = item.getItemId();
 
-        if (itemId == R.id.tlselect) {
+		switch (item.getItemId()) {
+			case R.id.tlselect:
             final EditText input = new EditText(context);
             input.setInputType(InputType.TYPE_CLASS_NUMBER);
 
@@ -179,9 +164,27 @@ public class TicketListFragment extends TracClientFragment
                         .setNegativeButton(R.string.cancel, null)
                         .show();
             }
-//        } else if (itemId == R.id.tlshare) {
-//            shareList();
-        } else if (itemId == R.id.tlzoek) {
+			break;
+			
+			case R.id.tlshare:
+			String lijst = "";
+
+			if (dataAdapter != null) {
+				final Intent sendIntent = new Intent(Intent.ACTION_SEND);
+				for (Ticket t : dataAdapter.getTicketList()) {
+					try {
+						lijst += t.getTicketnr() + ";" + t.getString("status") + ";" + t.getString("summary") + "\r\n";
+					} catch (final Exception e) {
+						tcLog.e("exception ticket = "+t, e);
+					}
+				}
+				sendIntent.putExtra(Intent.EXTRA_TEXT, lijst);
+				sendIntent.setType("text/plain");
+				startActivity(sendIntent);
+			}
+			break;
+			
+			case R.id.tlzoek:
             tcLog.d("zoeken =" + zoeken);
             zoeken = !zoeken;
             if (zoeken) {
@@ -200,7 +203,7 @@ public class TicketListFragment extends TracClientFragment
             }
             zoektext = null;
             filterText.setText(null);
-        } else {
+			default:
             return super.onOptionsItemSelected(item);
         }
         return true;
@@ -215,11 +218,11 @@ public class TicketListFragment extends TracClientFragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        tcLog.d("savedInstanceState = " + savedInstanceState);
+        tcLog.logCall();
         final View view = inflater.inflate(R.layout.list_view, container, false);
 
         listView = (ListView) view.findViewById(R.id.listOfTickets);
-        tcLog.d("listView = " + listView);
+//        tcLog.d("listView = " + listView);
         registerForContextMenu(listView);
         scrolling = false;
         hasScrolled = false;
@@ -232,14 +235,11 @@ public class TicketListFragment extends TracClientFragment
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        tcLog.d("view = " + view + " sis = " + savedInstanceState);
+        tcLog.logCall();
         super.onViewCreated(view, savedInstanceState);
         swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
         swipeLayout.setOnRefreshListener(this);
-        swipeLayout.setColorSchemeResources(R.color.swipe_blue,
-                                            R.color.swipe_green,
-                                            R.color.swipe_orange,
-                                            R.color.swipe_red);
+        swipeLayout.setColorSchemeResources(R.color.swipe_blue,R.color.swipe_green,R.color.swipe_orange,R.color.swipe_red);
         listener.listViewCreated();
     }
 
@@ -256,12 +256,11 @@ public class TicketListFragment extends TracClientFragment
 
     @Override
     public void onSaveInstanceState(Bundle savedState) {
-        tcLog.e("in = " + savedState);
+        tcLog.logCall();
         super.onSaveInstanceState(savedState);
         savedState.putBoolean(ZOEKENNAME, zoeken);
         savedState.putString(ZOEKTEXTNAME, zoektext);
         savedState.putInt(SCROLLPOSITIONNAME, scrollPosition);
-        tcLog.d("out = " + savedState);
     }
 
     @Override
@@ -269,7 +268,6 @@ public class TicketListFragment extends TracClientFragment
         tcLog.logCall();
         super.onPause();
         scrollPosition = listView.getFirstVisiblePosition();
-        // tcLog.d("onPause scrollPosition <= "+scrollPosition);
     }
 
     @Override
@@ -292,19 +290,6 @@ public class TicketListFragment extends TracClientFragment
         tcLog.logCall();
         inflater.inflate(R.menu.ticketlistmenu, menu);
         super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        tcLog.logCall();
-        super.onPrepareOptionsMenu(menu);
-        listener.setActionProvider(menu, R.id.tlshare);
-        final MenuItem itemList = menu.findItem(R.id.tlshare);
-        if (itemList != null) {
-            tcLog.d("item = " + itemList);
-            listShare = (ShareActionProvider) itemList.getActionProvider();
-            updateShareActionProvider();
-        }
     }
 
     @Override
@@ -334,26 +319,16 @@ public class TicketListFragment extends TracClientFragment
                     return true;
 
                 case R.id.dfshare:
-                    Intent i = listener.shareTicket(t);
-                    if (i != null) {
-                        startActivity(i);
-                    }
+					final Intent sendIntent = new Intent(Intent.ACTION_SEND);
+					sendIntent.putExtra(Intent.EXTRA_TEXT, t.toText());
+					sendIntent.setType("text/plain");
+					startActivity(sendIntent);
                     return true;
 
                 default:
             }
         }
         return super.onContextItemSelected(item);
-    }
-
-    private void updateShareActionProvider() {
-        tcLog.logCall();
-        Intent i = listener.shareList();
-        tcLog.d("SAP = " + listShare + " " + i);
-        if (listShare != null && i != null) {
-            listShare.setShareIntent(i);
-            listShare.setShareHistoryFileName("custom_share_history_list.xml");
-        }
     }
 
     private void setScroll() {
@@ -369,7 +344,6 @@ public class TicketListFragment extends TracClientFragment
             zetZoeken();
             setStatus(listener.getTicketContentCount() + "/" + listener.getTicketCount());
 //			setAdapter(listener.getAdapter());
-            updateShareActionProvider();
             listener.getAdapter().notifyDataSetChanged();
             getView().invalidate();
             listView.invalidate();

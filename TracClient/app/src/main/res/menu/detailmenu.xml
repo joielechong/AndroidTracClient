@@ -32,7 +32,6 @@
         android:title="@string/showempty"/>
     <item
         android:id="@+id/dfshare"
-        android:actionProviderClass="android.widget.ShareActionProvider"
         android:icon="@android:drawable/ic_menu_share"
         android:menuCategory="container"
         android:showAsAction="ifRoom"

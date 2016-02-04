@@ -38,7 +38,6 @@ import static com.mfvl.trac.client.Const.CURRENT_USERNAME;
 
 public class NewTicketFragment extends TracClientFragment {
     private final static int EXTRA = 1000;
-    private TicketModel tm;
     private String username = null;
 
     @Override
@@ -68,7 +67,7 @@ public class NewTicketFragment extends TracClientFragment {
         super.onActivityCreated(savedInstanceState);
         //tcLog.d("sis = " + savedInstanceState);
         View view = getView();
-        tm = listener.getTicketModel();
+//        tm = listener.getTicketModel();
         final Button storButton = (Button) view.findViewById(R.id.storebutton);
         storButton.setOnClickListener(this);
         final TableLayout tl = (TableLayout) view.findViewById(R.id.newTickTable);
@@ -81,28 +80,30 @@ public class NewTicketFragment extends TracClientFragment {
             final TicketModelVeld veld = tm.getVeld(i);
             final String veldnaam = veld.label();
             int extra = 0;
+            tcLog.d("i = "+i+" veld = "+veld);
 
             if (!Arrays.asList(ignoreFields).contains(veldnaam)) {
                 if (veld.options() != null) {
                     List<Object> waardes = veld.options();
                     boolean optional = veld.optional();
 
-                    final Spinner v1 = (Spinner) LayoutInflater.from(context).inflate(
+                    v = (TableRow) LayoutInflater.from(context).inflate(
                             R.layout.spinfield, tl, false);
+                    Spinner v1 = (Spinner)v.findViewById(R.id.nt_val);
                     v1.setPrompt(veldnaam);
                     v1.setAdapter(makeComboAdapter(context, waardes, optional));
-
-                    v = v1;
+                    v1.setId(i + 300);
                 } else {
                     v = LayoutInflater.from(context).inflate((veldnaam.equals(
                             "Description") ? R.layout.descrfield : R.layout.stdfield), tl, false);
-                    extra = EXTRA;
+                    v.findViewById(R.id.nt_val).setId(i + 300 +EXTRA);
                 }
+                ((TextView)v.findViewById(R.id.nt_nm)).setText(veldnaam);
+                tl.addView(v);
                 if (first) {
                     v.requestFocus();
                     first = false;
                 }
-                makeRow(tl, veldnaam, v, i + extra);
             }
         }
         view.invalidate();
@@ -170,25 +171,6 @@ public class NewTicketFragment extends TracClientFragment {
                 }
             }
         }.start();
-    }
-
-    private void makeRow(TableLayout tl, final String veldnaam, View tv2, final int id) {
-        if (veldnaam != null) {
-            final TableRow tr1 = new TableRow(context);
-
-            tr1.setId(id + 100);
-            final TextView tv1 = new TextView(context, null, android.R.attr.textAppearanceMedium);
-
-            tv1.setId(id + 200);
-            tr1.addView(tv1);
-            tv1.setText(veldnaam);
-            tl.addView(tr1);
-        }
-        final TableRow tr2 = new TableRow(context);
-
-        tv2.setId(id + 300);
-        tr2.addView(tv2);
-        tl.addView(tr2);
     }
 
 }

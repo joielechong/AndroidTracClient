@@ -75,7 +75,6 @@ public class DetailFragment extends TracClientFragment
     private final List<modifiedString> values = new ArrayList<>();
     private int ticknr = -1;
     private boolean showEmptyFields = false;
-    private TicketModel tm = null;
     private ModVeldMap modVeld;
     private boolean sendNotification = false;
     private boolean didUpdate = false;
@@ -117,7 +116,7 @@ public class DetailFragment extends TracClientFragment
 
     @Override
     public void onRefresh() {
-//	tcLog.d( "onRefresh");
+//		tcLog.logCall();
         refreshTicket();
         swipeLayout.setRefreshing(false);
     }
@@ -152,7 +151,7 @@ public class DetailFragment extends TracClientFragment
         super.onActivityCreated(savedInstanceState);
         tcLog.d("savedInstanceState = " + savedInstanceState);
 
-        tm = listener.getTicketModel();
+//        tm = listener.getTicketModel();
         View view = getView();
         CheckBox updNotify = (CheckBox) view.findViewById(R.id.updNotify);
         updNotify.setOnCheckedChangeListener(this);
@@ -178,74 +177,102 @@ public class DetailFragment extends TracClientFragment
     }
 
     private void display_and_refresh_ticket() {
-        _ticket = listener.getTicket(ticknr);
-        displayTicket();
+		new Thread() {
+			@Override
+			public void run() {
+				listener.getTicket(ticknr,new OnTicketLoadedListener() {
+						@Override
+						public void onTicketLoaded (final Ticket t) {
+							_ticket = t;
+							context.runOnUiThread(new Runnable() {
+								@Override
+								public void run() {
+									displayTicket();
+									if (didUpdate) {
+										refreshTicket();
+									}
+									didUpdate = false;
 
-        if (didUpdate) {
-            context.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    refreshTicket();
-                }
-            });
-            didUpdate = false;
-        }
-
-        try {
-            currentView.findViewById(R.id.modveld).setVisibility(
-                    modVeld.isEmpty() ? View.GONE : View.VISIBLE);
-        } catch (NullPointerException ignored) {
-        }
-        setSelect(modVeld.isEmpty());
+									try {
+										currentView.findViewById(R.id.modveld).setVisibility(
+											modVeld.isEmpty() ? View.GONE : View.VISIBLE);
+									} catch (NullPointerException ignored) {
+									}
+									setSelect(modVeld.isEmpty());
+								}
+							});
+						}
+				});
+			}
+		}.start();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // tcLog.d(item.toString());
 
-        if (item.getItemId() == R.id.dfupdate) {
-            if (_ticket != null) {
-                listener.onUpdateTicket(_ticket);
-                didUpdate = true;
-            }
-        } else if (item.getItemId() == R.id.dfselect) {
-            if (!listener.isFinishing()) {
+		switch (item.getItemId()) {
+			case R.id.dfupdate:
+			if (_ticket != null) {
+				listener.onUpdateTicket(_ticket);
+				didUpdate = true;
+			}
+			break;
+				
+			case R.id.dfselect:
+			if (!listener.isFinishing()) {
 
-                final EditText input = new EditText(context);
-                input.setInputType(InputType.TYPE_CLASS_NUMBER);
+				final EditText input = new EditText(context);
+				input.setInputType(InputType.TYPE_CLASS_NUMBER);
 
-                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-                alertDialogBuilder.setTitle(R.string.chooseticket)
-                        .setMessage(R.string.chooseticknr)
-                        .setView(input)
-                        .setCancelable(false)
-                        .setNegativeButton(R.string.cancel, null)
-                        .setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int id) {
-                                try {
-                                    final int newTicket = Integer.parseInt(
-                                            input.getText().toString());
-                                    // selectTicket(ticknr);
-                                    listener.getTicket(newTicket);
-                                } catch (final Exception e) {// noop keep old ticketnr
-                                }
-                            }
-                        })
-                        .show();
-            }
-        } else if (item.getItemId() == R.id.dfattach) {
+				final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+				alertDialogBuilder.setTitle(R.string.chooseticket)
+						.setMessage(R.string.chooseticknr)
+						.setView(input)
+						.setCancelable(false)
+						.setNegativeButton(R.string.cancel, null)
+						.setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int id) {
+								try {
+									final int newTicket = Integer.parseInt(
+											input.getText().toString());
+									// selectTicket(ticknr);
+									listener.getTicket(newTicket,null);
+								} catch (final Exception e) {// noop keep old ticketnr
+								}
+							}
+						})
+						.show();
+			}
+			break;
+				
+			case R.id.dfattach:
             if (_ticket != null) {
                 listener.onChooserSelected(this);
             }
-        } else if (item.getItemId() == R.id.dfrefresh) {
+			break;
+			
+			
+			case R.id.dfrefresh:
             refreshTicket();
-        } else if (item.getItemId() == R.id.dfempty) {
+			break;
+			
+			case R.id.dfempty:
             item.setChecked(!item.isChecked());
             showEmptyFields = item.isChecked();
 // 			tcLog.d( "showEmptyFields = "+showEmptyFields);
             displayTicket();
-        } else {
+			break;
+			
+			case R.id.dfshare:
+			final Intent sendIntent = new Intent(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, _ticket.toText());
+			sendIntent.setType("text/plain");
+			startActivity(sendIntent);
+			break;
+			
+			default:
             return super.onOptionsItemSelected(item);
         }
         return true;
@@ -333,7 +360,7 @@ public class DetailFragment extends TracClientFragment
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         final modifiedString t = (modifiedString) parent.getItemAtPosition(position);
 
-        tcLog.d("position = " + position);
+//        tcLog.d("position = " + position);
         if (t.length() >= 8 && "bijlage ".equals(t.substring(0, 8))) {
             return false;
         } else if (t.length() >= 8 && "comment:".equals(t.substring(0, 8))) {
@@ -350,7 +377,7 @@ public class DetailFragment extends TracClientFragment
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         final modifiedString t = (modifiedString) parent.getItemAtPosition(position);
 
-        tcLog.d("position = " + position);
+//        tcLog.d("position = " + position);
         if (t.length() >= 8 && "bijlage ".equals(t.substring(0, 8))) {
             final int d = t.indexOf(":");
             final int bijlagenr = Integer.parseInt(t.substring(8, d));
@@ -400,7 +427,7 @@ public class DetailFragment extends TracClientFragment
                             startActivity(j);
                         }
                     } catch (final Exception e) {
-                        tcLog.w(context.getString(R.string.ioerror) + ": " + filename, e);
+                        tcLog.e(context.getString(R.string.ioerror) + ": " + filename, e);
                         showAlertBox(R.string.notfound, R.string.sdcardmissing, null);
                     } finally {
                         listener.stopProgressBar();
@@ -683,7 +710,6 @@ public class DetailFragment extends TracClientFragment
             });
             return true;
         } else {
-            tcLog.d("returned false");
             return false;
         }
     }
