@@ -48,7 +48,7 @@ public class TicketModel implements Serializable {
         active = new Semaphore(1, true);
     }
 
-    public static TicketModel getInstance(TracHttpClient tracClient,final OnTicketModelListener oc) {
+    public static TicketModel getInstance(TracHttpClient tracClient, final OnTicketModelListener oc) {
         tcLog.d("new tracClient = " + tracClient);
         if (_instance == null || tracClient.equals(_tracClient)) {
             _instance = new TicketModel(tracClient);
@@ -65,11 +65,6 @@ public class TicketModel implements Serializable {
             }
             oc.onTicketModelLoaded(_instance);
         }
-        return _instance;
-    }
-
-    public static TicketModel getInstance() {
-        tcLog.d("old tracClient = " + _tracClient);
         return _instance;
     }
 
@@ -121,7 +116,7 @@ public class TicketModel implements Serializable {
         return s;
     }
 
-    public void wacht() {
+    private void wacht() {
         if (active.availablePermits() == 0) {
             active.acquireUninterruptibly();
             active.release();

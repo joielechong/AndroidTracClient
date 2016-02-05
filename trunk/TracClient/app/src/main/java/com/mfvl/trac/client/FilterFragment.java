@@ -16,7 +16,6 @@
 
 package com.mfvl.trac.client;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -51,7 +50,9 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
     private Spinner addSpinner;
 
     @Override
-    public String keyName() {return FILTERLISTNAME;}
+    public String keyName() {
+        return FILTERLISTNAME;
+    }
 
 /*
     @Override

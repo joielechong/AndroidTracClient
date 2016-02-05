@@ -19,9 +19,9 @@ package com.mfvl.trac.client;
 import java.io.Serializable;
 
 abstract public class Spec extends TcObject implements Serializable, Cloneable {
-    protected String _veld;
+    String _veld;
 
-    public Spec(String veld) {
+    Spec(String veld) {
         _veld = veld;
     }
 

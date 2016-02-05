@@ -177,103 +177,103 @@ public class DetailFragment extends TracClientFragment
     }
 
     private void display_and_refresh_ticket() {
-		new Thread() {
-			@Override
-			public void run() {
-				listener.getTicket(ticknr,new OnTicketLoadedListener() {
-						@Override
-						public void onTicketLoaded (final Ticket t) {
-							_ticket = t;
-							context.runOnUiThread(new Runnable() {
-								@Override
-								public void run() {
-									displayTicket();
-									if (didUpdate) {
-										refreshTicket();
-									}
-									didUpdate = false;
+        new Thread() {
+            @Override
+            public void run() {
+                listener.getTicket(ticknr, new OnTicketLoadedListener() {
+                    @Override
+                    public void onTicketLoaded(final Ticket t) {
+                        _ticket = t;
+                        context.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                displayTicket();
+                                if (didUpdate) {
+                                    refreshTicket();
+                                }
+                                didUpdate = false;
 
-									try {
-										currentView.findViewById(R.id.modveld).setVisibility(
-											modVeld.isEmpty() ? View.GONE : View.VISIBLE);
-									} catch (NullPointerException ignored) {
-									}
-									setSelect(modVeld.isEmpty());
-								}
-							});
-						}
-				});
-			}
-		}.start();
+                                try {
+                                    currentView.findViewById(R.id.modveld).setVisibility(
+                                            modVeld.isEmpty() ? View.GONE : View.VISIBLE);
+                                } catch (NullPointerException ignored) {
+                                }
+                                setSelect(modVeld.isEmpty());
+                            }
+                        });
+                    }
+                });
+            }
+        }.start();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // tcLog.d(item.toString());
 
-		switch (item.getItemId()) {
-			case R.id.dfupdate:
-			if (_ticket != null) {
-				listener.onUpdateTicket(_ticket);
-				didUpdate = true;
-			}
-			break;
-				
-			case R.id.dfselect:
-			if (!listener.isFinishing()) {
+        switch (item.getItemId()) {
+            case R.id.dfupdate:
+                if (_ticket != null) {
+                    listener.onUpdateTicket(_ticket);
+                    didUpdate = true;
+                }
+                break;
 
-				final EditText input = new EditText(context);
-				input.setInputType(InputType.TYPE_CLASS_NUMBER);
+            case R.id.dfselect:
+                if (!listener.isFinishing()) {
 
-				final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-				alertDialogBuilder.setTitle(R.string.chooseticket)
-						.setMessage(R.string.chooseticknr)
-						.setView(input)
-						.setCancelable(false)
-						.setNegativeButton(R.string.cancel, null)
-						.setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int id) {
-								try {
-									final int newTicket = Integer.parseInt(
-											input.getText().toString());
-									// selectTicket(ticknr);
-									listener.getTicket(newTicket,null);
-								} catch (final Exception e) {// noop keep old ticketnr
-								}
-							}
-						})
-						.show();
-			}
-			break;
-				
-			case R.id.dfattach:
-            if (_ticket != null) {
-                listener.onChooserSelected(this);
-            }
-			break;
-			
-			
-			case R.id.dfrefresh:
-            refreshTicket();
-			break;
-			
-			case R.id.dfempty:
-            item.setChecked(!item.isChecked());
-            showEmptyFields = item.isChecked();
+                    final EditText input = new EditText(context);
+                    input.setInputType(InputType.TYPE_CLASS_NUMBER);
+
+                    final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+                    alertDialogBuilder.setTitle(R.string.chooseticket)
+                            .setMessage(R.string.chooseticknr)
+                            .setView(input)
+                            .setCancelable(false)
+                            .setNegativeButton(R.string.cancel, null)
+                            .setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int id) {
+                                    try {
+                                        final int newTicket = Integer.parseInt(
+                                                input.getText().toString());
+                                        // selectTicket(ticknr);
+                                        listener.getTicket(newTicket, null);
+                                    } catch (final Exception e) {// noop keep old ticketnr
+                                    }
+                                }
+                            })
+                            .show();
+                }
+                break;
+
+            case R.id.dfattach:
+                if (_ticket != null) {
+                    listener.onChooserSelected(this);
+                }
+                break;
+
+
+            case R.id.dfrefresh:
+                refreshTicket();
+                break;
+
+            case R.id.dfempty:
+                item.setChecked(!item.isChecked());
+                showEmptyFields = item.isChecked();
 // 			tcLog.d( "showEmptyFields = "+showEmptyFields);
-            displayTicket();
-			break;
-			
-			case R.id.dfshare:
-			final Intent sendIntent = new Intent(Intent.ACTION_SEND);
-            sendIntent.putExtra(Intent.EXTRA_TEXT, _ticket.toText());
-			sendIntent.setType("text/plain");
-			startActivity(sendIntent);
-			break;
-			
-			default:
-            return super.onOptionsItemSelected(item);
+                displayTicket();
+                break;
+
+            case R.id.dfshare:
+                final Intent sendIntent = new Intent(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, _ticket.toText());
+                sendIntent.setType("text/plain");
+                startActivity(sendIntent);
+                break;
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
         return true;
     }

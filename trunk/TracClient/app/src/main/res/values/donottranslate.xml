@@ -8,4 +8,5 @@
     <string name="title_text">TRAC\nCLIENT</string>
     <string name="auteur">Michiel van Loon</string>
     <string name="logfile">tc-log.txt</string>
+    <string name="serviceAction">com.mfvl.trac.client.action</string>
 </resources>

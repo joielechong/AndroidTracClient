@@ -94,13 +94,13 @@ public class UpdateTicketFragment extends TracClientFragment {
             optionVal = null;
             spinPosition = 0;
         }
-        listener.getTicket(ticknr,new OnTicketLoadedListener() {
-			@Override 
-			public void onTicketLoaded(Ticket t) {
-				_ticket = t;
-				displayView(button, spinPosition, optionVal);
-			}
-		});
+        listener.getTicket(ticknr, new OnTicketLoadedListener() {
+            @Override
+            public void onTicketLoaded(Ticket t) {
+                _ticket = t;
+                displayView(button, spinPosition, optionVal);
+            }
+        });
     }
 
     private void displayView(final int checkedButton, final int spinPosition, final String optionVal) {

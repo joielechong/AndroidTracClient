@@ -22,7 +22,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
-public class TracJSONObject extends JSONObject {
+class TracJSONObject extends JSONObject {
 
     TracJSONObject() {
         super();

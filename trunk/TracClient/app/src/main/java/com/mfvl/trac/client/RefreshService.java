@@ -49,27 +49,6 @@ interface OnTicketModelListener {
 public class RefreshService extends Service implements Handler.Callback {
 
 
-    private class TicketLoaderLock extends ReentrantLock {
-        TicketLoaderLock() {
-            super();
-            tcLog.logCall();
-        }
-
-        public void killOwner() {
-            tcLog.logCall();
-            Thread t = super.getOwner();
-            t.interrupt();
-            tcLog.toast("Trying to interrupt ticketlist loading");
-        }
-    }
-
-    public class RefreshBinder extends Binder {
-        RefreshService getService() {
-            // Return this instance of LocalService so clients can call public methods
-            return RefreshService.this;
-        }
-    }
-
     public static final String refreshAction = "LIST_REFRESH";
     private final static String TICKET_GET = "GET";
     private final static String TICKET_CHANGE = "CHANGE";
@@ -134,7 +113,7 @@ public class RefreshService extends Service implements Handler.Callback {
     @Override
     public IBinder onBind(Intent intent) {
         int cmd = intent.getIntExtra(INTENT_CMD, -1);
-        tcLog.d("intent = " + intent+" cmd = "+cmd);
+        tcLog.d("intent = " + intent + " cmd = " + cmd);
         if (cmd != -1) {
             int arg1 = 0;
             int arg2 = 0;
@@ -148,7 +127,7 @@ public class RefreshService extends Service implements Handler.Callback {
             if (intent.hasExtra(INTENT_OBJ)) {
                 obj = intent.getSerializableExtra(INTENT_OBJ);
             }
-            send(Message.obtain(null,cmd,arg1,arg2,obj));
+            send(Message.obtain(null, cmd, arg1, arg2, obj));
         }
         return mBinder;
     }
@@ -216,7 +195,7 @@ public class RefreshService extends Service implements Handler.Callback {
     }
 
     private void loadTickets() {
-        tcLog.d(mLoginProfile+"\ninvalid = " + invalid);
+        tcLog.d(mLoginProfile + "\ninvalid = " + invalid);
         if (invalid) {
             mTickets = new Tickets();
             mTickets.resetCache();
@@ -350,13 +329,13 @@ public class RefreshService extends Service implements Handler.Callback {
 
     private void buildCall(JSONArray multiCall, int ticknr) throws JSONException {
         multiCall
-                .put(new TracJSONObject().makeComplexCall(TICKET_GET + "_" + ticknr, "ticket.get",ticknr))
-                .put(new TracJSONObject().makeComplexCall(TICKET_CHANGE + "_" + ticknr,"ticket.changeLog", ticknr))
-                .put(new TracJSONObject().makeComplexCall(TICKET_ATTACH + "_" + ticknr,"ticket.listAttachments", ticknr))
-                .put(new TracJSONObject().makeComplexCall(TICKET_ACTION + "_" + ticknr,"ticket.getActions", ticknr));
+                .put(new TracJSONObject().makeComplexCall(TICKET_GET + "_" + ticknr, "ticket.get", ticknr))
+                .put(new TracJSONObject().makeComplexCall(TICKET_CHANGE + "_" + ticknr, "ticket.changeLog", ticknr))
+                .put(new TracJSONObject().makeComplexCall(TICKET_ATTACH + "_" + ticknr, "ticket.listAttachments", ticknr))
+                .put(new TracJSONObject().makeComplexCall(TICKET_ACTION + "_" + ticknr, "ticket.getActions", ticknr));
     }
 
-    public Tickets changedTickets(String isoTijd) {
+    private Tickets changedTickets(String isoTijd) {
         try {
             final JSONArray datum = new JSONArray();
 
@@ -368,7 +347,7 @@ public class RefreshService extends Service implements Handler.Callback {
             final JSONArray param = new JSONArray();
 
             param.put(ob);
-            final JSONArray jsonTicketlist = tracClient.callJSONArray("ticket.getRecentChanges",param);
+            final JSONArray jsonTicketlist = tracClient.callJSONArray("ticket.getRecentChanges", param);
 
             Tickets t = null;
 
@@ -465,7 +444,7 @@ public class RefreshService extends Service implements Handler.Callback {
                     invalid = !lp.equals(mLoginProfile);
                     mLoginProfile = lp;
                     tracClient = new TracHttpClient(mLoginProfile);
-                    TicketModel tm = TicketModel.getInstance(tracClient, new OnTicketModelListener() {
+                    TicketModel.getInstance(tracClient, new OnTicketModelListener() {
                         @Override
                         public void onTicketModelLoaded(TicketModel tm) {
                             dispatchMessage(Message.obtain(null, MSG_SET_TICKET_MODEL, tm));
@@ -497,7 +476,7 @@ public class RefreshService extends Service implements Handler.Callback {
 
     private void dispatchMessage(Message msg) {
         msg.setTarget(TracStart.tracStartHandler);
-        tcLog.d("msg = "+msg.what);
+        tcLog.d("msg = " + msg.what);
         msg.sendToTarget();
     }
 
@@ -511,5 +490,26 @@ public class RefreshService extends Service implements Handler.Callback {
 
     private void sendMessageToUI(int message, int arg1, int arg2, Object o) {
         dispatchMessage(Message.obtain(null, message, arg1, arg2, o));
+    }
+
+    private class TicketLoaderLock extends ReentrantLock {
+        TicketLoaderLock() {
+            super();
+            tcLog.logCall();
+        }
+
+        public void killOwner() {
+            tcLog.logCall();
+            Thread t = super.getOwner();
+            t.interrupt();
+            tcLog.toast("Trying to interrupt ticketlist loading");
+        }
+    }
+
+    public class RefreshBinder extends Binder {
+        RefreshService getService() {
+            // Return this instance of LocalService so clients can call public methods
+            return RefreshService.this;
+        }
     }
 }

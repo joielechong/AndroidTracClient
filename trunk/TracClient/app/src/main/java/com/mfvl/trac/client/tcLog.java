@@ -32,16 +32,15 @@ public class tcLog {
                                                                    Locale.US);
     private static Activity _c = null;
     private static String debugString = "";
-    final static Object o=null;
 
     public static void setContext(Activity c) {
         _c = c;
     }
 
     public static String getDebug() {
-		synchronized (o) {
-			return debugString;
-		}
+        synchronized (s) {
+            return debugString;
+        }
     }
 
     public static void toast(final String string) {
@@ -81,18 +80,18 @@ public class tcLog {
     }
 
     private static void myLog(final String tag, final String message, Throwable tr) {
-		synchronized(o) {
-			final Date dt = new Date();
-			int tid = android.os.Process.myTid();
-			int pid = android.os.Process.myPid();
+        synchronized (s) {
+            final Date dt = new Date();
+            int tid = android.os.Process.myTid();
+            int pid = android.os.Process.myPid();
 
-			dt.setTime(System.currentTimeMillis());
-			final String date = s.format(new Date());
+            dt.setTime(System.currentTimeMillis());
+            final String date = s.format(new Date());
 
-			debugString += "\n" + date + " " + pid + " " + tid + " " + tag
-					+ ("".equals(message) ? "" : ": " + message)
-					+ (tr != null ? "\nException thrown: " + tr.getMessage() + "\n" + getStackTraceString(tr) : "");
-		}
+            debugString += "\n" + date + " " + pid + " " + tid + " " + tag
+                    + ("".equals(message) ? "" : ": " + message)
+                    + (tr != null ? "\nException thrown: " + tr.getMessage() + "\n" + getStackTraceString(tr) : "");
+        }
     }
 
     private static String getStackTraceString(Throwable tr) {
@@ -102,7 +101,7 @@ public class tcLog {
     public static void d(Object msg) {
         String caller = getCaller(2);
         Log.d(caller, (msg == null ? null : msg.toString()));
-        myLog("D." + caller, msg.toString());
+        myLog("D." + caller, (msg == null ? null : msg.toString()));
     }
 
     public static void d(String msg, Throwable tr) {
@@ -178,7 +177,6 @@ public class tcLog {
         try {
             file = TracGlobal.makeExtFilePath(logFilename, false);
             final OutputStream os = new FileOutputStream(file);
-
             os.write(getDebug().getBytes());
             os.close();
             Log.d(caller, "File saved  =  " + file);

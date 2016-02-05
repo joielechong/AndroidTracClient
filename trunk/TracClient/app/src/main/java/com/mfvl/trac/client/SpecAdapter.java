@@ -23,7 +23,7 @@ import android.widget.ListView;
 import java.util.ArrayList;
 
 class SpecAdapter<T extends Spec> extends ArrayAdapter<T> {
-    protected final ArrayList<T> items;
+    final ArrayList<T> items;
     protected ListView listView;
 
     public SpecAdapter(Context context, int textViewResourceId, ArrayList<T> items) {
