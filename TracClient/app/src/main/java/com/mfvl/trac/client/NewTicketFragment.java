@@ -79,26 +79,25 @@ public class NewTicketFragment extends TracClientFragment {
             View v;
             final TicketModelVeld veld = tm.getVeld(i);
             final String veldnaam = veld.label();
-            int extra = 0;
-            tcLog.d("i = "+i+" veld = "+veld);
+//            tcLog.d("i = "+i+" veld = "+veld);
 
             if (!Arrays.asList(ignoreFields).contains(veldnaam)) {
                 if (veld.options() != null) {
                     List<Object> waardes = veld.options();
                     boolean optional = veld.optional();
 
-                    v = (TableRow) LayoutInflater.from(context).inflate(
+                    v = LayoutInflater.from(context).inflate(
                             R.layout.spinfield, tl, false);
-                    Spinner v1 = (Spinner)v.findViewById(R.id.nt_val);
+                    Spinner v1 = (Spinner) v.findViewById(R.id.nt_val);
                     v1.setPrompt(veldnaam);
                     v1.setAdapter(makeComboAdapter(context, waardes, optional));
                     v1.setId(i + 300);
                 } else {
                     v = LayoutInflater.from(context).inflate((veldnaam.equals(
                             "Description") ? R.layout.descrfield : R.layout.stdfield), tl, false);
-                    v.findViewById(R.id.nt_val).setId(i + 300 +EXTRA);
+                    v.findViewById(R.id.nt_val).setId(i + 300 + EXTRA);
                 }
-                ((TextView)v.findViewById(R.id.nt_nm)).setText(veldnaam);
+                ((TextView) v.findViewById(R.id.veldnaam)).setText(veldnaam);
                 tl.addView(v);
                 if (first) {
                     v.requestFocus();

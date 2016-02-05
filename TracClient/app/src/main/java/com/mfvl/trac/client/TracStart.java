@@ -103,11 +103,12 @@ public class TracStart extends Activity implements Handler.Callback,
     private static final String UpdFragmentTag = "Modify_Fragment";
     private static final String FilterFragmentTag = "Filter_Fragment";
     private static final String SortFragmentTag = "Sort_Fragment";
-    private static final  String[] FragmentTags = new String[]{ListFragmentTag, LoginFragmentTag, DetailFragmentTag,
-            NewFragmentTag, UpdFragmentTag,FilterFragmentTag,SortFragmentTag};
+    private static final String[] FragmentTags = new String[]{ListFragmentTag, LoginFragmentTag, DetailFragmentTag,
+            NewFragmentTag, UpdFragmentTag, FilterFragmentTag, SortFragmentTag};
     static public Handler tracStartHandler = null;
     final private Semaphore loadingActive = new Semaphore(1, true);
-    boolean doubleBackToExitPressedOnce = false;
+    private final Semaphore isBinding = new Semaphore(1, true);
+    private boolean doubleBackToExitPressedOnce = false;
     private FrameLayout adViewContainer = null;
     private AdView adView = null;
     private boolean dispAds = true;
@@ -133,8 +134,6 @@ public class TracStart extends Activity implements Handler.Callback,
     private TicketModel tm = null;
     private Messenger mMessenger = null;
     private RefreshService mService = null;
-    private Semaphore isBinding =new Semaphore(1,true);
-
     private final ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -161,19 +160,20 @@ public class TracStart extends Activity implements Handler.Callback,
     private Boolean ticketsLoading = false;
     private TicketListAdapter dataAdapter = null;
     private ProgressDialog progressBar = null;
+    private String action = null;
 
     @SuppressWarnings("unchecked")
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         tcLog.setContext(this);
         tcLog.d("savedInstanceState = " + savedInstanceState);
+        action = getString(R.string.serviceAction);
+        sendMessageToService(-1);
 
         if (DEBUG_MANAGERS) {
             FragmentManager.enableDebugLogging(true);
-//            LoaderManager.enableDebugLogging(true);
         }
-
         TracGlobal.getInstance(getApplicationContext());
         mHandlerThread = new MyHandlerThread("IncomingHandler");
         mHandlerThread.start();
@@ -263,7 +263,8 @@ public class TracStart extends Activity implements Handler.Callback,
                     lp = pdb.findProfile(urlArg);
                 }
                 if (lp == null) {
-                    showAlertBox(R.string.wrongdb, R.string.wrongdbtext1, url + getString(R.string.wrongdbtext2) + urlArg + getString(
+                    showAlertBox(R.string.wrongdb, R.string.wrongdbtext1,
+                                 url + getString(R.string.wrongdbtext2) + urlArg + getString(
                                          R.string.wrongdbtext3));
                     urlArg = null;
                     ticketArg = -1;
@@ -311,33 +312,33 @@ public class TracStart extends Activity implements Handler.Callback,
                     ticketListFragment.setArguments(args);
                 }
                 ft.add(R.id.displayList, ticketListFragment, ListFragmentTag);
+//                tcLog.d("ft.add "+ListFragmentTag);
                 ft.addToBackStack(ListFragmentTag);
             } else {
                 final TracLoginFragment tracLoginFragment = newLoginFrag();
 
                 ft.add(R.id.displayList, tracLoginFragment, LoginFragmentTag);
+//                tcLog.d("ft.add " + LoginFragmentTag);
                 ft.addToBackStack(LoginFragmentTag);
             }
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
             ft.commit();
             tcLog.d("backstack initiated");
         }
-
-//        bindService(new Intent(this, RefreshService.class).setAction(ACTION_START_TIMER), mConnection, Context.BIND_AUTO_CREATE);
         setReferenceTime();
     }
-	
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
 //		tcLog.d("newConfig = "+newConfig);
-		if (dispAds) {
-			if (adView != null) {
-				adViewContainer.removeView(adView);  // first remove old adView
-			}
-			newAdview();
-		}
-	}
+        if (dispAds) {
+            if (adView != null) {
+                adViewContainer.removeView(adView);  // first remove old adView
+            }
+            newAdview();
+        }
+    }
 
     private void initAds() {
         if (dispAds) {
@@ -350,7 +351,7 @@ public class TracStart extends Activity implements Handler.Callback,
                     testDevices = new String[1];
                     testDevices[0] = t;
                 }
-				adViewContainer = (FrameLayout) findViewById(R.id.displayAd);
+                adViewContainer = (FrameLayout) findViewById(R.id.displayAd);
             } catch (final Exception e) {
                 tcLog.e("Problem retrieving Admod information", e);
                 dispAds = false;
@@ -358,9 +359,9 @@ public class TracStart extends Activity implements Handler.Callback,
             }
         }
 
-		dispAds &= (adViewContainer != null);
+        dispAds &= (adViewContainer != null);
         if (dispAds) {
-			newAdview();
+            newAdview();
         }
 
         if (!dispAds) {
@@ -370,36 +371,36 @@ public class TracStart extends Activity implements Handler.Callback,
             }
         }
     }
-	
-	private void newAdview() {
-		adView = new AdView(this);
-		adView.setAdUnitId(adUnitId);
-		adView.setAdSize(AdSize.SMART_BANNER);
 
-		final AdRequest.Builder arb = new AdRequest.Builder();
+    private void newAdview() {
+        adView = new AdView(this);
+        adView.setAdUnitId(adUnitId);
+        adView.setAdSize(AdSize.SMART_BANNER);
 
-		arb.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
-		if (TracGlobal.isDebuggable()) {
-			for (final String t : testDevices) {
-				tcLog.d("testDevice = " + t);
-				arb.addTestDevice(t);
-			}
-		}
-		arb.setGender(AdRequest.GENDER_UNKNOWN);
-		final AdRequest adRequest = arb.build();
+        final AdRequest.Builder arb = new AdRequest.Builder();
 
-		try {
-			adView.loadAd(adRequest);
-			adView.setLayoutParams(adViewContainer.getLayoutParams());
-			adViewContainer.addView(adView);
-		} catch (final Exception e) {
-			tcLog.e("Problem loading AdRequest", e);
-			dispAds = false;
-		}
-	}
+        arb.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
+        if (TracGlobal.isDebuggable()) {
+            for (final String t : testDevices) {
+                tcLog.d("testDevice = " + t);
+                arb.addTestDevice(t);
+            }
+        }
+        arb.setGender(AdRequest.GENDER_UNKNOWN);
+        final AdRequest adRequest = arb.build();
+
+        try {
+            adView.loadAd(adRequest);
+            adView.setLayoutParams(adViewContainer.getLayoutParams());
+            adViewContainer.addView(adView);
+        } catch (final Exception e) {
+            tcLog.e("Problem loading AdRequest", e);
+            dispAds = false;
+        }
+    }
 
     private void startListLoader(boolean newLoad) {
-//        tcLog.d("newLoad = " + newLoad);
+        tcLog.d("newLoad = " + newLoad);
         if (newLoad) {
             tracStartHandler.obtainMessage(MSG_START_LISTLOADER, null).sendToTarget();
         } else {
@@ -407,27 +408,33 @@ public class TracStart extends Activity implements Handler.Callback,
         }
     }
 
-    private void dispatchMessage(Message msg) {
+    private void dispatchMessage(final Message msg) {
         msg.replyTo = mMessenger;
         tcLog.d("mService = " + mService + " msg = " + msg);
         if (mService != null) {
             mService.send(msg);
         } else {
-            isBinding.acquireUninterruptibly();
-            if (mService == null) {
-                tcLog.d("using bindService");
-                bindService(new Intent(TracStart.this,
-                                       RefreshService.class).setAction(ACTION_LOAD_TICKETS)
-                                    .putExtra(INTENT_CMD, msg.what)
-                                    .putExtra(INTENT_ARG1, msg.arg1)
-                                    .putExtra(INTENT_ARG2, msg.arg2)
-                                    .putExtra(INTENT_OBJ, (Serializable) msg.obj),
-                            mConnection, Context.BIND_AUTO_CREATE);
-            } else {
-                isBinding.release();
-                tcLog.d("using sendMessage");
-                mService.send(msg);
-            }
+            new Thread() {
+                @Override
+                public void run() {
+                    isBinding.acquireUninterruptibly();
+                    if (mService == null) {
+                        tcLog.d("using bindService");
+                        bindService(new Intent(TracStart.this,
+                                               RefreshService.class).setAction(action)
+                                            .putExtra(INTENT_CMD, msg.what)
+                                            .putExtra(INTENT_ARG1, msg.arg1)
+                                            .putExtra(INTENT_ARG2, msg.arg2)
+                                            .putExtra(INTENT_OBJ, (Serializable) msg.obj),
+                                    mConnection, Context.BIND_AUTO_CREATE);
+                    } else {
+                        isBinding.release();
+                        tcLog.d("using sendMessage");
+                        mService.send(msg);
+                    }
+                    tcLog.d("Message "+msg+ " sent");
+                }
+            }.start();
         }
     }
 
@@ -448,10 +455,10 @@ public class TracStart extends Activity implements Handler.Callback,
                         @Override
                         public void run() {
 //                            tcLog.d("dismiss");
-							try {
-								ad.dismiss();
-							} catch(Exception ignored) {
-							}
+                            try {
+                                ad.dismiss();
+                            } catch (Exception ignored) {
+                            }
                         }
                     }, 7500);
                     ad.show();
@@ -461,7 +468,7 @@ public class TracStart extends Activity implements Handler.Callback,
     }
 
     private void restoreFragment(Bundle savedInstanceState, final String tag) {
-        tcLog.d("tag = "+tag);
+        tcLog.d("tag = " + tag);
         if (savedInstanceState.containsKey(tag)) {
             try {
                 getFragmentManager().getFragment(savedInstanceState, tag);
@@ -704,13 +711,13 @@ public class TracStart extends Activity implements Handler.Callback,
             case R.id.tlchangehost:
                 onChangeHost();
                 break;
-				
-			case R.id.debug:
-				final Intent sendIntent = new Intent(Intent.ACTION_SEND);
-				sendIntent.putExtra(Intent.EXTRA_TEXT, tcLog.getDebug());
-				sendIntent.setType("text/plain");
-				startActivity(sendIntent);
-				break;
+
+            case R.id.debug:
+                final Intent sendIntent = new Intent(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, tcLog.getDebug());
+                sendIntent.setType("text/plain");
+                startActivity(sendIntent);
+                break;
 
             default:
                 return super.onOptionsItemSelected(item);
@@ -738,22 +745,22 @@ public class TracStart extends Activity implements Handler.Callback,
         tcLog.d("requestCode = " + requestCode + " permissions = " + Arrays.asList(
                 permissions) + " grantResults = " + Arrays.asList(grantResults));
         if (requestCode == REQUEST_CODE_WRITE_EXT) {
-			// If request is cancelled, the result arrays are empty.
-			canWriteSD = (grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED);
+            // If request is cancelled, the result arrays are empty.
+            canWriteSD = (grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED);
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         tcLog.d("requestcode = " + requestCode + " intent = " + data);
-		if (requestCode == REQUEST_CODE_CHOOSER && resultCode == RESULT_OK && data != null) {
-			// Get the URI of the selected file
-			final Uri uri = data.getData();
-			tcLog.d("uri = " + uri);
-			if (_oc != null) {
-				_oc.onFileSelected(uri);
-			}
-		}
+        if (requestCode == REQUEST_CODE_CHOOSER && resultCode == RESULT_OK && data != null) {
+            // Get the URI of the selected file
+            final Uri uri = data.getData();
+            tcLog.d("uri = " + uri);
+            if (_oc != null) {
+                _oc.onFileSelected(uri);
+            }
+        }
     }
 
     private void onChangeHost() {
@@ -1076,9 +1083,9 @@ public class TracStart extends Activity implements Handler.Callback,
         if (t != null && !t.hasdata()) {
             refreshTicket(i);
         }
-		if (oc != null) {
-			oc.onTicketLoaded(t);
-		}
+        if (oc != null) {
+            oc.onTicketLoaded(t);
+        }
     }
 
     @Override
@@ -1369,10 +1376,10 @@ public class TracStart extends Activity implements Handler.Callback,
 
             case MSG_SET_TICKET_MODEL:
                 tm = (TicketModel) msg.obj;
-                for (String f:FragmentTags) {
+                for (String f : FragmentTags) {
                     Fragment frag = getFragmentManager().findFragmentByTag(f);
-                    if (frag != null){
-                        ((TracClientFragment)frag).onNewTicketModel(tm);
+                    if (frag != null) {
+                        ((TracClientFragment) frag).onNewTicketModel(tm);
                     }
                 }
                 break;
@@ -1396,7 +1403,8 @@ public class TracStart extends Activity implements Handler.Callback,
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                     ActivityCompat.requestPermissions(TracStart.this,
                                                       new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                                              Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE_WRITE_EXT);
+                                                              Manifest.permission.READ_EXTERNAL_STORAGE},
+                                                      REQUEST_CODE_WRITE_EXT);
                 }
                 break;
 
@@ -1422,8 +1430,8 @@ public class TracStart extends Activity implements Handler.Callback,
                 loadingActive.acquireUninterruptibly();
                 ticketsLoading = true;
 
-                tcLog.d("MSG_START_LISTLOADER: " + mService );
-                dispatchMessage(Message.obtain(null, MSG_LOAD_TICKETS,currentLoginProfile));
+                tcLog.d("MSG_START_LISTLOADER: " + mService);
+                dispatchMessage(Message.obtain(null, MSG_LOAD_TICKETS, currentLoginProfile));
                 break;
 
             case MSG_REFRESH_LIST:

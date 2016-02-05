@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class TicketModelVeld {
+class TicketModelVeld {
 
     private String _name;
     private String _label;

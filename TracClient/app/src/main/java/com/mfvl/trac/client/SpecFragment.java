@@ -26,17 +26,16 @@ import java.util.ArrayList;
 abstract public class SpecFragment<T extends Spec> extends TracClientFragment {
     private final static String inputSpecText = "inputSpec";
     private final static String outputSpecText = "outputSpec";
+    ArrayList<T> outputSpec = null;
+    ListView listView;
+    View currentView;
+    private ArrayList<T> inputSpec;
 
-    protected ArrayList<T> inputSpec;
-    protected ArrayList<T> outputSpec = null;
-    protected ListView listView;
-    protected View currentView;
-
-    abstract public String keyName();
+    protected abstract String keyName();
 
     @SuppressWarnings("unchecked")
     protected void onMyAttach(Context activity) {
-        tcLog.d("keyName = "+keyName());
+        tcLog.d("keyName = " + keyName());
         super.onMyAttach(activity);
         inputSpec = null;
 

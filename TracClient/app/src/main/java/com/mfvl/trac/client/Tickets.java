@@ -19,7 +19,7 @@ package com.mfvl.trac.client;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class Tickets {
+class Tickets {
 
     private static Map<Integer, Ticket> ticketMap = null;
     public TicketList ticketList = null;
@@ -29,7 +29,7 @@ public class Tickets {
         initList();
     }
 
-    public void initList() {
+    private void initList() {
         tcLog.logCall();
         ticketList = new TicketList();
     }

@@ -41,16 +41,16 @@ import static com.mfvl.trac.client.Const.*;
 
 abstract public class TracClientFragment extends Fragment implements View.OnClickListener {
 
-    public Ticket _ticket = null;
-    public TracStart context;
-    public InterFragmentListener listener = null;
-    protected int large_move;
-    protected Handler tracStartHandler = null;
-    protected int helpFile = -1;
-    protected Bundle fragmentArgs = null;
-    protected TicketModel tm = null;
+    Ticket _ticket = null;
+    TracStart context;
+    InterFragmentListener listener = null;
+    int large_move;
+    int helpFile = -1;
+    Bundle fragmentArgs = null;
+    TicketModel tm = null;
+    private Handler tracStartHandler = null;
 
-    public static void hideSoftKeyboard(Activity activity) {
+    static void hideSoftKeyboard(Activity activity) {
         InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(
                 Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
@@ -72,7 +72,7 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
         onMyAttach(activity);
     }
 
-    protected void onMyAttach(Context activity) {
+    void onMyAttach(Context activity) {
         context = (TracStart) activity;
         TracGlobal.getInstance(context.getApplicationContext());
         listener = (InterFragmentListener) activity;
@@ -105,17 +105,17 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
         return true;
     }
 
-    protected void sendMessageToHandler(int msg, Object o) {
+    void sendMessageToHandler(int msg, Object o) {
         tcLog.d("msg = " + msg + " o = " + o);
         tracStartHandler.obtainMessage(msg, o).sendToTarget();
     }
 
-    protected void showAlertBox(final int titleres, final int message, final String addit) {
+    void showAlertBox(final int titleres, final int message, final String addit) {
         tracStartHandler.obtainMessage(MSG_SHOW_DIALOG, titleres, message, addit).sendToTarget();
     }
 
-    protected SpinnerAdapter makeComboAdapter(Context context, List<Object> waardes, boolean optional) {
-        tcLog.d("waardes = "+waardes+" optional = "+optional);
+    SpinnerAdapter makeComboAdapter(Context context, List<Object> waardes, boolean optional) {
+//        tcLog.d("waardes = "+waardes+" optional = "+optional);
         if (waardes == null) {
             return null;
         }
@@ -136,19 +136,19 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
         return spinAdapter;
     }
 
-    protected void selectTicket(int ticknr) {
+    void selectTicket(int ticknr) {
         tcLog.d("ticknr = " + ticknr);
-        listener.getTicket(ticknr,new OnTicketLoadedListener() {
-			@Override
-			public void onTicketLoaded(Ticket t) {
-				if (t != null && t.hasdata()) {
-					listener.onTicketSelected(t);
-				}				
-			}
-		});
+        listener.getTicket(ticknr, new OnTicketLoadedListener() {
+            @Override
+            public void onTicketLoaded(Ticket t) {
+                if (t != null && t.hasdata()) {
+                    listener.onTicketSelected(t);
+                }
+            }
+        });
     }
 
-    protected void getScreensize(View spin, View but) {
+    void getScreensize(View spin, View but) {
         DisplayMetrics metrics = new DisplayMetrics();
         context.getWindowManager().getDefaultDisplay().getMetrics(metrics);
         int widthPixels = metrics.widthPixels;
@@ -161,11 +161,11 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
                                               drawable.getIntrinsicWidth()));
     }
 
-    protected void setListener(int resid) {
+    void setListener(int resid) {
         setListener(resid, this.getView(), this);
     }
 
-    protected void setListener(int resid, View v, View.OnClickListener c) {
+    void setListener(int resid, View v, View.OnClickListener c) {
 //		tcLog.d( "resid = "+resid+" v = "+v+" c =" + c);
         try {
             v.findViewById(resid).setOnClickListener(c);
@@ -178,7 +178,7 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
         tcLog.d("v =" + v);
     }
 
-    protected void onNewTicketModel(TicketModel newTm) {
+    void onNewTicketModel(TicketModel newTm) {
         tcLog.logCall();
         tm = newTm;
     }

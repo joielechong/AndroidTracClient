@@ -16,7 +16,6 @@
 
 package com.mfvl.trac.client;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -142,69 +141,69 @@ public class TicketListFragment extends TracClientFragment
     public boolean onOptionsItemSelected(MenuItem item) {
         tcLog.d("item=" + item.getTitle());
 
-		switch (item.getItemId()) {
-			case R.id.tlselect:
-            final EditText input = new EditText(context);
-            input.setInputType(InputType.TYPE_CLASS_NUMBER);
+        switch (item.getItemId()) {
+            case R.id.tlselect:
+                final EditText input = new EditText(context);
+                input.setInputType(InputType.TYPE_CLASS_NUMBER);
 
-            if (!listener.isFinishing()) {
-                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-                alertDialogBuilder.setTitle(R.string.chooseticket)
-                        .setMessage(R.string.chooseticknr)
-                        .setView(input)
-                        .setCancelable(false)
-                        .setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int id) {
-                                final int ticknr = Integer.parseInt(input.getText().toString());
+                if (!listener.isFinishing()) {
+                    final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+                    alertDialogBuilder.setTitle(R.string.chooseticket)
+                            .setMessage(R.string.chooseticknr)
+                            .setView(input)
+                            .setCancelable(false)
+                            .setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int id) {
+                                    final int ticknr = Integer.parseInt(input.getText().toString());
 
-                                selectTicket(ticknr);
-                            }
-                        })
-                        .setNegativeButton(R.string.cancel, null)
-                        .show();
-            }
-			break;
-			
-			case R.id.tlshare:
-			String lijst = "";
-
-			if (dataAdapter != null) {
-				final Intent sendIntent = new Intent(Intent.ACTION_SEND);
-				for (Ticket t : dataAdapter.getTicketList()) {
-					try {
-						lijst += t.getTicketnr() + ";" + t.getString("status") + ";" + t.getString("summary") + "\r\n";
-					} catch (final Exception e) {
-						tcLog.e("exception ticket = "+t, e);
-					}
-				}
-				sendIntent.putExtra(Intent.EXTRA_TEXT, lijst);
-				sendIntent.setType("text/plain");
-				startActivity(sendIntent);
-			}
-			break;
-			
-			case R.id.tlzoek:
-            tcLog.d("zoeken =" + zoeken);
-            zoeken = !zoeken;
-            if (zoeken) {
-                tcLog.d("Filter wordt gezet");
-                filterText.addTextChangedListener(filterTextWatcher);
-                filterText.setVisibility(View.VISIBLE);
-                dataAdapter.getFilter().filter("");
-            } else {
-                tcLog.d("Filter wordt verwijderd");
-                filterText.removeTextChangedListener(filterTextWatcher);
-                filterText.setVisibility(View.GONE);
-                if (filterText.isFocused()) {
-                    filterText.clearFocus();
+                                    selectTicket(ticknr);
+                                }
+                            })
+                            .setNegativeButton(R.string.cancel, null)
+                            .show();
                 }
-                dataAdapter.getFilter().filter(null);
-            }
-            zoektext = null;
-            filterText.setText(null);
-			default:
-            return super.onOptionsItemSelected(item);
+                break;
+
+            case R.id.tlshare:
+                String lijst = "";
+
+                if (dataAdapter != null) {
+                    final Intent sendIntent = new Intent(Intent.ACTION_SEND);
+                    for (Ticket t : dataAdapter.getTicketList()) {
+                        try {
+                            lijst += t.getTicketnr() + ";" + t.getString("status") + ";" + t.getString("summary") + "\r\n";
+                        } catch (final Exception e) {
+                            tcLog.e("exception ticket = " + t, e);
+                        }
+                    }
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, lijst);
+                    sendIntent.setType("text/plain");
+                    startActivity(sendIntent);
+                }
+                break;
+
+            case R.id.tlzoek:
+                tcLog.d("zoeken =" + zoeken);
+                zoeken = !zoeken;
+                if (zoeken) {
+                    tcLog.d("Filter wordt gezet");
+                    filterText.addTextChangedListener(filterTextWatcher);
+                    filterText.setVisibility(View.VISIBLE);
+                    dataAdapter.getFilter().filter("");
+                } else {
+                    tcLog.d("Filter wordt verwijderd");
+                    filterText.removeTextChangedListener(filterTextWatcher);
+                    filterText.setVisibility(View.GONE);
+                    if (filterText.isFocused()) {
+                        filterText.clearFocus();
+                    }
+                    dataAdapter.getFilter().filter(null);
+                }
+                zoektext = null;
+                filterText.setText(null);
+            default:
+                return super.onOptionsItemSelected(item);
         }
         return true;
     }
@@ -239,7 +238,7 @@ public class TicketListFragment extends TracClientFragment
         super.onViewCreated(view, savedInstanceState);
         swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
         swipeLayout.setOnRefreshListener(this);
-        swipeLayout.setColorSchemeResources(R.color.swipe_blue,R.color.swipe_green,R.color.swipe_orange,R.color.swipe_red);
+        swipeLayout.setColorSchemeResources(R.color.swipe_blue, R.color.swipe_green, R.color.swipe_orange, R.color.swipe_red);
         listener.listViewCreated();
     }
 
@@ -319,10 +318,10 @@ public class TicketListFragment extends TracClientFragment
                     return true;
 
                 case R.id.dfshare:
-					final Intent sendIntent = new Intent(Intent.ACTION_SEND);
-					sendIntent.putExtra(Intent.EXTRA_TEXT, t.toText());
-					sendIntent.setType("text/plain");
-					startActivity(sendIntent);
+                    final Intent sendIntent = new Intent(Intent.ACTION_SEND);
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, t.toText());
+                    sendIntent.setType("text/plain");
+                    startActivity(sendIntent);
                     return true;
 
                 default:

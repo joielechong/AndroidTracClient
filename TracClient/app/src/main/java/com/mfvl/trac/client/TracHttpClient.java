@@ -25,17 +25,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
-public class TracHttpClient extends JSONRPCHttpClient {
+class TracHttpClient extends JSONRPCHttpClient {
 
-    final static String TICKET_QUERY = "ticket.query";
-    final static String TICKET_CREATE = "ticket.create";
-    final static String TICKET_UPDATE = "ticket.update";
-    final static String TICKET_GETTICKETFIELDS = "ticket.getTicketFields";
-    final static String TICKET_GETATTACHMENT = "ticket.getAttachment";
-    final static String TICKET_PUTATTACHMENT = "ticket.putAttachment";
-    final static String SYSTEM_GETAPIVERSION = "system.getAPIVersion";
+    private final static String TICKET_QUERY = "ticket.query";
+    private final static String TICKET_CREATE = "ticket.create";
+    private final static String TICKET_UPDATE = "ticket.update";
+    private final static String TICKET_GETTICKETFIELDS = "ticket.getTicketFields";
+    private final static String TICKET_GETATTACHMENT = "ticket.getAttachment";
+    private final static String TICKET_PUTATTACHMENT = "ticket.putAttachment";
+    private final static String SYSTEM_GETAPIVERSION = "system.getAPIVersion";
 
-    final static String _JSONCLASS = "__jsonclass__";
+    private final static String _JSONCLASS = "__jsonclass__";
 
     private String current_url = null;
 

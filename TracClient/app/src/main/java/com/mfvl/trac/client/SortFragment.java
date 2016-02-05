@@ -17,7 +17,6 @@
 package com.mfvl.trac.client;
 
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -38,15 +37,17 @@ public class SortFragment extends SpecFragment<SortSpec> {
     private Spinner addSpinner = null;
 
     @Override
-    public String keyName() {return SORTLISTNAME;}
-
-/*
-    @Override
-    public void onMyAttach(Context activity) {
-        keyName=SORTLISTNAME;
-        onMyAttach(activity);
+    public String keyName() {
+        return SORTLISTNAME;
     }
-*/
+
+    /*
+        @Override
+        public void onMyAttach(Context activity) {
+            keyName=SORTLISTNAME;
+            onMyAttach(activity);
+        }
+    */
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.storebutton:

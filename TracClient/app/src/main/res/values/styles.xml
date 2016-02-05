@@ -197,6 +197,7 @@
 
     <style name="FieldName">
         <item name="android:id">@id/veldnaam</item>
+        <item name="android:textColor">@color/help_back</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">@dimen/list_textsize</item>

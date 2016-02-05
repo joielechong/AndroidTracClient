@@ -26,28 +26,51 @@ import java.util.Map;
  *
  * @author Michiel
  */
-public interface InterFragmentListener {
+interface InterFragmentListener {
     void enableDebug();
+
     void onChooserSelected(OnFileSelectedListener oc);
+
     void onLogin(String url, String username, String password, boolean sslHack, boolean sslHostNameHack, String profile);
+
     void onTicketSelected(Ticket ticket);
+
     void onUpdateTicket(Ticket ticket);
+
     void refreshOverview();
+
     void startProgressBar(int resid);
+
     void stopProgressBar();
+
     TicketListAdapter getAdapter();
-    void getTicket(int ticknr,OnTicketLoadedListener oc);
+
+    void getTicket(int ticknr, OnTicketLoadedListener oc);
+
     void refreshTicket(int ticknr);
+
     int getNextTicket(int i);
+
     int getPrevTicket(int i);
+
     int getTicketCount();
+
     int getTicketContentCount();
-    void updateTicket(Ticket t, String action, String comment, String veld, String waarde, final boolean notify, Map<String, String> modVeld) throws Exception;
+
+    void updateTicket(Ticket t, String action, String comment, String veld, String waarde, final boolean notify, Map<String, String> modVeld) throws
+                                                                                                                                              Exception;
+
     int createTicket(Ticket t, boolean notify) throws Exception;
+
     void listViewCreated();
+
     boolean isFinishing();
+
     Handler getHandler();
+
     boolean getCanWriteSD();
+
     void getAttachment(Ticket t, String filename, onAttachmentCompleteListener oc);
+
     void addAttachment(final Ticket ticket, final Uri uri, final onTicketCompleteListener oc);
 }
