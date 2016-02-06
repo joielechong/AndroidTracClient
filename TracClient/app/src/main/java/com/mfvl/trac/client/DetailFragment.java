@@ -177,35 +177,31 @@ public class DetailFragment extends TracClientFragment
     }
 
     private void display_and_refresh_ticket() {
-        new Thread() {
+        listener.getTicket(ticknr, new OnTicketLoadedListener() {
             @Override
-            public void run() {
-                listener.getTicket(ticknr, new OnTicketLoadedListener() {
+            public void onTicketLoaded(final Ticket t) {
+                _ticket = t;
+                context.runOnUiThread(new Runnable() {
                     @Override
-                    public void onTicketLoaded(final Ticket t) {
-                        _ticket = t;
-                        context.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                displayTicket();
-                                if (didUpdate) {
-                                    refreshTicket();
-                                }
-                                didUpdate = false;
+                    public void run() {
+                        displayTicket();
+                        if (didUpdate) {
+                            refreshTicket();
+                        }
+                        didUpdate = false;
 
-                                try {
-                                    currentView.findViewById(R.id.modveld).setVisibility(
-                                            modVeld.isEmpty() ? View.GONE : View.VISIBLE);
-                                } catch (NullPointerException ignored) {
-                                }
-                                setSelect(modVeld.isEmpty());
-                            }
-                        });
+                        try {
+                            currentView.findViewById(R.id.modveld).setVisibility(
+                                    modVeld.isEmpty() ? View.GONE : View.VISIBLE);
+                        } catch (NullPointerException ignored) {
+                        }
+                        setSelect(modVeld.isEmpty());
                     }
                 });
             }
-        }.start();
+        });
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -646,10 +642,7 @@ public class DetailFragment extends TracClientFragment
             }
             listView.setOnItemLongClickListener(this);
             listView.setOnItemClickListener(this);
-            final ModifiedStringArrayAdapter dataAdapter = new ModifiedStringArrayAdapter(context,
-                                                                                          R.layout.ticket_list,
-                                                                                          values);
-
+            final ModifiedStringArrayAdapter dataAdapter = new ModifiedStringArrayAdapter(context, values);
             listView.setAdapter(dataAdapter);
         }
     }
@@ -774,8 +767,8 @@ public class DetailFragment extends TracClientFragment
     }
 
     private class ModifiedStringArrayAdapter extends ColoredArrayAdapter<modifiedString> {
-        public ModifiedStringArrayAdapter(TracStart context, int resource, List<modifiedString> list) {
-            super(context, resource, list);
+        public ModifiedStringArrayAdapter(TracStart context, List<modifiedString> list) {
+            super(context, R.layout.ticket_list, list);
         }
 
         @Override

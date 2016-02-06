@@ -17,11 +17,7 @@
 package com.mfvl.trac.client;
 
 
-import java.io.Serializable;
-
-
-public class FilterSpec extends Spec implements Serializable, Cloneable {
-
+public class FilterSpec extends Spec {
     private String _operator;
     private String _waarde;
     private String _newwaarde;
@@ -38,7 +34,7 @@ public class FilterSpec extends Spec implements Serializable, Cloneable {
         super(null);
         _operator = null;
         _waarde = null;
-        for (int i = operators.length - 1; i >= 0; i--) {
+        for (int i = operators.length - 1; i >= 0 && _waarde == null; i--) {
             final String op = operators[i];
             final int index = string.indexOf(op);
 
@@ -47,7 +43,6 @@ public class FilterSpec extends Spec implements Serializable, Cloneable {
                 _operator = op;
                 _waarde = string.substring(index + op.length());
                 _newwaarde = _waarde;
-                i = 0;
             }
         }
     }

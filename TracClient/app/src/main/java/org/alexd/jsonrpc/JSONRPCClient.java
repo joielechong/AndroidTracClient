@@ -94,7 +94,7 @@ public abstract class JSONRPCClient {
     }
 
     //
-    public Object beginCall(String method, final Object... params) {
+    public void beginCall(String method, final Object... params) {
         // Handler
         class RequestThread extends Thread {
             String mMethod;
@@ -117,8 +117,6 @@ public abstract class JSONRPCClient {
 
         final RequestThread requestThread = new RequestThread(method, params);
         requestThread.start();
-
-        return null;
     }
 
     /**

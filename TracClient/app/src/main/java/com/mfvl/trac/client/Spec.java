@@ -33,17 +33,7 @@ abstract public class Spec extends TcObject implements Serializable, Cloneable {
     @Override
     public boolean equals(Object o) {
         boolean retVal;
-        if (this == o) {
-            retVal = true;
-        } else if (!(o instanceof Spec)) {
-            retVal = false;
-        } else {
-            retVal = super.equals(o);
-
-            Spec f = (Spec) o;
-            retVal &= equalFields(_veld, f.getVeld());
-        }
-//		tcLog.d("this = "+this+" o = "+o+" retVal = "+retVal);
+        retVal = (o instanceof Spec) && equalFields(_veld, ((Spec)o).getVeld());
         return retVal;
     }
 

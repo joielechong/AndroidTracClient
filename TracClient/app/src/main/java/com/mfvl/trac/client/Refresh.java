@@ -40,6 +40,7 @@ public class Refresh extends Activity implements ServiceConnection {
         tcLog.d("className = " + className + " service = " + service);
         RefreshService.RefreshBinder binder = (RefreshService.RefreshBinder) service;
         binder.getService().send(Message.obtain(null, MSG_REFRESH_LIST));
+        unbindService(this);
     }
 
     @Override
@@ -61,8 +62,7 @@ public class Refresh extends Activity implements ServiceConnection {
 
             if (action != null) {
                 if (action.equalsIgnoreCase(RefreshService.refreshAction)) {
-                    bindService(new Intent(this, RefreshService.class).setAction(getString(R.string.serviceAction)), this,
-                                Context.BIND_AUTO_CREATE);
+                    bindService(new Intent(this, RefreshService.class).setAction(getString(R.string.serviceAction)), this, Context.BIND_AUTO_CREATE);
                     // tcLog.i("Refresh sent");
                 }
             }

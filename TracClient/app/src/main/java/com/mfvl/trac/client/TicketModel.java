@@ -45,10 +45,10 @@ public class TicketModel implements Serializable {
         _hasData = false;
         _velden = new HashMap<>();
         _volgorde = new ArrayList<>();
-        active = new Semaphore(1, true);
+        active = new TcSemaphore(1, true);
     }
 
-    public static TicketModel getInstance(TracHttpClient tracClient, final OnTicketModelListener oc) {
+    public static void getInstance(TracHttpClient tracClient, final OnTicketModelListener oc) {
         tcLog.d("new tracClient = " + tracClient);
         if (_instance == null || tracClient.equals(_tracClient)) {
             _instance = new TicketModel(tracClient);
@@ -65,7 +65,6 @@ public class TicketModel implements Serializable {
             }
             oc.onTicketModelLoaded(_instance);
         }
-        return _instance;
     }
 
     private void loadModelData() {
@@ -116,7 +115,7 @@ public class TicketModel implements Serializable {
         return s;
     }
 
-    private void wacht() {
+    public void wacht() {
         if (active.availablePermits() == 0) {
             active.acquireUninterruptibly();
             active.release();

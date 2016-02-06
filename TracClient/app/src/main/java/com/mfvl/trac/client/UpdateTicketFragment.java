@@ -96,9 +96,14 @@ public class UpdateTicketFragment extends TracClientFragment {
         }
         listener.getTicket(ticknr, new OnTicketLoadedListener() {
             @Override
-            public void onTicketLoaded(Ticket t) {
-                _ticket = t;
-                displayView(button, spinPosition, optionVal);
+            public void onTicketLoaded(final Ticket t) {
+                context.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        _ticket = t;
+                        displayView(button, spinPosition, optionVal);
+                    }
+                });
             }
         });
     }

@@ -16,16 +16,14 @@
 
 package com.mfvl.trac.client;
 
-import java.io.Serializable;
-
-public class SortSpec extends Spec implements Cloneable, Serializable {
-    private Boolean _richting; // true = asc false = desc
+public class SortSpec extends Spec {
+    private boolean _richting; // true = asc false = desc
 
     public SortSpec(String veld) {
         this(veld, true);
     }
 
-    public SortSpec(String veld, Boolean richting) {
+    public SortSpec(String veld, boolean richting) {
         super(veld);
         _richting = richting;
     }
@@ -35,19 +33,17 @@ public class SortSpec extends Spec implements Cloneable, Serializable {
         boolean retVal;
         retVal = (this == o)
                 || (o instanceof SortSpec && super.equals(o)
-                && equalFields(_richting, ((SortSpec) o).getRichting()));
+                && (_richting== ((SortSpec) o).getRichting()));
 //		tcLog.d("this = "+this+" o = "+o+" retVal = "+retVal);
         return retVal;
     }
 
-    public Boolean getRichting() {
+    public boolean getRichting() {
         return _richting;
     }
 
-    public Boolean flip() {
-        if (_richting != null) {
-            _richting = !_richting;
-        }
+    public boolean flip() {
+        _richting = !_richting;
         return _richting;
     }
 
