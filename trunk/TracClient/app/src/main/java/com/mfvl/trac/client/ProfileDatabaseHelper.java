@@ -44,7 +44,6 @@ import javax.xml.parsers.SAXParserFactory;
 
 
 class ProfileDatabaseHelper extends SQLiteOpenHelper {
-    private static final String DATABASE_NAME = "profile.db";
     private static final int DATABASE_VERSION = 2;
     private static final String TABLE_NAME = "profiles";
     private static final String NAME_ID = "name";
@@ -57,7 +56,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
     private boolean upgrade = false;
 
     public ProfileDatabaseHelper(Context context) {
-        super(context, TracGlobal.makeDbPath(DATABASE_NAME), null, DATABASE_VERSION);
+        super(context, TracGlobal.makeDbPath(), null, DATABASE_VERSION);
         _context = context;
     }
 
@@ -111,12 +110,12 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
         upgrade = true;
     }
 
-    public void beginTransaction() {
+    private void beginTransaction() {
         open();
         db.beginTransaction();
     }
 
-    public void endTransaction() {
+    private void endTransaction() {
         db.setTransactionSuccessful();
         db.endTransaction();
     }
@@ -146,7 +145,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
                 null);
     }
 
-    public Cursor getAllProfiles() {
+    private Cursor getAllProfiles() {
         open();
         return db.rawQuery(
                 "SELECT " + NAME_ID + "," + URL_ID + "," + USERNAME_ID + "," + PASSWORD_ID + "," + SSLHACK_ID + " from "
@@ -190,7 +189,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
         return profile;
     }
 
-    public int delProfiles() {
+    private int delProfiles() {
         open();
         final String values[] = new String[]{""};
 
@@ -268,6 +267,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
                         state++;
                         _pdb.beginTransaction();
                         if (_pdb.delProfiles() == -1) {
+                            tcLog.e("delProfiles mislukt");
                             throw new RuntimeException("delProfiles mislukt");
                         }
                     }
@@ -277,12 +277,9 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
                     if ("profile".equals(localName)) {
                         state++;
                         lp = new LoginProfile(attributes.getValue(ProfileDatabaseHelper.URL_ID),
-                                              attributes.getValue(
-                                                      ProfileDatabaseHelper.USERNAME_ID),
-                                              attributes.getValue(
-                                                      ProfileDatabaseHelper.PASSWORD_ID),
-                                              "1".equals(attributes.getValue(
-                                                      ProfileDatabaseHelper.SSLHACK_ID)));
+                                              attributes.getValue(ProfileDatabaseHelper.USERNAME_ID),
+                                              attributes.getValue(ProfileDatabaseHelper.PASSWORD_ID),
+                                              "1".equals(attributes.getValue(ProfileDatabaseHelper.SSLHACK_ID)));
                         profileName = attributes.getValue(ProfileDatabaseHelper.NAME_ID);
                     }
                     break;

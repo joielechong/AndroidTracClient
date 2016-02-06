@@ -19,8 +19,8 @@ package com.mfvl.trac.client;
 public class TicketListAdapter extends ColoredArrayAdapter<Ticket> {
     private final Tickets mTickets;
 
-    public TicketListAdapter(TracStart context, int resource, Tickets tl) {
-        super(context, resource, tl != null ? tl.ticketList : null);
+    public TicketListAdapter(TracStart context, Tickets tl) {
+        super(context, R.layout.ticket_list, tl != null ? tl.ticketList : null);
         tcLog.logCall();
         mTickets = tl;
     }

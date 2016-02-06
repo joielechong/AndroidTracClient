@@ -59,6 +59,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.provider.MediaStore.Images;
@@ -85,16 +86,10 @@ interface OnTicketLoadedListener {
 }
 
 
-public class TracStart extends Activity implements Handler.Callback,
+public class TracStart extends Activity implements Handler.Callback,ServiceConnection,
                                                    InterFragmentListener, OnBackStackChangedListener,
                                                    ActivityCompat.OnRequestPermissionsResultCallback, ViewTreeObserver.OnGlobalLayoutListener {
-
-
-    /*
-     * Constanten voor communicatie met de service en fragmenten
-     */
-
-    public static final String DetailFragmentTag = "Detail_Fragment";
+   public static final String DetailFragmentTag = "Detail_Fragment";
     private static final int REQUEST_CODE_CHOOSER = 6384;
     private static final int REQUEST_CODE_WRITE_EXT = 6385;
     private static final String ListFragmentTag = "List_Fragment";
@@ -106,8 +101,8 @@ public class TracStart extends Activity implements Handler.Callback,
     private static final String[] FragmentTags = new String[]{ListFragmentTag, LoginFragmentTag, DetailFragmentTag,
             NewFragmentTag, UpdFragmentTag, FilterFragmentTag, SortFragmentTag};
     static public Handler tracStartHandler = null;
-    final private Semaphore loadingActive = new Semaphore(1, true);
-    private final Semaphore isBinding = new Semaphore(1, true);
+    final private Semaphore loadingActive = new TcSemaphore(1, true);
+    private final Semaphore isBinding = new TcSemaphore(1, true);
     private boolean doubleBackToExitPressedOnce = false;
     private FrameLayout adViewContainer = null;
     private AdView adView = null;
@@ -134,21 +129,6 @@ public class TracStart extends Activity implements Handler.Callback,
     private TicketModel tm = null;
     private Messenger mMessenger = null;
     private RefreshService mService = null;
-    private final ServiceConnection mConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            RefreshService.RefreshBinder binder = (RefreshService.RefreshBinder) service;
-            mService = binder.getService();
-            tcLog.d("mConnection mService = " + mService);
-            unbindService(this);
-            isBinding.release();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName className) {
-            tcLog.d("className = " + className);
-        }
-    };
 
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
@@ -426,7 +406,7 @@ public class TracStart extends Activity implements Handler.Callback,
                                             .putExtra(INTENT_ARG1, msg.arg1)
                                             .putExtra(INTENT_ARG2, msg.arg2)
                                             .putExtra(INTENT_OBJ, (Serializable) msg.obj),
-                                    mConnection, Context.BIND_AUTO_CREATE);
+                                    TracStart.this, Context.BIND_AUTO_CREATE);
                     } else {
                         isBinding.release();
                         tcLog.d("using sendMessage");
@@ -921,7 +901,7 @@ public class TracStart extends Activity implements Handler.Callback,
 
     private void newDataAdapter(Tickets tl) {
         tcLog.logCall();
-        dataAdapter = new TicketListAdapter(this, R.layout.ticket_list, tl);
+        dataAdapter = new TicketListAdapter(this, tl);
         dataAdapter.getFilter().filter(null);
         dataAdapter.setNotifyOnChange(true);
         try {
@@ -1070,22 +1050,27 @@ public class TracStart extends Activity implements Handler.Callback,
     }
 
     @Override
-    public void getTicket(int i, OnTicketLoadedListener oc) {
+    public void getTicket(final int i, final OnTicketLoadedListener oc) {
 //        tcLog.d("i = " + i + " semaphore = " + loadingActive);
 
-        if (loadingActive.availablePermits() == 0) {
-            loadingActive.acquireUninterruptibly();
-            loadingActive.release();
-        }
+        new Thread() {
+            @Override
+            public void run() {
+                if (loadingActive.availablePermits() == 0) {
+                    loadingActive.acquireUninterruptibly();
+                    loadingActive.release();
+                }
 
-        Ticket t = dataAdapter.getTicket(i);
-        tcLog.d("i = " + i + " ticket = " + t);
-        if (t != null && !t.hasdata()) {
-            refreshTicket(i);
-        }
-        if (oc != null) {
-            oc.onTicketLoaded(t);
-        }
+                Ticket t = dataAdapter.getTicket(i);
+                tcLog.d("i = " + i + " ticket = " + t);
+                if (t != null && !t.hasdata()) {
+                    refreshTicket(i);
+                }
+                if (oc != null) {
+                    oc.onTicketLoaded(t);
+                }
+            }
+        }.start();
     }
 
     @Override
@@ -1427,11 +1412,16 @@ public class TracStart extends Activity implements Handler.Callback,
                 if (loadingActive.availablePermits() == 0) {  // release semaphore if in use
                     loadingActive.release();
                 }
-                loadingActive.acquireUninterruptibly();
-                ticketsLoading = true;
+                new Thread() {
+                    @Override
+                    public void run() {
+                        loadingActive.acquireUninterruptibly();
+                        ticketsLoading = true;
 
-                tcLog.d("MSG_START_LISTLOADER: " + mService);
-                dispatchMessage(Message.obtain(null, MSG_LOAD_TICKETS, currentLoginProfile));
+                        tcLog.d("MSG_START_LISTLOADER: " + mService);
+                        dispatchMessage(Message.obtain(null, MSG_LOAD_TICKETS, currentLoginProfile));
+                    }
+                }.start();
                 break;
 
             case MSG_REFRESH_LIST:
@@ -1538,5 +1528,44 @@ public class TracStart extends Activity implements Handler.Callback,
                 }
             }
         }
+    }
+
+    @Override
+    public void onServiceConnected(ComponentName className, IBinder service) {
+        RefreshService.RefreshBinder binder = (RefreshService.RefreshBinder) service;
+
+        mService = binder.getService();
+        tcLog.d("mConnection mService = " + mService);
+        unbindService(this);
+        isBinding.release();
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName className) {
+        tcLog.d("className = " + className);
+    }
+
+}
+
+
+class TcSemaphore extends Semaphore {
+
+    public TcSemaphore(int permits) {
+        super(permits);
+    }
+
+    public TcSemaphore(int permits, boolean fair) {
+        super(permits, fair);
+    }
+
+    public void acquireUninterruptibly() {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            try {
+                throw new Exception("debug");
+            } catch (Exception e) {
+                tcLog.e(e);
+            }
+        }
+        super.acquireUninterruptibly();
     }
 }

@@ -41,23 +41,18 @@ public class SortFragment extends SpecFragment<SortSpec> {
         return SORTLISTNAME;
     }
 
-    /*
-        @Override
-        public void onMyAttach(Context activity) {
-            keyName=SORTLISTNAME;
-            onMyAttach(activity);
-        }
-    */
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.storebutton:
+/*
                 final ArrayList<SortSpec> items = sortAdapter.items;
                 for (int i = items.size() - 1; i >= 0; i--) {
                     if (items.get(i).getRichting() == null) {
                         items.remove(i);
                     }
                 }
-                sendMessageToHandler(MSG_SET_SORT, items);
+*/
+                sendMessageToHandler(MSG_SET_SORT, sortAdapter.items);
                 getFragmentManager().popBackStack();
                 break;
 
@@ -71,14 +66,14 @@ public class SortFragment extends SpecFragment<SortSpec> {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        tcLog.d("savedInstanceState = " + savedInstanceState);
+//        tcLog.d("savedInstanceState = " + savedInstanceState);
         return inflater.inflate(R.layout.sort_view, container, false);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);  // vult inputSpec en outputSpec
-        tcLog.d("savedInstanceState = " + savedInstanceState);
+//        tcLog.d("savedInstanceState = " + savedInstanceState);
         helpFile = R.string.sorthelpfile;
 
         sortAdapter = new SortAdapter(context, outputSpec);
@@ -141,7 +136,7 @@ public class SortFragment extends SpecFragment<SortSpec> {
         public void onClick(View dv) {
             int position = getSortPosition(dv);
             SortSpec sortItem = items.get(position);
-            tcLog.d(dv.toString() + " " + position + " " + sortItem);
+//            tcLog.d(dv.toString() + " " + position + " " + sortItem);
             switch (dv.getId()) {
                 case R.id.sortup:
                     if (position > 0) {

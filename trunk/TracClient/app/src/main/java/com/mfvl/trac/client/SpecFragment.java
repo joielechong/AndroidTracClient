@@ -51,26 +51,26 @@ abstract public class SpecFragment<T extends Spec> extends TracClientFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        tcLog.d("savedInstanceState = " + savedInstanceState);
+//        tcLog.d("savedInstanceState = " + savedInstanceState);
         setHasOptionsMenu(true);
     }
 
     @Override
     public void onViewCreated(final View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        tcLog.d("view = " + view + " savedInstanceState = " + savedInstanceState);
+//        tcLog.d("view = " + view + " savedInstanceState = " + savedInstanceState);
         currentView = view;
         listView = (ListView) view.findViewById(R.id.itemlist);
-        tcLog.d("view = " + view + " listView = " + listView + " savedInstanceState = " + savedInstanceState);
+//        tcLog.d("view = " + view + " listView = " + listView + " savedInstanceState = " + savedInstanceState);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void onSaveInstanceState(Bundle savedState) {
         super.onSaveInstanceState(savedState);
-        tcLog.logCall();
+//        tcLog.logCall();
         if (inputSpec != null) {
-            tcLog.d("inputSpec = " + inputSpec);
+//            tcLog.d("inputSpec = " + inputSpec);
             savedState.putSerializable(inputSpecText, inputSpec);
         }
 
@@ -80,18 +80,18 @@ abstract public class SpecFragment<T extends Spec> extends TracClientFragment {
             final ArrayList<T> outputSpec = adapter.getItems();
 
             if (outputSpec != null) {
-                tcLog.d("outputSpec = " + outputSpec);
+//                tcLog.d("outputSpec = " + outputSpec);
                 savedState.putSerializable(outputSpecText, outputSpec);
             }
         }
-        tcLog.d("super savedState = " + savedState);
+//        tcLog.d("super savedState = " + savedState);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        tcLog.d("savedInstanceState = " + savedInstanceState);
+//        tcLog.d("savedInstanceState = " + savedInstanceState);
 //        tm = listener.getTicketModel();
 
         if (savedInstanceState != null) {

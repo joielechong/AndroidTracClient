@@ -40,19 +40,7 @@ import java.util.TimeZone;
 
 import javax.security.auth.x500.X500Principal;
 
-import static com.mfvl.trac.client.Const.DisclaimerVersion;
-import static com.mfvl.trac.client.Const.PREFS_NAME;
-import static com.mfvl.trac.client.Const.PREF_1ST;
-import static com.mfvl.trac.client.Const.PREF_COOKIEINFORM;
-import static com.mfvl.trac.client.Const.PREF_DISCLAIM;
-import static com.mfvl.trac.client.Const.PREF_FILTER;
-import static com.mfvl.trac.client.Const.PREF_HACK;
-import static com.mfvl.trac.client.Const.PREF_HNH;
-import static com.mfvl.trac.client.Const.PREF_PASS;
-import static com.mfvl.trac.client.Const.PREF_PROF;
-import static com.mfvl.trac.client.Const.PREF_SORT;
-import static com.mfvl.trac.client.Const.PREF_URL;
-import static com.mfvl.trac.client.Const.PREF_USER;
+import static com.mfvl.trac.client.Const.*;
 
 public class TracGlobal {
     private static final X500Principal DEBUG_DN = new X500Principal(
@@ -76,12 +64,11 @@ public class TracGlobal {
         versie = context.getString(R.string.app_version);
     }
 
-    public static TracGlobal getInstance(final Context context) {
+    public static void getInstance(final Context context) {
         if (_instance == null) {
             _instance = new TracGlobal(context);
             loadCredentials();
         }
-        return _instance;
     }
 
     /**
@@ -227,21 +214,15 @@ public class TracGlobal {
         return versie;
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static String makeDbPath(String dbname) {
+    public static String makeDbPath() {
 
-        String dbpath = dbname;
+        String dbpath = DATABASE_NAME;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            final File filePath = new File(_context.getExternalFilesDir(null), dbname);
+            final File filePath = new File(_context.getExternalFilesDir(null), dbpath);
 //			tcLog.d("filePath = "+filePath);
-            final String p1 = filePath.toString();
 
-            if (!isDebuggable() && !isRCVersion()) {
-                if (filePath.exists()) {
-                    dbpath = p1;
-                }
-            } else {
-                dbpath = p1;
+            if (isDebuggable() || isRCVersion() || filePath.exists()) {
+                dbpath = filePath.toString();
             }
         }
         tcLog.d("dbpath = " + dbpath);
@@ -283,8 +264,7 @@ public class TracGlobal {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static File makeExtFilePath(String filename, boolean visible) throws
-                                                                         FileNotFoundException {
+    public static File makeExtFilePath(String filename, boolean visible) throws FileNotFoundException {
         File dirPath;
 //		tcLog.d("filename = "+filename);
         if (visible) {
@@ -297,7 +277,7 @@ public class TracGlobal {
         }
 //		tcLog.d("dirpath = "+dirPath);
         if (!dirPath.isDirectory()) {
-            throw new FileNotFoundException("Not a directory: " + dirPath.toString());
+            throw new FileNotFoundException(dirPath.toString());
         }
         final File filePath = new File(dirPath, filename);
 //		tcLog.d("filepath = "+filePath);

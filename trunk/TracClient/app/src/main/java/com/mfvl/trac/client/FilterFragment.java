@@ -54,14 +54,6 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
         return FILTERLISTNAME;
     }
 
-/*
-    @Override
-    public void onMyAttach(Context activity) {
-        tcLog.logCall();
-        super.onMyAttach(activity);
-    }
-*/
-
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.storefilter:
@@ -91,7 +83,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        tcLog.d("savedInstanceState = " + savedInstanceState);
+//        tcLog.d("savedInstanceState = " + savedInstanceState);
 
         return inflater.inflate(R.layout.filter_view, container, false);
     }
@@ -99,7 +91,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState); // must be called first
-        tcLog.d("savedInstanceState = " + savedInstanceState);
+//        tcLog.d("savedInstanceState = " + savedInstanceState);
         helpFile = R.string.filterhelpfile;
 
         filterAdapter = new FilterAdapter(context, outputSpec);
@@ -123,7 +115,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
         final String op = o.getOperator();
         final boolean omgekeerd = op != null && op.equals("!=");
 
-        tcLog.d(veldnaam + " " + w + " " + omgekeerd);
+//        tcLog.d(veldnaam + " " + w + " " + omgekeerd);
         LinearLayout valCheckBoxes = new LinearLayout(context);
 
         valCheckBoxes.setOrientation(LinearLayout.VERTICAL);
@@ -277,7 +269,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
 
         @Override
         public void onClick(View v) {
-            tcLog.d("v =" + v);
+//            tcLog.d("v =" + v);
             FilterSpec filterItem = getItem(v);
             switch (v.getId()) {
                 case R.id.filternaam:
