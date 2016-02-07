@@ -84,15 +84,14 @@ abstract public class SpecFragment<T extends Spec> extends TracClientFragment {
                 savedState.putSerializable(outputSpecText, outputSpec);
             }
         }
-//        tcLog.d("super savedState = " + savedState);
+        tcLog.d("super savedState = " + savedState);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-//        tcLog.d("savedInstanceState = " + savedInstanceState);
-//        tm = listener.getTicketModel();
+        tcLog.d("savedInstanceState = " + savedInstanceState);
 
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(inputSpecText)) {

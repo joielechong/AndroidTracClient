@@ -94,18 +94,30 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
 //        tcLog.d("savedInstanceState = " + savedInstanceState);
         helpFile = R.string.filterhelpfile;
 
-        filterAdapter = new FilterAdapter(context, outputSpec);
-        listView.setAdapter(filterAdapter);
+        new Thread() {
+            @Override
+            public void run() {
+                waitForTicketModel();
+                context.runOnUiThread(new Runnable() {
+                    public void run() {
+                        filterAdapter = new FilterAdapter(context, outputSpec);
+                        listView.setAdapter(filterAdapter);
 
-        currentView.findViewById(R.id.storefilter).setOnClickListener(this);
-        final ImageButton addButton = (ImageButton) currentView.findViewById(R.id.addbutton);
-        addButton.setOnClickListener(this);
-        addSpinner = (Spinner) currentView.findViewById(R.id.addspin);
-        getScreensize(addSpinner, addButton);
-        final ArrayList<String> velden = tm.velden();
-        Collections.sort(velden);
-        final ArrayAdapter<String> spinAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, velden);
-        addSpinner.setAdapter(spinAdapter);
+                        currentView.findViewById(R.id.storefilter).setOnClickListener(FilterFragment.this);
+                        final ImageButton addButton = (ImageButton) currentView.findViewById(R.id.addbutton);
+                        addButton.setOnClickListener(FilterFragment.this);
+                        addSpinner = (Spinner) currentView.findViewById(R.id.addspin);
+                        getScreensize(addSpinner, addButton);
+                        final ArrayList<String> velden = tm.velden();
+                        Collections.sort(velden);
+                        final ArrayAdapter<String> spinAdapter = new ArrayAdapter<>(context,
+                                                                                    android.R.layout.simple_spinner_item,
+                                                                                    velden);
+                        addSpinner.setAdapter(spinAdapter);
+                    }
+                });
+            }
+        }.start();
     }
 
     private LinearLayout makeCheckBoxes(final FilterSpec o) {
@@ -185,7 +197,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
 
         @Override
         public View getView(final int position, View convertView, final ViewGroup parent) {
-            //tcLog.d( "getView pos=" + position + " " + convertView + " " + parent);
+            //tcLog.d("getView pos=" + position + " " + convertView + " " + parent);
 
             int p = (position >= items.size() || position < 0 ? 0 : position);
             final FilterSpec filterItem = items.get(p);
