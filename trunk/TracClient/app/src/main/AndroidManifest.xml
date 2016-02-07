@@ -105,11 +105,12 @@
 
         <service
             android:name=".RefreshService"
-            android:exported="false"/>
-        <intent-filter>
-            <action android:name="@string/serviceAction"/>
-            <category android:name="android.intent.category.DEFAULT"/>
-        </intent-filter>
+            android:exported="false">
+            <intent-filter>
+                <action android:name="@string/serviceAction"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

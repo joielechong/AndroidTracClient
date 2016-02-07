@@ -173,6 +173,17 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
         }
     }
 
+    void waitForTicketModel() {
+        while (tm == null) {
+            tcLog.d("tm is still null");
+            try {
+                Thread.sleep(100);
+            } catch (Exception ignored){
+            }
+        }
+        tm.wacht();
+    }
+
     @Override
     public void onClick(View v) {
         tcLog.d("v =" + v);

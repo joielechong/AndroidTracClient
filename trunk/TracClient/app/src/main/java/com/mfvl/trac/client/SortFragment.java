@@ -44,14 +44,6 @@ public class SortFragment extends SpecFragment<SortSpec> {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.storebutton:
-/*
-                final ArrayList<SortSpec> items = sortAdapter.items;
-                for (int i = items.size() - 1; i >= 0; i--) {
-                    if (items.get(i).getRichting() == null) {
-                        items.remove(i);
-                    }
-                }
-*/
                 sendMessageToHandler(MSG_SET_SORT, sortAdapter.items);
                 getFragmentManager().popBackStack();
                 break;
@@ -85,12 +77,18 @@ public class SortFragment extends SpecFragment<SortSpec> {
         addSpinner = (Spinner) currentView.findViewById(R.id.addspin);
         getScreensize(addSpinner, addButton);
 
-        if (addSpinner != null) {
-            //tcLog.d("before setAdapter, tm = "+tm+ " addSspinner = "+ addSpinner+" context = "+context);
-            addSpinner.setAdapter(
-                    new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, tm.velden()));
-        }
-
+        new Thread() {
+            public void run() {
+                //tcLog.d("before setAdapter, tm = "+tm+ " addSspinner = "+ addSpinner+" context = "+context);
+                waitForTicketModel();
+                context.runOnUiThread(new Runnable() {
+                    public void run() {
+                        addSpinner.setAdapter(
+                                new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, tm.velden()));
+                    }
+                });
+            }
+        }.start();
     }
 
     private class SortAdapter extends SpecAdapter<SortSpec> implements View.OnClickListener {
@@ -100,7 +98,7 @@ public class SortFragment extends SpecFragment<SortSpec> {
 
         @Override
         public View getView(final int position, View convertView, final ViewGroup parent) {
-            // tcLog.d(    "getView: "+position+" "+convertView+" "+parent);
+            // tcLog.d("getView: "+position+" "+convertView+" "+parent);
             View v = convertView;
 
             if (v == null) {
