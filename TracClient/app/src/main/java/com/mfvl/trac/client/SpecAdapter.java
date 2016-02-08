@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Michiel van Loon
+ * Copyright (C) 2015,2016 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +28,12 @@ class SpecAdapter<T extends Spec> extends ArrayAdapter<T> {
 
     public SpecAdapter(Context context, int textViewResourceId, ArrayList<T> items) {
         super(context, textViewResourceId, items);
-//		tcLog.logCall();
+//        tcLog.logCall();
         this.items = items;
     }
 
     public ArrayList<T> getItems() {
-//		tcLog.logCall();
+//    tcLog.logCall();
         return items;
     }
 }

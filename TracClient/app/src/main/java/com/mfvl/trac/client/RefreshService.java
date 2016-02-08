@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014,2015 Michiel van Loon
+ * Copyright (C) 2014-2016 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -165,7 +165,7 @@ public class RefreshService extends Service implements Handler.Callback {
     }
 
     private void startLoadTickets() {
-        tcLog.d("loadLock = " + loadLock);
+//        tcLog.d("loadLock = " + loadLock);
         stopTimer();
         new Thread() {
             @Override
@@ -174,14 +174,14 @@ public class RefreshService extends Service implements Handler.Callback {
                     loadLock.killOwner();
                     loadLock.lock();
                 }
-                tcLog.d("locked: " + loadLock);
+//                tcLog.d("locked: " + loadLock);
                 try {
                     loadTickets();
                 } catch (Exception e) {
                     tcLog.d("Exception", e);
                 } finally {
                     loadLock.unlock();
-                    tcLog.d("unlock: " + loadLock);
+//                    tcLog.d("unlock: " + loadLock);
                 }
 
             }
@@ -250,7 +250,7 @@ public class RefreshService extends Service implements Handler.Callback {
                 popup_warning(R.string.connerr, e.getMessage());
             } catch (InterruptedException e) {
                 tcLog.d("InterruptedException", e);
-                tcLog.toast("Ticketload interrupted");
+                tcLog.toast(getString(R.string.interrupted));
                 sendMessageToUI(MSG_LOAD_ABORTED, mTickets);
             } catch (Exception e) {
                 tcLog.d("Exception", e);
@@ -502,7 +502,7 @@ public class RefreshService extends Service implements Handler.Callback {
             tcLog.logCall();
             Thread t = super.getOwner();
             t.interrupt();
-            tcLog.toast("Trying to interrupt ticketlist loading");
+            tcLog.toast(RefreshService.this.getString(R.string.tryinterrupt));
         }
     }
 

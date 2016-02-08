@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2015 Michiel van Loon 
+ * Copyright (C) 2013-2016 Michiel van Loon 
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,7 @@ import java.util.Date;
 import java.util.Locale;
 
 public class tcLog {
-    private static final SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss",
-                                                                   Locale.US);
+    private static final SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss",Locale.US);
     private static Activity _c = null;
     private static String debugString = "";
 
@@ -42,7 +41,7 @@ public class tcLog {
             return debugString;
         }
     }
-
+    
     public static void toast(final String string) {
         if (_c != null) {
             _c.runOnUiThread(new Runnable() {

@@ -115,4 +115,6 @@
     <string name="doubleback">Klik nogmaals op BACK om te stoppen</string>
     <string name="chooseoption">Kies optie</string>
     <string name="choosefield">Kies veld</string>
+    <string name="tryinterrupt">Proberen om ticket laden te onderbreken</string>
+    <string name="interrupted">Tocket laden onderbroken</string>
 </resources>
