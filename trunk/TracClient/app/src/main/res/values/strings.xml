@@ -131,5 +131,6 @@
     <string name="doubleback">Please click BACK again to exit</string>
     <string name="chooseoption">Choose option</string>
     <string name="choosefield">Choose field</string>
-
+    <string name="tryinterrupt">Trying to interrupt ticketlist loading</string>
+    <string name="interrupted">Ticketload interrupted</string>
 </resources>

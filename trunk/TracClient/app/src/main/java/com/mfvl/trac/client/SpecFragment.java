@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Michiel van Loon
+ * Copyright (C) 2015,2016 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ abstract public class SpecFragment<T extends Spec> extends TracClientFragment {
 
     @SuppressWarnings("unchecked")
     protected void onMyAttach(Context activity) {
-        tcLog.d("keyName = " + keyName());
+//        tcLog.d("keyName = " + keyName());
         super.onMyAttach(activity);
         inputSpec = null;
 
