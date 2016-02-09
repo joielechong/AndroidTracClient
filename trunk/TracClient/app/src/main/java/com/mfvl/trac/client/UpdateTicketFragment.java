@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013,2014`,2015 Michiel van Loon
+ * Copyright (C) 2013-2016 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,12 +23,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -120,25 +118,25 @@ public class UpdateTicketFragment extends TracClientFragment {
         final RadioGroup rg = (RadioGroup) view.findViewById(R.id.actionblock);
 
         try {
-            for (int i = 0; i < _actions.length(); i++) {
-                final JSONArray actie = _actions.getJSONArray(i);
+            for (int action = 0; action < _actions.length(); action++) {
+                final JSONArray actieInfo = _actions.getJSONArray(action);
+/*
                 final LinearLayout ll = new LinearLayout(context);
-
-                ll.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                                    ViewGroup.LayoutParams.WRAP_CONTENT));
+                ll.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                 ll.setOrientation(LinearLayout.VERTICAL);
+*/
                 setListener(R.id.canBut);
                 setListener(R.id.storeUpdate);
                 final TextView explain = (TextView) view.findViewById(R.id.explaintxt);
                 final RadioButton rb = new RadioButton(context);
-                final String hintText = actie.getString(2);
+                final String hintText = actieInfo.getString(2);
                 final Spinner optiesSpin = (Spinner) view.findViewById(R.id.opties);
                 final EditText optieval = (EditText) view.findViewById(R.id.optieval);
-                final JSONArray inputfields = actie.getJSONArray(3);
+                final JSONArray inputfields = actieInfo.getJSONArray(3);
 
                 // tcLog.d("inputfields = " + inputfields);
-                rb.setId(i);
-                if (i == 0) { // 1st action is always leave
+                rb.setId(action);
+                if (action == 0) { // 1st action is always leave
                     rb.setChecked(true);
                     explain.setText(hintText);
                     optiesSpin.setVisibility(View.GONE);
@@ -146,11 +144,11 @@ public class UpdateTicketFragment extends TracClientFragment {
                     optieval.setVisibility(View.GONE);
                     optieval.setText(null);
                 }
-                if (i == checkedButton) {
+                if (action == checkedButton) {
                     optiesSpin.setSelection(spinPosition);
                     optieval.setText(optionVal);
                 }
-                rb.setText(actie.getString(0));
+                rb.setText(actieInfo.getString(0));
                 // rb.setTextSize(context.getResources().getDimensionPixelSize(R.dimen.list_textsize));
                 rb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
