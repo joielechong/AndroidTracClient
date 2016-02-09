@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013,2014 Michiel van Loon
+ * Copyright (C) 2013-2016 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 
 package com.mfvl.trac.client;
-
 
 import org.json.JSONArray;
 
@@ -38,7 +37,6 @@ public class TicketModel implements Serializable {
     private static Semaphore active;
 
     private TicketModel(TracHttpClient tracClient) {
-
         tcLog.logCall();
         fieldCount = 0;
         _tracClient = tracClient;
@@ -66,7 +64,7 @@ public class TicketModel implements Serializable {
             oc.onTicketModelLoaded(_instance);
         }
     }
-
+	
     private void loadModelData() {
         tcLog.logCall();
         if (_tracClient != null) {

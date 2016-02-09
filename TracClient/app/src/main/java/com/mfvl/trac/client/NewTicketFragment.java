@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013,2014 Michiel van Loon
+ * Copyright (C) 2013-2016 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,7 +105,7 @@ public class NewTicketFragment extends TracClientFragment {
                                     if (savedInstanceState != null && savedInstanceState.containsKey(veldnaam)) {
                                         v1.setSelection(savedInstanceState.getInt(veldnaam));
                                     }
-                                    v1.setId(i + 300);
+                                    v1.setTag(veldnaam);
                                 } else {
                                     v = LayoutInflater.from(context).inflate((veldnaam.equals(
                                             "Description") ? R.layout.descrfield : R.layout.stdfield), tl, false);
@@ -113,7 +113,7 @@ public class NewTicketFragment extends TracClientFragment {
                                     if (savedInstanceState != null && savedInstanceState.containsKey(veldnaam)) {
                                         e.setText(savedInstanceState.getString(veldnaam));
                                     }
-                                    e.setId(i + 300);
+                                    e.setTag(veldnaam);
                                 }
                                 ((TextView) v.findViewById(R.id.veldnaam)).setText(veldnaam);
                                 tl.addView(v);
@@ -139,14 +139,14 @@ public class NewTicketFragment extends TracClientFragment {
             if (tl != null) {
                 for (int i = 0; i < tm.count(); i++) {
                     final String veldnaam = tm.getVeld(i).label();
-                    View w = tl.findViewById(i + 300);
+                    View w = tl.findViewWithTag(veldnaam);
                     if (w instanceof Spinner) {
                         try {
                             SavedState.putInt(veldnaam, ((Spinner) w).getSelectedItemPosition());
                         } catch (final Exception e) {
                             tcLog.e("Exception in createTicket", e);
                         }
-                    } else {
+                    } else if (w != null) {
                         final String s = ((EditText) w).getText().toString();
                         if (!"".equals(s)) {
                             SavedState.putString(veldnaam, s);
@@ -175,7 +175,7 @@ public class NewTicketFragment extends TracClientFragment {
                     for (int i = 0; i < count; i++) {
                         final TicketModelVeld veld = tm.getVeld(i);
                         final String veldnaam = veld.name();
-                        View w = tl.findViewById(i + 300);
+                        View w = tl.findViewWithTag(veldnaam);
 
                         if (w instanceof Spinner) {
                             try {
@@ -187,7 +187,7 @@ public class NewTicketFragment extends TracClientFragment {
                             } catch (final Exception e) {
                                 tcLog.e("Exception in createTicket", e);
                             }
-                        } else {
+                        } else if (w != null) {
                             final String s = ((EditText) w).getText().toString();
 
                             if (!"".equals(s)) {
