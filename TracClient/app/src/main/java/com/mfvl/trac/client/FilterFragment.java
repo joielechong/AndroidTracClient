@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013,2014 Michiel van Loon
+ * Copyright (C) 2013-2016 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -188,10 +188,8 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
             super(context, android.R.layout.simple_list_item_1, input);
             if (operators == null) {
                 final Resources res = context.getResources();
-                operators = new ArrayList<>(
-                        Arrays.asList(res.getStringArray(R.array.filter2_choice)));
-                operatornames = new ArrayList<>(
-                        Arrays.asList(res.getStringArray(R.array.filter_names)));
+                operators = new ArrayList<>(Arrays.asList(res.getStringArray(R.array.filter2_choice)));
+                operatornames = new ArrayList<>(Arrays.asList(res.getStringArray(R.array.filter_names)));
             }
         }
 
@@ -227,8 +225,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
             final EditText et = (EditText) v.findViewById(R.id.filtervaltext);
             final LinearLayout filterCheck = (LinearLayout) v.findViewById(R.id.filtercheck);
 
-            filterNaam.setText(
-                    (filterItem.getEdit() ? filterItem.getVeld() : filterItem.toString()));
+            filterNaam.setText((filterItem.getEdit() ? filterItem.getVeld() : filterItem.toString()));
 
             if (spin != null) {
                 final ArrayAdapter<String> spinAdapter = new ArrayAdapter<>(context,

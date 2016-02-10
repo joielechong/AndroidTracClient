@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013,2014 Michiel van Loon
+ * Copyright (C) 2013-2016 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import java.util.List;
 class ColoredArrayAdapter<T> extends ArrayAdapter<T> {
     private static int[] colors = null;
 
-    public ColoredArrayAdapter(TracStart context, int resource, List<T> list) {
-        super(context, resource, list);
+    public ColoredArrayAdapter(TracStart context, List<T> list) {
+        super(context, R.layout.ticket_list, list);
 //		tcLog.d("context = "+context+" resource = "+ resource+" list = " +list);
         if (colors == null) {
             colors = context.getResources().getIntArray(R.array.list_col);

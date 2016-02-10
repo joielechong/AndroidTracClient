@@ -71,6 +71,7 @@ public class RefreshService extends Service implements Handler.Callback {
     private Tickets mTickets = null;
     private boolean invalid = true;
     private TicketLoaderLock loadLock = null;
+    private Handler tracStartHandler = null;
 
     @Override
     public void onCreate() {
@@ -335,7 +336,7 @@ public class RefreshService extends Service implements Handler.Callback {
                 .put(new TracJSONObject().makeComplexCall(TICKET_ACTION + "_" + ticknr, "ticket.getActions", ticknr));
     }
 
-    private Tickets changedTickets(String isoTijd) {
+    private Tickets changedTickets(final String isoTijd) {
         try {
             final JSONArray datum = new JSONArray();
 
@@ -398,10 +399,7 @@ public class RefreshService extends Service implements Handler.Callback {
                                 .setTicker(RefreshService.this.getString(R.string.foundnew))
                                 .setContentText(RefreshService.this.getString(R.string.foundnew))
                                 .setContentIntent(PendingIntent.getActivity(this, -1,
-                                                                            new Intent(this,
-                                                                                       Refresh.class).setAction(
-                                                                                    refreshAction),
-                                                                            PendingIntent.FLAG_UPDATE_CURRENT))
+                                    new Intent(this, Refresh.class).setAction(refreshAction), PendingIntent.FLAG_UPDATE_CURRENT))
                                 .setSubText(tl.ticketList.toString())
                                 .build());
                         // tcLog.d( "Notification sent");
@@ -474,21 +472,25 @@ public class RefreshService extends Service implements Handler.Callback {
         return true;
     }
 
-    private void dispatchMessage(Message msg) {
-        msg.setTarget(TracStart.tracStartHandler);
+    private void dispatchMessage(final Message msg) {
+        msg.setTarget(tracStartHandler);
         tcLog.d("msg = " + msg.what);
         msg.sendToTarget();
     }
 
-    private void sendMessageToUI(int message) {
+    public void setTracStartHandler(final Handler tsh) {
+        tracStartHandler = tsh;
+    }
+
+    private void sendMessageToUI(final int message) {
         dispatchMessage(Message.obtain(null, message));
     }
 
-    private void sendMessageToUI(int message, Object o) {
+    private void sendMessageToUI(final int message, Object o) {
         dispatchMessage(Message.obtain(null, message, o));
     }
 
-    private void sendMessageToUI(int message, int arg1, int arg2, Object o) {
+    private void sendMessageToUI(final int message, int arg1, int arg2, Object o) {
         dispatchMessage(Message.obtain(null, message, arg1, arg2, o));
     }
 

@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
-public class TicketModel implements Serializable {
+class TicketModel implements Serializable {
     private final static List<String> extraFields = Arrays.asList("max", "page");
     private final static List<String> extraValues = Arrays.asList("500", "0");
     private static HashMap<String, TicketModelVeld> _velden;

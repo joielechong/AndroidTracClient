@@ -768,7 +768,7 @@ public class DetailFragment extends TracClientFragment
 
     private class ModifiedStringArrayAdapter extends ColoredArrayAdapter<modifiedString> {
         public ModifiedStringArrayAdapter(TracStart context, List<modifiedString> list) {
-            super(context, R.layout.ticket_list, list);
+            super(context, list);
         }
 
         @Override

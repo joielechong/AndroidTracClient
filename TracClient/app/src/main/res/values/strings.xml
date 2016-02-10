@@ -112,8 +112,6 @@
     <string name="cookies">Cookies</string>
     <string name="cookieInform">We use device IDs to personalize content and ads, to provide features for social media and to analyze our website traffic. We share these IDs and other information, with our partners for social media, advertising and analysis.</string>
     <string name="showchanges">Change history</string>
-    <string name="showdisclaimer">Disclaimer</string>
-    <string name="disclaimer">Disclaimer</string>
     <string name="permissiontitle">Permission request</string>
     <string name="permissiontext">This app needs to read and write the SD-card, this permission has not been granted yet to the app. If you choose not to grant this permission it will not be possible to import or export profiles or to attach files from the SD-card. If in doubt don\'t check the "Do not ask again" checkbox in the next dialog.</string>
 

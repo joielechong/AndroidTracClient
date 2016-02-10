@@ -42,9 +42,8 @@ import javax.security.auth.x500.X500Principal;
 
 import static com.mfvl.trac.client.Const.*;
 
-public class TracGlobal {
-    private static final X500Principal DEBUG_DN = new X500Principal(
-            "CN=Android Debug,O=Android,C=US");
+class TracGlobal {
+    private static final X500Principal DEBUG_DN = new X500Principal("CN=Android Debug,O=Android,C=US");
 
     static public int ticketGroupCount = 50;
     private static String versie = null;
