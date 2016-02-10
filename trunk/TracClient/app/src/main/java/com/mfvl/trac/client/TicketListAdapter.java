@@ -20,7 +20,7 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket> {
     private final Tickets mTickets;
 
     public TicketListAdapter(TracStart context, Tickets tl) {
-        super(context, R.layout.ticket_list, tl != null ? tl.ticketList : null);
+        super(context, tl != null ? tl.ticketList : null);
         tcLog.logCall();
         mTickets = tl;
     }

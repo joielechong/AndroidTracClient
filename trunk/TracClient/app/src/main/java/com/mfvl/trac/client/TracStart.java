@@ -89,7 +89,7 @@ interface OnTicketLoadedListener {
 public class TracStart extends Activity implements Handler.Callback,ServiceConnection,
                                                    InterFragmentListener, OnBackStackChangedListener,
                                                    ActivityCompat.OnRequestPermissionsResultCallback, ViewTreeObserver.OnGlobalLayoutListener {
-   public static final String DetailFragmentTag = "Detail_Fragment";
+    public static final String DetailFragmentTag = "Detail_Fragment";
     private static final int REQUEST_CODE_CHOOSER = 6384;
     private static final int REQUEST_CODE_WRITE_EXT = 6385;
     private static final String ListFragmentTag = "List_Fragment";
@@ -100,8 +100,9 @@ public class TracStart extends Activity implements Handler.Callback,ServiceConne
     private static final String SortFragmentTag = "Sort_Fragment";
     private static final String[] FragmentTags = new String[]{ListFragmentTag, LoginFragmentTag, DetailFragmentTag,
             NewFragmentTag, UpdFragmentTag, FilterFragmentTag, SortFragmentTag};
-    static public Handler tracStartHandler = null;
-    final private Semaphore loadingActive = new TcSemaphore(1, true);
+    private static final String TICKET_MODEL = "TicketModel";
+    public Handler tracStartHandler = null;
+    private final Semaphore loadingActive = new TcSemaphore(1, true);
     private final Semaphore isBinding = new TcSemaphore(1, true);
     private boolean doubleBackToExitPressedOnce = false;
     private FrameLayout adViewContainer = null;
@@ -147,7 +148,7 @@ public class TracStart extends Activity implements Handler.Callback,ServiceConne
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         tcLog.setContext(this);
-        tcLog.d("savedInstanceState = " + savedInstanceState);
+//        tcLog.d("savedInstanceState = " + savedInstanceState);
         action = getString(R.string.serviceAction);
         sendMessageToService(-1);
 
@@ -202,6 +203,10 @@ public class TracStart extends Activity implements Handler.Callback,ServiceConne
             filterList = (ArrayList<FilterSpec>) savedInstanceState.getSerializable(FILTERLISTNAME);
             sortList = (ArrayList<SortSpec>) savedInstanceState.getSerializable(SORTLISTNAME);
             dispAds = savedInstanceState.getBoolean(ADMOB, true);
+			tm = (TicketModel)savedInstanceState.getSerializable(TICKET_MODEL);
+			if (tm != null) {
+				tracStartHandler.sendMessage(Message.obtain(null,MSG_SET_TICKET_MODEL));
+			}
         } else {
             url = TracGlobal.getUrl();
             username = TracGlobal.getUsername();
@@ -512,7 +517,7 @@ public class TracStart extends Activity implements Handler.Callback,ServiceConne
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putBoolean("Admob", dispAds);
+        savedInstanceState.putBoolean(ADMOB, dispAds);
         savedInstanceState.putSerializable(SORTLISTNAME, sortList);
         savedInstanceState.putSerializable(FILTERLISTNAME, filterList);
         savedInstanceState.putString(CURRENT_URL, url);
@@ -520,6 +525,7 @@ public class TracStart extends Activity implements Handler.Callback,ServiceConne
         savedInstanceState.putString(CURRENT_PASSWORD, password);
         savedInstanceState.putBoolean(CURRENT_SSLHACK, sslHack);
         savedInstanceState.putBoolean(CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
+		savedInstanceState.putSerializable(TICKET_MODEL,tm);
         saveFragment(savedInstanceState, ListFragmentTag);
         saveFragment(savedInstanceState, LoginFragmentTag);
         saveFragment(savedInstanceState, DetailFragmentTag);
@@ -950,8 +956,7 @@ public class TracStart extends Activity implements Handler.Callback,ServiceConne
         target.setType("*/*");
         target.addCategory(Intent.CATEGORY_OPENABLE);
         // Create the chooser Intent
-        startActivityForResult(Intent.createChooser(target, getString(R.string.chooser_title)),
-                               REQUEST_CODE_CHOOSER);
+        startActivityForResult(Intent.createChooser(target, getString(R.string.chooser_title)), REQUEST_CODE_CHOOSER);
     }
 
     @Override
@@ -1535,6 +1540,7 @@ public class TracStart extends Activity implements Handler.Callback,ServiceConne
         RefreshService.RefreshBinder binder = (RefreshService.RefreshBinder) service;
 
         mService = binder.getService();
+        mService.setTracStartHandler(tracStartHandler);
         tcLog.d("mConnection mService = " + mService);
         unbindService(this);
         isBinding.release();
@@ -1546,7 +1552,6 @@ public class TracStart extends Activity implements Handler.Callback,ServiceConne
     }
 
 }
-
 
 class TcSemaphore extends Semaphore {
 

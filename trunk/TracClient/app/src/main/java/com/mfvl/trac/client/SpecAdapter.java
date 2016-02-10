@@ -18,13 +18,11 @@ package com.mfvl.trac.client;
 
 import android.content.Context;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
 import java.util.ArrayList;
 
 class SpecAdapter<T extends Spec> extends ArrayAdapter<T> {
     final ArrayList<T> items;
-    protected ListView listView;
 
     public SpecAdapter(Context context, int textViewResourceId, ArrayList<T> items) {
         super(context, textViewResourceId, items);

@@ -132,7 +132,7 @@ public class SortFragment extends SpecFragment<SortSpec> {
         }
 
         public void onClick(View dv) {
-            int position = getSortPosition(dv);
+            int position = (Integer) ((View) dv.getParent()).getTag();
             SortSpec sortItem = items.get(position);
 //            tcLog.d(dv.toString() + " " + position + " " + sortItem);
             switch (dv.getId()) {
@@ -166,10 +166,6 @@ public class SortFragment extends SpecFragment<SortSpec> {
                     notifyDataSetChanged();
                     break;
             }
-        }
-
-        private int getSortPosition(View dv) {
-            return (Integer) ((View) dv.getParent()).getTag();
         }
     }
 }

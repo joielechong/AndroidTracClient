@@ -72,12 +72,6 @@
                 style="@style/TextViewButton"
                 android:text="@string/cookies"
                 android:visibility="gone"/>
-
-            <Button
-                android:id="@+id/showdisclaimer"
-                style="@style/TextViewButton"
-                android:text="@string/showdisclaimer"
-                android:visibility="gone"/>
         </LinearLayout>
 
     </LinearLayout>
