@@ -26,8 +26,7 @@
 
         <TextView
             android:id="@+id/filternaam"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            style="@style/FilterSpec"
             android:layout_weight="12"
             android:clickable="true"
             android:textAppearance="?android:attr/textAppearanceMedium"
@@ -35,17 +34,13 @@
 
         <ImageButton
             android:id="@+id/stopedit"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+            style="@style/FilterSpec"
             android:src="@drawable/upArrow"/>
 
         <ImageButton
             android:id="@+id/delitem"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@android:drawable/ic_menu_delete"/>
+            style="@style/FilterSpec"
+            android:src="@drawable/delete"/>
     </LinearLayout>
 
     <LinearLayout
