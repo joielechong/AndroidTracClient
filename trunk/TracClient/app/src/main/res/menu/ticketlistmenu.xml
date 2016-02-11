@@ -40,7 +40,7 @@
         android:title="@string/tlshare"/>
     <item
         android:id="@+id/tlzoek"
-        android:icon="@android:drawable/ic_menu_search"
+        android:icon="@drawable/search"
         android:menuCategory="container"
         android:showAsAction="ifRoom"
         android:title="@string/zoek"

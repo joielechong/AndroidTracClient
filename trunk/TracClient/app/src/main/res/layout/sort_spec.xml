@@ -22,30 +22,25 @@
 
     <ImageButton
         android:id="@+id/sortup"
-        style="@style/SortSpecImageButton"
-        android:src="@android:drawable/arrow_up_float"/>
+        style="@style/SortSpec"
+        android:src="@drawable/upArrow"/>
 
     <ImageButton
         android:id="@+id/sortdown"
-        style="@style/SortSpecImageButton"
-        android:src="@android:drawable/arrow_down_float"/>
+        style="@style/SortSpec"
+        android:src="@drawable/downArrow"/>
 
     <TextView
         android:id="@+id/sortfield"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
-        android:layout_weight="8"
-        android:textAppearance="?android:attr/textAppearanceMedium"/>
+        style="@style/SortSpecText" />
 
     <ImageButton
         android:id="@+id/sortdirec"
-        style="@style/SortSpecImageButton8"/>
+        style="@style/SortSpec8"/>
 
     <ImageButton
         android:id="@+id/delitem"
-        style="@style/SortSpecImageButton"
-        android:src="@android:drawable/ic_menu_delete"/>
+        style="@style/SortSpec"
+        android:src="@drawable/delete"/>
 
 </LinearLayout>

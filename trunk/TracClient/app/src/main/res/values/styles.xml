@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
- * Copyright (C) 2015,2016 Michiel van Loon
+ * Copyright (C) 2015-2016 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -126,22 +126,35 @@
         <item name="android:minHeight">?android:attr/listPreferredItemHeightSmall</item>
     </style>
 
-    <style name="SortSpecImageButtonBase">
+    <style name="SortSpecBase">
         <item name="android:layout_marginLeft">4dp</item>
         <item name="android:layout_marginRight">4dp</item>
     </style>
 
-    <style name="SortSpecImageButtonBase8" parent="SortSpecImageButtonBase">
+    <style name="SortSpecBase8" parent="SortSpecBase">
         <item name="android:layout_marginRight">8dp</item>
     </style>
 
-    <style name="SortSpecImageButton" parent="SortSpecImageButtonBase">
+    <style name="SortSpec" parent="SortSpecBase">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
     </style>
 
-    <style name="SortSpecImageButton8" parent="SortSpecImageButtonBase8">
+    <style name="SortSpec8" parent="SortSpecBase8">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="SortSpecText" parent="SortSpecBase" >
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">8</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+
+    <style name="FilterSpec">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
@@ -168,7 +181,7 @@
     </style>
 
     <style name="ListSearchBoxBase">
-        <item name="android:drawableLeft">@android:drawable/ic_menu_search</item>
+        <item name="android:drawableLeft">@drawable/search</item>
     </style>
 
     <style name="ListSearchBox" parent="ListSearchBoxBase">
