@@ -91,33 +91,20 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState); // must be called first
-//        tcLog.d("savedInstanceState = " + savedInstanceState);
+        tcLog.d("savedInstanceState = " + savedInstanceState);
         helpFile = R.string.filterhelpfile;
+        filterAdapter = new FilterAdapter(context, outputSpec);
+        listView.setAdapter(filterAdapter);
 
-        new Thread() {
-            @Override
-            public void run() {
-                waitForTicketModel();
-                context.runOnUiThread(new Runnable() {
-                    public void run() {
-                        filterAdapter = new FilterAdapter(context, outputSpec);
-                        listView.setAdapter(filterAdapter);
-
-                        currentView.findViewById(R.id.storefilter).setOnClickListener(FilterFragment.this);
-                        final ImageButton addButton = (ImageButton) currentView.findViewById(R.id.addbutton);
-                        addButton.setOnClickListener(FilterFragment.this);
-                        addSpinner = (Spinner) currentView.findViewById(R.id.addspin);
-                        getScreensize(addSpinner, addButton);
-                        final ArrayList<String> velden = tm.velden();
-                        Collections.sort(velden);
-                        final ArrayAdapter<String> spinAdapter = new ArrayAdapter<>(context,
-                                                                                    android.R.layout.simple_spinner_item,
-                                                                                    velden);
-                        addSpinner.setAdapter(spinAdapter);
-                    }
-                });
-            }
-        }.start();
+        currentView.findViewById(R.id.storefilter).setOnClickListener(this);
+        final ImageButton addButton = (ImageButton) currentView.findViewById(R.id.addbutton);
+        addButton.setOnClickListener(this);
+        addSpinner = (Spinner) currentView.findViewById(R.id.addspin);
+        getScreensize(addSpinner, addButton);
+        final ArrayList<String> velden = tm.velden();
+        Collections.sort(velden);
+        final ArrayAdapter<String> spinAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, velden);
+        addSpinner.setAdapter(spinAdapter);
     }
 
     private LinearLayout makeCheckBoxes(final FilterSpec o) {

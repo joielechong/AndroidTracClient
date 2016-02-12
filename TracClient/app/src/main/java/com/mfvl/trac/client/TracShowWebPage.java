@@ -55,10 +55,9 @@ public class TracShowWebPage extends Activity implements View.OnClickListener {
         } else {
             final TextView tv1 = (TextView) findViewById(R.id.about_version_text);
             tv1.setText(TracGlobal.getVersion());
-            boolean disclaimer = TracGlobal.checkDisclaimer();
             boolean cookies = TracGlobal.getCookieInform();
             View kb = findViewById(R.id.keuzeblock);
-            if (!disclaimer && !cookies) {
+            if (!cookies) {
                 kb.setVisibility(View.GONE);
             } else {
                 kb.setVisibility(View.VISIBLE);

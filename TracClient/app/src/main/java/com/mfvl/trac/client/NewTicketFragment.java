@@ -69,65 +69,53 @@ public class NewTicketFragment extends TracClientFragment {
         final View view = getView();
         final Button storButton = (Button) view.findViewById(R.id.storebutton);
         storButton.setOnClickListener(this);
-        CheckBox notify = (CheckBox)view.findViewById(R.id.updNotify);
+        CheckBox notify = (CheckBox) view.findViewById(R.id.updNotify);
         final TableLayout tl = (TableLayout) view.findViewById(R.id.newTickTable);
         if (savedInstanceState != null && savedInstanceState.containsKey(NotfifyField)) {
             notify.setSelected(savedInstanceState.getBoolean(NotfifyField));
         }
 
         final String[] ignoreFields = getResources().getStringArray(R.array.ignorecreatefields);
-        new Thread() {
-            @Override
-            public void run() {
-                //        tm = listener.getTicketModel();
-                waitForTicketModel();
-                context.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        boolean first = true;
+	boolean first = true;
 
-                        for (int i = 0; i < tm.count(); i++) {
-                            View v;
-                            final TicketModelVeld veld = tm.getVeld(i);
-                            final String veldnaam = veld.label();
-                            //tcLog.d("i = "+i+" veld = "+veld);
+	for (int i = 0; i < tm.count(); i++) {
+	    View v;
+	    final TicketModelVeld veld = tm.getVeld(i);
+	    final String veldnaam = veld.label();
+	    //tcLog.d("i = "+i+" veld = "+veld);
 
-                            if (!Arrays.asList(ignoreFields).contains(veldnaam)) {
-                                if (veld.options() != null) {
-                                    List<Object> waardes = veld.options();
-                                    boolean optional = veld.optional();
+	    if (!Arrays.asList(ignoreFields).contains(veldnaam)) {
+		if (veld.options() != null) {
+		    List<Object> waardes = veld.options();
+		    boolean optional = veld.optional();
 
-                                    v = LayoutInflater.from(context).inflate(R.layout.spinfield, tl, false);
-                                    Spinner v1 = (Spinner) v.findViewById(R.id.nt_val);
-                                    v1.setPrompt(veldnaam);
-                                    SpinnerAdapter a = makeComboAdapter(context, waardes, optional);
-                                    v1.setAdapter(a);
-                                    if (savedInstanceState != null && savedInstanceState.containsKey(veldnaam)) {
-                                        v1.setSelection(savedInstanceState.getInt(veldnaam));
-                                    }
-                                    v1.setTag(veldnaam);
-                                } else {
-                                    v = LayoutInflater.from(context).inflate((veldnaam.equals(
-                                            "Description") ? R.layout.descrfield : R.layout.stdfield), tl, false);
-                                    EditText e = (EditText) v.findViewById(R.id.nt_val);
-                                    if (savedInstanceState != null && savedInstanceState.containsKey(veldnaam)) {
-                                        e.setText(savedInstanceState.getString(veldnaam));
-                                    }
-                                    e.setTag(veldnaam);
-                                }
-                                ((TextView) v.findViewById(R.id.veldnaam)).setText(veldnaam);
-                                tl.addView(v);
-                                if (first) {
-                                    v.requestFocus();
-                                    first = false;
-                                }
-                            }
-                        }
-                        view.invalidate();
-                    }
-                });
-            }
-        }.start();
+		    v = LayoutInflater.from(context).inflate(R.layout.spinfield, tl, false);
+		    Spinner v1 = (Spinner) v.findViewById(R.id.nt_val);
+		    v1.setPrompt(veldnaam);
+		    SpinnerAdapter a = makeComboAdapter(context, waardes, optional);
+		    v1.setAdapter(a);
+		    if (savedInstanceState != null && savedInstanceState.containsKey(veldnaam)) {
+			v1.setSelection(savedInstanceState.getInt(veldnaam));
+		    }
+		    v1.setTag(veldnaam);
+		} else {
+		    v = LayoutInflater.from(context).inflate((veldnaam.equals(
+			    "Description") ? R.layout.descrfield : R.layout.stdfield), tl, false);
+		    EditText e = (EditText) v.findViewById(R.id.nt_val);
+		    if (savedInstanceState != null && savedInstanceState.containsKey(veldnaam)) {
+			e.setText(savedInstanceState.getString(veldnaam));
+		    }
+		    e.setTag(veldnaam);
+		}
+		((TextView) v.findViewById(R.id.veldnaam)).setText(veldnaam);
+		tl.addView(v);
+		if (first) {
+		    v.requestFocus();
+		    first = false;
+		}
+	    }
+	}
+	view.invalidate();
     }
 
     @Override

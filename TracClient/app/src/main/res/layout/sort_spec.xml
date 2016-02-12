@@ -32,7 +32,7 @@
 
     <TextView
         android:id="@+id/sortfield"
-        style="@style/SortSpecText" />
+        style="@style/SortSpecText"/>
 
     <ImageButton
         android:id="@+id/sortdirec"

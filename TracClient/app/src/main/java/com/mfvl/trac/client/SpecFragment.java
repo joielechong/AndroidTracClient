@@ -84,7 +84,7 @@ abstract public class SpecFragment<T extends Spec> extends TracClientFragment {
                 savedState.putSerializable(outputSpecText, outputSpec);
             }
         }
-        tcLog.d("super savedState = " + savedState);
+//        tcLog.d("super savedState = " + savedState);
     }
 
     @SuppressWarnings("unchecked")

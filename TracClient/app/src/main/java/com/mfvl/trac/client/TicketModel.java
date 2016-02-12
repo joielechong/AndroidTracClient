@@ -18,6 +18,8 @@ package com.mfvl.trac.client;
 
 import org.json.JSONArray;
 
+import android.os.Bundle;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,7 +36,7 @@ class TicketModel implements Serializable {
     private static TicketModel _instance = null;
     private static boolean _hasData;
     private static TracHttpClient _tracClient = null;
-    private static Semaphore active;
+    private static Semaphore active = null;
 
     private TicketModel(TracHttpClient tracClient) {
         tcLog.logCall();
@@ -44,6 +46,20 @@ class TicketModel implements Serializable {
         _velden = new HashMap<>();
         _volgorde = new ArrayList<>();
         active = new TcSemaphore(1, true);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static TicketModel restore(Bundle b) {
+        if (b.containsKey("FieldCount")) {
+            _instance = new TicketModel(new TracHttpClient(b));
+            _volgorde = (ArrayList<String>) b.getSerializable("Volgorde");
+            _velden = (HashMap<String, TicketModelVeld>) b.getSerializable("Velden");
+            fieldCount = b.getInt("FieldCount");
+//			tcLog.d("_instance = "+_instance+" tracClient = "+_tracClient);
+            return _instance;
+        } else {
+            return null;
+        }
     }
 
     public static void getInstance(TracHttpClient tracClient, final OnTicketModelListener oc) {
@@ -64,7 +80,15 @@ class TicketModel implements Serializable {
             oc.onTicketModelLoaded(_instance);
         }
     }
-	
+
+    public void onSaveInstanceState(Bundle b) {
+        _tracClient.onSaveInstanceState(b);
+        b.putSerializable("Volgorde", _volgorde);
+        b.putSerializable("Velden", _velden);
+        b.putInt("FieldCount", fieldCount);
+//		tcLog.d("b = "+b);
+    }
+
     private void loadModelData() {
         tcLog.logCall();
         if (_tracClient != null) {
@@ -107,14 +131,18 @@ class TicketModel implements Serializable {
         wacht();
         String s = "";
 
-        for (String v : _volgorde) {
-            s += _velden.get(v) + "\n";
+        if (_velden != null) {
+            for (String v : _volgorde) {
+                s += _velden.get(v) + "\n";
+            }
+        } else {
+            s += "TicketModel not initialized";
         }
         return s;
     }
 
     public void wacht() {
-        if (active.availablePermits() == 0) {
+        if (_velden == null && active.availablePermits() == 0) {
             active.acquireUninterruptibly();
             active.release();
         }
