@@ -65,7 +65,7 @@ public class SortFragment extends SpecFragment<SortSpec> {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);  // vult inputSpec en outputSpec
-//        tcLog.d("savedInstanceState = " + savedInstanceState);
+        tcLog.d("savedInstanceState = " + savedInstanceState);
         helpFile = R.string.sorthelpfile;
 
         sortAdapter = new SortAdapter(context, outputSpec);
@@ -76,19 +76,7 @@ public class SortFragment extends SpecFragment<SortSpec> {
         setListener(R.id.storebutton);
         addSpinner = (Spinner) currentView.findViewById(R.id.addspin);
         getScreensize(addSpinner, addButton);
-
-        new Thread() {
-            public void run() {
-                //tcLog.d("before setAdapter, tm = "+tm+ " addSspinner = "+ addSpinner+" context = "+context);
-                waitForTicketModel();
-                context.runOnUiThread(new Runnable() {
-                    public void run() {
-                        addSpinner.setAdapter(
-                                new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, tm.velden()));
-                    }
-                });
-            }
-        }.start();
+        addSpinner.setAdapter(new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, tm.velden()));
     }
 
     private class SortAdapter extends SpecAdapter<SortSpec> implements View.OnClickListener {

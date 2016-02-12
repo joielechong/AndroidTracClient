@@ -33,7 +33,7 @@ public class SortSpec extends Spec {
         boolean retVal;
         retVal = (this == o)
                 || (o instanceof SortSpec && super.equals(o)
-                && (_richting== ((SortSpec) o).getRichting()));
+                && (_richting == ((SortSpec) o).getRichting()));
 //		tcLog.d("this = "+this+" o = "+o+" retVal = "+retVal);
         return retVal;
     }

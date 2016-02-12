@@ -28,7 +28,7 @@ import java.util.Date;
 import java.util.Locale;
 
 public class tcLog {
-    private static final SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss",Locale.US);
+    private static final SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
     private static Activity _c = null;
     private static String debugString = "";
 
@@ -41,7 +41,7 @@ public class tcLog {
             return debugString;
         }
     }
-    
+
     public static void toast(final String string) {
         if (_c != null) {
             _c.runOnUiThread(new Runnable() {

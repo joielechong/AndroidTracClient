@@ -139,6 +139,11 @@ public class RefreshService extends Service implements Handler.Callback {
         return false;
     }
 
+    public void send(Message msg) {
+//        tcLog.d(msg);
+        mServiceHandler.sendMessage(msg);
+    }
+
     private void stopTimer() {
 //        tcLog.logCall();
         if (monitorTimer != null) {
@@ -148,13 +153,9 @@ public class RefreshService extends Service implements Handler.Callback {
         monitorTimer = null;
     }
 
-    public void send(Message msg) {
-//        tcLog.d(msg);
-        mServiceHandler.sendMessage(msg);
-    }
-
     private void startTimer() {
 //        tcLog.logCall();
+        stopTimer();
         monitorTimer = new Timer("monitorTickets");
         monitorTimer.schedule(new TimerTask() {
             @Override
@@ -373,19 +374,14 @@ public class RefreshService extends Service implements Handler.Callback {
         tcLog.d("msg = " + msg.what);
 
         switch (msg.what) {
+            case MSG_REMOVE_NOTIFICATION:
+                mNotificationManager.cancel(notifId);
             case MSG_START_TIMER:
-                stopTimer();
                 startTimer();
                 break;
 
             case MSG_STOP_TIMER:
                 stopTimer();
-                break;
-
-            case MSG_REMOVE_NOTIFICATION:
-                mNotificationManager.cancel(notifId);
-                stopTimer();
-                startTimer();
                 break;
 
             case MSG_SEND_TICKET_COUNT:
@@ -399,7 +395,7 @@ public class RefreshService extends Service implements Handler.Callback {
                                 .setTicker(RefreshService.this.getString(R.string.foundnew))
                                 .setContentText(RefreshService.this.getString(R.string.foundnew))
                                 .setContentIntent(PendingIntent.getActivity(this, -1,
-                                    new Intent(this, Refresh.class).setAction(refreshAction), PendingIntent.FLAG_UPDATE_CURRENT))
+                                        new Intent(this, Refresh.class).setAction(refreshAction),PendingIntent.FLAG_UPDATE_CURRENT))
                                 .setSubText(tl.ticketList.toString())
                                 .build());
                         // tcLog.d( "Notification sent");
@@ -497,11 +493,11 @@ public class RefreshService extends Service implements Handler.Callback {
     private class TicketLoaderLock extends ReentrantLock {
         TicketLoaderLock() {
             super();
-            tcLog.logCall();
+//            tcLog.logCall();
         }
 
         public void killOwner() {
-            tcLog.logCall();
+//            tcLog.logCall();
             Thread t = super.getOwner();
             t.interrupt();
             tcLog.toast(RefreshService.this.getString(R.string.tryinterrupt));

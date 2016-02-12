@@ -86,7 +86,7 @@ interface OnTicketLoadedListener {
 }
 
 
-public class TracStart extends Activity implements Handler.Callback,ServiceConnection,
+public class TracStart extends Activity implements Handler.Callback, ServiceConnection,
                                                    InterFragmentListener, OnBackStackChangedListener,
                                                    ActivityCompat.OnRequestPermissionsResultCallback, ViewTreeObserver.OnGlobalLayoutListener {
     public static final String DetailFragmentTag = "Detail_Fragment";
@@ -100,10 +100,9 @@ public class TracStart extends Activity implements Handler.Callback,ServiceConne
     private static final String SortFragmentTag = "Sort_Fragment";
     private static final String[] FragmentTags = new String[]{ListFragmentTag, LoginFragmentTag, DetailFragmentTag,
             NewFragmentTag, UpdFragmentTag, FilterFragmentTag, SortFragmentTag};
-    private static final String TICKET_MODEL = "TicketModel";
-    public Handler tracStartHandler = null;
     private final Semaphore loadingActive = new TcSemaphore(1, true);
     private final Semaphore isBinding = new TcSemaphore(1, true);
+    public Handler tracStartHandler = null;
     private boolean doubleBackToExitPressedOnce = false;
     private FrameLayout adViewContainer = null;
     private AdView adView = null;
@@ -148,7 +147,8 @@ public class TracStart extends Activity implements Handler.Callback,ServiceConne
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         tcLog.setContext(this);
-//        tcLog.d("savedInstanceState = " + savedInstanceState);
+//		tcLog.logCall();
+        tcLog.d("savedInstanceState = " + savedInstanceState);
         action = getString(R.string.serviceAction);
         sendMessageToService(-1);
 
@@ -203,10 +203,11 @@ public class TracStart extends Activity implements Handler.Callback,ServiceConne
             filterList = (ArrayList<FilterSpec>) savedInstanceState.getSerializable(FILTERLISTNAME);
             sortList = (ArrayList<SortSpec>) savedInstanceState.getSerializable(SORTLISTNAME);
             dispAds = savedInstanceState.getBoolean(ADMOB, true);
-			tm = (TicketModel)savedInstanceState.getSerializable(TICKET_MODEL);
-			if (tm != null) {
-				tracStartHandler.sendMessage(Message.obtain(null,MSG_SET_TICKET_MODEL));
-			}
+            tm = TicketModel.restore(savedInstanceState);
+            if (tm != null) {
+                tcLog.d("restoring TicketModel: " + tm);
+                tracStartHandler.sendMessage(Message.obtain(null, MSG_SET_TICKET_MODEL, tm));
+            }
         } else {
             url = TracGlobal.getUrl();
             username = TracGlobal.getUsername();
@@ -417,7 +418,7 @@ public class TracStart extends Activity implements Handler.Callback,ServiceConne
                         tcLog.d("using sendMessage");
                         mService.send(msg);
                     }
-                    tcLog.d("Message "+msg+ " sent");
+                    tcLog.d("Message " + msg + " sent");
                 }
             }.start();
         }
@@ -517,6 +518,7 @@ public class TracStart extends Activity implements Handler.Callback,ServiceConne
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
+        tm.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putBoolean(ADMOB, dispAds);
         savedInstanceState.putSerializable(SORTLISTNAME, sortList);
         savedInstanceState.putSerializable(FILTERLISTNAME, filterList);
@@ -525,7 +527,6 @@ public class TracStart extends Activity implements Handler.Callback,ServiceConne
         savedInstanceState.putString(CURRENT_PASSWORD, password);
         savedInstanceState.putBoolean(CURRENT_SSLHACK, sslHack);
         savedInstanceState.putBoolean(CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
-		savedInstanceState.putSerializable(TICKET_MODEL,tm);
         saveFragment(savedInstanceState, ListFragmentTag);
         saveFragment(savedInstanceState, LoginFragmentTag);
         saveFragment(savedInstanceState, DetailFragmentTag);
@@ -1535,7 +1536,7 @@ public class TracStart extends Activity implements Handler.Callback,ServiceConne
         }
     }
 
-    @Override
+    @Override 
     public void onServiceConnected(ComponentName className, IBinder service) {
         RefreshService.RefreshBinder binder = (RefreshService.RefreshBinder) service;
 

@@ -145,17 +145,6 @@ class TracGlobal {
         _profile = profile;
     }
 
-    public static boolean checkDisclaimer() {
-//        tcLog.logCall();
-        final String thisRun = DisclaimerVersion;
-        final String lastRun = settings.getString(PREF_DISCLAIM, "");
-
-        return !lastRun.equals(thisRun);
-    }
-
-    public static void setDisclaimer() {
-        settings.edit().putString(PREF_DISCLAIM, DisclaimerVersion).apply();
-    }
 
     public static boolean getFirstRun() {
         // tcLog.d("getFirstRun");
