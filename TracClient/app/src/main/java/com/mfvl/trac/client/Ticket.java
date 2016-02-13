@@ -158,13 +158,19 @@ public class Ticket implements Serializable {
 
                 try {
                     veld = fields.getString(i);
-                    if ("summary".equals(veld) || "_ts".equals(veld)) {// skip
-                    } else if ("time".equals(veld) || "changetime".equals(veld)) {
-                        tekst += veld + ":\t" + toonTijd(_velden.getJSONObject(veld)) + "\n";
-                    } else if (_velden.getString(veld).length() > 0) {
-                        tekst += veld + ":\t" + _velden.getString(veld) + "\n";
-                    }
+                    switch (veld) {
+                        case "summary":
+                        case "_ts":
+                            break;
 
+                        case "time":
+                        case "changetime":
+                            tekst += veld + ":\t" + toonTijd(_velden.getJSONObject(veld)) + "\n";
+                            break;
+
+                        default:
+                            tekst += veld + ":\t" + _velden.getString(veld) + "\n";
+                    }
                 } catch (final Exception ignored) {
                 }
             }

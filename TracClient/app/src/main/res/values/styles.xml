@@ -232,14 +232,13 @@
         <item name="android:checked">false</item>
     </style>
 
-    <style name="TextViewButton">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">@color/help_text</item>
+    <style name="AboutButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textColor">@android:color/white</item>
         <item name="android:paddingLeft">8dp</item>
         <item name="android:textSize">@dimen/helpsml_textsize</item>
         <item name="android:paddingRight">8dp</item>
-        <item name="android:clickable">true</item>
     </style>
 
     <style name="AboutText" parent="TitleScreenText">

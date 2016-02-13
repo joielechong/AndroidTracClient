@@ -518,7 +518,9 @@ public class TracStart extends Activity implements Handler.Callback, ServiceConn
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
-        tm.onSaveInstanceState(savedInstanceState);
+        if (tm != null) {
+            tm.onSaveInstanceState(savedInstanceState);
+        }
         savedInstanceState.putBoolean(ADMOB, dispAds);
         savedInstanceState.putSerializable(SORTLISTNAME, sortList);
         savedInstanceState.putSerializable(FILTERLISTNAME, filterList);
@@ -1555,10 +1557,6 @@ public class TracStart extends Activity implements Handler.Callback, ServiceConn
 }
 
 class TcSemaphore extends Semaphore {
-
-    public TcSemaphore(int permits) {
-        super(permits);
-    }
 
     public TcSemaphore(int permits, boolean fair) {
         super(permits, fair);
