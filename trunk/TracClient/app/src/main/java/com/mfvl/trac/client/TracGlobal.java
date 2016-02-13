@@ -141,11 +141,6 @@ class TracGlobal {
         return _profile;
     }
 
-    public static void setProfile(String profile) {
-        _profile = profile;
-    }
-
-
     public static boolean getFirstRun() {
         // tcLog.d("getFirstRun");
         final String thisRun = versie;

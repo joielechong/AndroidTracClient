@@ -62,11 +62,9 @@ public class TracShowWebPage extends Activity implements View.OnClickListener {
             } else {
                 kb.setVisibility(View.VISIBLE);
                 TextView sch = (TextView) findViewById(R.id.showchanges);
-                sch.setVisibility(View.VISIBLE);
-                sch.setOnClickListener(this);
+                 sch.setOnClickListener(this);
                 if (cookies) {
                     TextView v = (TextView) findViewById(R.id.showcookies);
-                    v.setVisibility(View.VISIBLE);
                     v.setOnClickListener(this);
                 }
             }

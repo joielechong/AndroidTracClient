@@ -53,13 +53,11 @@ final class Const {
     static final String PREF_1ST = "firstRun";
     static final String PREF_FILTER = "filterstring";
     static final String PREF_SORT = "sortString";
-    static final String PREF_DISCLAIM = "disclaimer";
     static final String PREF_COOKIEINFORM = "CookieInform";
 
     /*
      * Messages
     */
-    static final String DisclaimerVersion = "1.0";
     static final int MSG_START_TIMER = 1;
     static final int MSG_STOP_TIMER = 2;
     static final int MSG_REQUEST_TICKET_COUNT = 3;
