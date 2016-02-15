@@ -27,8 +27,8 @@
     <style name="ButtonBarBase" parent="android:Widget.Material.Light.ButtonBar"/>
 
     <style name="ButtonBarButton" parent="android:Widget.Material.Light.SegmentedButton"/>
-
+<!--
     <style name="MyBaseStyle" parent="android:Theme.Material.Light.DarkActionBar"/>
-
+-->
     <style name="NormalButtonBase" parent="android:Widget.Material.Light.Button"/>
 </resources>

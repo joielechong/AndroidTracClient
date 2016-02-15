@@ -41,18 +41,18 @@ class TracHttpClient extends JSONRPCHttpClient {
     private String current_url = null;
     private String current_username = null;
     private String current_password = null;
-    private boolean current_sslHack;
-    private boolean current_sslHostNameHack;
+    private final boolean current_sslHack;
+    private final boolean current_sslHostNameHack;
 
 
     public TracHttpClient(final String url, final boolean sslHack, final boolean sslHostNameHack, final String username, final String password) {
         super(url, sslHack, sslHostNameHack);
-        setCredentials(username, password);
         current_url = url;
         current_username = username;
         current_password = password;
         current_sslHack = sslHack;
         current_sslHostNameHack = sslHostNameHack;
+        setCredentials(username, password);
     }
 
     public TracHttpClient(final LoginProfile lp) {

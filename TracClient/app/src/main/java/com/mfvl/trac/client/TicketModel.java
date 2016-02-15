@@ -141,7 +141,7 @@ class TicketModel implements Serializable {
         return s;
     }
 
-    public void wacht() {
+    private void wacht() {
         if (_velden == null && active.availablePermits() == 0) {
             active.acquireUninterruptibly();
             active.release();

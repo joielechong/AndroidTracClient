@@ -17,7 +17,6 @@
 package com.mfvl.trac.client;
 
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -48,25 +47,14 @@ public class UpdateTicketFragment extends TracClientFragment {
     private String currentActionName = null;
     private int ticknr;
 
-    @Override
-    public void onAttach(Context activity) {
-        super.onAttach(activity);
-        onMyAttach();
-    }
-
-    private void onMyAttach() {
+    void onMyAttach(Context context) {
+        super.onMyAttach(context);
         final Bundle args = getArguments();
 
         // tcLog.d("onAttach ");
         if (args != null) {
             ticknr = args.getInt(CURRENT_TICKET);
         }
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        onMyAttach();
     }
 
     @Override
