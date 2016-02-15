@@ -25,9 +25,11 @@
 
     <style name="ButtonBarButton" parent="android:Holo.Light.SegmentedButton"/>
 
-    <style name="MyBaseStyle" parent="android:Theme.Holo.Light.DarkActionBar"/>
+    <!-- style name="MyBaseStyle" parent="android:Theme.Holo.Light.DarkActionBar"/ -->
+    <style name="MyBaseStyle" parent="Theme.AppCompat.Light.NoActionBar"/>
 
     <style name="NormalButtonBase" parent="android:Widget.Holo.Light.Button"/>
+    <!-- style name="NormalButtonBase" parent="Widget.AppCompat.Light.ActionButton"/ -->
 
     <style name="AppTheme" parent="@style/AppBaseTheme"/>
 

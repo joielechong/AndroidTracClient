@@ -30,15 +30,16 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="?android:attr/actionBarSize"
-            android:background="?android:attr/colorPrimary" />
+            android:layout_alignParentTop="true"
+            android:background="@color/popup_back"
+            android:minHeight="?android:attr/actionBarSize" />
 
         <FrameLayout
             android:id="@+id/displayList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/displayAd"
-            android:layout_alignParentTop="true"/>
+            android:layout_below="@+id/toolbar"
+            android:layout_above="@+id/displayAd"/>
 
         <FrameLayout
             android:id="@+id/displayAd"

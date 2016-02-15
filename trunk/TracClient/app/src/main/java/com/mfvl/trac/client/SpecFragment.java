@@ -34,7 +34,7 @@ abstract public class SpecFragment<T extends Spec> extends TracClientFragment {
     protected abstract String keyName();
 
     @SuppressWarnings("unchecked")
-    protected void onMyAttach(Context activity) {
+    void onMyAttach(Context activity) {
 //        tcLog.d("keyName = " + keyName());
         super.onMyAttach(activity);
         inputSpec = null;
@@ -51,7 +51,7 @@ abstract public class SpecFragment<T extends Spec> extends TracClientFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        tcLog.d("savedInstanceState = " + savedInstanceState);
+        //tcLog.d("savedInstanceState = " + savedInstanceState);
         setHasOptionsMenu(true);
     }
 

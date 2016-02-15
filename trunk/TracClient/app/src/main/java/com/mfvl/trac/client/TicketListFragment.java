@@ -76,7 +76,7 @@ public class TicketListFragment extends TracClientFragment
     private boolean hasScrolled = false;
     private SwipeRefreshLayout swipeLayout;
 
-    public void onMyAttach(Context activity) {
+    void onMyAttach(Context activity) {
         tcLog.logCall();
         super.onMyAttach(activity);
         if (fragmentArgs != null) {
