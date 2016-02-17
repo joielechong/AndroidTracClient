@@ -16,6 +16,7 @@
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:tools="http://schemas.android.com/tools"
+	  xmlns:support="http://schemas.android.com/apk/res-auto"
       tools:ignore="AppCompatResource">
     <item
         android:id="@+id/tlnieuw"
@@ -30,19 +31,19 @@
         android:id="@+id/tlrefresh"
         android:icon="@android:drawable/ic_popup_sync"
         android:menuCategory="container"
-        android:showAsAction="ifRoom"
+        support:showAsAction="ifRoom"
         android:title="@string/tlrefresh"/>
     <item
         android:id="@+id/tlshare"
         android:icon="@android:drawable/ic_menu_share"
         android:menuCategory="container"
-        android:showAsAction="ifRoom"
+        support:showAsAction="ifRoom"
         android:title="@string/tlshare"/>
     <item
         android:id="@+id/tlzoek"
         android:icon="@drawable/search"
         android:menuCategory="container"
-        android:showAsAction="ifRoom"
+        support:showAsAction="ifRoom"
         android:title="@string/zoek"
         android:visibility="gone"/>
     <item

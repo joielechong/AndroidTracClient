@@ -18,6 +18,7 @@
 <android.support.v4.widget.DrawerLayout
     android:id="@+id/drawer_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:support="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -26,13 +27,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <!-- item name="android:background">@android:color/black</item -->
         <android.support.v7.widget.Toolbar
+            support:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             android:id="@+id/toolbar"
+			android:title="@string/app_name"
+			android:minHeight="?android:attr/actionBarSize"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:background="@color/popup_back"
-            android:minHeight="?android:attr/actionBarSize" />
+			android:background="@color/primary_material_dark"
+			support:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            android:layout_alignParentTop="true" />
 
         <FrameLayout
             android:id="@+id/displayList"
@@ -53,7 +58,7 @@
         android:id="@+id/left_drawer"
         android:layout_width="@dimen/drawer_width"
         android:layout_height="match_parent"
-        android:layout_gravity="start"
+        android:layout_gravity="left|start"
         android:background="@color/popup_back"
         android:choiceMode="singleChoice"
         android:divider="@android:color/transparent"
