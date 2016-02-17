@@ -63,7 +63,7 @@ public class EditFieldFragment extends DialogFragment {
         final Spinner spinValue = (Spinner) ll.findViewById(R.id.spinval);
         if (spinValue != null) {
             final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<>(getActivity(),
-                                                                        android.R.layout.simple_spinner_item);
+                    android.R.layout.simple_spinner_item);
             spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             if (tmv.optional()) {
                 spinAdapter.add("");
@@ -72,7 +72,7 @@ public class EditFieldFragment extends DialogFragment {
             spinValue.setAdapter(spinAdapter);
             if (waarde != null && !"".equals(waarde)) {
                 spinValue.setSelection(tmv.options().indexOf(waarde) + (tmv.optional() ? 1 : 0),
-                                       true);
+                        true);
             }
         }
 

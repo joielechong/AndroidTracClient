@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 -->
-<resources xmlns:android="http://schemas.android.com/apk/res/android"
-		   xmlns:support="http://schemas.android.com/apk/res-auto">
+<resources xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <!-- style name="AppBaseTheme" parent="android:Theme.Holo.Light"/ -->
     <style name="AppBaseTheme" parent="Theme.AppCompat.Light" />

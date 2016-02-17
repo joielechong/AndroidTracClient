@@ -73,7 +73,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
                         String[] values = res.getStringArray(resId);
 
                         addProfile(values[0], new LoginProfile(values[1], values[2], values[3],
-                                                               "true".equals(values[4])));
+                                "true".equals(values[4])));
                         // tcLog.d("i = "+i+" values = "+Arrays.asList(values));
                     }
                 } finally {
@@ -158,14 +158,14 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
 
         open();
         final Cursor c = db.query(TABLE_NAME,
-                                  new String[]{URL_ID, USERNAME_ID, PASSWORD_ID, SSLHACK_ID},
-                                  NAME_ID + "=?",
-                                  new String[]{name}, null, null, null);
+                new String[]{URL_ID, USERNAME_ID, PASSWORD_ID, SSLHACK_ID},
+                NAME_ID + "=?",
+                new String[]{name}, null, null, null);
 
         if (c.getCount() > 0) {
             c.moveToFirst();
             profile = new LoginProfile(c.getString(0), c.getString(1), c.getString(2),
-                                       c.getInt(3) == 1);
+                    c.getInt(3) == 1);
         }
         c.close();
         return profile;
@@ -176,14 +176,14 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
 
         open();
         final Cursor c = db.query(TABLE_NAME,
-                                  new String[]{URL_ID, USERNAME_ID, PASSWORD_ID, SSLHACK_ID},
-                                  URL_ID + "=?",
-                                  new String[]{url}, null, null, null);
+                new String[]{URL_ID, USERNAME_ID, PASSWORD_ID, SSLHACK_ID},
+                URL_ID + "=?",
+                new String[]{url}, null, null, null);
 
         if (c.getCount() > 0) {
             c.moveToFirst();
             profile = new LoginProfile(c.getString(0), c.getString(1), c.getString(2),
-                                       c.getInt(3) == 1);
+                    c.getInt(3) == 1);
         }
         c.close();
         return profile;
@@ -253,8 +253,8 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
 
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) throws
-                                                                                                    SAXException,
-                                                                                                    RuntimeException {
+                SAXException,
+                RuntimeException {
             switch (state) {
                 case 0:
                     if (localName.equals(_appname)) {
@@ -277,9 +277,9 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
                     if ("profile".equals(localName)) {
                         state++;
                         lp = new LoginProfile(attributes.getValue(ProfileDatabaseHelper.URL_ID),
-                                              attributes.getValue(ProfileDatabaseHelper.USERNAME_ID),
-                                              attributes.getValue(ProfileDatabaseHelper.PASSWORD_ID),
-                                              "1".equals(attributes.getValue(ProfileDatabaseHelper.SSLHACK_ID)));
+                                attributes.getValue(ProfileDatabaseHelper.USERNAME_ID),
+                                attributes.getValue(ProfileDatabaseHelper.PASSWORD_ID),
+                                "1".equals(attributes.getValue(ProfileDatabaseHelper.SSLHACK_ID)));
                         profileName = attributes.getValue(ProfileDatabaseHelper.NAME_ID);
                     }
                     break;

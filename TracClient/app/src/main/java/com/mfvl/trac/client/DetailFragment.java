@@ -63,14 +63,14 @@ import static com.mfvl.trac.client.Const.*;
 
 public class DetailFragment extends TracClientFragment
         implements SwipeRefreshLayout.OnRefreshListener, CompoundButton.OnCheckedChangeListener,
-                   GestureDetector.OnGestureListener, OnFileSelectedListener, OnItemClickListener,
-                   OnItemLongClickListener {
+        GestureDetector.OnGestureListener, OnFileSelectedListener, OnItemClickListener,
+        OnItemLongClickListener {
 
     private static final String EMPTYFIELDS = "emptyfields";
     private static final String MODVELD = "modveld";
 
     private static final List<String> skipFields = Arrays.asList("summary", "_ts", "max", "page",
-                                                                 "id");
+            "id");
     private static final List<String> timeFields = Arrays.asList("time", "changetime");
     private final List<modifiedString> values = new ArrayList<>();
     private int ticknr = -1;
@@ -160,9 +160,9 @@ public class DetailFragment extends TracClientFragment
         swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
         swipeLayout.setOnRefreshListener(this);
         swipeLayout.setColorSchemeResources(R.color.swipe_blue,
-                                            R.color.swipe_green,
-                                            R.color.swipe_orange,
-                                            R.color.swipe_red);
+                R.color.swipe_green,
+                R.color.swipe_orange,
+                R.color.swipe_red);
         if (savedInstanceState != null) {
             showEmptyFields = savedInstanceState.getBoolean(EMPTYFIELDS, false);
             if (savedInstanceState.containsKey(CURRENT_TICKET)) {
@@ -611,9 +611,9 @@ public class DetailFragment extends TracClientFragment
                         if ("comment".equals(cmt.getString(2)) && cmt.getString(4).length() > 0) {
                             values.add(
                                     new modifiedString("comment",
-                                                       toonTijd(cmt.getJSONObject(
-                                                               0)) + " - " + cmt.getString(
-                                                               1) + " - " + cmt.getString(4)));
+                                            toonTijd(cmt.getJSONObject(
+                                                    0)) + " - " + cmt.getString(
+                                                    1) + " - " + cmt.getString(4)));
                         }
                     } catch (final JSONException e) {
                         tcLog.e("JSONException in displayTicket loading history");
@@ -630,10 +630,10 @@ public class DetailFragment extends TracClientFragment
                         bijlage = attachments.getJSONArray(j);
                         values.add(
                                 new modifiedString("bijlage " + (j + 1),
-                                                   toonTijd(bijlage.getJSONObject(
-                                                           3)) + " - " + bijlage.getString(
-                                                           4) + " - " + bijlage.getString(0)
-                                                           + " - " + bijlage.getString(1)));
+                                        toonTijd(bijlage.getJSONObject(
+                                                3)) + " - " + bijlage.getString(
+                                                4) + " - " + bijlage.getString(0)
+                                                + " - " + bijlage.getString(1)));
 
                     } catch (final JSONException e) {
                         tcLog.e("JSONException in displayTicket loading attachments", e);

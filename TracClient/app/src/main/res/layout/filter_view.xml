@@ -15,16 +15,16 @@
 
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <Button
         android:id="@+id/storefilter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="@string/storefilter"/>
+        android:text="@string/storefilter" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -37,14 +37,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="19"
             android:prompt="@string/choosefield"
-            android:spinnerMode="dialog"/>
+            android:spinnerMode="dialog" />
 
         <ImageButton
             android:id="@+id/addbutton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="5"
-            android:src="@drawable/plus"/>
+            android:src="@drawable/plus" />
 
     </LinearLayout>
 
@@ -52,5 +52,5 @@
         android:id="@+id/itemlist"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="5dp"/>
+        android:layout_marginBottom="5dp" />
 </LinearLayout>

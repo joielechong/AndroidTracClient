@@ -71,7 +71,7 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
                 final String u = uri.getScheme() + "://" + uri.getHost() + "/";
 
                 String urlstring = u.replace("tracclient://", "http://").replace("tracclients://",
-                                                                                 "https://");
+                        "https://");
                 final int count = segments.size();
                 final String mustBeTicket = segments.get(count - 2);
 

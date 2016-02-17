@@ -37,12 +37,11 @@ class TracHttpClient extends JSONRPCHttpClient {
     private final static String TICKET_PUTATTACHMENT = "ticket.putAttachment";
     private final static String SYSTEM_GETAPIVERSION = "system.getAPIVersion";
     private final static String _JSONCLASS = "__jsonclass__";
-
+    private final boolean current_sslHack;
+    private final boolean current_sslHostNameHack;
     private String current_url = null;
     private String current_username = null;
     private String current_password = null;
-    private final boolean current_sslHack;
-    private final boolean current_sslHostNameHack;
 
 
     public TracHttpClient(final String url, final boolean sslHack, final boolean sslHostNameHack, final String username, final String password) {
@@ -61,7 +60,7 @@ class TracHttpClient extends JSONRPCHttpClient {
 
     public TracHttpClient(final Bundle b) {
         this(b.getString(CURRENT_URL), b.getBoolean(CURRENT_SSLHACK), b.getBoolean(CURRENT_SSLHOSTNAMEHACK), b.getString(CURRENT_USERNAME),
-             b.getString(CURRENT_PASSWORD));
+                b.getString(CURRENT_PASSWORD));
     }
 
     public void onSaveInstanceState(Bundle savedState) {
@@ -98,7 +97,7 @@ class TracHttpClient extends JSONRPCHttpClient {
     }
 
     public byte[] getAttachment(int ticknr, String filename) throws JSONException, JSONRPCException {
-        return Base64.decode(callJSONObject(TICKET_GETATTACHMENT, ticknr, filename).getJSONArray( _JSONCLASS).getString(1), Base64.DEFAULT);
+        return Base64.decode(callJSONObject(TICKET_GETATTACHMENT, ticknr, filename).getJSONArray(_JSONCLASS).getString(1), Base64.DEFAULT);
     }
 
     public void putAttachment(final int ticknr, String filename, String base64Content) throws JSONException, JSONRPCException {

@@ -81,7 +81,7 @@ public class JSONRPCHttpClient extends JSONRPCClient {
         try {
             if (sslHostNameHack) {
                 sslsf = new SSLConnectionSocketFactory(builder.build(),
-                                                       new AllowAllHostnameVerifier());
+                        new AllowAllHostnameVerifier());
             } else {
                 sslsf = new SSLConnectionSocketFactory(builder.build());
             }
@@ -109,7 +109,7 @@ public class JSONRPCHttpClient extends JSONRPCClient {
                 if (_username != null) {
                     final BasicCredentialsProvider cp = new BasicCredentialsProvider();
                     cp.setCredentials(new AuthScope(u.getHost(), u.getPort()),
-                                      new UsernamePasswordCredentials(_username, _password));
+                            new UsernamePasswordCredentials(_username, _password));
                     httpContext.setCredentialsProvider(cp);
                     httpContext.setAuthCache(new BasicAuthCache());
                 }
@@ -228,7 +228,7 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 
         @Override
         public boolean isTrusted(final X509Certificate[] chain, final String authType) throws
-                                                                                       CertificateException {
+                CertificateException {
             return true;
         }
 

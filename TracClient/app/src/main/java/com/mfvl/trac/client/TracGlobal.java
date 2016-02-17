@@ -177,7 +177,7 @@ class TracGlobal {
     public static String getSortString() {
         // tcLog.logCall();
         final String sortString = settings.getString(PREF_SORT,
-                                                     "order=priority&order=modified&desc=1");
+                "order=priority&order=modified&desc=1");
 
         tcLog.d("sortString = " + sortString);
         return sortString;

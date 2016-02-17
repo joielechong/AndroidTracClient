@@ -15,9 +15,9 @@
 
 -->
 <TableRow xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -25,7 +25,7 @@
         android:orientation="vertical"
         tools:ignore="UselessParent">
 
-        <TextView style="@style/FieldName"/>
+        <TextView style="@style/FieldName" />
 
         <Spinner
             android:id="@id/nt_val"
@@ -34,6 +34,6 @@
             android:layout_margin="4dp"
             android:ems="10"
             android:spinnerMode="dialog"
-            android:textSize="@dimen/list_textsize"/>
+            android:textSize="@dimen/list_textsize" />
     </LinearLayout>
 </TableRow>
