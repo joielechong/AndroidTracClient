@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="okBut" type="id"/>
-    <item name="canBut" type="id"/>
-    <item name="swipe_container" type="id"/>
-    <item name="veldnaam" type="id"/>
+    <item name="okBut" type="id" />
+    <item name="canBut" type="id" />
+    <item name="swipe_container" type="id" />
+    <item name="veldnaam" type="id" />
 
-    <item name="nt_val" type="id"/>
+    <item name="nt_val" type="id" />
 </resources>

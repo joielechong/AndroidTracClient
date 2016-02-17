@@ -216,8 +216,8 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
 
             if (spin != null) {
                 final ArrayAdapter<String> spinAdapter = new ArrayAdapter<>(context,
-                                                                            android.R.layout.simple_spinner_item,
-                                                                            operatornames);
+                        android.R.layout.simple_spinner_item,
+                        operatornames);
 
                 spin.setAdapter(spinAdapter);
                 spin.setSelection(operators.indexOf(filterItem.getOperator()));

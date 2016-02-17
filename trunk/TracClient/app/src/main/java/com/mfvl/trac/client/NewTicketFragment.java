@@ -76,46 +76,46 @@ public class NewTicketFragment extends TracClientFragment {
         }
 
         final String[] ignoreFields = getResources().getStringArray(R.array.ignorecreatefields);
-	boolean first = true;
+        boolean first = true;
 
-	for (int i = 0; i < tm.count(); i++) {
-	    View v;
-	    final TicketModelVeld veld = tm.getVeld(i);
-	    final String veldnaam = veld.label();
-	    //tcLog.d("i = "+i+" veld = "+veld);
+        for (int i = 0; i < tm.count(); i++) {
+            View v;
+            final TicketModelVeld veld = tm.getVeld(i);
+            final String veldnaam = veld.label();
+            //tcLog.d("i = "+i+" veld = "+veld);
 
-	    if (!Arrays.asList(ignoreFields).contains(veldnaam)) {
-		if (veld.options() != null) {
-		    List<Object> waardes = veld.options();
-		    boolean optional = veld.optional();
+            if (!Arrays.asList(ignoreFields).contains(veldnaam)) {
+                if (veld.options() != null) {
+                    List<Object> waardes = veld.options();
+                    boolean optional = veld.optional();
 
-		    v = LayoutInflater.from(context).inflate(R.layout.spinfield, tl, false);
-		    Spinner v1 = (Spinner) v.findViewById(R.id.nt_val);
-		    v1.setPrompt(veldnaam);
-		    SpinnerAdapter a = makeComboAdapter(context, waardes, optional);
-		    v1.setAdapter(a);
-		    if (savedInstanceState != null && savedInstanceState.containsKey(veldnaam)) {
-			v1.setSelection(savedInstanceState.getInt(veldnaam));
-		    }
-		    v1.setTag(veldnaam);
-		} else {
-		    v = LayoutInflater.from(context).inflate((veldnaam.equals(
-			    "Description") ? R.layout.descrfield : R.layout.stdfield), tl, false);
-		    EditText e = (EditText) v.findViewById(R.id.nt_val);
-		    if (savedInstanceState != null && savedInstanceState.containsKey(veldnaam)) {
-			e.setText(savedInstanceState.getString(veldnaam));
-		    }
-		    e.setTag(veldnaam);
-		}
-		((TextView) v.findViewById(R.id.veldnaam)).setText(veldnaam);
-		tl.addView(v);
-		if (first) {
-		    v.requestFocus();
-		    first = false;
-		}
-	    }
-	}
-	view.invalidate();
+                    v = LayoutInflater.from(context).inflate(R.layout.spinfield, tl, false);
+                    Spinner v1 = (Spinner) v.findViewById(R.id.nt_val);
+                    v1.setPrompt(veldnaam);
+                    SpinnerAdapter a = makeComboAdapter(context, waardes, optional);
+                    v1.setAdapter(a);
+                    if (savedInstanceState != null && savedInstanceState.containsKey(veldnaam)) {
+                        v1.setSelection(savedInstanceState.getInt(veldnaam));
+                    }
+                    v1.setTag(veldnaam);
+                } else {
+                    v = LayoutInflater.from(context).inflate((veldnaam.equals(
+                            "Description") ? R.layout.descrfield : R.layout.stdfield), tl, false);
+                    EditText e = (EditText) v.findViewById(R.id.nt_val);
+                    if (savedInstanceState != null && savedInstanceState.containsKey(veldnaam)) {
+                        e.setText(savedInstanceState.getString(veldnaam));
+                    }
+                    e.setTag(veldnaam);
+                }
+                ((TextView) v.findViewById(R.id.veldnaam)).setText(veldnaam);
+                tl.addView(v);
+                if (first) {
+                    v.requestFocus();
+                    first = false;
+                }
+            }
+        }
+        view.invalidate();
     }
 
     @Override

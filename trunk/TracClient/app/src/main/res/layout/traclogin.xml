@@ -15,9 +15,9 @@
 
 -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,14 +29,14 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|center_horizontal"
             android:text="@string/tracLogin"
-            android:textAppearance="?android:attr/textAppearanceLarge"/>
+            android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <Spinner
             android:id="@+id/loginspinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:prompt="@string/loadprofile"
-            android:spinnerMode="dialog"/>
+            android:spinnerMode="dialog" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -52,7 +52,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/tracUrl"
-                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <EditText
                     android:id="@+id/trac_URL"
@@ -61,14 +61,14 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="none"
                     android:hint="@string/tracUrlHint"
-                    android:inputType="textUri"/>
+                    android:inputType="textUri" />
             </LinearLayout>
 
             <CheckBox
                 android:id="@+id/sslHack"
                 style="@style/CheckBox"
                 android:text="@string/sslHack"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -79,7 +79,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/tracUser"
-                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <EditText
                     android:id="@+id/trac_User"
@@ -88,7 +88,7 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="none"
                     android:hint="@string/tracUserHint"
-                    android:inputType="text"/>
+                    android:inputType="text" />
             </LinearLayout>
 
             <LinearLayout
@@ -100,7 +100,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/tracPw"
-                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <EditText
                     android:id="@+id/trac_Pw"
@@ -109,7 +109,7 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="none"
                     android:hint="@string/tracPwHint"
-                    android:inputType="textPassword"/>
+                    android:inputType="textPassword" />
             </LinearLayout>
         </LinearLayout>
 
@@ -117,7 +117,7 @@
             android:id="@+id/bewaren"
             style="@style/CheckBox"
             android:checked="true"
-            android:text="@string/bewaren"/>
+            android:text="@string/bewaren" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -130,7 +130,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="@string/vertext"/>
+                android:text="@string/vertext" />
 
             <TextView
                 android:id="@+id/connWarn"
@@ -141,7 +141,7 @@
                 android:gravity="center_vertical|center_horizontal"
                 android:text="@string/validCred"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/connWarnSts"
@@ -150,7 +150,7 @@
                 android:layout_margin="3dp"
                 android:gravity="center_horizontal"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
             <LinearLayout style="@style/ButtonHolder">
 
@@ -159,13 +159,13 @@
                     style="@style/LoginStoreButton"
                     android:layout_weight="40"
                     android:gravity="center"
-                    android:text="@string/storeprofile"/>
+                    android:text="@string/storeprofile" />
 
                 <Button
                     style="@style/LoginOkButton"
                     android:layout_height="match_parent"
                     android:layout_weight="40"
-                    android:gravity="center"/>
+                    android:gravity="center" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

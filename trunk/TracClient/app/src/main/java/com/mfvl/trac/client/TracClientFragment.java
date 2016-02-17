@@ -128,7 +128,7 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
 
         spinValues.addAll(waardes);
 
-        final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<>(context,android.R.layout.simple_spinner_item,spinValues);
+        final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, spinValues);
         spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         return spinAdapter;
@@ -152,8 +152,8 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
         int widthPixels = metrics.widthPixels;
         Drawable drawable = ContextCompat.getDrawable(context, R.drawable.plus);
         spin.setLayoutParams(
-                new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT,widthPixels - drawable.getIntrinsicWidth()));
-        but.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT,drawable.getIntrinsicWidth()));
+                new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, widthPixels - drawable.getIntrinsicWidth()));
+        but.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, drawable.getIntrinsicWidth()));
     }
 
     void setListener(int resid) {
@@ -167,18 +167,19 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
         } catch (Exception ignored) {
         }
     }
-/*
-    void waitForTicketModel() {
-        while (tm == null) {
-            tcLog.d("tm is still null");
-            try {
-                Thread.sleep(100);
-            } catch (Exception ignored){
+
+    /*
+        void waitForTicketModel() {
+            while (tm == null) {
+                tcLog.d("tm is still null");
+                try {
+                    Thread.sleep(100);
+                } catch (Exception ignored){
+                }
             }
+            tm.wacht();
         }
-        tm.wacht();
-    }
-*/
+    */
     @Override
     public void onClick(View v) {
         tcLog.d("v =" + v);

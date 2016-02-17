@@ -14,8 +14,7 @@
  * limitations under the License.
 
 -->
-<TableRow
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<TableRow xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -26,7 +25,7 @@
         android:orientation="vertical"
         tools:ignore="UselessParent">
 
-        <TextView style="@style/FieldName"/>
+        <TextView style="@style/FieldName" />
 
         <EditText
             android:id="@id/nt_val"
@@ -37,7 +36,7 @@
             android:inputType="text|textCapSentences|textMultiLine"
             android:maxLines="10"
             android:minLines="1"
-            android:textSize="@dimen/list_textsize"/>
+            android:textSize="@dimen/list_textsize" />
     </LinearLayout>
 
 </TableRow>

@@ -15,9 +15,9 @@
 
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -30,23 +30,23 @@
             android:layout_weight="12"
             android:clickable="true"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textIsSelectable="false"/>
+            android:textIsSelectable="false" />
 
         <ImageButton
             android:id="@+id/stopedit"
             style="@style/FilterSpec"
-            android:src="@drawable/upArrow"/>
+            android:src="@drawable/upArrow" />
 
         <ImageButton
             android:id="@+id/delitem"
             style="@style/FilterSpec"
-            android:src="@drawable/delete"/>
+            android:src="@drawable/delete" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/filtercheck"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"/>
+        android:orientation="vertical" />
 
 </LinearLayout>

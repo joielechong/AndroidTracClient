@@ -87,8 +87,8 @@ interface OnTicketLoadedListener {
 
 
 public class TracStart extends AppCompatActivity implements Handler.Callback, ServiceConnection,
-                                                   InterFragmentListener, FragmentManager.OnBackStackChangedListener,
-                                                   ActivityCompat.OnRequestPermissionsResultCallback, ViewTreeObserver.OnGlobalLayoutListener {
+        InterFragmentListener, FragmentManager.OnBackStackChangedListener,
+        ActivityCompat.OnRequestPermissionsResultCallback, ViewTreeObserver.OnGlobalLayoutListener {
     public static final String DetailFragmentTag = "Detail_Fragment";
     private static final int REQUEST_CODE_CHOOSER = 6384;
     private static final int REQUEST_CODE_WRITE_EXT = 6385;
@@ -162,7 +162,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         mMessenger = new Messenger(tracStartHandler);
 
         if (ActivityCompat.checkSelfPermission(this,
-                                               Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 new AlertDialog.Builder(this)
                         .setTitle(R.string.permissiontitle)
@@ -187,7 +187,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         setContentView(R.layout.tracstart);
         debug |= TracGlobal.isRCVersion();
 
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setLogo(R.drawable.traclogo);
         setSupportActionBar(toolbar);
 
@@ -196,8 +196,8 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         TextView tv = (TextView) getLayoutInflater().inflate(R.layout.ticket_list, mDrawerList, false);
         tv.setText(R.string.changehost);
         mDrawerList.addHeaderView(tv, null, false);
-		//mDrawerLayout.setStatusBarBackgroundColor(android.R.color.black);
-		
+        //mDrawerLayout.setStatusBarBackgroundColor(android.R.color.black);
+
         serviceIntent = new Intent(this, RefreshService.class);
         if (savedInstanceState != null) {
             url = savedInstanceState.getString(CURRENT_URL);
@@ -255,8 +255,8 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
                 }
                 if (lp == null) {
                     showAlertBox(R.string.wrongdb, R.string.wrongdbtext1,
-                                 url + getString(R.string.wrongdbtext2) + urlArg + getString(
-                                         R.string.wrongdbtext3));
+                            url + getString(R.string.wrongdbtext2) + urlArg + getString(
+                                    R.string.wrongdbtext3));
                     urlArg = null;
                     ticketArg = -1;
                 } else {
@@ -412,12 +412,12 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
                     if (mService == null) {
                         tcLog.d("using bindService");
                         bindService(new Intent(TracStart.this,
-                                               RefreshService.class).setAction(action)
-                                            .putExtra(INTENT_CMD, msg.what)
-                                            .putExtra(INTENT_ARG1, msg.arg1)
-                                            .putExtra(INTENT_ARG2, msg.arg2)
-                                            .putExtra(INTENT_OBJ, (Serializable) msg.obj),
-                                    TracStart.this, Context.BIND_AUTO_CREATE);
+                                        RefreshService.class).setAction(action)
+                                        .putExtra(INTENT_CMD, msg.what)
+                                        .putExtra(INTENT_ARG1, msg.arg1)
+                                        .putExtra(INTENT_ARG2, msg.arg2)
+                                        .putExtra(INTENT_OBJ, (Serializable) msg.obj),
+                                TracStart.this, Context.BIND_AUTO_CREATE);
                     } else {
                         isBinding.release();
                         tcLog.d("using sendMessage");
@@ -491,7 +491,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         final int[] to = new int[]{android.R.id.text1};
         mDrawerList.setAdapter(
                 new SimpleCursorAdapter(this, R.layout.drawer_list_item, pdbCursor, columns, to,
-                                        CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER));
+                        CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER));
         // Set the list's click listener
         mDrawerList.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
@@ -983,7 +983,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         if (ticketListFragment == null) {
             doNotFinish = true;
             getSupportFragmentManager().popBackStackImmediate(LoginFragmentTag,
-                                                       FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                    FragmentManager.POP_BACK_STACK_INCLUSIVE);
             ticketListFragment = new TicketListFragment();
             final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.add(R.id.displayList, ticketListFragment, ListFragmentTag);
@@ -1122,7 +1122,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     }
 
     public void updateTicket(final Ticket t, final String action, final String comment, final String veld, final String waarde, final boolean notify, final Map<String, String> modVeld) throws
-                                                                                                                                                                                         Exception {
+            Exception {
         final JSONObject velden = t.getVelden();
         tcLog.d("Ticket = " + t + "update: " + action + " '" + comment + "' '" + veld + "' '" + waarde + "' " + modVeld);
 //        tcLog.d("velden voor = " + velden);
@@ -1155,7 +1155,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
             public void run() {
                 try {
                     TracHttpClient tracClient = new TracHttpClient(url, sslHack, sslHostNameHack,
-                                                                   username, password);
+                            username, password);
                     JSONArray retTick = tracClient.updateTicket(ticknr, cmt, velden, notify);
                     t.setFields(retTick.getJSONObject(3));
                     if (modVeld != null) {
@@ -1290,7 +1290,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
                     }
                     is.close();
                     new TracHttpClient(url, sslHack, sslHostNameHack, username,
-                                       password).putAttachment(_ticknr, file.getName(), b64);
+                            password).putAttachment(_ticknr, file.getName(), b64);
                 } else {
                     tcLog.e("Cannot open" + uri);
                     showAlertBox(R.string.warning, R.string.notfound, filename);
@@ -1402,9 +1402,9 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
             case MSG_GET_PERMISSIONS:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                     ActivityCompat.requestPermissions(TracStart.this,
-                                                      new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                                              Manifest.permission.READ_EXTERNAL_STORAGE},
-                                                      REQUEST_CODE_WRITE_EXT);
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                    Manifest.permission.READ_EXTERNAL_STORAGE},
+                            REQUEST_CODE_WRITE_EXT);
                 }
                 break;
 
@@ -1545,7 +1545,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         }
     }
 
-    @Override 
+    @Override
     public void onServiceConnected(ComponentName className, IBinder service) {
         RefreshService.RefreshBinder binder = (RefreshService.RefreshBinder) service;
 

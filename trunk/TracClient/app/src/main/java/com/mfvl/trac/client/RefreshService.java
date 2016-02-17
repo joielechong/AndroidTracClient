@@ -395,7 +395,7 @@ public class RefreshService extends Service implements Handler.Callback {
                                 .setTicker(RefreshService.this.getString(R.string.foundnew))
                                 .setContentText(RefreshService.this.getString(R.string.foundnew))
                                 .setContentIntent(PendingIntent.getActivity(this, -1,
-                                        new Intent(this, Refresh.class).setAction(refreshAction),PendingIntent.FLAG_UPDATE_CURRENT))
+                                        new Intent(this, Refresh.class).setAction(refreshAction), PendingIntent.FLAG_UPDATE_CURRENT))
                                 .setSubText(tl.ticketList.toString())
                                 .build());
                         // tcLog.d( "Notification sent");

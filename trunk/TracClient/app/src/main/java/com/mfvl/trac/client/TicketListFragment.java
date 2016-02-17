@@ -69,7 +69,7 @@ public class TicketListFragment extends TracClientFragment
             if (listView != null && listView.getAdapter() != null && s != null) {
                 tcLog.d(s);
                 tcLog.d(listView.toString());
-                TicketListAdapter adapter = (TicketListAdapter)listView.getAdapter();
+                TicketListAdapter adapter = (TicketListAdapter) listView.getAdapter();
                 tcLog.d(adapter.toString());
                 Filter f = adapter.getFilter();
                 tcLog.d(f.toString());

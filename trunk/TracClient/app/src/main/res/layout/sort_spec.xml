@@ -15,32 +15,32 @@
 
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:gravity="center_vertical"
-              android:orientation="horizontal">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
 
     <ImageButton
         android:id="@+id/sortup"
         style="@style/SortSpec"
-        android:src="@drawable/upArrow"/>
+        android:src="@drawable/upArrow" />
 
     <ImageButton
         android:id="@+id/sortdown"
         style="@style/SortSpec"
-        android:src="@drawable/downArrow"/>
+        android:src="@drawable/downArrow" />
 
     <TextView
         android:id="@+id/sortfield"
-        style="@style/SortSpecText"/>
+        style="@style/SortSpecText" />
 
     <ImageButton
         android:id="@+id/sortdirec"
-        style="@style/SortSpec8"/>
+        style="@style/SortSpec8" />
 
     <ImageButton
         android:id="@+id/delitem"
         style="@style/SortSpec"
-        android:src="@drawable/delete"/>
+        android:src="@drawable/delete" />
 
 </LinearLayout>

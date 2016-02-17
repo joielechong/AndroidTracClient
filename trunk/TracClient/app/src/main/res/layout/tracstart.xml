@@ -16,9 +16,9 @@
 -->
 
 <android.support.v4.widget.DrawerLayout
-    android:id="@+id/drawer_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:support="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -29,28 +29,28 @@
 
         <!-- item name="android:background">@android:color/black</item -->
         <android.support.v7.widget.Toolbar
-            support:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             android:id="@+id/toolbar"
-			android:title="@string/app_name"
-			android:minHeight="?android:attr/actionBarSize"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-			android:background="@color/primary_material_dark"
-			support:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            android:layout_alignParentTop="true" />
+            android:layout_alignParentTop="true"
+            android:background="@color/primary_material_dark"
+            android:minHeight="?android:attr/actionBarSize"
+            android:title="@string/app_name"
+            support:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            support:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
         <FrameLayout
             android:id="@+id/displayList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/toolbar"
-            android:layout_above="@+id/displayAd"/>
+            android:layout_above="@+id/displayAd"
+            android:layout_below="@+id/toolbar" />
 
         <FrameLayout
             android:id="@+id/displayAd"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"/>
+            android:layout_alignParentBottom="true" />
     </RelativeLayout>
 
     <!-- The navigation drawer -->
@@ -62,5 +62,5 @@
         android:background="@color/popup_back"
         android:choiceMode="singleChoice"
         android:divider="@android:color/transparent"
-        android:dividerHeight="1dp"/>
+        android:dividerHeight="1dp" />
 </android.support.v4.widget.DrawerLayout>

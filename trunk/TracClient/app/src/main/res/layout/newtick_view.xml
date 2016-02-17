@@ -15,16 +15,16 @@
 
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <LinearLayout style="@style/ButtonHolder">
 
         <Button
             android:id="@+id/storebutton"
             style="@style/NormalButton"
-            android:text="@string/store"/>
+            android:text="@string/store" />
     </LinearLayout>
 
     <ScrollView
@@ -52,14 +52,14 @@
                         android:layout_margin="4dip"
                         android:padding="5dp"
                         android:text="@string/newtick"
-                        android:textSize="@dimen/help_textsize"/>
+                        android:textSize="@dimen/help_textsize" />
                 </TableRow>
                 <!-- just draw a red line -->
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="2dp"
-                    android:background="#FF0000"/>
+                    android:background="#FF0000" />
 
 
             </TableLayout>
@@ -67,7 +67,7 @@
             <CheckBox
                 android:id="@+id/updNotify"
                 style="@style/CheckBox"
-                android:text="@string/notify"/>
+                android:text="@string/notify" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

@@ -250,7 +250,7 @@ public class UpdateTicketFragment extends TracClientFragment {
         try {
             final boolean notify = updNotify != null && updNotify.isChecked();
             listener.updateTicket(_ticket, action, comment, currentActionName, waarde, notify,
-                                  null);
+                    null);
         } catch (final Exception e) {
             tcLog.e("update failed", e);
             showAlertBox(R.string.storerr, R.string.storerrdesc, e.getMessage());

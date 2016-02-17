@@ -188,10 +188,10 @@ public class TracLoginFragment extends TracClientFragment
 
             loginSpinner.setVisibility(View.VISIBLE);
             final SimpleCursorAdapter adapt = new SimpleCursorAdapter(context,
-                                                                      android.R.layout.simple_spinner_dropdown_item,
-                                                                      pdbCursor,
-                                                                      columns, to,
-                                                                      CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+                    android.R.layout.simple_spinner_dropdown_item,
+                    pdbCursor,
+                    columns, to,
+                    CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
             adapt.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             loginSpinner.setAdapter(adapt);
@@ -422,7 +422,7 @@ public class TracLoginFragment extends TracClientFragment
             @Override
             public void run() {
                 TracHttpClient tc = new TracHttpClient(url, sslHack, sslHostNameHack, username,
-                                                       password);
+                        password);
                 try {
                     final String TracVersion = tc.verifyHost();
                     tcLog.d(TracVersion);
@@ -445,21 +445,21 @@ public class TracLoginFragment extends TracClientFragment
                                         .setTitle(R.string.hostnametitle)
                                         .setCancelable(false)
                                         .setPositiveButton(R.string.oktext,
-                                                           new DialogInterface.OnClickListener() {
-                                                               @Override
-                                                               public void onClick(DialogInterface dialog, int id) {
-                                                                   verifyHostNameHack();
-                                                               }
-                                                           })
+                                                new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int id) {
+                                                        verifyHostNameHack();
+                                                    }
+                                                })
                                         .setNegativeButton(R.string.cancel,
-                                                           new DialogInterface.OnClickListener() {
-                                                               @Override
-                                                               public void onClick(DialogInterface dialog, int id) {
-                                                                   setInvalidMessage(errmsg,
-                                                                                     "Fail UserCancel Hostname");
-                                                                   sslHostNameHack = false;
-                                                               }
-                                                           })
+                                                new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int id) {
+                                                        setInvalidMessage(errmsg,
+                                                                "Fail UserCancel Hostname");
+                                                        sslHostNameHack = false;
+                                                    }
+                                                })
                                         .show();
                             }
                         });
@@ -481,7 +481,7 @@ public class TracLoginFragment extends TracClientFragment
             @Override
             public void run() {
                 TracHttpClient tc = new TracHttpClient(url, sslHack, sslHostNameHack, username,
-                                                       password);
+                        password);
                 try {
                     final String TracVersion = tc.verifyHost();
                     tcLog.d(TracVersion);
