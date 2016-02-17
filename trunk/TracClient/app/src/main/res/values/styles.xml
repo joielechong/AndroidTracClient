@@ -13,25 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 -->
-<resources xmlns:android="http://schemas.android.com/apk/res/android">
+<resources xmlns:android="http://schemas.android.com/apk/res/android"
+		   xmlns:support="http://schemas.android.com/apk/res-auto">
 
-    <style name="AppBaseTheme" parent="android:Theme.Holo.Light"/>
+    <!-- style name="AppBaseTheme" parent="android:Theme.Holo.Light"/ -->
+    <style name="AppBaseTheme" parent="Theme.AppCompat.Light" />
 
-    <style name="FullscreenThemeBase" parent="android:Theme.Holo.Light.NoActionBar.Fullscreen"/>
+    <style name="FullscreenThemeBase" parent="android:Theme.Holo.Light.NoActionBar.Fullscreen" />
 
-    <style name="AlertDialogStyle" parent="android:Holo.Light.ButtonBar.AlertDialog"/>
+    <!-- style name="AlertDialogStyle" parent="android:Holo.Light.ButtonBar.AlertDialog"/ -->
+    <style name="AlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert" />
 
-    <style name="ButtonBarBase" parent="android:Holo.Light.ButtonBar"/>
+    <style name="ButtonBarBase" parent="android:Holo.Light.ButtonBar" />
 
-    <style name="ButtonBarButton" parent="android:Holo.Light.SegmentedButton"/>
+    <style name="ButtonBarButton" parent="android:Holo.Light.SegmentedButton" />
 
     <!-- style name="MyBaseStyle" parent="android:Theme.Holo.Light.DarkActionBar"/ -->
-    <style name="MyBaseStyle" parent="Theme.AppCompat.Light.NoActionBar"/>
+    <style name="MyBaseStyle" parent="Theme.AppCompat.Light.NoActionBar" />
 
-    <style name="NormalButtonBase" parent="android:Widget.Holo.Light.Button"/>
-    <!-- style name="NormalButtonBase" parent="Widget.AppCompat.Light.ActionButton"/ -->
+    <style name="NormalButtonBase" parent="android:Widget.Holo.Light.Button" />
 
-    <style name="AppTheme" parent="@style/AppBaseTheme"/>
+    <style name="AppTheme" parent="@style/AppBaseTheme" />
 
     <style name="EditFieldTheme" parent="@style/AppBaseTheme">
         <item name="android:colorBackground">@color/popup_back</item>
@@ -98,7 +100,7 @@
     </style>
 
 
-    <style name="MyStyle" parent="@style/MyBaseStyle"/>
+    <style name="MyStyle" parent="@style/MyBaseStyle" />
 
     <style name="TextWarn">
         <item name="android:drawableLeft">@drawable/ic_warn</item>

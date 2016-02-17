@@ -196,7 +196,8 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         TextView tv = (TextView) getLayoutInflater().inflate(R.layout.ticket_list, mDrawerList, false);
         tv.setText(R.string.changehost);
         mDrawerList.addHeaderView(tv, null, false);
-
+		//mDrawerLayout.setStatusBarBackgroundColor(android.R.color.black);
+		
         serviceIntent = new Intent(this, RefreshService.class);
         if (savedInstanceState != null) {
             url = savedInstanceState.getString(CURRENT_URL);
