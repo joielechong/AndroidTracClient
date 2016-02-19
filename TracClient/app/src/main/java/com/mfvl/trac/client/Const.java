@@ -81,4 +81,5 @@ final class Const {
     static final int MSG_SET_TICKET_MODEL = 47;
 
     static final String DATABASE_NAME = "profile.db";
+    static final String DB_UPDATED = "db_update";
 }

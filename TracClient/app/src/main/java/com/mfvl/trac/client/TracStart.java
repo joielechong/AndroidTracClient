@@ -40,10 +40,12 @@ import android.Manifest;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -59,11 +61,15 @@ import android.os.Message;
 import android.os.Messenger;
 import android.provider.MediaStore.Images;
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
@@ -72,12 +78,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.widget.AdapterView;
-import android.widget.CursorAdapter;
 import android.widget.FrameLayout;
-import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
 
 import static com.mfvl.trac.client.Const.*;
 
@@ -88,6 +89,7 @@ interface OnTicketLoadedListener {
 
 public class TracStart extends AppCompatActivity implements Handler.Callback, ServiceConnection,
         InterFragmentListener, FragmentManager.OnBackStackChangedListener,
+        NavigationView.OnNavigationItemSelectedListener,
         ActivityCompat.OnRequestPermissionsResultCallback, ViewTreeObserver.OnGlobalLayoutListener {
     public static final String DetailFragmentTag = "Detail_Fragment";
     private static final int REQUEST_CODE_CHOOSER = 6384;
@@ -131,9 +133,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     private RefreshService mService = null;
 
     private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
     private ProfileDatabaseHelper pdb = null;
-    private Cursor pdbCursor;
     private Intent serviceIntent;
     private MyHandlerThread mHandlerThread = null;
     private boolean hasTicketsLoadingBar = false;
@@ -141,6 +141,50 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     private TicketListAdapter dataAdapter = null;
     private ProgressDialog progressBar = null;
     private String action = null;
+    private NavigationView navigationView = null;
+    private final BroadcastReceiver sqlupdateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get extra data included in the Intent
+            tcLog.d("intent = " + intent);
+            Menu menu = navigationView.getMenu();
+            menu.removeGroup(1234);
+
+            MenuItem mi = menu.add(1234, Menu.NONE, Menu.NONE, "Select host");
+            mi.setEnabled(false);
+            Cursor pdbCursor = pdb.getProfiles(false);
+            tcLog.d("pdbCursor = " + pdbCursor);
+            for (pdbCursor.moveToFirst(); !pdbCursor.isAfterLast(); pdbCursor.moveToNext()) {
+                //tcLog.d("pdbCursor 0 = "+pdbCursor.getInt(0));
+                //tcLog.d("pdbCursor 1 = "+pdbCursor.getString(1));
+                menu.add(1234, Menu.NONE, Menu.NONE, pdbCursor.getString(1));
+            }
+            pdbCursor.close();
+            mi = menu.add(1234, Menu.NONE, Menu.NONE, "--------------");
+            mi.setEnabled(false);
+        }
+    };
+
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        tcLog.d("item = " + item);
+        // Handle navigation view item clicks here.
+
+        if (item.getGroupId() == 1234 && item.isEnabled()) {
+            String newProfile = item.getTitle().toString();
+//                tcLog.d(newProfile);
+            LoginProfile lp = pdb.getProfile(newProfile);
+            tcLog.d(lp);
+            if (lp != null) {
+                onLogin(lp.getUrl(), lp.getUsername(), lp.getPassword(), lp.getSslHack(),
+                        lp.getSslHostNameHack(), newProfile);
+            }
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
 
     @SuppressWarnings("unchecked")
     @Override
@@ -192,11 +236,14 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         setSupportActionBar(toolbar);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
-        TextView tv = (TextView) getLayoutInflater().inflate(R.layout.ticket_list, mDrawerList, false);
-        tv.setText(R.string.changehost);
-        mDrawerList.addHeaderView(tv, null, false);
-        //mDrawerLayout.setStatusBarBackgroundColor(android.R.color.black);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        mDrawerLayout.setDrawerListener(toggle);
+        toggle.syncState();
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(sqlupdateReceiver, new IntentFilter(DB_UPDATED));
+
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
         serviceIntent = new Intent(this, RefreshService.class);
         if (savedInstanceState != null) {
@@ -482,35 +529,6 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        tcLog.logCall();
-        // Set the adapter for the list view
-        pdbCursor = pdb.getProfiles(false);
-        final String[] columns = new String[]{"name"};
-        final int[] to = new int[]{android.R.id.text1};
-        mDrawerList.setAdapter(
-                new SimpleCursorAdapter(this, R.layout.drawer_list_item, pdbCursor, columns, to,
-                        CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER));
-        // Set the list's click listener
-        mDrawerList.setOnItemClickListener(new ListView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView parent, View view, int position, long id) {
-//                tcLog.d("parent = " + parent + " view = " + view + " position = " + position);
-                String newProfile = ((TextView) view).getText().toString();
-//                tcLog.d(newProfile);
-                LoginProfile lp = pdb.getProfile(newProfile);
-                tcLog.d(lp);
-                if (lp != null) {
-                    onLogin(lp.getUrl(), lp.getUsername(), lp.getPassword(), lp.getSslHack(),
-                            lp.getSslHostNameHack(), newProfile);
-                }
-                mDrawerLayout.closeDrawer(mDrawerList);
-            }
-        });
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
         tcLog.logCall();
@@ -580,7 +598,6 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     protected void onStop() {
         super.onStop();
         tcLog.logCall();
-        pdbCursor.close();
     }
 
     @Override
@@ -621,8 +638,8 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         tcLog.logCall();
         DetailFragment dt = (DetailFragment) getFragment(DetailFragmentTag);
 
-        if (mDrawerLayout.isDrawerOpen(mDrawerList)) {
-            mDrawerLayout.closeDrawer(mDrawerList);
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
         } else {
             boolean processed = false;
             if (DetailFragmentTag.equals(getTopFragment())) {
@@ -678,7 +695,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         switch (item.getItemId()) {
             case android.R.id.home:
                 if (getSupportFragmentManager().getBackStackEntryCount() == 1) {
-                    mDrawerLayout.openDrawer(mDrawerList);
+                    mDrawerLayout.openDrawer(GravityCompat.START);
                 } else {
                     return false;
                 }

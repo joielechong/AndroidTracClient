@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 -->
-<resources xmlns:android="http://schemas.android.com/apk/res/android" >
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- style name="AppBaseTheme" parent="android:Theme.Holo.Light"/ -->
     <!-- style name="AppBaseTheme" parent="Theme.AppCompat.Light" / -->
@@ -28,7 +28,7 @@
     <style name="ButtonBarButton" parent="android:Holo.Light.SegmentedButton" />
 
     <!-- style name="MyBaseStyle" parent="android:Theme.Holo.Light.DarkActionBar"/ -->
-    <style name="MyBaseStyle" parent="Theme.AppCompat.Light.NoActionBar" />
+    <style name="MyBaseStyle" parent="AppTheme.NoActionBar" />
 
     <style name="NormalButtonBase" parent="android:Widget.Holo.Light.Button" />
 
@@ -121,8 +121,8 @@
     <style name="Drawer" parent="DrawerBase">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">@color/popup_back</item>
-        <item name="android:textColor">@color/help_back</item>
+        <!-- item name="android:background">@color/popup_back</item -->
+        <!-- item name="android:textColor">@color/help_back</item -->
         <item name="android:gravity">center_vertical</item>
         <item name="android:id">@android:id/text1</item>
         <item name="android:textAppearance">?android:attr/textAppearanceListItemSmall</item>
@@ -262,7 +262,7 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

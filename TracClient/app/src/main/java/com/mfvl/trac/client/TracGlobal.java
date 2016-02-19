@@ -220,8 +220,8 @@ class TracGlobal {
             final PackageInfo pinfo = _context.getPackageManager().getPackageInfo(
                     _context.getPackageName(),
                     PackageManager.GET_SIGNATURES);
-//			tcLog.d("pinfo = "+pinfo);
-//			tcLog.toast("pinfo.packageName = "+pinfo.packageName);
+            //tcLog.d("pinfo = "+pinfo);
+            //tcLog.toast("pinfo.packageName = "+pinfo.packageName);
             final Signature signatures[] = pinfo.signatures;
 
             final CertificateFactory cf = CertificateFactory.getInstance("X.509");
@@ -249,21 +249,21 @@ class TracGlobal {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public static File makeExtFilePath(String filename, boolean visible) throws FileNotFoundException {
         File dirPath;
-//		tcLog.d("filename = "+filename);
+        //tcLog.d("filename = "+filename);
         if (visible) {
             final File extPath = Environment.getExternalStorageDirectory();
-//			tcLog.d("extpath = "+extPath);
+            //tcLog.d("extpath = " + extPath);
             dirPath = new File(extPath, "TracClient");
         } else {
             dirPath = _context.getExternalFilesDir(null);
-            dirPath.mkdirs();
         }
-//		tcLog.d("dirpath = "+dirPath);
+        dirPath.mkdirs();
+        //tcLog.d("dirpath = "+dirPath);
         if (!dirPath.isDirectory()) {
             throw new FileNotFoundException(dirPath.toString());
         }
         final File filePath = new File(dirPath, filename);
-//		tcLog.d("filepath = "+filePath);
+        tcLog.d("filepath = " + filePath);
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             throw new FileNotFoundException(filePath.toString());
         }

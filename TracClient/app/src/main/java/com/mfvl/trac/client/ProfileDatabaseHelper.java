@@ -16,15 +16,16 @@
 
 package com.mfvl.trac.client;
 
-
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.v4.content.LocalBroadcastManager;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -42,6 +43,7 @@ import java.io.OutputStream;
 
 import javax.xml.parsers.SAXParserFactory;
 
+import static com.mfvl.trac.client.Const.*;
 
 class ProfileDatabaseHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 2;
@@ -51,20 +53,21 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
     private static final String USERNAME_ID = "username";
     private static final String PASSWORD_ID = "password";
     private static final String SSLHACK_ID = "sslhack";
-    private final Context _context;
+    private final Context context;
     private SQLiteDatabase db = null;
     private boolean upgrade = false;
 
     public ProfileDatabaseHelper(Context context) {
         super(context, TracGlobal.makeDbPath(), null, DATABASE_VERSION);
-        _context = context;
+        this.context = context;
+        sendNotification("class creation");
     }
 
     public void open() {
         if (db == null) {
             db = getWritableDatabase();
             if (upgrade) {
-                Resources res = _context.getResources();
+                Resources res = context.getResources();
                 TypedArray ta = res.obtainTypedArray(R.array.profiles);
                 try {
 
@@ -98,6 +101,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_PROFILE_TABLE);
         db.execSQL("insert into " + TABLE_NAME + "(" + NAME_ID + ") VALUES ('')");
         upgrade = true;
+        sendNotification("Databae opened");
     }
 
     @Override
@@ -120,6 +124,13 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
+    private void sendNotification(String message) {
+        Intent intent = new Intent(DB_UPDATED);
+        // You can also include some extra data.
+        intent.putExtra(DB_UPDATED, message);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    }
+
     public void addProfile(String name, LoginProfile profile) throws SQLException {
         final ContentValues values = new ContentValues();
 
@@ -134,6 +145,8 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
             db.insertOrThrow(TABLE_NAME, null, values);
         } catch (final SQLException e) {
             db.replaceOrThrow(TABLE_NAME, null, values);
+        } finally {
+            sendNotification("add profile");
         }
     }
 
@@ -190,23 +203,31 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
     }
 
     private int delProfiles() {
-        open();
-        final String values[] = new String[]{""};
+        try {
+            open();
+            final String values[] = new String[]{""};
 
-        return db.delete(TABLE_NAME, "name!=?", values);
+            return db.delete(TABLE_NAME, "name!=?", values);
+        } finally {
+            sendNotification("delProfiles");
+        }
     }
 
     public void readXML(final String appname) throws Exception {
-        open();
-        final File fileName = TracGlobal.makeExtFilePath(appname + ".xml", true);
-        final InputStream in = new BufferedInputStream(new FileInputStream(fileName));
-        final XMLReader xmlR = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
+        try {
+            open();
+            final File fileName = TracGlobal.makeExtFilePath(appname + ".xml", true);
+            final InputStream in = new BufferedInputStream(new FileInputStream(fileName));
+            final XMLReader xmlR = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
 
-        /**
-         * Create the Handler to handle each of the XML tags.
-         **/
-        xmlR.setContentHandler(new XMLHandler(appname, this));
-        xmlR.parse(new InputSource(in));
+            /**
+             * Create the Handler to handle each of the XML tags.
+             **/
+            xmlR.setContentHandler(new XMLHandler(appname, this));
+            xmlR.parse(new InputSource(in));
+        } finally {
+            sendNotification("read XML");
+        }
     }
 
     public void writeXML(final String appname) throws Exception {

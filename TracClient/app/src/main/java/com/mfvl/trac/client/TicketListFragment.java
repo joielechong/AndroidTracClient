@@ -349,7 +349,6 @@ public class TicketListFragment extends TracClientFragment
             tcLog.d("hs = " + hs);
             zetZoeken();
             setStatus(listener.getTicketContentCount() + "/" + listener.getTicketCount());
-//			setAdapter(listener.getAdapter());
             listener.getAdapter().notifyDataSetChanged();
             getView().invalidate();
             listView.invalidate();
