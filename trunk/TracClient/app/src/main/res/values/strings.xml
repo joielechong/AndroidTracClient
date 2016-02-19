@@ -131,4 +131,9 @@
     <string name="choosefield">Choose field</string>
     <string name="tryinterrupt">Trying to interrupt ticketlist loading</string>
     <string name="interrupted">Ticketload interrupted</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
 </resources>

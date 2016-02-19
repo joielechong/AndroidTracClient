@@ -116,4 +116,9 @@
     <string name="choosefield">Kies veld</string>
     <string name="tryinterrupt">Laden wordt onderbroken</string>
     <string name="interrupted">Ticket laden onderbroken</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Sluit navigation drawer</string>
+
+    <string name="action_settings">Instellingen</string>
 </resources>

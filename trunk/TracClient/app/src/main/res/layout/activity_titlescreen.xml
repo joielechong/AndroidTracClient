@@ -20,7 +20,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context="com.mfvl.trac.client.TracTitlescreenActivity">
+    tools:context=".TracTitlescreenActivity">
 
     <ImageView
         android:layout_width="wrap_content"

@@ -21,7 +21,7 @@
     android:layout_gravity="top"
     android:gravity="top"
     android:orientation="vertical"
-    tools:context="com.mfvl.trac.client.TracShowWebPage">
+    tools:context=".TracShowWebPage">
 
     <LinearLayout
         android:id="@+id/versionblock"

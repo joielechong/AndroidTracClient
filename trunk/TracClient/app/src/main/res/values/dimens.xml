@@ -21,7 +21,6 @@
     <dimen name="helpsml_textsize">16sp</dimen>
     <integer name="webzoom">120</integer>
     <!-- zoom factor to be used on webpages -->
-    <dimen name="drawer_width">240dp</dimen>
     <dimen name="popup_width">300dp</dimen>
     <dimen name="popup_height">450dp</dimen>
     <dimen name="nav_header_vertical_spacing">16dp</dimen>

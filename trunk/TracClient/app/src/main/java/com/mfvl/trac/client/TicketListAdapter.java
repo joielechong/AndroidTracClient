@@ -38,7 +38,7 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket> {
 
     @Override
     public Ticket getItem(int position) {
-//        tcLog.d( "getItem " + position);
+        //tcLog.d( "getItem " + position);
         try {
             return mTickets.ticketList.get(position);
         } catch (Exception e) {
@@ -47,7 +47,7 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket> {
     }
 
     public void addAll(Tickets tl) {
-        tcLog.d("tl = " + tl + " " + (tl != null ? tl.ticketList.toString() : null));
+        //tcLog.d("tl = " + tl + " " + (tl != null ? tl.ticketList.toString() : null));
         if (tl != null) {
             super.addAll(tl.ticketList);
             mTickets.add(tl);
@@ -61,7 +61,7 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket> {
 
     @Override
     public boolean hasStableIds() {
-//        tcLog.logCall();
+        //tcLog.logCall();
         return true;
     }
 
