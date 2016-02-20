@@ -150,7 +150,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
             Menu menu = navigationView.getMenu();
             menu.removeGroup(1234);
 
-            MenuItem mi = menu.add(1234, Menu.NONE, Menu.NONE, "Select host");
+            MenuItem mi = menu.add(1234, Menu.NONE, Menu.NONE, R.string.changehost);
             mi.setEnabled(false);
             Cursor pdbCursor = pdb.getProfiles(false);
             tcLog.d("pdbCursor = " + pdbCursor);
@@ -160,8 +160,6 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
                 menu.add(1234, Menu.NONE, Menu.NONE, pdbCursor.getString(1));
             }
             pdbCursor.close();
-            mi = menu.add(1234, Menu.NONE, Menu.NONE, "--------------");
-            mi.setEnabled(false);
         }
     };
 
@@ -170,16 +168,31 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         tcLog.d("item = " + item);
         // Handle navigation view item clicks here.
 
-        if (item.getGroupId() == 1234 && item.isEnabled()) {
-            String newProfile = item.getTitle().toString();
-//                tcLog.d(newProfile);
-            LoginProfile lp = pdb.getProfile(newProfile);
-            tcLog.d(lp);
-            if (lp != null) {
-                onLogin(lp.getUrl(), lp.getUsername(), lp.getPassword(), lp.getSslHack(),
-                        lp.getSslHostNameHack(), newProfile);
-            }
-        }
+		switch (item.getItemId()) {
+			case R.id.help:
+			Fragment frag = getSupportFragmentManager().findFragmentByTag(getTopFragment());
+			if (frag instanceof TracClientFragment) {
+				((TracClientFragment)frag).showHelp();
+			}
+			break;
+			
+			case R.id.over:
+			showAbout();
+			break;
+			
+			default:
+			if (item.getGroupId() == 1234 && item.isEnabled()) {
+				String newProfile = item.getTitle().toString();
+				//tcLog.d(newProfile);
+				LoginProfile lp = pdb.getProfile(newProfile);
+				tcLog.d(lp);
+				if (lp != null) {
+					onLogin(lp.getUrl(), lp.getUsername(), lp.getPassword(), lp.getSslHack(),
+							lp.getSslHostNameHack(), newProfile);
+				}
+			}
+			break;
+		}
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

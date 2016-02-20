@@ -87,6 +87,16 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
         tcLog.logCall();
         tracStartHandler = listener.getHandler();
     }
+	
+	public void showHelp() {
+		if (helpFile != -1) {
+			final Intent launchTrac = new Intent(context, TracShowWebPage.class);
+			final String filename = context.getString(helpFile);
+			launchTrac.putExtra(HELP_FILE, filename);
+			launchTrac.putExtra(HELP_VERSION, false);
+			startActivity(launchTrac);	
+		}
+	}
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -94,11 +104,7 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
         final int itemId = item.getItemId();
 
         if (itemId == R.id.help && helpFile != -1) {
-            final Intent launchTrac = new Intent(context, TracShowWebPage.class);
-            final String filename = context.getString(helpFile);
-            launchTrac.putExtra(HELP_FILE, filename);
-            launchTrac.putExtra(HELP_VERSION, false);
-            startActivity(launchTrac);
+			showHelp();
         } else {
             return super.onOptionsItemSelected(item);
         }

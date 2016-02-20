@@ -105,7 +105,7 @@
     <string name="noJSON">Kein JSON Unterstutzung auf Trac host</string>
     <string name="cookies">Cookies</string>
     <string name="permissiontitle"> Antrag auf Genehmigung</string>
-    <string name="doubleback"> Bitte klicken Sie nochmals auf"BACK"zum Beenden</string>
+    <string name="doubleback"> Bitte klicken Sie nochmals auf "BACK" zum Beenden</string>
     <string name="chooseoption">Option wählen</string>
     <string name="showchanges">Änderungshistorie</string>
     <string name="choosefield">Feld wählen</string>
