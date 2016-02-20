@@ -50,7 +50,7 @@ public class SortFragment extends SpecFragment<SortSpec> {
 
             case R.id.addbutton:
                 final String veld = tm.velden().get((int) addSpinner.getSelectedItemId());
-                // tcLog.d(     "addButton " + veld);
+                //tcLog.d("addButton " + veld);
                 sortAdapter.add(new SortSpec(veld));
                 break;
         }

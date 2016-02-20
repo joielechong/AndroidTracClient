@@ -64,7 +64,7 @@ public class Refresh extends Activity implements ServiceConnection {
                 if (action.equalsIgnoreCase(RefreshService.refreshAction)) {
                     bindService(new Intent(this, RefreshService.class).setAction(getString(R.string.serviceAction)), this,
                             Context.BIND_AUTO_CREATE);
-                    // tcLog.i("Refresh sent");
+                    //tcLog.d("Refresh sent");
                 }
             }
         } catch (final Exception e) {

@@ -103,7 +103,7 @@
     <string name="permissiontitle"> Pedido de autorização</string>
     <string name="chooseoption">Escolher opção</string>
     <string name="choosefield"> escolher campo</string>
-    <string name="doubleback"> Por favor,clique em Back novamente para sair</string>
+    <string name="doubleback"> Por favor, clique em BACK novamente para sair</string>
     <string name="noJSON"> Não há suporte a JSON sobre o TRAC-servidor</string>
 
 </resources>

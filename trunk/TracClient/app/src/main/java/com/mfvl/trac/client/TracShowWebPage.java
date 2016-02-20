@@ -97,6 +97,6 @@ public class TracShowWebPage extends Activity implements View.OnClickListener {
         sv.setVisibility(View.VISIBLE);
         wv.setVisibility(View.GONE);
         cv.setText(R.string.cookieInform);
-//		TracGlobal.setCookieInform();
+		//TracGlobal.setCookieInform(false);
     }
 }
