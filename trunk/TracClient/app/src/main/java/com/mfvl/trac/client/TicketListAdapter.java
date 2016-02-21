@@ -32,25 +32,13 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket> {
         notifyDataSetChanged();
     }
 
-    public int getCount() {
-        return mTickets.getTicketCount();
-    }
-
-    @Override
-    public Ticket getItem(int position) {
-        //tcLog.d( "getItem " + position);
-        try {
-            return mTickets.ticketList.get(position);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
     public void addAll(Tickets tl) {
         //tcLog.d("tl = " + tl + " " + (tl != null ? tl.ticketList.toString() : null));
         if (tl != null) {
-            super.addAll(tl.ticketList);
-            mTickets.add(tl);
+            for (Ticket t:tl.ticketList) {
+                super.add(t);
+            }
+            //mTickets.add(tl);
             notifyDataSetChanged();
         }
     }
@@ -75,7 +63,8 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket> {
 
     public Ticket getTicket(int i) {
         tcLog.d("getTicket i = " + i + " mTickets = " + mTickets);
-        return (mTickets != null ? mTickets.getTicket(i) : null);
+//        return (mTickets != null ? mTickets.getTicket(i) : null);
+        return getItem(i);
     }
 
     public int getTicketContentCount() {
