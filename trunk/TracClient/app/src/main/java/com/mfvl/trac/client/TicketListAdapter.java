@@ -17,18 +17,18 @@
 package com.mfvl.trac.client;
 
 public class TicketListAdapter extends ColoredArrayAdapter<Ticket> {
-    private final Tickets mTickets;
+    //private final Tickets mTickets;
 
     public TicketListAdapter(TracStart context, Tickets tl) {
         super(context, tl != null ? tl.ticketList : null);
         tcLog.logCall();
-        mTickets = tl;
+        //mTickets = tl;
     }
 
     public void clear() {
         tcLog.logCall();
         super.clear();
-        mTickets.clear();
+        //mTickets.clear();
         notifyDataSetChanged();
     }
 
@@ -43,31 +43,68 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket> {
         }
     }
 
-    public TicketList getTicketList() {
-        return mTickets.ticketList;
-    }
-
     @Override
     public boolean hasStableIds() {
         //tcLog.logCall();
         return true;
     }
 
-    public int getNextTicket(int pos) {
-        return mTickets.getNextTicket(pos);
+    public int getNextTicket(int ticknr) {
+        Ticket t = Tickets.getTicket(ticknr);
+        int retVal = -1;
+        if (t != null) {
+            int pos = super.getPosition(t);
+            if (pos >= 0) {
+                try {
+                    t = super.getItem(pos + 1);
+                    retVal = t.getTicketnr();
+                } catch (IndexOutOfBoundsException ignored) {
+                    //  retVal remains -1
+                }
+            }
+        }
+        return retVal;
     }
 
-    public int getPrevTicket(int pos) {
-        return mTickets.getPrevTicket(pos);
+    public int getPrevTicket(int ticknr) {
+        Ticket t = Tickets.getTicket(ticknr);
+        int retVal = -1;
+        if (t != null) {
+            int pos = super.getPosition(t);
+            if (pos > 0) {
+                try {
+                    t = super.getItem(pos - 1);
+                    retVal = t.getTicketnr();
+                } catch (IndexOutOfBoundsException ignored) {
+                    //  retVal remains -1
+                }
+            }
+        }
+        return retVal;
     }
 
-    public Ticket getTicket(int i) {
-        tcLog.d("getTicket i = " + i + " mTickets = " + mTickets);
-//        return (mTickets != null ? mTickets.getTicket(i) : null);
-        return getItem(i);
+    public TicketList getTicketList() {
+        TicketList tl = new TicketList();
+        for (int i = 0;i<getCount();i++) {
+            tl.add(getItem(i));
+        }
+        return tl;
     }
 
     public int getTicketContentCount() {
-        return mTickets.getTicketContentCount();
+        int count = 0;
+        for (int i = 0;i<getCount();i++) {
+            if (getItem(i).hasdata()) {
+                count++;
+            }
+        }
+        tcLog.d("count = "+count);
+        return count;
+    }
+
+    public int getCount() {
+        int count = super.getCount();
+        tcLog.d("count = "+count);
+        return count;
     }
 }
