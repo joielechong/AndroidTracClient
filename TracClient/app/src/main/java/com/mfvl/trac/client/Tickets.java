@@ -86,39 +86,9 @@ class Tickets {
         return c;
     }
 
-    public int getNextTicket(final int ticket) {
-        return getNeighTicket(ticket, 1);
-    }
-
-    private int getNeighTicket(final int ticknr, final int dir) {
-        tcLog.d("ticknr = " + ticknr + ", dir = " + dir);
-        Ticket t = getTicket(ticknr);
-
-        // tcLog.d("t = " + t);
-        if (t == null) {
-            return -1;
-        } else {
-            final int pos = ticketList.indexOf(t);
-            final int newpos = pos + dir;
-
-            // tcLog.d("pos = "+pos+", newpos = "+newpos+", count = "+ticketList.size());
-            if (pos < 0 || newpos < 0 || newpos >= ticketList.size()) {
-                return -1;
-            } else {
-                t = ticketList.get(newpos);
-                tcLog.d("new ticket = " + t);
-                return t != null && t.hasdata() ? t.getTicketnr() : ticknr;
-            }
-        }
-    }
-
-    public Ticket getTicket(final int ticknr) {
+    public static Ticket getTicket(final int ticknr) {
 //        tcLog.d("ticketMap = "+ticketMap);
 //        tcLog.d("ticknr = "+ticknr+ " "+ticketMap.containsKey(ticknr));
         return ticketMap.containsKey(ticknr) ? ticketMap.get(ticknr) : null;
-    }
-
-    public int getPrevTicket(final int ticket) {
-        return getNeighTicket(ticket, -1);
     }
 }

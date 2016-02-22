@@ -92,8 +92,8 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         NavigationView.OnNavigationItemSelectedListener,
         ActivityCompat.OnRequestPermissionsResultCallback, ViewTreeObserver.OnGlobalLayoutListener {
     public static final String DetailFragmentTag = "Detail_Fragment";
-    private static final int REQUEST_CODE_CHOOSER = 6384;
-    private static final int REQUEST_CODE_WRITE_EXT = 6385;
+    private static final int REQUEST_CODE_CHOOSER = 174;
+    private static final int REQUEST_CODE_WRITE_EXT = 175;
     private static final String ListFragmentTag = "List_Fragment";
     private static final String LoginFragmentTag = "Login_Fragment";
     private static final String NewFragmentTag = "New_Fragment";
@@ -1106,7 +1106,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
                     loadingActive.release();
                 }
 
-                Ticket t = dataAdapter.getTicket(i);
+                Ticket t = Tickets.getTicket(i);
                 tcLog.d("i = " + i + " ticket = " + t);
                 if (t != null && !t.hasdata()) {
                     refreshTicket(i);
