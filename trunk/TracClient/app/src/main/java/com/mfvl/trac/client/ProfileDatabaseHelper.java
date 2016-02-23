@@ -106,6 +106,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        //noinspection StatementWithEmptyBody
         if (oldVersion == 1 && newVersion == 2) {
         } else {
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
