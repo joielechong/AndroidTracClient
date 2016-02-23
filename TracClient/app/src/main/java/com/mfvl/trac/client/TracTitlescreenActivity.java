@@ -56,6 +56,7 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
         launchTrac = new Intent(getApplicationContext(), TracStart.class);
 
         // adMobAvailable=false;
+        //noinspection ConstantConditions
         launchTrac.putExtra(ADMOB, adMobAvailable);
 
         final Intent intent = getIntent();
