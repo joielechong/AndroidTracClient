@@ -17,12 +17,11 @@
 package com.mfvl.trac.client;
 
 public class TicketListAdapter extends ColoredArrayAdapter<Ticket> {
-    //private final Tickets mTickets;
 
     public TicketListAdapter(TracStart context, Tickets tl) {
         super(context, tl != null ? tl.ticketList : null);
         tcLog.logCall();
-        //mTickets = tl;
+		setNotifyOnChange(true);
     }
 
     public void clear() {
