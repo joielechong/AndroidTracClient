@@ -19,7 +19,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.mfvl.trac.client"
     android:installLocation="auto"
-    android:versionCode="91"
+    android:versionCode="92"
     android:versionName="@string/app_version">
 
     <uses-sdk
@@ -121,7 +121,8 @@
             android:name=".RefreshService"
             android:exported="false">
             <intent-filter>
-                <action android:name="@string/serviceAction" />
+                <!-- action android:name="@string/serviceAction" / -->
+                <action android:name="com.mfvl.trac.client.action" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>
