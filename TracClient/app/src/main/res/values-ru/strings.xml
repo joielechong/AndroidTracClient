@@ -104,6 +104,6 @@
     <string name="cookies">кукис </string>
     <string name="permissiontitle">Запрос разрешения</string>
     <string name="choosefield">выбрать поле</string>
-    <string name="chooseoption"> выбрать опцию</string>
-    <string name="doubleback"> Пожалуйста,нажмите снова,чтобы выйти</string>
+    <string name="chooseoption">выбрать опцию</string>
+    <string name="doubleback">Пожалуйста,нажмите снова,чтобы выйти</string>
 </resources>
