@@ -19,7 +19,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.mfvl.trac.client"
     android:installLocation="auto"
-    android:versionCode="92"
+    android:versionCode="93"
     android:versionName="@string/app_version">
 
     <uses-sdk
