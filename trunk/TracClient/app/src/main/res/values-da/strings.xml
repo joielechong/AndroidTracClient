@@ -68,7 +68,6 @@
 	<string name="selectticket">Vælg individuel ticket</string>
 	<string name="showempty">Vis tomme felter</string>
 	<string name="sort">Sorter</string>
-	<string name="sortdel">Fjern sorteringen</string>
 	<string name="sslHack">Accepter selv signerede certifikater</string>
 	<string name="sslHack1">Accepter problematiske certifikater</string>
 	<string name="store">Gem ticket</string>
