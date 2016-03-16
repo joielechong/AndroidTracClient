@@ -362,6 +362,7 @@ public class TicketListFragment extends TracClientFragment
         tcLog.d("s = " + s);
         try {
             hs.setText(s);
+			hs.invalidate();
         } catch (Exception ignored) {
         }
     }
