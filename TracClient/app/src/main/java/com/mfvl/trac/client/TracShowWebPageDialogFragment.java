@@ -16,67 +16,72 @@
 
 package com.mfvl.trac.client;
 
-import android.app.Activity;
+import android.support.v4.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
+import android.view.Window;
 
 import static com.mfvl.trac.client.Const.HELP_FILE;
 import static com.mfvl.trac.client.Const.HELP_VERSION;
 
-public class TracShowWebPage extends Activity implements View.OnClickListener {
+public class TracShowWebPageDialogFragment extends DialogFragment implements View.OnClickListener {
     private String filename;
     private WebView wv;
     private TextView cv;
     private View sv;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        TracGlobal.getInstance(getApplicationContext());
-        tcLog.d("savedInstanceState = " + savedInstanceState);
-        final Intent i = getIntent();
-        final boolean toonVersie = i.getBooleanExtra(HELP_VERSION, true);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        tcLog.logCall();
+        final Bundle args = getArguments();
+        final boolean toonVersie = args.getBoolean(HELP_VERSION);
 
-        setContentView(R.layout.trac_about);
-        filename = "file:///android_asset/" + i.getStringExtra(HELP_FILE) + ".html";
+		View ll = inflater.inflate(R.layout.trac_about,container);
+//		getDialog().setTitle("dummy");
+//		getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        final View tv = findViewById(R.id.versionblock);
-        tcLog.d(filename + " " + toonVersie + " " + tv);
-        wv = (WebView) findViewById(R.id.webfile);
-        cv = (TextView) findViewById(R.id.textAbout);
-        sv = findViewById(R.id.scrollAbout);
+        filename = "file:///android_asset/" + args.getString(HELP_FILE) + ".html";
+
+        final View tv = ll.findViewById(R.id.versionblock);
+        //tcLog.d(filename + " " + toonVersie + " " + tv);
+        wv = (WebView) ll.findViewById(R.id.webfile);
+        cv = (TextView) ll.findViewById(R.id.textAbout);
+        sv = ll.findViewById(R.id.scrollAbout);
 
         if (!toonVersie) {
             tv.setVisibility(View.GONE);
         } else {
-            final TextView tv1 = (TextView) findViewById(R.id.about_version_text);
+            final TextView tv1 = (TextView) ll.findViewById(R.id.about_version_text);
             tv1.setText(TracGlobal.getVersion());
             boolean cookies = TracGlobal.getCookieInform();
-            View kb = findViewById(R.id.keuzeblock);
+            View kb = ll.findViewById(R.id.keuzeblock);
             if (!cookies) {
                 kb.setVisibility(View.GONE);
             } else {
                 kb.setVisibility(View.VISIBLE);
-                TextView sch = (TextView) findViewById(R.id.showchanges);
+                TextView sch = (TextView) ll.findViewById(R.id.showchanges);
                 sch.setOnClickListener(this);
                 if (cookies) {
-                    TextView v = (TextView) findViewById(R.id.showcookies);
+                    TextView v = (TextView) ll.findViewById(R.id.showcookies);
                     v.setOnClickListener(this);
                 }
             }
         }
         showWebpage();
-    }
+		return ll;
+	}
 
     private void showWebpage() {
         wv.setVisibility(View.VISIBLE);
         sv.setVisibility(View.GONE);
         // wv.getSettings().setJavaScriptEnabled(true);
-        wv.setWebViewClient(new WebViewClient());
+        // wv.setWebViewClient(new WebViewClient());
         wv.getSettings().setTextZoom(getResources().getInteger(R.integer.webzoom));
         wv.loadUrl(filename);
     }
