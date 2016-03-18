@@ -285,10 +285,20 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
 
             // only at first start
             if (TracGlobal.getFirstRun()) {
+				TracShowWebPageDialogFragment about = new TracShowWebPageDialogFragment();
+				Bundle args = new Bundle();
+				args.putString(HELP_FILE, getString(R.string.whatsnewhelpfile));
+				args.putBoolean(HELP_VERSION, false);
+				about.setArguments(args);
+				FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+				about.show(ft,"about");
+/*
+  old form
                 final Intent launchTrac = new Intent(this, TracShowWebPage.class);
                 launchTrac.putExtra(HELP_FILE, getString(R.string.whatsnewhelpfile));
                 launchTrac.putExtra(HELP_VERSION, false);
                 startActivity(launchTrac);
+*/
             }
             dispAds = !getIntent().hasExtra(ADMOB) || getIntent().getBooleanExtra(ADMOB, true);
             if (getIntent().hasExtra(INTENT_URL)) {
@@ -753,10 +763,13 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
 
     private void showAbout() {
         //tcLog.d( "showAbout");
-        final Intent launchTrac = new Intent(getApplicationContext(), TracShowWebPage.class);
-        launchTrac.putExtra(HELP_FILE, getString(R.string.whatsnewhelpfile));
-        launchTrac.putExtra(HELP_VERSION, true);
-        startActivity(launchTrac);
+		TracShowWebPageDialogFragment about = new TracShowWebPageDialogFragment();
+		Bundle args = new Bundle();
+		args.putString(HELP_FILE, getString(R.string.whatsnewhelpfile));
+		args.putBoolean(HELP_VERSION, true);
+		about.setArguments(args);
+		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+		about.show(ft,"about");
     }
 
     @Override
