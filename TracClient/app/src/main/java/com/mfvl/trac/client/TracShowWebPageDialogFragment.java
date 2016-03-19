@@ -27,8 +27,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.view.Window;
 
-import static com.mfvl.trac.client.Const.HELP_FILE;
-import static com.mfvl.trac.client.Const.HELP_VERSION;
+import static com.mfvl.trac.client.Const.*;
 
 public class TracShowWebPageDialogFragment extends DialogFragment implements View.OnClickListener {
     private String filename;
