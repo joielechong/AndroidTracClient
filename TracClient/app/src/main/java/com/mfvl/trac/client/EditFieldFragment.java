@@ -41,9 +41,9 @@ public class EditFieldFragment extends DialogFragment {
 //		getView().setAlpha(0.7f);
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            @Override
+            public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                    Bundle savedInstanceState) {
         tcLog.logCall();
         final String veld = getArguments().getString("veld");
         final String waarde = getArguments().getString("waarde");
