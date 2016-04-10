@@ -133,6 +133,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     private RefreshService mService = null;
 
     private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle toggle;
     private ProfileDatabaseHelper pdb = null;
     private Intent serviceIntent;
     private MyHandlerThread mHandlerThread = null;
@@ -249,8 +250,8 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         setSupportActionBar(toolbar);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        mDrawerLayout.setDrawerListener(toggle);
+        toggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        mDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
         LocalBroadcastManager.getInstance(this).registerReceiver(sqlupdateReceiver, new IntentFilter(DB_UPDATED));
@@ -626,11 +627,12 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     @Override
     protected void onDestroy() {
         tcLog.d("isFinishing = " + isFinishing());
-        super.onDestroy();
+        mDrawerLayout.addDrawerListener(toggle);
         if (isFinishing()) {
             stopService(serviceIntent);
             mHandlerThread.quit();
         }
+        super.onDestroy();
     }
 
     @Override

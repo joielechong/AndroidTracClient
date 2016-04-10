@@ -17,15 +17,12 @@
 package com.mfvl.trac.client;
 
 import android.support.v4.app.DialogFragment;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.TextView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-import android.view.Window;
 
 import static com.mfvl.trac.client.Const.*;
 

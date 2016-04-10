@@ -113,22 +113,6 @@
         <item name="android:layout_marginLeft">24dp</item>
     </style>
 
-    <style name="DrawerBase">
-        <item name="android:paddingLeft">16dp</item>
-        <item name="android:paddingRight">16dp</item>
-    </style>
-
-    <style name="Drawer" parent="DrawerBase">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <!-- item name="android:background">@color/popup_back</item -->
-        <!-- item name="android:textColor">@color/help_back</item -->
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:id">@android:id/text1</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceListItemSmall</item>
-        <item name="android:minHeight">?android:attr/listPreferredItemHeightSmall</item>
-    </style>
-
     <style name="SortSpecBase">
         <item name="android:layout_marginLeft">4dp</item>
         <item name="android:layout_marginRight">4dp</item>
