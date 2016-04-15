@@ -292,7 +292,7 @@ public class RefreshService extends Service implements Handler.Callback {
                         final int thisTicket = Integer.parseInt(id.substring(startpos));
 
                         if (t == null || t.getTicketnr() != thisTicket) {
-                            t = tl.getTicket(thisTicket);
+                            t = Tickets.getTicket(thisTicket);
                         }
                         if (t != null) {
                             if ((TICKET_GET + "_" + thisTicket).equals(id)) {
@@ -419,7 +419,7 @@ public class RefreshService extends Service implements Handler.Callback {
                     try {
                         loadTicketContent(tl);
                         if (msg.arg2 != 0) {
-                            sendMessageToUI(msg.arg2, tl.getTicket(msg.arg1));
+                            sendMessageToUI(msg.arg2, Tickets.getTicket(msg.arg1));
                         }
                     } catch (Exception e) {
                         tcLog.e("MSG_SEND_TICKETS exception", e);
