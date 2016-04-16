@@ -68,7 +68,7 @@ public class SortFragment extends SpecFragment<SortSpec> {
         tcLog.d("savedInstanceState = " + savedInstanceState);
         helpFile = R.string.sorthelpfile;
 
-        sortAdapter = new SortAdapter(context, (SortList)outputSpec);
+        sortAdapter = new SortAdapter(context, (ArrayList<SortSpec> )outputSpec);
         listView.setAdapter(sortAdapter);
 
         ImageButton addButton = (ImageButton) currentView.findViewById(R.id.addbutton);
@@ -80,7 +80,7 @@ public class SortFragment extends SpecFragment<SortSpec> {
     }
 
     private class SortAdapter extends SpecAdapter<SortSpec> implements View.OnClickListener {
-        public SortAdapter(Context context, SortList items) {
+        public SortAdapter(Context context, ArrayList<SortSpec>  items) {
             super(context, R.layout.sort_spec, items);
         }
 
