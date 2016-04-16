@@ -24,7 +24,7 @@
 
     <LinearLayout
         android:id="@+id/versionblock"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
 		android:padding="16dp"
@@ -66,12 +66,16 @@
             android:weightSum="10">
 
             <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:id="@+id/showchanges"
                 style="@style/AboutButton"
                 android:layout_weight="5"
                 android:text="@string/showchanges" />
 
             <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:id="@+id/showcookies"
                 style="@style/AboutButton"
                 android:layout_weight="3"
@@ -93,6 +97,8 @@
         android:visibility="gone">
 
         <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:id="@+id/textAbout"
             style="@style/AboutText" />
     </ScrollView>

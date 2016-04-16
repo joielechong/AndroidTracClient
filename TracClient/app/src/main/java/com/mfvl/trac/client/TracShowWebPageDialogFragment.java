@@ -16,9 +16,12 @@
 
 package com.mfvl.trac.client;
 
+import android.app.Dialog;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.webkit.WebView;
 import android.widget.TextView;
 import android.view.LayoutInflater;
@@ -39,9 +42,6 @@ public class TracShowWebPageDialogFragment extends DialogFragment implements Vie
         final boolean toonVersie = args.getBoolean(HELP_VERSION);
 
 		View ll = inflater.inflate(R.layout.trac_about,container);
-//		getDialog().setTitle("dummy");
-//		getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
-
         filename = "file:///android_asset/" + args.getString(HELP_FILE) + ".html";
 
         final View tv = ll.findViewById(R.id.versionblock);
@@ -73,16 +73,7 @@ public class TracShowWebPageDialogFragment extends DialogFragment implements Vie
 		return ll;
 	}
 
-    private void showWebpage() {
-        wv.setVisibility(View.VISIBLE);
-        sv.setVisibility(View.GONE);
-        // wv.getSettings().setJavaScriptEnabled(true);
-        // wv.setWebViewClient(new WebViewClient());
-        wv.getSettings().setTextZoom(getResources().getInteger(R.integer.webzoom));
-        wv.loadUrl(filename);
-    }
-
-    public void onClick(View v) {
+     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.showchanges:
                 showWebpage();
@@ -93,8 +84,19 @@ public class TracShowWebPageDialogFragment extends DialogFragment implements Vie
                 break;
         }
     }
+    
+    private void showWebpage() {
+        tcLog.logCall();
+        wv.setVisibility(View.VISIBLE);
+        sv.setVisibility(View.GONE);
+        // wv.getSettings().setJavaScriptEnabled(true);
+        // wv.setWebViewClient(new WebViewClient());
+        wv.getSettings().setTextZoom(getResources().getInteger(R.integer.webzoom));
+        wv.loadUrl(filename);
+    }
 
     private void showCookies() {
+        tcLog.logCall();
         sv.setVisibility(View.VISIBLE);
         wv.setVisibility(View.GONE);
         cv.setText(R.string.cookieInform);

@@ -111,8 +111,8 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     private boolean dispAds = true;
     private String adUnitId;
     private String[] testDevices;
-    private SortList sortList = null;
-    private FilterList filterList = null;
+    private ArrayList<SortSpec>  sortList = null;
+    private ArrayList<FilterSpec>  filterList = null;
     private String profile = null;
     private LoginProfile currentLoginProfile = null;
     private String url = null;
@@ -195,8 +195,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
 			break;
 		}
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 
@@ -265,8 +264,8 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
             password = savedInstanceState.getString(CURRENT_PASSWORD);
             sslHack = savedInstanceState.getBoolean(CURRENT_SSLHACK, false);
             sslHostNameHack = savedInstanceState.getBoolean(CURRENT_SSLHOSTNAMEHACK, false);
-            filterList = (FilterList) savedInstanceState.getSerializable(FILTERLISTNAME);
-            sortList = (SortList) savedInstanceState.getSerializable(SORTLISTNAME);
+            filterList = (ArrayList<FilterSpec> ) savedInstanceState.getSerializable(FILTERLISTNAME);
+            sortList = (ArrayList<SortSpec> ) savedInstanceState.getSerializable(SORTLISTNAME);
             dispAds = savedInstanceState.getBoolean(ADMOB, true);
             tm = TicketModel.restore(savedInstanceState);
             if (tm != null) {
@@ -814,7 +813,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         ft.commit();
     }
 
-    private void onFilterSelected(FilterList filterList) {
+    private void onFilterSelected(ArrayList<FilterSpec>  filterList) {
         tcLog.d("filterList = " + filterList);
 
         final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -846,7 +845,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         ft.commit();
     }
 
-    private void onSortSelected(SortList sortList) {
+    private void onSortSelected(ArrayList<SortSpec>  sortList) {
         tcLog.logCall();
         final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         final SortFragment sortFragment = new SortFragment();
@@ -879,7 +878,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
 
     private void setFilter(String filterString) {
         tcLog.d(filterString);
-        final FilterList filter = new FilterList();
+        final ArrayList<FilterSpec>  filter = new ArrayList<FilterSpec> ();
 
         if (filterString.length() > 0) {
             String[] fs;
@@ -899,7 +898,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         setFilter(filter);
     }
 
-    private void setFilter(FilterList filter) {
+    private void setFilter(ArrayList<FilterSpec>  filter) {
         tcLog.d(filter.toString());
         String filterString = TracGlobal.joinList(filter.toArray(), "&");
         TracGlobal.storeFilterString(filterString);
@@ -908,7 +907,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
 
     private void setSort(String sortString) {
         tcLog.d(sortString);
-        final SortList sl = new SortList();
+        final ArrayList<SortSpec>  sl = new ArrayList<SortSpec> ();
 
         if (sortString.length() > 0) {
             String[] sort;
@@ -941,7 +940,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         setSort(sl);
     }
 
-    private void setSort(SortList sort) {
+    private void setSort(ArrayList<SortSpec>  sort) {
         tcLog.d(sort.toString());
 
         String sortString = TracGlobal.joinList(sort.toArray(), "&");
@@ -1403,13 +1402,13 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
                 break;
 
             case MSG_SET_SORT:
-                setSort((SortList) msg.obj);
+                setSort((ArrayList<SortSpec> ) msg.obj);
                 sendMessageToService(MSG_SET_SORT, msg.obj);
                 refreshOverview();
                 break;
 
             case MSG_SET_FILTER:
-                setFilter((FilterList) msg.obj);
+                setFilter((ArrayList<FilterSpec> ) msg.obj);
                 sendMessageToService(MSG_SET_FILTER, msg.obj);
                 refreshOverview();
                 break;
@@ -1622,12 +1621,4 @@ class TcSemaphore extends Semaphore {
         }
         super.acquireUninterruptibly();
     }
-}
-
-class SortList extends ArrayList<SortSpec> {
-
-}
-
-class FilterList extends ArrayList<FilterSpec> {
-
 }
