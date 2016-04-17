@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013,2014 Michiel van Loon
+ * Copyright (C) 2013-2016 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.TextView;
 import android.view.LayoutInflater;
@@ -30,10 +31,10 @@ import android.view.ViewGroup;
 import static com.mfvl.trac.client.Const.*;
 
 public class TracShowWebPageDialogFragment extends DialogFragment implements View.OnClickListener {
-    private String filename;
-    private WebView wv;
-    private TextView cv;
-    private View sv;
+    private String fileUrl;
+    private WebView webfile;
+    private TextView textAbout;
+    private View scrollAbout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -41,39 +42,45 @@ public class TracShowWebPageDialogFragment extends DialogFragment implements Vie
         final Bundle args = getArguments();
         final boolean toonVersie = args.getBoolean(HELP_VERSION);
 
-		View ll = inflater.inflate(R.layout.trac_about,container);
-        filename = "file:///android_asset/" + args.getString(HELP_FILE) + ".html";
+        View mainView = inflater.inflate(R.layout.trac_about,container);
+        fileUrl = "file:///android_asset/" + args.getString(HELP_FILE) + ".html";
 
-        final View tv = ll.findViewById(R.id.versionblock);
-        //tcLog.d(filename + " " + toonVersie + " " + tv);
-        wv = (WebView) ll.findViewById(R.id.webfile);
-        cv = (TextView) ll.findViewById(R.id.textAbout);
-        sv = ll.findViewById(R.id.scrollAbout);
+        final View versionblock = mainView.findViewById(R.id.versionblock);
+        tcLog.d(fileUrl + " " + toonVersie + " " + versionblock);
+        webfile = (WebView) mainView.findViewById(R.id.webfile);
+        textAbout = (TextView) mainView.findViewById(R.id.textAbout);
+        scrollAbout = mainView.findViewById(R.id.scrollAbout);
 
         if (!toonVersie) {
-            tv.setVisibility(View.GONE);
+            versionblock.setVisibility(View.GONE);
         } else {
-            final TextView tv1 = (TextView) ll.findViewById(R.id.about_version_text);
-            tv1.setText(TracGlobal.getVersion());
-            boolean cookies = TracGlobal.getCookieInform();
-            View kb = ll.findViewById(R.id.keuzeblock);
-            if (!cookies) {
-                kb.setVisibility(View.GONE);
+            final TextView about_version_text = (TextView) mainView.findViewById(R.id.about_version_text);
+            about_version_text.setText(TracGlobal.getVersion());
+            boolean cookieInform = TracGlobal.getCookieInform();
+            View keuzeblock = mainView.findViewById(R.id.keuzeblock);
+            if (!cookieInform) {
+                keuzeblock.setVisibility(View.GONE);
             } else {
-                kb.setVisibility(View.VISIBLE);
-                TextView sch = (TextView) ll.findViewById(R.id.showchanges);
-                sch.setOnClickListener(this);
-                if (cookies) {
-                    TextView v = (TextView) ll.findViewById(R.id.showcookies);
-                    v.setOnClickListener(this);
-                }
+                keuzeblock.setVisibility(View.VISIBLE);
+                mainView.findViewById(R.id.showchanges).setOnClickListener(this);
+                mainView.findViewById(R.id.showcookies).setOnClickListener(this);
             }
         }
         showWebpage();
-		return ll;
-	}
+        return mainView;
+    }
 
-     public void onClick(View v) {
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        tcLog.logCall();
+        Dialog d = super.onCreateDialog(savedInstanceState);
+        d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        return d;
+    }
+
+    public void onClick(View v) {
+        tcLog.d(v.getId());
         switch (v.getId()) {
             case R.id.showchanges:
                 showWebpage();
@@ -84,22 +91,25 @@ public class TracShowWebPageDialogFragment extends DialogFragment implements Vie
                 break;
         }
     }
-    
+
     private void showWebpage() {
         tcLog.logCall();
-        wv.setVisibility(View.VISIBLE);
-        sv.setVisibility(View.GONE);
-        // wv.getSettings().setJavaScriptEnabled(true);
-        // wv.setWebViewClient(new WebViewClient());
-        wv.getSettings().setTextZoom(getResources().getInteger(R.integer.webzoom));
-        wv.loadUrl(filename);
+//        scrollAbout.setVisibility(View.GONE);
+        webfile.loadUrl(fileUrl);
+        webfile.setVisibility(View.VISIBLE);
+        // webfile.getSettings().setJavaScriptEnabled(true);
+        webfile.getSettings().setTextZoom(getResources().getInteger(R.integer.webzoom));
+        tcLog.d(webfile.getContentHeight());
+        scrollAbout.setVisibility(View.VISIBLE);
+        textAbout.setText(null);
     }
 
     private void showCookies() {
         tcLog.logCall();
-        sv.setVisibility(View.VISIBLE);
-        wv.setVisibility(View.GONE);
-        cv.setText(R.string.cookieInform);
-		//TracGlobal.setCookieInform(false);
+        webfile.setVisibility(View.GONE);
+        scrollAbout.setVisibility(View.VISIBLE);
+        textAbout.setText(R.string.cookieInform);
+//        webfile.loadData(getResources().getString(R.string.cookieInform),"text/html",null);
+        //TracGlobal.setCookieInform(false);
     }
 }

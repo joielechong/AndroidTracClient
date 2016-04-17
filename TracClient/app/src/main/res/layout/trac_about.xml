@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
- * Copyright (C) 2013,2014 Michiel van Loon
+ * Copyright (C) 2013-2016 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,22 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:theme="@style/FullscreenTheme"
+    android:background="@color/help_back"
+    android:theme="@style/MyBaseStyle"
     android:layout_gravity="top"
     android:gravity="top"
     android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/versionblock"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
 		android:padding="16dp"
         android:orientation="vertical">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:text="@string/title_text"
@@ -41,7 +42,7 @@
 
         <TextView
             android:id="@+id/about_version_text"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:textColor="@color/help_text"
@@ -49,7 +50,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:text="@string/auteur"
@@ -59,7 +60,7 @@
 
         <LinearLayout
             android:id="@+id/keuzeblock"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:orientation="horizontal"
@@ -84,16 +85,10 @@
 
     </LinearLayout>
 
-    <WebView
-        android:id="@+id/webfile"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone" />
-
     <ScrollView
         android:id="@+id/scrollAbout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:visibility="gone">
 
         <TextView
@@ -102,4 +97,10 @@
             android:id="@+id/textAbout"
             style="@style/AboutText" />
     </ScrollView>
+    <WebView
+        android:id="@+id/webfile"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible" />
+
 </LinearLayout>
