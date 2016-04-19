@@ -259,12 +259,15 @@ public class UpdateTicketFragment extends TracClientFragment {
         }
     }
 
+    int getHelpFile() {
+        return R.string.updatehelpfile;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // tcLog.d("onCreate savedInstanceState = " + savedInstanceState );
         setHasOptionsMenu(true);
-        helpFile = R.string.updatehelpfile;
     }
 
     @Override

@@ -16,9 +16,9 @@
 
 package com.mfvl.trac.client;
 
-import org.json.JSONArray;
-
 import android.os.Bundle;
+
+import org.json.JSONArray;
 
 import java.io.Serializable;
 import java.util.ArrayList;

@@ -20,6 +20,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Editable;
@@ -82,6 +83,14 @@ public class TicketListFragment extends TracClientFragment
     private boolean scrolling = false;
     private boolean hasScrolled = false;
     private SwipeRefreshLayout swipeLayout;
+    private final DataSetObserver observer  = new DataSetObserver() {
+        @Override
+        public void onChanged() {
+            super.onChanged();
+            tcLog.logCall();
+            setStatus(listener.getTicketContentCount() + "/" + listener.getTicketCount());
+        }
+    };
 
     void onMyAttach(Context activity) {
         tcLog.logCall();
@@ -121,6 +130,7 @@ public class TicketListFragment extends TracClientFragment
         tcLog.d("a = " + a + " listView = " + listView);
         dataAdapter = a;
         listView.setAdapter(a);
+        a.registerDataSetObserver(observer);
         zetZoeken();
     }
 
@@ -249,11 +259,14 @@ public class TicketListFragment extends TracClientFragment
         listener.listViewCreated();
     }
 
+    int getHelpFile() {
+        return R.string.helplistfile;
+    }
+
     @Override
     public void onResume() {
         super.onResume();
         tcLog.logCall();
-        helpFile = R.string.helplistfile;
         listView.setAdapter(listener.getAdapter());
         zetZoeken();
         setScroll();
@@ -284,6 +297,7 @@ public class TicketListFragment extends TracClientFragment
         }
         if (listView != null) {
             listView.invalidateViews();
+            listView.getAdapter().unregisterDataSetObserver(observer);
             listView.setAdapter(null);
             unregisterForContextMenu(listView);
             listView = null;
@@ -338,9 +352,8 @@ public class TicketListFragment extends TracClientFragment
     }
 
     private void setScroll() {
-        try {
+        if (listView != null) {
             listView.setSelection(scrollPosition);
-        } catch (Exception ignored) {
         }
     }
 
@@ -360,10 +373,9 @@ public class TicketListFragment extends TracClientFragment
 
     private void setStatus(final String s) {
         tcLog.d("s = " + s);
-        try {
+        if (hs != null) {
             hs.setText(s);
-			hs.invalidate();
-        } catch (Exception ignored) {
+            hs.invalidate();
         }
     }
 
@@ -373,9 +385,9 @@ public class TicketListFragment extends TracClientFragment
     }
 
     private void setStatus(final int s) {
-        try {
+        if (hs != null) {
             hs.setText(s);
-        } catch (Exception ignored) {
+            hs.invalidate();
         }
     }
 

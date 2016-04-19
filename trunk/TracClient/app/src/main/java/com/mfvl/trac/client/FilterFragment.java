@@ -88,12 +88,15 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
         return inflater.inflate(R.layout.filter_view, container, false);
     }
 
+    int getHelpFile() {
+        return R.string.filterhelpfile;
+    }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState); // must be called first
         tcLog.d("savedInstanceState = " + savedInstanceState);
-        helpFile = R.string.filterhelpfile;
-        filterAdapter = new FilterAdapter(context, (ArrayList<FilterSpec> )outputSpec);
+        filterAdapter = new FilterAdapter(context, outputSpec);
         listView.setAdapter(filterAdapter);
 
         currentView.findViewById(R.id.storefilter).setOnClickListener(this);
@@ -171,7 +174,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
 
     private class FilterAdapter extends SpecAdapter<FilterSpec> implements View.OnClickListener {
 
-        public FilterAdapter(Context context, ArrayList<FilterSpec>  input) {
+        public FilterAdapter(Context context, ArrayList<FilterSpec> input) {
             super(context, android.R.layout.simple_list_item_1, input);
             if (operators == null) {
                 final Resources res = context.getResources();

@@ -16,26 +16,6 @@
 
 package com.mfvl.trac.client;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
-
-import org.alexd.jsonrpc.JSONRPCException;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.Semaphore;
-
 import android.Manifest;
 import android.app.ActionBar;
 import android.app.AlertDialog;
@@ -80,12 +60,31 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+
+import org.alexd.jsonrpc.JSONRPCException;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.Semaphore;
+
 import static com.mfvl.trac.client.Const.*;
 
 interface OnTicketLoadedListener {
     void onTicketLoaded(Ticket t);
 }
-
 
 public class TracStart extends AppCompatActivity implements Handler.Callback, ServiceConnection,
         InterFragmentListener, FragmentManager.OnBackStackChangedListener,
@@ -111,8 +110,8 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     private boolean dispAds = true;
     private String adUnitId;
     private String[] testDevices;
-    private ArrayList<SortSpec>  sortList = null;
-    private ArrayList<FilterSpec>  filterList = null;
+    private ArrayList<SortSpec> sortList = null;
+    private ArrayList<FilterSpec> filterList = null;
     private String profile = null;
     private LoginProfile currentLoginProfile = null;
     private String url = null;
@@ -131,6 +130,9 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     private TicketModel tm = null;
     private Messenger mMessenger = null;
     private RefreshService mService = null;
+    private TracShowWebPageDialogFragment about = null;
+    private Bundle aboutArgs = null;
+
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle toggle;
@@ -169,36 +171,37 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         tcLog.d("item = " + item);
         // Handle navigation view item clicks here.
 
-		switch (item.getItemId()) {
-			case R.id.help:
-			Fragment frag = getSupportFragmentManager().findFragmentByTag(getTopFragment());
-			if (frag instanceof TracClientFragment) {
-				((TracClientFragment)frag).showHelp();
-			}
-			break;
-			
-			case R.id.over:
-			showAbout();
-			break;
-			
-			default:
-			if (item.getGroupId() == 1234 && item.isEnabled()) {
-				String newProfile = item.getTitle().toString();
-				//tcLog.d(newProfile);
-				LoginProfile lp = pdb.getProfile(newProfile);
-				tcLog.d(lp);
-				if (lp != null) {
-					onLogin(lp.getUrl(), lp.getUsername(), lp.getPassword(), lp.getSslHack(),
-							lp.getSslHostNameHack(), newProfile);
-				}
-			}
-			break;
-		}
+        switch (item.getItemId()) {
+            case R.id.help:
+                Fragment frag = getSupportFragmentManager().findFragmentByTag(getTopFragment());
+                if (frag instanceof TracClientFragment) {
+                    ((TracClientFragment) frag).showHelp();
+                }
+                break;
+
+            case R.id.over:
+                showAbout();
+                break;
+
+            default:
+                if (item.getGroupId() == 1234 && item.isEnabled()) {
+                    String newProfile = item.getTitle().toString();
+                    //tcLog.d(newProfile);
+                    LoginProfile lp = pdb.getProfile(newProfile);
+                    tcLog.d(lp);
+                    if (lp != null) {
+                        onLogin(lp.getUrl(), lp.getUsername(), lp.getPassword(), lp.getSslHack(),
+                                lp.getSslHostNameHack(), newProfile);
+                    }
+                }
+                break;
+        }
 
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -264,8 +267,8 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
             password = savedInstanceState.getString(CURRENT_PASSWORD);
             sslHack = savedInstanceState.getBoolean(CURRENT_SSLHACK, false);
             sslHostNameHack = savedInstanceState.getBoolean(CURRENT_SSLHOSTNAMEHACK, false);
-            filterList = (ArrayList<FilterSpec> ) savedInstanceState.getSerializable(FILTERLISTNAME);
-            sortList = (ArrayList<SortSpec> ) savedInstanceState.getSerializable(SORTLISTNAME);
+            filterList = (ArrayList<FilterSpec>) savedInstanceState.getSerializable(FILTERLISTNAME);
+            sortList = (ArrayList<SortSpec>) savedInstanceState.getSerializable(SORTLISTNAME);
             dispAds = savedInstanceState.getBoolean(ADMOB, true);
             tm = TicketModel.restore(savedInstanceState);
             if (tm != null) {
@@ -284,20 +287,8 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
 
             // only at first start
             if (TracGlobal.getFirstRun()) {
-				TracShowWebPageDialogFragment about = new TracShowWebPageDialogFragment();
-				Bundle args = new Bundle();
-				args.putString(HELP_FILE, getString(R.string.whatsnewhelpfile));
-				args.putBoolean(HELP_VERSION, false);
-				about.setArguments(args);
-				FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-				about.show(ft,"about");
-/*
-  old form
-                final Intent launchTrac = new Intent(this, TracShowWebPage.class);
-                launchTrac.putExtra(HELP_FILE, getString(R.string.whatsnewhelpfile));
-                launchTrac.putExtra(HELP_VERSION, false);
-                startActivity(launchTrac);
-*/
+                prepareAbout();
+                showAbout();
             }
             dispAds = !getIntent().hasExtra(ADMOB) || getIntent().getBooleanExtra(ADMOB, true);
             if (getIntent().hasExtra(INTENT_URL)) {
@@ -558,6 +549,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
             adView.resume();
         }
         findViewById(R.id.displayList).getViewTreeObserver().addOnGlobalLayoutListener(this);
+        prepareAbout();
     }
 
     @Override
@@ -761,15 +753,20 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         return true;
     }
 
-    private void showAbout() {
+    private void prepareAbout() {
         //tcLog.d( "showAbout");
-		TracShowWebPageDialogFragment about = new TracShowWebPageDialogFragment();
-		Bundle args = new Bundle();
-		args.putString(HELP_FILE, getString(R.string.whatsnewhelpfile));
-		args.putBoolean(HELP_VERSION, true);
-		about.setArguments(args);
-		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-		about.show(ft,"about");
+        about = new TracShowWebPageDialogFragment();
+        aboutArgs = new Bundle();
+        aboutArgs.putString(HELP_FILE, getString(R.string.whatsnewhelpfile));
+        aboutArgs.putBoolean(HELP_VERSION, true);
+        aboutArgs.putInt(HELP_ZOOM, getResources().getInteger(R.integer.webzoom));
+        about.preLoad(getLayoutInflater(), aboutArgs);
+    }
+
+    private void showAbout() {
+        about.setArguments(aboutArgs);
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        about.show(ft, "about");
     }
 
     @Override
@@ -813,7 +810,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         ft.commit();
     }
 
-    private void onFilterSelected(ArrayList<FilterSpec>  filterList) {
+    private void onFilterSelected(ArrayList<FilterSpec> filterList) {
         tcLog.d("filterList = " + filterList);
 
         final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -845,7 +842,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         ft.commit();
     }
 
-    private void onSortSelected(ArrayList<SortSpec>  sortList) {
+    private void onSortSelected(ArrayList<SortSpec> sortList) {
         tcLog.logCall();
         final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         final SortFragment sortFragment = new SortFragment();
@@ -878,7 +875,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
 
     private void setFilter(String filterString) {
         tcLog.d(filterString);
-        final ArrayList<FilterSpec>  filter = new ArrayList<FilterSpec> ();
+        final ArrayList<FilterSpec> filter = new ArrayList<>();
 
         if (filterString.length() > 0) {
             String[] fs;
@@ -898,7 +895,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         setFilter(filter);
     }
 
-    private void setFilter(ArrayList<FilterSpec>  filter) {
+    private void setFilter(ArrayList<FilterSpec> filter) {
         tcLog.d(filter.toString());
         String filterString = TracGlobal.joinList(filter.toArray(), "&");
         TracGlobal.storeFilterString(filterString);
@@ -907,7 +904,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
 
     private void setSort(String sortString) {
         tcLog.d(sortString);
-        final ArrayList<SortSpec>  sl = new ArrayList<SortSpec> ();
+        final ArrayList<SortSpec> sl = new ArrayList<>();
 
         if (sortString.length() > 0) {
             String[] sort;
@@ -940,7 +937,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         setSort(sl);
     }
 
-    private void setSort(ArrayList<SortSpec>  sort) {
+    private void setSort(ArrayList<SortSpec> sort) {
         tcLog.d(sort.toString());
 
         String sortString = TracGlobal.joinList(sort.toArray(), "&");
@@ -1402,13 +1399,13 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
                 break;
 
             case MSG_SET_SORT:
-                setSort((ArrayList<SortSpec> ) msg.obj);
+                setSort((ArrayList<SortSpec>) msg.obj);
                 sendMessageToService(MSG_SET_SORT, msg.obj);
                 refreshOverview();
                 break;
 
             case MSG_SET_FILTER:
-                setFilter((ArrayList<FilterSpec> ) msg.obj);
+                setFilter((ArrayList<FilterSpec>) msg.obj);
                 sendMessageToService(MSG_SET_FILTER, msg.obj);
                 refreshOverview();
                 break;

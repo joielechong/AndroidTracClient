@@ -62,13 +62,16 @@ public class SortFragment extends SpecFragment<SortSpec> {
         return inflater.inflate(R.layout.sort_view, container, false);
     }
 
+    int getHelpFile() {
+        return R.string.sorthelpfile;
+    }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);  // vult inputSpec en outputSpec
         tcLog.d("savedInstanceState = " + savedInstanceState);
-        helpFile = R.string.sorthelpfile;
 
-        sortAdapter = new SortAdapter(context, (ArrayList<SortSpec> )outputSpec);
+        sortAdapter = new SortAdapter(context, outputSpec);
         listView.setAdapter(sortAdapter);
 
         ImageButton addButton = (ImageButton) currentView.findViewById(R.id.addbutton);
@@ -80,7 +83,7 @@ public class SortFragment extends SpecFragment<SortSpec> {
     }
 
     private class SortAdapter extends SpecAdapter<SortSpec> implements View.OnClickListener {
-        public SortAdapter(Context context, ArrayList<SortSpec>  items) {
+        public SortAdapter(Context context, ArrayList<SortSpec> items) {
             super(context, R.layout.sort_spec, items);
         }
 
