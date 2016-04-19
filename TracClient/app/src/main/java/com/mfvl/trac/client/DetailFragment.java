@@ -127,10 +127,13 @@ public class DetailFragment extends TracClientFragment
         }
     }
 
+    int getHelpFile() {
+        return R.string.helpdetailfile;
+    }
+
     @Override
     public void onResume() {
         super.onResume();
-        helpFile = R.string.helpdetailfile;
         gestureDetector = new GestureDetector(context, this);
 
         currentView = getView();
@@ -153,25 +156,27 @@ public class DetailFragment extends TracClientFragment
 
 //        tm = listener.getTicketModel();
         View view = getView();
-        CheckBox updNotify = (CheckBox) view.findViewById(R.id.updNotify);
-        updNotify.setOnCheckedChangeListener(this);
-        setListener(R.id.canBut);
-        setListener(R.id.updBut);
-        swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
-        swipeLayout.setOnRefreshListener(this);
-        swipeLayout.setColorSchemeResources(R.color.swipe_blue,
-                R.color.swipe_green,
-                R.color.swipe_orange,
-                R.color.swipe_red);
-        if (savedInstanceState != null) {
-            showEmptyFields = savedInstanceState.getBoolean(EMPTYFIELDS, false);
-            if (savedInstanceState.containsKey(CURRENT_TICKET)) {
-                // tcLog.d("onActivityCreated start Loading");
-                if (savedInstanceState.containsKey(MODVELD)) {
-                    modVeld = (ModVeldMap) savedInstanceState.getSerializable(MODVELD);
+        if (view != null) {
+            CheckBox updNotify = (CheckBox) view.findViewById(R.id.updNotify);
+            updNotify.setOnCheckedChangeListener(this);
+            setListener(R.id.canBut);
+            setListener(R.id.updBut);
+            swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+            swipeLayout.setOnRefreshListener(this);
+            swipeLayout.setColorSchemeResources(R.color.swipe_blue,
+                    R.color.swipe_green,
+                    R.color.swipe_orange,
+                    R.color.swipe_red);
+            if (savedInstanceState != null) {
+                showEmptyFields = savedInstanceState.getBoolean(EMPTYFIELDS, false);
+                if (savedInstanceState.containsKey(CURRENT_TICKET)) {
+                    // tcLog.d("onActivityCreated start Loading");
+                    if (savedInstanceState.containsKey(MODVELD)) {
+                        modVeld = (ModVeldMap) savedInstanceState.getSerializable(MODVELD);
+                    }
+                    setSelect(modVeld != null ? modVeld.isEmpty() : false);
+                    ticknr = savedInstanceState.getInt(CURRENT_TICKET, -1);
                 }
-                setSelect(modVeld.isEmpty());
-                ticknr = savedInstanceState.getInt(CURRENT_TICKET, -1);
             }
         }
     }
@@ -511,7 +516,7 @@ public class DetailFragment extends TracClientFragment
                 dataView.setText(newValue);
                 dataView.setTextColor(popup_selected_color);
                 tcLog.d("tickText na postInvalidate + " + dataView);
-                final String[] parsed = newValue.split(":", 2);
+                final String[] parsed = newValue != null ? newValue.split(":", 2) : new String[0];
                 modVeld.put("summary", parsed[1].trim());
             } else {
                 final int pos = ((ModifiedStringArrayAdapter) parent.getAdapter()).getPosition(

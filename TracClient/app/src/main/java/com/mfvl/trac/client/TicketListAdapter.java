@@ -21,25 +21,20 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket> {
     public TicketListAdapter(TracStart context, Tickets tl) {
         super(context, tl != null ? tl.ticketList : null);
         tcLog.logCall();
-		setNotifyOnChange(true);
+        setNotifyOnChange(true);
     }
-
-    public void clear() {
-        tcLog.logCall();
-        super.clear();
-        //mTickets.clear();
-        notifyDataSetChanged();
-    }
-
     public void addAll(Tickets tl) {
         //tcLog.d("tl = " + tl + " " + (tl != null ? tl.ticketList.toString() : null));
+        super.addAll(tl.ticketList);
+/*
         if (tl != null) {
-            for (Ticket t:tl.ticketList) {
-                super.add(t);
+            for (Ticket t : tl.ticketList) {
+                add(t);
             }
             //mTickets.add(tl);
             notifyDataSetChanged();
         }
+*/
     }
 
     @Override
@@ -84,7 +79,7 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket> {
 
     public TicketList getTicketList() {
         TicketList tl = new TicketList();
-        for (int i = 0;i<getCount();i++) {
+        for (int i = 0; i < getCount(); i++) {
             tl.add(getItem(i));
         }
         return tl;
@@ -92,18 +87,12 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket> {
 
     public int getTicketContentCount() {
         int count = 0;
-        for (int i = 0;i<getCount();i++) {
+        for (int i = 0; i < getCount(); i++) {
             if (getItem(i).hasdata()) {
                 count++;
             }
         }
-        tcLog.d("count = "+count);
-        return count;
-    }
-
-    public int getCount() {
-        int count = super.getCount();
-        tcLog.d("count = "+count);
+        tcLog.d("count = " + count);
         return count;
     }
 }

@@ -200,11 +200,14 @@ public class TracLoginFragment extends TracClientFragment
         }
     }
 
+    int getHelpFile() {
+        return R.string.loginhelpfile;
+    }
+
     @Override
     public void onResume() {
         tcLog.logCall();
         super.onResume();
-        helpFile = R.string.loginhelpfile;
         urlView.addTextChangedListener(checkUrlInput);
         userView.addTextChangedListener(checkUserPwInput);
         pwView.addTextChangedListener(checkUserPwInput);

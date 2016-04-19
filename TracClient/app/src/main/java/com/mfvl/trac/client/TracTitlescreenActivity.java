@@ -23,9 +23,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 
-//import com.google.android.gms.common.ConnectionResult;
-//import com.google.android.gms.common.GoogleApiAvailability;
-
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;

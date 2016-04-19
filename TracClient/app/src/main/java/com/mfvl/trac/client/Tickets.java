@@ -29,6 +29,12 @@ class Tickets {
         initList();
     }
 
+    public static Ticket getTicket(final int ticknr) {
+//        tcLog.d("ticketMap = "+ticketMap);
+//        tcLog.d("ticknr = "+ticknr+ " "+ticketMap.containsKey(ticknr));
+        return ticketMap.containsKey(ticknr) ? ticketMap.get(ticknr) : null;
+    }
+
     private void initList() {
         tcLog.logCall();
         ticketList = new TicketList();
@@ -84,11 +90,5 @@ class Tickets {
             }
         }
         return c;
-    }
-
-    public static Ticket getTicket(final int ticknr) {
-//        tcLog.d("ticketMap = "+ticketMap);
-//        tcLog.d("ticknr = "+ticknr+ " "+ticketMap.containsKey(ticknr));
-        return ticketMap.containsKey(ticknr) ? ticketMap.get(ticknr) : null;
     }
 }

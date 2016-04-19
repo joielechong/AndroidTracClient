@@ -16,17 +16,17 @@
 
 package com.mfvl.trac.client;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
-import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.TextView;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
 
 import static com.mfvl.trac.client.Const.*;
 
@@ -35,15 +35,19 @@ public class TracShowWebPageDialogFragment extends DialogFragment implements Vie
     private WebView webfile;
     private TextView textAbout;
     private View scrollAbout;
+    private View mainView = null;
+    private int webzoom = 0;
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        tcLog.logCall();
-        final Bundle args = getArguments();
+    @SuppressLint("InflateParams")
+    public void preLoad(LayoutInflater inflater, Bundle args) {
+
         final boolean toonVersie = args.getBoolean(HELP_VERSION);
+        final String fileName = args.getString(HELP_FILE);
+        final boolean cookieInform = TracGlobal.getCookieInform();
+        webzoom = args.getInt(HELP_ZOOM);
 
-        View mainView = inflater.inflate(R.layout.trac_about,container);
-        fileUrl = "file:///android_asset/" + args.getString(HELP_FILE) + ".html";
+        mainView = inflater.inflate(R.layout.trac_about, null);
+        fileUrl = "file:///android_asset/" + fileName + ".html";
 
         final View versionblock = mainView.findViewById(R.id.versionblock);
         tcLog.d(fileUrl + " " + toonVersie + " " + versionblock);
@@ -56,7 +60,6 @@ public class TracShowWebPageDialogFragment extends DialogFragment implements Vie
         } else {
             final TextView about_version_text = (TextView) mainView.findViewById(R.id.about_version_text);
             about_version_text.setText(TracGlobal.getVersion());
-            boolean cookieInform = TracGlobal.getCookieInform();
             View keuzeblock = mainView.findViewById(R.id.keuzeblock);
             if (!cookieInform) {
                 keuzeblock.setVisibility(View.GONE);
@@ -67,6 +70,14 @@ public class TracShowWebPageDialogFragment extends DialogFragment implements Vie
             }
         }
         showWebpage();
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        tcLog.logCall();
+        if (mainView == null) {
+            preLoad(inflater, getArguments());
+        }
         return mainView;
     }
 
@@ -98,7 +109,7 @@ public class TracShowWebPageDialogFragment extends DialogFragment implements Vie
         webfile.loadUrl(fileUrl);
         webfile.setVisibility(View.VISIBLE);
         // webfile.getSettings().setJavaScriptEnabled(true);
-        webfile.getSettings().setTextZoom(getResources().getInteger(R.integer.webzoom));
+        webfile.getSettings().setTextZoom(webzoom);
         tcLog.d(webfile.getContentHeight());
         scrollAbout.setVisibility(View.VISIBLE);
         textAbout.setText(null);

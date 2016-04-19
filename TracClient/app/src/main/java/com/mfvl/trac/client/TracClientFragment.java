@@ -45,10 +45,11 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
     TracStart context;
     InterFragmentListener listener = null;
     int large_move;
-    int helpFile = -1;
     Bundle fragmentArgs = null;
     TicketModel tm = null;
     private Handler tracStartHandler = null;
+    private TracShowWebPageDialogFragment about = null;
+    private Bundle aboutArgs;
 
     static void hideSoftKeyboard(Activity activity) {
         InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(
@@ -86,28 +87,34 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
         super.onActivityCreated(savedInstanceState);
         tcLog.logCall();
         tracStartHandler = listener.getHandler();
+        prepareHelp();
     }
-	
-	public void showHelp() {
-		if (helpFile != -1) {
-			final String filename = context.getString(helpFile);
-			TracShowWebPageDialogFragment about = new TracShowWebPageDialogFragment();
-			Bundle args = new Bundle();
-			args.putString(HELP_FILE, filename);
-			args.putBoolean(HELP_VERSION, false);
-			about.setArguments(args);
-			FragmentTransaction ft = getFragmentManager().beginTransaction();
-			about.show(ft,"help");
-		}
-	}
+
+    abstract int getHelpFile();
+
+    private void prepareHelp() {
+        final String filename = context.getString(getHelpFile());
+        about = new TracShowWebPageDialogFragment();
+        aboutArgs = new Bundle();
+        aboutArgs.putString(HELP_FILE, filename);
+        aboutArgs.putBoolean(HELP_VERSION, false);
+        aboutArgs.putInt(HELP_ZOOM, context.getResources().getInteger(R.integer.webzoom));
+        about.preLoad(context.getLayoutInflater(), aboutArgs);
+    }
+
+    public void showHelp() {
+        about.setArguments(aboutArgs);
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        about.show(ft, "help");
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        tcLog.d("item=" + item + " " + helpFile);
+        tcLog.d("item=" + item);
         final int itemId = item.getItemId();
 
-        if (itemId == R.id.help && helpFile != -1) {
-			showHelp();
+        if (itemId == R.id.help) {
+            showHelp();
         } else {
             return super.onOptionsItemSelected(item);
         }

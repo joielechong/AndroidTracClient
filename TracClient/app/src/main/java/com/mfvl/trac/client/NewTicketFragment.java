@@ -21,7 +21,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -34,17 +33,20 @@ import org.json.JSONObject;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.mfvl.trac.client.Const.CURRENT_USERNAME;
+import static com.mfvl.trac.client.Const.*;
 
 public class NewTicketFragment extends TracClientFragment {
     static final private String NotfifyField = "Notify";
     private String username = null;
 
+    int getHelpFile() {
+        return R.string.newhelpfile;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // tcLog.d( "onCreate savedInstanceState = " + savedInstanceState);
-        helpFile = R.string.newhelpfile;
         if (fragmentArgs != null) {
             if (fragmentArgs.containsKey(CURRENT_USERNAME)) {
                 username = fragmentArgs.getString(CURRENT_USERNAME);
@@ -67,8 +69,7 @@ public class NewTicketFragment extends TracClientFragment {
         super.onActivityCreated(savedInstanceState);
         tcLog.d("savedInstanceState = " + savedInstanceState);
         final View view = getView();
-        final Button storButton = (Button) view.findViewById(R.id.storebutton);
-        storButton.setOnClickListener(this);
+        view.findViewById(R.id.storebutton).setOnClickListener(this);
         CheckBox notify = (CheckBox) view.findViewById(R.id.updNotify);
         final TableLayout tl = (TableLayout) view.findViewById(R.id.newTickTable);
         if (savedInstanceState != null && savedInstanceState.containsKey(NotfifyField)) {
