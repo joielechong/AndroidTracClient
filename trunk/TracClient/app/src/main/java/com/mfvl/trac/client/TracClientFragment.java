@@ -48,8 +48,6 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
     Bundle fragmentArgs = null;
     TicketModel tm = null;
     private Handler tracStartHandler = null;
-    private TracShowWebPageDialogFragment about = null;
-    private Bundle aboutArgs;
 
     static void hideSoftKeyboard(Activity activity) {
         InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(
@@ -87,25 +85,21 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
         super.onActivityCreated(savedInstanceState);
         tcLog.logCall();
         tracStartHandler = listener.getHandler();
-        prepareHelp();
     }
 
     abstract int getHelpFile();
 
-    private void prepareHelp() {
+    public void showHelp() {
         final String filename = context.getString(getHelpFile());
-        about = new TracShowWebPageDialogFragment();
-        aboutArgs = new Bundle();
+		final TracShowWebPageDialogFragment about =  new TracShowWebPageDialogFragment();
+		final Bundle aboutArgs = new Bundle();
         aboutArgs.putString(HELP_FILE, filename);
         aboutArgs.putBoolean(HELP_VERSION, false);
         aboutArgs.putInt(HELP_ZOOM, context.getResources().getInteger(R.integer.webzoom));
         about.preLoad(context.getLayoutInflater(), aboutArgs);
-    }
-
-    public void showHelp() {
         about.setArguments(aboutArgs);
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        about.show(ft, "help");
+//        final FragmentTransaction ft = .beginTransaction();
+        about.show(getFragmentManager(), "help");
     }
 
     @Override
@@ -114,7 +108,7 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
         final int itemId = item.getItemId();
 
         if (itemId == R.id.help) {
-            showHelp();
+           showHelp();
         } else {
             return super.onOptionsItemSelected(item);
         }
