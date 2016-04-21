@@ -287,7 +287,6 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
 
             // only at first start
             if (TracGlobal.getFirstRun()) {
-                prepareAbout();
                 showAbout();
             }
             dispAds = !getIntent().hasExtra(ADMOB) || getIntent().getBooleanExtra(ADMOB, true);
@@ -549,7 +548,6 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
             adView.resume();
         }
         findViewById(R.id.displayList).getViewTreeObserver().addOnGlobalLayoutListener(this);
-        prepareAbout();
     }
 
     @Override
@@ -753,20 +751,16 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         return true;
     }
 
-    private void prepareAbout() {
-        //tcLog.d( "showAbout");
+    private void showAbout() {
+        tcLog.d("showAbout");
         about = new TracShowWebPageDialogFragment();
         aboutArgs = new Bundle();
         aboutArgs.putString(HELP_FILE, getString(R.string.whatsnewhelpfile));
         aboutArgs.putBoolean(HELP_VERSION, true);
         aboutArgs.putInt(HELP_ZOOM, getResources().getInteger(R.integer.webzoom));
         about.preLoad(getLayoutInflater(), aboutArgs);
-    }
-
-    private void showAbout() {
-        about.setArguments(aboutArgs);
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        about.show(ft, "about");
+//        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        about.show(getSupportFragmentManager(), "about");
     }
 
     @Override

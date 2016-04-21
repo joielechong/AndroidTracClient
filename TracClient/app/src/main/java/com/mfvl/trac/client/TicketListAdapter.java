@@ -26,15 +26,6 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket> {
     public void addAll(Tickets tl) {
         //tcLog.d("tl = " + tl + " " + (tl != null ? tl.ticketList.toString() : null));
         super.addAll(tl.ticketList);
-/*
-        if (tl != null) {
-            for (Ticket t : tl.ticketList) {
-                add(t);
-            }
-            //mTickets.add(tl);
-            notifyDataSetChanged();
-        }
-*/
     }
 
     @Override
