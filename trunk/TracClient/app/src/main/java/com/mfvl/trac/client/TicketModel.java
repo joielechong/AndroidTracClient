@@ -168,7 +168,7 @@ class TicketModel implements Serializable {
         return fieldCount;
     }
 
-    TicketModelVeld getVeld(final int i) {
+    TicketModelVeld getVeld(final int i) throws IndexOutOfBoundsException {
         wacht();
         if (i < 0 || i >= fieldCount) {
             throw new IndexOutOfBoundsException();
@@ -176,7 +176,7 @@ class TicketModel implements Serializable {
         return getVeld(_volgorde.get(i));
     }
 
-    TicketModelVeld getVeld(final String naam) {
+    TicketModelVeld getVeld(final String naam) throws IndexOutOfBoundsException {
         wacht();
         if (_velden.containsKey(naam)) {
             return _velden.get(naam);

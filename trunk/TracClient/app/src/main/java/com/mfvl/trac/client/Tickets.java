@@ -47,11 +47,6 @@ class Tickets {
         // tcLog.d("na: ticketMap = "+ticketMap);
     }
 
-    public void clear() {
-        tcLog.logCall();
-        ticketList.clear();
-    }
-
     public void add(Tickets tl) {
         tcLog.d("this = " + this + " size voor = " + getTicketCount() + " tl = " + tl);
         this.ticketList.addAll(tl.ticketList);

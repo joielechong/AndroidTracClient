@@ -108,11 +108,6 @@ public class UpdateTicketFragment extends TracClientFragment {
         try {
             for (int action = 0; action < _actions.length(); action++) {
                 final JSONArray actieInfo = _actions.getJSONArray(action);
-/*
-                final LinearLayout ll = new LinearLayout(context);
-                ll.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-                ll.setOrientation(LinearLayout.VERTICAL);
-*/
                 setListener(R.id.canBut);
                 setListener(R.id.storeUpdate);
                 final TextView explain = (TextView) view.findViewById(R.id.explaintxt);
