@@ -130,8 +130,6 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     private TicketModel tm = null;
     private Messenger mMessenger = null;
     private RefreshService mService = null;
-    private TracShowWebPageDialogFragment about = null;
-    private Bundle aboutArgs = null;
 
 
     private DrawerLayout mDrawerLayout;
@@ -753,8 +751,8 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
 
     private void showAbout() {
         tcLog.d("showAbout");
-        about = new TracShowWebPageDialogFragment();
-        aboutArgs = new Bundle();
+        TracShowWebPageDialogFragment about = new TracShowWebPageDialogFragment();
+        Bundle aboutArgs = new Bundle();
         aboutArgs.putString(HELP_FILE, getString(R.string.whatsnewhelpfile));
         aboutArgs.putBoolean(HELP_VERSION, true);
         aboutArgs.putInt(HELP_ZOOM, getResources().getInteger(R.integer.webzoom));

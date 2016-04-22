@@ -154,10 +154,10 @@ class TracGlobal {
         return settings.getBoolean(PREF_COOKIEINFORM, true);
     }
 
-    public static void setCookieInform(boolean val) {
+//    public static void setCookieInform(boolean val) {
 //        tcLog.logCall();
-        settings.edit().putBoolean(PREF_COOKIEINFORM, val).apply();
-    }
+//        settings.edit().putBoolean(PREF_COOKIEINFORM, val).apply();
+//    }
 
     public static String getFilterString() {
         // tcLog.logCall();
