@@ -188,6 +188,8 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
                     LoginProfile lp = pdb.getProfile(newProfile);
                     tcLog.d(lp);
                     if (lp != null) {
+                        TracGlobal.removeFilterString();
+                        TracGlobal.removeSortString();
                         onLogin(lp.getUrl(), lp.getUsername(), lp.getPassword(), lp.getSslHack(),
                                 lp.getSslHostNameHack(), newProfile);
                     }
@@ -452,7 +454,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         if (newLoad) {
             tracStartHandler.obtainMessage(MSG_START_LISTLOADER, null).sendToTarget();
         } else {
-            dispatchMessage(Message.obtain(null, MSG_REFRESH_LIST));
+            tracStartHandler.obtainMessage(MSG_REFRESH_LIST, null).sendToTarget();
         }
     }
 
@@ -1363,9 +1365,16 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
             case MSG_START_PROGRESSBAR:
                 final String message = (String) msg.obj;
                 synchronized (this) {
-                    // tcLog.d("handleMessage msg = START_PROGRESSBAR string = "+message);
+                    //tcLog.d("handleMessage msg = START_PROGRESSBAR string = "+message);
                     if (progressBar == null) {
-                        progressBar = new ProgressDialog(TracStart.this);
+                        progressBar = new ProgressDialog(TracStart.this){
+                            @Override
+                            public void onStop() {
+                                super.onStop();
+                                tcLog.logCall();
+                                stopProgressBar();
+                            }
+						};
                         progressBar.setCancelable(true);
                         if (message != null) {
                             progressBar.setMessage(message);
@@ -1450,8 +1459,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
                 // Returns a new CursorLoader
                 try {
                     getTicketListFragment().startLoading();
-                } catch (Exception ignored) {
-                }
+                } catch (Exception ignored) {}
                 if (ListFragmentTag.equals(getTopFragment())) {
                     startProgressBar(getString(R.string.getlist) + (profile == null ? "" : "\n" + profile));
                     hasTicketsLoadingBar = true;
@@ -1472,6 +1480,10 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
                 break;
 
             case MSG_REFRESH_LIST:
+                if (ListFragmentTag.equals(getTopFragment())) {
+                    startProgressBar(getString(R.string.getlist) + (profile == null ? "" : "\n" + profile));
+                    hasTicketsLoadingBar = true;
+                }
                 dispatchMessage(Message.obtain(null, MSG_LOAD_TICKETS, null));
                 break;
 
