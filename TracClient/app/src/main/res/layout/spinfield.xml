@@ -31,7 +31,7 @@
             android:id="@id/nt_val"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="4dp"
+            android:layout_margin="@dimen/half_margin"
             android:ems="10"
             android:spinnerMode="dialog"
             android:textSize="@dimen/list_textsize" />

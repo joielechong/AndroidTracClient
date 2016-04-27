@@ -18,29 +18,21 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <style name="ButtonBarBase.1">
-        <item name="android:paddingStart">2dp</item>
-        <item name="android:paddingEnd">2dp</item>
+        <item name="android:paddingStart">@dimen/but_padding</item>
+        <item name="android:paddingEnd">@dimen/but_padding</item>
     </style>
 
     <style name="TextWarn">
         <item name="android:drawableStart">@drawable/ic_warn</item>
     </style>
 
-    <style name="EditL12">
-        <item name="android:layout_marginStart">12dp</item>
-    </style>
-
-    <style name="EditL24">
-        <item name="android:layout_marginStart">24dp</item>
-    </style>
-
     <style name="SortSpecBase">
-        <item name="android:layout_marginStart">4dp</item>
-        <item name="android:layout_marginEnd">4dp</item>
+        <item name="android:layout_marginStart">@dimen/half_margin</item>
+        <item name="android:layout_marginEnd">@dimen/half_margin</item>
     </style>
 
     <style name="SortSpecBase8" parent="SortSpecBase">
-        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:layout_marginEnd">@dimen/std_margin</item>
     </style>
 
     <style name="ActionBlockBase">

@@ -23,9 +23,19 @@
     <!-- zoom factor to be used on webpages -->
     <dimen name="popup_width">300dp</dimen>
     <dimen name="popup_height">450dp</dimen>
-    <dimen name="nav_header_vertical_spacing">16dp</dimen>
     <dimen name="nav_header_height">160dp</dimen>
+
+    <dimen name="nav_header_vertical_spacing">@dimen/dbl_margin</dimen>
     <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="activity_horizontal_margin">@dimen/dbl_margin</dimen>
+    <dimen name="activity_vertical_margin">@dimen/dbl_margin</dimen>
+
+    <dimen name="std_margin">8dp</dimen>
+    <dimen name="dbl_margin">16dp</dimen>
+    <dimen name="big_margin">24dp</dimen>
+    <dimen name="half_margin">4dp</dimen>
+
+    <dimen name="std_padding">6dp</dimen>
+    <dimen name="half_padding">3dp</dimen>
+    <dimen name="but_padding">2dp</dimen>
 </resources>
