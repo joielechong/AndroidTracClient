@@ -23,4 +23,13 @@
     <!-- zoom factor to be used on webpages -->
     <dimen name="popup_width">450dp</dimen>
     <dimen name="popup_height">280dp</dimen>
+
+    <dimen name="std_margin">12dp</dimen>
+    <dimen name="dbl_margin">24dp</dimen>
+    <dimen name="big_margin">32dp</dimen>
+    <dimen name="half_margin">6dp</dimen>
+
+    <dimen name="std_padding">8dp</dimen>
+    <dimen name="half_padding">4dp</dimen>
+    <dimen name="but_padding">3dp</dimen>
 </resources>

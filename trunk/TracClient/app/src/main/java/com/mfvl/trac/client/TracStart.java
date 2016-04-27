@@ -1012,6 +1012,8 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         sslHack = newHack;
         sslHostNameHack = newHostNameHack;
         profile = newProfile;
+        setFilter(TracGlobal.getFilterString());
+        setSort(TracGlobal.getSortString());
         TicketListFragment ticketListFragment = (TicketListFragment) getFragment(ListFragmentTag);
 
         if (ticketListFragment == null) {

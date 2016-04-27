@@ -56,10 +56,7 @@
 
                 <EditText
                     android:id="@+id/trac_URL"
-                    style="@style/EditL24"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="none"
+                    style="@style/EditLogin"
                     android:hint="@string/tracUrlHint"
                     android:inputType="textUri" />
             </LinearLayout>
@@ -83,10 +80,7 @@
 
                 <EditText
                     android:id="@+id/trac_User"
-                    style="@style/EditL12"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="none"
+                    style="@style/EditLogin"
                     android:hint="@string/tracUserHint"
                     android:inputType="text" />
             </LinearLayout>
@@ -104,10 +98,7 @@
 
                 <EditText
                     android:id="@+id/trac_Pw"
-                    style="@style/EditL12"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="none"
+                    style="@style/EditLogin"
                     android:hint="@string/tracPwHint"
                     android:inputType="textPassword" />
             </LinearLayout>
@@ -147,7 +138,7 @@
                 android:id="@+id/connWarnSts"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="3dp"
+                android:layout_margin="@dimen/half_margin"
                 android:gravity="center_horizontal"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:visibility="gone" />

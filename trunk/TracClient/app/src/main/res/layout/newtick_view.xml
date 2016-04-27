@@ -49,8 +49,8 @@
                     <TextView
                         android:id="@+id/titel"
                         style="@style/FieldName"
-                        android:layout_margin="4dip"
-                        android:padding="5dp"
+                        android:layout_margin="@dimen/half_margin"
+                        android:padding="@dimen/std_padding"
                         android:text="@string/newtick"
                         android:textSize="@dimen/help_textsize" />
                 </TableRow>
