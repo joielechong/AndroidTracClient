@@ -42,6 +42,7 @@ public class TracShowWebPageDialogFragment extends DialogFragment implements Vie
     public void preLoad(LayoutInflater inflater, Bundle args) {
 
         final boolean toonVersie = args.getBoolean(HELP_VERSION);
+		final boolean showCookies = args.getBoolean(HELP_COOKIES);
         final String fileName = args.getString(HELP_FILE);
         final boolean cookieInform = TracGlobal.getCookieInform();
         webzoom = args.getInt(HELP_ZOOM);
@@ -61,7 +62,7 @@ public class TracShowWebPageDialogFragment extends DialogFragment implements Vie
             final TextView about_version_text = (TextView) mainView.findViewById(R.id.about_version_text);
             about_version_text.setText(TracGlobal.getVersion());
             View keuzeblock = mainView.findViewById(R.id.keuzeblock);
-            if (!cookieInform) {
+            if (!cookieInform && !showCookies) {
                 keuzeblock.setVisibility(View.GONE);
             } else {
                 keuzeblock.setVisibility(View.VISIBLE);
