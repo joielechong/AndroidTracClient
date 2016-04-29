@@ -40,6 +40,7 @@ final class Const {
     static final String HELP_FILE = "file";
     static final String HELP_VERSION = "version";
     static final String HELP_ZOOM = "zoom";
+	static final String HELP_COOKIES = "cookies";
     static final String PREFS_NAME = "Trac";
     static final String PREF_URL = "tracUrl";
     static final String PREF_USER = "tracUsername";

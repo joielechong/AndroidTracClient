@@ -95,10 +95,10 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
 		final Bundle aboutArgs = new Bundle();
         aboutArgs.putString(HELP_FILE, filename);
         aboutArgs.putBoolean(HELP_VERSION, false);
+        aboutArgs.putBoolean(HELP_COOKIES, false);
         aboutArgs.putInt(HELP_ZOOM, context.getResources().getInteger(R.integer.webzoom));
         about.preLoad(context.getLayoutInflater(), aboutArgs);
         about.setArguments(aboutArgs);
-//        final FragmentTransaction ft = .beginTransaction();
         about.show(getFragmentManager(), "help");
     }
 

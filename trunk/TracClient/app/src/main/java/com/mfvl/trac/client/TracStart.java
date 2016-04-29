@@ -178,7 +178,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
                 break;
 
             case R.id.over:
-                showAbout();
+                showAbout(false);
                 break;
 
             default:
@@ -287,7 +287,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
 
             // only at first start
             if (TracGlobal.getFirstRun()) {
-                showAbout();
+                showAbout(true);
             }
             dispAds = !getIntent().hasExtra(ADMOB) || getIntent().getBooleanExtra(ADMOB, true);
             if (getIntent().hasExtra(INTENT_URL)) {
@@ -715,7 +715,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
                 break;
 
             case R.id.over:
-                showAbout();
+                showAbout(false);
                 break;
 
             case R.id.tlrefresh:
@@ -751,15 +751,15 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         return true;
     }
 
-    private void showAbout() {
+    private void showAbout(boolean showCookies) {
         tcLog.d("showAbout");
         TracShowWebPageDialogFragment about = new TracShowWebPageDialogFragment();
         Bundle aboutArgs = new Bundle();
         aboutArgs.putString(HELP_FILE, getString(R.string.whatsnewhelpfile));
         aboutArgs.putBoolean(HELP_VERSION, true);
+		aboutArgs.putBoolean(HELP_COOKIES,showCookies);
         aboutArgs.putInt(HELP_ZOOM, getResources().getInteger(R.integer.webzoom));
         about.preLoad(getLayoutInflater(), aboutArgs);
-//        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         about.show(getSupportFragmentManager(), "about");
     }
 
