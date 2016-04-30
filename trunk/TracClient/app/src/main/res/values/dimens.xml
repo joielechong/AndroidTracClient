@@ -21,8 +21,6 @@
     <dimen name="helpsml_textsize">16sp</dimen>
     <integer name="webzoom">120</integer>
     <!-- zoom factor to be used on webpages -->
-    <dimen name="popup_width">300dp</dimen>
-    <dimen name="popup_height">450dp</dimen>
     <dimen name="nav_header_height">160dp</dimen>
 
     <dimen name="nav_header_vertical_spacing">@dimen/dbl_margin</dimen>
@@ -32,7 +30,6 @@
 
     <dimen name="std_margin">8dp</dimen>
     <dimen name="dbl_margin">16dp</dimen>
-    <dimen name="big_margin">24dp</dimen>
     <dimen name="half_margin">4dp</dimen>
 
     <dimen name="std_padding">6dp</dimen>

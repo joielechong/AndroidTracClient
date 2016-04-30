@@ -16,30 +16,22 @@
 
 package com.mfvl.trac.client;
 
+import android.content.Context;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
 
-public class EditFieldFragment extends DialogFragment {
-
-    public EditFieldFragment() {
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        int width = getResources().getDimensionPixelSize(R.dimen.popup_width);
-        int height = getResources().getDimensionPixelSize(R.dimen.popup_height);
-        getDialog().getWindow().setLayout(width, height);
-//		getView().setAlpha(0.7f);
-    }
+public class EditFieldFragment extends TcDialogFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

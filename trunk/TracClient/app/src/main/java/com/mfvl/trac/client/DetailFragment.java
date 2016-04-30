@@ -174,7 +174,7 @@ public class DetailFragment extends TracClientFragment
                     if (savedInstanceState.containsKey(MODVELD)) {
                         modVeld = (ModVeldMap) savedInstanceState.getSerializable(MODVELD);
                     }
-                    setSelect(modVeld != null ? modVeld.isEmpty() : false);
+                    setSelect(modVeld != null && modVeld.isEmpty());
                     ticknr = savedInstanceState.getInt(CURRENT_TICKET, -1);
                 }
             }

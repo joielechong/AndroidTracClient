@@ -18,6 +18,4 @@
     <dimen name="list_textsize">20sp</dimen>
     <integer name="webzoom">100</integer>
     <!-- zoom factor to be used on webpages -->
-    <dimen name="popup_width">600dp</dimen>
-    <dimen name="popup_height">900dp</dimen>
 </resources>
