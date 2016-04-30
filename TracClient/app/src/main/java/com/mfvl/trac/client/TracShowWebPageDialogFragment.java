@@ -18,19 +18,23 @@ package com.mfvl.trac.client;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Context;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.TextView;
 
 import static com.mfvl.trac.client.Const.*;
 
-public class TracShowWebPageDialogFragment extends DialogFragment implements View.OnClickListener {
+public class TracShowWebPageDialogFragment extends TcDialogFragment implements View.OnClickListener {
     private String fileUrl;
     private WebView webfile;
     private TextView textAbout;
