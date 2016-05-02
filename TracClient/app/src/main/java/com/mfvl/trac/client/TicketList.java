@@ -15,6 +15,8 @@
  */
 package com.mfvl.trac.client;
 
+import com.mfvl.mfvllib.MyLog;
+
 import java.util.ArrayList;
 
 public class TicketList extends ArrayList<Ticket> {
@@ -23,7 +25,7 @@ public class TicketList extends ArrayList<Ticket> {
     }
 
     public void addAll(TicketList tl) {
-        tcLog.d(tl != null ? tl.toString() : null);
+        MyLog.d(tl != null ? tl.toString() : null);
         if (tl != null) {
             super.addAll(tl);
         }

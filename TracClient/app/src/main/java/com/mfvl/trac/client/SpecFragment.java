@@ -21,6 +21,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 
+import com.mfvl.mfvllib.MyLog;
+
 import java.util.ArrayList;
 
 abstract public class SpecFragment<T extends Spec> extends TracClientFragment {
@@ -35,7 +37,7 @@ abstract public class SpecFragment<T extends Spec> extends TracClientFragment {
 
     @SuppressWarnings("unchecked")
     void onMyAttach(Context activity) {
-//        tcLog.d("keyName = " + keyName());
+//        MyLog.d("keyName = " + keyName());
         super.onMyAttach(activity);
         inputSpec = null;
 
@@ -45,32 +47,32 @@ abstract public class SpecFragment<T extends Spec> extends TracClientFragment {
                 inputSpec = (ArrayList<T>) args.getSerializable(keyName());
             }
         }
-        //tcLog.d("onMyAttach inputSpec = "+inputSpec);
+        //MyLog.d("onMyAttach inputSpec = "+inputSpec);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //tcLog.d("savedInstanceState = " + savedInstanceState);
+        //MyLog.d("savedInstanceState = " + savedInstanceState);
         setHasOptionsMenu(true);
     }
 
     @Override
     public void onViewCreated(final View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-//        tcLog.d("view = " + view + " savedInstanceState = " + savedInstanceState);
+//        MyLog.d("view = " + view + " savedInstanceState = " + savedInstanceState);
         currentView = view;
         listView = (ListView) view.findViewById(R.id.itemlist);
-//        tcLog.d("view = " + view + " listView = " + listView + " savedInstanceState = " + savedInstanceState);
+//        MyLog.d("view = " + view + " listView = " + listView + " savedInstanceState = " + savedInstanceState);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void onSaveInstanceState(Bundle savedState) {
         super.onSaveInstanceState(savedState);
-//        tcLog.logCall();
+//        MyLog.logCall();
         if (inputSpec != null) {
-//            tcLog.d("inputSpec = " + inputSpec);
+//            MyLog.d("inputSpec = " + inputSpec);
             savedState.putSerializable(inputSpecText, inputSpec);
         }
 
@@ -80,18 +82,18 @@ abstract public class SpecFragment<T extends Spec> extends TracClientFragment {
             final ArrayList<T> outputSpec = adapter.getItems();
 
             if (outputSpec != null) {
-//                tcLog.d("outputSpec = " + outputSpec);
+//                MyLog.d("outputSpec = " + outputSpec);
                 savedState.putSerializable(outputSpecText, outputSpec);
             }
         }
-//        tcLog.d("super savedState = " + savedState);
+//        MyLog.d("super savedState = " + savedState);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        tcLog.d("savedInstanceState = " + savedInstanceState);
+        MyLog.d("savedInstanceState = " + savedInstanceState);
 
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(inputSpecText)) {

@@ -27,6 +27,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.v4.content.LocalBroadcastManager;
 
+import com.mfvl.mfvllib.MyLog;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -77,7 +79,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
 
                         addProfile(values[0], new LoginProfile(values[1], values[2], values[3],
                                 "true".equals(values[4])));
-                        // tcLog.d("i = "+i+" values = "+Arrays.asList(values));
+                        // MyLog.d("i = "+i+" values = "+Arrays.asList(values));
                     }
                 } finally {
                     ta.recycle();
@@ -152,7 +154,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Cursor getProfiles(boolean addBlank) {
-        tcLog.d("addBlank = " + addBlank);
+        MyLog.d("addBlank = " + addBlank);
         open();
         return db.rawQuery(
                 "SELECT rowid as _id,name from " + TABLE_NAME + (!addBlank ? " WHERE " + NAME_ID + " !=''" : "") + " ORDER BY name",
@@ -289,7 +291,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
                         state++;
                         _pdb.beginTransaction();
                         if (_pdb.delProfiles() == -1) {
-                            tcLog.e("delProfiles mislukt");
+                            MyLog.e("delProfiles mislukt");
                             throw new RuntimeException("delProfiles mislukt");
                         }
                     }

@@ -31,6 +31,8 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.mfvl.mfvllib.MyLog;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -51,7 +53,7 @@ public class UpdateTicketFragment extends TracClientFragment {
         super.onMyAttach(context);
         final Bundle args = getArguments();
 
-        // tcLog.d("onAttach ");
+        // MyLog.d("onAttach ");
         if (args != null) {
             ticknr = args.getInt(CURRENT_TICKET);
         }
@@ -64,7 +66,7 @@ public class UpdateTicketFragment extends TracClientFragment {
         final int spinPosition;
 
         super.onActivityCreated(savedInstanceState);
-        tcLog.d("savedInstanceState = " + savedInstanceState);
+        MyLog.d("savedInstanceState = " + savedInstanceState);
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(CURRENT_TICKET)) {
                 ticknr = savedInstanceState.getInt(CURRENT_TICKET);
@@ -102,7 +104,7 @@ public class UpdateTicketFragment extends TracClientFragment {
         tv.setText(text);
 
         JSONArray _actions = _ticket.getActions();
-        tcLog.d("actions = " + _actions);
+        MyLog.d("actions = " + _actions);
         final RadioGroup rg = (RadioGroup) view.findViewById(R.id.actionblock);
 
         try {
@@ -117,7 +119,7 @@ public class UpdateTicketFragment extends TracClientFragment {
                 final EditText optieval = (EditText) view.findViewById(R.id.optieval);
                 final JSONArray inputfields = actieInfo.getJSONArray(3);
 
-                // tcLog.d("inputfields = " + inputfields);
+                // MyLog.d("inputfields = " + inputfields);
                 rb.setId(action);
                 if (action == 0) { // 1st action is always leave
                     rb.setChecked(true);
@@ -167,7 +169,7 @@ public class UpdateTicketFragment extends TracClientFragment {
                                             try {
                                                 opties.add(ifOpties.getString(j));
                                             } catch (final JSONException e) {
-                                                tcLog.e("exception adding " + ifOpties + " j=" + j,
+                                                MyLog.e("exception adding " + ifOpties + " j=" + j,
                                                         e);
                                             }
                                         }
@@ -183,7 +185,7 @@ public class UpdateTicketFragment extends TracClientFragment {
                                         }
                                     }
                                 } catch (final Exception e) {
-                                    tcLog.e("exception getting fields", e);
+                                    MyLog.e("exception getting fields", e);
                                 }
                             }
                             view.postInvalidate();
@@ -193,9 +195,9 @@ public class UpdateTicketFragment extends TracClientFragment {
                 rg.addView(rb);
             }
         } catch (final Exception e) {
-            tcLog.e("exception loading ticketdata", e);
+            MyLog.e("exception loading ticketdata", e);
         }
-//        tcLog.d("currentButton = " + checkedButton);
+//        MyLog.d("currentButton = " + checkedButton);
         rg.check(checkedButton);
     }
 
@@ -203,7 +205,7 @@ public class UpdateTicketFragment extends TracClientFragment {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.canBut:
-                tcLog.d("cancel pressed v = " + v);
+                MyLog.d("cancel pressed v = " + v);
                 getFragmentManager().popBackStack();
                 break;
 
@@ -247,7 +249,7 @@ public class UpdateTicketFragment extends TracClientFragment {
             listener.updateTicket(_ticket, action, comment, currentActionName, waarde, notify,
                     null);
         } catch (final Exception e) {
-            tcLog.e("update failed", e);
+            MyLog.e("update failed", e);
             showAlertBox(R.string.storerr, R.string.storerrdesc, e.getMessage());
         } finally {
             listener.stopProgressBar();
@@ -261,13 +263,13 @@ public class UpdateTicketFragment extends TracClientFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // tcLog.d("onCreate savedInstanceState = " + savedInstanceState );
+        // MyLog.d("onCreate savedInstanceState = " + savedInstanceState );
         setHasOptionsMenu(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // tcLog.d(_tag,"onCreateView savedInstanceState = " + savedInstanceState);
+        // MyLog.d(_tag,"onCreateView savedInstanceState = " + savedInstanceState);
         return inflater.inflate(R.layout.update_view, container, false);
     }
 
@@ -296,6 +298,6 @@ public class UpdateTicketFragment extends TracClientFragment {
                 savedState.putString(UPDATE_OPTION_VAL, optieVal.getText().toString());
             }
         }
-        tcLog.d("savedState = " + savedState);
+        MyLog.d("savedState = " + savedState);
     }
 }

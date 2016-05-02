@@ -16,6 +16,8 @@
 
 package com.mfvl.trac.client;
 
+import com.mfvl.mfvllib.MyLog;
+
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -25,55 +27,55 @@ class Tickets {
     public TicketList ticketList = null;
 
     public Tickets() {
-        tcLog.logCall();
+        MyLog.logCall();
         initList();
     }
 
     public static Ticket getTicket(final int ticknr) {
-//        tcLog.d("ticketMap = "+ticketMap);
-//        tcLog.d("ticknr = "+ticknr+ " "+ticketMap.containsKey(ticknr));
+//        MyLog.d("ticketMap = "+ticketMap);
+//        MyLog.d("ticknr = "+ticknr+ " "+ticketMap.containsKey(ticknr));
         return ticketMap.containsKey(ticknr) ? ticketMap.get(ticknr) : null;
     }
 
     private void initList() {
-        tcLog.logCall();
+        MyLog.logCall();
         ticketList = new TicketList();
     }
 
     public void resetCache() {
-        tcLog.logCall();
-        // tcLog.d("voor: ticketMap = "+ticketMap);
+        MyLog.logCall();
+        // MyLog.d("voor: ticketMap = "+ticketMap);
         ticketMap = new TreeMap<>();
-        // tcLog.d("na: ticketMap = "+ticketMap);
+        // MyLog.d("na: ticketMap = "+ticketMap);
     }
 
     public void add(Tickets tl) {
-        tcLog.d("this = " + this + " size voor = " + getTicketCount() + " tl = " + tl);
+        MyLog.d("this = " + this + " size voor = " + getTicketCount() + " tl = " + tl);
         this.ticketList.addAll(tl.ticketList);
 //		for(Ticket t: tl.ticketList) {
 //			addTicket(t);
 //		}
-        tcLog.d("size na = " + getTicketCount());
+        MyLog.d("size na = " + getTicketCount());
     }
 
     public int getTicketCount() {
         try {
             return ticketList.size();
         } catch (final Exception e) {
-            tcLog.d("Exception", e);
+            MyLog.d("Exception", e);
             return 0;
         }
     }
 
     public void addTicket(Ticket ticket) {
-//		tcLog.d("ticket = "+ticket);
+//		MyLog.d("ticket = "+ticket);
         ticketList.add(ticket);
         putTicket(ticket);
     }
 
     public void putTicket(Ticket ticket) {
-//        tcLog.d("ticketMap = "+ticketMap);
-//        tcLog.d("ticket = "+ticket);
+//        MyLog.d("ticketMap = "+ticketMap);
+//        MyLog.d("ticket = "+ticket);
         ticketMap.put(ticket.getTicketnr(), ticket);
     }
 

@@ -27,7 +27,7 @@ class ColoredArrayAdapter<T> extends ArrayAdapter<T> {
 
     public ColoredArrayAdapter(TracStart context, List<T> list) {
         super(context, R.layout.ticket_list, list);
-		//tcLog.d("context = "+context+" resource = "+ resource+" list = " +list);
+		//MyLog.d("context = "+context+" resource = "+ resource+" list = " +list);
         if (colors == null) {
             colors = context.getResources().getIntArray(R.array.list_col);
         }
@@ -35,7 +35,7 @@ class ColoredArrayAdapter<T> extends ArrayAdapter<T> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-		//tcLog.d("position = " + position + " convertView = " + convertView + " parent = " + parent);
+		//MyLog.d("position = " + position + " convertView = " + convertView + " parent = " + parent);
         final View view = super.getView(position, convertView, parent);
         view.setBackgroundColor(colors[position % colors.length]);
         return view;

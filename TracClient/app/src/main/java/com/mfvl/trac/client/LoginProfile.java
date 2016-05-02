@@ -45,7 +45,7 @@ public class LoginProfile extends TcObject implements Serializable, Cloneable {
             retVal = false;
         } else {
             LoginProfile f = (LoginProfile) o;
-//			tcLog.d("this = "+this+" f = "+f + " "+retVal);
+//			MyLog.d("this = "+this+" f = "+f + " "+retVal);
             retVal = equalFields(_url, f.getUrl());
             retVal &= equalFields(_username, f.getUsername());
             retVal &= equalFields(_password, f.getPassword());

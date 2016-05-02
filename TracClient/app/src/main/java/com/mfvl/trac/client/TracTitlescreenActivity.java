@@ -23,6 +23,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 
+import com.mfvl.mfvllib.MyLog;
+
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -35,9 +37,10 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-//        tcLog.logCall();
+//        MyLog.logCall();
         super.onCreate(savedInstanceState);
-        tcLog.setContext(this);
+        MyLog.setContext(this,getString(R.string.logfile));
+        MyLog.reset();
         TracGlobal.getInstance(getApplicationContext());
         setContentView(R.layout.activity_titlescreen);
         startService(new Intent(this, RefreshService.class));
@@ -45,7 +48,7 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
 
     @Override
     public void onStart() {
-//        tcLog.logCall();
+//        MyLog.logCall();
         super.onStart();
 
 //        boolean adMobAvailable = false;
@@ -62,7 +65,7 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             final String contentString = intent.getDataString();
 
-            // tcLog.d("View intent data = " + contentString);
+            // MyLog.d("View intent data = " + contentString);
             if (contentString != null) {
                 final Uri uri = Uri.parse(contentString.replace("trac.client.mfvl.com/", ""));
                 final List<String> segments = uri.getPathSegments();
@@ -82,7 +85,7 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
                     launchTrac.putExtra(INTENT_URL, urlstring)
                             .putExtra(INTENT_TICKET, (long) ticket);
                 } else {
-                    tcLog.w("View intent bad Url");
+                    MyLog.w("View intent bad Url");
                 }
             }
         }
@@ -91,7 +94,7 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
     }
 
     private void startApp() {
-//        tcLog.logCall();
+//        MyLog.logCall();
         int timerVal = getResources().getInteger(R.integer.startupTimer);
         final Timer t = new Timer();
         t.schedule(new TimerTask() {
@@ -100,7 +103,7 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        tcLog.logCall();
+                        MyLog.logCall();
                         startActivity(launchTrac);
                         finish();
                     }
@@ -110,30 +113,30 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
     }
 
     public void onResume() {
-        tcLog.logCall();
+        MyLog.logCall();
         super.onResume();
     }
 
     public void onPause() {
-        tcLog.logCall();
+        MyLog.logCall();
         super.onPause();
     }
 
     public void onStop() {
-        tcLog.logCall();
+        MyLog.logCall();
         super.onStop();
     }
 
     public void onDestroy() {
-        tcLog.logCall();
+        MyLog.logCall();
         super.onDestroy();
     }
 
 
     @Override
     public void uncaughtException(Thread thread, Throwable ex) {
-        tcLog.e("Uncaught exception in thread " + thread, ex);
-        tcLog.save();
+        MyLog.e("Uncaught exception in thread " + thread, ex);
+        MyLog.save();
         finish();
     }
 }

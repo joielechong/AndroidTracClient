@@ -36,6 +36,8 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.mfvl.mfvllib.MyLog;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -83,7 +85,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-//        tcLog.d("savedInstanceState = " + savedInstanceState);
+//        MyLog.d("savedInstanceState = " + savedInstanceState);
 
         return inflater.inflate(R.layout.filter_view, container, false);
     }
@@ -95,7 +97,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState); // must be called first
-        tcLog.d("savedInstanceState = " + savedInstanceState);
+        MyLog.d("savedInstanceState = " + savedInstanceState);
         filterAdapter = new FilterAdapter(context, outputSpec);
         listView.setAdapter(filterAdapter);
 
@@ -117,7 +119,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
         final String op = o.getOperator();
         final boolean omgekeerd = op != null && op.equals("!=");
 
-//        tcLog.d(veldnaam + " " + w + " " + omgekeerd);
+//        MyLog.d(veldnaam + " " + w + " " + omgekeerd);
         LinearLayout valCheckBoxes = new LinearLayout(context);
 
         valCheckBoxes.setOrientation(LinearLayout.VERTICAL);
@@ -152,13 +154,13 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
 
     @Override
     public void onCheckedChanged(CompoundButton cb0, boolean isChecked) {
-//		tcLog.d("cb0 = "+cb0+" parent = "+ cb0.getParent());
+//		MyLog.d("cb0 = "+cb0+" parent = "+ cb0.getParent());
         String temp = null;
         ViewGroup parent = (ViewGroup) cb0.getParent();
 
         for (int j = 0; j < parent.getChildCount(); j++) {
             final CheckBox cb = (CheckBox) parent.getChildAt(j);
-//			tcLog.d("cb = "+cb+" j = "+ j);
+//			MyLog.d("cb = "+cb+" j = "+ j);
 
             if (cb != null && cb.isChecked()) {
                 if (temp == null) {
@@ -185,19 +187,19 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
 
         @Override
         public View getView(final int position, View convertView, final ViewGroup parent) {
-            //tcLog.d("getView pos=" + position + " " + convertView + " " + parent);
+            //MyLog.d("getView pos=" + position + " " + convertView + " " + parent);
 
             int p = (position >= items.size() || position < 0 ? 0 : position);
             final FilterSpec filterItem = items.get(p);
             final TicketModelVeld tmv = tm.getVeld(filterItem.getVeld());
-            //tcLog.d( "getView pos=" + position +" " + filterItem + " " + tmv);
+            //MyLog.d( "getView pos=" + position +" " + filterItem + " " + tmv);
             final int resid = (filterItem.getEdit() ? (tmv.options() == null ? R.layout.filter_spec2 : R.layout.filter_spec3) : R.layout.filter_spec1);
 
             View v = convertView;
 
             final int curid = convertView == null ? -1 : convertView.getId();
 
-            //tcLog.d("getView pos = " + position + " curid = " + curid + " resid=" + resid + " veld = " + filterItem.getVeld());
+            //MyLog.d("getView pos = " + position + " curid = " + curid + " resid=" + resid + " veld = " + filterItem.getVeld());
             if (curid != resid) {
                 v = LayoutInflater.from(context).inflate(resid, null);
                 //noinspection ResourceType
@@ -268,11 +270,11 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
 
         @Override
         public void onClick(View v) {
-//            tcLog.d("v =" + v);
+//            MyLog.d("v =" + v);
             FilterSpec filterItem = getItem(v);
             switch (v.getId()) {
                 case R.id.filternaam:
-                    //			tcLog.d( "toggleEdit filterItem =" + filterItem);
+                    //			MyLog.d( "toggleEdit filterItem =" + filterItem);
                     if (filterItem.getEdit()) {
                         View v1 = (View) v.getParent();
                         final Spinner spin = (Spinner) v1.findViewById(R.id.filter_choice_spin);
@@ -300,26 +302,26 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
         }
 
         private FilterSpec getItem(View v1) {
-//			tcLog.d("getItem v1 =" + v1);
+//			MyLog.d("getItem v1 =" + v1);
             View parent = (View) v1.getParent();
-//			tcLog.d("getItem parent =" + parent);
+//			MyLog.d("getItem parent =" + parent);
             if (parent.getTag() == null) {
                 parent = (View) parent.getParent();
             }
-//			tcLog.d("getItem parent2 =" + parent);
+//			MyLog.d("getItem parent2 =" + parent);
             FilterSpec o = (FilterSpec) parent.getTag();
-            tcLog.d("getItem filterItem = " + o);
+            MyLog.d("getItem filterItem = " + o);
             return o;
         }
 
         private void startEditItem(FilterSpec filterItem) {
-//			tcLog.d("startEditItem filterItem =" + filterItem);
+//			MyLog.d("startEditItem filterItem =" + filterItem);
             filterItem.setEdit(true);
             notifyDataSetChanged();
         }
 
         private void stopEditItem(FilterSpec filterItem, Spinner spin) {
-//			tcLog.d("stopEditItem filterItem =" + filterItem + " spin = " + spin);
+//			MyLog.d("stopEditItem filterItem =" + filterItem + " spin = " + spin);
             filterItem.setEdit(false);
             if (spin != null) {
                 filterItem.setOperator(operators.get(spin.getSelectedItemPosition()));

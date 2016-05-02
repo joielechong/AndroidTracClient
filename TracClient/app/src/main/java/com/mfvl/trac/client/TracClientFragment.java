@@ -33,6 +33,8 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.SpinnerAdapter;
 
+import com.mfvl.mfvllib.MyLog;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,7 +60,7 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
     @Override
     public void onAttach(Context activity) {
         super.onAttach(activity);
-        tcLog.d("(C) ");
+        MyLog.d("(C) ");
         onMyAttach(activity);
     }
 
@@ -66,7 +68,7 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        tcLog.d("(A) ");
+        MyLog.d("(A) ");
         onMyAttach(activity);
     }
 
@@ -82,7 +84,7 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        tcLog.logCall();
+        MyLog.logCall();
         tracStartHandler = listener.getHandler();
     }
 
@@ -103,7 +105,7 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        tcLog.d("item=" + item);
+        MyLog.d("item=" + item);
         final int itemId = item.getItemId();
 
         if (itemId == R.id.help) {
@@ -115,7 +117,7 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
     }
 
     void sendMessageToHandler(int msg, Object o) {
-        tcLog.d("msg = " + msg + " o = " + o);
+        MyLog.d("msg = " + msg + " o = " + o);
         tracStartHandler.obtainMessage(msg, o).sendToTarget();
     }
 
@@ -124,7 +126,7 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
     }
 
     SpinnerAdapter makeComboAdapter(Context context, List<Object> waardes, boolean optional) {
-//        tcLog.d("waardes = "+waardes+" optional = "+optional);
+//        MyLog.d("waardes = "+waardes+" optional = "+optional);
         if (waardes == null) {
             return null;
         }
@@ -144,7 +146,7 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
     }
 
     void selectTicket(int ticknr) {
-        tcLog.d("ticknr = " + ticknr);
+        MyLog.d("ticknr = " + ticknr);
         listener.getTicket(ticknr, new OnTicketLoadedListener() {
             @Override
             public void onTicketLoaded(Ticket t) {
@@ -170,7 +172,7 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
     }
 
     void setListener(int resid, View v, View.OnClickListener c) {
-//		tcLog.d( "resid = "+resid+" v = "+v+" c =" + c);
+//		MyLog.d( "resid = "+resid+" v = "+v+" c =" + c);
         try {
             v.findViewById(resid).setOnClickListener(c);
         } catch (Exception ignored) {
@@ -180,7 +182,7 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
     /*
         void waitForTicketModel() {
             while (tm == null) {
-                tcLog.d("tm is still null");
+                MyLog.d("tm is still null");
                 try {
                     Thread.sleep(100);
                 } catch (Exception ignored){
@@ -191,11 +193,11 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
     */
     @Override
     public void onClick(View v) {
-        tcLog.d("v =" + v);
+        MyLog.d("v =" + v);
     }
 
     void onNewTicketModel(TicketModel newTm) {
-        tcLog.d("newTm == null " + (newTm == null));
+        MyLog.d("newTm == null " + (newTm == null));
         tm = newTm;
     }
 }

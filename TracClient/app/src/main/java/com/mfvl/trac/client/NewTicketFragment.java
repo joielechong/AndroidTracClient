@@ -28,6 +28,8 @@ import android.widget.SpinnerAdapter;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
+import com.mfvl.mfvllib.MyLog;
+
 import org.json.JSONObject;
 
 import java.util.Arrays;
@@ -46,7 +48,7 @@ public class NewTicketFragment extends TracClientFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // tcLog.d( "onCreate savedInstanceState = " + savedInstanceState);
+        // MyLog.d( "onCreate savedInstanceState = " + savedInstanceState);
         if (fragmentArgs != null) {
             if (fragmentArgs.containsKey(CURRENT_USERNAME)) {
                 username = fragmentArgs.getString(CURRENT_USERNAME);
@@ -57,7 +59,7 @@ public class NewTicketFragment extends TracClientFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // tcLog.d("onCreateView savedInstanceState = " + savedInstanceState);
+        // MyLog.d("onCreateView savedInstanceState = " + savedInstanceState);
         if (container == null) {
             return null;
         }
@@ -67,7 +69,7 @@ public class NewTicketFragment extends TracClientFragment {
     @Override
     public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        tcLog.d("savedInstanceState = " + savedInstanceState);
+        MyLog.d("savedInstanceState = " + savedInstanceState);
         final View view = getView();
         view.findViewById(R.id.storebutton).setOnClickListener(this);
         CheckBox notify = (CheckBox) view.findViewById(R.id.updNotify);
@@ -83,7 +85,7 @@ public class NewTicketFragment extends TracClientFragment {
             View v;
             final TicketModelVeld veld = tm.getVeld(i);
             final String veldnaam = veld.label();
-            //tcLog.d("i = "+i+" veld = "+veld);
+            //MyLog.d("i = "+i+" veld = "+veld);
 
             if (!Arrays.asList(ignoreFields).contains(veldnaam)) {
                 if (veld.options() != null) {
@@ -133,7 +135,7 @@ public class NewTicketFragment extends TracClientFragment {
                         try {
                             SavedState.putInt(veldnaam, ((Spinner) w).getSelectedItemPosition());
                         } catch (final Exception e) {
-                            tcLog.e("Exception in createTicket", e);
+                            MyLog.e("Exception in createTicket", e);
                         }
                     } else if (w != null) {
                         final String s = ((EditText) w).getText().toString();
@@ -174,7 +176,7 @@ public class NewTicketFragment extends TracClientFragment {
                                     velden.put(veldnaam, val);
                                 }
                             } catch (final Exception e) {
-                                tcLog.e("Exception in createTicket", e);
+                                MyLog.e("Exception in createTicket", e);
                             }
                         } else if (w != null) {
                             final String s = ((EditText) w).getText().toString();
@@ -199,7 +201,7 @@ public class NewTicketFragment extends TracClientFragment {
                     listener.refreshOverview();
                     getFragmentManager().popBackStack();
                 } catch (final Exception e) {
-                    tcLog.e("Exception in createTicket", e);
+                    MyLog.e("Exception in createTicket", e);
                     listener.stopProgressBar();
                     showAlertBox(R.string.storerr, R.string.storerrdesc, e.getMessage());
                 }

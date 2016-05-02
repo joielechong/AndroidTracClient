@@ -2,8 +2,6 @@ package org.alexd.jsonrpc;
 
 import android.net.Uri;
 
-import com.mfvl.trac.client.tcLog;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,6 +31,8 @@ import ch.boye.httpclientandroidlib.impl.client.CloseableHttpClient;
 import ch.boye.httpclientandroidlib.impl.client.HttpClientBuilder;
 import ch.boye.httpclientandroidlib.impl.client.TargetAuthenticationStrategy;
 import ch.boye.httpclientandroidlib.util.EntityUtils;
+
+import com.mfvl.mfvllib.MyLog;
 
 /**
  * Implementation of JSON-RPC over HTTP/POST
@@ -74,7 +74,7 @@ public class JSONRPCHttpClient extends JSONRPCClient {
             try {
                 builder.loadTrustMaterial(null, new MyTrustAlwaysStrategy());
             } catch (GeneralSecurityException e) {
-                tcLog.e("Exception after sslHack", e);
+                MyLog.e("Exception after sslHack", e);
             }
         }
 
@@ -87,7 +87,7 @@ public class JSONRPCHttpClient extends JSONRPCClient {
             }
             hcb.setSSLSocketFactory(sslsf);
         } catch (final GeneralSecurityException e) {
-            tcLog.e("Exception after sslHostNameHack", e);
+            MyLog.e("Exception after sslHostNameHack", e);
         }
 
         hcb.setTargetAuthenticationStrategy(new TargetAuthenticationStrategy());
@@ -130,7 +130,7 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 
                 // Execute the request and try to decode the JSON Response
                 try {
-//					tcLog.d("httpClient = "+httpClient+"request = "+request+" httpContext = "+httpContext);
+//					MyLog.d("httpClient = "+httpClient+"request = "+request+" httpContext = "+httpContext);
                     response = httpClient.execute(request, httpContext);
                     int statusCode = response.getStatusLine().getStatusCode();
                     if (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
@@ -140,7 +140,7 @@ public class JSONRPCHttpClient extends JSONRPCClient {
                     }
                 } catch (SSLException e) {
                     // Catch 1st 3 times
-                    tcLog.w("SSLException in 	JSONRPCHTTPClient.doJSONRequest retrycount = " + retrycount);
+                    MyLog.w("SSLException in 	JSONRPCHTTPClient.doJSONRequest retrycount = " + retrycount);
                     if (retrycount++ < 3) {
                         retry = true;
                     } else {
@@ -167,21 +167,21 @@ public class JSONRPCHttpClient extends JSONRPCClient {
             }
             return jsonResponse;
         } catch (final JSONRPCException e) {
-//			tcLog.e( "JSONRPCException in JSONRPCHTTPClient.doJSONRequest", e);
+//			MyLog.e( "JSONRPCException in JSONRPCHTTPClient.doJSONRequest", e);
             throw e;
         } catch (final SSLException e) { // 4th time
-//			tcLog.d( "SSLException in JSONRPCHTTPClient.doJSONRequest", e);
+//			MyLog.d( "SSLException in JSONRPCHTTPClient.doJSONRequest", e);
             throw new JSONRPCException(e.getMessage());
         } catch (final JSONException e) {
-//			tcLog.e("JSONException in JSONRPCHTTPClient.doJSONRequest", e);
-//			tcLog.d("lastResonse = "+lastResponse);
+//			MyLog.e("JSONException in JSONRPCHTTPClient.doJSONRequest", e);
+//			MyLog.d("lastResonse = "+lastResponse);
             if (lastResponse.length() == 0) {
                 throw new JSONRPCException("JSONException: " + e.getMessage());
             } else {
                 final int titelstart = lastResponse.indexOf("<title");
                 final int titeleind = lastResponse.indexOf("</title>");
                 if (titelstart == -1 || titeleind == -1) {
-                    tcLog.toast(lastResponse.substring(0, 20) + "==");
+                    MyLog.toast(lastResponse.substring(0, 20) + "==");
                     if ("No protocol matching".equals(lastResponse.substring(0, 20))) {
                         throw new JSONRPCException("NOJSON");
                     } else {
@@ -193,7 +193,7 @@ public class JSONRPCHttpClient extends JSONRPCClient {
                 }
             }
         } catch (final Exception e) {
-//			tcLog.e( "Exception in JSONRPCHTTPClient.doJSONRequest", e);
+//			MyLog.e( "Exception in JSONRPCHTTPClient.doJSONRequest", e);
             throw new JSONRPCException("Exception in doRequest: " + e.getMessage(), e);
         }
     }
@@ -215,9 +215,9 @@ public class JSONRPCHttpClient extends JSONRPCClient {
             public boolean isTrusted(final X509Certificate[] chain, final String authType) throws CertificateException {
                 if (_debug) {
                     for (final X509Certificate x : chain) {
-                        tcLog.d( "cert: " + x);
+                        MyLog.d( "cert: " + x);
                     }
-                    tcLog.d( "chain = " + chain.length + " authType = " + authType);
+                    MyLog.d( "chain = " + chain.length + " authType = " + authType);
                 }
                 return chain.length == 1;
             }

@@ -18,6 +18,8 @@ package com.mfvl.trac.client;
 
 import android.os.Bundle;
 
+import com.mfvl.mfvllib.MyLog;
+
 import org.json.JSONArray;
 
 import java.io.Serializable;
@@ -39,7 +41,7 @@ class TicketModel implements Serializable {
     private static Semaphore active = null;
 
     private TicketModel(TracHttpClient tracClient) {
-        tcLog.logCall();
+        MyLog.logCall();
         fieldCount = 0;
         _tracClient = tracClient;
         _hasData = false;
@@ -55,7 +57,7 @@ class TicketModel implements Serializable {
             _volgorde = (ArrayList<String>) b.getSerializable("Volgorde");
             _velden = (HashMap<String, TicketModelVeld>) b.getSerializable("Velden");
             fieldCount = b.getInt("FieldCount");
-//			tcLog.d("_instance = "+_instance+" tracClient = "+_tracClient);
+//			MyLog.d("_instance = "+_instance+" tracClient = "+_tracClient);
             return _instance;
         } else {
             return null;
@@ -63,7 +65,7 @@ class TicketModel implements Serializable {
     }
 
     public static void getInstance(TracHttpClient tracClient, final OnTicketModelListener oc) {
-        tcLog.d("new tracClient = " + tracClient);
+        MyLog.d("new tracClient = " + tracClient);
         if (_instance == null || tracClient.equals(_tracClient)) {
             _instance = new TicketModel(tracClient);
         }
@@ -86,17 +88,17 @@ class TicketModel implements Serializable {
         b.putSerializable("Volgorde", _volgorde);
         b.putSerializable("Velden", _velden);
         b.putInt("FieldCount", fieldCount);
-//		tcLog.d("b = "+b);
+//		MyLog.d("b = "+b);
     }
 
     private void loadModelData() {
-        tcLog.logCall();
+        MyLog.logCall();
         if (_tracClient != null) {
             active.acquireUninterruptibly();
             new Thread() {
                 @Override
                 public void run() {
-                    //tcLog.d("TicketModel loading model tracClient = " + _tracClient);
+                    //MyLog.d("TicketModel loading model tracClient = " + _tracClient);
                     try {
                         final JSONArray v = _tracClient.getModel();
 
@@ -114,15 +116,15 @@ class TicketModel implements Serializable {
                         }
                         _hasData = true;
                     } catch (final Exception e) {
-                        tcLog.e("exception", e);
+                        MyLog.e("exception", e);
                     } finally {
                         active.release();
-                        tcLog.d("Model loaded");
+                        MyLog.d("Model loaded");
                     }
                 }
             }.start();
         } else {
-            tcLog.e("called with url == null");
+            MyLog.e("called with url == null");
         }
     }
 
