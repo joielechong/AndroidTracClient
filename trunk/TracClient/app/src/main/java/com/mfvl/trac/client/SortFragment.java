@@ -27,6 +27,8 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.mfvl.mfvllib.MyLog;
+
 import java.util.ArrayList;
 
 import static com.mfvl.trac.client.Const.*;
@@ -50,7 +52,7 @@ public class SortFragment extends SpecFragment<SortSpec> {
 
             case R.id.addbutton:
                 final String veld = tm.velden().get((int) addSpinner.getSelectedItemId());
-                //tcLog.d("addButton " + veld);
+                //MyLog.d("addButton " + veld);
                 sortAdapter.add(new SortSpec(veld));
                 break;
         }
@@ -58,7 +60,7 @@ public class SortFragment extends SpecFragment<SortSpec> {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-//        tcLog.d("savedInstanceState = " + savedInstanceState);
+//        MyLog.d("savedInstanceState = " + savedInstanceState);
         return inflater.inflate(R.layout.sort_view, container, false);
     }
 
@@ -69,7 +71,7 @@ public class SortFragment extends SpecFragment<SortSpec> {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);  // vult inputSpec en outputSpec
-        tcLog.d("savedInstanceState = " + savedInstanceState);
+        MyLog.d("savedInstanceState = " + savedInstanceState);
 
         sortAdapter = new SortAdapter(context, outputSpec);
         listView.setAdapter(sortAdapter);
@@ -89,7 +91,7 @@ public class SortFragment extends SpecFragment<SortSpec> {
 
         @Override
         public View getView(final int position, View convertView, final ViewGroup parent) {
-            // tcLog.d("getView: "+position+" "+convertView+" "+parent);
+            // MyLog.d("getView: "+position+" "+convertView+" "+parent);
             View v = convertView;
 
             if (v == null) {
@@ -125,7 +127,7 @@ public class SortFragment extends SpecFragment<SortSpec> {
         public void onClick(View dv) {
             int position = (Integer) ((View) dv.getParent()).getTag();
             SortSpec sortItem = items.get(position);
-//            tcLog.d(dv.toString() + " " + position + " " + sortItem);
+//            MyLog.d(dv.toString() + " " + position + " " + sortItem);
             switch (dv.getId()) {
                 case R.id.sortup:
                     if (position > 0) {

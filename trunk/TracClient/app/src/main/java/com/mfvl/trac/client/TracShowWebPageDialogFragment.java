@@ -18,19 +18,16 @@ package com.mfvl.trac.client;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.Context;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.TextView;
+
+import com.mfvl.mfvllib.MyLog;
 
 import static com.mfvl.trac.client.Const.*;
 
@@ -55,7 +52,7 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements V
         fileUrl = "file:///android_asset/" + fileName + ".html";
 
         final View versionblock = mainView.findViewById(R.id.versionblock);
-        tcLog.d(fileUrl + " " + toonVersie + " " + versionblock);
+        MyLog.d(fileUrl + " " + toonVersie + " " + versionblock);
         webfile = (WebView) mainView.findViewById(R.id.webfile);
         textAbout = (TextView) mainView.findViewById(R.id.textAbout);
         scrollAbout = mainView.findViewById(R.id.scrollAbout);
@@ -79,7 +76,7 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements V
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        tcLog.logCall();
+        MyLog.logCall();
         if (mainView == null) {
             preLoad(inflater, getArguments());
         }
@@ -89,14 +86,14 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements V
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        tcLog.logCall();
+        MyLog.logCall();
         Dialog d = super.onCreateDialog(savedInstanceState);
         d.requestWindowFeature(Window.FEATURE_NO_TITLE);
         return d;
     }
 
     public void onClick(View v) {
-        tcLog.d(v.getId());
+        MyLog.d(v.getId());
         switch (v.getId()) {
             case R.id.showchanges:
                 showWebpage();
@@ -109,19 +106,19 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements V
     }
 
     private void showWebpage() {
-        tcLog.logCall();
+        MyLog.logCall();
 //        scrollAbout.setVisibility(View.GONE);
         webfile.loadUrl(fileUrl);
         webfile.setVisibility(View.VISIBLE);
         // webfile.getSettings().setJavaScriptEnabled(true);
         webfile.getSettings().setTextZoom(webzoom);
-        tcLog.d(webfile.getContentHeight());
+        MyLog.d(webfile.getContentHeight());
         scrollAbout.setVisibility(View.VISIBLE);
         textAbout.setText(null);
     }
 
     private void showCookies() {
-        tcLog.logCall();
+        MyLog.logCall();
         webfile.setVisibility(View.GONE);
         scrollAbout.setVisibility(View.VISIBLE);
         textAbout.setText(R.string.cookieInform);

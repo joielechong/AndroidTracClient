@@ -63,6 +63,7 @@ import android.widget.FrameLayout;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.mfvl.mfvllib.MyLog;
 
 import org.alexd.jsonrpc.JSONRPCException;
 import org.json.JSONArray;
@@ -147,17 +148,17 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         @Override
         public void onReceive(Context context, Intent intent) {
             // Get extra data included in the Intent
-            tcLog.d("intent = " + intent);
+            MyLog.d("intent = " + intent);
             Menu menu = navigationView.getMenu();
             menu.removeGroup(1234);
 
             MenuItem mi = menu.add(1234, Menu.NONE, Menu.NONE, R.string.changehost);
             mi.setEnabled(false);
             Cursor pdbCursor = pdb.getProfiles(false);
-            tcLog.d("pdbCursor = " + pdbCursor);
+            MyLog.d("pdbCursor = " + pdbCursor);
             for (pdbCursor.moveToFirst(); !pdbCursor.isAfterLast(); pdbCursor.moveToNext()) {
-                //tcLog.d("pdbCursor 0 = "+pdbCursor.getInt(0));
-                //tcLog.d("pdbCursor 1 = "+pdbCursor.getString(1));
+                //MyLog.d("pdbCursor 0 = "+pdbCursor.getInt(0));
+                //MyLog.d("pdbCursor 1 = "+pdbCursor.getString(1));
                 menu.add(1234, Menu.NONE, Menu.NONE, pdbCursor.getString(1));
             }
             pdbCursor.close();
@@ -166,7 +167,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        tcLog.d("item = " + item);
+        MyLog.d("item = " + item);
         // Handle navigation view item clicks here.
 
         switch (item.getItemId()) {
@@ -184,9 +185,9 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
             default:
                 if (item.getGroupId() == 1234 && item.isEnabled()) {
                     String newProfile = item.getTitle().toString();
-                    //tcLog.d(newProfile);
+                    //MyLog.d(newProfile);
                     LoginProfile lp = pdb.getProfile(newProfile);
-                    tcLog.d(lp);
+                    MyLog.d(lp);
                     if (lp != null) {
                         TracGlobal.removeFilterString();
                         TracGlobal.removeSortString();
@@ -205,9 +206,9 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        tcLog.setContext(this);
-//		tcLog.logCall();
-        tcLog.d("savedInstanceState = " + savedInstanceState);
+        MyLog.setContext(this,getString(R.string.logfile));
+//		MyLog.logCall();
+        MyLog.d("savedInstanceState = " + savedInstanceState);
         action = getString(R.string.serviceAction);
         sendMessageToService(-1);
 
@@ -272,7 +273,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
             dispAds = savedInstanceState.getBoolean(ADMOB, true);
             tm = TicketModel.restore(savedInstanceState);
             if (tm != null) {
-                tcLog.d("restoring TicketModel: " + tm);
+                MyLog.d("restoring TicketModel: " + tm);
                 tracStartHandler.sendMessage(Message.obtain(null, MSG_SET_TICKET_MODEL, tm));
             }
         } else {
@@ -343,7 +344,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
             restoreFragment(savedInstanceState, UpdFragmentTag);
             restoreFragment(savedInstanceState, FilterFragmentTag);
             restoreFragment(savedInstanceState, SortFragmentTag);
-            tcLog.d("backstack restored");
+            MyLog.d("backstack restored");
             startListLoader(true);
         } else {
             final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -354,7 +355,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
                 final TicketListFragment ticketListFragment = new TicketListFragment();
 
                 if (urlArg != null) {
-                    tcLog.d("select Ticket = " + ticketArg);
+                    MyLog.d("select Ticket = " + ticketArg);
                     final Bundle args = makeArgs();
                     args.putInt("TicketArg", ticketArg);
                     urlArg = null;
@@ -362,18 +363,18 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
                     ticketListFragment.setArguments(args);
                 }
                 ft.add(R.id.displayList, ticketListFragment, ListFragmentTag);
-//                tcLog.d("ft.add "+ListFragmentTag);
+//                MyLog.d("ft.add "+ListFragmentTag);
                 ft.addToBackStack(ListFragmentTag);
             } else {
                 final TracLoginFragment tracLoginFragment = newLoginFrag();
 
                 ft.add(R.id.displayList, tracLoginFragment, LoginFragmentTag);
-//                tcLog.d("ft.add " + LoginFragmentTag);
+//                MyLog.d("ft.add " + LoginFragmentTag);
                 ft.addToBackStack(LoginFragmentTag);
             }
             ft.setTransition(FragmentTransaction.TRANSIT_NONE);
             ft.commit();
-            tcLog.d("backstack initiated");
+            MyLog.d("backstack initiated");
         }
         setReferenceTime();
     }
@@ -381,7 +382,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-//		tcLog.d("newConfig = "+newConfig);
+//		MyLog.d("newConfig = "+newConfig);
         if (dispAds) {
             if (adView != null) {
                 adViewContainer.removeView(adView);  // first remove old adView
@@ -403,7 +404,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
                 }
                 adViewContainer = (FrameLayout) findViewById(R.id.displayAd);
             } catch (final Exception e) {
-                tcLog.e("Problem retrieving Admod information", e);
+                MyLog.e("Problem retrieving Admod information", e);
                 dispAds = false;
                 adUnitId = "";
             }
@@ -415,7 +416,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         }
 
         if (!dispAds) {
-            tcLog.i("Not displaying ads");
+            MyLog.i("Not displaying ads");
             if (adViewContainer != null) {
                 adViewContainer.setVisibility(View.GONE);
             }
@@ -432,7 +433,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         arb.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
         if (TracGlobal.isDebuggable()) {
             for (final String t : testDevices) {
-                tcLog.d("testDevice = " + t);
+                MyLog.d("testDevice = " + t);
                 arb.addTestDevice(t);
             }
         }
@@ -444,13 +445,13 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
             adView.setLayoutParams(adViewContainer.getLayoutParams());
             adViewContainer.addView(adView);
         } catch (final Exception e) {
-            tcLog.e("Problem loading AdRequest", e);
+            MyLog.e("Problem loading AdRequest", e);
             dispAds = false;
         }
     }
 
     private void startListLoader(boolean newLoad) {
-        tcLog.d("newLoad = " + newLoad);
+        MyLog.d("newLoad = " + newLoad);
         if (newLoad) {
             tracStartHandler.obtainMessage(MSG_START_LISTLOADER, null).sendToTarget();
         } else {
@@ -460,7 +461,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
 
     private void dispatchMessage(final Message msg) {
         msg.replyTo = mMessenger;
-        tcLog.d("mService = " + mService + " msg = " + msg);
+        MyLog.d("mService = " + mService + " msg = " + msg);
         if (mService != null) {
             mService.send(msg);
         } else {
@@ -469,7 +470,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
                 public void run() {
                     isBinding.acquireUninterruptibly();
                     if (mService == null) {
-                        tcLog.d("using bindService");
+                        MyLog.d("using bindService");
                         bindService(new Intent(TracStart.this,
                                         RefreshService.class).setAction(action)
                                         .putExtra(INTENT_CMD, msg.what)
@@ -479,17 +480,17 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
                                 TracStart.this, Context.BIND_AUTO_CREATE);
                     } else {
                         isBinding.release();
-                        tcLog.d("using sendMessage");
+                        MyLog.d("using sendMessage");
                         mService.send(msg);
                     }
-                    tcLog.d("Message " + msg + " sent");
+                    MyLog.d("Message " + msg + " sent");
                 }
             }.start();
         }
     }
 
     private void showAlertBox(final int titleres, final int message, final String addit) {
-        tcLog.d("titleres = " + titleres + " : " + getString(titleres));
+        MyLog.d("titleres = " + titleres + " : " + getString(titleres));
         if (!isFinishing()) {
             runOnUiThread(new Runnable() {
                 @Override
@@ -504,7 +505,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
                     tracStartHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-//                            tcLog.d("dismiss");
+//                            MyLog.d("dismiss");
                             try {
                                 ad.dismiss();
                             } catch (Exception ignored) {
@@ -518,7 +519,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     }
 
     private void restoreFragment(Bundle savedInstanceState, final String tag) {
-        tcLog.d("tag = " + tag);
+        MyLog.d("tag = " + tag);
         if (savedInstanceState.containsKey(tag)) {
             try {
                 getSupportFragmentManager().getFragment(savedInstanceState, tag);
@@ -529,10 +530,10 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
 
     private void shouldDisplayHomeUp() {
         // Enable Up button only if there are entries in the back stack
-        tcLog.d("entry count = " + getSupportFragmentManager().getBackStackEntryCount());
+        MyLog.d("entry count = " + getSupportFragmentManager().getBackStackEntryCount());
         final boolean canBack = getSupportFragmentManager().getBackStackEntryCount() > 1;
 
-        tcLog.d("canBack = " + canBack);
+        MyLog.d("canBack = " + canBack);
         final ActionBar ab = getActionBar();
 
         if (ab != null) {
@@ -543,7 +544,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     @Override
     protected void onResume() {
         super.onResume();
-        tcLog.logCall();
+        MyLog.logCall();
         if (adView != null) {
             adView.resume();
         }
@@ -571,7 +572,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         saveFragment(savedInstanceState, UpdFragmentTag);
         saveFragment(savedInstanceState, FilterFragmentTag);
         saveFragment(savedInstanceState, SortFragmentTag);
-        tcLog.d("savedInstanceState = " + savedInstanceState);
+        MyLog.d("savedInstanceState = " + savedInstanceState);
     }
 
     private void saveFragment(Bundle savedInstanceState, final String tag) {
@@ -589,7 +590,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     @Override
     protected void onPause() {
         super.onPause();
-        tcLog.logCall();
+        MyLog.logCall();
         stopProgressBar();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             findViewById(R.id.displayList).getViewTreeObserver().removeOnGlobalLayoutListener(this);
@@ -599,22 +600,22 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         if (adView != null) {
             adView.pause();
         }
-        tcLog.d("isFinishing = " + isFinishing());
+        MyLog.d("isFinishing = " + isFinishing());
     /* save logfile when exiting */
         if (isFinishing() && TracGlobal.isRCVersion()) {
-            tcLog.save();
+            MyLog.save();
         }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        tcLog.logCall();
+        MyLog.logCall();
     }
 
     @Override
     protected void onDestroy() {
-        tcLog.d("isFinishing = " + isFinishing());
+        MyLog.d("isFinishing = " + isFinishing());
         mDrawerLayout.addDrawerListener(toggle);
         if (isFinishing()) {
             stopService(serviceIntent);
@@ -625,7 +626,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
 
     @Override
     public void onAttachFragment(final Fragment frag) {
-        tcLog.d(frag + " this = " + this);
+        MyLog.d(frag + " this = " + this);
 
         if (frag instanceof TracClientFragment) {
             ((TracClientFragment) frag).onNewTicketModel(tm);
@@ -634,10 +635,10 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         if (ListFragmentTag.equals(frag.getTag())) {
             final TicketListFragment ticketListFragment = getTicketListFragment();
             if (ticketListFragment != null) {
-                tcLog.d("ticketListFragment = " + ticketListFragment);
+                MyLog.d("ticketListFragment = " + ticketListFragment);
 
                 if (urlArg != null) {
-                    tcLog.d("Ticket = " + ticketArg);
+                    MyLog.d("Ticket = " + ticketArg);
                     ticketListFragment.selectTicket(ticketArg);
                     urlArg = null;
                     ticketArg = -1;
@@ -648,7 +649,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
 
     @Override
     public void onBackPressed() {
-        tcLog.logCall();
+        MyLog.logCall();
         DetailFragment dt = (DetailFragment) getFragment(DetailFragmentTag);
 
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -659,13 +660,13 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
                 processed = dt.onBackPressed();
             }
             if (!processed) {
-                //tcLog.d("Stackcount = "+getSupportFragmentManager().getBackStackEntryCount());
-                //tcLog.d("doubleBackToExitPressedOnce="+doubleBackToExitPressedOnce);
+                //MyLog.d("Stackcount = "+getSupportFragmentManager().getBackStackEntryCount());
+                //MyLog.d("doubleBackToExitPressedOnce="+doubleBackToExitPressedOnce);
                 if (getSupportFragmentManager().getBackStackEntryCount() > 1 || doubleBackToExitPressedOnce) {
                     super.onBackPressed();
                 } else {
                     doubleBackToExitPressedOnce = true;
-                    tcLog.toast(getString(R.string.doubleback));
+                    MyLog.toast(getString(R.string.doubleback));
                     tracStartHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -689,21 +690,21 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        tcLog.logCall();
+        MyLog.logCall();
         getMenuInflater().inflate(R.menu.tracstartmenu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        tcLog.logCall();
+        MyLog.logCall();
         menu.findItem(R.id.debug).setVisible(debug).setEnabled(debug);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        tcLog.d("item=" + item.getTitle());
+        MyLog.d("item=" + item.getTitle());
 
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -740,7 +741,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
 
             case R.id.debug:
                 final Intent sendIntent = new Intent(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, tcLog.getDebug());
+                sendIntent.putExtra(Intent.EXTRA_TEXT, MyLog.getDebug());
                 sendIntent.setType("text/plain");
                 startActivity(sendIntent);
                 break;
@@ -752,7 +753,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     }
 
     private void showAbout(boolean showCookies) {
-        tcLog.d("showAbout");
+        MyLog.d("showAbout");
         TracShowWebPageDialogFragment about = new TracShowWebPageDialogFragment();
         Bundle aboutArgs = new Bundle();
         aboutArgs.putString(HELP_FILE, getString(R.string.whatsnewhelpfile));
@@ -765,14 +766,14 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
 
     @Override
     public boolean onNavigateUp() {
-        tcLog.d("entry count = " + getSupportFragmentManager().getBackStackEntryCount());
+        MyLog.d("entry count = " + getSupportFragmentManager().getBackStackEntryCount());
         // This method is called when the up button is pressed. Just the pop back stack.
         getSupportFragmentManager().popBackStack();
         return true;
     }
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        tcLog.d("requestCode = " + requestCode + " permissions = " + Arrays.asList(
+        MyLog.d("requestCode = " + requestCode + " permissions = " + Arrays.asList(
                 permissions) + " grantResults = " + Arrays.asList(grantResults));
         if (requestCode == REQUEST_CODE_WRITE_EXT) {
             // If request is cancelled, the result arrays are empty.
@@ -782,11 +783,11 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        tcLog.d("requestcode = " + requestCode + " intent = " + data);
+        MyLog.d("requestcode = " + requestCode + " intent = " + data);
         if (requestCode == REQUEST_CODE_CHOOSER && resultCode == RESULT_OK && data != null) {
             // Get the URI of the selected file
             final Uri uri = data.getData();
-            tcLog.d("uri = " + uri);
+            MyLog.d("uri = " + uri);
             if (_oc != null) {
                 _oc.onFileSelected(uri);
             }
@@ -794,7 +795,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     }
 
     private void onChangeHost() {
-        tcLog.logCall();
+        MyLog.logCall();
         final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         final TracLoginFragment tracLoginFragment = newLoginFrag();
 
@@ -805,7 +806,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     }
 
     private void onFilterSelected(ArrayList<FilterSpec> filterList) {
-        tcLog.d("filterList = " + filterList);
+        MyLog.d("filterList = " + filterList);
 
         final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         final FilterFragment filterFragment = new FilterFragment();
@@ -821,10 +822,10 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     }
 
     private void onNewTicket() {
-        tcLog.logCall();
+        MyLog.logCall();
 
         final NewTicketFragment newtickFragment = new NewTicketFragment();
-        // tcLog.d("newTickFragment =" +  newtickFragment.toString());
+        // MyLog.d("newTickFragment =" +  newtickFragment.toString());
         final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         final Bundle args = makeArgs();
         args.putString(CURRENT_USERNAME, username);
@@ -837,7 +838,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     }
 
     private void onSortSelected(ArrayList<SortSpec> sortList) {
-        tcLog.logCall();
+        MyLog.logCall();
         final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         final SortFragment sortFragment = new SortFragment();
 
@@ -868,7 +869,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     }
 
     private void setFilter(String filterString) {
-        tcLog.d(filterString);
+        MyLog.d(filterString);
         final ArrayList<FilterSpec> filter = new ArrayList<>();
 
         if (filterString.length() > 0) {
@@ -890,14 +891,14 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     }
 
     private void setFilter(ArrayList<FilterSpec> filter) {
-        tcLog.d(filter.toString());
+        MyLog.d(filter.toString());
         String filterString = TracGlobal.joinList(filter.toArray(), "&");
         TracGlobal.storeFilterString(filterString);
         filterList = filter;
     }
 
     private void setSort(String sortString) {
-        tcLog.d(sortString);
+        MyLog.d(sortString);
         final ArrayList<SortSpec> sl = new ArrayList<>();
 
         if (sortString.length() > 0) {
@@ -932,7 +933,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     }
 
     private void setSort(ArrayList<SortSpec> sort) {
-        tcLog.d(sort.toString());
+        MyLog.d(sort.toString());
 
         String sortString = TracGlobal.joinList(sort.toArray(), "&");
         TracGlobal.storeSortString(sortString);
@@ -940,7 +941,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     }
 
     private void setReferenceTime() {
-        // tcLog.d("setReferenceTime");
+        // MyLog.d("setReferenceTime");
         referenceTime = System.currentTimeMillis() - timerCorr;
         sendMessageToService(MSG_REMOVE_NOTIFICATION);
     }
@@ -950,14 +951,14 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     }
 
     private void newDataAdapter(Tickets tl) {
-        tcLog.logCall();
+        MyLog.logCall();
         dataAdapter = new TicketListAdapter(this, tl);
         dataAdapter.getFilter().filter(null);
         dataAdapter.setNotifyOnChange(true);
         try {
             getTicketListFragment().setAdapter(dataAdapter);
         } catch (NullPointerException e) {
-            tcLog.e("NullPointerException");
+            MyLog.e("NullPointerException");
         }
     }
 
@@ -973,7 +974,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     public void onBackStackChanged() {
         final int depth = getSupportFragmentManager().getBackStackEntryCount();
 
-        tcLog.d("depth = " + depth);
+        MyLog.d("depth = " + depth);
         if (depth == 0 && !doNotFinish) {
             finish();
         }
@@ -983,15 +984,15 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
 
     @Override
     public void enableDebug() {
-        // tcLog.d("enableDebug");
+        // MyLog.d("enableDebug");
         debug = true;
         invalidateOptionsMenu();
-        tcLog.toast("Debug enabled");
+        MyLog.toast("Debug enabled");
     }
 
     @Override
     public void onChooserSelected(OnFileSelectedListener oc) {
-        tcLog.logCall();
+        MyLog.logCall();
         // save callback
         _oc = oc;
         // Use the GET_CONTENT intent from the utility class
@@ -1005,7 +1006,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
 
     @Override
     public void onLogin(String newUrl, String newUser, String newPass, boolean newHack, boolean newHostNameHack, String newProfile) {
-        tcLog.d(newUrl + " " + newUser + " " + newPass + " " + newHack + " " + newHostNameHack + " " + newProfile);
+        MyLog.d(newUrl + " " + newUser + " " + newPass + " " + newHack + " " + newHostNameHack + " " + newProfile);
         url = newUrl;
         username = newUser;
         password = newPass;
@@ -1036,14 +1037,14 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     @Override
     public void onTicketSelected(Ticket ticket) {
         boolean isTop = (DetailFragmentTag.equals(getTopFragment()));
-        tcLog.d("Ticket: " + ticket + " isTop = " + isTop);
+        MyLog.d("Ticket: " + ticket + " isTop = " + isTop);
 
         DetailFragment detailFragment = new DetailFragment();
         final Bundle args = makeArgs();
         args.putInt(CURRENT_TICKET, ticket.getTicketnr());
         detailFragment.setArguments(args);
 
-        //		tcLog.d("detailFragment =" + detailFragment.toString());
+        //		MyLog.d("detailFragment =" + detailFragment.toString());
         final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
         ft.replace(R.id.displayList, detailFragment, DetailFragmentTag);
@@ -1057,14 +1058,14 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
 
     @Override
     public void onUpdateTicket(Ticket ticket) {
-        tcLog.d("ticket = " + ticket);
+        MyLog.d("ticket = " + ticket);
 
         final UpdateTicketFragment updtickFragment = new UpdateTicketFragment();
         final Bundle args = makeArgs();
 
         args.putInt(CURRENT_TICKET, ticket.getTicketnr());
         updtickFragment.setArguments(args);
-//		tcLog.d("updtickFragment = " + updtickFragment.toString());
+//		MyLog.d("updtickFragment = " + updtickFragment.toString());
         final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
         ft.replace(R.id.displayList, updtickFragment, UpdFragmentTag);
@@ -1075,7 +1076,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
 
     @Override
     public void refreshOverview() {
-        tcLog.logCall();
+        MyLog.logCall();
 //		dataAdapter.notifyDataSetChanged();
         startListLoader(false);
         setReferenceTime();
@@ -1086,23 +1087,23 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     }
 
     public void stopProgressBar() {
-        tcLog.logCall();
+        MyLog.logCall();
         try {
             tracStartHandler.obtainMessage(MSG_STOP_PROGRESSBAR).sendToTarget();
         } catch (Exception e) {
-            tcLog.e("Exception", e);
+            MyLog.e("Exception", e);
         }
     }
 
     @Override
     public TicketListAdapter getAdapter() {
-        tcLog.d("dataAdapter = " + dataAdapter);
+        MyLog.d("dataAdapter = " + dataAdapter);
         return dataAdapter;
     }
 
     @Override
     public void getTicket(final int i, final OnTicketLoadedListener oc) {
-//        tcLog.d("i = " + i + " semaphore = " + loadingActive);
+//        MyLog.d("i = " + i + " semaphore = " + loadingActive);
 
         new Thread() {
             @Override
@@ -1113,7 +1114,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
                 }
 
                 Ticket t = Tickets.getTicket(i);
-                tcLog.d("i = " + i + " ticket = " + t);
+                MyLog.d("i = " + i + " ticket = " + t);
                 if (t != null && !t.hasdata()) {
                     refreshTicket(i);
                 }
@@ -1160,8 +1161,8 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     public void updateTicket(final Ticket t, final String action, final String comment, final String veld, final String waarde, final boolean notify, final Map<String, String> modVeld) throws
             Exception {
         final JSONObject velden = t.getVelden();
-        tcLog.d("Ticket = " + t + "update: " + action + " '" + comment + "' '" + veld + "' '" + waarde + "' " + modVeld);
-//        tcLog.d("velden voor = " + velden);
+        MyLog.d("Ticket = " + t + "update: " + action + " '" + comment + "' '" + veld + "' '" + waarde + "' " + modVeld);
+//        MyLog.d("velden voor = " + velden);
         final int ticknr = t.getTicketnr();
 
         if (ticknr == -1) {
@@ -1176,7 +1177,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         }
         if (modVeld != null) {
             for (Entry<String, String> e : modVeld.entrySet()) {
-//				tcLog.d(e.toString());
+//				MyLog.d(e.toString());
                 velden.put(e.getKey(), e.getValue());
             }
         }
@@ -1197,9 +1198,9 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
                     if (modVeld != null) {
                         modVeld.clear();
                     }
-                    tcLog.d("retTicket = " + retTick);
+                    MyLog.d("retTicket = " + retTick);
                 } catch (final Exception e) {
-                    tcLog.e("Exception during update", e);
+                    MyLog.e("Exception during update", e);
                     showAlertBox(R.string.upderr, R.string.storerrdesc, e.getMessage());
                 }
             }
@@ -1213,7 +1214,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         if (ticknr != -1) {
             throw new IllegalArgumentException("Call create ticket not -1");
         }
-        tcLog.i("create: " + velden.toString());
+        MyLog.i("create: " + velden.toString());
         final String s = velden.getString("summary");
         final String d = velden.getString("description");
 
@@ -1232,7 +1233,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
                 return -1;
             }
         } catch (final Exception e) {
-            tcLog.e("Exception during create", e);
+            MyLog.e("Exception during create", e);
             showAlertBox(R.string.storerr, R.string.storerrdesc, e.getMessage());
             return -1;
         }
@@ -1240,7 +1241,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
 
     @Override
     public void listViewCreated() {
-        tcLog.d("ticketsLoading = " + ticketsLoading + " hasTicketsLoadingBar = " + hasTicketsLoadingBar);
+        MyLog.d("ticketsLoading = " + ticketsLoading + " hasTicketsLoadingBar = " + hasTicketsLoadingBar);
         synchronized (this) {
             if (ticketsLoading) {
                 if (!hasTicketsLoadingBar) {
@@ -1262,7 +1263,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
 
     @Override
     public void getAttachment(final Ticket ticket, final String filename, final onAttachmentCompleteListener oc) {
-        tcLog.d(ticket.toString() + " " + filename);
+        MyLog.d(ticket.toString() + " " + filename);
         final int _ticknr = ticket.getTicketnr();
         new Thread() {
             @Override
@@ -1273,7 +1274,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
                         TracHttpClient tracClient = new TracHttpClient(url, sslHack, sslHostNameHack, username, password);
                         oc.onComplete(tracClient.getAttachment(_ticknr, filename));
                     } catch (final Exception e) {
-                        tcLog.e("Exception during getAttachment", e);
+                        MyLog.e("Exception during getAttachment", e);
 //                    } finally {
 //                        available.release();
                     }
@@ -1286,7 +1287,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
      * always executed in a thread
      */
     public void addAttachment(final Ticket ticket, final Uri uri, final onTicketCompleteListener oc) {
-        tcLog.i(ticket.toString() + " " + uri);
+        MyLog.i(ticket.toString() + " " + uri);
         final int _ticknr = ticket.getTicketnr();
         String filename = null;
         int bytes = 0;
@@ -1297,7 +1298,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
                 Cursor c = getContentResolver().query(uri, null, null, null, null);
                 if (c != null) {
                     if (c.moveToFirst()) {
-//                    tcLog.d("ColumnNames = "+Arrays.asList(c.getColumnNames()));
+//                    MyLog.d("ColumnNames = "+Arrays.asList(c.getColumnNames()));
                         int id = c.getColumnIndex(Images.Media.DISPLAY_NAME);
                         if (id != -1) {
                             filename = c.getString(id);
@@ -1328,14 +1329,14 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
                     new TracHttpClient(url, sslHack, sslHostNameHack, username,
                             password).putAttachment(_ticknr, file.getName(), b64);
                 } else {
-                    tcLog.e("Cannot open" + uri);
+                    MyLog.e("Cannot open" + uri);
                     showAlertBox(R.string.warning, R.string.notfound, filename);
                 }
             } catch (final FileNotFoundException e) {
-                tcLog.e("Exception", e);
+                MyLog.e("Exception", e);
                 showAlertBox(R.string.warning, R.string.notfound, filename);
             } catch (final NullPointerException | IOException | JSONRPCException | JSONException e) {
-                tcLog.e("Exception during addAttachment", e);
+                MyLog.e("Exception during addAttachment", e);
                 showAlertBox(R.string.warning, R.string.failed, filename);
             } finally {
                 oc.onComplete(ticket);
@@ -1344,18 +1345,18 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     }
 
     private void startProgressBar(String message) {
-        tcLog.d(message);
+        MyLog.d(message);
         try {
             tracStartHandler.obtainMessage(MSG_START_PROGRESSBAR, message).sendToTarget();
         } catch (NullPointerException e) {
-            tcLog.e("NullPointerException", e);
+            MyLog.e("NullPointerException", e);
         }
     }
 
     @Override
     @SuppressWarnings({"InlinedAPI", "unchecked"})
     public boolean handleMessage(Message msg) {
-        tcLog.d("msg = " + msg.what);
+        MyLog.d("msg = " + msg.what);
         switch (msg.what) {
             case MSG_REQUEST_TICKET_COUNT:
                 if (!LoginFragmentTag.equals(getTopFragment())) {
@@ -1367,13 +1368,13 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
             case MSG_START_PROGRESSBAR:
                 final String message = (String) msg.obj;
                 synchronized (this) {
-                    //tcLog.d("handleMessage msg = START_PROGRESSBAR string = "+message);
+                    //MyLog.d("handleMessage msg = START_PROGRESSBAR string = "+message);
                     if (progressBar == null) {
                         progressBar = new ProgressDialog(TracStart.this){
                             @Override
                             public void onStop() {
                                 super.onStop();
-                                tcLog.logCall();
+                                MyLog.logCall();
                                 stopProgressBar();
                             }
 						};
@@ -1391,7 +1392,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
 
             case MSG_STOP_PROGRESSBAR:
                 synchronized (this) {
-                    // tcLog.d("handleMessage msg = STOP_PROGRESSBAR "+progressBar+" "+TracStart.this.isFinishing());
+                    // MyLog.d("handleMessage msg = STOP_PROGRESSBAR "+progressBar+" "+TracStart.this.isFinishing());
                     if (progressBar != null) {
                         if (!TracStart.this.isFinishing()) {
                             progressBar.dismiss();
@@ -1475,7 +1476,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
                         loadingActive.acquireUninterruptibly();
                         ticketsLoading = true;
 
-                        tcLog.d("MSG_START_LISTLOADER: " + mService);
+                        MyLog.d("MSG_START_LISTLOADER: " + mService);
                         dispatchMessage(Message.obtain(null, MSG_LOAD_TICKETS, currentLoginProfile));
                     }
                 }.start();
@@ -1498,7 +1499,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
 
             case MSG_LOAD_FASE1_FINISHED:
                 final Tickets tl = (Tickets) msg.obj;
-                // tcLog.d("Tickets = " + tl);
+                // MyLog.d("Tickets = " + tl);
                 if (hasTicketsLoadingBar) {
                     stopProgressBar();
                     hasTicketsLoadingBar = false;
@@ -1597,14 +1598,14 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
 
         mService = binder.getService();
         mService.setTracStartHandler(tracStartHandler);
-        tcLog.d("mConnection mService = " + mService);
+        MyLog.d("mConnection mService = " + mService);
         unbindService(this);
         isBinding.release();
     }
 
     @Override
     public void onServiceDisconnected(ComponentName className) {
-        tcLog.d("className = " + className);
+        MyLog.d("className = " + className);
     }
 }
 
@@ -1619,7 +1620,7 @@ class TcSemaphore extends Semaphore {
             try {
                 throw new Exception("debug");
             } catch (Exception e) {
-                tcLog.e(e);
+                MyLog.e(e);
             }
         }
         super.acquireUninterruptibly();

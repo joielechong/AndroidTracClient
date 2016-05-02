@@ -55,7 +55,7 @@ public class FilterSpec extends Spec {
                 && super.equals(o)
                 && equalFields(_operator, ((FilterSpec) o).getOperator())
                 && equalFields(_waarde, ((FilterSpec) o).getWaarde()));
-//		tcLog.d("this = "+this+" o = "+o+" retVal = "+retVal);
+//		MyLog.d("this = "+this+" o = "+o+" retVal = "+retVal);
         return retVal;
     }
 
@@ -87,7 +87,7 @@ public class FilterSpec extends Spec {
 
     @Override
     public FilterSpec setEdit(final boolean edited) {
-        // tcLog.i( "setEdit veld = " + _veld + " edited = " + edited);
+        // MyLog.i( "setEdit veld = " + _veld + " edited = " + edited);
         if (edited != _edited) {
             _edited = edited;
             if (_edited) {

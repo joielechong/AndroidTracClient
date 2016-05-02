@@ -26,6 +26,8 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
 
+import com.mfvl.mfvllib.MyLog;
+
 import static com.mfvl.trac.client.Const.*;
 
 
@@ -37,7 +39,7 @@ public class Refresh extends Activity implements ServiceConnection {
      */
     @Override
     public void onServiceConnected(ComponentName className, IBinder service) {
-        tcLog.d("className = " + className + " service = " + service);
+        MyLog.d("className = " + className + " service = " + service);
         RefreshService.RefreshBinder binder = (RefreshService.RefreshBinder) service;
         binder.getService().send(Message.obtain(null, MSG_REFRESH_LIST));
         unbindService(this);
@@ -45,7 +47,7 @@ public class Refresh extends Activity implements ServiceConnection {
 
     @Override
     public void onServiceDisconnected(ComponentName className) {
-        tcLog.d("className = " + className);
+        MyLog.d("className = " + className);
     }
 
     /*
@@ -55,7 +57,7 @@ public class Refresh extends Activity implements ServiceConnection {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        tcLog.d("savedInstanceState = " + savedInstanceState);
+        MyLog.d("savedInstanceState = " + savedInstanceState);
 
         try {
             final String action = getIntent().getAction();
@@ -64,23 +66,23 @@ public class Refresh extends Activity implements ServiceConnection {
                 if (action.equalsIgnoreCase(RefreshService.refreshAction)) {
                     bindService(new Intent(this, RefreshService.class).setAction(getString(R.string.serviceAction)), this,
                             Context.BIND_AUTO_CREATE);
-                    //tcLog.d("Refresh sent");
+                    //MyLog.d("Refresh sent");
                 }
             }
         } catch (final Exception e) {
-            tcLog.e("Problem consuming action from intent", e);
+            MyLog.e("Problem consuming action from intent", e);
         }
         finish();
     }
 
     @Override
     public void onDestroy() {
-        tcLog.logCall();
+        MyLog.logCall();
         super.onDestroy();
         try {
             unbindService(this);
         } catch (final Throwable t) {
-            tcLog.e("Failed to unbind from the service", t);
+            MyLog.e("Failed to unbind from the service", t);
         }
     }
 }

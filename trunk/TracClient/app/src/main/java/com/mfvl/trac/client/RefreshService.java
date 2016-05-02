@@ -28,6 +28,8 @@ import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.app.NotificationCompat;
 
+import com.mfvl.mfvllib.MyLog;
+
 import org.alexd.jsonrpc.JSONRPCException;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -75,7 +77,7 @@ public class RefreshService extends Service implements Handler.Callback {
 
     @Override
     public void onCreate() {
-        tcLog.logCall();
+        MyLog.logCall();
 
         Resources res = getResources();
         timerStart = res.getInteger(R.integer.timerStart);
@@ -96,13 +98,13 @@ public class RefreshService extends Service implements Handler.Callback {
      */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        tcLog.d("intent = " + intent);
+        MyLog.d("intent = " + intent);
         return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
-        tcLog.logCall();
+        MyLog.logCall();
         stopTimer();
         mHandlerThread.interrupt();
         mHandlerThread.quit();
@@ -114,7 +116,7 @@ public class RefreshService extends Service implements Handler.Callback {
     @Override
     public IBinder onBind(Intent intent) {
         int cmd = intent.getIntExtra(INTENT_CMD, -1);
-        tcLog.d("intent = " + intent + " cmd = " + cmd);
+        MyLog.d("intent = " + intent + " cmd = " + cmd);
         if (cmd != -1) {
             int arg1 = 0;
             int arg2 = 0;
@@ -135,39 +137,39 @@ public class RefreshService extends Service implements Handler.Callback {
 
     @Override
     public boolean onUnbind(Intent intent) {
-        tcLog.d("intent = " + intent);
+        MyLog.d("intent = " + intent);
         return false;
     }
 
     public void send(Message msg) {
-//        tcLog.d(msg);
+//        MyLog.d(msg);
         mServiceHandler.sendMessage(msg);
     }
 
     private void stopTimer() {
-//        tcLog.logCall();
+//        MyLog.logCall();
         if (monitorTimer != null) {
             monitorTimer.cancel();
-            tcLog.d("timertask stopped");
+            MyLog.d("timertask stopped");
         }
         monitorTimer = null;
     }
 
     private void startTimer() {
-//        tcLog.logCall();
+//        MyLog.logCall();
         stopTimer();
         monitorTimer = new Timer("monitorTickets");
         monitorTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                tcLog.d("timertask started");
+                MyLog.d("timertask started");
                 sendMessageToUI(MSG_REQUEST_TICKET_COUNT);
             }
         }, timerStart, timerPeriod);
     }
 
     private void startLoadTickets() {
-//        tcLog.d("loadLock = " + loadLock);
+//        MyLog.d("loadLock = " + loadLock);
         stopTimer();
         new Thread() {
             @Override
@@ -176,14 +178,14 @@ public class RefreshService extends Service implements Handler.Callback {
                     loadLock.killOwner();
                     loadLock.lock();
                 }
-//                tcLog.d("locked: " + loadLock);
+//                MyLog.d("locked: " + loadLock);
                 try {
                     loadTickets();
                 } catch (Exception e) {
-                    tcLog.d("Exception", e);
+                    MyLog.d("Exception", e);
                 } finally {
                     loadLock.unlock();
-//                    tcLog.d("unlock: " + loadLock);
+//                    MyLog.d("unlock: " + loadLock);
                 }
 
             }
@@ -197,7 +199,7 @@ public class RefreshService extends Service implements Handler.Callback {
     }
 
     private void loadTickets() {
-        tcLog.d(mLoginProfile + "\ninvalid = " + invalid);
+        MyLog.d(mLoginProfile + "\ninvalid = " + invalid);
         if (invalid) {
             mTickets = new Tickets();
             mTickets.resetCache();
@@ -216,13 +218,13 @@ public class RefreshService extends Service implements Handler.Callback {
             if (reqString.length() == 0) {
                 reqString = "max=0";
             }
-            tcLog.d("reqString = " + reqString);
+            MyLog.d("reqString = " + reqString);
             try {
                 final JSONArray jsonTicketlist = tracClient.Query(reqString);
                 check_interrupt();
-//                tcLog.d(jsonTicketlist.toString());
+//                MyLog.d(jsonTicketlist.toString());
                 final int count = jsonTicketlist.length();
-                tcLog.d("ticketlist loaded");
+                MyLog.d("ticketlist loaded");
 
                 if (count > 0) {
                     int tickets[] = new int[count];
@@ -248,14 +250,14 @@ public class RefreshService extends Service implements Handler.Callback {
                     popup_warning(R.string.notickets, null);
                 }
             } catch (JSONRPCException e) {
-                tcLog.d("JSONRPCException", e);
+                MyLog.d("JSONRPCException", e);
                 popup_warning(R.string.connerr, e.getMessage());
             } catch (InterruptedException e) {
-                tcLog.d("InterruptedException", e);
-                tcLog.toast(getString(R.string.interrupted));
+                MyLog.d("InterruptedException", e);
+                MyLog.toast(getString(R.string.interrupted));
                 sendMessageToUI(MSG_LOAD_ABORTED, mTickets);
             } catch (Exception e) {
-                tcLog.d("Exception", e);
+                MyLog.d("Exception", e);
                 sendMessageToUI(MSG_LOAD_ABORTED, mTickets);
                 popup_warning(R.string.connerr, e.getMessage());
             }
@@ -267,9 +269,9 @@ public class RefreshService extends Service implements Handler.Callback {
     }
 
     private void loadTicketContent(Tickets tl) throws Exception {
-//        tcLog.logCall();
+//        MyLog.logCall();
         int count = tl.getTicketCount();
-//        tcLog.d("count = " + count + " " + tl);
+//        MyLog.d("count = " + count + " " + tl);
 
         for (int j = 0; j < count; j += ticketGroupCount) {
             final JSONArray mc = new JSONArray();
@@ -279,7 +281,7 @@ public class RefreshService extends Service implements Handler.Callback {
             }
             try {
                 final JSONArray mcresult = tracClient.callJSONArray("system.multicall", mc);
-                // tcLog.d("mcresult = " + mcresult);
+                // MyLog.d("mcresult = " + mcresult);
                 check_interrupt();
                 Ticket t = null;
 
@@ -304,18 +306,18 @@ public class RefreshService extends Service implements Handler.Callback {
                             } else if ((TICKET_ACTION + "_" + thisTicket).equals(id)) {
                                 t.setActions(result);
                             } else {
-                                tcLog.d("unexpected response = " + result);
+                                MyLog.d("unexpected response = " + result);
                             }
                         }
                         check_interrupt();
                     } catch (final JSONException e1) {
-                        tcLog.e("JSONException thrown innerloop j=" + j + " k=" + k, e1);
+                        MyLog.e("JSONException thrown innerloop j=" + j + " k=" + k, e1);
                     }
                 }
             } catch (final JSONRPCException e) {
-                tcLog.e("JSONRPCException thrown outerloop j=" + j, e);
+                MyLog.e("JSONRPCException thrown outerloop j=" + j, e);
             } finally {
-                tcLog.d("loop " + tl.getTicketContentCount());
+                MyLog.d("loop " + tl.getTicketContentCount());
             }
             notify_datachanged();
         }
@@ -363,7 +365,7 @@ public class RefreshService extends Service implements Handler.Callback {
             }
             return t;
         } catch (Exception e) {
-            tcLog.d("getChanges exception", e);
+            MyLog.d("getChanges exception", e);
         }
         return null;
     }
@@ -371,7 +373,7 @@ public class RefreshService extends Service implements Handler.Callback {
     @SuppressWarnings("unchecked")
     @Override
     public boolean handleMessage(final Message msg) {
-        tcLog.d("msg = " + msg.what);
+        MyLog.d("msg = " + msg.what);
 
         switch (msg.what) {
             case MSG_REMOVE_NOTIFICATION:
@@ -398,7 +400,7 @@ public class RefreshService extends Service implements Handler.Callback {
                                         new Intent(this, Refresh.class).setAction(refreshAction), PendingIntent.FLAG_UPDATE_CURRENT))
                                 .setSubText(tl.ticketList.toString())
                                 .build());
-                        // tcLog.d( "Notification sent");
+                        // MyLog.d( "Notification sent");
                     }
                 }
                 break;
@@ -409,7 +411,7 @@ public class RefreshService extends Service implements Handler.Callback {
                     newTickets = new ArrayList<>();
                     newTickets.add(msg.arg1);
                 }
-                tcLog.d("newTickets = " + newTickets);
+                MyLog.d("newTickets = " + newTickets);
 
                 if (newTickets.size() > 0) {
                     Tickets tl = new Tickets();
@@ -422,7 +424,7 @@ public class RefreshService extends Service implements Handler.Callback {
                             sendMessageToUI(msg.arg2, Tickets.getTicket(msg.arg1));
                         }
                     } catch (Exception e) {
-                        tcLog.e("MSG_SEND_TICKETS exception", e);
+                        MyLog.e("MSG_SEND_TICKETS exception", e);
                         popup_warning(R.string.ticketnotfound, "" + tl.ticketList);
                     }
                 }
@@ -432,8 +434,8 @@ public class RefreshService extends Service implements Handler.Callback {
                 msg.obj = null;
             case MSG_LOAD_TICKETS:
                 LoginProfile lp = (LoginProfile) msg.obj;
-                tcLog.d("lp = " + lp);
-                tcLog.d("mLoginProfile = " + mLoginProfile);
+                MyLog.d("lp = " + lp);
+                MyLog.d("mLoginProfile = " + mLoginProfile);
                 if (lp != null) {
                     invalid = !lp.equals(mLoginProfile);
                     mLoginProfile = lp;
@@ -470,7 +472,7 @@ public class RefreshService extends Service implements Handler.Callback {
 
     private void dispatchMessage(final Message msg) {
         msg.setTarget(tracStartHandler);
-        tcLog.d("msg = " + msg.what);
+        MyLog.d("msg = " + msg.what);
         msg.sendToTarget();
     }
 
@@ -493,14 +495,14 @@ public class RefreshService extends Service implements Handler.Callback {
     private class TicketLoaderLock extends ReentrantLock {
         TicketLoaderLock() {
             super();
-//            tcLog.logCall();
+//            MyLog.logCall();
         }
 
         public void killOwner() {
-//            tcLog.logCall();
+//            MyLog.logCall();
             Thread t = super.getOwner();
             t.interrupt();
-            tcLog.toast(RefreshService.this.getString(R.string.tryinterrupt));
+            MyLog.toast(RefreshService.this.getString(R.string.tryinterrupt));
         }
     }
 

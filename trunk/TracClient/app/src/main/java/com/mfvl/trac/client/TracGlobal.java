@@ -25,6 +25,8 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
 import android.os.Environment;
 
+import com.mfvl.mfvllib.MyLog;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -74,7 +76,7 @@ class TracGlobal {
      * Load login credentials from shared preferences: server-url, username, password and profile
      */
     private static void loadCredentials() {
-//        tcLog.logCall();
+//        MyLog.logCall();
         _url = settings.getString(PREF_URL, "");
         _username = settings.getString(PREF_USER, "");
         _password = settings.getString(PREF_PASS, "");
@@ -87,7 +89,7 @@ class TracGlobal {
      * Store login credentials to shared preferences: server-url, username, password and profile
      */
     public static void storeCredentials() {
-//        tcLog.logCall();
+//        MyLog.logCall();
         settings.edit()
                 .putString(PREF_URL, _url)
                 .putString(PREF_USER, _username)
@@ -102,7 +104,7 @@ class TracGlobal {
      * Set login credentials server-url, username, password and profile
      */
     public static void setCredentials(final String url, final String username, final String password, final String profile) {
-//        tcLog.logCall();
+//        MyLog.logCall();
         _url = url;
         _username = username;
         _password = password;
@@ -142,7 +144,7 @@ class TracGlobal {
     }
 
     public static boolean getFirstRun() {
-        // tcLog.d("getFirstRun");
+        // MyLog.d("getFirstRun");
         final String thisRun = versie;
         final String lastRun = settings.getString(PREF_1ST, "");
         settings.edit().putString(PREF_1ST, thisRun).apply();
@@ -150,46 +152,46 @@ class TracGlobal {
     }
 
     public static boolean getCookieInform() {
-//        tcLog.logCall();
+//        MyLog.logCall();
         return settings.getBoolean(PREF_COOKIEINFORM, true);
     }
 
 //    public static void setCookieInform(boolean val) {
-//        tcLog.logCall();
+//        MyLog.logCall();
 //        settings.edit().putBoolean(PREF_COOKIEINFORM, val).apply();
 //    }
 
     public static String getFilterString() {
-        // tcLog.logCall();
+        // MyLog.logCall();
         return settings.getString(PREF_FILTER, "max=500&status!=closed");
     }
 
     public static void removeFilterString() {
-        // tcLog.logCall();
+        // MyLog.logCall();
         storeFilterString("max=500&status!=closed");
     }
 
     public static void storeFilterString(final String filterString) {
-        //tcLog.d(filterString);
+        //MyLog.d(filterString);
         settings.edit().putString(PREF_FILTER, filterString == null ? "" : filterString).apply();
     }
 
     public static String getSortString() {
-        // tcLog.logCall();
+        // MyLog.logCall();
         final String sortString = settings.getString(PREF_SORT,
                 "order=priority&order=modified&desc=1");
 
-        tcLog.d("sortString = " + sortString);
+        MyLog.d("sortString = " + sortString);
         return sortString;
     }
 
     public static void removeSortString() {
-        // tcLog.logCall();
+        // MyLog.logCall();
         storeSortString("order=priority&order=modified&desc=1");
     }
 
     public static void storeSortString(final String sortString) {
-        //tcLog.d(sortString);
+        //MyLog.d(sortString);
         settings.edit().putString(PREF_SORT, sortString == null ? "" : sortString).apply();
     }
 
@@ -202,13 +204,13 @@ class TracGlobal {
         String dbpath = DATABASE_NAME;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
             final File filePath = new File(_context.getExternalFilesDir(null), dbpath);
-//			tcLog.d("filePath = "+filePath);
+//			MyLog.d("filePath = "+filePath);
 
             if (isDebuggable() || isRCVersion() || filePath.exists()) {
                 dbpath = filePath.toString();
             }
         }
-        tcLog.d("dbpath = " + dbpath);
+        MyLog.d("dbpath = " + dbpath);
         return dbpath;
     }
 
@@ -220,8 +222,8 @@ class TracGlobal {
             final PackageInfo pinfo = _context.getPackageManager().getPackageInfo(
                     _context.getPackageName(),
                     PackageManager.GET_SIGNATURES);
-            //tcLog.d("pinfo = "+pinfo);
-            //tcLog.toast("pinfo.packageName = "+pinfo.packageName);
+            //MyLog.d("pinfo = "+pinfo);
+            //MyLog.toast("pinfo.packageName = "+pinfo.packageName);
             final Signature signatures[] = pinfo.signatures;
 
             final CertificateFactory cf = CertificateFactory.getInstance("X.509");
@@ -237,7 +239,7 @@ class TracGlobal {
                 }
             }
         } catch (final NameNotFoundException | CertificateException e) {
-            tcLog.w(e);
+            MyLog.w(e);
         }
         return debuggable;
     }
@@ -249,21 +251,21 @@ class TracGlobal {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public static File makeExtFilePath(String filename, boolean visible) throws FileNotFoundException {
         File dirPath;
-        //tcLog.d("filename = "+filename);
+        //MyLog.d("filename = "+filename);
         if (visible) {
             final File extPath = Environment.getExternalStorageDirectory();
-            //tcLog.d("extpath = " + extPath);
+            //MyLog.d("extpath = " + extPath);
             dirPath = new File(extPath, "TracClient");
         } else {
             dirPath = _context.getExternalFilesDir(null);
         }
         dirPath.mkdirs();
-        //tcLog.d("dirpath = "+dirPath);
+        //MyLog.d("dirpath = "+dirPath);
         if (!dirPath.isDirectory()) {
             throw new FileNotFoundException(dirPath.toString());
         }
         final File filePath = new File(dirPath, filename);
-        tcLog.d("filepath = " + filePath);
+        MyLog.d("filepath = " + filePath);
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             throw new FileNotFoundException(filePath.toString());
         }
@@ -272,7 +274,7 @@ class TracGlobal {
 
     public static File makeCacheFilePath(final String filename) {
         final File filePath = new File(_context.getExternalCacheDir(), filename);
-        tcLog.d("filepath = " + filePath);
+        MyLog.d("filepath = " + filePath);
         return filePath;
     }
 

@@ -18,6 +18,8 @@ package com.mfvl.trac.client;
 
 import android.os.HandlerThread;
 
+import com.mfvl.mfvllib.MyLog;
+
 class MyHandlerThread extends HandlerThread implements Thread.UncaughtExceptionHandler {
 
     MyHandlerThread(String name) {
@@ -27,6 +29,6 @@ class MyHandlerThread extends HandlerThread implements Thread.UncaughtExceptionH
 
     @Override
     public void uncaughtException(Thread thread, Throwable ex) {
-        tcLog.e("Exception in HandlerThread " + thread.getId() + " Run - " + thread.getName(), ex);
+        MyLog.e("Exception in HandlerThread " + thread.getId() + " Run - " + thread.getName(), ex);
     }
 }

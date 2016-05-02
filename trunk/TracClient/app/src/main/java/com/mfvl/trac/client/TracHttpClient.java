@@ -19,6 +19,8 @@ package com.mfvl.trac.client;
 import android.os.Bundle;
 import android.util.Base64;
 
+import com.mfvl.mfvllib.MyLog;
+
 import org.alexd.jsonrpc.JSONRPCException;
 import org.alexd.jsonrpc.JSONRPCHttpClient;
 import org.json.JSONArray;
@@ -80,7 +82,7 @@ class TracHttpClient extends JSONRPCHttpClient {
     }
 
     public JSONArray updateTicket(final int _ticknr, final String cmt, final JSONObject _velden, final boolean notify) throws JSONRPCException {
-        // tcLog.d( "_velden call = " + _velden);
+        // MyLog.d( "_velden call = " + _velden);
         return callJSONArray(TICKET_UPDATE, _ticknr, cmt, _velden, notify);
     }
 
@@ -117,6 +119,6 @@ class TracHttpClient extends JSONRPCHttpClient {
         ar.put(true);
         final String retfile = callString(TICKET_PUTATTACHMENT, ar);
 
-        tcLog.i("putAttachment " + retfile);
+        MyLog.i("putAttachment " + retfile);
     }
 }

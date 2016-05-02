@@ -16,21 +16,23 @@
 
 package com.mfvl.trac.client;
 
+import com.mfvl.mfvllib.MyLog;
+
 public class TicketListAdapter extends ColoredArrayAdapter<Ticket> {
 
     public TicketListAdapter(TracStart context, Tickets tl) {
         super(context, tl != null ? tl.ticketList : null);
-        tcLog.logCall();
+        MyLog.logCall();
         setNotifyOnChange(true);
     }
     public void addAll(Tickets tl) {
-        //tcLog.d("tl = " + tl + " " + (tl != null ? tl.ticketList.toString() : null));
+        //MyLog.d("tl = " + tl + " " + (tl != null ? tl.ticketList.toString() : null));
         super.addAll(tl.ticketList);
     }
 
     @Override
     public boolean hasStableIds() {
-        //tcLog.logCall();
+        //MyLog.logCall();
         return true;
     }
 
@@ -83,7 +85,7 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket> {
                 count++;
             }
         }
-        //tcLog.d("count = " + count);
+        //MyLog.d("count = " + count);
         return count;
     }
 }

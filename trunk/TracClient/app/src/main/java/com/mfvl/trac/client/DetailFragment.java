@@ -44,6 +44,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.mfvl.mfvllib.MyLog;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -90,7 +92,7 @@ public class DetailFragment extends TracClientFragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // tcLog.d( "onCreate savedInstanceState = " + savedInstanceState);
+        // MyLog.d( "onCreate savedInstanceState = " + savedInstanceState);
         if (fragmentArgs != null) {
             ticknr = fragmentArgs.getInt(CURRENT_TICKET);
         }
@@ -116,7 +118,7 @@ public class DetailFragment extends TracClientFragment
 
     @Override
     public void onRefresh() {
-//		tcLog.logCall();
+//		MyLog.logCall();
         refreshTicket();
         swipeLayout.setRefreshing(false);
     }
@@ -152,7 +154,7 @@ public class DetailFragment extends TracClientFragment
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        tcLog.d("savedInstanceState = " + savedInstanceState);
+        MyLog.d("savedInstanceState = " + savedInstanceState);
 
 //        tm = listener.getTicketModel();
         View view = getView();
@@ -170,7 +172,7 @@ public class DetailFragment extends TracClientFragment
             if (savedInstanceState != null) {
                 showEmptyFields = savedInstanceState.getBoolean(EMPTYFIELDS, false);
                 if (savedInstanceState.containsKey(CURRENT_TICKET)) {
-                    // tcLog.d("onActivityCreated start Loading");
+                    // MyLog.d("onActivityCreated start Loading");
                     if (savedInstanceState.containsKey(MODVELD)) {
                         modVeld = (ModVeldMap) savedInstanceState.getSerializable(MODVELD);
                     }
@@ -210,7 +212,7 @@ public class DetailFragment extends TracClientFragment
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // tcLog.d(item.toString());
+        // MyLog.d(item.toString());
 
         switch (item.getItemId()) {
             case R.id.dfupdate:
@@ -262,7 +264,7 @@ public class DetailFragment extends TracClientFragment
             case R.id.dfempty:
                 item.setChecked(!item.isChecked());
                 showEmptyFields = item.isChecked();
-// 			tcLog.d( "showEmptyFields = "+showEmptyFields);
+// 			MyLog.d( "showEmptyFields = "+showEmptyFields);
                 displayTicket();
                 break;
 
@@ -305,7 +307,7 @@ public class DetailFragment extends TracClientFragment
     @Override
     public void onSaveInstanceState(Bundle savedState) {
         super.onSaveInstanceState(savedState);
-        tcLog.d("_ticket = " + _ticket + " " + modVeld);
+        MyLog.d("_ticket = " + _ticket + " " + modVeld);
         if (_ticket != null) {
             savedState.putInt(CURRENT_TICKET, _ticket.getTicketnr());
         } else if (ticknr != -1) {
@@ -315,11 +317,11 @@ public class DetailFragment extends TracClientFragment
             savedState.putSerializable(MODVELD, modVeld);
         }
         savedState.putBoolean(EMPTYFIELDS, showEmptyFields);
-        // tcLog.d( "onSaveInstanceState = " + savedState);
+        // MyLog.d( "onSaveInstanceState = " + savedState);
     }
 
     private void updateTicket() {
-        tcLog.logCall();
+        MyLog.logCall();
         try {
             listener.startProgressBar(R.string.saveupdate);
             listener.updateTicket(_ticket, "leave", "", null, null, sendNotification, modVeld);
@@ -327,14 +329,14 @@ public class DetailFragment extends TracClientFragment
             listener.stopProgressBar();
             displayTicket();
         } catch (final Exception e) {
-            tcLog.e("Exception during update", e);
+            MyLog.e("Exception during update", e);
             showAlertBox(R.string.upderr, R.string.storerrdesc, e.getMessage());
         }
     }
 
     @Override
     public void onFileSelected(final Uri uri) {
-        tcLog.d("ticket = " + _ticket + " uri = " + uri);
+        MyLog.d("ticket = " + _ticket + " uri = " + uri);
         listener.startProgressBar(R.string.uploading);
         new Thread() {
             @Override
@@ -361,7 +363,7 @@ public class DetailFragment extends TracClientFragment
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         final modifiedString t = (modifiedString) parent.getItemAtPosition(position);
 
-//        tcLog.d("position = " + position);
+//        MyLog.d("position = " + position);
         if (t.length() >= 8 && "bijlage ".equals(t.substring(0, 8))) {
             return false;
         } else if (t.length() >= 8 && "comment:".equals(t.substring(0, 8))) {
@@ -378,7 +380,7 @@ public class DetailFragment extends TracClientFragment
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         final modifiedString t = (modifiedString) parent.getItemAtPosition(position);
 
-//        tcLog.d("position = " + position);
+//        MyLog.d("position = " + position);
         if (t.length() >= 8 && "bijlage ".equals(t.substring(0, 8))) {
             final int d = t.indexOf(":");
             final int bijlagenr = Integer.parseInt(t.substring(8, d));
@@ -389,7 +391,7 @@ public class DetailFragment extends TracClientFragment
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        // tcLog.d( "onCreateOptionsMenu");
+        // MyLog.d( "onCreateOptionsMenu");
         inflater.inflate(R.menu.detailmenu, menu);
         super.onCreateOptionsMenu(menu, inflater);
         selectItem = menu.findItem(R.id.dfselect);
@@ -405,7 +407,7 @@ public class DetailFragment extends TracClientFragment
             listener.getAttachment(_ticket, filename, new onAttachmentCompleteListener() {
                 @Override
                 public void onComplete(final byte[] filedata) {
-                    // tcLog.d("onComplete filedata = "
+                    // MyLog.d("onComplete filedata = "
                     // + filedata.length);
                     try {
                         final File file = TracGlobal.makeCacheFilePath(filename);
@@ -416,7 +418,7 @@ public class DetailFragment extends TracClientFragment
                         os.close();
                         final Intent viewIntent = new Intent(Intent.ACTION_VIEW);
 
-                        // tcLog.d("file = "+ file.toString() + " mimeType = " + mimeType);
+                        // MyLog.d("file = "+ file.toString() + " mimeType = " + mimeType);
                         if (mimeType != null) {
                             viewIntent.setDataAndType(Uri.fromFile(file), mimeType);
                             startActivity(viewIntent);
@@ -428,7 +430,7 @@ public class DetailFragment extends TracClientFragment
                             startActivity(j);
                         }
                     } catch (final Exception e) {
-                        tcLog.e(context.getString(R.string.ioerror) + ": " + filename, e);
+                        MyLog.e(context.getString(R.string.ioerror) + ": " + filename, e);
                         showAlertBox(R.string.notfound, R.string.sdcardmissing, null);
                     } finally {
                         listener.stopProgressBar();
@@ -437,7 +439,7 @@ public class DetailFragment extends TracClientFragment
             });
 
         } catch (final JSONException e) {
-            tcLog.e("JSONException fetching attachment", e);
+            MyLog.e("JSONException fetching attachment", e);
         }
     }
 
@@ -446,7 +448,7 @@ public class DetailFragment extends TracClientFragment
     }
 
     private void setSelect(final boolean value) {
-        tcLog.d(String.format(Locale.US, "%b", value));
+        MyLog.d(String.format(Locale.US, "%b", value));
         if (selectItem != null) {
             selectItem.setEnabled(value);
         }
@@ -484,7 +486,7 @@ public class DetailFragment extends TracClientFragment
 
         int newTicket = -1;
 
-        // tcLog.d("onFling e1 = "+e1+", e2 = "+e2);
+        // MyLog.d("onFling e1 = "+e1+", e2 = "+e2);
 
         if (e1.getX() - e2.getX() > large_move) {
             newTicket = listener.getNextTicket(_ticket.getTicketnr());
@@ -508,14 +510,14 @@ public class DetailFragment extends TracClientFragment
     }
 
     public void setModVeld(final String veld, final String waarde, final String newValue) {
-        tcLog.d("veld = " + veld + " waarde = " + waarde + "newValue = " + newValue);
+        MyLog.d("veld = " + veld + " waarde = " + waarde + "newValue = " + newValue);
         final ListView parent = (ListView) currentView.findViewById(R.id.listofFields);
         if (newValue != null && !newValue.equals(waarde) || newValue == null && waarde != null) {
             if ("summary".equals(veld)) {
                 final TextView dataView = (TextView) currentView.findViewById(R.id.ticknr);
                 dataView.setText(newValue);
                 dataView.setTextColor(popup_selected_color);
-                tcLog.d("tickText na postInvalidate + " + dataView);
+                MyLog.d("tickText na postInvalidate + " + dataView);
                 final String[] parsed = newValue != null ? newValue.split(":", 2) : new String[0];
                 modVeld.put("summary", parsed[1].trim());
             } else {
@@ -542,7 +544,7 @@ public class DetailFragment extends TracClientFragment
     }
 
     private void displayTicket() {
-        tcLog.d("ticket = " + _ticket);
+        MyLog.d("ticket = " + _ticket);
         if (_ticket != null) {
 
             if (currentView == null) {
@@ -566,13 +568,13 @@ public class DetailFragment extends TracClientFragment
                     }
                     tickText.append(" : " + summ);
                 } catch (final JSONException ignored) {
-//                    tcLog.e( "JSONException fetching summary");
+//                    MyLog.e( "JSONException fetching summary");
                 }
                 tickText.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View view) {
                         selectField("summary", ((TextView) view).getText().toString());
-                        tcLog.d("tickText modVeld = " + modVeld);
+                        MyLog.d("tickText modVeld = " + modVeld);
                         return true;
                     }
                 });
@@ -582,7 +584,7 @@ public class DetailFragment extends TracClientFragment
                 try {
                     modifiedString ms = null;
 
-                    //tcLog.d( "showEmptyFields = "+showEmptyFields);
+                    //MyLog.d( "showEmptyFields = "+showEmptyFields);
 
                     if (!skipFields.contains(veld)) {
                         if (timeFields.contains(veld)) {
@@ -601,7 +603,7 @@ public class DetailFragment extends TracClientFragment
                         values.add(ms);
                     }
                 } catch (final JSONException e) {
-//                    tcLog.e( "JSONException fetching field " + veld);
+//                    MyLog.e( "JSONException fetching field " + veld);
                     values.add(new modifiedString(veld, ""));
                 }
             }
@@ -621,7 +623,7 @@ public class DetailFragment extends TracClientFragment
                                                     1) + " - " + cmt.getString(4)));
                         }
                     } catch (final JSONException e) {
-                        tcLog.e("JSONException in displayTicket loading history");
+                        MyLog.e("JSONException in displayTicket loading history");
                     }
                 }
             }
@@ -641,7 +643,7 @@ public class DetailFragment extends TracClientFragment
                                                 + " - " + bijlage.getString(1)));
 
                     } catch (final JSONException e) {
-                        tcLog.e("JSONException in displayTicket loading attachments", e);
+                        MyLog.e("JSONException in displayTicket loading attachments", e);
                     }
                 }
             }
@@ -657,7 +659,7 @@ public class DetailFragment extends TracClientFragment
             return TracGlobal.toCalendar(
                     v.getJSONArray("__jsonclass__").getString(1) + "Z").getTime().toString();
         } catch (final Exception e) {
-            tcLog.e("Error converting time", e);
+            MyLog.e("Error converting time", e);
             return "";
         }
     }
@@ -687,7 +689,7 @@ public class DetailFragment extends TracClientFragment
     }
 
     public boolean onBackPressed() {
-        tcLog.logCall();
+        MyLog.logCall();
         if (!modVeld.isEmpty()) {
             context.runOnUiThread(new Runnable() {
                 @Override
@@ -786,7 +788,7 @@ public class DetailFragment extends TracClientFragment
                         ms.getUpdated() ? popup_selected_color : popup_unselected_color);
                 return view;
             } catch (final Exception e) {
-                tcLog.e("exception", e);
+                MyLog.e("exception", e);
                 return null;
             }
         }

@@ -47,6 +47,8 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.mfvl.mfvllib.MyLog;
+
 import org.alexd.jsonrpc.JSONRPCException;
 
 import static com.mfvl.trac.client.Const.*;
@@ -144,14 +146,14 @@ public class TracLoginFragment extends TracClientFragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        tcLog.d("savedInstanceState = " + savedInstanceState);
+        MyLog.d("savedInstanceState = " + savedInstanceState);
         setHasOptionsMenu(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        tcLog.d("savedInstanceState = " + savedInstanceState);
-        // tcLog.d("container = " + (container == null ? "null" : "not null"));
+        MyLog.d("savedInstanceState = " + savedInstanceState);
+        // MyLog.d("container = " + (container == null ? "null" : "not null"));
         if (container == null) {
             return null;
         }
@@ -161,7 +163,7 @@ public class TracLoginFragment extends TracClientFragment
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        tcLog.logCall();
+        MyLog.logCall();
         urlView = (EditText) view.findViewById(R.id.trac_URL);
         userView = (EditText) view.findViewById(R.id.trac_User);
         pwView = (EditText) view.findViewById(R.id.trac_Pw);
@@ -206,7 +208,7 @@ public class TracLoginFragment extends TracClientFragment
 
     @Override
     public void onResume() {
-        tcLog.logCall();
+        MyLog.logCall();
         super.onResume();
         urlView.addTextChangedListener(checkUrlInput);
         userView.addTextChangedListener(checkUserPwInput);
@@ -223,12 +225,12 @@ public class TracLoginFragment extends TracClientFragment
         savedState.putBoolean(CURRENT_SSLHACK, sslHackBox.isChecked());
         savedState.putBoolean(CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
         savedState.putBoolean(bewaarText, bewaarBox.isChecked());
-        tcLog.d(" savedState = " + savedState);
+        MyLog.d(" savedState = " + savedState);
     }
 
     @Override
     public void onPause() {
-        tcLog.logCall();
+        MyLog.logCall();
         urlView.removeTextChangedListener(checkUrlInput);
         userView.removeTextChangedListener(checkUserPwInput);
         pwView.removeTextChangedListener(checkUserPwInput);
@@ -237,7 +239,7 @@ public class TracLoginFragment extends TracClientFragment
 
     @Override
     public void onDestroyView() {
-        tcLog.logCall();
+        MyLog.logCall();
         loginSpinner.setAdapter(null);
         if (pdbCursor != null) {
             pdbCursor.close();
@@ -248,18 +250,18 @@ public class TracLoginFragment extends TracClientFragment
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//        tcLog.logCall();
+//        MyLog.logCall();
         inflater.inflate(R.menu.tracloginmenu, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        tcLog.logCall();
+        MyLog.logCall();
         super.onPrepareOptionsMenu(menu);
         final MenuItem importItem = menu.findItem(R.id.importprofiles);
         final MenuItem exportItem = menu.findItem(R.id.exportprofiles);
-        tcLog.d("canWriteSD = " + listener.getCanWriteSD());
+        MyLog.d("canWriteSD = " + listener.getCanWriteSD());
         importItem.setEnabled(listener.getCanWriteSD());
         exportItem.setEnabled(listener.getCanWriteSD());
     }
@@ -314,7 +316,7 @@ public class TracLoginFragment extends TracClientFragment
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        tcLog.d("savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+        MyLog.d("savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
 
         String currentUsername;
         boolean currentSslHostNameHack;
@@ -366,7 +368,7 @@ public class TracLoginFragment extends TracClientFragment
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // tcLog.d("item=" + item.getTitle());
+        // MyLog.d("item=" + item.getTitle());
         switch (item.getItemId()) {
             case R.id.exportprofiles:
                 try {
@@ -374,7 +376,7 @@ public class TracLoginFragment extends TracClientFragment
                     pdb.writeXML(context.getString(R.string.app_name));
                     showAlertBox(R.string.completed, R.string.xmlwritecompleted, null);
                 } catch (final Exception e) {
-                    tcLog.e("Export failed", e);
+                    MyLog.e("Export failed", e);
                     showAlertBox(R.string.failed, 0, e.getMessage());
                 }
                 break;
@@ -386,7 +388,7 @@ public class TracLoginFragment extends TracClientFragment
                     swapSpinnerAdapter();
                     showAlertBox(R.string.completed, R.string.xmlreadcompleted, null);
                 } catch (final Exception e) {
-                    tcLog.e("Import failed", e);
+                    MyLog.e("Import failed", e);
                     showAlertBox(R.string.failed, 0, e.getMessage());
                 }
                 break;
@@ -428,13 +430,13 @@ public class TracLoginFragment extends TracClientFragment
                         password);
                 try {
                     final String TracVersion = tc.verifyHost();
-                    tcLog.d(TracVersion);
+                    MyLog.d(TracVersion);
                     setValidMessage();
                 } catch (JSONRPCException e) {
                     final String errmsg = e.getMessage();
 
-                    tcLog.d("Exception during verify 1 " + errmsg, e);
-                    tcLog.toast("==" + errmsg + "==");
+                    MyLog.d("Exception during verify 1 " + errmsg, e);
+                    MyLog.toast("==" + errmsg + "==");
                     if (errmsg.startsWith("hostname in certificate didn't match:")) {
                         listener.stopProgressBar();
                         context.runOnUiThread(new Runnable() {
@@ -487,14 +489,14 @@ public class TracLoginFragment extends TracClientFragment
                         password);
                 try {
                     final String TracVersion = tc.verifyHost();
-                    tcLog.d(TracVersion);
+                    MyLog.d(TracVersion);
                     setValidMessage();
                     sslHostNameHack = true;
                 } catch (JSONRPCException e) {
                     final String errmsg = e.getMessage();
 
-                    tcLog.d("Exception during verify 2 " + errmsg, e);
-                    tcLog.toast("==" + errmsg + "==");
+                    MyLog.d("Exception during verify 2 " + errmsg, e);
+                    MyLog.toast("==" + errmsg + "==");
                     if ("NOJSON".equals(errmsg)) {
                         setNoJSONMessage("Fail Hostname NOJSON");
                     } else {

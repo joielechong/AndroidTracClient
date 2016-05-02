@@ -16,19 +16,16 @@
 
 package com.mfvl.trac.client;
 
-import android.content.Context;
-import android.graphics.Point;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+
+import com.mfvl.mfvllib.MyLog;
 
 
 public class EditFieldFragment extends TcDialogFragment {
@@ -36,7 +33,7 @@ public class EditFieldFragment extends TcDialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        tcLog.logCall();
+        MyLog.logCall();
         final String veld = getArguments().getString("veld");
         final String waarde = getArguments().getString("waarde");
         final TicketModel tm = (TicketModel) getArguments().getSerializable("tm");
@@ -81,7 +78,7 @@ public class EditFieldFragment extends TcDialogFragment {
         storBut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tcLog.logCall();
+                MyLog.logCall();
                 String newValue = null;
 
                 if (spinValue != null) {

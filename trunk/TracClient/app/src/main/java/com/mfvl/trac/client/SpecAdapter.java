@@ -26,12 +26,12 @@ class SpecAdapter<T extends Spec> extends ArrayAdapter<T> {
 
     public SpecAdapter(Context context, int textViewResourceId, ArrayList<T> items) {
         super(context, textViewResourceId, items);
-//        tcLog.logCall();
+//        MyLog.logCall();
         this.items = items;
     }
 
     public ArrayList<T> getItems() {
-//    tcLog.logCall();
+//    MyLog.logCall();
         return items;
     }
 }

@@ -6,9 +6,6 @@ import android.support.v4.app.DialogFragment;
 import android.view.Display;
 import android.view.WindowManager;
 
-/**
- * Created by Michiel on 29-4-2016.
- */
 public class TcDialogFragment extends DialogFragment {
     @Override
     public void onResume() {

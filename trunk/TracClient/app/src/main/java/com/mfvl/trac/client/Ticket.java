@@ -17,6 +17,8 @@
 package com.mfvl.trac.client;
 
 
+import com.mfvl.mfvllib.MyLog;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,7 +47,7 @@ public class Ticket implements Serializable {
     private boolean _hasdata = false;
 
     public Ticket(final JSONObject velden) {
-        tcLog.d("Ticket = " + velden);
+        MyLog.d("Ticket = " + velden);
 
         _ticknr = -1;
         _velden = velden;
@@ -175,7 +177,7 @@ public class Ticket implements Serializable {
                 }
             }
         } catch (final JSONException e) {
-            tcLog.e("velden failed", e);
+            MyLog.e("velden failed", e);
         }
         for (int j = 0; j < _history.length(); j++) {
             JSONArray cmt;
@@ -188,7 +190,7 @@ public class Ticket implements Serializable {
                             + "\n";
                 }
             } catch (final JSONException e) {
-                tcLog.e("history failed", e);
+                MyLog.e("history failed", e);
             }
         }
         for (int j = 0; j < _attachments.length(); j++) {
@@ -200,7 +202,7 @@ public class Ticket implements Serializable {
                         bijlage.getJSONObject(3)) + " - " + bijlage.getString(4) + " - "
                         + bijlage.getString(0) + " - " + bijlage.getString(1) + "\n";
             } catch (final JSONException e) {
-                tcLog.e("attachment failed", e);
+                MyLog.e("attachment failed", e);
             }
         }
         return tekst;
@@ -211,7 +213,7 @@ public class Ticket implements Serializable {
             return TracGlobal.toCalendar(
                     v.getJSONArray("__jsonclass__").getString(1) + "Z").getTime().toString();
         } catch (final Exception e) {
-            tcLog.e("Exception", e);
+            MyLog.e("Exception", e);
             return "";
         }
     }
