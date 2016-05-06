@@ -46,6 +46,7 @@ import java.io.OutputStream;
 import javax.xml.parsers.SAXParserFactory;
 
 import static com.mfvl.trac.client.Const.*;
+import static com.mfvl.trac.client.TracGlobal.*;
 
 class ProfileDatabaseHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 2;
@@ -60,7 +61,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
     private boolean upgrade = false;
 
     public ProfileDatabaseHelper(Context context) {
-        super(context, TracGlobal.makeDbPath(), null, DATABASE_VERSION);
+        super(context, makeDbPath(), null, DATABASE_VERSION);
         this.context = context;
         sendNotification("class creation");
     }
@@ -219,7 +220,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
     public void readXML(final String appname) throws Exception {
         try {
             open();
-            final File fileName = TracGlobal.makeExtFilePath(appname + ".xml", true);
+            final File fileName = makeExtFilePath(appname + ".xml", true);
             final InputStream in = new BufferedInputStream(new FileInputStream(fileName));
             final XMLReader xmlR = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
 
@@ -234,7 +235,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void writeXML(final String appname) throws Exception {
-        final File fileName = TracGlobal.makeExtFilePath(appname + ".xml", true);
+        final File fileName = makeExtFilePath(appname + ".xml", true);
         final OutputStream out = new BufferedOutputStream(new FileOutputStream(fileName));
 
         String xmlString = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n";

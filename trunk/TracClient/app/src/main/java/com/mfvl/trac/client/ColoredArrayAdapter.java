@@ -22,22 +22,21 @@ import android.widget.ArrayAdapter;
 
 import java.util.List;
 
+import static com.mfvl.trac.client.TracGlobal.*;
+
+
 class ColoredArrayAdapter<T> extends ArrayAdapter<T> {
-    private static int[] colors = null;
 
     public ColoredArrayAdapter(TracStart context, List<T> list) {
         super(context, R.layout.ticket_list, list);
 		//MyLog.d("context = "+context+" resource = "+ resource+" list = " +list);
-        if (colors == null) {
-            colors = context.getResources().getIntArray(R.array.list_col);
-        }
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 		//MyLog.d("position = " + position + " convertView = " + convertView + " parent = " + parent);
         final View view = super.getView(position, convertView, parent);
-        view.setBackgroundColor(colors[position % colors.length]);
+        view.setBackgroundColor(adapterColors[position % adapterColors.length]);
         return view;
     }
 }

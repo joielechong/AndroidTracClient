@@ -30,6 +30,7 @@ import android.widget.TextView;
 import com.mfvl.mfvllib.MyLog;
 
 import static com.mfvl.trac.client.Const.*;
+import static com.mfvl.trac.client.TracGlobal.*;
 
 public class TracShowWebPageDialogFragment extends TcDialogFragment implements View.OnClickListener {
     private String fileUrl;
@@ -45,7 +46,7 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements V
         final boolean toonVersie = args.getBoolean(HELP_VERSION);
 		final boolean showCookies = args.getBoolean(HELP_COOKIES);
         final String fileName = args.getString(HELP_FILE);
-        final boolean cookieInform = TracGlobal.getCookieInform();
+        final boolean cookieInform = getCookieInform();
         webzoom = args.getInt(HELP_ZOOM);
 
         mainView = inflater.inflate(R.layout.trac_about, null);
@@ -61,7 +62,7 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements V
             versionblock.setVisibility(View.GONE);
         } else {
             final TextView about_version_text = (TextView) mainView.findViewById(R.id.about_version_text);
-            about_version_text.setText(TracGlobal.getVersion());
+            about_version_text.setText(getVersion());
             View keuzeblock = mainView.findViewById(R.id.keuzeblock);
             if (!cookieInform && !showCookies) {
                 keuzeblock.setVisibility(View.GONE);

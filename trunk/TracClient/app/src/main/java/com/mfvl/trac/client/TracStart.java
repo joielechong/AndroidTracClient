@@ -82,6 +82,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.Semaphore;
 
 import static com.mfvl.trac.client.Const.*;
+import static com.mfvl.trac.client.TracGlobal.*;
 
 interface OnTicketLoadedListener {
     void onTicketLoaded(Ticket t);
@@ -120,7 +121,6 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     private String password = null;
     private boolean sslHack = false;
     private boolean sslHostNameHack = false;
-    private int timerCorr = 0;
     private boolean debug = false; // disable menuoption at startup
     private OnFileSelectedListener _oc = null;
     private boolean canWriteSD = false;
@@ -189,8 +189,8 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
                     LoginProfile lp = pdb.getProfile(newProfile);
                     MyLog.d(lp);
                     if (lp != null) {
-                        TracGlobal.removeFilterString();
-                        TracGlobal.removeSortString();
+                        removeFilterString();
+                        removeSortString();
                         onLogin(lp.getUrl(), lp.getUsername(), lp.getPassword(), lp.getSslHack(),
                                 lp.getSslHostNameHack(), newProfile);
                     }
@@ -242,10 +242,8 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
             canWriteSD = true;
         }
 
-        TracGlobal.ticketGroupCount = getResources().getInteger(R.integer.ticketGroupCount);
-        timerCorr = getResources().getInteger(R.integer.timerCorr);
         setContentView(R.layout.tracstart);
-        debug |= TracGlobal.isRCVersion();
+        debug |= isRCVersion();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setLogo(R.drawable.traclogo);
@@ -277,17 +275,17 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
                 tracStartHandler.sendMessage(Message.obtain(null, MSG_SET_TICKET_MODEL, tm));
             }
         } else {
-            url = TracGlobal.getUrl();
-            username = TracGlobal.getUsername();
-            password = TracGlobal.getPassword();
-            sslHack = TracGlobal.getSslHack();
-            sslHostNameHack = TracGlobal.getSslHostNameHack();
-            profile = TracGlobal.getProfile();
-            setFilter(TracGlobal.getFilterString());
-            setSort(TracGlobal.getSortString());
+            url = getUrl();
+            username = getUsername();
+            password = getPassword();
+            sslHack = getSslHack();
+            sslHostNameHack = getSslHostNameHack();
+            profile = getProfile();
+            setFilter(getFilterString());
+            setSort(getSortString());
 
             // only at first start
-            if (TracGlobal.getFirstRun()) {
+            if (isFirstRun()) {
                 showAbout(true);
             }
             dispAds = !getIntent().hasExtra(ADMOB) || getIntent().getBooleanExtra(ADMOB, true);
@@ -431,7 +429,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         final AdRequest.Builder arb = new AdRequest.Builder();
 
         arb.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
-        if (TracGlobal.isDebuggable()) {
+        if (isDebuggable()) {
             for (final String t : testDevices) {
                 MyLog.d("testDevice = " + t);
                 arb.addTestDevice(t);
@@ -495,8 +493,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    String s = (message != 0 ? getResources().getString(
-                            message) + (addit != null ? ": " + addit : "") : addit);
+                    String s = (message != 0 ? getString(message) + (addit != null ? ": " + addit : "") : addit);
                     final AlertDialog ad = new AlertDialog.Builder(TracStart.this)
                             .setTitle(titleres)
                             .setMessage(s)
@@ -602,7 +599,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         }
         MyLog.d("isFinishing = " + isFinishing());
     /* save logfile when exiting */
-        if (isFinishing() && TracGlobal.isRCVersion()) {
+        if (isFinishing() && isRCVersion()) {
             MyLog.save();
         }
     }
@@ -759,7 +756,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         aboutArgs.putString(HELP_FILE, getString(R.string.whatsnewhelpfile));
         aboutArgs.putBoolean(HELP_VERSION, true);
 		aboutArgs.putBoolean(HELP_COOKIES,showCookies);
-        aboutArgs.putInt(HELP_ZOOM, getResources().getInteger(R.integer.webzoom));
+        aboutArgs.putInt(HELP_ZOOM, webzoom);
         about.preLoad(getLayoutInflater(), aboutArgs);
         about.show(getSupportFragmentManager(), "about");
     }
@@ -892,8 +889,8 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
 
     private void setFilter(ArrayList<FilterSpec> filter) {
         MyLog.d(filter.toString());
-        String filterString = TracGlobal.joinList(filter.toArray(), "&");
-        TracGlobal.storeFilterString(filterString);
+        String filterString = joinList(filter.toArray(), "&");
+        storeFilterString(filterString);
         filterList = filter;
     }
 
@@ -935,8 +932,8 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     private void setSort(ArrayList<SortSpec> sort) {
         MyLog.d(sort.toString());
 
-        String sortString = TracGlobal.joinList(sort.toArray(), "&");
-        TracGlobal.storeSortString(sortString);
+        String sortString = joinList(sort.toArray(), "&");
+        storeSortString(sortString);
         sortList = sort;
     }
 
@@ -1013,8 +1010,8 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         sslHack = newHack;
         sslHostNameHack = newHostNameHack;
         profile = newProfile;
-        setFilter(TracGlobal.getFilterString());
-        setSort(TracGlobal.getSortString());
+        setFilter(getFilterString());
+        setSort(getSortString());
         TicketListFragment ticketListFragment = (TicketListFragment) getFragment(ListFragmentTag);
 
         if (ticketListFragment == null) {
@@ -1361,7 +1358,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
             case MSG_REQUEST_TICKET_COUNT:
                 if (!LoginFragmentTag.equals(getTopFragment())) {
                     final int count = getTicketCount();
-                    sendMessageToService(MSG_SEND_TICKET_COUNT, count, TracGlobal.fromUnix(referenceTime));
+                    sendMessageToService(MSG_SEND_TICKET_COUNT, count, fromUnix(referenceTime));
                 }
                 break;
 
