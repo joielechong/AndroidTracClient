@@ -21,7 +21,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -57,8 +56,6 @@ public class RefreshService extends Service implements Handler.Callback {
     private final static String TICKET_ATTACH = "ATTACH";
     private final static String TICKET_ACTION = "ACTION";
     private static final int notifId = 1234;
-    private static int timerStart;
-    private static int timerPeriod;
     /**
      * Class used for the client Binder.  Because we know this service always
      * runs in the same process as its clients, we don't need to deal with IPC.
@@ -78,10 +75,6 @@ public class RefreshService extends Service implements Handler.Callback {
     @Override
     public void onCreate() {
         MyLog.logCall();
-
-        Resources res = getResources();
-        timerStart = res.getInteger(R.integer.timerStart);
-        timerPeriod = res.getInteger(R.integer.timerPeriod);
 
         loadLock = new TicketLoaderLock();
 
@@ -206,14 +199,14 @@ public class RefreshService extends Service implements Handler.Callback {
             String reqString = "";
             List<FilterSpec> fl = mLoginProfile.getFilterList();
             if (fl != null) {
-                reqString = TracGlobal.joinList(fl.toArray(), "&");
+                reqString = joinList(fl.toArray(), "&");
             }
             List<SortSpec> sl = mLoginProfile.getSortList();
             if (sl != null) {
                 if (fl != null) {
                     reqString += "&";
                 }
-                reqString += TracGlobal.joinList(sl.toArray(), "&");
+                reqString += joinList(sl.toArray(), "&");
             }
             if (reqString.length() == 0) {
                 reqString = "max=0";

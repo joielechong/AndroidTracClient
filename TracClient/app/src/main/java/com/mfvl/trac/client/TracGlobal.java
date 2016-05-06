@@ -23,6 +23,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
+import android.content.res.Resources;
 import android.os.Environment;
 
 import com.mfvl.mfvllib.MyLog;
@@ -47,7 +48,14 @@ import static com.mfvl.trac.client.Const.*;
 class TracGlobal {
     private static final X500Principal DEBUG_DN = new X500Principal("CN=Android Debug,O=Android,C=US");
 
-    static public int ticketGroupCount = 50;
+    public static int ticketGroupCount;
+    public static int webzoom;
+    public static int timerCorr;
+    public static int timerStart;
+    public static int timerPeriod;
+    public static int large_move;
+    public static int[] adapterColors = null;
+
     private static String versie = null;
     private static String _url = "";
     private static String _username = "";
@@ -63,6 +71,22 @@ class TracGlobal {
         settings = context.getSharedPreferences(PREFS_NAME, 0);
         _context = context;
         versie = context.getString(R.string.app_version);
+        Resources res = context.getResources();
+        try {
+            ticketGroupCount = res.getInteger(R.integer.ticketGroupCount);
+        } catch (Resources.NotFoundException e) {
+            ticketGroupCount = 50;
+        }
+        try {
+            webzoom = res.getInteger(R.integer.webzoom);
+        } catch (Resources.NotFoundException e) {
+            webzoom = 120;
+        }
+        timerCorr = res.getInteger(R.integer.timerCorr);
+        large_move = res.getInteger(R.integer.large_move);
+        timerStart = res.getInteger(R.integer.timerStart);
+        timerPeriod = res.getInteger(R.integer.timerPeriod);
+        adapterColors = res.getIntArray(R.array.list_col);
     }
 
     public static void getInstance(final Context context) {
@@ -143,8 +167,8 @@ class TracGlobal {
         return _profile;
     }
 
-    public static boolean getFirstRun() {
-        // MyLog.d("getFirstRun");
+    public static boolean isFirstRun() {
+        // MyLog.d("isFirstRun");
         final String thisRun = versie;
         final String lastRun = settings.getString(PREF_1ST, "");
         settings.edit().putString(PREF_1ST, thisRun).apply();

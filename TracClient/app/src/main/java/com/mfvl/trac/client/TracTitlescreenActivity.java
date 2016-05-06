@@ -50,7 +50,6 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
     public void onStart() {
 //        MyLog.logCall();
         super.onStart();
-
 //        boolean adMobAvailable = false;
         boolean adMobAvailable = true;
         launchTrac = new Intent(getApplicationContext(), TracStart.class);
@@ -111,27 +110,6 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
             }
         }, timerVal);
     }
-
-    public void onResume() {
-        MyLog.logCall();
-        super.onResume();
-    }
-
-    public void onPause() {
-        MyLog.logCall();
-        super.onPause();
-    }
-
-    public void onStop() {
-        MyLog.logCall();
-        super.onStop();
-    }
-
-    public void onDestroy() {
-        MyLog.logCall();
-        super.onDestroy();
-    }
-
 
     @Override
     public void uncaughtException(Thread thread, Throwable ex) {

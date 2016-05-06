@@ -26,6 +26,8 @@ import org.json.JSONObject;
 import java.io.Serializable;
 import java.util.concurrent.Semaphore;
 
+import static com.mfvl.trac.client.TracGlobal.*;
+
 interface onTicketCompleteListener {
     void onComplete(Ticket t);
 }
@@ -210,7 +212,7 @@ public class Ticket implements Serializable {
 
     private String toonTijd(final JSONObject v) {
         try {
-            return TracGlobal.toCalendar(
+            return toCalendar(
                     v.getJSONArray("__jsonclass__").getString(1) + "Z").getTime().toString();
         } catch (final Exception e) {
             MyLog.e("Exception", e);

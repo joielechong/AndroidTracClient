@@ -39,13 +39,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.mfvl.trac.client.Const.*;
+import static com.mfvl.trac.client.TracGlobal.*;
 
 abstract public class TracClientFragment extends Fragment implements View.OnClickListener {
 
     Ticket _ticket = null;
     TracStart context;
     InterFragmentListener listener = null;
-    int large_move;
     Bundle fragmentArgs = null;
     TicketModel tm = null;
     private Handler tracStartHandler = null;
@@ -77,7 +77,6 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
         TracGlobal.getInstance(context.getApplicationContext());
         listener = (InterFragmentListener) activity;
         tracStartHandler = listener.getHandler();
-        large_move = context.getResources().getInteger(R.integer.large_move);
         fragmentArgs = getArguments();
     }
 
@@ -97,7 +96,7 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
         aboutArgs.putString(HELP_FILE, filename);
         aboutArgs.putBoolean(HELP_VERSION, false);
         aboutArgs.putBoolean(HELP_COOKIES, false);
-        aboutArgs.putInt(HELP_ZOOM, context.getResources().getInteger(R.integer.webzoom));
+        aboutArgs.putInt(HELP_ZOOM, webzoom);
         about.preLoad(context.getLayoutInflater(), aboutArgs);
         about.setArguments(aboutArgs);
         about.show(getFragmentManager(), "help");
@@ -179,18 +178,6 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
         }
     }
 
-    /*
-        void waitForTicketModel() {
-            while (tm == null) {
-                MyLog.d("tm is still null");
-                try {
-                    Thread.sleep(100);
-                } catch (Exception ignored){
-                }
-            }
-            tm.wacht();
-        }
-    */
     @Override
     public void onClick(View v) {
         MyLog.d("v =" + v);

@@ -52,6 +52,7 @@ import com.mfvl.mfvllib.MyLog;
 import org.alexd.jsonrpc.JSONRPCException;
 
 import static com.mfvl.trac.client.Const.*;
+import static com.mfvl.trac.client.TracGlobal.*;
 
 public class TracLoginFragment extends TracClientFragment
         implements OnItemSelectedListener, OnCheckedChangeListener {
@@ -570,13 +571,13 @@ public class TracLoginFragment extends TracClientFragment
         bewaren = bewaarBox.isChecked();
         sslHack = sslHackBox.isChecked();
         if (bewaren) {
-            TracGlobal.setCredentials(url, username, password, SelectedProfile);
-            TracGlobal.setSslHack(sslHack);
-            TracGlobal.setSslHostNameHack(sslHostNameHack);
-            TracGlobal.storeCredentials();
+            setCredentials(url, username, password, SelectedProfile);
+            setSslHack(sslHack);
+            setSslHostNameHack(sslHostNameHack);
+            storeCredentials();
         }
-        TracGlobal.removeFilterString();
-        TracGlobal.removeSortString();
+        removeFilterString();
+        removeSortString();
         listener.onLogin(url, username, password, sslHack, sslHostNameHack, SelectedProfile);
     }
 
