@@ -46,8 +46,8 @@ import java.util.List;
 import static com.mfvl.trac.client.Const.*;
 
 public class FilterFragment extends SpecFragment<FilterSpec> implements OnCheckedChangeListener {
-    private static ArrayList<String> operators = null;
-    private static ArrayList<String> operatornames = null;
+    private static List<String> operators = null;
+    private static List<String> operatornames = null;
     private FilterAdapter filterAdapter;
     private Spinner addSpinner;
 
@@ -180,8 +180,8 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
             super(context, android.R.layout.simple_list_item_1, input);
             if (operators == null) {
                 final Resources res = context.getResources();
-                operators = new ArrayList<>(Arrays.asList(res.getStringArray(R.array.filter2_choice)));
-                operatornames = new ArrayList<>(Arrays.asList(res.getStringArray(R.array.filter_names)));
+                operators = Arrays.asList(res.getStringArray(R.array.filter2_choice));
+                operatornames = Arrays.asList(res.getStringArray(R.array.filter_names));
             }
         }
 

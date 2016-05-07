@@ -18,22 +18,21 @@ package com.mfvl.trac.client;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 
 import com.mfvl.mfvllib.MyLog;
 
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import static com.mfvl.trac.client.Const.*;
 
 public class TracTitlescreenActivity extends Activity implements Thread.UncaughtExceptionHandler {
     private Intent launchTrac = null;
-    private Handler handler = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,15 +40,17 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
         super.onCreate(savedInstanceState);
         MyLog.setContext(this,getString(R.string.logfile));
         MyLog.reset();
+        PreferenceManager.setDefaultValues(getApplicationContext(),Const.PREFS_NAME, Context.MODE_PRIVATE,
+                R.xml.default_preferences, false);
         TracGlobal.getInstance(getApplicationContext());
         setContentView(R.layout.activity_titlescreen);
         startService(new Intent(this, RefreshService.class));
     }
 
     @Override
-    public void onStart() {
+    public void onResume() {
 //        MyLog.logCall();
-        super.onStart();
+        super.onResume();
 //        boolean adMobAvailable = false;
         boolean adMobAvailable = true;
         launchTrac = new Intent(getApplicationContext(), TracStart.class);
@@ -84,31 +85,21 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
                     launchTrac.putExtra(INTENT_URL, urlstring)
                             .putExtra(INTENT_TICKET, (long) ticket);
                 } else {
-                    MyLog.w("View intent bad Url");
+                    MyLog.w("TracClient bad url "+contentString);
+                    MyLog.toast("TracClient bad url "+contentString);
                 }
             }
         }
-        handler = new Handler();
-        startApp();
-    }
-
-    private void startApp() {
-//        MyLog.logCall();
-        int timerVal = getResources().getInteger(R.integer.startupTimer);
-        final Timer t = new Timer();
-        t.schedule(new TimerTask() {
+        Handler handler = new Handler();
+        final int timerVal = getResources().getInteger(R.integer.startupTimer);
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        MyLog.logCall();
-                        startActivity(launchTrac);
-                        finish();
-                    }
-                });
+                MyLog.logCall();
+                startActivity(launchTrac);
+                finish();
             }
-        }, timerVal);
+        },timerVal);
     }
 
     @Override

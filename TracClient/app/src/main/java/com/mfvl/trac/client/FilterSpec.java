@@ -86,7 +86,7 @@ public class FilterSpec extends Spec {
     }
 
     @Override
-    public FilterSpec setEdit(final boolean edited) {
+    public void setEdit(final boolean edited) {
         // MyLog.i( "setEdit veld = " + _veld + " edited = " + edited);
         if (edited != _edited) {
             _edited = edited;
@@ -96,7 +96,6 @@ public class FilterSpec extends Spec {
                 _waarde = _newwaarde;
             }
         }
-        return this;
     }
 
     @Override

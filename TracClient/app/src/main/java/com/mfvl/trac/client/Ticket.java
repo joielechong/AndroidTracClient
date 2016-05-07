@@ -169,7 +169,7 @@ public class Ticket implements Serializable {
 
                         case "time":
                         case "changetime":
-                            tekst += veld + ":\t" + toonTijd(_velden.getJSONObject(veld)) + "\n";
+                            tekst += veld + ":\t" +  toonTijd(_velden.getJSONObject(veld)) + "\n";
                             break;
 
                         default:
