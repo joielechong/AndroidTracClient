@@ -321,7 +321,7 @@ public class RefreshService extends Service implements Handler.Callback {
     }
 
     private void popup_warning(int messString, String addit) {
-        sendMessageToUI(MSG_SHOW_DIALOG, R.string.warning, messString, addit);
+        sendMessageToUI(MSG_SHOW_DIALOG, messString, addit);
     }
 
     private void buildCall(JSONArray multiCall, int ticknr) throws JSONException {
@@ -481,8 +481,8 @@ public class RefreshService extends Service implements Handler.Callback {
         dispatchMessage(Message.obtain(null, message, o));
     }
 
-    private void sendMessageToUI(final int message, int arg1, int arg2, Object o) {
-        dispatchMessage(Message.obtain(null, message, arg1, arg2, o));
+    private void sendMessageToUI(final int message, int arg2, Object o) {
+        dispatchMessage(Message.obtain(null, message, R.string.warning, arg2, o));
     }
 
     private class TicketLoaderLock extends ReentrantLock {

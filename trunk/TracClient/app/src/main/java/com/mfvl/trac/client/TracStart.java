@@ -39,6 +39,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
+import android.preference.PreferenceActivity;
 import android.provider.MediaStore.Images;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -704,6 +705,13 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         MyLog.d("item=" + item.getTitle());
 
         switch (item.getItemId()) {
+            case R.id.settings:
+                Intent launchPrefs = new Intent(this, TcPreference.class);
+                launchPrefs.putExtra(PreferenceActivity.EXTRA_NO_HEADERS,true);
+                launchPrefs.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT,"com.mfvl.trac.client.TcPreference$SettingsFragment");
+                startActivity(launchPrefs);
+                break;
+
             case android.R.id.home:
                 if (getSupportFragmentManager().getBackStackEntryCount() == 1) {
                     mDrawerLayout.openDrawer(GravityCompat.START);

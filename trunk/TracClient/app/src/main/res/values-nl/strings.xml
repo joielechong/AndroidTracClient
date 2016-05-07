@@ -119,5 +119,6 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Sluit navigation drawer</string>
+    <string name="settings">Instellingen</string>
 
 </resources>

@@ -18,7 +18,7 @@ package com.mfvl.trac.client;
 
 import java.io.Serializable;
 
-abstract public class Spec extends TcObject implements Serializable, Cloneable {
+abstract class Spec extends TcObject implements Serializable, Cloneable {
     String _veld;
 
     Spec(String veld) {
@@ -41,7 +41,6 @@ abstract public class Spec extends TcObject implements Serializable, Cloneable {
         return _veld;
     }
 
-    public Spec setEdit(final boolean edited) { //no-op
-        return this;
+    public void setEdit(final boolean edited) { //no-op
     }
 }

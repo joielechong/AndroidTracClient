@@ -272,7 +272,6 @@ class TracGlobal {
         return (versie != null) && (versie.toLowerCase(Locale.US).contains("rc"));
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static File makeExtFilePath(String filename, boolean visible) throws FileNotFoundException {
         File dirPath;
         //MyLog.d("filename = "+filename);
