@@ -5,7 +5,7 @@
     <string name="tracUserHint">Nom d\'utilisateur</string>
     <string name="tracPw">Mot de passe</string>
     <string name="tracPwHint">Mot de passe</string>
-    <string name="bewaren">pouvoirs de magasins</string>
+    <string name="bewaren">Sauvegarder connexion</string>
     <string name="vertext">Vérification</string>
     <string name="invalidCred">Pouvoirs pas valide</string>
     <string name="validCred">Informations d\'identification valides</string>
@@ -84,7 +84,6 @@
     <string name="ticketnotfound">Billet pas trouvé</string>
     <string name="chooseticknr">Entrez ticketnumber</string>
     <string name="chooseticket">Choisissez billet</string>
-    <string name="checking">Compte chèque</string>
     <string name="debug">Débogage</string>
     <string name="foundnew">Modification ou de nouveaux billets trouvés:</string>
     <string name="notifmod">Billets modifiés trouvés</string>
@@ -110,5 +109,8 @@
     <string name="chooseoption">Choisissez option</string>
     <string name="showchanges">Historique des modifications</string>
     <string name="choosefield">Choisissez champ</string>
+    <string name="cookieInform">Cette application utilise les cookies de Google pour offrir des services, pour personnaliser les annonces et d\'analyser le trafic. Informations sur votre utilisation de cette application est partagée avec Google. Si vous utilisez cette application, vous acceptez l\'utilisation de cookies.</string>
+    <string name="checking">Vérification</string>
+    <string name="settings">Paramètres</string>
 
 </resources>

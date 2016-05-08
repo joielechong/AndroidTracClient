@@ -98,11 +98,11 @@
         <item>kończy się na</item>
         <item>nie kończy się na</item>
     </string-array>
-    <string name="cookies">Cookies</string>
     <string name="permissiontitle">Prośba o pozwolenie</string>
     <string name="chooseoption">Wybierz opcję</string>
     <string name="choosefield">Wybierz pole</string>
     <string name="doubleback">Kliknij ponownie,aby wyjść</string>
     <string name="noJSON">Brak wsparcia JSON na TRAC-serwer</string>
+    <string name="settings">Ustawienia</string>
 
 </resources>
