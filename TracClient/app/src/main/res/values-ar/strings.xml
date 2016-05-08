@@ -105,5 +105,6 @@
     <string name="choosefield">اختيار الحقل</string>
     <string name="doubleback">يرجى الضغط مرة أخرى للخروج</string>
     <string name="noJSON">أي دعم JSON على خادم TRAC</string>
+    <string name="settings"> إعدادات</string>
 
 </resources>
