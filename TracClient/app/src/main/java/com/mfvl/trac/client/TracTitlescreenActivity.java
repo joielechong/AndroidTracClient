@@ -18,12 +18,10 @@ package com.mfvl.trac.client;
 
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 
 import com.mfvl.mfvllib.MyLog;
 
@@ -40,8 +38,6 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
         super.onCreate(savedInstanceState);
         MyLog.setContext(this,getString(R.string.logfile));
         MyLog.reset();
-        PreferenceManager.setDefaultValues(getApplicationContext(),Const.PREFS_NAME, Context.MODE_PRIVATE,
-                R.xml.default_preferences, false);
         TracGlobal.getInstance(getApplicationContext());
         setContentView(R.layout.activity_titlescreen);
         startService(new Intent(this, RefreshService.class));

@@ -68,20 +68,23 @@ class TracGlobal {
     private static Context _context = null;
 
     private TracGlobal(final Context context) {
-        settings = context.getSharedPreferences(PREFS_NAME, 0);
         _context = context;
-        versie = context.getString(R.string.app_version);
         Resources res = context.getResources();
-        try {
-            ticketGroupCount = res.getInteger(R.integer.ticketGroupCount);
-        } catch (Resources.NotFoundException e) {
-            ticketGroupCount = 50;
+        settings = context.getSharedPreferences(PREFS_NAME, 0);
+        MyLog.d(settings);
+        versie = res.getString(R.string.app_version);
+
+        ticketGroupCount = Integer.parseInt(settings.getString( res.getString(R.string.prefNrItemsKey),"-1"));
+        if (ticketGroupCount == -1) {
+            try {
+                ticketGroupCount = res.getInteger(R.integer.ticketGroupCount);
+            } catch (Resources.NotFoundException e) {
+                ticketGroupCount = 50;
+            }
         }
-        try {
-            webzoom = res.getInteger(R.integer.webzoom);
-        } catch (Resources.NotFoundException e) {
-            webzoom = 120;
-        }
+        MyLog.d("final: "+ticketGroupCount);
+
+        webzoom = res.getInteger(R.integer.webzoom);
         timerCorr = res.getInteger(R.integer.timerCorr);
         large_move = res.getInteger(R.integer.large_move);
         timerStart = res.getInteger(R.integer.timerStart);

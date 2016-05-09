@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="Algemene instellingen">
+
+        <EditTextPreference
+            android:inputType="number"
+            android:defaultValue="@integer/ticketGroupCount"
+            android:key="@string/prefNrItemsKey"
+            android:persistent="true"
+            android:title="@string/prefNrItems" />
+    </PreferenceCategory>
 
 </PreferenceScreen>
