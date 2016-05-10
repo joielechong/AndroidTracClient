@@ -51,7 +51,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.view.Menu;
@@ -89,8 +88,8 @@ interface OnTicketLoadedListener {
     void onTicketLoaded(Ticket t);
 }
 
-public class TracStart extends AppCompatActivity implements Handler.Callback, ServiceConnection,
-        InterFragmentListener, FragmentManager.OnBackStackChangedListener,
+public class TracStart extends TcBaseActivity implements ServiceConnection,
+        FragmentManager.OnBackStackChangedListener,
         NavigationView.OnNavigationItemSelectedListener,
         ActivityCompat.OnRequestPermissionsResultCallback, ViewTreeObserver.OnGlobalLayoutListener {
     public static final String DetailFragmentTag = "Detail_Fragment";
@@ -106,7 +105,6 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
             NewFragmentTag, UpdFragmentTag, FilterFragmentTag, SortFragmentTag};
     private final Semaphore loadingActive = new TcSemaphore(1, true);
     private final Semaphore isBinding = new TcSemaphore(1, true);
-    private Handler tracStartHandler = null;
     private boolean doubleBackToExitPressedOnce = false;
     private FrameLayout adViewContainer = null;
     private AdView adView = null;
@@ -129,8 +127,6 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     private String urlArg = null;
     private int ticketArg = -1;
     private boolean doNotFinish = false;
-    private TicketModel tm = null;
-    private Messenger mMessenger = null;
     private RefreshService mService = null;
 
 
@@ -138,7 +134,6 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     private ActionBarDrawerToggle toggle;
     private ProfileDatabaseHelper pdb = null;
     private Intent serviceIntent;
-    private MyHandlerThread mHandlerThread = null;
     private boolean hasTicketsLoadingBar = false;
     private Boolean ticketsLoading = false;
     private TicketListAdapter dataAdapter = null;
@@ -625,6 +620,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
     @Override
     public void onAttachFragment(final Fragment frag) {
         MyLog.d(frag + " this = " + this);
+        super.onAttachFragment(frag);
 
         if (frag instanceof TracClientFragment) {
             ((TracClientFragment) frag).onNewTicketModel(tm);
@@ -1258,10 +1254,6 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
         }
     }
 
-    public Handler getHandler() {
-        return tracStartHandler;
-    }
-
     public boolean getCanWriteSD() {
         return canWriteSD;
     }
@@ -1427,7 +1419,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
                 tm = (TicketModel) msg.obj;
                 for (String f : FragmentTags) {
                     Fragment frag = getSupportFragmentManager().findFragmentByTag(f);
-                    if (frag != null) {
+                    if (frag != null && frag instanceof TracClientFragment) {
                         ((TracClientFragment) frag).onNewTicketModel(tm);
                     }
                 }
@@ -1532,7 +1524,7 @@ public class TracStart extends AppCompatActivity implements Handler.Callback, Se
                 break;
 
             default:
-                return false;
+                return super.handleMessage(msg);
         }
         return true;
     }

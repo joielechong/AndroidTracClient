@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceScreen
+        android:key="filteropties"
+        android:title="Filteropties"
+        android:summary="Stel filter in">
+        <intent
+            android:action="android.intent.action.EDIT"
+            android:targetPackage="com.mfvl.trac.client"
+            android:targetClass="com.mfvl.trac.client.FilterActivity" />
+    </PreferenceScreen>
+
     <PreferenceCategory android:title="Algemene instellingen">
 
         <EditTextPreference
