@@ -16,6 +16,7 @@
 
 package com.mfvl.trac.client;
 
+import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -27,7 +28,7 @@ import static com.mfvl.trac.client.TracGlobal.*;
 
 class ColoredArrayAdapter<T> extends ArrayAdapter<T> {
 
-    public ColoredArrayAdapter(TracStart context, List<T> list) {
+    public ColoredArrayAdapter(Activity context, List<T> list) {
         super(context, R.layout.ticket_list, list);
 		//MyLog.d("context = "+context+" resource = "+ resource+" list = " +list);
     }

@@ -44,7 +44,7 @@ import static com.mfvl.trac.client.TracGlobal.*;
 abstract public class TracClientFragment extends Fragment implements View.OnClickListener {
 
     Ticket _ticket = null;
-    TracStart context;
+    Activity context;
     InterFragmentListener listener = null;
     Bundle fragmentArgs = null;
     TicketModel tm = null;
@@ -73,10 +73,9 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
     }
 
     void onMyAttach(Context activity) {
-        context = (TracStart) activity;
+        context = (Activity) activity;
         TracGlobal.getInstance(context.getApplicationContext());
         listener = (InterFragmentListener) activity;
-        tracStartHandler = listener.getHandler();
         fragmentArgs = getArguments();
     }
 

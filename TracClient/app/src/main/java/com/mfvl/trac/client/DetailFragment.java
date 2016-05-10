@@ -16,6 +16,7 @@
 
 package com.mfvl.trac.client;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -775,7 +776,7 @@ public class DetailFragment extends TracClientFragment
     }
 
     private class ModifiedStringArrayAdapter extends ColoredArrayAdapter<modifiedString> {
-        public ModifiedStringArrayAdapter(TracStart context, List<modifiedString> list) {
+        public ModifiedStringArrayAdapter(Activity context, List<modifiedString> list) {
             super(context, list);
         }
 

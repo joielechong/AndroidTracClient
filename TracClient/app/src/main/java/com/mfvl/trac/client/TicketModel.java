@@ -83,6 +83,10 @@ class TicketModel implements Serializable {
         }
     }
 
+    public static TicketModel getInstance() {
+        return _instance;
+    }
+
     public void onSaveInstanceState(Bundle b) {
         _tracClient.onSaveInstanceState(b);
         b.putSerializable("Volgorde", _volgorde);
