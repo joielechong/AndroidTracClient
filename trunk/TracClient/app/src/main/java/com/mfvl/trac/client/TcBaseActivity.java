@@ -10,13 +10,14 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.mfvl.mfvllib.MyLog;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 public abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callback, InterFragmentListener {
-    protected Handler tracStartHandler = null;
-    protected Messenger mMessenger = null;
-    protected MyHandlerThread mHandlerThread = null;
-    protected TicketModel tm = null;
+    Handler tracStartHandler = null;
+    Messenger mMessenger = null;
+    MyHandlerThread mHandlerThread = null;
+    TicketModel tm = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,9 +38,35 @@ public abstract class TcBaseActivity extends AppCompatActivity implements Handle
         }
     }
 
+    @Override
     public boolean handleMessage(Message msg) {
         MyLog.logCall();
         return false;
+    }
+
+    Bundle makeArgs() {
+        return new Bundle();
+    }
+
+    ArrayList<FilterSpec> parseFilterString(String filterString) {
+        final ArrayList<FilterSpec> filter = new ArrayList<>();
+
+        if (filterString.length() > 0) {
+            String[] fs;
+
+            try {
+                fs = filterString.split("&");
+            } catch (final IllegalArgumentException e) {
+                fs = new String[1];
+                fs[0] = filterString;
+            }
+            final String[] operators = getResources().getStringArray(R.array.filter2_choice);
+
+            for (final String f : fs) {
+                filter.add(new FilterSpec(f, operators));
+            }
+        }
+        return filter;
     }
 
     @Override

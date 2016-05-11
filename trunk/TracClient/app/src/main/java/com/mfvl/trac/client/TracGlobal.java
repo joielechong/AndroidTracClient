@@ -89,8 +89,13 @@ class TracGlobal {
         large_move = res.getInteger(R.integer.large_move);
         timerStart = res.getInteger(R.integer.timerStart);
         timerPeriod = res.getInteger(R.integer.timerPeriod);
+        PREF_FILTER = res.getString(R.string.prefFilter);
         adapterColors = res.getIntArray(R.array.list_col);
     }
+	
+	public static SharedPreferences getSharedPreferences() {
+		return settings;
+	}
 
     public static void getInstance(final Context context) {
         if (_instance == null) {
@@ -189,7 +194,7 @@ class TracGlobal {
 //    }
 
     public static String getFilterString() {
-        // MyLog.logCall();
+        MyLog.logCall();
         return settings.getString(PREF_FILTER, "max=500&status!=closed");
     }
 
@@ -199,7 +204,7 @@ class TracGlobal {
     }
 
     public static void storeFilterString(final String filterString) {
-        //MyLog.d(filterString);
+        MyLog.d(filterString);
         settings.edit().putString(PREF_FILTER, filterString == null ? "" : filterString).apply();
     }
 

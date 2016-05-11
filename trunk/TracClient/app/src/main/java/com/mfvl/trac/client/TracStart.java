@@ -27,6 +27,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
@@ -88,10 +89,9 @@ interface OnTicketLoadedListener {
     void onTicketLoaded(Ticket t);
 }
 
-public class TracStart extends TcBaseActivity implements ServiceConnection,
-        FragmentManager.OnBackStackChangedListener,
-        NavigationView.OnNavigationItemSelectedListener,
-        ActivityCompat.OnRequestPermissionsResultCallback, ViewTreeObserver.OnGlobalLayoutListener {
+public class TracStart extends TcBaseActivity implements ServiceConnection, FragmentManager.OnBackStackChangedListener,
+        NavigationView.OnNavigationItemSelectedListener, ActivityCompat.OnRequestPermissionsResultCallback,
+        ViewTreeObserver.OnGlobalLayoutListener, SharedPreferences.OnSharedPreferenceChangeListener {
     public static final String DetailFragmentTag = "Detail_Fragment";
     private static final int REQUEST_CODE_CHOOSER = 174;
     private static final int REQUEST_CODE_WRITE_EXT = 175;
@@ -371,7 +371,8 @@ public class TracStart extends TcBaseActivity implements ServiceConnection,
             MyLog.d("backstack initiated");
         }
         setReferenceTime();
-    }
+ 		TracGlobal.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+   }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -533,7 +534,19 @@ public class TracStart extends TcBaseActivity implements ServiceConnection,
             ab.setDisplayHomeAsUpEnabled(canBack);
         }
     }
-
+	
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+		MyLog.d(key);
+        if (getString(R.string.prefFilter).equals(key)) {
+            String filterString = sharedPreferences.getString(key,"");
+            MyLog.d(filterString);
+            filterList = parseFilterString(filterString);
+            MyLog.d(filterList);
+            startListLoader(true);
+        }
+	}
+	
     @Override
     protected void onResume() {
         super.onResume();
@@ -542,7 +555,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection,
             adView.resume();
         }
         findViewById(R.id.displayList).getViewTreeObserver().addOnGlobalLayoutListener(this);
-    }
+   }
 
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
@@ -601,14 +614,9 @@ public class TracStart extends TcBaseActivity implements ServiceConnection,
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        MyLog.logCall();
-    }
-
-    @Override
     protected void onDestroy() {
         MyLog.d("isFinishing = " + isFinishing());
+		TracGlobal.getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
         mDrawerLayout.addDrawerListener(toggle);
         if (isFinishing()) {
             stopService(serviceIntent);
@@ -865,30 +873,9 @@ public class TracStart extends TcBaseActivity implements ServiceConnection,
         return tracLoginFragment;
     }
 
-    private Bundle makeArgs() {
-        return new Bundle();
-    }
-
     private void setFilter(String filterString) {
         MyLog.d(filterString);
-        final ArrayList<FilterSpec> filter = new ArrayList<>();
-
-        if (filterString.length() > 0) {
-            String[] fs;
-
-            try {
-                fs = filterString.split("&");
-            } catch (final IllegalArgumentException e) {
-                fs = new String[1];
-                fs[0] = filterString;
-            }
-            final String[] operators = getResources().getStringArray(R.array.filter2_choice);
-
-            for (final String f : fs) {
-                filter.add(new FilterSpec(f, operators));
-            }
-        }
-        setFilter(filter);
+        setFilter(parseFilterString(filterString));
     }
 
     private void setFilter(ArrayList<FilterSpec> filter) {
