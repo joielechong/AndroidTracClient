@@ -10,4 +10,7 @@
     <string name="email_address">michiel@van-loon.xs4all.nl</string>
     <string name="logfile">tc-log.txt</string>
     <string name="serviceAction">com.mfvl.trac.client.action</string>
+
+    <string name="prefNrItemsKey">prefNrItems</string>
+    <string name="prefFilter">filterstring</string>
 </resources>

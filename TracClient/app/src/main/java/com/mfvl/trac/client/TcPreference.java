@@ -24,12 +24,21 @@ public class TcPreference extends PreferenceActivity {
             super.onCreate(savedInstanceState);
             MyLog.i("Arguments: " + getArguments());
             getPreferenceManager().setSharedPreferencesName(Const.PREFS_NAME);
-            getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
             addPreferencesFromResource(R.xml.preferences);
             EditTextPreference pref = (EditTextPreference)findPreference(getString(R.string.prefNrItemsKey));
             String val = pref.getText();
             pref.setSummary(val);
         }
+		
+		public void onStart() {
+			super.onStart();
+            getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+		}
+		
+		public void onStop() {
+			super.onStop();
+            getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+		}
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -43,6 +52,7 @@ public class TcPreference extends PreferenceActivity {
                 TracGlobal.ticketGroupCount = Integer.parseInt(val);
                 MyLog.d("val = "+val);
             }
-        }    }
+        }
+	}
 
 }
