@@ -55,6 +55,8 @@ class TracGlobal {
     public static int timerPeriod;
     public static int large_move;
     public static int[] adapterColors = null;
+    public static String prefFilterKey = "filterstring";
+    public static String prefSortKey = "sortString";
 
     private static String versie = null;
     private static String _url = "";
@@ -89,7 +91,8 @@ class TracGlobal {
         large_move = res.getInteger(R.integer.large_move);
         timerStart = res.getInteger(R.integer.timerStart);
         timerPeriod = res.getInteger(R.integer.timerPeriod);
-        PREF_FILTER = res.getString(R.string.prefFilter);
+        prefFilterKey = res.getString(R.string.prefFilterKey);
+        prefSortKey = res.getString(R.string.prefSortKey);
         adapterColors = res.getIntArray(R.array.list_col);
     }
 	
@@ -195,7 +198,7 @@ class TracGlobal {
 
     public static String getFilterString() {
         MyLog.logCall();
-        return settings.getString(PREF_FILTER, "max=500&status!=closed");
+        return settings.getString(prefFilterKey, "max=500&status!=closed");
     }
 
     public static void removeFilterString() {
@@ -205,12 +208,12 @@ class TracGlobal {
 
     public static void storeFilterString(final String filterString) {
         MyLog.d(filterString);
-        settings.edit().putString(PREF_FILTER, filterString == null ? "" : filterString).apply();
+        settings.edit().putString(prefFilterKey, filterString == null ? "" : filterString).apply();
     }
 
     public static String getSortString() {
         // MyLog.logCall();
-        final String sortString = settings.getString(PREF_SORT,
+        final String sortString = settings.getString(prefSortKey,
                 "order=priority&order=modified&desc=1");
 
         MyLog.d("sortString = " + sortString);
@@ -224,7 +227,7 @@ class TracGlobal {
 
     public static void storeSortString(final String sortString) {
         //MyLog.d(sortString);
-        settings.edit().putString(PREF_SORT, sortString == null ? "" : sortString).apply();
+        settings.edit().putString(prefSortKey, sortString == null ? "" : sortString).apply();
     }
 
     public static String getVersion() {

@@ -19,7 +19,6 @@ package com.mfvl.trac.client;
 import android.Manifest;
 import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -129,7 +128,6 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     private boolean doNotFinish = false;
     private RefreshService mService = null;
 
-
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle toggle;
     private ProfileDatabaseHelper pdb = null;
@@ -137,7 +135,6 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     private boolean hasTicketsLoadingBar = false;
     private Boolean ticketsLoading = false;
     private TicketListAdapter dataAdapter = null;
-    private ProgressDialog progressBar = null;
     private String action = null;
     private NavigationView navigationView = null;
     private final BroadcastReceiver sqlupdateReceiver = new BroadcastReceiver() {
@@ -188,7 +185,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                         removeFilterString();
                         removeSortString();
                         onLogin(lp.getUrl(), lp.getUsername(), lp.getPassword(), lp.getSslHack(),
-                                lp.getSslHostNameHack(), newProfile);
+                                lp.getSslHostNameHack(), newProfile,false);
                     }
                 }
                 break;
@@ -538,11 +535,17 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		MyLog.d(key);
-        if (getString(R.string.prefFilter).equals(key)) {
+        if (prefFilterKey.equals(key)) {
             String filterString = sharedPreferences.getString(key,"");
             MyLog.d(filterString);
             filterList = parseFilterString(filterString);
             MyLog.d(filterList);
+            startListLoader(true);
+        } else if (prefSortKey.equals(key)) {
+            String sortString = sharedPreferences.getString(key,"");
+            MyLog.d(sortString);
+            sortList = parseSortString(sortString);
+            MyLog.d(sortList);
             startListLoader(true);
         }
 	}
@@ -735,7 +738,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             case R.id.tlnieuw:
                 onNewTicket();
                 break;
-
+/*
             case R.id.tlfilter:
                 onFilterSelected(filterList);
                 break;
@@ -743,7 +746,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             case R.id.tlsort:
                 onSortSelected(sortList);
                 break;
-
+*/
             case R.id.tlchangehost:
                 onChangeHost();
                 break;
@@ -887,36 +890,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
 
     private void setSort(String sortString) {
         MyLog.d(sortString);
-        final ArrayList<SortSpec> sl = new ArrayList<>();
-
-        if (sortString.length() > 0) {
-            String[] sort;
-
-            try {
-                sort = sortString.split("&");
-            } catch (final IllegalArgumentException e) {
-                sort = new String[1];
-                sort[0] = sortString;
-            }
-            for (int i = 0; i < sort.length; i++) {
-                final String s = sort[i];
-
-                if (s.startsWith("order=")) {
-                    final String veld = s.substring(6);
-                    boolean richting = true;
-
-                    if (i + 1 < sort.length) {
-                        final String s1 = sort[i + 1];
-
-                        if ("desc=1".equalsIgnoreCase(s1)) {
-                            richting = false;
-                            i++;
-                        }
-                    }
-                    sl.add(new SortSpec(veld, richting));
-                }
-            }
-        }
+        final ArrayList<SortSpec> sl = parseSortString(sortString);
         setSort(sl);
     }
 
@@ -993,7 +967,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     }
 
     @Override
-    public void onLogin(String newUrl, String newUser, String newPass, boolean newHack, boolean newHostNameHack, String newProfile) {
+    public void onLogin(String newUrl, String newUser, String newPass, boolean newHack, boolean newHostNameHack, String newProfile,boolean bewaren) {
         MyLog.d(newUrl + " " + newUser + " " + newPass + " " + newHack + " " + newHostNameHack + " " + newProfile);
         url = newUrl;
         username = newUser;
@@ -1068,19 +1042,6 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
 //		dataAdapter.notifyDataSetChanged();
         startListLoader(false);
         setReferenceTime();
-    }
-
-    public void startProgressBar(int resid) {
-        startProgressBar(getString(resid));
-    }
-
-    public void stopProgressBar() {
-        MyLog.logCall();
-        try {
-            tracStartHandler.obtainMessage(MSG_STOP_PROGRESSBAR).sendToTarget();
-        } catch (Exception e) {
-            MyLog.e("Exception", e);
-        }
     }
 
     @Override
@@ -1328,15 +1289,6 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         }
     }
 
-    private void startProgressBar(String message) {
-        MyLog.d(message);
-        try {
-            tracStartHandler.obtainMessage(MSG_START_PROGRESSBAR, message).sendToTarget();
-        } catch (NullPointerException e) {
-            MyLog.e("NullPointerException", e);
-        }
-    }
-
     @Override
     @SuppressWarnings({"InlinedAPI", "unchecked"})
     public boolean handleMessage(Message msg) {
@@ -1346,43 +1298,6 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                 if (!LoginFragmentTag.equals(getTopFragment())) {
                     final int count = getTicketCount();
                     sendMessageToService(MSG_SEND_TICKET_COUNT, count, fromUnix(referenceTime));
-                }
-                break;
-
-            case MSG_START_PROGRESSBAR:
-                final String message = (String) msg.obj;
-                synchronized (this) {
-                    //MyLog.d("handleMessage msg = START_PROGRESSBAR string = "+message);
-                    if (progressBar == null) {
-                        progressBar = new ProgressDialog(TracStart.this){
-                            @Override
-                            public void onStop() {
-                                super.onStop();
-                                MyLog.logCall();
-                                stopProgressBar();
-                            }
-						};
-                        progressBar.setCancelable(true);
-                        if (message != null) {
-                            progressBar.setMessage(message);
-                        }
-                        progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                        if (!TracStart.this.isFinishing()) {
-                            progressBar.show();
-                        }
-                    }
-                }
-                break;
-
-            case MSG_STOP_PROGRESSBAR:
-                synchronized (this) {
-                    // MyLog.d("handleMessage msg = STOP_PROGRESSBAR "+progressBar+" "+TracStart.this.isFinishing());
-                    if (progressBar != null) {
-                        if (!TracStart.this.isFinishing()) {
-                            progressBar.dismiss();
-                        }
-                        progressBar = null;
-                    }
                 }
                 break;
 

@@ -10,7 +10,12 @@
     <string name="email_address">michiel@van-loon.xs4all.nl</string>
     <string name="logfile">tc-log.txt</string>
     <string name="serviceAction">com.mfvl.trac.client.action</string>
+    <string name="editFilterAction">com.mfvl.trac.client.EDITFILTER</string>
+    <string name="editSortAction">com.mfvl.trac.client.EDITSORT</string>
+    <string name="editLoginAction">com.mfvl.trac.client.EDITLOGIN</string>
 
     <string name="prefNrItemsKey">prefNrItems</string>
-    <string name="prefFilter">filterstring</string>
+    <string name="prefFilterKey">filterstring</string>
+    <string name="prefSortKey">sortString</string>
+    <string name="prefLoginKey">loginString</string>
 </resources>

@@ -112,5 +112,6 @@
     <string name="cookieInform">Cette application utilise les cookies de Google pour offrir des services, pour personnaliser les annonces et d\'analyser le trafic. Informations sur votre utilisation de cette application est partagée avec Google. Si vous utilisez cette application, vous acceptez l\'utilisation de cookies.</string>
     <string name="checking">Vérification</string>
     <string name="settings">Paramètres</string>
+    <string name="generalsettings"> Réglages généraux</string>
 
 </resources>
