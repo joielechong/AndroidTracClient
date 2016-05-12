@@ -31,7 +31,7 @@ interface InterFragmentListener {
 
     void onChooserSelected(OnFileSelectedListener oc);
 
-    void onLogin(String url, String username, String password, boolean sslHack, boolean sslHostNameHack, String profile);
+    void onLogin(String url, String username, String password, boolean sslHack, boolean sslHostNameHack, String profile, boolean bewaren);
 
     void onTicketSelected(Ticket ticket);
 

@@ -46,7 +46,7 @@
         android:title="@string/zoek"
         android:visibility="gone"
         support:showAsAction="ifRoom" />
-    <item
+    <!--item
         android:id="@+id/tlfilter"
         android:menuCategory="container"
         android:title="@string/filter" />
@@ -54,7 +54,7 @@
         android:id="@+id/tlsort"
         android:icon="@android:drawable/ic_menu_sort_by_size"
         android:menuCategory="container"
-        android:title="@string/sort" />
+        android:title="@string/sort" / -->
     <item
         android:id="@+id/tlselect"
         android:menuCategory="container"

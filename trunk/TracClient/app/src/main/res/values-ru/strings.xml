@@ -107,4 +107,5 @@
     <string name="chooseoption">выбрать опцию</string>
     <string name="doubleback">Пожалуйста,нажмите снова,чтобы выйти</string>
     <string name="settings"> настройки</string>
+    <string name="generalsettings"> Общие настройки</string>
 </resources>

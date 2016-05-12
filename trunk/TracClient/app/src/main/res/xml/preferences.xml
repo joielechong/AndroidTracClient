@@ -2,16 +2,36 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceScreen
-        android:key="@string/prefFilter"
-        android:title="Filteropties"
-        android:summary="Stel filter in">
+        android:key="@string/prefLoginKey"
+        android:title="TRAC Host"
+        android:summary="Kies een andere TRAC host">
         <intent
-            android:action="android.intent.action.EDIT"
+            android:action="@string/editLoginAction"
             android:targetPackage="com.mfvl.trac.client"
-            android:targetClass="com.mfvl.trac.client.FilterActivity" />
+            android:targetClass="com.mfvl.trac.client.PrefSpecActivity" />
     </PreferenceScreen>
 
-    <PreferenceCategory android:title="Algemene instellingen">
+    <PreferenceScreen
+        android:key="@string/prefFilterKey"
+        android:title="@string/filter"
+        android:summary="@string/filtersumm">
+        <intent
+            android:action="@string/editFilterAction"
+            android:targetPackage="com.mfvl.trac.client"
+            android:targetClass="com.mfvl.trac.client.PrefSpecActivity" />
+    </PreferenceScreen>
+
+    <PreferenceScreen
+        android:key="@string/prefSortKey"
+        android:title="@string/sort"
+        android:summary="@string/sortsumm">
+        <intent
+            android:action="@string/editSortAction"
+            android:targetPackage="com.mfvl.trac.client"
+            android:targetClass="com.mfvl.trac.client.PrefSpecActivity" />
+    </PreferenceScreen>
+
+    <PreferenceCategory android:title="@string/generalsettings">
 
         <EditTextPreference
             android:inputType="number"

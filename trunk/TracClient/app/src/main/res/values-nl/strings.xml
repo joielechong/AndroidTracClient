@@ -120,4 +120,7 @@
     <string name="settings">Instellingen</string>
     <string name="checking">Controleren</string>
     <string name="prefNrItems">Batchgrootte tickets laden</string>
+    <string name="filtersumm">Specificeer filter opties</string>
+    <string name="sortsumm">Specifificeer sorteer volgorder</string>
+    <string name="generalsettings">Algemene instellingen</string>
 </resources>

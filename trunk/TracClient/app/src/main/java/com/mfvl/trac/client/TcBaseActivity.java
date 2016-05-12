@@ -1,5 +1,6 @@
 package com.mfvl.trac.client;
 
+import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,11 +14,14 @@ import com.mfvl.mfvllib.MyLog;
 import java.util.ArrayList;
 import java.util.Map;
 
+import static com.mfvl.trac.client.Const.*;
+
 public abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callback, InterFragmentListener {
     Handler tracStartHandler = null;
     Messenger mMessenger = null;
     MyHandlerThread mHandlerThread = null;
     TicketModel tm = null;
+    ProgressDialog progressBar = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,8 +44,49 @@ public abstract class TcBaseActivity extends AppCompatActivity implements Handle
 
     @Override
     public boolean handleMessage(Message msg) {
-        MyLog.logCall();
-        return false;
+        MyLog.d("msg = " + msg.what);
+        switch (msg.what) {
+            case MSG_START_PROGRESSBAR:
+                final String message = (String) msg.obj;
+                synchronized (this) {
+                    //MyLog.d("handleMessage msg = START_PROGRESSBAR string = "+message);
+                    if (progressBar == null) {
+                        progressBar = new ProgressDialog(this){
+                            @Override
+                            public void onStop() {
+                                super.onStop();
+                                MyLog.logCall();
+                                stopProgressBar();
+                            }
+						};
+                        progressBar.setCancelable(true);
+                        if (message != null) {
+                            progressBar.setMessage(message);
+                        }
+                        progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                        if (!isFinishing()) {
+                            progressBar.show();
+                        }
+                    }
+                }
+                break;
+
+            case MSG_STOP_PROGRESSBAR:
+                synchronized (this) {
+                    // MyLog.d("handleMessage msg = STOP_PROGRESSBAR "+progressBar+" "+TracStart.this.isFinishing());
+                    if (progressBar != null) {
+                        if (!isFinishing()) {
+                            progressBar.dismiss();
+                        }
+                        progressBar = null;
+                    }
+                }
+                break;
+
+            default:
+                return false;
+        }
+        return true;
     }
 
     Bundle makeArgs() {
@@ -68,6 +113,40 @@ public abstract class TcBaseActivity extends AppCompatActivity implements Handle
         }
         return filter;
     }
+	
+	ArrayList<SortSpec> parseSortString(String sortString) {
+        final ArrayList<SortSpec> sl = new ArrayList<>();
+
+        if (sortString.length() > 0) {
+            String[] sort;
+
+            try {
+                sort = sortString.split("&");
+            } catch (final IllegalArgumentException e) {
+                sort = new String[1];
+                sort[0] = sortString;
+            }
+            for (int i = 0; i < sort.length; i++) {
+                final String s = sort[i];
+
+                if (s.startsWith("order=")) {
+                    final String veld = s.substring(6);
+                    boolean richting = true;
+
+                    if (i + 1 < sort.length) {
+                        final String s1 = sort[i + 1];
+
+                        if ("desc=1".equalsIgnoreCase(s1)) {
+                            richting = false;
+                            i++;
+                        }
+                    }
+                    sl.add(new SortSpec(veld, richting));
+                }
+            }
+        }
+		return sl;
+	}
 
     @Override
     public void enableDebug() {
@@ -81,7 +160,7 @@ public abstract class TcBaseActivity extends AppCompatActivity implements Handle
     }
 
     @Override
-    public void onLogin(String url, String username, String password, boolean sslHack, boolean sslHostNameHack, String profile) {
+    public void onLogin(String url, String username, String password, boolean sslHack, boolean sslHostNameHack, String profile,boolean bewaren) {
         throw new RuntimeException("not implemented");
 
     }
@@ -106,14 +185,26 @@ public abstract class TcBaseActivity extends AppCompatActivity implements Handle
 
     @Override
     public void startProgressBar(int resid) {
-        throw new RuntimeException("not implemented");
+        startProgressBar(getString(resid));
+    }
 
+    void startProgressBar(String message) {
+        MyLog.d(message);
+        try {
+            tracStartHandler.obtainMessage(MSG_START_PROGRESSBAR, message).sendToTarget();
+        } catch (NullPointerException e) {
+            MyLog.e("NullPointerException", e);
+        }
     }
 
     @Override
     public void stopProgressBar() {
-        throw new RuntimeException("not implemented");
-
+        MyLog.logCall();
+        try {
+            tracStartHandler.obtainMessage(MSG_STOP_PROGRESSBAR).sendToTarget();
+        } catch (Exception e) {
+            MyLog.e("Exception", e);
+        }
     }
 
     @Override
