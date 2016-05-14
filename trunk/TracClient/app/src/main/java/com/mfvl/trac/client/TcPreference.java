@@ -6,6 +6,7 @@ import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceScreen;
 
 import com.mfvl.mfvllib.MyLog;
 
@@ -25,9 +26,15 @@ public class TcPreference extends PreferenceActivity {
             MyLog.i("Arguments: " + getArguments());
             getPreferenceManager().setSharedPreferencesName(Const.PREFS_NAME);
             addPreferencesFromResource(R.xml.preferences);
-            EditTextPreference pref = (EditTextPreference)findPreference(getString(R.string.prefNrItemsKey));
-            String val = pref.getText();
-            pref.setSummary(val);
+            EditTextPreference editPref = (EditTextPreference)findPreference(getString(R.string.prefNrItemsKey));
+            String val = editPref.getText();
+            editPref.setSummary(val);
+            PreferenceScreen filterPref = (PreferenceScreen)findPreference(TracGlobal.prefFilterKey);
+            val = TracGlobal.getFilterString();
+            filterPref.setSummary(val);
+            PreferenceScreen sortPref = (PreferenceScreen)findPreference(TracGlobal.prefSortKey);
+            val = TracGlobal.getSortString();
+            sortPref.setSummary(val);
         }
 		
 		public void onStart() {
@@ -43,14 +50,22 @@ public class TcPreference extends PreferenceActivity {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             MyLog.d(key);
+            String val;
             Preference pref = findPreference(key);
+            MyLog.d(pref);
 
-            if (pref instanceof EditTextPreference) {
+            if (pref instanceof EditTextPreference && getString(R.string.prefNrItemsKey).equals(key)) {
                 EditTextPreference editPref = (EditTextPreference) pref;
-                String val = editPref.getText();
+                val = editPref.getText();
                 pref.setSummary(val);
                 TracGlobal.ticketGroupCount = Integer.parseInt(val);
                 MyLog.d("val = "+val);
+            } else if (TracGlobal.prefFilterKey.equals(key)) {
+                val = TracGlobal.getFilterString();
+                pref.setSummary(val);
+            } else if (TracGlobal.prefSortKey.equals(key)) {
+                val = TracGlobal.getSortString();
+                pref.setSummary(val);
             }
         }
 	}
