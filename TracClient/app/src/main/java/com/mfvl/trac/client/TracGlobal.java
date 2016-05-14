@@ -73,18 +73,19 @@ class TracGlobal {
         _context = context;
         Resources res = context.getResources();
         settings = context.getSharedPreferences(PREFS_NAME, 0);
-        MyLog.d(settings);
+        //MyLog.d(settings.getAll());
         versie = res.getString(R.string.app_version);
+		MyLog.i("Started TracClient version "+versie);
 
-        ticketGroupCount = Integer.parseInt(settings.getString( res.getString(R.string.prefNrItemsKey),"-1"));
+		try {
+			ticketGroupCount = Integer.parseInt(settings.getString( res.getString(R.string.prefNrItemsKey),"-1"));
+		} catch (Exception e) {
+            ticketGroupCount = -1;
+		}
         if (ticketGroupCount == -1) {
-            try {
-                ticketGroupCount = res.getInteger(R.integer.ticketGroupCount);
-            } catch (Resources.NotFoundException e) {
-                ticketGroupCount = 50;
-            }
+            ticketGroupCount = res.getInteger(R.integer.ticketGroupCount);
         }
-        MyLog.d("final: "+ticketGroupCount);
+        //MyLog.d("final: "+ticketGroupCount);
 
         webzoom = res.getInteger(R.integer.webzoom);
         timerCorr = res.getInteger(R.integer.timerCorr);
@@ -94,6 +95,13 @@ class TracGlobal {
         prefFilterKey = res.getString(R.string.prefFilterKey);
         prefSortKey = res.getString(R.string.prefSortKey);
         adapterColors = res.getIntArray(R.array.list_col);
+		
+        _url = settings.getString(PREF_URL, "");
+        _username = settings.getString(PREF_USER, "");
+        _password = settings.getString(PREF_PASS, "");
+        _sslHack = settings.getBoolean(PREF_HACK, false);
+        _sslHostNameHack = settings.getBoolean(PREF_HNH, false);
+        _profile = settings.getString(PREF_PROF, null);
     }
 	
 	public static SharedPreferences getSharedPreferences() {
@@ -103,36 +111,22 @@ class TracGlobal {
     public static void getInstance(final Context context) {
         if (_instance == null) {
             _instance = new TracGlobal(context);
-            loadCredentials();
         }
     }
 
-    /**
-     * Load login credentials from shared preferences: server-url, username, password and profile
-     */
-    private static void loadCredentials() {
-//        MyLog.logCall();
-        _url = settings.getString(PREF_URL, "");
-        _username = settings.getString(PREF_USER, "");
-        _password = settings.getString(PREF_PASS, "");
-        _sslHack = settings.getBoolean(PREF_HACK, false);
-        _sslHostNameHack = settings.getBoolean(PREF_HNH, false);
-        _profile = settings.getString(PREF_PROF, null);
-    }
-
-    /**
+     /**
      * Store login credentials to shared preferences: server-url, username, password and profile
      */
     public static void storeCredentials() {
 //        MyLog.logCall();
         settings.edit()
-                .putString(PREF_URL, _url)
-                .putString(PREF_USER, _username)
-                .putString(PREF_PASS, _password)
-                .putBoolean(PREF_HACK, _sslHack)
-                .putBoolean(PREF_HNH, _sslHostNameHack)
-                .putString(PREF_PROF, _profile)
-                .apply();
+			.putString(PREF_URL, _url)
+			.putString(PREF_USER, _username)
+			.putString(PREF_PASS, _password)
+			.putBoolean(PREF_HACK, _sslHack)
+			.putBoolean(PREF_HNH, _sslHostNameHack)
+			.putString(PREF_PROF, _profile)
+			.apply();
     }
 
     /**
