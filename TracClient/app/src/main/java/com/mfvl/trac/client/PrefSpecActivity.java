@@ -27,7 +27,6 @@ public class PrefSpecActivity extends TcBaseActivity  {
 		String action = intent.getAction();
         setContentView(R.layout.content_main);
         tm = TicketModel.getInstance();
-        MyLog.d(tm);
 		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 		final Bundle args = makeArgs();
 		TracClientFragment ff;
@@ -54,7 +53,7 @@ public class PrefSpecActivity extends TcBaseActivity  {
 	
     @Override
     public boolean handleMessage(Message msg) {
-        MyLog.logCall();
+        MyLog.d(msg);
         switch (msg.what) {
             case MSG_SET_FILTER:
                 //noinspection unchecked
