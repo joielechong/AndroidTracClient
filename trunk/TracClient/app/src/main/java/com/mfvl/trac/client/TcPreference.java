@@ -35,15 +35,13 @@ public class TcPreference extends PreferenceActivity {
             PreferenceScreen sortPref = (PreferenceScreen)findPreference(TracGlobal.prefSortKey);
             val = TracGlobal.getSortString();
             sortPref.setSummary(val);
-        }
-		
-		public void onStart() {
-			super.onStart();
+            MyLog.logCall();
             getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 		}
 		
-		public void onStop() {
-			super.onStop();
+		public void onDestroy() {
+			super.onDestroy();
+            MyLog.logCall();
             getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
 		}
 
