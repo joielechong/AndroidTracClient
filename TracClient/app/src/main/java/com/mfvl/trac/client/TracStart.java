@@ -797,14 +797,18 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         MyLog.d("requestcode = " + requestCode + " intent = " + data);
-        if (requestCode == REQUEST_CODE_CHOOSER && resultCode == RESULT_OK && data != null) {
-            // Get the URI of the selected file
-            final Uri uri = data.getData();
-            MyLog.d("uri = " + uri);
-            if (_oc != null) {
-                _oc.onFileSelected(uri);
-            }
-        }
+        if (requestCode == REQUEST_CODE_CHOOSER) {
+			if (resultCode == RESULT_OK && data != null) {
+				// Get the URI of the selected file
+				final Uri uri = data.getData();
+				MyLog.d("uri = " + uri);
+				if (_oc != null) {
+					_oc.onFileSelected(uri);
+				}
+			}
+		} else {
+			super.onActivityResult(requestCode,resultCode,data);
+		}
     }
 
     private void onChangeHost() {
