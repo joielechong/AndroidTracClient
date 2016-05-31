@@ -64,6 +64,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.mfvl.mfvllib.MyLog;
+import com.ipaulpro.afilechooser.utils.FileUtils;
 
 import org.alexd.jsonrpc.JSONRPCException;
 import org.json.JSONArray;
@@ -957,13 +958,20 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         MyLog.logCall();
         // save callback
         _oc = oc;
+/*
         // Use the GET_CONTENT intent from the utility class
         final Intent target = new Intent(Intent.ACTION_GET_CONTENT);
 
-        target.setType("*/*");
+        target.setType("*\*");  // let op terugveranderen
         target.addCategory(Intent.CATEGORY_OPENABLE);
         // Create the chooser Intent
         startActivityForResult(Intent.createChooser(target, getString(R.string.chooser_title)), REQUEST_CODE_CHOOSER);
+*/
+		// Create the ACTION_GET_CONTENT Intent
+		Intent getContentIntent = FileUtils.createGetContentIntent();
+
+		Intent intent = Intent.createChooser(getContentIntent, getString(R.string.chooser_title));
+		startActivityForResult(intent, REQUEST_CODE_CHOOSER);
     }
 
     @Override
