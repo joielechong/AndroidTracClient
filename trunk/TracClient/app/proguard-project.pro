@@ -20,8 +20,8 @@
 #}
 -dontobfuscate
 #-dontnote android.support.**
--dontwarn android.support.**
--dontwarn com.google.android.gms.**
+#-dontwarn android.support.**
+#-dontwarn com.google.android.gms.**
 
 -keep class * extends java.util.ListResourceBundle {
     protected java.lang.Object[][] getContents();
@@ -61,6 +61,17 @@
 
 -keep public class com.google.android.gms.flags.impl.FlagProviderImpl {
   public <fields>; public <methods>;
+}
+
+-keepattributes Signature
+-keepattributes InnerClasses
+
+-keep,includedescriptorclasses class com.google.android.gms.flags.impl.FlagProviderImpl {
+    public <fields>; public <methods>;
+}
+
+-keep,includedescriptorclasses class com.google.android.gms.ads.doubleclick.PublisherAdView {
+    public <fields>; public <methods>;
 }
 
 -optimizations !field/removal/writeonly,!field/marking/private,!class/merging/*,!code/allocation/variable
