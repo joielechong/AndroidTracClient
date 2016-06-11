@@ -139,10 +139,11 @@
             </intent-filter>
         </activity>
 
+			<!-- android:enabled="@bool/use_activity" -->
 		<activity
 			android:name="com.ipaulpro.afilechooser.FileChooserActivity"
 			android:icon="@drawable/ic_chooser"
-			android:enabled="@bool/use_activity"
+			android:enabled="true"
 			android:exported="true"
 			android:label="@string/choose_file" >
 			<intent-filter>
