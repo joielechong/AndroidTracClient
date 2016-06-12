@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_version">0.7-rc11</string>
+    <string name="app_version">0.7-rc12</string>
     <string name="app_name">TracClient</string>
     <string name="tracUrl">TRAC url</string>
     <string name="tracUrlHint">http://host/trac/login/rpc</string>
