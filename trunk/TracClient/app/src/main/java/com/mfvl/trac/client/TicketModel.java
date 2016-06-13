@@ -66,7 +66,7 @@ class TicketModel implements Serializable {
 
     public static void getInstance(TracHttpClient tracClient, final OnTicketModelListener oc) {
         MyLog.d("new tracClient = " + tracClient);
-        if (_instance == null || tracClient.equals(_tracClient)) {
+        if (_instance == null || ! tracClient.equals(_tracClient)) {
             _instance = new TicketModel(tracClient);
         }
         if (_hasData) {

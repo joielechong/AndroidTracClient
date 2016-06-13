@@ -32,11 +32,9 @@ class TicketModelVeld implements Serializable {
     private String _type;
     private String _format;
     private String _value;
-    private List<Object> _options = null;
+    private List<Object> _options;
     private boolean _optional;
-    @SuppressWarnings("FieldCanBeLocal")
     private int _order;
-    @SuppressWarnings("FieldCanBeLocal")
     private boolean _custom;
 
     public TicketModelVeld(String name, String label, String value) {
@@ -52,6 +50,7 @@ class TicketModelVeld implements Serializable {
             throw new RuntimeException("JSONObject is null");
         }
 
+        _options = null;
         _name = getNeededField(v, "name");
         _label = getNeededField(v, "label");
         _type = getNeededField(v, "type");
