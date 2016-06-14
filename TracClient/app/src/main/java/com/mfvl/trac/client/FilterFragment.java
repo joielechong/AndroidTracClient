@@ -53,11 +53,6 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
 
 
     @Override
-    public void onCreate(Bundle sis) {
-        super.onCreate(sis);
-    }
-
-    @Override
     public String keyName() {
         return FILTERLISTNAME;
     }
