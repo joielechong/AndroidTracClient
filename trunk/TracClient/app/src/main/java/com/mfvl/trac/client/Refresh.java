@@ -30,7 +30,6 @@ import com.mfvl.mfvllib.MyLog;
 
 import static com.mfvl.trac.client.Const.*;
 
-
 public class Refresh extends Activity implements ServiceConnection {
 
     /*
@@ -40,7 +39,7 @@ public class Refresh extends Activity implements ServiceConnection {
     @Override
     public void onServiceConnected(ComponentName className, IBinder service) {
         MyLog.d("className = " + className + " service = " + service);
-        RefreshService.RefreshBinder binder = (RefreshService.RefreshBinder) service;
+        RefreshBinder binder = (RefreshBinder) service;
         binder.getService().send(Message.obtain(null, MSG_REFRESH_LIST));
         unbindService(this);
     }

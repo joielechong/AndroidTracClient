@@ -34,8 +34,8 @@ class TicketModelVeld implements Serializable {
     private String _value;
     private List<Object> _options;
     private boolean _optional;
-    private int _order;
-    private boolean _custom;
+//    private int _order;
+//    private boolean _custom;
 
     public TicketModelVeld(String name, String label, String value) {
         _name = name;
@@ -54,6 +54,7 @@ class TicketModelVeld implements Serializable {
         _name = getNeededField(v, "name");
         _label = getNeededField(v, "label");
         _type = getNeededField(v, "type");
+/*
         try {
             _custom = v.getString("custom").equals("true");
         } catch (final JSONException e) {
@@ -64,7 +65,7 @@ class TicketModelVeld implements Serializable {
         } catch (final JSONException e) {
             _order = 0;
         }
-
+*/
         if (_type.equals("text")) {
             try {
                 _format = v.getString("format");
