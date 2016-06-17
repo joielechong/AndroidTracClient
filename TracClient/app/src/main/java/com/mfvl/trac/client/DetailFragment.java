@@ -62,13 +62,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import static com.mfvl.trac.client.Const.*;
-import static com.mfvl.trac.client.TracGlobal.*;
+import static com.mfvl.trac.client.Const.CURRENT_TICKET;
+import static com.mfvl.trac.client.TracGlobal.large_move;
+import static com.mfvl.trac.client.TracGlobal.makeCacheFilePath;
+import static com.mfvl.trac.client.TracGlobal.toCalendar;
+
+interface DetailInterface {
+    void setTicket(int newTicket);
+
+    boolean dispatchTouchEvent(MotionEvent ev);
+
+    boolean onBackPressed();
+
+    void setModVeld(final String veld, final String waarde, final String newValue);
+}
 
 public class DetailFragment extends TracClientFragment
         implements SwipeRefreshLayout.OnRefreshListener, CompoundButton.OnCheckedChangeListener,
         GestureDetector.OnGestureListener, OnFileSelectedListener, OnItemClickListener,
-        OnItemLongClickListener {
+        OnItemLongClickListener, DetailInterface {
 
     private static final String EMPTYFIELDS = "emptyfields";
     private static final String MODVELD = "modveld";
@@ -76,7 +88,7 @@ public class DetailFragment extends TracClientFragment
     private static final List<String> skipFields = Arrays.asList("summary", "_ts", "max", "page",
             "id");
     private static final List<String> timeFields = Arrays.asList("time", "changetime");
-    private final List<modifiedString> values = new ArrayList<>();
+    private final List<ModifiedString> values = new ArrayList<>();
     private int ticknr = -1;
     private boolean showEmptyFields = false;
     private ModVeldMap modVeld;
@@ -363,7 +375,7 @@ public class DetailFragment extends TracClientFragment
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        final modifiedString t = (modifiedString) parent.getItemAtPosition(position);
+        final ModifiedString t = (ModifiedString) parent.getItemAtPosition(position);
 
 //        MyLog.d("position = " + position);
         if (t.length() >= 8 && "bijlage ".equals(t.substring(0, 8))) {
@@ -380,7 +392,7 @@ public class DetailFragment extends TracClientFragment
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        final modifiedString t = (modifiedString) parent.getItemAtPosition(position);
+        final ModifiedString t = (ModifiedString) parent.getItemAtPosition(position);
 
 //        MyLog.d("position = " + position);
         if (t.length() >= 8 && "bijlage ".equals(t.substring(0, 8))) {
@@ -524,10 +536,10 @@ public class DetailFragment extends TracClientFragment
                 modVeld.put("summary", parsed[1].trim());
             } else {
                 final int pos = ((ModifiedStringArrayAdapter) parent.getAdapter()).getPosition(
-                        new modifiedString(veld, newValue));
+                        new ModifiedStringImpl(veld, newValue));
 
                 if (pos >= 0) {
-                    final modifiedString ms = values.get(pos);
+                    final ModifiedString ms = values.get(pos);
 
                     ms.setWaarde(newValue);
                     ms.setUpdated();
@@ -584,15 +596,15 @@ public class DetailFragment extends TracClientFragment
             for (final String veld : tm.velden()) {
 
                 try {
-                    modifiedString ms = null;
+                    ModifiedString ms = null;
 
                     //MyLog.d( "showEmptyFields = "+showEmptyFields);
 
                     if (!skipFields.contains(veld)) {
                         if (timeFields.contains(veld)) {
-                            ms = new modifiedString(veld, toonTijd(_ticket.getJSONObject(veld)));
+                            ms = new ModifiedStringImpl(veld, toonTijd(_ticket.getJSONObject(veld)));
                         } else if (showEmptyFields || _ticket.getString(veld).length() > 0) {
-                            ms = new modifiedString(veld, _ticket.getString(veld));
+                            ms = new ModifiedStringImpl(veld, _ticket.getString(veld));
                         }
                     }
 
@@ -606,7 +618,7 @@ public class DetailFragment extends TracClientFragment
                     }
                 } catch (final JSONException e) {
 //                    MyLog.e( "JSONException fetching field " + veld);
-                    values.add(new modifiedString(veld, ""));
+                    values.add(new ModifiedStringImpl(veld, ""));
                 }
             }
             final JSONArray history = _ticket.getHistory();
@@ -619,7 +631,7 @@ public class DetailFragment extends TracClientFragment
                         cmt = history.getJSONArray(j);
                         if ("comment".equals(cmt.getString(2)) && cmt.getString(4).length() > 0) {
                             values.add(
-                                    new modifiedString("comment",
+                                    new ModifiedStringImpl("comment",
                                             toonTijd(cmt.getJSONObject(
                                                     0)) + " - " + cmt.getString(
                                                     1) + " - " + cmt.getString(4)));
@@ -638,7 +650,7 @@ public class DetailFragment extends TracClientFragment
                     try {
                         bijlage = attachments.getJSONArray(j);
                         values.add(
-                                new modifiedString("bijlage " + (j + 1),
+                                new ModifiedStringImpl("bijlage " + (j + 1),
                                         toonTijd(bijlage.getJSONObject(
                                                 3)) + " - " + bijlage.getString(
                                                 4) + " - " + bijlage.getString(0)
@@ -716,16 +728,34 @@ public class DetailFragment extends TracClientFragment
         }
     }
 
+    interface ModifiedString {
+        boolean getUpdated();
+
+        void setUpdated();
+
+        int length();
+
+        int indexOf(String s);
+
+        String substring(int b, int l);
+
+        String[] split(String s, int c);
+
+        void setWaarde(String s);
+
+        String veld();
+    }
+
     private class ModVeldMap extends HashMap<String, String> implements Serializable {
 //	private static final long serialVersionUID = 191019591050L;
     }
 
-    private class modifiedString {
+    private class ModifiedStringImpl implements ModifiedString {
         private final String _veld;
         private boolean _updated;
         private String _waarde;
 
-        public modifiedString(String v, String w) {
+        public ModifiedStringImpl(String v, String w) {
             _veld = v;
             _waarde = w;
             _updated = false;
@@ -759,24 +789,24 @@ public class DetailFragment extends TracClientFragment
             _waarde = s;
         }
 
+        public String veld() {
+            return _veld;
+        }
+
         @Override
         public boolean equals(Object o) {
-            return this == o || o instanceof modifiedString && _veld.equals(
-                    ((modifiedString) o).veld());
+            return this == o || o instanceof ModifiedString && _veld.equals(
+                    ((ModifiedString) o).veld());
         }
 
         @Override
         public String toString() {
             return _veld + ": " + _waarde;
         }
-
-        public String veld() {
-            return _veld;
-        }
     }
 
-    private class ModifiedStringArrayAdapter extends ColoredArrayAdapter<modifiedString> {
-        public ModifiedStringArrayAdapter(Activity context, List<modifiedString> list) {
+    private class ModifiedStringArrayAdapter extends ColoredArrayAdapter<ModifiedString> {
+        public ModifiedStringArrayAdapter(Activity context, List<ModifiedString> list) {
             super(context, list);
         }
 
@@ -784,7 +814,7 @@ public class DetailFragment extends TracClientFragment
         public View getView(int position, View convertView, ViewGroup parent) {
             try {
                 final View view = super.getView(position, convertView, parent);
-                final modifiedString ms = getItem(position);
+                final ModifiedString ms = getItem(position);
 
                 ((TextView) view).setTextColor(
                         ms.getUpdated() ? popup_selected_color : popup_unselected_color);

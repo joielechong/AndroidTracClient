@@ -656,7 +656,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     @Override
     public void onBackPressed() {
         MyLog.logCall();
-        DetailFragment dt = (DetailFragment) getFragment(DetailFragmentTag);
+        DetailInterface dt = (DetailInterface) getFragment(DetailFragmentTag);
 
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -688,7 +688,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     public boolean dispatchTouchEvent(MotionEvent ev) {
         boolean ret = super.dispatchTouchEvent(ev);
         try {
-            ret |= ((DetailFragment) getFragment(DetailFragmentTag)).dispatchTouchEvent(ev);
+            ret |= ((DetailInterface) getFragment(DetailFragmentTag)).dispatchTouchEvent(ev);
         } catch (Exception ignored) {
         }
         return ret;
@@ -1345,7 +1345,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            final DetailFragment d = (DetailFragment) getFragment(DetailFragmentTag);
+                            final DetailInterface d = (DetailInterface) getFragment(DetailFragmentTag);
                             d.setTicket(t.getTicketnr());
                         }
                     });
@@ -1409,7 +1409,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                 break;
 
             case MSG_LOAD_FASE1_FINISHED:
-                final Tickets tl = (Tickets) msg.obj;
+                final TL tl = (TL) msg.obj;
                 // MyLog.d("Tickets = " + tl);
                 if (hasTicketsLoadingBar) {
                     stopProgressBar();
@@ -1505,7 +1505,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
 
     @Override
     public void onServiceConnected(ComponentName className, IBinder service) {
-        RefreshService.RefreshBinder binder = (RefreshService.RefreshBinder) service;
+        RefreshBinder binder = (RefreshBinder) service;
 
         mService = binder.getService();
         mService.setTracStartHandler(tracStartHandler);

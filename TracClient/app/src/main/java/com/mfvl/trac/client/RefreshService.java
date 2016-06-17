@@ -47,6 +47,10 @@ interface OnTicketModelListener {
     void onTicketModelLoaded(TicketModel tm);
 }
 
+interface RefreshBinder{
+    RefreshService getService();
+}
+
 public class RefreshService extends Service implements Handler.Callback {
 
 
@@ -60,7 +64,7 @@ public class RefreshService extends Service implements Handler.Callback {
      * Class used for the client Binder.  Because we know this service always
      * runs in the same process as its clients, we don't need to deal with IPC.
      */
-    private final IBinder mBinder = new RefreshBinder();
+    private final IBinder mBinder = new RefreshBinderImpl();
     private Timer monitorTimer = null;
     private MyHandlerThread mHandlerThread = null;
     private Handler mServiceHandler;
@@ -230,7 +234,7 @@ public class RefreshService extends Service implements Handler.Callback {
                         } catch (JSONException e) {
                             tickets[i] = -1;
                         } finally {
-                            mTickets.ticketList.add(i, t);
+                            mTickets.getTicketList().add(i, t);
                         }
                     }
                     sendMessageToUI(MSG_LOAD_FASE1_FINISHED, mTickets);
@@ -270,7 +274,7 @@ public class RefreshService extends Service implements Handler.Callback {
             final JSONArray mc = new JSONArray();
 
             for (int i = j; i < (j + ticketGroupCount < count ? j + ticketGroupCount : count); i++) {
-                buildCall(mc, tl.ticketList.get(i).getTicketnr());
+                buildCall(mc, tl.getTicketList().get(i).getTicketnr());
             }
             try {
                 final JSONArray mcresult = tracClient.callJSONArray("system.multicall", mc);
@@ -382,7 +386,7 @@ public class RefreshService extends Service implements Handler.Callback {
             case MSG_SEND_TICKET_COUNT:
                 if (msg.arg1 > 0) {
                     Tickets tl = changedTickets((String) msg.obj);
-                    if (tl != null && tl.ticketList.size() > 0) {
+                    if (tl != null && tl.getTicketList().size() > 0) {
                         mNotificationManager.notify(notifId, new NotificationCompat.Builder(this)
                                 .setSmallIcon(R.drawable.traclogo)
                                 .setAutoCancel(true)
@@ -391,7 +395,7 @@ public class RefreshService extends Service implements Handler.Callback {
                                 .setContentText(RefreshService.this.getString(R.string.foundnew))
                                 .setContentIntent(PendingIntent.getActivity(this, -1,
                                         new Intent(this, Refresh.class).setAction(refreshAction), PendingIntent.FLAG_UPDATE_CURRENT))
-                                .setSubText(tl.ticketList.toString())
+                                .setSubText(tl.getTicketList().toString())
                                 .build());
                         // MyLog.d( "Notification sent");
                     }
@@ -418,7 +422,7 @@ public class RefreshService extends Service implements Handler.Callback {
                         }
                     } catch (Exception e) {
                         MyLog.e("MSG_SEND_TICKETS exception", e);
-                        popup_warning(R.string.ticketnotfound, "" + tl.ticketList);
+                        popup_warning(R.string.ticketnotfound, "" + tl.getTicketList());
                     }
                 }
                 break;
@@ -499,8 +503,8 @@ public class RefreshService extends Service implements Handler.Callback {
         }
     }
 
-    public class RefreshBinder extends Binder {
-        RefreshService getService() {
+    public class RefreshBinderImpl extends Binder implements RefreshBinder {
+        public RefreshService getService() {
             // Return this instance of LocalService so clients can call public methods
             return RefreshService.this;
         }

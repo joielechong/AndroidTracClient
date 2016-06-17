@@ -36,7 +36,7 @@ interface onAttachmentCompleteListener {
     void onComplete(byte[] data);
 }
 
-public class Ticket implements Serializable {
+public class Ticket { // implements Serializable {
     /**
      *
      */

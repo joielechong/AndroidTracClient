@@ -21,10 +21,14 @@ import com.mfvl.mfvllib.MyLog;
 import java.util.Map;
 import java.util.TreeMap;
 
-class Tickets {
+interface TL {
+    TicketList getTicketList();
+}
+
+class Tickets implements TL {
 
     private static Map<Integer, Ticket> ticketMap = null;
-    public TicketList ticketList = null;
+    private TicketList ticketList = null;
 
     public Tickets() {
         MyLog.logCall();
@@ -35,6 +39,10 @@ class Tickets {
 //        MyLog.d("ticketMap = "+ticketMap);
 //        MyLog.d("ticknr = "+ticknr+ " "+ticketMap.containsKey(ticknr));
         return ticketMap.containsKey(ticknr) ? ticketMap.get(ticknr) : null;
+    }
+
+    public TicketList getTicketList() {
+        return ticketList;
     }
 
     private void initList() {
