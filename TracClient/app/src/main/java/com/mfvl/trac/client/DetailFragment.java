@@ -62,10 +62,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import static com.mfvl.trac.client.Const.CURRENT_TICKET;
-import static com.mfvl.trac.client.TracGlobal.large_move;
-import static com.mfvl.trac.client.TracGlobal.makeCacheFilePath;
-import static com.mfvl.trac.client.TracGlobal.toCalendar;
+import static com.mfvl.trac.client.Const.*;
+import static com.mfvl.trac.client.TracGlobal.*;
 
 interface DetailInterface {
     void setTicket(int newTicket);
