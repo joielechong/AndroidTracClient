@@ -44,7 +44,7 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements V
     public void preLoad(LayoutInflater inflater, Bundle args) {
 
         final boolean toonVersie = args.getBoolean(HELP_VERSION);
-		final boolean showCookies = args.getBoolean(HELP_COOKIES);
+        final boolean showCookies = args.getBoolean(HELP_COOKIES);
         final String fileName = args.getString(HELP_FILE);
         final boolean cookieInform = getCookieInform();
         webzoom = args.getInt(HELP_ZOOM);

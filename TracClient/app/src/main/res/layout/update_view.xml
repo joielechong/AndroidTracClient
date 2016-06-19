@@ -15,8 +15,8 @@
 
 -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,7 +29,7 @@
             android:layout_height="match_parent"
             android:padding="@dimen/half_padding"
             android:text="@string/updtick"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -42,7 +42,7 @@
                 android:layout_margin="@dimen/half_margin"
                 android:padding="@dimen/half_padding"
                 android:text="@string/perfact"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -51,7 +51,7 @@
 
                 <RadioGroup
                     android:id="@+id/actionblock"
-                    style="@style/ActionBlock" />
+                    style="@style/ActionBlock"/>
 
                 <LinearLayout style="@style/OptionsBlock">
 
@@ -61,7 +61,7 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/half_margin"
                         android:padding="@dimen/std_padding"
-                        android:textAppearance="?android:attr/textAppearanceMedium" />
+                        android:textAppearance="?android:attr/textAppearanceMedium"/>
 
                     <EditText
                         android:id="@+id/optieval"
@@ -70,7 +70,7 @@
                         android:layout_margin="@dimen/half_margin"
                         android:inputType="text"
                         android:padding="@dimen/std_padding"
-                        android:textAppearance="?android:attr/textAppearanceMedium" />
+                        android:textAppearance="?android:attr/textAppearanceMedium"/>
 
                     <Spinner
                         android:id="@+id/opties"
@@ -79,7 +79,7 @@
                         android:layout_margin="@dimen/half_margin"
                         android:padding="@dimen/std_padding"
                         android:prompt="@string/chooseoption"
-                        android:spinnerMode="dialog" />
+                        android:spinnerMode="dialog"/>
                 </LinearLayout>
             </RelativeLayout>
         </LinearLayout>
@@ -93,10 +93,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_margin="@dimen/half_margin"
-                android:padding="@dimen/half_padding"
                 android:layout_weight="1"
+                android:padding="@dimen/half_padding"
                 android:text="@string/comment"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
 
             <EditText
                 android:id="@+id/comment"
@@ -108,22 +108,22 @@
                 android:maxLines="6"
                 android:minLines="1"
                 android:padding="@dimen/std_padding"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
         </LinearLayout>
 
         <CheckBox
             android:id="@+id/updNotify"
             style="@style/CheckBox"
-            android:text="@string/notify" />
+            android:text="@string/notify"/>
 
         <LinearLayout style="@style/ButtonHolder">
 
-            <Button style="@style/CancelButton" />
+            <Button style="@style/CancelButton"/>
 
             <Button
                 android:id="@+id/storeUpdate"
                 style="@style/NormalButton"
-                android:text="@string/storeupd" />
+                android:text="@string/storeupd"/>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

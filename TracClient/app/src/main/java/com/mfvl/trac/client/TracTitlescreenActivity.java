@@ -36,7 +36,7 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
     protected void onCreate(Bundle savedInstanceState) {
 //        MyLog.logCall();
         super.onCreate(savedInstanceState);
-        MyLog.setContext(this,getString(R.string.logfile));
+        MyLog.setContext(this, getString(R.string.logfile));
         MyLog.reset();
         TracGlobal.getInstance(getApplicationContext());
         setContentView(R.layout.activity_titlescreen);
@@ -81,8 +81,8 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
                     launchTrac.putExtra(INTENT_URL, urlstring)
                             .putExtra(INTENT_TICKET, (long) ticket);
                 } else {
-                    MyLog.w("TracClient bad url "+contentString);
-                    MyLog.toast("TracClient bad url "+contentString);
+                    MyLog.w("TracClient bad url " + contentString);
+                    MyLog.toast("TracClient bad url " + contentString);
                 }
             }
         }
@@ -95,7 +95,7 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
                 startActivity(launchTrac);
                 finish();
             }
-        },timerVal);
+        }, timerVal);
     }
 
     @Override

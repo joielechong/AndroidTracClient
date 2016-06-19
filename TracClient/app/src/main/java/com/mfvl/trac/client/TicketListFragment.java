@@ -55,6 +55,14 @@ public class TicketListFragment extends TracClientFragment
     private ListView listView = null;
     private EditText filterText = null;
     private TextView hs = null;
+    private final DataSetObserver observer = new DataSetObserver() {
+        @Override
+        public void onChanged() {
+            super.onChanged();
+            MyLog.logCall();
+            setStatus(listener.getTicketContentCount() + "/" + listener.getTicketCount());
+        }
+    };
     private boolean zoeken = false;
     private String zoektext = "";
     private final TextWatcher filterTextWatcher = new TextWatcher() {
@@ -85,14 +93,6 @@ public class TicketListFragment extends TracClientFragment
     private boolean scrolling = false;
     private boolean hasScrolled = false;
     private SwipeRefreshLayout swipeLayout;
-    private final DataSetObserver observer  = new DataSetObserver() {
-        @Override
-        public void onChanged() {
-            super.onChanged();
-            MyLog.logCall();
-            setStatus(listener.getTicketContentCount() + "/" + listener.getTicketCount());
-        }
-    };
 
     void onMyAttach(Context activity) {
         MyLog.logCall();

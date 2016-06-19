@@ -578,7 +578,7 @@ public class TracLoginFragment extends TracClientFragment
         }
         removeFilterString();
         removeSortString();
-        listener.onLogin(url, username, password, sslHack, sslHostNameHack, SelectedProfile,bewaren);
+        listener.onLogin(url, username, password, sslHack, sslHostNameHack, SelectedProfile, bewaren);
     }
 
     private void storeProfile() {

@@ -63,8 +63,8 @@ import android.widget.FrameLayout;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
-import com.mfvl.mfvllib.MyLog;
 import com.ipaulpro.afilechooser.utils.FileUtils;
+import com.mfvl.mfvllib.MyLog;
 
 import org.alexd.jsonrpc.JSONRPCException;
 import org.json.JSONArray;
@@ -186,7 +186,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                         removeFilterString();
                         removeSortString();
                         onLogin(lp.getUrl(), lp.getUsername(), lp.getPassword(), lp.getSslHack(),
-                                lp.getSslHostNameHack(), newProfile,false);
+                                lp.getSslHostNameHack(), newProfile, false);
                     }
                 }
                 break;
@@ -200,7 +200,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MyLog.setContext(this,getString(R.string.logfile));
+        MyLog.setContext(this, getString(R.string.logfile));
 //		MyLog.logCall();
         MyLog.d("savedInstanceState = " + savedInstanceState);
         action = getString(R.string.serviceAction);
@@ -369,8 +369,8 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             MyLog.d("backstack initiated");
         }
         setReferenceTime();
- 		TracGlobal.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-   }
+        TracGlobal.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+    }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -532,25 +532,25 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             ab.setDisplayHomeAsUpEnabled(canBack);
         }
     }
-	
-	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		MyLog.d(key);
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        MyLog.d(key);
         if (prefFilterKey.equals(key)) {
-            String filterString = sharedPreferences.getString(key,"");
+            String filterString = sharedPreferences.getString(key, "");
             MyLog.d(filterString);
             filterList = parseFilterString(filterString);
             MyLog.d(filterList);
             startListLoader(true);
         } else if (prefSortKey.equals(key)) {
-            String sortString = sharedPreferences.getString(key,"");
+            String sortString = sharedPreferences.getString(key, "");
             MyLog.d(sortString);
             sortList = parseSortString(sortString);
             MyLog.d(sortList);
             startListLoader(true);
         }
-	}
-	
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -559,7 +559,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             adView.resume();
         }
         findViewById(R.id.displayList).getViewTreeObserver().addOnGlobalLayoutListener(this);
-   }
+    }
 
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
@@ -620,7 +620,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     @Override
     protected void onDestroy() {
         MyLog.d("isFinishing = " + isFinishing());
-		TracGlobal.getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+        TracGlobal.getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
         mDrawerLayout.addDrawerListener(toggle);
         if (isFinishing()) {
             stopService(serviceIntent);
@@ -715,8 +715,8 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         switch (item.getItemId()) {
             case R.id.settings:
                 Intent launchPrefs = new Intent(this, TcPreference.class);
-                launchPrefs.putExtra(PreferenceActivity.EXTRA_NO_HEADERS,true);
-                launchPrefs.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT,"com.mfvl.trac.client.TcPreference$SettingsFragment");
+                launchPrefs.putExtra(PreferenceActivity.EXTRA_NO_HEADERS, true);
+                launchPrefs.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, "com.mfvl.trac.client.TcPreference$SettingsFragment");
                 startActivity(launchPrefs);
                 break;
 
@@ -771,7 +771,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         Bundle aboutArgs = new Bundle();
         aboutArgs.putString(HELP_FILE, getString(R.string.whatsnewhelpfile));
         aboutArgs.putBoolean(HELP_VERSION, true);
-		aboutArgs.putBoolean(HELP_COOKIES,showCookies);
+        aboutArgs.putBoolean(HELP_COOKIES, showCookies);
         aboutArgs.putInt(HELP_ZOOM, webzoom);
         about.preLoad(getLayoutInflater(), aboutArgs);
         about.show(getSupportFragmentManager(), "about");
@@ -798,17 +798,17 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         MyLog.d("requestcode = " + requestCode + " intent = " + data);
         if (requestCode == REQUEST_CODE_CHOOSER) {
-			if (resultCode == RESULT_OK && data != null) {
-				// Get the URI of the selected file
-				final Uri uri = data.getData();
-				MyLog.d("uri = " + uri);
-				if (_oc != null) {
-					_oc.onFileSelected(uri);
-				}
-			}
-		} else {
-			super.onActivityResult(requestCode,resultCode,data);
-		}
+            if (resultCode == RESULT_OK && data != null) {
+                // Get the URI of the selected file
+                final Uri uri = data.getData();
+                MyLog.d("uri = " + uri);
+                if (_oc != null) {
+                    _oc.onFileSelected(uri);
+                }
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     private void onChangeHost() {
@@ -971,15 +971,15 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         // Create the chooser Intent
         startActivityForResult(Intent.createChooser(target, getString(R.string.chooser_title)), REQUEST_CODE_CHOOSER);
 */
-		// Create the ACTION_GET_CONTENT Intent
-		Intent getContentIntent = FileUtils.createGetContentIntent();
+        // Create the ACTION_GET_CONTENT Intent
+        Intent getContentIntent = FileUtils.createGetContentIntent();
 
-		Intent intent = Intent.createChooser(getContentIntent, getString(R.string.chooser_title));
-		startActivityForResult(intent, REQUEST_CODE_CHOOSER);
+        Intent intent = Intent.createChooser(getContentIntent, getString(R.string.chooser_title));
+        startActivityForResult(intent, REQUEST_CODE_CHOOSER);
     }
 
     @Override
-    public void onLogin(String newUrl, String newUser, String newPass, boolean newHack, boolean newHostNameHack, String newProfile,boolean bewaren) {
+    public void onLogin(String newUrl, String newUser, String newPass, boolean newHack, boolean newHostNameHack, String newProfile, boolean bewaren) {
         MyLog.d(newUrl + " " + newUser + " " + newPass + " " + newHack + " " + newHostNameHack + " " + newProfile);
         url = newUrl;
         username = newUser;
@@ -1373,7 +1373,8 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                 // Returns a new CursorLoader
                 try {
                     getTicketListFragment().startLoading();
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
                 if (ListFragmentTag.equals(getTopFragment())) {
                     startProgressBar(getString(R.string.getlist) + (profile == null ? "" : "\n" + profile));
                     hasTicketsLoadingBar = true;

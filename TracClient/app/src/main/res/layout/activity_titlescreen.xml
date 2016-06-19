@@ -15,28 +15,29 @@
 
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical"
-    tools:context=".TracTitlescreenActivity">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:gravity="center"
+              android:orientation="vertical"
+              tools:context=".TracTitlescreenActivity">
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/traclogo" />
+        android:src="@drawable/traclogo"
+        tools:ignore="ContentDescription"/>
 
     <TextView
         style="@style/TitleScreenText.Big"
-        android:text="@string/title_text" />
+        android:text="@string/title_text"/>
 
     <TextView
         style="@style/TitleScreenText"
-        android:text="@string/app_version" />
+        android:text="@string/app_version"/>
 
     <TextView
         style="@style/TitleScreenText"
-        android:text="@string/auteur" />
+        android:text="@string/auteur"/>
 
 </LinearLayout>

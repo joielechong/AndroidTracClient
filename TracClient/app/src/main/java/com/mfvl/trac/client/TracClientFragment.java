@@ -90,8 +90,8 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
 
     public void showHelp() {
         final String filename = context.getString(getHelpFile());
-		final TracShowWebPageDialogFragment about =  new TracShowWebPageDialogFragment();
-		final Bundle aboutArgs = new Bundle();
+        final TracShowWebPageDialogFragment about = new TracShowWebPageDialogFragment();
+        final Bundle aboutArgs = new Bundle();
         aboutArgs.putString(HELP_FILE, filename);
         aboutArgs.putBoolean(HELP_VERSION, false);
         aboutArgs.putBoolean(HELP_COOKIES, false);
@@ -107,7 +107,7 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
         final int itemId = item.getItemId();
 
         if (itemId == R.id.help) {
-           showHelp();
+            showHelp();
         } else {
             return super.onOptionsItemSelected(item);
         }

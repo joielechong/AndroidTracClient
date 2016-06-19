@@ -47,7 +47,7 @@ interface OnTicketModelListener {
     void onTicketModelLoaded(TicketModel tm);
 }
 
-interface RefreshBinder{
+interface RefreshBinder {
     RefreshService getService();
 }
 

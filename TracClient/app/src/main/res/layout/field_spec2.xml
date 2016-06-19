@@ -15,10 +15,10 @@
 
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:theme="@style/EditFieldTheme">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:theme="@style/EditFieldTheme">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -30,7 +30,7 @@
             android:id="@+id/spinval"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:spinnerMode="dialog" />
+            android:spinnerMode="dialog"/>
     </LinearLayout>
 
     <LinearLayout
@@ -39,9 +39,9 @@
 
         <Button
             android:id="@+id/cancelpw"
-            style="@style/CancelButton" />
+            style="@style/CancelButton"/>
 
-        <Button style="@style/OkButton" />
+        <Button style="@style/OkButton"/>
     </LinearLayout>
 
 </RelativeLayout>
