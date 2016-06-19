@@ -23,7 +23,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
 import java.util.concurrent.Semaphore;
 
 import static com.mfvl.trac.client.TracGlobal.*;
@@ -169,7 +168,7 @@ public class Ticket { // implements Serializable {
 
                         case "time":
                         case "changetime":
-                            tekst += veld + ":\t" +  toonTijd(_velden.getJSONObject(veld)) + "\n";
+                            tekst += veld + ":\t" + toonTijd(_velden.getJSONObject(veld)) + "\n";
                             break;
 
                         default:

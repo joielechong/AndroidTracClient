@@ -3,42 +3,42 @@
 
     <PreferenceScreen
         android:key="@string/prefLoginKey"
-        android:title="TRAC Host"
-        android:summary="Kies een andere TRAC host">
+        android:summary="Kies een andere TRAC host"
+        android:title="TRAC Host">
         <intent
             android:action="@string/editLoginAction"
-            android:targetPackage="com.mfvl.trac.client"
-            android:targetClass="com.mfvl.trac.client.PrefSpecActivity" />
+            android:targetClass="com.mfvl.trac.client.PrefSpecActivity"
+            android:targetPackage="com.mfvl.trac.client"/>
     </PreferenceScreen>
 
     <PreferenceScreen
         android:key="@string/prefFilterKey"
-        android:title="@string/filter"
-        android:summary="@string/filtersumm">
+        android:summary="@string/filtersumm"
+        android:title="@string/filter">
         <intent
             android:action="@string/editFilterAction"
-            android:targetPackage="com.mfvl.trac.client"
-            android:targetClass="com.mfvl.trac.client.PrefSpecActivity" />
+            android:targetClass="com.mfvl.trac.client.PrefSpecActivity"
+            android:targetPackage="com.mfvl.trac.client"/>
     </PreferenceScreen>
 
     <PreferenceScreen
         android:key="@string/prefSortKey"
-        android:title="@string/sort"
-        android:summary="@string/sortsumm">
+        android:summary="@string/sortsumm"
+        android:title="@string/sort">
         <intent
             android:action="@string/editSortAction"
-            android:targetPackage="com.mfvl.trac.client"
-            android:targetClass="com.mfvl.trac.client.PrefSpecActivity" />
+            android:targetClass="com.mfvl.trac.client.PrefSpecActivity"
+            android:targetPackage="com.mfvl.trac.client"/>
     </PreferenceScreen>
 
     <PreferenceCategory android:title="@string/generalsettings">
 
         <EditTextPreference
-            android:inputType="number"
             android:defaultValue="@integer/ticketGroupCount"
+            android:inputType="number"
             android:key="@string/prefNrItemsKey"
             android:persistent="true"
-            android:title="@string/prefNrItems" />
+            android:title="@string/prefNrItems"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

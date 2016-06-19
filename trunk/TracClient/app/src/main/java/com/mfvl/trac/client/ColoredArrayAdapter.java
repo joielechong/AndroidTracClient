@@ -30,12 +30,12 @@ class ColoredArrayAdapter<T> extends ArrayAdapter<T> {
 
     public ColoredArrayAdapter(Activity context, List<T> list) {
         super(context, R.layout.ticket_list, list);
-		//MyLog.d("context = "+context+" resource = "+ resource+" list = " +list);
+        //MyLog.d("context = "+context+" resource = "+ resource+" list = " +list);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-		//MyLog.d("position = " + position + " convertView = " + convertView + " parent = " + parent);
+        //MyLog.d("position = " + position + " convertView = " + convertView + " parent = " + parent);
         final View view = super.getView(position, convertView, parent);
         view.setBackgroundColor(adapterColors[position % adapterColors.length]);
         return view;

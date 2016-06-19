@@ -2,6 +2,8 @@ package org.alexd.jsonrpc;
 
 import android.net.Uri;
 
+import com.mfvl.mfvllib.MyLog;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -31,8 +33,6 @@ import ch.boye.httpclientandroidlib.impl.client.CloseableHttpClient;
 import ch.boye.httpclientandroidlib.impl.client.HttpClientBuilder;
 import ch.boye.httpclientandroidlib.impl.client.TargetAuthenticationStrategy;
 import ch.boye.httpclientandroidlib.util.EntityUtils;
-
-import com.mfvl.mfvllib.MyLog;
 
 /**
  * Implementation of JSON-RPC over HTTP/POST

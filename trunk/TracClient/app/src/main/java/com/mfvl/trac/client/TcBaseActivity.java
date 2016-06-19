@@ -21,7 +21,7 @@ public abstract class TcBaseActivity extends AppCompatActivity implements Handle
     Messenger mMessenger = null;
     MyHandlerThread mHandlerThread = null;
     TicketModel tm = null;
-    ProgressDialog progressBar = null;
+    private ProgressDialog progressBar = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,14 +51,14 @@ public abstract class TcBaseActivity extends AppCompatActivity implements Handle
                 synchronized (this) {
                     //MyLog.d("handleMessage msg = START_PROGRESSBAR string = "+message);
                     if (progressBar == null) {
-                        progressBar = new ProgressDialog(this){
+                        progressBar = new ProgressDialog(this) {
                             @Override
                             public void onStop() {
                                 super.onStop();
                                 MyLog.logCall();
                                 stopProgressBar();
                             }
-						};
+                        };
                         progressBar.setCancelable(true);
                         if (message != null) {
                             progressBar.setMessage(message);
@@ -113,8 +113,8 @@ public abstract class TcBaseActivity extends AppCompatActivity implements Handle
         }
         return filter;
     }
-	
-	ArrayList<SortSpec> parseSortString(String sortString) {
+
+    ArrayList<SortSpec> parseSortString(String sortString) {
         final ArrayList<SortSpec> sl = new ArrayList<>();
 
         if (sortString.length() > 0) {
@@ -145,8 +145,8 @@ public abstract class TcBaseActivity extends AppCompatActivity implements Handle
                 }
             }
         }
-		return sl;
-	}
+        return sl;
+    }
 
     @Override
     public void enableDebug() {
@@ -160,7 +160,7 @@ public abstract class TcBaseActivity extends AppCompatActivity implements Handle
     }
 
     @Override
-    public void onLogin(String url, String username, String password, boolean sslHack, boolean sslHostNameHack, String profile,boolean bewaren) {
+    public void onLogin(String url, String username, String password, boolean sslHack, boolean sslHostNameHack, String profile, boolean bewaren) {
         throw new RuntimeException("not implemented");
 
     }

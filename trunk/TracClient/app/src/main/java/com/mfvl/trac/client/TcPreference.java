@@ -26,24 +26,24 @@ public class TcPreference extends PreferenceActivity {
             MyLog.i("Arguments: " + getArguments());
             getPreferenceManager().setSharedPreferencesName(Const.PREFS_NAME);
             addPreferencesFromResource(R.xml.preferences);
-            EditTextPreference editPref = (EditTextPreference)findPreference(getString(R.string.prefNrItemsKey));
+            EditTextPreference editPref = (EditTextPreference) findPreference(getString(R.string.prefNrItemsKey));
             String val = editPref.getText();
             editPref.setSummary(val);
-            PreferenceScreen filterPref = (PreferenceScreen)findPreference(TracGlobal.prefFilterKey);
+            PreferenceScreen filterPref = (PreferenceScreen) findPreference(TracGlobal.prefFilterKey);
             val = TracGlobal.getFilterString();
             filterPref.setSummary(val);
-            PreferenceScreen sortPref = (PreferenceScreen)findPreference(TracGlobal.prefSortKey);
+            PreferenceScreen sortPref = (PreferenceScreen) findPreference(TracGlobal.prefSortKey);
             val = TracGlobal.getSortString();
             sortPref.setSummary(val);
             MyLog.logCall();
             getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-		}
-		
-		public void onDestroy() {
-			super.onDestroy();
+        }
+
+        public void onDestroy() {
+            super.onDestroy();
             MyLog.logCall();
             getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
-		}
+        }
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -57,7 +57,7 @@ public class TcPreference extends PreferenceActivity {
                 val = editPref.getText();
                 pref.setSummary(val);
                 TracGlobal.ticketGroupCount = Integer.parseInt(val);
-                MyLog.d("val = "+val);
+                MyLog.d("val = " + val);
             } else if (TracGlobal.prefFilterKey.equals(key)) {
                 val = TracGlobal.getFilterString();
                 pref.setSummary(val);
@@ -66,6 +66,6 @@ public class TcPreference extends PreferenceActivity {
                 pref.setSummary(val);
             }
         }
-	}
+    }
 
 }

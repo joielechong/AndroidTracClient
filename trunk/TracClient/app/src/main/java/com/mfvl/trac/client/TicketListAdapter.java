@@ -25,6 +25,7 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket> {
         MyLog.logCall();
         setNotifyOnChange(true);
     }
+
     public void addAll(TL tl) {
         //MyLog.d("tl = " + tl + " " + (tl != null ? tl.ticketList.toString() : null));
         super.addAll(tl.getTicketList());
