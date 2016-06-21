@@ -739,15 +739,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             case R.id.tlnieuw:
                 onNewTicket();
                 break;
-/*
-            case R.id.tlfilter:
-                onFilterSelected(filterList);
-                break;
 
-            case R.id.tlsort:
-                onSortSelected(sortList);
-                break;
-*/
             case R.id.tlchangehost:
                 onChangeHost();
                 break;
@@ -822,22 +814,6 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         ft.commit();
     }
 
-    private void onFilterSelected(ArrayList<FilterSpec> filterList) {
-        MyLog.d("filterList = " + filterList);
-
-        final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        final FilterFragment filterFragment = new FilterFragment();
-
-        final Bundle args = makeArgs();
-        args.putSerializable(FILTERLISTNAME, filterList);
-        filterFragment.setArguments(args);
-
-        ft.replace(R.id.displayList, filterFragment, FilterFragmentTag);
-        ft.setTransition(FragmentTransaction.TRANSIT_NONE);
-        ft.addToBackStack(FilterFragmentTag);
-        ft.commit();
-    }
-
     private void onNewTicket() {
         MyLog.logCall();
 
@@ -851,21 +827,6 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         ft.replace(R.id.displayList, newtickFragment, NewFragmentTag);
         ft.setTransition(FragmentTransaction.TRANSIT_NONE);
         ft.addToBackStack(NewFragmentTag);
-        ft.commit();
-    }
-
-    private void onSortSelected(ArrayList<SortSpec> sortList) {
-        MyLog.logCall();
-        final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        final SortFragment sortFragment = new SortFragment();
-
-        final Bundle args = makeArgs();
-        args.putSerializable(SORTLISTNAME, sortList);
-        sortFragment.setArguments(args);
-
-        ft.replace(R.id.displayList, sortFragment, SortFragmentTag);
-        ft.setTransition(FragmentTransaction.TRANSIT_NONE);
-        ft.addToBackStack(SortFragmentTag);
         ft.commit();
     }
 
