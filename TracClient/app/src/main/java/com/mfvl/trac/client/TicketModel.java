@@ -21,15 +21,17 @@ import android.os.Bundle;
 import com.mfvl.mfvllib.MyLog;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONException;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
-class TicketModel implements Serializable {
+class TicketModel {
+	public final static String bundleKey = "TicketModelObject";
     private final static List<String> extraFields = Arrays.asList("max", "page");
     private final static List<String> extraValues = Arrays.asList("500", "0");
     private static HashMap<String, TicketModelVeld> _velden;
@@ -39,6 +41,7 @@ class TicketModel implements Serializable {
     private static boolean _hasData;
     private static TracHttpClient _tracClient = null;
     private static Semaphore active = null;
+    private static JSONArray v;
 
     private TicketModel(TracHttpClient tracClient) {
         MyLog.logCall();
@@ -50,16 +53,19 @@ class TicketModel implements Serializable {
         active = new TcSemaphore(1, true);
     }
 
-    @SuppressWarnings("unchecked")
-    public static TicketModel restore(Bundle b) {
-        if (b.containsKey("FieldCount")) {
-            _instance = new TicketModel(new TracHttpClient(b));
-            _volgorde = (ArrayList<String>) b.getSerializable("Volgorde");
-            _velden = (HashMap<String, TicketModelVeld>) b.getSerializable("Velden");
-            fieldCount = b.getInt("FieldCount");
-//			MyLog.d("_instance = "+_instance+" tracClient = "+_tracClient);
+    public static TicketModel restore(String jsonString) {
+        MyLog.logCall();
+        try {
+            JSONObject o = new JSONObject(jsonString);
+			JSONObject h = o.getJSONObject("HttpClient");
+			v = o.getJSONArray("Model");
+            fieldCount = v.length();
+            _instance = new TicketModel(new TracHttpClient(h));
+            processModelData(v);
+//            MyLog.d("_instance = " + _instance + " tracClient = " + _tracClient);
             return _instance;
-        } else {
+        } catch (JSONException e) {
+            MyLog.e(e);
             return null;
         }
     }
@@ -84,15 +90,27 @@ class TicketModel implements Serializable {
     }
 
     public static TicketModel getInstance() {
+        MyLog.d("noargs _instance = "+_instance);
         return _instance;
     }
+	
+	public String jsonString() {
+        MyLog.logCall();
+		try {
+			JSONObject o = new JSONObject();
+			o.put("Model",v);
+			o.put("HttpClient",_tracClient.toJSON());
+			return o.toString();
+		} catch (JSONException e) {
+			MyLog.e(e);
+			return null;
+		}
+	}
 
     public void onSaveInstanceState(Bundle b) {
-        _tracClient.onSaveInstanceState(b);
-        b.putSerializable("Volgorde", _volgorde);
-        b.putSerializable("Velden", _velden);
-        b.putInt("FieldCount", fieldCount);
-//		MyLog.d("b = "+b);
+        MyLog.logCall();
+		b.putString(bundleKey,jsonString());
+		MyLog.d("b = "+b);
     }
 
     private void loadModelData() {
@@ -104,21 +122,8 @@ class TicketModel implements Serializable {
                 public void run() {
                     //MyLog.d("TicketModel loading model tracClient = " + _tracClient);
                     try {
-                        final JSONArray v = _tracClient.getModel();
-
-                        fieldCount = v.length();
-                        for (int i = 0; i < fieldCount; i++) {
-                            final String key = v.getJSONObject(i).getString("name");
-
-                            _velden.put(key, new TicketModelVeld(v.getJSONObject(i)));
-                            _volgorde.add(key);
-                        }
-                        for (int i = 0; i < extraFields.size(); i++) {
-                            String v1 = extraFields.get(i);
-                            _velden.put(v1, new TicketModelVeld(v1, v1, extraValues.get(i)));
-                            _volgorde.add(v1);
-                        }
-                        _hasData = true;
+                        v = _tracClient.getModel();
+                        processModelData(v);
                     } catch (final Exception e) {
                         MyLog.e("exception", e);
                     } finally {
@@ -130,6 +135,22 @@ class TicketModel implements Serializable {
         } else {
             MyLog.e("called with url == null");
         }
+    }
+
+    private static void processModelData(JSONArray v) throws JSONException {
+        fieldCount = v.length();
+        for (int i = 0; i < fieldCount; i++) {
+            final String key = v.getJSONObject(i).getString("name");
+
+            _velden.put(key, new TicketModelVeld(v.getJSONObject(i)));
+            _volgorde.add(key);
+        }
+        for (int i = 0; i < extraFields.size(); i++) {
+            String v1 = extraFields.get(i);
+            _velden.put(v1, new TicketModelVeld(v1, v1, extraValues.get(i)));
+            _volgorde.add(v1);
+        }
+        _hasData = true;
     }
 
     @Override

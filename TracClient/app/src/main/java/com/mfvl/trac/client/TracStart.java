@@ -195,7 +195,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
-
+ 
     @SuppressWarnings("unchecked")
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -263,9 +263,9 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             filterList = (ArrayList<FilterSpec>) savedInstanceState.getSerializable(FILTERLISTNAME);
             sortList = (ArrayList<SortSpec>) savedInstanceState.getSerializable(SORTLISTNAME);
             dispAds = savedInstanceState.getBoolean(ADMOB, true);
-            tm = TicketModel.restore(savedInstanceState);
+            tm = TicketModel.restore(savedInstanceState.getString(TicketModel.bundleKey));
             if (tm != null) {
-                MyLog.d("restoring TicketModel: " + tm);
+                MyLog.d("restoring TicketModel");
                 tracStartHandler.sendMessage(Message.obtain(null, MSG_SET_TICKET_MODEL, tm));
             }
         } else {
