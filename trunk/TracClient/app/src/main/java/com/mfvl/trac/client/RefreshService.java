@@ -430,7 +430,7 @@ public class RefreshService extends Service implements Handler.Callback {
             case MSG_REFRESH_LIST:
                 msg.obj = null;
             case MSG_LOAD_TICKETS:
-                LoginProfile lp = (LoginProfile) msg.obj;
+                @SuppressWarnings("CastToConcreteClass") LoginProfile lp = (LoginProfile) msg.obj;
                 MyLog.d("lp = " + lp);
                 MyLog.d("mLoginProfile = " + mLoginProfile);
                 if (lp != null) {

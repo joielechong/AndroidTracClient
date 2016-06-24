@@ -16,7 +16,6 @@
 
 package com.mfvl.trac.client;
 
-import android.os.Bundle;
 import android.util.Base64;
 
 import com.mfvl.mfvllib.MyLog;
@@ -60,18 +59,20 @@ class TracHttpClient extends JSONRPCHttpClient {
         this(lp.getUrl(), lp.getSslHack(), lp.getSslHostNameHack(), lp.getUsername(), lp.getPassword());
     }
 
-    public TracHttpClient(final Bundle b) {
+    public TracHttpClient(final JSONObject b) throws JSONException {
         this(b.getString(CURRENT_URL), b.getBoolean(CURRENT_SSLHACK), b.getBoolean(CURRENT_SSLHOSTNAMEHACK), b.getString(CURRENT_USERNAME),
                 b.getString(CURRENT_PASSWORD));
     }
-
-    public void onSaveInstanceState(Bundle savedState) {
-        savedState.putString(CURRENT_URL, current_url);
-        savedState.putString(CURRENT_USERNAME, current_username);
-        savedState.putString(CURRENT_PASSWORD, current_password);
-        savedState.putBoolean(CURRENT_SSLHACK, current_sslHack);
-        savedState.putBoolean(CURRENT_SSLHOSTNAMEHACK, current_sslHostNameHack);
-    }
+	
+	public JSONObject toJSON() throws JSONException {
+		JSONObject a = new JSONObject();
+		a.put(CURRENT_URL, current_url);
+		a.put(CURRENT_USERNAME, current_username);
+		a.put(CURRENT_PASSWORD, current_password);
+		a.put(CURRENT_SSLHACK, current_sslHack);
+		a.put(CURRENT_SSLHOSTNAMEHACK, current_sslHostNameHack);		
+		return a;
+	}
 
     public JSONArray Query(String reqString) throws JSONRPCException {
         return callJSONArray(TICKET_QUERY, reqString);

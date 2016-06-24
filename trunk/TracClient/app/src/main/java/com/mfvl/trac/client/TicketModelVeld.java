@@ -20,12 +20,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 
-class TicketModelVeld implements Serializable {
+class TicketModelVeld {
 
     private String _name;
     private String _label;

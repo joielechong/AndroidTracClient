@@ -24,23 +24,51 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.mfvl.mfvllib.MyLog;
 
 
 public class EditFieldFragment extends TcDialogFragment {
+	
+	public static final String Veld = "veld";
+	public static final String Waarde = "waarde";
+	private static final String NieuwWaarde = "nieuwWaarde";
+	private static TicketModel tm;
+    private static String veld;
+	private static String waarde;
+	private static String nieuwWaarde;
+	private static Spinner spinValue;
+    @Override
+    public void onSaveInstanceState(Bundle savedState) {
+        super.onSaveInstanceState(savedState);
+        MyLog.logCall();
+		savedState.putString(Veld,veld);
+		savedState.putString(Waarde,waarde);
+		tm.onSaveInstanceState(savedState);
+		nieuwWaarde = ((TextView)spinValue.getSelectedView()).getText().toString();
+		MyLog.d(nieuwWaarde);
+		savedState.putString(NieuwWaarde,nieuwWaarde);
+     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        MyLog.logCall();
-        final String veld = getArguments().getString("veld");
-        final String waarde = getArguments().getString("waarde");
-        final TicketModel tm = (TicketModel) getArguments().getSerializable("tm");
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        MyLog.d(savedInstanceState);
+
+		if (savedInstanceState == null) {
+			tm = TicketModel.getInstance();
+			veld = getArguments().getString(Veld);
+			waarde = getArguments().getString(Waarde);
+			nieuwWaarde = waarde;
+		} else {
+			veld = savedInstanceState.getString(Veld);
+			waarde = savedInstanceState.getString(Waarde);
+			nieuwWaarde = savedInstanceState.getString(NieuwWaarde);
+			tm = TicketModel.restore(savedInstanceState.getString(TicketModel.bundleKey));
+		}
         final TicketModelVeld tmv = tm.getVeld(veld);
 
-        View ll = inflater.inflate(
-                tmv.options() == null ? R.layout.field_spec1 : R.layout.field_spec2, container);
+        View ll = inflater.inflate(tmv.options() == null ? R.layout.field_spec1 : R.layout.field_spec2, container);
         getDialog().setTitle(veld);
 
         final EditText et = (EditText) ll.findViewById(R.id.veldwaarde);
@@ -49,7 +77,7 @@ public class EditFieldFragment extends TcDialogFragment {
             et.requestFocus();
         }
 
-        final Spinner spinValue = (Spinner) ll.findViewById(R.id.spinval);
+        spinValue = (Spinner) ll.findViewById(R.id.spinval);
         if (spinValue != null) {
             final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<>(getActivity(),
                     android.R.layout.simple_spinner_item);
@@ -60,15 +88,14 @@ public class EditFieldFragment extends TcDialogFragment {
             spinAdapter.addAll(tmv.options());
             spinValue.setAdapter(spinAdapter);
             if (waarde != null && !"".equals(waarde)) {
-                spinValue.setSelection(tmv.options().indexOf(waarde) + (tmv.optional() ? 1 : 0),
-                        true);
+                spinValue.setSelection(tmv.options().indexOf(waarde) + (tmv.optional() ? 1 : 0),true);
             }
         }
 
         final Button canBut = (Button) ll.findViewById(R.id.cancelpw);
         canBut.setOnClickListener(new View.OnClickListener() {
-            @Override
 
+			@Override
             public void onClick(View v) {
                 getFragmentManager().popBackStack();
             }
