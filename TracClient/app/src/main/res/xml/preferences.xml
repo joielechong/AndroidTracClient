@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceScreen
+    <!-- PreferenceScreen
         android:key="@string/prefLoginKey"
         android:summary="Kies een andere TRAC host"
         android:title="TRAC Host">
@@ -9,7 +9,7 @@
             android:action="@string/editLoginAction"
             android:targetClass="com.mfvl.trac.client.PrefSpecActivity"
             android:targetPackage="com.mfvl.trac.client"/>
-    </PreferenceScreen>
+    </PreferenceScreen -->
 
     <PreferenceScreen
         android:key="@string/prefFilterKey"

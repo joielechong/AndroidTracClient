@@ -274,17 +274,21 @@ public class DetailFragment extends TracClientFragment
                 break;
 
             case R.id.dfempty:
-                item.setChecked(!item.isChecked());
-                showEmptyFields = item.isChecked();
+                if (item != null) {
+                    item.setChecked(!item.isChecked());
+                    showEmptyFields = item.isChecked();
 // 			MyLog.d( "showEmptyFields = "+showEmptyFields);
+                }
                 displayTicket();
                 break;
 
             case R.id.dfshare:
-                final Intent sendIntent = new Intent(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, _ticket.toText());
-                sendIntent.setType("text/plain");
-                startActivity(sendIntent);
+                if (_ticket != null) {
+                    final Intent sendIntent = new Intent(Intent.ACTION_SEND);
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, _ticket.toText());
+                    sendIntent.setType("text/plain");
+                    startActivity(sendIntent);
+                }
                 break;
 
             default:
