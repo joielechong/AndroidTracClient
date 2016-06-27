@@ -22,8 +22,10 @@ package com.mfvl.trac.client;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -576,9 +578,15 @@ public class TracLoginFragment extends TracClientFragment
             setSslHostNameHack(sslHostNameHack);
             storeCredentials();
         }
-        removeFilterString();
-        removeSortString();
-        listener.onLogin(url, username, password, sslHack, sslHostNameHack, SelectedProfile, bewaren);
+        Intent intent = new Intent(PERFORM_LOGIN);
+        intent.putExtra(CURRENT_URL, url);
+        intent.putExtra(CURRENT_USERNAME, username);
+        intent.putExtra(CURRENT_PASSWORD, password);
+        intent.putExtra(CURRENT_SSLHACK, sslHack);
+        intent.putExtra(CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
+        intent.putExtra(CURRENT_PROFILE, SelectedProfile);
+        intent.putExtra(BEWAREN, bewaren);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
     private void storeProfile() {

@@ -28,6 +28,7 @@ final class Const {
     static final String CURRENT_TICKET = "ticknr";
     static final String CURRENT_SSLHACK = "sslHack";
     static final String CURRENT_SSLHOSTNAMEHACK = "sslHostNameHack";
+    static final String CURRENT_PROFILE = "profile";
     static final String ADMOB = "Admob";
     static final String FILTERLISTNAME = "filterlist";
     static final String SORTLISTNAME = "sortlist";
@@ -78,4 +79,7 @@ final class Const {
 
     static final String DATABASE_NAME = "profile.db";
     static final String DB_UPDATED = "db_update";
+
+    static final String PERFORM_LOGIN = "perform_login";
+    static final String BEWAREN = "bewaren";
 }

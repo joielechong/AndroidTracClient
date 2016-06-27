@@ -159,6 +159,24 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         }
     };
 
+    private final BroadcastReceiver performLoginReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get extra data included in the Intent
+            MyLog.d("intent = " + intent);
+            String url = intent.getStringExtra(CURRENT_URL);
+            String username = intent.getStringExtra(CURRENT_USERNAME);
+            String password = intent.getStringExtra(CURRENT_PASSWORD);
+            String SelectedProfile = intent.getStringExtra(CURRENT_PROFILE);
+            boolean bewaren = intent.getBooleanExtra(BEWAREN,false);
+            removeFilterString();
+            removeSortString();
+            onLogin(url, username, password, sslHack, sslHostNameHack, SelectedProfile, bewaren);
+        }
+    };
+
+
+
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         MyLog.d("item = " + item);
@@ -249,6 +267,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         toggle.syncState();
 
         LocalBroadcastManager.getInstance(this).registerReceiver(sqlupdateReceiver, new IntentFilter(DB_UPDATED));
+        LocalBroadcastManager.getInstance(this).registerReceiver(performLoginReceiver, new IntentFilter(PERFORM_LOGIN));
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
