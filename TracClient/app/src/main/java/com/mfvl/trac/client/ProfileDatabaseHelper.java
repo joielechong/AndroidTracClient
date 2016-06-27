@@ -130,7 +130,6 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
 
     private void sendNotification(String message) {
         Intent intent = new Intent(DB_UPDATED);
-        // You can also include some extra data.
         intent.putExtra(DB_UPDATED, message);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
