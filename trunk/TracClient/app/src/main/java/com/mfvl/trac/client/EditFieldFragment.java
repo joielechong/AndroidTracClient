@@ -30,42 +30,43 @@ import com.mfvl.mfvllib.MyLog;
 
 
 public class EditFieldFragment extends TcDialogFragment {
-	
-	public static final String Veld = "veld";
-	public static final String Waarde = "waarde";
-	private static final String NieuwWaarde = "nieuwWaarde";
-	private static TicketModel tm;
+
+    public static final String Veld = "veld";
+    public static final String Waarde = "waarde";
+    private static final String NieuwWaarde = "nieuwWaarde";
+    private static TicketModel tm;
     private static String veld;
-	private static String waarde;
-	private static String nieuwWaarde;
-	private static Spinner spinValue;
+    private static String waarde;
+    private static String nieuwWaarde;
+    private static Spinner spinValue;
+
     @Override
     public void onSaveInstanceState(Bundle savedState) {
         super.onSaveInstanceState(savedState);
         MyLog.logCall();
-		savedState.putString(Veld,veld);
-		savedState.putString(Waarde,waarde);
-		tm.onSaveInstanceState(savedState);
-		nieuwWaarde = ((TextView)spinValue.getSelectedView()).getText().toString();
-		MyLog.d(nieuwWaarde);
-		savedState.putString(NieuwWaarde,nieuwWaarde);
-     }
+        savedState.putString(Veld, veld);
+        savedState.putString(Waarde, waarde);
+        tm.onSaveInstanceState(savedState);
+        nieuwWaarde = ((TextView) spinValue.getSelectedView()).getText().toString();
+        MyLog.d(nieuwWaarde);
+        savedState.putString(NieuwWaarde, nieuwWaarde);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         MyLog.d(savedInstanceState);
 
-		if (savedInstanceState == null) {
-			tm = TicketModel.getInstance();
-			veld = getArguments().getString(Veld);
-			waarde = getArguments().getString(Waarde);
-			nieuwWaarde = waarde;
-		} else {
-			veld = savedInstanceState.getString(Veld);
-			waarde = savedInstanceState.getString(Waarde);
-			nieuwWaarde = savedInstanceState.getString(NieuwWaarde);
-			tm = TicketModel.restore(savedInstanceState.getString(TicketModel.bundleKey));
-		}
+        if (savedInstanceState == null) {
+            tm = TicketModel.getInstance();
+            veld = getArguments().getString(Veld);
+            waarde = getArguments().getString(Waarde);
+            nieuwWaarde = waarde;
+        } else {
+            veld = savedInstanceState.getString(Veld);
+            waarde = savedInstanceState.getString(Waarde);
+            nieuwWaarde = savedInstanceState.getString(NieuwWaarde);
+            tm = TicketModel.restore(savedInstanceState.getString(TicketModel.bundleKey));
+        }
         final TicketModelVeld tmv = tm.getVeld(veld);
 
         View ll = inflater.inflate(tmv.options() == null ? R.layout.field_spec1 : R.layout.field_spec2, container);
@@ -88,14 +89,14 @@ public class EditFieldFragment extends TcDialogFragment {
             spinAdapter.addAll(tmv.options());
             spinValue.setAdapter(spinAdapter);
             if (waarde != null && !"".equals(waarde)) {
-                spinValue.setSelection(tmv.options().indexOf(waarde) + (tmv.optional() ? 1 : 0),true);
+                spinValue.setSelection(tmv.options().indexOf(waarde) + (tmv.optional() ? 1 : 0), true);
             }
         }
 
         final Button canBut = (Button) ll.findViewById(R.id.cancelpw);
         canBut.setOnClickListener(new View.OnClickListener() {
 
-			@Override
+            @Override
             public void onClick(View v) {
                 getFragmentManager().popBackStack();
             }

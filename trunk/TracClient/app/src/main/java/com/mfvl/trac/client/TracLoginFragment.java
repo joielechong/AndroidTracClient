@@ -587,6 +587,8 @@ public class TracLoginFragment extends TracClientFragment
         intent.putExtra(CURRENT_PROFILE, SelectedProfile);
         intent.putExtra(BEWAREN, bewaren);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+        sendMessageToHandler(MSG_DONE, null);
+        getFragmentManager().popBackStack();
     }
 
     private void storeProfile() {

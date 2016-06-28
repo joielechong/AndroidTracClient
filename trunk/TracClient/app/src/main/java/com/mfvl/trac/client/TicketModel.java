@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 
 class TicketModel {
-	public final static String bundleKey = "TicketModelObject";
+    public final static String bundleKey = "TicketModelObject";
     private final static List<String> extraFields = Arrays.asList("max", "page");
     private final static List<String> extraValues = Arrays.asList("500", "0");
     private static HashMap<String, TicketModelVeld> _velden;
@@ -57,8 +57,8 @@ class TicketModel {
         MyLog.logCall();
         try {
             JSONObject o = new JSONObject(jsonString);
-			JSONObject h = o.getJSONObject("HttpClient");
-			v = o.getJSONArray("Model");
+            JSONObject h = o.getJSONObject("HttpClient");
+            v = o.getJSONArray("Model");
             fieldCount = v.length();
             _instance = new TicketModel(new TracHttpClient(h));
             processModelData(v);
@@ -90,27 +90,43 @@ class TicketModel {
     }
 
     public static TicketModel getInstance() {
-        MyLog.d("noargs _instance = "+_instance);
+        MyLog.d("noargs _instance = " + _instance);
         return _instance;
     }
-	
-	public String jsonString() {
+
+    private static void processModelData(JSONArray v) throws JSONException {
+        fieldCount = v.length();
+        for (int i = 0; i < fieldCount; i++) {
+            final String key = v.getJSONObject(i).getString("name");
+
+            _velden.put(key, new TicketModelVeld(v.getJSONObject(i)));
+            _volgorde.add(key);
+        }
+        for (int i = 0; i < extraFields.size(); i++) {
+            String v1 = extraFields.get(i);
+            _velden.put(v1, new TicketModelVeld(v1, v1, extraValues.get(i)));
+            _volgorde.add(v1);
+        }
+        _hasData = true;
+    }
+
+    private String jsonString() {
         MyLog.logCall();
-		try {
-			JSONObject o = new JSONObject();
-			o.put("Model",v);
-			o.put("HttpClient",_tracClient.toJSON());
-			return o.toString();
-		} catch (JSONException e) {
-			MyLog.e(e);
-			return null;
-		}
-	}
+        try {
+            JSONObject o = new JSONObject();
+            o.put("Model", v);
+            o.put("HttpClient", _tracClient.toJSON());
+            return o.toString();
+        } catch (JSONException e) {
+            MyLog.e(e);
+            return null;
+        }
+    }
 
     public void onSaveInstanceState(Bundle b) {
         MyLog.logCall();
-		b.putString(bundleKey,jsonString());
-		MyLog.d("b = "+b);
+        b.putString(bundleKey, jsonString());
+        MyLog.d("b = " + b);
     }
 
     private void loadModelData() {
@@ -135,22 +151,6 @@ class TicketModel {
         } else {
             MyLog.e("called with url == null");
         }
-    }
-
-    private static void processModelData(JSONArray v) throws JSONException {
-        fieldCount = v.length();
-        for (int i = 0; i < fieldCount; i++) {
-            final String key = v.getJSONObject(i).getString("name");
-
-            _velden.put(key, new TicketModelVeld(v.getJSONObject(i)));
-            _volgorde.add(key);
-        }
-        for (int i = 0; i < extraFields.size(); i++) {
-            String v1 = extraFields.get(i);
-            _velden.put(v1, new TicketModelVeld(v1, v1, extraValues.get(i)));
-            _volgorde.add(v1);
-        }
-        _hasData = true;
     }
 
     @Override

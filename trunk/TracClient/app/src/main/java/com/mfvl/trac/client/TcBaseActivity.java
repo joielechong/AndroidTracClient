@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.mfvl.mfvllib.MyLog;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -22,6 +23,10 @@ public abstract class TcBaseActivity extends AppCompatActivity implements Handle
     MyHandlerThread mHandlerThread = null;
     TicketModel tm = null;
     private ProgressDialog progressBar = null;
+    protected static boolean debug = false; // disable menuoption at startup
+    private boolean isPaused;
+
+    abstract ArrayDeque<Message> getMessageQueue();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -29,8 +34,40 @@ public abstract class TcBaseActivity extends AppCompatActivity implements Handle
         MyLog.logCall();
         mHandlerThread = new MyHandlerThread("IncomingHandler");
         mHandlerThread.start();
+        isPaused = false;
         tracStartHandler = new Handler(mHandlerThread.getLooper(), this);
         mMessenger = new Messenger(tracStartHandler);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        MyLog.logCall();
+        isPaused = false;
+        ArrayDeque<Message> msgQueue = getMessageQueue();
+        MyLog.d(msgQueue);
+        while (!msgQueue.isEmpty()) {
+            Message m = msgQueue.poll();
+            if (m != null) {
+                tracStartHandler.sendMessage(m);
+            }
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        MyLog.logCall();
+        isPaused = true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        MyLog.d("isFinishing = " + isFinishing());
+        if (isFinishing()) {
+            mHandlerThread.quit();
+        }
+        super.onDestroy();
     }
 
     @Override
@@ -44,6 +81,26 @@ public abstract class TcBaseActivity extends AppCompatActivity implements Handle
 
     @Override
     public boolean handleMessage(Message msg) {
+        MyLog.d("msg = " + msg);
+        if (isPaused && msg.what != MSG_REQUEST_TICKET_COUNT) {
+            return queueMessage(msg);
+        } else {
+            return processMessage(msg);
+        }
+    }
+
+    private synchronized boolean queueMessage(Message msg) {
+        MyLog.d("msg = " + msg);
+        ArrayDeque<Message> msgQueue = getMessageQueue();
+//		Message m = new Message();
+//		m.copyFrom(msg);
+        Message m = Message.obtain(msg);
+        msgQueue.add(m);
+        MyLog.d(msgQueue);
+        return true;
+    }
+
+    boolean processMessage(Message msg) {
         MyLog.d("msg = " + msg.what);
         switch (msg.what) {
             case MSG_START_PROGRESSBAR:
@@ -150,37 +207,30 @@ public abstract class TcBaseActivity extends AppCompatActivity implements Handle
 
     @Override
     public void enableDebug() {
-        throw new RuntimeException("not implemented");
+        // MyLog.d("enableDebug");
+        debug = true;
+        invalidateOptionsMenu();
+        MyLog.toast("Debug enabled");
     }
 
     @Override
     public void onChooserSelected(OnFileSelectedListener oc) {
         throw new RuntimeException("not implemented");
-
-    }
-
-    @Override
-    public void onLogin(String url, String username, String password, boolean sslHack, boolean sslHostNameHack, String profile, boolean bewaren) {
-        throw new RuntimeException("not implemented");
-
     }
 
     @Override
     public void onTicketSelected(Ticket ticket) {
         throw new RuntimeException("not implemented");
-
     }
 
     @Override
     public void onUpdateTicket(Ticket ticket) {
         throw new RuntimeException("not implemented");
-
     }
 
     @Override
     public void refreshOverview() {
         throw new RuntimeException("not implemented");
-
     }
 
     @Override
@@ -215,13 +265,11 @@ public abstract class TcBaseActivity extends AppCompatActivity implements Handle
     @Override
     public void getTicket(int ticknr, OnTicketLoadedListener oc) {
         throw new RuntimeException("not implemented");
-
     }
 
     @Override
     public void refreshTicket(int ticknr) {
         throw new RuntimeException("not implemented");
-
     }
 
     @Override
@@ -247,7 +295,6 @@ public abstract class TcBaseActivity extends AppCompatActivity implements Handle
     @Override
     public void updateTicket(Ticket t, String action, String comment, String veld, String waarde, boolean notify, Map<String, String> modVeld) throws Exception {
         throw new RuntimeException("not implemented");
-
     }
 
     @Override
@@ -258,7 +305,6 @@ public abstract class TcBaseActivity extends AppCompatActivity implements Handle
     @Override
     public void listViewCreated() {
         throw new RuntimeException("not implemented");
-
     }
 
     @Override
@@ -274,12 +320,10 @@ public abstract class TcBaseActivity extends AppCompatActivity implements Handle
     @Override
     public void getAttachment(Ticket t, String filename, onAttachmentCompleteListener oc) {
         throw new RuntimeException("not implemented");
-
     }
 
     @Override
     public void addAttachment(Ticket ticket, Uri uri, onTicketCompleteListener oc) {
         throw new RuntimeException("not implemented");
-
     }
 }

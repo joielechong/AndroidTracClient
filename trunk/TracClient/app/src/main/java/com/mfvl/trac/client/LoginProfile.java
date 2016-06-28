@@ -28,12 +28,18 @@ public class LoginProfile extends TcObject implements Serializable, Cloneable {
     private boolean _sslHostNameHack = false;
     private List<FilterSpec> filterList = null;
     private List<SortSpec> sortList = null;
+    private String _profile = null;
 
     public LoginProfile(String url, String username, String password, boolean sslHack) {
+        this(url, username, password, sslHack, false);
+    }
+
+    public LoginProfile(String url, String username, String password, boolean sslHack, boolean sslHostNameHack) {
         _url = url;
         _username = username;
         _password = password;
         _sslHack = sslHack;
+        _sslHostNameHack = sslHostNameHack;
     }
 
     @Override
@@ -104,5 +110,13 @@ public class LoginProfile extends TcObject implements Serializable, Cloneable {
     @Override
     public String toString() {
         return "url: " + _url + " username: " + _username + " password: " + _password + " sslHack: " + _sslHack + " sslHostNameHack: " + _sslHostNameHack + " filterList: " + filterList + " sortList: " + sortList;
+    }
+
+    public String getProfile() {
+        return _profile;
+    }
+
+    public void setProfile(String profile) {
+        _profile = profile;
     }
 }

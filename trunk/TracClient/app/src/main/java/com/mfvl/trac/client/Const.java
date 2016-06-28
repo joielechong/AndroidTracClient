@@ -76,6 +76,8 @@ final class Const {
     static final int MSG_LOAD_FASE2_FINISHED = 44;
     static final int MSG_LOAD_ABORTED = 46;
     static final int MSG_SET_TICKET_MODEL = 47;
+    static final int MSG_PERFORM_LOGIN = 48;
+    static final int MSG_DONE = 49;
 
     static final String DATABASE_NAME = "profile.db";
     static final String DB_UPDATED = "db_update";
