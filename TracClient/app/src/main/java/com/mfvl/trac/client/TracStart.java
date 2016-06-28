@@ -59,6 +59,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
@@ -81,6 +82,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Semaphore;
+import java.util.ArrayDeque;
 
 import static com.mfvl.trac.client.Const.*;
 import static com.mfvl.trac.client.TracGlobal.*;
@@ -103,8 +105,29 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     private static final String SortFragmentTag = "Sort_Fragment";
     private static final String[] FragmentTags = new String[]{ListFragmentTag, LoginFragmentTag, DetailFragmentTag,
             NewFragmentTag, UpdFragmentTag, FilterFragmentTag, SortFragmentTag};
+    private static ArrayDeque<Message> msgQueue = null;
     private final Semaphore loadingActive = new TcSemaphore(1, true);
     private final Semaphore isBinding = new TcSemaphore(1, true);
+    private final BroadcastReceiver performLoginReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get extra data included in the Intent
+            MyLog.d("intent = " + intent);
+            String url = intent.getStringExtra(CURRENT_URL);
+            String username = intent.getStringExtra(CURRENT_USERNAME);
+            String password = intent.getStringExtra(CURRENT_PASSWORD);
+            String SelectedProfile = intent.getStringExtra(CURRENT_PROFILE);
+            boolean bewaren = intent.getBooleanExtra(BEWAREN, false);
+            boolean sslHack = intent.getBooleanExtra(CURRENT_SSLHACK, false);
+            boolean sslHostNameHack = intent.getBooleanExtra(CURRENT_SSLHOSTNAMEHACK, false);
+            LoginProfile lp = new LoginProfile(url, username, password, sslHack, sslHostNameHack);
+            lp.setProfile(SelectedProfile);
+            MyLog.d(lp);
+            Message m = tracStartHandler.obtainMessage(MSG_PERFORM_LOGIN, (bewaren ? 1 : 0), 0, lp);
+            MyLog.d(m);
+            m.sendToTarget();
+        }
+    };
     private boolean doubleBackToExitPressedOnce = false;
     private FrameLayout adViewContainer = null;
     private AdView adView = null;
@@ -120,7 +143,6 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     private String password = null;
     private boolean sslHack = false;
     private boolean sslHostNameHack = false;
-    private boolean debug = false; // disable menuoption at startup
     private OnFileSelectedListener _oc = null;
     private boolean canWriteSD = false;
     private long referenceTime = 0;
@@ -128,7 +150,6 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     private int ticketArg = -1;
     private boolean doNotFinish = false;
     private RefreshService mService = null;
-
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle toggle;
     private ProfileDatabaseHelper pdb = null;
@@ -159,23 +180,11 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         }
     };
 
-    private final BroadcastReceiver performLoginReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            // Get extra data included in the Intent
-            MyLog.d("intent = " + intent);
-            String url = intent.getStringExtra(CURRENT_URL);
-            String username = intent.getStringExtra(CURRENT_USERNAME);
-            String password = intent.getStringExtra(CURRENT_PASSWORD);
-            String SelectedProfile = intent.getStringExtra(CURRENT_PROFILE);
-            boolean bewaren = intent.getBooleanExtra(BEWAREN,false);
-            removeFilterString();
-            removeSortString();
-            onLogin(url, username, password, sslHack, sslHostNameHack, SelectedProfile, bewaren);
-        }
-    };
-
-
+    @Override
+    public ArrayDeque<Message> getMessageQueue() {
+        MyLog.logCall();
+        return msgQueue;
+    }
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -213,7 +222,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
- 
+
     @SuppressWarnings("unchecked")
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -228,6 +237,9 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             FragmentManager.enableDebugLogging(true);
         }
         TracGlobal.getInstance(getApplicationContext());
+        if (msgQueue == null) {
+            msgQueue = new ArrayDeque<>(100);
+        }
         mHandlerThread = new MyHandlerThread("IncomingHandler");
         mHandlerThread.start();
         tracStartHandler = new Handler(mHandlerThread.getLooper(), this);
@@ -271,6 +283,18 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        ImageButton settings = (ImageButton) navigationView.getHeaderView(0).findViewById(R.id.settings);
+        MyLog.d("settings = " + settings);
+        settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent launchPrefs = new Intent(TracStart.this, TcPreference.class);
+                launchPrefs.putExtra(PreferenceActivity.EXTRA_NO_HEADERS, true);
+                launchPrefs.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, "com.mfvl.trac.client.TcPreference$SettingsFragment");
+                startActivity(launchPrefs);
+                mDrawerLayout.closeDrawer(GravityCompat.START);
+            }
+        });
 
         serviceIntent = new Intent(this, RefreshService.class);
         if (savedInstanceState != null) {
@@ -583,6 +607,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
+        MyLog.logCall();
         if (tm != null) {
             tm.onSaveInstanceState(savedInstanceState);
         }
@@ -643,7 +668,6 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         mDrawerLayout.addDrawerListener(toggle);
         if (isFinishing()) {
             stopService(serviceIntent);
-            mHandlerThread.quit();
         }
         super.onDestroy();
     }
@@ -732,13 +756,6 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         MyLog.d("item=" + item.getTitle());
 
         switch (item.getItemId()) {
-            case R.id.settings:
-                Intent launchPrefs = new Intent(this, TcPreference.class);
-                launchPrefs.putExtra(PreferenceActivity.EXTRA_NO_HEADERS, true);
-                launchPrefs.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, "com.mfvl.trac.client.TcPreference$SettingsFragment");
-                startActivity(launchPrefs);
-                break;
-
             case android.R.id.home:
                 if (getSupportFragmentManager().getBackStackEntryCount() == 1) {
                     mDrawerLayout.openDrawer(GravityCompat.START);
@@ -758,11 +775,6 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             case R.id.tlnieuw:
                 onNewTicket();
                 break;
-
-            case R.id.tlchangehost:
-                onChangeHost();
-                break;
-
             case R.id.debug:
                 final Intent sendIntent = new Intent(Intent.ACTION_SEND);
                 sendIntent.putExtra(Intent.EXTRA_TEXT, MyLog.getDebug());
@@ -820,17 +832,6 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
-    }
-
-    private void onChangeHost() {
-        MyLog.logCall();
-        final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        final TracLoginFragment tracLoginFragment = newLoginFrag();
-
-        ft.replace(R.id.displayList, tracLoginFragment, LoginFragmentTag);
-        ft.setTransition(FragmentTransaction.TRANSIT_NONE);
-        ft.addToBackStack(LoginFragmentTag);
-        ft.commit();
     }
 
     private void onNewTicket() {
@@ -930,14 +931,6 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     }
 
     @Override
-    public void enableDebug() {
-        // MyLog.d("enableDebug");
-        debug = true;
-        invalidateOptionsMenu();
-        MyLog.toast("Debug enabled");
-    }
-
-    @Override
     public void onChooserSelected(OnFileSelectedListener oc) {
         MyLog.logCall();
         // save callback
@@ -958,7 +951,6 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         startActivityForResult(intent, REQUEST_CODE_CHOOSER);
     }
 
-    @Override
     public void onLogin(String newUrl, String newUser, String newPass, boolean newHack, boolean newHostNameHack, String newProfile, boolean bewaren) {
         MyLog.d(newUrl + " " + newUser + " " + newPass + " " + newHack + " " + newHostNameHack + " " + newProfile);
         url = newUrl;
@@ -984,7 +976,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         } else {
             getSupportFragmentManager().popBackStackImmediate(ListFragmentTag, 0);
         }
-        dataAdapter.clear();
+        newDataAdapter(new Tickets()); // empty list
         startListLoader(true);
     }
 
@@ -1283,8 +1275,8 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
 
     @Override
     @SuppressWarnings({"InlinedAPI", "unchecked"})
-    public boolean handleMessage(Message msg) {
-        MyLog.d("msg = " + msg.what);
+    public boolean processMessage(final Message msg) {
+        MyLog.d("msg = " + msg);
         switch (msg.what) {
             case MSG_REQUEST_TICKET_COUNT:
                 if (!LoginFragmentTag.equals(getTopFragment())) {
@@ -1418,8 +1410,23 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                 notifyTicketListFragment();
                 break;
 
+            case MSG_PERFORM_LOGIN:
+                final LoginProfile lp = (LoginProfile) msg.obj;
+                MyLog.d(lp);
+                removeFilterString();
+                removeSortString();
+                TracStart.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        MyLog.d(lp);
+                        onLogin(lp.getUrl(), lp.getUsername(), lp.getPassword(), lp.getSslHack(),
+                                lp.getSslHostNameHack(), lp.getProfile(), (msg.arg1 == 1));
+                    }
+                });
+                break;
+
             default:
-                return super.handleMessage(msg);
+                return super.processMessage(msg);
         }
         return true;
     }

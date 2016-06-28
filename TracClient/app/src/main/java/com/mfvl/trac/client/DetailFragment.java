@@ -274,11 +274,9 @@ public class DetailFragment extends TracClientFragment
                 break;
 
             case R.id.dfempty:
-                if (item != null) {
-                    item.setChecked(!item.isChecked());
-                    showEmptyFields = item.isChecked();
+                item.setChecked(!item.isChecked());
+                showEmptyFields = item.isChecked();
 // 			MyLog.d( "showEmptyFields = "+showEmptyFields);
-                }
                 displayTicket();
                 break;
 

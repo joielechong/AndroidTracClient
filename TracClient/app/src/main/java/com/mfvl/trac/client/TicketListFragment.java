@@ -38,7 +38,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.EditText;
-import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -80,11 +80,9 @@ public class TicketListFragment extends TracClientFragment
             if (listView != null && listView.getAdapter() != null && s != null) {
                 MyLog.d(s);
                 MyLog.d(listView.toString());
-                TicketListAdapter adapter = (TicketListAdapter) listView.getAdapter();
-                MyLog.d(adapter.toString());
-                Filter f = adapter.getFilter();
-                MyLog.d(f.toString());
-                f.filter(s);
+                Filterable adapter = (Filterable) listView.getAdapter();
+                MyLog.d(adapter);
+                adapter.getFilter().filter(s);
                 zoektext = s.toString();
             }
         }

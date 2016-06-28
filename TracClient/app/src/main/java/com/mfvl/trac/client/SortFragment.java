@@ -73,15 +73,22 @@ public class SortFragment extends SpecFragment<SortSpec> {
         super.onActivityCreated(savedInstanceState);  // vult inputSpec en outputSpec
         MyLog.d("savedInstanceState = " + savedInstanceState);
 
-        sortAdapter = new SortAdapter(context, outputSpec);
-        listView.setAdapter(sortAdapter);
+        if (tm == null) {
+            MyLog.toast("Kan niet uitvoeren");
+            sendMessageToHandler(MSG_DONE, null);
+            getFragmentManager().popBackStack();
+        } else {
 
-        ImageButton addButton = (ImageButton) currentView.findViewById(R.id.addbutton);
-        addButton.setOnClickListener(this);
-        setListener(R.id.storebutton);
-        addSpinner = (Spinner) currentView.findViewById(R.id.addspin);
-        getScreensize(addSpinner, addButton);
-        addSpinner.setAdapter(new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, tm.velden()));
+            sortAdapter = new SortAdapter(context, outputSpec);
+            listView.setAdapter(sortAdapter);
+
+            ImageButton addButton = (ImageButton) currentView.findViewById(R.id.addbutton);
+            addButton.setOnClickListener(this);
+            setListener(R.id.storebutton);
+            addSpinner = (Spinner) currentView.findViewById(R.id.addspin);
+            getScreensize(addSpinner, addButton);
+            addSpinner.setAdapter(new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, tm.velden()));
+        }
     }
 
     private class SortAdapter extends SpecAdapter<SortSpec> implements View.OnClickListener {

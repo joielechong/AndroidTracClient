@@ -98,19 +98,27 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState); // must be called first
-        MyLog.d("savedInstanceState = " + savedInstanceState);
-        filterAdapter = new FilterAdapter(context, outputSpec);
-        listView.setAdapter(filterAdapter);
+        MyLog.d("savedInstanceState = " + savedInstanceState+" tm = "+tm);
 
-        currentView.findViewById(R.id.storefilter).setOnClickListener(this);
-        final ImageButton addButton = (ImageButton) currentView.findViewById(R.id.addbutton);
-        addButton.setOnClickListener(this);
-        addSpinner = (Spinner) currentView.findViewById(R.id.addspin);
-        getScreensize(addSpinner, addButton);
-        final ArrayList<String> velden = tm.velden();
-        Collections.sort(velden);
-        final ArrayAdapter<String> spinAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, velden);
-        addSpinner.setAdapter(spinAdapter);
+        if (tm == null) {
+            MyLog.toast("Kan niet uitvoeren");
+            sendMessageToHandler(MSG_DONE, null);
+            getFragmentManager().popBackStack();
+        } else {
+
+            filterAdapter = new FilterAdapter(context, outputSpec);
+            listView.setAdapter(filterAdapter);
+
+            currentView.findViewById(R.id.storefilter).setOnClickListener(this);
+            final ImageButton addButton = (ImageButton) currentView.findViewById(R.id.addbutton);
+            addButton.setOnClickListener(this);
+            addSpinner = (Spinner) currentView.findViewById(R.id.addspin);
+            getScreensize(addSpinner, addButton);
+            final ArrayList<String> velden = tm.velden();
+            Collections.sort(velden);
+            final ArrayAdapter<String> spinAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, velden);
+            addSpinner.setAdapter(spinAdapter);
+        }
     }
 
     private LinearLayout makeCheckBoxes(final FilterSpec o) {

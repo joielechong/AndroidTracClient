@@ -57,15 +57,6 @@ class Tickets implements TL {
         // MyLog.d("na: ticketMap = "+ticketMap);
     }
 
-    public void add(Tickets tl) {
-        MyLog.d("this = " + this + " size voor = " + getTicketCount() + " tl = " + tl);
-        this.ticketList.addAll(tl.ticketList);
-//		for(Ticket t: tl.ticketList) {
-//			addTicket(t);
-//		}
-        MyLog.d("size na = " + getTicketCount());
-    }
-
     public int getTicketCount() {
         try {
             return ticketList.size();

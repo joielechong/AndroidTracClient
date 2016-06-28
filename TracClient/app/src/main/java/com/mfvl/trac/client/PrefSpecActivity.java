@@ -8,11 +8,19 @@ import android.support.v4.app.FragmentTransaction;
 import com.mfvl.mfvllib.MyLog;
 
 import java.util.ArrayList;
+import java.util.ArrayDeque;
 
 import static com.mfvl.trac.client.Const.*;
 import static com.mfvl.trac.client.TracGlobal.*;
 
 public class PrefSpecActivity extends TcBaseActivity {
+    private static ArrayDeque<Message> msgQueue = null;
+
+    @Override
+    public ArrayDeque<Message> getMessageQueue() {
+        MyLog.logCall();
+        return msgQueue;
+    }
 
     @Override
     public void onCreate(Bundle sis) {
@@ -22,6 +30,9 @@ public class PrefSpecActivity extends TcBaseActivity {
         String sortAction = getString(R.string.editSortAction);
         String loginAction = getString(R.string.editLoginAction);
 
+        if (msgQueue == null) {
+            msgQueue = new ArrayDeque<>(100);
+        }
         Intent intent = getIntent();
         MyLog.d(intent);
         String action = intent.getAction();
@@ -52,9 +63,13 @@ public class PrefSpecActivity extends TcBaseActivity {
     }
 
     @Override
-    public boolean handleMessage(Message msg) {
+    public boolean processMessage(Message msg) {
         MyLog.d(msg);
         switch (msg.what) {
+            case MSG_DONE:
+                finish();
+                break;
+
             case MSG_SET_FILTER:
                 //noinspection unchecked
                 ArrayList<FilterSpec> filter = (ArrayList<FilterSpec>) msg.obj;
@@ -72,7 +87,7 @@ public class PrefSpecActivity extends TcBaseActivity {
                 break;
 
             default:
-                return super.handleMessage(msg);
+                return super.processMessage(msg);
         }
         return true;
     }

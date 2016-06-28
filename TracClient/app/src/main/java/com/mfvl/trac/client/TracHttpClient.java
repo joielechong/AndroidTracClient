@@ -63,16 +63,16 @@ class TracHttpClient extends JSONRPCHttpClient {
         this(b.getString(CURRENT_URL), b.getBoolean(CURRENT_SSLHACK), b.getBoolean(CURRENT_SSLHOSTNAMEHACK), b.getString(CURRENT_USERNAME),
                 b.getString(CURRENT_PASSWORD));
     }
-	
-	public JSONObject toJSON() throws JSONException {
-		JSONObject a = new JSONObject();
-		a.put(CURRENT_URL, current_url);
-		a.put(CURRENT_USERNAME, current_username);
-		a.put(CURRENT_PASSWORD, current_password);
-		a.put(CURRENT_SSLHACK, current_sslHack);
-		a.put(CURRENT_SSLHOSTNAMEHACK, current_sslHostNameHack);		
-		return a;
-	}
+
+    public JSONObject toJSON() throws JSONException {
+        JSONObject a = new JSONObject();
+        a.put(CURRENT_URL, current_url);
+        a.put(CURRENT_USERNAME, current_username);
+        a.put(CURRENT_PASSWORD, current_password);
+        a.put(CURRENT_SSLHACK, current_sslHack);
+        a.put(CURRENT_SSLHOSTNAMEHACK, current_sslHostNameHack);
+        return a;
+    }
 
     public JSONArray Query(String reqString) throws JSONRPCException {
         return callJSONArray(TICKET_QUERY, reqString);
