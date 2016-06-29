@@ -20,13 +20,13 @@ import com.mfvl.mfvllib.MyLog;
 
 public class TicketListAdapter extends ColoredArrayAdapter<Ticket> {
 
-    public TicketListAdapter(TracStart context, TL tl) {
+    public TicketListAdapter(TracStart context, TicketListInterface tl) {
         super(context, tl != null ? tl.getTicketList() : null);
         MyLog.logCall();
         setNotifyOnChange(true);
     }
 
-    public void addAll(TL tl) {
+    public void addAll(TicketListInterface tl) {
         //MyLog.d("tl = " + tl + " " + (tl != null ? tl.ticketList.toString() : null));
         super.addAll(tl.getTicketList());
     }

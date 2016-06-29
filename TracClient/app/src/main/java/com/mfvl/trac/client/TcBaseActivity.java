@@ -40,7 +40,7 @@ public abstract class TcBaseActivity extends AppCompatActivity implements Handle
     }
 
     @Override
-    public void onStart() {
+    public synchronized void onStart() {
         super.onStart();
         MyLog.logCall();
         isPaused = false;

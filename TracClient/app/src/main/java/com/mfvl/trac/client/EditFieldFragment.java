@@ -31,9 +31,9 @@ import com.mfvl.mfvllib.MyLog;
 
 public class EditFieldFragment extends TcDialogFragment {
 
-    public static final String Veld = "veld";
-    public static final String Waarde = "waarde";
-    private static final String NieuwWaarde = "nieuwWaarde";
+    public static final String VELD = "veld";
+    public static final String WAARDE = "waarde";
+    private static final String NIEUW_WAARDE = "nieuwWaarde";
     private static TicketModel tm;
     private static String veld;
     private static String waarde;
@@ -44,12 +44,12 @@ public class EditFieldFragment extends TcDialogFragment {
     public void onSaveInstanceState(Bundle savedState) {
         super.onSaveInstanceState(savedState);
         MyLog.logCall();
-        savedState.putString(Veld, veld);
-        savedState.putString(Waarde, waarde);
+        savedState.putString(VELD, veld);
+        savedState.putString(WAARDE, waarde);
         tm.onSaveInstanceState(savedState);
         nieuwWaarde = ((TextView) spinValue.getSelectedView()).getText().toString();
         MyLog.d(nieuwWaarde);
-        savedState.putString(NieuwWaarde, nieuwWaarde);
+        savedState.putString(NIEUW_WAARDE, nieuwWaarde);
     }
 
     @Override
@@ -58,13 +58,13 @@ public class EditFieldFragment extends TcDialogFragment {
 
         if (savedInstanceState == null) {
             tm = TicketModel.getInstance();
-            veld = getArguments().getString(Veld);
-            waarde = getArguments().getString(Waarde);
+            veld = getArguments().getString(VELD);
+            waarde = getArguments().getString(WAARDE);
             nieuwWaarde = waarde;
         } else {
-            veld = savedInstanceState.getString(Veld);
-            waarde = savedInstanceState.getString(Waarde);
-            nieuwWaarde = savedInstanceState.getString(NieuwWaarde);
+            veld = savedInstanceState.getString(VELD);
+            waarde = savedInstanceState.getString(WAARDE);
+            nieuwWaarde = savedInstanceState.getString(NIEUW_WAARDE);
             tm = TicketModel.restore(savedInstanceState.getString(TicketModel.bundleKey));
         }
         final TicketModelVeld tmv = tm.getVeld(veld);

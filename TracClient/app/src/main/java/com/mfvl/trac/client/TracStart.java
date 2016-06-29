@@ -1382,7 +1382,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                 break;
 
             case MSG_LOAD_FASE1_FINISHED:
-                final TL tl = (TL) msg.obj;
+                final TicketListInterface tl = (TicketListInterface) msg.obj;
                 // MyLog.d("Tickets = " + tl);
                 if (hasTicketsLoadingBar) {
                     stopProgressBar();

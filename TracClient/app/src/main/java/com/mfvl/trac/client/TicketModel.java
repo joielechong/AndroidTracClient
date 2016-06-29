@@ -64,7 +64,7 @@ class TicketModel {
             processModelData(v);
 //            MyLog.d("_instance = " + _instance + " tracClient = " + _tracClient);
             return _instance;
-        } catch (JSONException e) {
+        } catch (NullPointerException | JSONException e) {
             MyLog.e(e);
             return null;
         }

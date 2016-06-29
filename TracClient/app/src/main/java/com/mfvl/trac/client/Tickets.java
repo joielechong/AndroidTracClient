@@ -21,11 +21,11 @@ import com.mfvl.mfvllib.MyLog;
 import java.util.Map;
 import java.util.TreeMap;
 
-interface TL {
+interface TicketListInterface {
     TicketList getTicketList();
 }
 
-class Tickets implements TL {
+class Tickets implements TicketListInterface {
 
     private static Map<Integer, Ticket> ticketMap = null;
     private TicketList ticketList = null;
