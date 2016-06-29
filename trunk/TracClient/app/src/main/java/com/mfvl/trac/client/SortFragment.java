@@ -74,11 +74,10 @@ public class SortFragment extends SpecFragment<SortSpec> {
         MyLog.d("savedInstanceState = " + savedInstanceState);
 
         if (tm == null) {
-            MyLog.toast("Kan niet uitvoeren");
+            MyLog.toast(context.getString(R.string.notpossible));
             sendMessageToHandler(MSG_DONE, null);
             getFragmentManager().popBackStack();
         } else {
-
             sortAdapter = new SortAdapter(context, outputSpec);
             listView.setAdapter(sortAdapter);
 

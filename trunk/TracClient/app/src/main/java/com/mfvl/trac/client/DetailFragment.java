@@ -694,8 +694,8 @@ public class DetailFragment extends TracClientFragment
             // Create and show the dialog.
             EditFieldFragment editFieldFragment = new EditFieldFragment();
             Bundle args = new Bundle();
-            args.putString(EditFieldFragment.Veld, veld);
-            args.putString(EditFieldFragment.Waarde, waarde);
+            args.putString(EditFieldFragment.VELD, veld);
+            args.putString(EditFieldFragment.WAARDE, waarde);
             editFieldFragment.setArguments(args);
             editFieldFragment.show(ft, "editfield");
         }

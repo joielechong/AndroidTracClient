@@ -101,11 +101,10 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
         MyLog.d("savedInstanceState = " + savedInstanceState+" tm = "+tm);
 
         if (tm == null) {
-            MyLog.toast("Kan niet uitvoeren");
+            MyLog.toast(context.getString(R.string.notpossible));
             sendMessageToHandler(MSG_DONE, null);
             getFragmentManager().popBackStack();
         } else {
-
             filterAdapter = new FilterAdapter(context, outputSpec);
             listView.setAdapter(filterAdapter);
 
