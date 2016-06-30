@@ -1,0 +1,127 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.0"
+
+    defaultConfig {
+        applicationId "com.mfvl.trac.client"
+        minSdkVersion 15
+        targetSdkVersion 24
+        versionCode 101
+        versionName "0.7"
+        resConfigs "nl","en","da","de","fr","pl","pt","ru","ar"
+    }
+
+    applicationVariants.all { variant ->
+        variant.resValue "string", "versionName", variant.versionName
+        variant.outputs.each    { output ->
+	    output.outputFile = new File("${System.env.PROJECTHOME}/APKFiles","TracClient-${variant.buildType.name}.apk")
+			        }
+			    }			   
+
+    sourceSets.main{
+        setRoot("${System.env.PROJECTHOME}/TracClient/app/src/main")
+//         manifest "${System.env.PROJECTHOME}/TracClient/app/src/main/AndroidManifest.xml"
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    dexOptions {
+        incremental true
+        javaMaxHeapSize "2048M"
+    }
+
+    signingConfigs {
+        release
+    }
+
+    buildTypes {
+        release {
+//noinspection GroovyAssignabilityCheck
+            signingConfig signingConfigs.release
+            shrinkResources false
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.pro'
+            zipAlignEnabled true
+            buildConfigField "boolean", "DEBUG_LOG", "true"
+        }
+        export {
+//noinspection GroovyAssignabilityCheck
+            signingConfig signingConfigs.release
+            shrinkResources true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.pro'
+            zipAlignEnabled true
+            buildConfigField "boolean", "DEBUG_LOG", "false"
+        }
+        debug {
+            shrinkResources false
+            buildConfigField "boolean", "DEBUG_LOG", "true"
+            debuggable true
+            minifyEnabled false
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+}
+
+repositories {
+    maven { url "http://dl.bintray.com/rameeshakulapc/maven" }
+}
+
+dependencies {
+    compile "com.google.android.gms:play-services-ads-lite:${google_play_services_library}"
+//    compile 'com.google.firebase:firebase-ads:${google_play_services_library}'
+    compile "com.android.support:appcompat-v7:${google_support_library}"
+    compile "com.android.support:design:${google_support_library}"
+    compile "com.android.support:support-v4:${google_support_library}"
+    compile "andhradroid.dev:app:1.0.1"
+    compile files('libs/httpclientandroidlib-1.2.1.jar')
+    compile project(":mfvllib")
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+preBuild.doFirst {
+    def parsedProjectXml = (new XmlParser()).parse("${System.env.PROJECTHOME}/TracClient/app/src/main/res/values/version.xml")
+    println "String name : " + parsedProjectXml.string[0].@name + ", text : " + parsedProjectXml.string[0].text()
+    android.defaultConfig.versionName = parsedProjectXml.string[0].text()
+}
+
+// dynamically load the signing values from private.properties
+File privatePropertiesFile = rootProject.file('private.properties')
+if (privatePropertiesFile.exists()) {
+    Properties properties = new Properties()
+    properties.load(new FileInputStream(privatePropertiesFile))
+    android.signingConfigs {
+        release {
+            storeFile file(properties.getProperty('key.store'))
+            storePassword properties.getProperty('key.store.password')
+            keyAlias properties.getProperty('key.alias')
+            keyPassword properties.getProperty('key.alias.password')
+        }
+    }
+    android.buildTypes.release.signingConfig android.signingConfigs.release
+}
+
+// check existence of private properties, show an error message
+task verifyPrivateProperties << {
+    if (!rootProject.file('private.properties').exists()) {
+        throw new InvalidUserDataException("For signing the release build you must provide a file private.properties in the root directory. Copy templates/private.properties and change the values.")
+    }
+}
+
+tasks.whenTaskAdded { theTask ->
+    // only verify the existence of private.properties, when the file is really needed
+    if (theTask.name.equals("validateReleaseSigning")) {
+        theTask.dependsOn "verifyPrivateProperties"
+    }
+}
+
+
+
+//apply plugin: 'com.google.gms.google-services'
