@@ -32,7 +32,7 @@ class Tickets implements TicketListInterface {
 
     public Tickets() {
         MyLog.logCall();
-        initList();
+        ticketList = new TicketList();
     }
 
     public static Ticket getTicket(final int ticknr) {
@@ -43,11 +43,6 @@ class Tickets implements TicketListInterface {
 
     public TicketList getTicketList() {
         return ticketList;
-    }
-
-    private void initList() {
-        MyLog.logCall();
-        ticketList = new TicketList();
     }
 
     public void resetCache() {
