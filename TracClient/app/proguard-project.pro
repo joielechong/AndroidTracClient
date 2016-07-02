@@ -70,12 +70,123 @@
     public <fields>; public <methods>;
 }
 
+-keep,includedescriptorclasses class com.google.android.gms.flags.impl.FlagProviderImpl {
+    public <fields>; public <methods>;
+}
+
+-keep,includedescriptorclasses class android.support.design.widget.NavigationView {
+    public <fields>; public <methods>;
+}
+
+-keep,includedescriptorclasses class android.support.design.widget.TabLayout {
+    public <fields>; public <methods>;
+}
+
+-keep,includedescriptorclasses class android.support.v4.view.ViewPager {
+    public <fields>; public <methods>;
+}
+
+-keep,includedescriptorclasses class android.support.design.widget.Snackbar$SnackbarLayout {
+    public <fields>; public <methods>;
+}
+
+-keep,includedescriptorclasses class android.support.v4.widget.SlidingPaneLayout {
+    public <fields>; public <methods>;
+}
+
+-keep,includedescriptorclasses class android.support.v4.widget.SwipeRefreshLayout {
+    public <fields>; public <methods>;
+}
+
+-keep,includedescriptorclasses class android.support.v7.view.menu.ActionMenuItemView {
+    public <fields>; public <methods>;
+}
+
+-keep,includedescriptorclasses class android.support.v7.widget.ActionBarContainer {
+    public <fields>; public <methods>;
+}
+
+-keep,includedescriptorclasses class android.support.v7.widget.ActionBarOverlayLayou {
+    public <fields>; public <methods>;
+}
+
+-keep,includedescriptorclasses class android.support.v7.widget.ActionMenuView {
+    public <fields>; public <methods>;
+}
+
+-keep,includedescriptorclasses class android.support.v7.widget.FitWindowsFrameLayout  {
+    public <fields>; public <methods>;
+}
+
+-keep,includedescriptorclasses class android.support.v4.widget.NestedScrollView {
+    public <fields>; public <methods>;
+}
+
+-keep,includedescriptorclasses class android.support.v7.widget.RecyclerView {
+    public <fields>; public <methods>;
+}
+
 -keep,includedescriptorclasses class com.google.android.gms.ads.doubleclick.PublisherAdView {
     public <fields>; public <methods>;
 }
 
+-keep,includedescriptorclasses class com.google.android.gms.ads.search.SearchAdView {
+    public <fields>; public <methods>;
+}
+
+-keep,includedescriptorclasses class android.support.v7.widget.SearchView {
+    public <fields>; public <methods>;
+}
+
+-keep,includedescriptorclasses class com.google.android.gms.ads.formats.NativeAdView {
+    public <fields>; public <methods>;
+}
+
+-keep,includedescriptorclasses class com.google.android.gms.ads.AdView {
+    public <fields>; public <methods>;
+}
+
+-keep,includedescriptorclasses class android.support.v7.widget.ViewStubCompat {
+    public <fields>; public <methods>;
+}
+
+-keep,includedescriptorclasses class android.support.v7.widget.Toolbar  {
+    public <fields>; public <methods>;
+}
+
+-keep,includedescriptorclasses class com.google.android.gms.ads.NativeExpressAdView  {
+    public <fields>; public <methods>;
+}
+
+-keep,includedescriptorclasses class android.support.v7.widget.MenuPopupWindow$MenuDropDownListView  {
+    public <fields>; public <methods>;
+}
+
+-keep,includedescriptorclasses class android.support.v7.widget.ActivityChooserView  {
+    public <fields>; public <methods>;
+}
+
+-keep,includedescriptorclasses class android.support.v7.widget.ContentFrameLayout  {
+    public <fields>; public <methods>;
+}
+
+-keep,includedescriptorclasses class android.support.v7.widget.ActionBarOverlayLayout  {
+    public <fields>; public <methods>;
+}
+
+-keep,includedescriptorclasses class android.support.v4.widget.DrawerLayout  {
+    public <fields>; public <methods>;
+}
 
 -keep class com.mfvl.trac.client.TcPreference* {
+	*;
+}
+
+-keep class android.support.design.widget.Snackbar$SnackbarLayout$OnLayoutChangeListener {
+	*;
+}
+
+-keep class android.support.design.widget.Snackbar$SnackbarLayout$OnAttachStateChangeListener {
 	*;
 }
 
