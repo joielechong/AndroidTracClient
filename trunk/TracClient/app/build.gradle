@@ -8,7 +8,7 @@ android {
         applicationId "com.mfvl.trac.client"
         minSdkVersion 15
         targetSdkVersion 24
-        versionCode 101
+        versionCode 102
         versionName "0.7"
         resConfigs "nl","en","da","de","fr","pl","pt","ru","ar"
     }
@@ -125,4 +125,3 @@ tasks.whenTaskAdded { theTask ->
 
 
 //apply plugin: 'com.google.gms.google-services'
-
