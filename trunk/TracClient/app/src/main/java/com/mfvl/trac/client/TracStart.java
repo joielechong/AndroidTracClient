@@ -1,6 +1,7 @@
 /*
- * Copyright (C) 2013-2016 Michiel van Loon
- *);
+ * Copyright (C) 2013 - 2016 Michiel van Loon
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -9,10 +10,10 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * Licensed under the Apache License, Version 2.0 (the "License"
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 
 package com.mfvl.trac.client;
 
@@ -120,7 +121,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             boolean bewaren = intent.getBooleanExtra(BEWAREN, false);
             boolean sslHack = intent.getBooleanExtra(CURRENT_SSLHACK, false);
             boolean sslHostNameHack = intent.getBooleanExtra(CURRENT_SSLHOSTNAMEHACK, false);
-            LoginProfile lp = new LoginProfile(url, username, password, sslHack, sslHostNameHack);
+            LoginProfileImpl lp = new LoginProfileImpl(url, username, password, sslHack, sslHostNameHack);
             lp.setProfile(SelectedProfile);
             MyLog.d(lp);
             Message m = tracStartHandler.obtainMessage(MSG_PERFORM_LOGIN, (bewaren ? 1 : 0), 0, lp);
@@ -137,7 +138,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     private ArrayList<SortSpec> sortList = null;
     private ArrayList<FilterSpec> filterList = null;
     private String profile = null;
-    private LoginProfile currentLoginProfile = null;
+    private LoginProfileImpl currentLoginProfile = null;
     private String url = null;
     private String username = null;
     private String password = null;
@@ -207,7 +208,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                 if (item.getGroupId() == 1234 && item.isEnabled()) {
                     String newProfile = item.getTitle().toString();
                     //MyLog.d(newProfile);
-                    LoginProfile lp = pdb.getProfile(newProfile);
+                    LoginProfileImpl lp = pdb.getProfile(newProfile);
                     MyLog.d(lp);
                     if (lp != null) {
                         removeFilterString();
@@ -340,7 +341,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             final String urlArg2 = urlArg + "login/rpc";
 
             if (!(urlArg.equals(url) || urlArg1.equals(url) || urlArg2.equals(url))) {
-                LoginProfile lp = pdb.findProfile(urlArg2);
+                LoginProfileImpl lp = pdb.findProfile(urlArg2);
 
                 if (lp == null) {
                     lp = pdb.findProfile(urlArg1);
@@ -1336,7 +1337,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                 break;
 
             case MSG_START_LISTLOADER:
-                currentLoginProfile = new LoginProfile(url, username, password, sslHack)
+                currentLoginProfile = new LoginProfileImpl(url, username, password, sslHack)
                         .setSslHostNameHack(sslHostNameHack)
                         .setFilterList(filterList)
                         .setSortList(sortList);

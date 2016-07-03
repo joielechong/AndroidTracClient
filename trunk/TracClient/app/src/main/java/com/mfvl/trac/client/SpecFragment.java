@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015,2016 Michiel van Loon
+ * Copyright (C) 2013 - 2016 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,7 +76,7 @@ abstract public class SpecFragment<T extends Spec> extends TracClientFragment {
             savedState.putSerializable(inputSpecText, inputSpec);
         }
 
-        SpecAdapter<T> adapter = (SpecAdapter<T>) listView.getAdapter();
+        ItemsAdapter<T> adapter = (ItemsAdapter<T>) listView.getAdapter();
 
         if (adapter != null) {
             final ArrayList<T> outputSpec = adapter.getItems();

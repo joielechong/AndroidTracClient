@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013,2014 Michiel van Loon
+ * Copyright (C) 2013 - 2016 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,32 @@
 
 package com.mfvl.trac.client;
 
+interface FilterSpec extends Spec {
+    String getOperator();
 
-public class FilterSpec extends Spec {
+    FilterSpec setOperator(final String o);
+
+    String getWaarde();
+
+    FilterSpec setWaarde(final String w);
+
+    boolean getEdit();
+}
+
+class FilterSpecImpl extends SpecImpl implements FilterSpec {
     private String _operator;
     private String _waarde;
     private String _newwaarde;
     private Boolean _edited = false;
 
-    public FilterSpec(final String veld, final String operator, final String waarde) {
+    public FilterSpecImpl(final String veld, final String operator, final String waarde) {
         super(veld);
         _operator = operator;
         _waarde = waarde;
         _newwaarde = waarde;
     }
 
-    public FilterSpec(final String string, final String[] operators) {
+    public FilterSpecImpl(final String string, final String[] operators) {
         super(null);
         _operator = null;
         _waarde = null;
@@ -98,7 +109,6 @@ public class FilterSpec extends Spec {
         }
     }
 
-    @Override
     public String toString() {
         return _edited ? _veld : _veld + (_operator != null ? _operator : "") + (_waarde != null ? _waarde : "");
     }

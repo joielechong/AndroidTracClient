@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013,2014 Michiel van Loon
+ * Copyright (C) 2013 - 2016 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -274,7 +274,7 @@ public class TracLoginFragment extends TracClientFragment
         if (arg1 != null) {
             SelectedProfile = ((CheckedTextView) arg1).getText().toString();
             if (arg2 > 0) { // pos 0 is empty
-                final LoginProfile prof = pdb.getProfile(SelectedProfile);
+                final LoginProfileImpl prof = pdb.getProfile(SelectedProfile);
 
                 if (prof != null) {
                     urlView.removeTextChangedListener(checkUrlInput);
@@ -595,7 +595,7 @@ public class TracLoginFragment extends TracClientFragment
         username = userView.getText().toString();
         password = pwView.getText().toString();
         sslHack = sslHackBox.isChecked();
-        final LoginProfile prof = new LoginProfile(url, username, password, sslHack);
+        final LoginProfileImpl prof = new LoginProfileImpl(url, username, password, sslHack);
 
         final AlertDialog.Builder alert = new AlertDialog.Builder(context);
 

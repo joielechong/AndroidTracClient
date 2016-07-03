@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2016 Michiel van Loon
+ * Copyright (C) 2013 - 2016 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -535,7 +536,7 @@ public class DetailFragment extends TracClientFragment
                 final String[] parsed = newValue != null ? newValue.split(":", 2) : new String[0];
                 modVeld.put("summary", parsed[1].trim());
             } else {
-                final int pos = ((ModifiedStringArrayAdapter) parent.getAdapter()).getPosition(
+                final int pos = ((ArrayAdapter<ModifiedString>) parent.getAdapter()).getPosition(
                         new ModifiedStringImpl(veld, newValue));
 
                 if (pos >= 0) {
@@ -544,7 +545,7 @@ public class DetailFragment extends TracClientFragment
                     ms.setWaarde(newValue);
                     ms.setUpdated();
                     values.set(pos, ms);
-                    ((ModifiedStringArrayAdapter) parent.getAdapter()).notifyDataSetChanged();
+                    ((ArrayAdapter<ModifiedString>) parent.getAdapter()).notifyDataSetChanged();
                 }
                 modVeld.put(veld, newValue);
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013,2014 Michiel van Loon
+ * Copyright (C) 2013 - 2016 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,34 @@ package com.mfvl.trac.client;
 import java.io.Serializable;
 import java.util.List;
 
+interface LoginProfile {
+    String getUrl();
 
-public class LoginProfile extends TcObject implements Serializable, Cloneable {
+    String getUsername();
+
+    String getPassword();
+
+    boolean getSslHack();
+
+    boolean getSslHostNameHack();
+
+    LoginProfile setSslHostNameHack(boolean v);
+
+    List<FilterSpec> getFilterList();
+
+    LoginProfileImpl setFilterList(List<FilterSpec> fl);
+
+    List<SortSpec> getSortList();
+
+    LoginProfileImpl setSortList(List<SortSpec> sl);
+
+    String getProfile();
+
+    void setProfile(String profile);
+
+}
+
+class LoginProfileImpl extends TcObject implements Serializable, Cloneable, LoginProfile {
     private final String _url;
     private final String _username;
     private final String _password;
@@ -30,11 +56,11 @@ public class LoginProfile extends TcObject implements Serializable, Cloneable {
     private List<SortSpec> sortList = null;
     private String _profile = null;
 
-    public LoginProfile(String url, String username, String password, boolean sslHack) {
+    public LoginProfileImpl(String url, String username, String password, boolean sslHack) {
         this(url, username, password, sslHack, false);
     }
 
-    public LoginProfile(String url, String username, String password, boolean sslHack, boolean sslHostNameHack) {
+    public LoginProfileImpl(String url, String username, String password, boolean sslHack, boolean sslHostNameHack) {
         _url = url;
         _username = username;
         _password = password;
@@ -47,10 +73,10 @@ public class LoginProfile extends TcObject implements Serializable, Cloneable {
         boolean retVal;
         if (this == o) {
             retVal = true;
-        } else if (!(o instanceof LoginProfile)) {
+        } else if (!(o instanceof LoginProfileImpl)) {
             retVal = false;
         } else {
-            LoginProfile f = (LoginProfile) o;
+            LoginProfileImpl f = (LoginProfileImpl) o;
 //			MyLog.d("this = "+this+" f = "+f + " "+retVal);
             retVal = equalFields(_url, f.getUrl());
             retVal &= equalFields(_username, f.getUsername());
@@ -84,7 +110,7 @@ public class LoginProfile extends TcObject implements Serializable, Cloneable {
         return _sslHostNameHack;
     }
 
-    public LoginProfile setSslHostNameHack(boolean v) {
+    public LoginProfileImpl setSslHostNameHack(boolean v) {
         _sslHostNameHack = v;
         return this;
     }
@@ -93,7 +119,7 @@ public class LoginProfile extends TcObject implements Serializable, Cloneable {
         return filterList;
     }
 
-    public LoginProfile setFilterList(List<FilterSpec> fl) {
+    public LoginProfileImpl setFilterList(List<FilterSpec> fl) {
         filterList = fl;
         return this;
     }
@@ -102,7 +128,7 @@ public class LoginProfile extends TcObject implements Serializable, Cloneable {
         return sortList;
     }
 
-    public LoginProfile setSortList(List<SortSpec> sl) {
+    public LoginProfileImpl setSortList(List<SortSpec> sl) {
         sortList = sl;
         return this;
     }

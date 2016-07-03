@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2013 - 2016 Michiel van Loon
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.mfvl.trac.client;
 
 import android.app.ProgressDialog;
@@ -18,12 +34,12 @@ import java.util.Map;
 import static com.mfvl.trac.client.Const.*;
 
 public abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callback, InterFragmentListener {
+    protected static boolean debug = false; // disable menuoption at startup
     Handler tracStartHandler = null;
     Messenger mMessenger = null;
     MyHandlerThread mHandlerThread = null;
     TicketModel tm = null;
     private ProgressDialog progressBar = null;
-    protected static boolean debug = false; // disable menuoption at startup
     private boolean isPaused;
 
     abstract ArrayDeque<Message> getMessageQueue();
@@ -165,7 +181,7 @@ public abstract class TcBaseActivity extends AppCompatActivity implements Handle
             final String[] operators = getResources().getStringArray(R.array.filter2_choice);
 
             for (final String f : fs) {
-                filter.add(new FilterSpec(f, operators));
+                filter.add(new FilterSpecImpl(f, operators));
             }
         }
         return filter;

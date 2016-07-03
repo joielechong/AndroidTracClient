@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015,2016 Michiel van Loon
+ * Copyright (C) 2013 - 2016 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,11 @@ import android.widget.ArrayAdapter;
 
 import java.util.ArrayList;
 
-class SpecAdapter<T extends Spec> extends ArrayAdapter<T> {
+interface ItemsAdapter<T> {
+    ArrayList<T> getItems();
+}
+
+class SpecAdapter<T extends Spec> extends ArrayAdapter<T> implements ItemsAdapter<T> {
     final ArrayList<T> items;
 
     public SpecAdapter(Context context, int textViewResourceId, ArrayList<T> items) {
