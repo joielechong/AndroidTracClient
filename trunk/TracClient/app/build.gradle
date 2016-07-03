@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2013 - 2016 Michiel van Loon
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 apply plugin: 'com.android.application'
 
 android {
@@ -15,9 +31,9 @@ android {
     applicationVariants.all { variant ->
         variant.resValue "string", "versionName", variant.versionName
         variant.outputs.each    { output ->
-	    output.outputFile = new File("${System.env.PROJECTHOME}/APKFiles","TracClient-${variant.buildType.name}.apk")
-			        }
-			    }			   
+            output.outputFile = new File("${System.env.PROJECTHOME}/APKFiles", "TracClient-${variant.buildType.name}.apk")
+        }
+    }
 
     sourceSets.main{
         setRoot("${System.env.PROJECTHOME}/TracClient/app/src/main")
@@ -43,7 +59,6 @@ android {
             signingConfig signingConfigs.release
             shrinkResources false
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.pro'
             zipAlignEnabled true
             buildConfigField "boolean", "DEBUG_LOG", "true"
         }
@@ -75,7 +90,6 @@ repositories {
 
 dependencies {
     compile "com.google.android.gms:play-services-ads-lite:${google_play_services_library}"
-//    compile 'com.google.firebase:firebase-ads:${google_play_services_library}'
     compile "com.android.support:appcompat-v7:${google_support_library}"
     compile "com.android.support:design:${google_support_library}"
     compile "com.android.support:support-v4:${google_support_library}"
@@ -120,7 +134,5 @@ tasks.whenTaskAdded { theTask ->
         theTask.dependsOn "verifyPrivateProperties"
     }
 }
-
-
 
 //apply plugin: 'com.google.gms.google-services'
