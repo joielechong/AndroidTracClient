@@ -9,7 +9,6 @@ android {
         minSdkVersion 15
         targetSdkVersion 24
         versionCode 102
-        versionName "0.7"
         resConfigs "nl","en","da","de","fr","pl","pt","ru","ar"
     }
 
