@@ -12,8 +12,7 @@
   ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
-  -->
-<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+  -->s xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string-array name="TracClient">
         <item name="name">TracClient</item>
         <item name="url">https://van-loon.xs4all.nl/TracClient/login/rpc</item>
