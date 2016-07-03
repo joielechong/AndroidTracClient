@@ -13,7 +13,9 @@
   ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
-  -->es>
+  -->
+
+<resources>
     <string name="app_name">TracClient</string>
     <string name="tracUrl">TRAC url</string>
     <string name="tracUrlHint">http://host/trac/login/rpc</string>

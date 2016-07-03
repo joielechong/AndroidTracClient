@@ -12,7 +12,8 @@
   ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
-  -->s>
+  -->
+<resources>
     <color name="colorPrimary">@color/help_back</color>
     <color name="colorPrimaryDark">@color/material_blue_grey_800</color>
     <color name="colorAccent">@android:color/holo_orange_dark</color>
