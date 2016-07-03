@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2016 Michiel van Loon
+ * Copyright (C) 2013 - 2016 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,7 +76,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
 
             case R.id.addbutton:
                 final String veld = (String) addSpinner.getSelectedItem();
-                final FilterSpec o = new FilterSpec(veld, "=", "");
+                final FilterSpec o = new FilterSpecImpl(veld, "=", "");
 
                 filterAdapter.add(o);
                 filterAdapter.notifyDataSetChanged();

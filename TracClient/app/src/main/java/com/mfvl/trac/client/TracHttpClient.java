@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Michiel van Loon
+ * Copyright (C) 2013 - 2016 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ class TracHttpClient extends JSONRPCHttpClient {
         setCredentials(username, password);
     }
 
-    public TracHttpClient(final LoginProfile lp) {
+    public TracHttpClient(final LoginProfileImpl lp) {
         this(lp.getUrl(), lp.getSslHack(), lp.getSslHostNameHack(), lp.getUsername(), lp.getPassword());
     }
 

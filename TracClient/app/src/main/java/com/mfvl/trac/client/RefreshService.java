@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2016 Michiel van Loon
+ * Copyright (C) 2013 - 2016 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ public class RefreshService extends Service implements Handler.Callback {
     private Timer monitorTimer = null;
     private MyHandlerThread mHandlerThread = null;
     private Handler mServiceHandler;
-    private LoginProfile mLoginProfile = null;
+    private LoginProfileImpl mLoginProfile = null;
     private TracHttpClient tracClient = null;
     private NotificationManager mNotificationManager;
     private Tickets mTickets = null;
@@ -430,7 +430,7 @@ public class RefreshService extends Service implements Handler.Callback {
             case MSG_REFRESH_LIST:
                 msg.obj = null;
             case MSG_LOAD_TICKETS:
-                @SuppressWarnings("CastToConcreteClass") LoginProfile lp = (LoginProfile) msg.obj;
+                @SuppressWarnings("CastToConcreteClass") LoginProfileImpl lp = (LoginProfileImpl) msg.obj;
                 MyLog.d("lp = " + lp);
                 MyLog.d("mLoginProfile = " + mLoginProfile);
                 if (lp != null) {

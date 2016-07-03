@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013,2014 Michiel van Loon
+ * Copyright (C) 2013 - 2016 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package com.mfvl.trac.client;
 
-public class SortSpec extends Spec {
+public class SortSpec extends SpecImpl {
     private boolean _richting; // true = asc false = desc
 
     public SortSpec(String veld) {

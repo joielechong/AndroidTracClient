@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013,2014 Michiel van Loon
+ * Copyright (C) 2013 - 2016 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,7 +78,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
                         int resId = ta.getResourceId(i, 0);
                         String[] values = res.getStringArray(resId);
 
-                        addProfile(values[0], new LoginProfile(values[1], values[2], values[3],
+                        addProfile(values[0], new LoginProfileImpl(values[1], values[2], values[3],
                                 "true".equals(values[4])));
                         // MyLog.d("i = "+i+" values = "+Arrays.asList(values));
                     }
@@ -134,7 +134,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
-    public void addProfile(String name, LoginProfile profile) throws SQLException {
+    public void addProfile(String name, LoginProfileImpl profile) throws SQLException {
         final ContentValues values = new ContentValues();
 
         values.put(NAME_ID, name);
@@ -169,8 +169,8 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
                 null);
     }
 
-    public LoginProfile getProfile(String name) {
-        LoginProfile profile = null;
+    public LoginProfileImpl getProfile(String name) {
+        LoginProfileImpl profile = null;
 
         open();
         final Cursor c = db.query(TABLE_NAME,
@@ -180,15 +180,15 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
 
         if (c.getCount() > 0) {
             c.moveToFirst();
-            profile = new LoginProfile(c.getString(0), c.getString(1), c.getString(2),
+            profile = new LoginProfileImpl(c.getString(0), c.getString(1), c.getString(2),
                     c.getInt(3) == 1);
         }
         c.close();
         return profile;
     }
 
-    public LoginProfile findProfile(String url) {
-        LoginProfile profile = null;
+    public LoginProfileImpl findProfile(String url) {
+        LoginProfileImpl profile = null;
 
         open();
         final Cursor c = db.query(TABLE_NAME,
@@ -198,7 +198,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
 
         if (c.getCount() > 0) {
             c.moveToFirst();
-            profile = new LoginProfile(c.getString(0), c.getString(1), c.getString(2),
+            profile = new LoginProfileImpl(c.getString(0), c.getString(1), c.getString(2),
                     c.getInt(3) == 1);
         }
         c.close();
@@ -266,7 +266,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
         String _appname = null;
         private int state = -1;
         private String profileName;
-        private LoginProfile lp;
+        private LoginProfileImpl lp;
 
         public XMLHandler(String appname, ProfileDatabaseHelper pdb) {
             super();
@@ -300,7 +300,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
                 case 2:
                     if ("profile".equals(localName)) {
                         state++;
-                        lp = new LoginProfile(attributes.getValue(ProfileDatabaseHelper.URL_ID),
+                        lp = new LoginProfileImpl(attributes.getValue(ProfileDatabaseHelper.URL_ID),
                                 attributes.getValue(ProfileDatabaseHelper.USERNAME_ID),
                                 attributes.getValue(ProfileDatabaseHelper.PASSWORD_ID),
                                 "1".equals(attributes.getValue(ProfileDatabaseHelper.SSLHACK_ID)));
