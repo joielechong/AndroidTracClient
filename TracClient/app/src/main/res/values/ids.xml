@@ -13,7 +13,9 @@
   ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
-  -->es>
+  -->
+
+<resources>
     <item name="okBut" type="id"/>
     <item name="canBut" type="id"/>
     <item name="swipe_container" type="id"/>

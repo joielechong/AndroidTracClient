@@ -12,7 +12,9 @@
   ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
-  -->al names for system resources -->
+  -->
+
+<!-- local names for system resources -->
 <resources>
     <drawable name="upArrow">@android:drawable/arrow_up_float</drawable>
     <drawable name="downArrow">@android:drawable/arrow_down_float</drawable>

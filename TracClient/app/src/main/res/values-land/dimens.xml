@@ -12,7 +12,8 @@
   ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
-  -->s>
+  -->
+<resources>
     <dimen name="list_textsize">16sp</dimen>
     <dimen name="help_textsize">20sp</dimen>
     <dimen name="helphdr_textsize">35sp</dimen>

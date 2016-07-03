@@ -12,7 +12,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */org.alexd.jsonrpc;
+ */
+
+package org.alexd.jsonrpc;
 
 /**
  * Represents an error during JSON-RPC method call. Various reasons can make a JSON-RPC call fail (network not available, non
