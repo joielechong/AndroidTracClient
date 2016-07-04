@@ -101,7 +101,9 @@ dependencies {
 
 preBuild.doFirst {
     def parsedProjectXml = (new XmlParser()).parse("${System.env.PROJECTHOME}/TracClient/app/src/main/res/values/version.xml")
+    //noinspection GroovyAssignabilityCheck,GroovyAssignabilityCheck,GroovyAssignabilityCheck
     println "String name : " + parsedProjectXml.string[0].@name + ", text : " + parsedProjectXml.string[0].text()
+    //noinspection GroovyAssignabilityCheck
     android.defaultConfig.versionName = parsedProjectXml.string[0].text()
 }
 
