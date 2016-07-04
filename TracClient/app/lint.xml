@@ -14,9 +14,8 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
 <lint>
-    <issue id="UnusedIds" severity="warning" />
+    <issue id="UnusedIds" severity="warning"/>
     <issue id="NewerVersionAvailable" severity="info" />
 
     <!-- Disable this given check in this project  -->
