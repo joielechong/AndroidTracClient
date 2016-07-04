@@ -536,7 +536,9 @@ public class DetailFragment extends TracClientFragment
                 final String[] parsed = newValue != null ? newValue.split(":", 2) : new String[0];
                 modVeld.put("summary", parsed[1].trim());
             } else {
-                final int pos = ((ArrayAdapter<ModifiedString>) parent.getAdapter()).getPosition(
+                @SuppressWarnings("unchecked")
+                ArrayAdapter<ModifiedString> adapter = (ArrayAdapter<ModifiedString>) parent.getAdapter();
+                final int pos = adapter.getPosition(
                         new ModifiedStringImpl(veld, newValue));
 
                 if (pos >= 0) {
@@ -545,7 +547,7 @@ public class DetailFragment extends TracClientFragment
                     ms.setWaarde(newValue);
                     ms.setUpdated();
                     values.set(pos, ms);
-                    ((ArrayAdapter<ModifiedString>) parent.getAdapter()).notifyDataSetChanged();
+                    adapter.notifyDataSetChanged();
                 }
                 modVeld.put(veld, newValue);
             }

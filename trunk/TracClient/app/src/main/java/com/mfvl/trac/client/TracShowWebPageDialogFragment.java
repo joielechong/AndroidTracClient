@@ -18,8 +18,10 @@ package com.mfvl.trac.client;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TabLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,49 +32,57 @@ import android.widget.TextView;
 import com.mfvl.mfvllib.MyLog;
 
 import static com.mfvl.trac.client.Const.*;
-import static com.mfvl.trac.client.TracGlobal.*;
 
-public class TracShowWebPageDialogFragment extends TcDialogFragment implements View.OnClickListener {
+public class TracShowWebPageDialogFragment extends TcDialogFragment implements TabLayout.OnTabSelectedListener {
     private String fileUrl;
-    private WebView webfile;
-    private TextView textAbout;
-    private View scrollAbout;
     private View mainView = null;
     private int webzoom = 0;
 
     @SuppressLint("InflateParams")
     public void preLoad(LayoutInflater inflater, Bundle args) {
-
-        final boolean toonVersie = args.getBoolean(HELP_VERSION);
-        final boolean showCookies = args.getBoolean(HELP_COOKIES);
+        MyLog.logCall();
         final String fileName = args.getString(HELP_FILE);
-        final boolean cookieInform = getCookieInform();
         webzoom = args.getInt(HELP_ZOOM);
 
         mainView = inflater.inflate(R.layout.trac_about, null);
         fileUrl = "file:///android_asset/" + fileName + ".html";
+        MyLog.d(fileUrl);
+    }
 
-        final View versionblock = mainView.findViewById(R.id.versionblock);
-        MyLog.d(fileUrl + " " + toonVersie + " " + versionblock);
-        webfile = (WebView) mainView.findViewById(R.id.webfile);
-        textAbout = (TextView) mainView.findViewById(R.id.textAbout);
-        scrollAbout = mainView.findViewById(R.id.scrollAbout);
-
-        if (!toonVersie) {
-            versionblock.setVisibility(View.GONE);
-        } else {
-            final TextView about_version_text = (TextView) mainView.findViewById(R.id.about_version_text);
-            about_version_text.setText(getVersion());
-            View keuzeblock = mainView.findViewById(R.id.keuzeblock);
-            if (!cookieInform && !showCookies) {
-                keuzeblock.setVisibility(View.GONE);
-            } else {
-                keuzeblock.setVisibility(View.VISIBLE);
-                mainView.findViewById(R.id.showchanges).setOnClickListener(this);
-                mainView.findViewById(R.id.showcookies).setOnClickListener(this);
-            }
+    private void startFragment(Fragment frag) {
+        MyLog.d(frag);
+        if (frag != null) {
+            getChildFragmentManager().beginTransaction().replace(R.id.about_frame, frag).commit();
         }
-        showWebpage();
+    }
+
+    @Override
+    public void onTabSelected(TabLayout.Tab tab) {
+        MyLog.d(tab);
+        switch (tab.getPosition()) {
+            case 0:
+                startFragment(new AboutFragment());
+                break;
+            case 1:
+                Fragment frag = new ChangeFragment();
+                Bundle args = new Bundle();
+                args.putString(HELP_FILE, fileUrl);
+                args.putInt(HELP_ZOOM, webzoom);
+                frag.setArguments(args);
+                startFragment(frag);
+                break;
+            case 2:
+                startFragment(new CookiesFragment());
+                break;
+        }
+    }
+
+    @Override
+    public void onTabReselected(TabLayout.Tab tab) {
+    }
+
+    @Override
+    public void onTabUnselected(TabLayout.Tab tab) {
     }
 
     @Override
@@ -81,7 +91,15 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements V
         if (mainView == null) {
             preLoad(inflater, getArguments());
         }
+        TabLayout tl = (TabLayout) mainView.findViewById(R.id.tabs);
+        tl.setOnTabSelectedListener(this);
         return mainView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        startFragment(new AboutFragment());
     }
 
     @NonNull
@@ -93,37 +111,39 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements V
         return d;
     }
 
-    public void onClick(View v) {
-        MyLog.d(v.getId());
-        switch (v.getId()) {
-            case R.id.showchanges:
-                showWebpage();
-                break;
-
-            case R.id.showcookies:
-                showCookies();
-                break;
+    public static class AboutFragment extends Fragment {
+        @SuppressLint("InflateParams")
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            MyLog.logCall();
+            return inflater.inflate(R.layout.trac_version, null);
         }
     }
 
-    private void showWebpage() {
-        MyLog.logCall();
-//        scrollAbout.setVisibility(View.GONE);
-        webfile.loadUrl(fileUrl);
-        webfile.setVisibility(View.VISIBLE);
-        // webfile.getSettings().setJavaScriptEnabled(true);
-        webfile.getSettings().setTextZoom(webzoom);
-        MyLog.d(webfile.getContentHeight());
-        scrollAbout.setVisibility(View.VISIBLE);
-        textAbout.setText(null);
+    public static class ChangeFragment extends Fragment {
+        @SuppressLint("InflateParams")
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            MyLog.logCall();
+            final View v = inflater.inflate(R.layout.trac_help, null);
+            final WebView wv = (WebView) v.findViewById(R.id.webfile);
+            final Bundle args = getArguments();
+            if (args != null) {
+                final String fileUrl = args.getString(HELP_FILE);
+                final int webzoom = args.getInt(HELP_ZOOM);
+                wv.loadUrl(fileUrl);
+                wv.getSettings().setTextZoom(webzoom);
+            }
+            return v;
+        }
     }
 
-    private void showCookies() {
-        MyLog.logCall();
-        webfile.setVisibility(View.GONE);
-        scrollAbout.setVisibility(View.VISIBLE);
-        textAbout.setText(R.string.cookieInform);
-//        webfile.loadData(getResources().getString(R.string.cookieInform),"text/html",null);
-        //TracGlobal.setCookieInform(false);
+    public static class CookiesFragment extends Fragment {
+        @SuppressLint("InflateParams")
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            MyLog.logCall();
+            return inflater.inflate(R.layout.cookies, null);
+        }
     }
 }

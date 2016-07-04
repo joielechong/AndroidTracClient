@@ -180,16 +180,6 @@ class TracGlobal {
         return !lastRun.equals(thisRun);
     }
 
-    public static boolean getCookieInform() {
-//        MyLog.logCall();
-        return settings.getBoolean(PREF_COOKIEINFORM, true);
-    }
-
-//    public static void setCookieInform(boolean val) {
-//        MyLog.logCall();
-//        settings.edit().putBoolean(PREF_COOKIEINFORM, val).apply();
-//    }
-
     public static String getFilterString() {
         MyLog.logCall();
         return settings.getString(prefFilterKey, "max=500&status!=closed");
@@ -222,10 +212,6 @@ class TracGlobal {
     public static void storeSortString(final String sortString) {
         //MyLog.d(sortString);
         settings.edit().putString(prefSortKey, sortString == null ? "" : sortString).apply();
-    }
-
-    public static String getVersion() {
-        return versie;
     }
 
     public static String makeDbPath() {

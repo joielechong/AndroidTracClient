@@ -126,6 +126,5 @@
     <string name="choosefield">Feld wählen</string>
     <string name="permissiontext">Diese App braucht die SD-Karte lesen und schreiben zu können. Dazu gibt es jetz noch keine Permission.Ohne diesePermission ist es nicht möglich Profilen zu importieren oder exportieren oder Anhänge von der SD-Karte anzuschließen.Wenn Sie nicht sicher sind,klicken Sie in dem folgenden Dialog dann nicht auf"Fragen Sie nicht mehr"Wahl.</string>
     <string name="cookieInform"> Diese App nutzt Cookies von Google. um Dienstleistungen zu liefern, um Anzeigen zu personalisieren und Verkehr zu analysieren. Informationen über Ihre Benutzung dieser App wird mit Google geteilt. Wenn Sie diese App nutzen, akzeptieren Sie der Verwendung von Cookies.</string>
-    <string name="settings"> Einstellungen</string>
     <string name="generalsettings"> Allgemeine Einstellungen</string>
 </resources>
