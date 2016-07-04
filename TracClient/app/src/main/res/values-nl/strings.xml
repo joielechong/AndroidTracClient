@@ -133,7 +133,6 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Sluit navigation drawer</string>
-    <string name="settings">Instellingen</string>
     <string name="checking">Controleren</string>
     <string name="prefNrItems">Batchgrootte tickets laden</string>
     <string name="filtersumm">Specificeer filter opties</string>

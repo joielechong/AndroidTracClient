@@ -119,6 +119,5 @@
     <string name="choosefield">Wybierz pole</string>
     <string name="doubleback">Kliknij ponownie,aby wyjść</string>
     <string name="noJSON">Brak wsparcia JSON na TRAC-serwer</string>
-    <string name="settings">Ustawienia</string>
 
 </resources>
