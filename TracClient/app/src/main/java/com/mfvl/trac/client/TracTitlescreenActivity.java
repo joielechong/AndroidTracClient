@@ -39,7 +39,7 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
         MyLog.setContext(this, getString(R.string.logfile));
         MyLog.reset();
         TracGlobal.getInstance(getApplicationContext());
-        setContentView(R.layout.activity_titlescreen);
+        setContentView(R.layout.trac_version);
         startService(new Intent(this, RefreshService.class));
     }
 
