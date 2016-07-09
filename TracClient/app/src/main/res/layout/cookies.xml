@@ -18,5 +18,5 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="@string/cookieInform"
-            android:textColor="@color/help_text"
-            android:textSize="@dimen/help_textsize"/>
+			android:theme="@style/AboutscreenTheme"
+            android:textSize="@dimen/list_textsize"/>
