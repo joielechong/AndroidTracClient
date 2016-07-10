@@ -20,7 +20,8 @@
 
     <color name="popup_back">#39cccccc</color>
     <color name="help_back">@android:color/holo_blue_dark</color>
-    <color name="help_text">@android:color/holo_blue_light</color>
+    <!-- color name="help_text">@android:color/holo_blue_light</color -->
+    <color name="help_text">#77e5e5</color>
     <color name="about_text">@android:color/holo_blue_bright</color>
     <color name="spinner_text">@android:color/black</color>
 
