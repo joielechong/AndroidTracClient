@@ -26,6 +26,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 
 import com.mfvl.mfvllib.MyLog;
+import com.mfvl.mfvllib.MyProgressBar;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ public abstract class TcBaseActivity extends AppCompatActivity implements Handle
     Messenger mMessenger = null;
     MyHandlerThread mHandlerThread = null;
     TicketModel tm = null;
-    private ProgressDialog progressBar = null;
+    private MyProgressBar progressBar = null;
     private boolean isPaused;
 
     abstract ArrayDeque<Message> getMessageQueue();
@@ -124,22 +125,7 @@ public abstract class TcBaseActivity extends AppCompatActivity implements Handle
                 synchronized (this) {
                     //MyLog.d("handleMessage msg = START_PROGRESSBAR string = "+message);
                     if (progressBar == null) {
-                        progressBar = new ProgressDialog(this) {
-                            @Override
-                            public void onStop() {
-                                super.onStop();
-                                MyLog.logCall();
-                                stopProgressBar();
-                            }
-                        };
-                        progressBar.setCancelable(true);
-                        if (message != null) {
-                            progressBar.setMessage(message);
-                        }
-                        progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                        if (!isFinishing()) {
-                            progressBar.show();
-                        }
+                        progressBar = new MyProgressBar(this,message);
                     }
                 }
                 break;
