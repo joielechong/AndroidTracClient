@@ -797,7 +797,8 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         aboutArgs.putBoolean(HELP_VERSION, true);
         aboutArgs.putBoolean(HELP_COOKIES, showCookies);
         aboutArgs.putInt(HELP_ZOOM, webzoom);
-        about.preLoad(getLayoutInflater(), aboutArgs);
+//        about.preLoad(getLayoutInflater(), aboutArgs);
+        about.setArguments(aboutArgs);
         about.show(getSupportFragmentManager(), "about");
     }
 

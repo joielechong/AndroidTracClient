@@ -94,7 +94,6 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
         final Bundle aboutArgs = new Bundle();
         aboutArgs.putString(HELP_FILE, filename);
         aboutArgs.putInt(HELP_ZOOM, webzoom);
-        about.preLoad(context.getLayoutInflater(), aboutArgs);
         about.setArguments(aboutArgs);
         about.show(getFragmentManager(), "help");
     }

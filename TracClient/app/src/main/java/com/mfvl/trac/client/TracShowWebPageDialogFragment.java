@@ -16,7 +16,6 @@
 
 package com.mfvl.trac.client;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -27,27 +26,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.webkit.WebView;
-import android.widget.TextView;
 
 import com.mfvl.mfvllib.MyLog;
 
 import static com.mfvl.trac.client.Const.*;
 
 public class TracShowWebPageDialogFragment extends TcDialogFragment implements TabLayout.OnTabSelectedListener {
+    private final static String TABSELECTED = "tabselected";
     private String fileUrl;
-    private View mainView = null;
     private int webzoom = 0;
-
-    @SuppressLint("InflateParams")
-    public void preLoad(LayoutInflater inflater, Bundle args) {
-        MyLog.logCall();
-        final String fileName = args.getString(HELP_FILE);
-        webzoom = args.getInt(HELP_ZOOM);
-
-        mainView = inflater.inflate(R.layout.trac_about, null);
-        fileUrl = "file:///android_asset/" + fileName + ".html";
-        MyLog.d(fileUrl);
-    }
+    private int tabSelected = 0;
+    private TabLayout tl;
 
     private void startFragment(Fragment frag) {
         MyLog.d(frag);
@@ -59,7 +48,12 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements T
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
         MyLog.d(tab);
-        switch (tab.getPosition()) {
+        tabSelected = tab.getPosition();
+        selectFragment(tabSelected);
+    }
+
+    private void selectFragment(int tab) {
+        switch (tab) {
             case 0:
                 startFragment(new AboutFragment());
                 break;
@@ -79,6 +73,7 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements T
 
     @Override
     public void onTabReselected(TabLayout.Tab tab) {
+        onTabSelected(tab);
     }
 
     @Override
@@ -88,18 +83,43 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements T
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         MyLog.logCall();
-        if (mainView == null) {
-            preLoad(inflater, getArguments());
+        if (savedInstanceState != null) {
+            tabSelected = savedInstanceState.getInt(TABSELECTED);
         }
-        TabLayout tl = (TabLayout) mainView.findViewById(R.id.tabs);
-        tl.setOnTabSelectedListener(this);
+        final String fileName = getArguments().getString(HELP_FILE);
+        webzoom = getArguments().getInt(HELP_ZOOM);
+
+        View mainView = inflater.inflate(R.layout.trac_about, container, false);
+        fileUrl = "file:///android_asset/" + fileName + ".html";
+        tl = (TabLayout) mainView.findViewById(R.id.tabs);
+        MyLog.d(fileUrl);
         return mainView;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(TABSELECTED,tabSelected);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        startFragment(new AboutFragment());
+        TabLayout.Tab tab = tl.getTabAt(tabSelected);
+        if (tab != null) {
+            tab.select();
+            selectFragment(tabSelected);
+        }
+    }
+
+    public void onResume() {
+        super.onResume();
+        tl.addOnTabSelectedListener(this);
+    }
+
+    public void onPause() {
+        super.onPause();
+        tl.removeOnTabSelectedListener(this);
     }
 
     @NonNull
@@ -112,20 +132,18 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements T
     }
 
     public static class AboutFragment extends Fragment {
-        @SuppressLint("InflateParams")
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             MyLog.logCall();
-            return inflater.inflate(R.layout.trac_version, null);
+            return inflater.inflate(R.layout.trac_version,  container,false);
         }
     }
 
     public static class ChangeFragment extends Fragment {
-        @SuppressLint("InflateParams")
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             MyLog.logCall();
-            final View v = inflater.inflate(R.layout.trac_help, null);
+            final View v = inflater.inflate(R.layout.trac_help, container,false);
             final WebView wv = (WebView) v.findViewById(R.id.webfile);
             final Bundle args = getArguments();
             if (args != null) {
@@ -139,11 +157,10 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements T
     }
 
     public static class CookiesFragment extends Fragment {
-        @SuppressLint("InflateParams")
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             MyLog.logCall();
-            return inflater.inflate(R.layout.cookies, null);
+            return inflater.inflate(R.layout.cookies, container,false);
         }
     }
 }
