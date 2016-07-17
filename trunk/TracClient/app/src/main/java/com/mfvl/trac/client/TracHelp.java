@@ -25,7 +25,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.webkit.WebView;
-import android.widget.TextView;
 
 import com.mfvl.mfvllib.MyLog;
 
@@ -34,29 +33,20 @@ import static com.mfvl.trac.client.Const.*;
 public class TracHelp extends TcDialogFragment {
     private String fileUrl;
     private WebView webfile;
-    private View mainView = null;
     private int webzoom = 0;
 
-    @SuppressLint("InflateParams")
-    public void preLoad(LayoutInflater inflater, Bundle args) {
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        MyLog.logCall();
+        final String fileName = getArguments().getString(HELP_FILE);
+        webzoom = getArguments().getInt(HELP_ZOOM);
 
-        final String fileName = args.getString(HELP_FILE);
-        webzoom = args.getInt(HELP_ZOOM);
-
-        mainView = inflater.inflate(R.layout.trac_help, null);
+        View mainView = inflater.inflate(R.layout.trac_help, container, false);
         fileUrl = "file:///android_asset/" + fileName + ".html";
 
         MyLog.d(fileUrl);
         webfile = (WebView) mainView.findViewById(R.id.webfile);
         showWebpage();
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        MyLog.logCall();
-        if (mainView == null) {
-            preLoad(inflater, getArguments());
-        }
         return mainView;
     }
 

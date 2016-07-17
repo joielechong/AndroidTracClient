@@ -16,7 +16,6 @@
 
 package com.mfvl.trac.client;
 
-import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
