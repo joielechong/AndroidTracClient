@@ -129,7 +129,27 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             m.sendToTarget();
         }
     };
-    private boolean doubleBackToExitPressedOnce = false;
+	private final BroadcastReceiver performFilterReceiver = new BroadcastReceiver() {
+		@Override
+		public void	onReceive(Context context, Intent intent) {
+            MyLog.d("intent = " + intent);
+			String filterString = intent.getStringExtra(FILTERLISTNAME);
+			Message m = tracStartHandler.obtainMessage(MSG_SET_FILTER,parseFilterString(filterString));
+			MyLog.d(m);
+			m.sendToTarget();
+		}
+	};
+	private final BroadcastReceiver performSortReceiver = new BroadcastReceiver() {
+		@Override
+		public void	onReceive(Context context, Intent intent) {
+            MyLog.d("intent = " + intent);
+			String sortString = intent.getStringExtra(SORTLISTNAME);
+			Message m = tracStartHandler.obtainMessage(MSG_SET_SORT,parseSortString(sortString));
+			MyLog.d(m);
+			m.sendToTarget();
+		}
+	};
+	private boolean doubleBackToExitPressedOnce = false;
     private FrameLayout adViewContainer = null;
     private AdView adView = null;
     private boolean dispAds = true;
@@ -281,6 +301,8 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
 
         LocalBroadcastManager.getInstance(this).registerReceiver(sqlupdateReceiver, new IntentFilter(DB_UPDATED));
         LocalBroadcastManager.getInstance(this).registerReceiver(performLoginReceiver, new IntentFilter(PERFORM_LOGIN));
+        LocalBroadcastManager.getInstance(this).registerReceiver(performFilterReceiver, new IntentFilter(PERFORM_FILTER));
+        LocalBroadcastManager.getInstance(this).registerReceiver(performSortReceiver, new IntentFilter(PERFORM_SORT));
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);

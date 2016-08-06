@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 
 import com.mfvl.mfvllib.MyLog;
 
@@ -80,6 +81,7 @@ public class PrefSpecActivity extends TcBaseActivity {
 
     @Override
     public boolean processMessage(Message msg) {
+		Intent intent;
         MyLog.d(msg);
         switch (msg.what) {
             case MSG_DONE:
@@ -91,7 +93,10 @@ public class PrefSpecActivity extends TcBaseActivity {
                 ArrayList<FilterSpec> filter = (ArrayList<FilterSpec>) msg.obj;
                 String filterString = joinList(filter.toArray(), "&");
                 storeFilterString(filterString);
-                finish();
+				intent = new Intent(PERFORM_FILTER);
+				intent.putExtra(FILTERLISTNAME, filterString);
+				LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+				finish();
                 break;
 
             case MSG_SET_SORT:
@@ -99,6 +104,9 @@ public class PrefSpecActivity extends TcBaseActivity {
                 ArrayList<SortSpec> sort = (ArrayList<SortSpec>) msg.obj;
                 String sortString = joinList(sort.toArray(), "&");
                 storeSortString(sortString);
+				intent = new Intent(PERFORM_SORT);
+				intent.putExtra(SORTLISTNAME, sortString);
+				LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
                 finish();
                 break;
 
