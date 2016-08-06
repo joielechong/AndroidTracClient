@@ -78,8 +78,6 @@ final class Const {
     static final int MSG_SET_TICKET_MODEL = 47;
     static final int MSG_PERFORM_LOGIN = 48;
     static final int MSG_DONE = 49;
-    static final int MSG_PERFORM_FILTER = 50;
-    static final int MSG_PERFORM_SORT = 51;
 
     static final String DATABASE_NAME = "profile.db";
     static final String DB_UPDATED = "db_update";
