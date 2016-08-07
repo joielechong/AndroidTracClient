@@ -37,7 +37,7 @@ android {
 
     sourceSets.main{
         setRoot("${System.env.PROJECTHOME}/TracClient/app/src/main")
-//         manifest "${System.env.PROJECTHOME}/TracClient/app/src/main/AndroidManifest.xml"
+//         manifest "${System.//env.PROJECTHOME}/TracClient/app/src/main/AndroidManifest.xml"
     }
 
     lintOptions {
@@ -77,6 +77,10 @@ android {
             debuggable true
             minifyEnabled false
         }
+	all {
+	    def svnVersion=rootProject.getSvnRevision(file("${System.env.PROJECTHOME}/TracClient/app/src/main"))
+	    buildConfigField "int", "SVN_REVISION", "${svnVersion}"
+	}
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
