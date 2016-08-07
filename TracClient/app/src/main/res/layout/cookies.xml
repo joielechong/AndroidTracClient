@@ -18,5 +18,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="@string/cookieInform"
-			android:theme="@style/AboutscreenTheme"
+	    android:id="@+id/cookiestext"
+	    android:theme="@style/AboutscreenTheme"
             android:textSize="@dimen/list_textsize"/>

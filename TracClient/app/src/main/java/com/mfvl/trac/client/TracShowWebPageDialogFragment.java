@@ -26,7 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.webkit.WebView;
-
+import android.widget.TextView;
 import com.mfvl.mfvllib.MyLog;
 
 import static com.mfvl.trac.client.Const.*;
@@ -37,6 +37,7 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements T
     private int webzoom = 0;
     private int tabSelected = 0;
     private TabLayout tl;
+	InterFragmentListener listener;
 
     private void startFragment(Fragment frag) {
         MyLog.d(frag);
@@ -49,15 +50,15 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements T
     public void onTabSelected(TabLayout.Tab tab) {
         MyLog.d(tab);
         tabSelected = tab.getPosition();
-        selectFragment(tabSelected);
+        selectFragment(tab);
     }
 
-    private void selectFragment(int tab) {
-        switch (tab) {
-            case 0:
-                startFragment(new AboutFragment());
+    private void selectFragment(TabLayout.Tab tab) {
+        switch (tab.getPosition()) {
+		case 0:
+				startFragment(new AboutFragment());
                 break;
-            case 1:
+		case 1:
                 Fragment frag = new ChangeFragment();
                 Bundle args = new Bundle();
                 args.putString(HELP_FILE, fileUrl);
@@ -65,9 +66,12 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements T
                 frag.setArguments(args);
                 startFragment(frag);
                 break;
-            case 2:
+		case 2:
                 startFragment(new CookiesFragment());
                 break;
+		case 3:
+				startFragment(new SvnFragment());
+				break;
         }
     }
 
@@ -83,6 +87,7 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements T
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         MyLog.logCall();
+		listener = (InterFragmentListener)getActivity();
         if (savedInstanceState != null) {
             tabSelected = savedInstanceState.getInt(TABSELECTED);
         }
@@ -93,6 +98,9 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements T
         fileUrl = "file:///android_asset/" + fileName + ".html";
         tl = (TabLayout) mainView.findViewById(R.id.tabs);
         MyLog.d(fileUrl);
+		if (listener.debugEnabled()) {
+			tl.addTab(tl.newTab().setText(R.string.svn));
+		}
         return mainView;
     }
 
@@ -108,7 +116,7 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements T
         TabLayout.Tab tab = tl.getTabAt(tabSelected);
         if (tab != null) {
             tab.select();
-            selectFragment(tabSelected);
+            selectFragment(tab);
         }
     }
 
@@ -161,6 +169,17 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements T
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             MyLog.logCall();
             return inflater.inflate(R.layout.cookies, container,false);
+        }
+    }
+
+    public static class SvnFragment extends Fragment {
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            MyLog.logCall();
+            View v = inflater.inflate(R.layout.cookies, container,false);
+			TextView t =(TextView)v.findViewById(R.id.cookiestext);
+			t.setText("SVN Revision = "+BuildConfig.SVN_REVISION);
+			return v;
         }
     }
 }

@@ -29,6 +29,8 @@ import java.util.Map;
 interface InterFragmentListener {
     void enableDebug();
 
+	boolean debugEnabled();
+
     void onChooserSelected(OnFileSelectedListener oc);
 
     void onTicketSelected(Ticket ticket);

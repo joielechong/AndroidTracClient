@@ -33,4 +33,5 @@
     <string name="prefFilterKey">filterstring</string>
     <string name="prefSortKey">sortString</string>
     <string name="prefLoginKey">loginString</string>
+    <string name="svn">SVN</string>
 </resources>
