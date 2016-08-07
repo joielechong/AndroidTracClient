@@ -214,6 +214,11 @@ public abstract class TcBaseActivity extends AppCompatActivity implements Handle
         MyLog.toast("Debug enabled");
     }
 
+	@Override
+	public boolean debugEnabled() {
+		return debug;
+	}
+
     @Override
     public void onChooserSelected(OnFileSelectedListener oc) {
         throw new RuntimeException("not implemented");
