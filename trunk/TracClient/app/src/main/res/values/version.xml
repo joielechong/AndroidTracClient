@@ -16,5 +16,5 @@
   -->
 
 <resources>
-    <string name="app_version" translatable="false">0.7-rc16</string>
+    <string name="app_version" translatable="false">0.7-rc17</string>
 </resources>
