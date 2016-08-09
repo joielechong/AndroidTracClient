@@ -78,8 +78,9 @@ android {
             minifyEnabled false
         }
 	all {
-	    def svnVersion=rootProject.getSvnRevision(file("${System.env.PROJECTHOME}/TracClient/"))
-	    buildConfigField "int", "SVN_REVISION", "${svnVersion}"
+	    def rev = rootProject.svnUpdate(file("${System.env.PROJECTHOME}/TracClient/"))
+	    println "Updated to revision "+rev 
+	    buildConfigField "int", "SVN_REVISION", "${rev}"
 	}
     }
     compileOptions {
@@ -109,8 +110,6 @@ preBuild.doFirst {
     println parsedProjectXml.string[0].@name + " : " + parsedProjectXml.string[0].text()
     //noinspection GroovyAssignabilityCheck
     android.defaultConfig.versionName = parsedProjectXml.string[0].text()
-    def rev = rootProject.svnUpdate(file("${System.env.PROJECTHOME}/TracClient/"))
-    println "Updated to revision "+rev 
 }
 
 // dynamically load the signing values from private.properties
