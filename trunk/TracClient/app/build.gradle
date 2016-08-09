@@ -78,7 +78,7 @@ android {
             minifyEnabled false
         }
 	all {
-	    def svnVersion=rootProject.getSvnRevision(file("${System.env.PROJECTHOME}/TracClient/app/src/main"))
+	    def svnVersion=rootProject.getSvnRevision(file("${System.env.PROJECTHOME}/TracClient/"))
 	    buildConfigField "int", "SVN_REVISION", "${svnVersion}"
 	}
     }
