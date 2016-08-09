@@ -105,10 +105,12 @@ dependencies {
 
 preBuild.doFirst {
     def parsedProjectXml = (new XmlParser()).parse("${System.env.PROJECTHOME}/TracClient/app/src/main/res/values/version.xml")
-    //noinspection GroovyAssignabilityCheck,GroovyAssignabilityCheck,GroovyAssignabilityCheck
-    println "String name : " + parsedProjectXml.string[0].@name + ", text : " + parsedProjectXml.string[0].text()
+    //noinspection GroovyAssignabilityCheck
+    println parsedProjectXml.string[0].@name + " : " + parsedProjectXml.string[0].text()
     //noinspection GroovyAssignabilityCheck
     android.defaultConfig.versionName = parsedProjectXml.string[0].text()
+    def rev = rootProject.svnUpdate(file("${System.env.PROJECTHOME}/TracClient/"))
+    println "Updated to revision "+rev 
 }
 
 // dynamically load the signing values from private.properties
