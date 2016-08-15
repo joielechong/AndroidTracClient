@@ -178,7 +178,7 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements T
             MyLog.logCall();
             View v = inflater.inflate(R.layout.cookies, container,false);
 			TextView t =(TextView)v.findViewById(R.id.cookiestext);
-			t.setText("SVN Revision = "+BuildConfig.SVN_REVISION);
+			t.setText(getString(R.string.svnrev,BuildConfig.SVN_REVISION));
 			return v;
         }
     }

@@ -34,4 +34,5 @@
     <string name="prefSortKey">sortString</string>
     <string name="prefLoginKey">loginString</string>
     <string name="svn">SVN</string>
+    <string name="svnrev">SVN Revision = %d"</string>
 </resources>
