@@ -37,7 +37,6 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements T
     private int webzoom = 0;
     private int tabSelected = 0;
     private TabLayout tl;
-	InterFragmentListener listener;
 
     private void startFragment(Fragment frag) {
         MyLog.d(frag);
@@ -87,7 +86,7 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements T
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         MyLog.logCall();
-		listener = (InterFragmentListener)getActivity();
+        InterFragmentListener listener = (InterFragmentListener) getActivity();
         if (savedInstanceState != null) {
             tabSelected = savedInstanceState.getInt(TABSELECTED);
         }

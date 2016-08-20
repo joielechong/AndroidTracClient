@@ -311,11 +311,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         settings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent launchPrefs = new Intent(TracStart.this, TcPreference.class);
-                launchPrefs.putExtra(PreferenceActivity.EXTRA_NO_HEADERS, true);
-                launchPrefs.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, "com.mfvl.trac.client.TcPreference$SettingsFragment");
-                startActivity(launchPrefs);
-                mDrawerLayout.closeDrawer(GravityCompat.START);
+                startPreferences();
             }
         });
 
@@ -436,6 +432,14 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         }
         setReferenceTime();
         TracGlobal.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+    }
+
+    private void startPreferences() {
+        Intent launchPrefs = new Intent(TracStart.this, TcPreference.class);
+        launchPrefs.putExtra(PreferenceActivity.EXTRA_NO_HEADERS, true);
+        launchPrefs.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, "com.mfvl.trac.client.TcPreference$SettingsFragment");
+        startActivity(launchPrefs);
+        mDrawerLayout.closeDrawer(GravityCompat.START);
     }
 
     @Override
@@ -787,6 +791,10 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                 }
                 break;
 
+            case R.id.settings:
+                startPreferences();
+                break;
+
             case R.id.over:
                 showAbout(false);
                 break;
@@ -798,6 +806,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             case R.id.tlnieuw:
                 onNewTicket();
                 break;
+
             case R.id.debug:
                 final Intent sendIntent = new Intent(Intent.ACTION_SEND);
                 sendIntent.putExtra(Intent.EXTRA_TEXT, MyLog.getDebug());
@@ -975,7 +984,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         startActivityForResult(intent, REQUEST_CODE_CHOOSER);
     }
 
-    public void onLogin(String newUrl, String newUser, String newPass, boolean newHack, boolean newHostNameHack, String newProfile, boolean bewaren) {
+    private void onLogin(String newUrl, String newUser, String newPass, boolean newHack, boolean newHostNameHack, String newProfile, boolean bewaren) {
         MyLog.d(newUrl + " " + newUser + " " + newPass + " " + newHack + " " + newHostNameHack + " " + newProfile);
         url = newUrl;
         username = newUser;

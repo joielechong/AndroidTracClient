@@ -138,4 +138,5 @@
     <string name="filtersumm">Specificeer filter opties</string>
     <string name="sortsumm">Specifificeer sorteer volgorder</string>
     <string name="generalsettings">Algemene instellingen</string>
+    <string name="settings">Instellingen</string>
 </resources>

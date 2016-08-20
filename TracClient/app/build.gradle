@@ -18,13 +18,13 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.0"
+    buildToolsVersion "${build_tools_version}"
 
     defaultConfig {
         applicationId "com.mfvl.trac.client"
         minSdkVersion 15
         targetSdkVersion 24
-        versionCode 104
+        versionCode 105
         resConfigs "nl","en","da","de","fr","pl","pt","ru","ar"
     }
 
