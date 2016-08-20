@@ -50,7 +50,6 @@ final class Const {
     static final String PREF_HNH = "sslHostNameHack";
     static final String PREF_PROF = "profile";
     static final String PREF_1ST = "firstRun";
-    static final String PREF_COOKIEINFORM = "CookieInform";
 
     /*
      * Messages

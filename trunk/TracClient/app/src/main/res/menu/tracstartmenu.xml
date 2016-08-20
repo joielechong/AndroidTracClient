@@ -17,6 +17,14 @@
       xmlns:support="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
       tools:ignore="AppCompatResource">
+
+    <item
+        android:id="@+id/settings"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:menuCategory="container"
+        android:orderInCategory="9996"
+        android:title="@string/settings"
+        support:showAsAction="ifRoom"/>
     <item
         android:id="@+id/help"
         android:icon="@android:drawable/ic_menu_help"
