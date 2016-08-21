@@ -129,5 +129,7 @@
     <string name="checking">Vérification</string>
     <string name="generalsettings"> Réglages généraux</string>
     <string name="settings"></string>
+    <string name="trachost">Hôte Trac</string>
+    <string name="permissiontext">Cette application devrait être capable de lire et d\'écrire sur la carte SD. Il n\'y a pas l\'autorisation pour les données. Si vous choisissez de ne pas donner un tel consentement, il est impossible d\'importer ou d\'exporter des profils ou des pièces jointes à attacher de la carte SD. Si vous n\'êtes pas cliquez sur le dialogue suivant pas le choix "Ne demandez pas".</string>
 
 </resources>
