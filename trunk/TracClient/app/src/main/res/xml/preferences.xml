@@ -19,8 +19,8 @@
 
     <PreferenceScreen
         android:key="@string/prefLoginKey"
-        android:summary="Kies een andere TRAC host"
-        android:title="TRAC Host">
+        android:summary="@string/changehost"
+        android:title="@string/trachost">
         <intent
             android:action="@string/editLoginAction"
             android:targetClass="com.mfvl.trac.client.PrefSpecActivity"

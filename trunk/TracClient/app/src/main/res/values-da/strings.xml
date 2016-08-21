@@ -101,4 +101,11 @@
     <string name="oktext">OK</string>
     <string name="checking">Kontrollere</string>
     <string name="bewaren">Gem login</string>
+    <string name="doubleback">Klik BACK igen for at afslutte</string>
+    <string name="invalidCred"> Ugyldige legitimationsoplysninger</string>
+    <string name="permissiontext"> Denne app skal læse og skrive SD-kort, denne tilladelse er ikke blevet endnu ydet til app. Hvis du vælger ikke at give denne tilladelse, vil det ikke være muligt at importere eller eksportere profiler eller at vedhæfte filer fra SD-kortet. Hvis der er tvivl ikke kontrollere afkrydsningsfeltet "Spørg ikke igen" i den næste dialog.</string>
+    <string name="permissiontitle"> Anmodning om tilladelse</string>
+    <string name="chooseoption">Vælg option</string>
+    <string name="choosefield"> Vælg felt</string>
+    <string name="debug">Debug</string>
 </resources>
