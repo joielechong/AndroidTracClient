@@ -71,7 +71,7 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket> {
         return retVal;
     }
 
-    public TicketList getTicketList() {
+    public Iterable<Ticket> getTicketList() {
         TicketList tl = new TicketList();
         for (int i = 0; i < getCount(); i++) {
             tl.add(getItem(i));

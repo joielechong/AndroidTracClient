@@ -36,6 +36,7 @@ import ch.boye.httpclientandroidlib.HttpStatus;
 import ch.boye.httpclientandroidlib.ProtocolVersion;
 import ch.boye.httpclientandroidlib.auth.AuthScope;
 import ch.boye.httpclientandroidlib.auth.UsernamePasswordCredentials;
+import ch.boye.httpclientandroidlib.client.CredentialsProvider;
 import ch.boye.httpclientandroidlib.client.config.RequestConfig;
 import ch.boye.httpclientandroidlib.client.methods.HttpPost;
 import ch.boye.httpclientandroidlib.client.protocol.HttpClientContext;
@@ -123,7 +124,7 @@ public class JSONRPCHttpClient extends JSONRPCClient {
                 final Uri u = Uri.parse(actualUri);
                 final HttpClientContext httpContext = HttpClientContext.create();
                 if (_username != null) {
-                    final BasicCredentialsProvider cp = new BasicCredentialsProvider();
+                    final CredentialsProvider cp = new BasicCredentialsProvider();
                     cp.setCredentials(new AuthScope(u.getHost(), u.getPort()),
                             new UsernamePasswordCredentials(_username, _password));
                     httpContext.setCredentialsProvider(cp);

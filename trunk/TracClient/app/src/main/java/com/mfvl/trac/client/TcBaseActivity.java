@@ -34,7 +34,7 @@ import java.util.Map;
 import static com.mfvl.trac.client.Const.*;
 
 public abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callback, InterFragmentListener {
-    protected static boolean debug = false; // disable menuoption at startup
+    static boolean debug = false; // disable menuoption at startup
     Handler tracStartHandler = null;
     Messenger mMessenger = null;
     MyHandlerThread mHandlerThread = null;

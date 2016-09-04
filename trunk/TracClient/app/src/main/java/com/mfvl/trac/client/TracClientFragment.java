@@ -36,6 +36,7 @@ import android.widget.SpinnerAdapter;
 import com.mfvl.mfvllib.MyLog;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static com.mfvl.trac.client.Const.*;
@@ -120,7 +121,7 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
         tracStartHandler.obtainMessage(MSG_SHOW_DIALOG, titleres, message, addit).sendToTarget();
     }
 
-    SpinnerAdapter makeComboAdapter(Context context, List<Object> waardes, boolean optional) {
+    SpinnerAdapter makeComboAdapter(Context context, Collection<Object> waardes, boolean optional) {
 //        MyLog.d("waardes = "+waardes+" optional = "+optional);
         if (waardes == null) {
             return null;

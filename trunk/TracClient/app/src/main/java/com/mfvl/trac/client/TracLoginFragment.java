@@ -512,7 +512,7 @@ public class TracLoginFragment extends TracClientFragment
         }.start();
     }
 
-    private void setNoJSONMessage(final String message) {
+    private void setNoJSONMessage(final CharSequence message) {
         context.runOnUiThread(new Runnable() {
             @Override
             public void run() {

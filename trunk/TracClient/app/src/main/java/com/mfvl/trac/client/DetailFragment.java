@@ -43,6 +43,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -666,7 +667,7 @@ public class DetailFragment extends TracClientFragment
             }
             listView.setOnItemLongClickListener(this);
             listView.setOnItemClickListener(this);
-            final ModifiedStringArrayAdapter dataAdapter = new ModifiedStringArrayAdapter(context, values);
+            final ListAdapter dataAdapter = new ModifiedStringArrayAdapter(context, values);
             listView.setAdapter(dataAdapter);
         }
     }

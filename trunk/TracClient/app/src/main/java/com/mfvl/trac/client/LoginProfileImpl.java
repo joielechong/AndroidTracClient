@@ -76,7 +76,7 @@ class LoginProfileImpl extends TcObject implements Serializable, Cloneable, Logi
         } else if (!(o instanceof LoginProfileImpl)) {
             retVal = false;
         } else {
-            LoginProfileImpl f = (LoginProfileImpl) o;
+            LoginProfile f = (LoginProfileImpl) o;
 //			MyLog.d("this = "+this+" f = "+f + " "+retVal);
             retVal = equalFields(_url, f.getUrl());
             retVal &= equalFields(_username, f.getUsername());
