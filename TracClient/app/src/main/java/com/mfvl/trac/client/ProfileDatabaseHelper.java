@@ -205,7 +205,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
         return profile;
     }
 
-    private int delProfiles() {
+    public int delProfiles() {
         try {
             open();
             final String values[] = new String[]{""};

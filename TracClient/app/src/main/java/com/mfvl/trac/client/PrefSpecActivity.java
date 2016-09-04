@@ -26,6 +26,7 @@ import com.mfvl.mfvllib.MyLog;
 
 import java.util.ArrayList;
 import java.util.ArrayDeque;
+import java.util.Collection;
 
 import static com.mfvl.trac.client.Const.*;
 import static com.mfvl.trac.client.TracGlobal.*;
@@ -90,7 +91,7 @@ public class PrefSpecActivity extends TcBaseActivity {
 
             case MSG_SET_FILTER:
                 //noinspection unchecked
-                ArrayList<FilterSpec> filter = (ArrayList<FilterSpec>) msg.obj;
+                Collection<FilterSpec> filter = (ArrayList<FilterSpec>) msg.obj;
                 String filterString = joinList(filter.toArray(), "&");
                 storeFilterString(filterString);
 				intent = new Intent(PERFORM_FILTER);
@@ -101,7 +102,7 @@ public class PrefSpecActivity extends TcBaseActivity {
 
             case MSG_SET_SORT:
                 //noinspection unchecked
-                ArrayList<SortSpec> sort = (ArrayList<SortSpec>) msg.obj;
+                Collection<SortSpec> sort = (ArrayList<SortSpec>) msg.obj;
                 String sortString = joinList(sort.toArray(), "&");
                 storeSortString(sortString);
 				intent = new Intent(PERFORM_SORT);

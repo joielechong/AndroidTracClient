@@ -22,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.Checkable;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
@@ -188,7 +189,7 @@ public class NewTicketFragment extends TracClientFragment {
                     }
                     velden.put("status", "new");
                     velden.put("reporter", username);
-                    final CheckBox updNotify = (CheckBox) view.findViewById(R.id.updNotify);
+                    final Checkable updNotify = (CheckBox) view.findViewById(R.id.updNotify);
                     final boolean notify = updNotify != null && updNotify.isChecked();
                     final Ticket t = new Ticket(velden);
                     final int newtick = listener.createTicket(t, notify);

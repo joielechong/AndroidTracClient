@@ -121,7 +121,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             boolean bewaren = intent.getBooleanExtra(BEWAREN, false);
             boolean sslHack = intent.getBooleanExtra(CURRENT_SSLHACK, false);
             boolean sslHostNameHack = intent.getBooleanExtra(CURRENT_SSLHOSTNAMEHACK, false);
-            LoginProfileImpl lp = new LoginProfileImpl(url, username, password, sslHack, sslHostNameHack);
+            LoginProfile lp = new LoginProfileImpl(url, username, password, sslHack, sslHostNameHack);
             lp.setProfile(SelectedProfile);
             MyLog.d(lp);
             Message m = tracStartHandler.obtainMessage(MSG_PERFORM_LOGIN, (bewaren ? 1 : 0), 0, lp);
@@ -208,7 +208,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     }
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         MyLog.d("item = " + item);
         // Handle navigation view item clicks here.
 

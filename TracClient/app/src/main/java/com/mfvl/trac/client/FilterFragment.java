@@ -34,6 +34,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 import com.mfvl.mfvllib.MyLog;
@@ -45,7 +46,7 @@ import java.util.List;
 
 import static com.mfvl.trac.client.Const.*;
 
-public class FilterFragment extends SpecFragment<FilterSpec> implements OnCheckedChangeListener {
+public class FilterFragment extends SpecFragment<FilterSpec> {
     private static List<String> operators = null;
     private static List<String> operatornames = null;
     private FilterAdapter filterAdapter;
@@ -115,74 +116,12 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
             getScreensize(addSpinner, addButton);
             final ArrayList<String> velden = tm.velden();
             Collections.sort(velden);
-            final ArrayAdapter<String> spinAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, velden);
+            final SpinnerAdapter spinAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, velden);
             addSpinner.setAdapter(spinAdapter);
         }
     }
 
-    private LinearLayout makeCheckBoxes(final FilterSpec o) {
-        final String veldnaam = o.getVeld();
-        List<Object> waardes = tm.getVeld(veldnaam).options();
-        final String w = o.getWaarde();
-        final String op = o.getOperator();
-        final boolean omgekeerd = op != null && op.equals("!=");
-
-//        MyLog.d(veldnaam + " " + w + " " + omgekeerd);
-        LinearLayout valCheckBoxes = new LinearLayout(context);
-
-        valCheckBoxes.setOrientation(LinearLayout.VERTICAL);
-        String[] ws;
-
-        try {
-            ws = w == null ? null : w.split("\\|");
-        } catch (final IllegalArgumentException e) {
-            ws = new String[1];
-            ws[0] = w;
-        }
-
-        for (int i = 0; i < waardes.size(); i++) {
-            final CheckBox rb = new CheckBox(context);
-
-            rb.setText((String) waardes.get(i));
-            rb.setId(i);
-            rb.setChecked(omgekeerd);
-            if (w != null) {
-                for (final String w1 : ws) {
-                    if (w1.equals(waardes.get(i))) {
-                        rb.setChecked(!omgekeerd);
-                    }
-                }
-            }
-            rb.setTag(o);
-            rb.setOnCheckedChangeListener(this);
-            valCheckBoxes.addView(rb);
-        }
-        return valCheckBoxes;
-    }
-
-    @Override
-    public void onCheckedChanged(CompoundButton cb0, boolean isChecked) {
-//		MyLog.d("cb0 = "+cb0+" parent = "+ cb0.getParent());
-        String temp = null;
-        ViewGroup parent = (ViewGroup) cb0.getParent();
-
-        for (int j = 0; j < parent.getChildCount(); j++) {
-            final CheckBox cb = (CheckBox) parent.getChildAt(j);
-//			MyLog.d("cb = "+cb+" j = "+ j);
-
-            if (cb != null && cb.isChecked()) {
-                if (temp == null) {
-                    temp = cb.getText().toString();
-                } else {
-                    temp += "|" + cb.getText();
-                }
-            }
-        }
-        FilterSpec o = (FilterSpec) cb0.getTag();
-        o.setOperator("=").setWaarde(temp);
-    }
-
-    private class FilterAdapter extends SpecAdapter<FilterSpec> implements View.OnClickListener {
+    private class FilterAdapter extends SpecAdapter<FilterSpec> implements View.OnClickListener, OnCheckedChangeListener {
 
         public FilterAdapter(Context context, ArrayList<FilterSpec> input) {
             super(context, android.R.layout.simple_list_item_1, input);
@@ -228,7 +167,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
             filterNaam.setText((filterItem.getEdit() ? filterItem.getVeld() : filterItem.toString()));
 
             if (spin != null) {
-                final ArrayAdapter<String> spinAdapter = new ArrayAdapter<>(context,
+                final SpinnerAdapter spinAdapter = new ArrayAdapter<>(context,
                         android.R.layout.simple_spinner_item,
                         operatornames);
 
@@ -274,6 +213,46 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
             parent.invalidate();
 
             return v;
+        }
+
+        private LinearLayout makeCheckBoxes(final FilterSpec o) {
+            final String veldnaam = o.getVeld();
+            List<Object> waardes = tm.getVeld(veldnaam).options();
+            final String w = o.getWaarde();
+            final String op = o.getOperator();
+            final boolean omgekeerd = op != null && op.equals("!=");
+
+//        MyLog.d(veldnaam + " " + w + " " + omgekeerd);
+            LinearLayout valCheckBoxes = new LinearLayout(context);
+
+            valCheckBoxes.setOrientation(LinearLayout.VERTICAL);
+            String[] ws;
+
+            try {
+                ws = w == null ? null : w.split("\\|");
+            } catch (final IllegalArgumentException e) {
+                ws = new String[1];
+                ws[0] = w;
+            }
+
+            for (int i = 0; i < waardes.size(); i++) {
+                final CheckBox rb = new CheckBox(context);
+
+                rb.setText((String) waardes.get(i));
+                rb.setId(i);
+                rb.setChecked(omgekeerd);
+                if (w != null) {
+                    for (final String w1 : ws) {
+                        if (w1.equals(waardes.get(i))) {
+                            rb.setChecked(!omgekeerd);
+                        }
+                    }
+                }
+                rb.setTag(o);
+                rb.setOnCheckedChangeListener(this);
+                valCheckBoxes.addView(rb);
+            }
+            return valCheckBoxes;
         }
 
         @Override
@@ -322,7 +301,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
             return o;
         }
 
-        private void startEditItem(FilterSpec filterItem) {
+        private void startEditItem(Spec filterItem) {
 //			MyLog.d("startEditItem filterItem =" + filterItem);
             filterItem.setEdit(true);
             notifyDataSetChanged();
@@ -335,6 +314,28 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements OnChecke
                 filterItem.setOperator(operators.get(spin.getSelectedItemPosition()));
             }
             notifyDataSetChanged();
+        }
+
+        @Override
+        public void onCheckedChanged(CompoundButton cb0, boolean isChecked) {
+//		MyLog.d("cb0 = "+cb0+" parent = "+ cb0.getParent());
+            String temp = null;
+            ViewGroup parent = (ViewGroup) cb0.getParent();
+
+            for (int j = 0; j < parent.getChildCount(); j++) {
+                final CheckBox cb = (CheckBox) parent.getChildAt(j);
+//			MyLog.d("cb = "+cb+" j = "+ j);
+
+                if (cb != null && cb.isChecked()) {
+                    if (temp == null) {
+                        temp = cb.getText().toString();
+                    } else {
+                        temp += "|" + cb.getText();
+                    }
+                }
+            }
+            FilterSpec o = (FilterSpec) cb0.getTag();
+            o.setOperator("=").setWaarde(temp);
         }
     }
 }

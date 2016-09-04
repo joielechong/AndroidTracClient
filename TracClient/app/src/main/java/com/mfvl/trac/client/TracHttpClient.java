@@ -55,7 +55,7 @@ class TracHttpClient extends JSONRPCHttpClient {
         setCredentials(username, password);
     }
 
-    public TracHttpClient(final LoginProfileImpl lp) {
+    public TracHttpClient(final LoginProfile lp) {
         this(lp.getUrl(), lp.getSslHack(), lp.getSslHostNameHack(), lp.getUsername(), lp.getPassword());
     }
 

@@ -35,6 +35,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -403,7 +404,7 @@ public class RefreshService extends Service implements Handler.Callback {
                 break;
 
             case MSG_SEND_TICKETS:
-                List<Integer> newTickets = (List<Integer>) msg.obj;
+                Collection<Integer> newTickets = (List<Integer>) msg.obj;
                 if (newTickets == null) {
                     newTickets = new ArrayList<>();
                     newTickets.add(msg.arg1);

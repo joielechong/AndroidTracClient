@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.Checkable;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -96,7 +97,7 @@ public class UpdateTicketFragment extends TracClientFragment {
         });
     }
 
-    private void displayView(final int checkedButton, final int spinPosition, final String optionVal) {
+    private void displayView(final int checkedButton, final int spinPosition, final CharSequence optionVal) {
         final View view = getView();
         final TextView tv = (TextView) view.findViewById(R.id.titel);
         final String text = context.getString(R.string.updtick) + " " + _ticket;
@@ -227,7 +228,7 @@ public class UpdateTicketFragment extends TracClientFragment {
         final int sel = rg.getCheckedRadioButtonId();
         final RadioButton rb = (RadioButton) rg.findViewById(sel);
         final EditText et = (EditText) view.findViewById(R.id.comment);
-        final CheckBox updNotify = (CheckBox) view.findViewById(R.id.updNotify);
+        final Checkable updNotify = (CheckBox) view.findViewById(R.id.updNotify);
 
         final String action = (String) rb.getText();
         final String comment = et.getText().toString();
