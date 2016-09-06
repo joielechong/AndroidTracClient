@@ -18,16 +18,15 @@ package com.mfvl.trac.client;
 import com.mfvl.mfvllib.MyLog;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class TicketList extends ArrayList<Ticket> {
     public TicketList() {
         super();
     }
 
-    public void addAll(TicketList tl) {
+    public boolean addAll(Collection tl) {
         MyLog.d(tl != null ? tl.toString() : null);
-        if (tl != null) {
-            super.addAll(tl);
-        }
+        return tl != null && super.addAll(tl);
     }
 }

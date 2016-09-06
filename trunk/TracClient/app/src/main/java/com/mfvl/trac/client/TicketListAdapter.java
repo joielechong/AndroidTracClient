@@ -18,6 +18,8 @@ package com.mfvl.trac.client;
 
 import com.mfvl.mfvllib.MyLog;
 
+import java.util.Collection;
+
 public class TicketListAdapter extends ColoredArrayAdapter<Ticket> {
 
     public TicketListAdapter(TracStart context, TicketListInterface tl) {
@@ -72,7 +74,7 @@ public class TicketListAdapter extends ColoredArrayAdapter<Ticket> {
     }
 
     public Iterable<Ticket> getTicketList() {
-        TicketList tl = new TicketList();
+        Collection<Ticket> tl = new TicketList();
         for (int i = 0; i < getCount(); i++) {
             tl.add(getItem(i));
         }
