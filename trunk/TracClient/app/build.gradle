@@ -78,9 +78,15 @@ android {
             minifyEnabled false
         }
 	all {
-	    def rev = rootProject.svnUpdate(file("${System.env.PROJECTHOME}/TracClient/"))
-	    println "Updated to revision "+rev 
-	    buildConfigField "int", "SVN_REVISION", "${rev}"
+        try {
+            def rev = rootProject.svnUpdate(file("${System.env.PROJECTHOME}/TracClient/"))
+            println "Updated to revision " + rev
+            buildConfigField "int", "SVN_REVISION", "${rev}"
+        }
+        catch (Exception e) {
+            println "Cannot get SVN revision"
+            buildConfigField "int", "SVN_REVISION", "0"
+        }
 	}
     }
     compileOptions {
