@@ -1249,61 +1249,67 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
      * always executed in a thread
      */
     public void addAttachment(final Ticket ticket, final Uri uri, final onTicketCompleteListener oc) {
-        MyLog.i(ticket.toString() + " " + uri);
-        final int _ticknr = ticket.getTicketnr();
-        String filename = null;
-        int bytes = 0;
-        if (uri != null) {
-            if (uri.toString().startsWith("file:")) {
-                filename = uri.getPath();
-            } else {
-                Cursor c = getContentResolver().query(uri, null, null, null, null);
-                if (c != null) {
-                    if (c.moveToFirst()) {
-//                    MyLog.d("ColumnNames = "+Arrays.asList(c.getColumnNames()));
-                        int id = c.getColumnIndex(Images.Media.DISPLAY_NAME);
-                        if (id != -1) {
-                            filename = c.getString(id);
-                        }
-                        id = c.getColumnIndex(Images.Media.SIZE);
-                        if (id != -1) {
-                            bytes = c.getInt(id);
-                        }
-                    }
-                    c.close();
-                }
-            }
-            final File file = new File(filename == null ? uri.getPath() : filename);
-            if (bytes == 0) {
-                bytes = (int) file.length();
-            }
-            final int maxBytes = (bytes > 0 ? bytes : 120000);   // 6 fold because of Base64
-            final byte[] data = new byte[maxBytes];
+        tracStartHandler.post(new Runnable() {
 
-            try {
-                final InputStream is = getContentResolver().openInputStream(uri);
-                if (is != null) {
-                    String b64 = "";
-                    for (int nbytes = is.read(data); nbytes >= 0; nbytes = is.read(data)) {
-                        b64 += Base64.encodeToString(data, 0, nbytes, Base64.DEFAULT);
+            @Override
+            public void run() {
+                MyLog.i(ticket.toString() + " " + uri);
+                final int _ticknr = ticket.getTicketnr();
+                String filename = null;
+                int bytes = 0;
+                if (uri != null) {
+                    if (uri.toString().startsWith("file:")) {
+                        filename = uri.getPath();
+                    } else {
+                        Cursor c = getContentResolver().query(uri, null, null, null, null);
+                        if (c != null) {
+                            if (c.moveToFirst()) {
+//                    MyLog.d("ColumnNames = "+Arrays.asList(c.getColumnNames()));
+                                int id = c.getColumnIndex(Images.Media.DISPLAY_NAME);
+                                if (id != -1) {
+                                    filename = c.getString(id);
+                                }
+                                id = c.getColumnIndex(Images.Media.SIZE);
+                                if (id != -1) {
+                                    bytes = c.getInt(id);
+                                }
+                            }
+                            c.close();
+                        }
                     }
-                    is.close();
-                    new TracHttpClient(url, sslHack, sslHostNameHack, username,
-                            password).putAttachment(_ticknr, file.getName(), b64);
-                } else {
-                    MyLog.e("Cannot open" + uri);
-                    showAlertBox(R.string.warning, R.string.notfound, filename);
+                    final File file = new File(filename == null ? uri.getPath() : filename);
+                    if (bytes == 0) {
+                        bytes = (int) file.length();
+                    }
+                    final int maxBytes = (bytes > 0 ? bytes : 120000);   // 6 fold because of Base64
+                    final byte[] data = new byte[maxBytes];
+
+                    try {
+                        final InputStream is = getContentResolver().openInputStream(uri);
+                        if (is != null) {
+                            String b64 = "";
+                            for (int nbytes = is.read(data); nbytes >= 0; nbytes = is.read(data)) {
+                                b64 += Base64.encodeToString(data, 0, nbytes, Base64.DEFAULT);
+                            }
+                            is.close();
+                            new TracHttpClient(url, sslHack, sslHostNameHack, username,
+                                    password).putAttachment(_ticknr, file.getName(), b64);
+                        } else {
+                            MyLog.e("Cannot open" + uri);
+                            showAlertBox(R.string.warning, R.string.notfound, filename);
+                        }
+                    } catch (final FileNotFoundException e) {
+                        MyLog.e("Cannot open : " + uri, e);
+                        showAlertBox(R.string.warning, R.string.notfound, filename);
+                    } catch (final NullPointerException | IOException | JSONRPCException | JSONException e) {
+                        MyLog.e("Exception during addAttachment, uri = " + uri, e);
+                        showAlertBox(R.string.warning, R.string.failed, filename);
+                    } finally {
+                        oc.onComplete(ticket);
+                    }
                 }
-            } catch (final FileNotFoundException e) {
-                MyLog.e("Exception", e);
-                showAlertBox(R.string.warning, R.string.notfound, filename);
-            } catch (final NullPointerException | IOException | JSONRPCException | JSONException e) {
-                MyLog.e("Exception during addAttachment", e);
-                showAlertBox(R.string.warning, R.string.failed, filename);
-            } finally {
-                oc.onComplete(ticket);
             }
-        }
+        });
     }
 
     @Override
