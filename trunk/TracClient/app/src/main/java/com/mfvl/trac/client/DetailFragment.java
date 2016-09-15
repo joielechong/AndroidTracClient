@@ -354,19 +354,13 @@ public class DetailFragment extends TracClientFragment
     public void onFileSelected(final Uri uri) {
         MyLog.d("ticket = " + _ticket + " uri = " + uri);
         listener.startProgressBar(R.string.uploading);
-        new Thread() {
+        listener.addAttachment(_ticket, uri, new onTicketCompleteListener() {
             @Override
-            public void run() {
-                listener.addAttachment(_ticket, uri, new onTicketCompleteListener() {
-                    @Override
-                    public void onComplete(Ticket t2) {
-                        refreshTicket();
-                        listener.stopProgressBar();
-                    }
-                });
-
+            public void onComplete(Ticket t2) {
+                refreshTicket();
+                listener.stopProgressBar();
             }
-        }.start();
+        });
     }
 
     @Override

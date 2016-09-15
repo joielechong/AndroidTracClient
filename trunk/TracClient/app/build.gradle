@@ -83,7 +83,7 @@ android {
             println "Updated to revision " + rev
             buildConfigField "int", "SVN_REVISION", "${rev}"
         }
-        catch (Exception e) {
+        catch (Exception ignored) {
             println "Cannot get SVN revision"
             buildConfigField "int", "SVN_REVISION", "0"
         }
