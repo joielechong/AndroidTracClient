@@ -17,6 +17,7 @@
 package com.mfvl.trac.client;
 
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -94,7 +95,7 @@ public class NewTicketFragment extends TracClientFragment {
                     boolean optional = veld.optional();
 
                     v = LayoutInflater.from(context).inflate(R.layout.spinfield, tl, false);
-                    Spinner v1 = (Spinner) v.findViewById(R.id.nt_val);
+                    @SuppressLint("CutPasteId") Spinner v1 = (Spinner) v.findViewById(R.id.nt_val);
                     v1.setPrompt(veldnaam);
                     SpinnerAdapter a = makeComboAdapter(context, waardes, optional);
                     v1.setAdapter(a);
@@ -105,7 +106,7 @@ public class NewTicketFragment extends TracClientFragment {
                 } else {
                     v = LayoutInflater.from(context).inflate((veldnaam.equals(
                             "Description") ? R.layout.descrfield : R.layout.stdfield), tl, false);
-                    EditText e = (EditText) v.findViewById(R.id.nt_val);
+                    @SuppressLint("CutPasteId") EditText e = (EditText) v.findViewById(R.id.nt_val);
                     if (savedInstanceState != null && savedInstanceState.containsKey(veldnaam)) {
                         e.setText(savedInstanceState.getString(veldnaam));
                     }

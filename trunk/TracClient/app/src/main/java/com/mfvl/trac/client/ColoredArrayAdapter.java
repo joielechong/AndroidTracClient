@@ -17,6 +17,7 @@
 package com.mfvl.trac.client;
 
 import android.app.Activity;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -33,8 +34,9 @@ class ColoredArrayAdapter<T> extends ArrayAdapter<T> {
         //MyLog.d("context = "+context+" resource = "+ resource+" list = " +list);
     }
 
+    @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         //MyLog.d("position = " + position + " convertView = " + convertView + " parent = " + parent);
         final View view = super.getView(position, convertView, parent);
         view.setBackgroundColor(adapterColors[position % adapterColors.length]);

@@ -19,6 +19,7 @@ package com.mfvl.trac.client;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -132,8 +133,9 @@ public class FilterFragment extends SpecFragment<FilterSpec> {
             }
         }
 
+        @NonNull
         @Override
-        public View getView(final int position, View convertView, final ViewGroup parent) {
+        public View getView(final int position, View convertView, @NonNull final ViewGroup parent) {
             //MyLog.d("getView pos=" + position + " " + convertView + " " + parent);
 
             int p = (position >= items.size() || position < 0 ? 0 : position);

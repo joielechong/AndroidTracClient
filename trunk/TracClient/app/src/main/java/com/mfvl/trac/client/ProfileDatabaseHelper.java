@@ -118,12 +118,12 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
         upgrade = true;
     }
 
-    private void beginTransaction() {
+    public void beginTransaction() {
         open();
         db.beginTransaction();
     }
 
-    private void endTransaction() {
+    public void endTransaction() {
         db.setTransactionSuccessful();
         db.endTransaction();
     }
@@ -260,7 +260,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
         out.close();
     }
 
-    public class XMLHandler extends DefaultHandler {
+    private class XMLHandler extends DefaultHandler {
 
         private final ProfileDatabaseHelper _pdb;
         String _appname = null;
@@ -268,7 +268,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
         private String profileName;
         private LoginProfileImpl lp;
 
-        public XMLHandler(String appname, ProfileDatabaseHelper pdb) {
+        XMLHandler(String appname, ProfileDatabaseHelper pdb) {
             super();
             _appname = appname;
             _pdb = pdb;
