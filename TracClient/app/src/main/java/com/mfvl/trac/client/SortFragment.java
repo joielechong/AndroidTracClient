@@ -19,6 +19,7 @@ package com.mfvl.trac.client;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -95,8 +96,9 @@ public class SortFragment extends SpecFragment<SortSpec> {
             super(context, R.layout.sort_spec, items);
         }
 
+        @NonNull
         @Override
-        public View getView(final int position, View convertView, final ViewGroup parent) {
+        public View getView(final int position, View convertView, @NonNull final ViewGroup parent) {
             // MyLog.d("getView: "+position+" "+convertView+" "+parent);
             View v = convertView;
 
