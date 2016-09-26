@@ -44,8 +44,16 @@ import android.widget.TextView;
 
 import com.mfvl.mfvllib.MyLog;
 
+interface TicketListFragInterface {
+    void setAdapter(TicketListAdapter adapter);
+
+    void dataHasChanged();
+
+    void startLoading();
+}
+
 public class TicketListFragment extends TracClientFragment
-        implements SwipeRefreshLayout.OnRefreshListener, AdapterView.OnItemClickListener, AbsListView.OnScrollListener {
+        implements SwipeRefreshLayout.OnRefreshListener, AdapterView.OnItemClickListener, AbsListView.OnScrollListener, HelpInterface, TicketListFragInterface {
 
     private static final String ZOEKENNAME = "zoeken";
     private static final String ZOEKTEXTNAME = "filtertext";
@@ -92,6 +100,7 @@ public class TicketListFragment extends TracClientFragment
     private boolean hasScrolled = false;
     private SwipeRefreshLayout swipeLayout;
 
+    @Override
     void onMyAttach(Context activity) {
         MyLog.logCall();
         super.onMyAttach(activity);
@@ -126,6 +135,7 @@ public class TicketListFragment extends TracClientFragment
         }
     }
 
+    @Override
     public void setAdapter(TicketListAdapter a) {
         MyLog.d("a = " + a + " listView = " + listView);
         dataAdapter = a;
@@ -259,7 +269,8 @@ public class TicketListFragment extends TracClientFragment
         listener.listViewCreated();
     }
 
-    int getHelpFile() {
+    @Override
+    public int getHelpFile() {
         return R.string.helplistfile;
     }
 
@@ -357,6 +368,7 @@ public class TicketListFragment extends TracClientFragment
         }
     }
 
+    @Override
     public void dataHasChanged() {
         try {
             MyLog.d("hs = " + hs);
@@ -379,6 +391,7 @@ public class TicketListFragment extends TracClientFragment
         }
     }
 
+    @Override
     public void startLoading() {
 //        MyLog.d("hs = " + hs);
         setStatus(R.string.ophalen);

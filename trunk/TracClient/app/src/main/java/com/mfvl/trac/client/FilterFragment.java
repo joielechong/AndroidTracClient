@@ -47,18 +47,18 @@ import java.util.List;
 
 import static com.mfvl.trac.client.Const.*;
 
-public class FilterFragment extends SpecFragment<FilterSpec> {
+public class FilterFragment extends SpecFragment<FilterSpec> implements HelpInterface, SpecInterface {
     private static List<String> operators = null;
     private static List<String> operatornames = null;
     private FilterAdapter filterAdapter;
     private Spinner addSpinner;
-
 
     @Override
     public String keyName() {
         return FILTERLISTNAME;
     }
 
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.storefilter:
@@ -93,7 +93,8 @@ public class FilterFragment extends SpecFragment<FilterSpec> {
         return inflater.inflate(R.layout.filter_view, container, false);
     }
 
-    int getHelpFile() {
+    @Override
+    public int getHelpFile() {
         return R.string.filterhelpfile;
     }
 

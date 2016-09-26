@@ -94,7 +94,7 @@ interface OnTicketLoadedListener {
 
 public class TracStart extends TcBaseActivity implements ServiceConnection, FragmentManager.OnBackStackChangedListener,
         NavigationView.OnNavigationItemSelectedListener, ActivityCompat.OnRequestPermissionsResultCallback,
-        ViewTreeObserver.OnGlobalLayoutListener, SharedPreferences.OnSharedPreferenceChangeListener {
+        ViewTreeObserver.OnGlobalLayoutListener, SharedPreferences.OnSharedPreferenceChangeListener, TcBaseInterface {
     public static final String DetailFragmentTag = "Detail_Fragment";
     private static final int REQUEST_CODE_CHOOSER = 174;
     private static final int REQUEST_CODE_WRITE_EXT = 175;
@@ -841,6 +841,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         return true;
     }
 
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         MyLog.d("requestCode = " + requestCode + " permissions = " + Arrays.asList(
                 permissions) + " grantResults = " + Arrays.asList(grantResults));
@@ -1124,6 +1125,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         }
     }
 
+    @Override
     public void updateTicket(final Ticket t, final String action, final String comment, final String veld, final String waarde, final boolean notify, final Map<String, String> modVeld) throws
             Exception {
         final JSONObject velden = t.getVelden();
@@ -1173,6 +1175,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         }.start();
     }
 
+    @Override
     public int createTicket(Ticket t, boolean notify) throws Exception {
         int ticknr = t.getTicketnr();
         final JSONObject velden = t.getVelden();
@@ -1219,6 +1222,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         }
     }
 
+    @Override
     public boolean getCanWriteSD() {
         return canWriteSD;
     }
@@ -1248,6 +1252,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     /*
      * always executed in a thread
      */
+    @Override
     public void addAttachment(final Ticket ticket, final Uri uri, final onTicketCompleteListener oc) {
         tracStartHandler.post(new Runnable() {
 
@@ -1305,7 +1310,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                         MyLog.e("Exception during addAttachment, uri = " + uri, e);
                         showAlertBox(R.string.warning, R.string.failed, filename);
                     } finally {
-                        oc.onComplete(ticket);
+                        oc.onComplete();
                     }
                 }
             }
@@ -1421,7 +1426,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                 break;
 
             case MSG_LOAD_FASE1_FINISHED:
-                final TicketListInterface tl = (TicketListInterface) msg.obj;
+                final Tickets tl = (Tickets) msg.obj;
                 // MyLog.d("Tickets = " + tl);
                 if (hasTicketsLoadingBar) {
                     stopProgressBar();
@@ -1553,6 +1558,7 @@ class TcSemaphore extends Semaphore {
         super(permits, fair);
     }
 
+    @Override
     public void acquireUninterruptibly() {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             try {

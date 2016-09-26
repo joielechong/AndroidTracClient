@@ -28,7 +28,7 @@ import java.util.concurrent.Semaphore;
 import static com.mfvl.trac.client.TracGlobal.*;
 
 interface onTicketCompleteListener {
-    void onComplete(Ticket t);
+    void onComplete();
 }
 
 interface onAttachmentCompleteListener {

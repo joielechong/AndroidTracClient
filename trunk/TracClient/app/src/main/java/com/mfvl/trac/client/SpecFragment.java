@@ -25,7 +25,11 @@ import com.mfvl.mfvllib.MyLog;
 
 import java.util.ArrayList;
 
-abstract public class SpecFragment<T extends Spec> extends TracClientFragment {
+interface SpecInterface {
+    String keyName();
+}
+
+public class SpecFragment<T extends Spec> extends TracClientFragment {
     private final static String inputSpecText = "inputSpec";
     private final static String outputSpecText = "outputSpec";
     ArrayList<T> outputSpec = null;
@@ -33,8 +37,7 @@ abstract public class SpecFragment<T extends Spec> extends TracClientFragment {
     View currentView;
     private ArrayList<T> inputSpec;
 
-    protected abstract String keyName();
-
+    @Override
     @SuppressWarnings("unchecked")
     void onMyAttach(Context activity) {
 //        MyLog.d("keyName = " + keyName());
@@ -43,8 +46,8 @@ abstract public class SpecFragment<T extends Spec> extends TracClientFragment {
 
         final Bundle args = getArguments();
         if (args != null) {
-            if (args.containsKey(keyName())) {
-                inputSpec = (ArrayList<T>) args.getSerializable(keyName());
+            if (args.containsKey(((SpecInterface) this).keyName())) {
+                inputSpec = (ArrayList<T>) args.getSerializable(((SpecInterface) this).keyName());
             }
         }
         //MyLog.d("onMyAttach inputSpec = "+inputSpec);

@@ -34,7 +34,7 @@ import java.util.ArrayList;
 
 import static com.mfvl.trac.client.Const.*;
 
-public class SortFragment extends SpecFragment<SortSpec> {
+public class SortFragment extends SpecFragment<SortSpec> implements HelpInterface, SpecInterface {
 
     private SortAdapter sortAdapter = null;
     private Spinner addSpinner = null;
@@ -44,6 +44,7 @@ public class SortFragment extends SpecFragment<SortSpec> {
         return SORTLISTNAME;
     }
 
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.storebutton:
@@ -65,7 +66,8 @@ public class SortFragment extends SpecFragment<SortSpec> {
         return inflater.inflate(R.layout.sort_view, container, false);
     }
 
-    int getHelpFile() {
+    @Override
+    public int getHelpFile() {
         return R.string.sorthelpfile;
     }
 
@@ -132,6 +134,7 @@ public class SortFragment extends SpecFragment<SortSpec> {
             return v;
         }
 
+        @Override
         public void onClick(View dv) {
             int position = (Integer) ((View) dv.getParent()).getTag();
             SortSpec sortItem = items.get(position);

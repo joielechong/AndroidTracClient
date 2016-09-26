@@ -42,7 +42,11 @@ import java.util.List;
 import static com.mfvl.trac.client.Const.*;
 import static com.mfvl.trac.client.TracGlobal.*;
 
-abstract public class TracClientFragment extends Fragment implements View.OnClickListener {
+interface HelpInterface {
+    int getHelpFile();
+}
+
+public class TracClientFragment extends Fragment implements View.OnClickListener {
 
     Ticket _ticket = null;
     Activity context;
@@ -87,10 +91,8 @@ abstract public class TracClientFragment extends Fragment implements View.OnClic
         tracStartHandler = listener.getHandler();
     }
 
-    abstract int getHelpFile();
-
     public void showHelp() {
-        final String filename = context.getString(getHelpFile());
+        final String filename = context.getString(((HelpInterface) this).getHelpFile());
         final TracHelp about = new TracHelp();
         final Bundle aboutArgs = new Bundle();
         aboutArgs.putString(HELP_FILE, filename);

@@ -26,7 +26,7 @@ interface Spec {
     Object clone() throws CloneNotSupportedException;
 }
 
-abstract class SpecImpl extends TcObject implements Serializable, Cloneable, Spec {
+class SpecImpl extends TcObject implements Serializable, Cloneable, Spec {
     String _veld;
 
     SpecImpl(String veld) {
@@ -45,10 +45,12 @@ abstract class SpecImpl extends TcObject implements Serializable, Cloneable, Spe
         return retVal;
     }
 
+    @Override
     public String getVeld() {
         return _veld;
     }
 
+    @Override
     public void setEdit(final boolean edited) { //no-op
     }
 }

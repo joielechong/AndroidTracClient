@@ -90,44 +90,54 @@ class LoginProfileImpl extends TcObject implements Serializable, Cloneable, Logi
         return retVal;
     }
 
+    @Override
     public String getUrl() {
         return _url;
     }
 
+    @Override
     public String getUsername() {
         return _username;
     }
 
+    @Override
     public String getPassword() {
         return _password;
     }
 
+    @Override
     public boolean getSslHack() {
         return _sslHack;
     }
 
+    @Override
     public boolean getSslHostNameHack() {
         return _sslHostNameHack;
     }
 
+    @Override
     public LoginProfileImpl setSslHostNameHack(boolean v) {
         _sslHostNameHack = v;
         return this;
     }
 
+    @Override
     public List<FilterSpec> getFilterList() {
         return filterList;
     }
 
+    @Override
     public LoginProfileImpl setFilterList(List<FilterSpec> fl) {
         filterList = fl;
         return this;
     }
 
+    @Override
     public List<SortSpec> getSortList() {
         return sortList;
     }
 
+    @Override
     public LoginProfileImpl setSortList(List<SortSpec> sl) {
         sortList = sl;
         return this;
@@ -138,10 +148,12 @@ class LoginProfileImpl extends TcObject implements Serializable, Cloneable, Logi
         return "url: " + _url + " username: " + _username + " password: " + _password + " sslHack: " + _sslHack + " sslHostNameHack: " + _sslHostNameHack + " filterList: " + filterList + " sortList: " + sortList;
     }
 
+    @Override
     public String getProfile() {
         return _profile;
     }
 
+    @Override
     public void setProfile(String profile) {
         _profile = profile;
     }

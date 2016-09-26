@@ -31,7 +31,7 @@ import java.util.Collection;
 import static com.mfvl.trac.client.Const.*;
 import static com.mfvl.trac.client.TracGlobal.*;
 
-public class PrefSpecActivity extends TcBaseActivity {
+public class PrefSpecActivity extends TcBaseActivity implements TcBaseInterface {
     private static ArrayDeque<Message> msgQueue = null;
 
     @Override

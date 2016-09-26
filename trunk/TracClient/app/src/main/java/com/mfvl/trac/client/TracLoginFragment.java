@@ -57,7 +57,7 @@ import static com.mfvl.trac.client.Const.*;
 import static com.mfvl.trac.client.TracGlobal.*;
 
 public class TracLoginFragment extends TracClientFragment
-        implements OnItemSelectedListener, OnCheckedChangeListener {
+        implements OnItemSelectedListener, OnCheckedChangeListener, HelpInterface {
 
     private static final String NEW_URL = "newURL";
     private static final String NEW_USERNAME = "newUsername";
@@ -205,7 +205,8 @@ public class TracLoginFragment extends TracClientFragment
         }
     }
 
-    int getHelpFile() {
+    @Override
+    public int getHelpFile() {
         return R.string.loginhelpfile;
     }
 
@@ -402,6 +403,7 @@ public class TracLoginFragment extends TracClientFragment
         return true;
     }
 
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.okBut:

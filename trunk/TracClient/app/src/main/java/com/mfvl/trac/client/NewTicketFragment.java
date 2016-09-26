@@ -39,11 +39,12 @@ import java.util.List;
 
 import static com.mfvl.trac.client.Const.*;
 
-public class NewTicketFragment extends TracClientFragment {
+public class NewTicketFragment extends TracClientFragment implements HelpInterface {
     static final private String NotfifyField = "Notify";
     private String username = null;
 
-    int getHelpFile() {
+    @Override
+    public int getHelpFile() {
         return R.string.newhelpfile;
     }
 
