@@ -33,7 +33,11 @@ import java.util.Map;
 
 import static com.mfvl.trac.client.Const.*;
 
-public abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callback, InterFragmentListener {
+interface TcBaseInterface {
+    ArrayDeque<Message> getMessageQueue();
+}
+
+class TcBaseActivity extends AppCompatActivity implements Handler.Callback, InterFragmentListener {
     static boolean debug = false; // disable menuoption at startup
     Handler tracStartHandler = null;
     Messenger mMessenger = null;
@@ -41,8 +45,6 @@ public abstract class TcBaseActivity extends AppCompatActivity implements Handle
     TicketModel tm = null;
     private MyProgressBar progressBar = null;
     private boolean isPaused;
-
-    abstract ArrayDeque<Message> getMessageQueue();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,7 +62,7 @@ public abstract class TcBaseActivity extends AppCompatActivity implements Handle
         super.onStart();
         MyLog.logCall();
         isPaused = false;
-        ArrayDeque<Message> msgQueue = getMessageQueue();
+        ArrayDeque<Message> msgQueue = ((TcBaseInterface) this).getMessageQueue();
         MyLog.d(msgQueue);
         while (!msgQueue.isEmpty()) {
             Message m = msgQueue.poll();
@@ -107,9 +109,7 @@ public abstract class TcBaseActivity extends AppCompatActivity implements Handle
 
     private synchronized boolean queueMessage(Message msg) {
         MyLog.d("msg = " + msg);
-        ArrayDeque<Message> msgQueue = getMessageQueue();
-//		Message m = new Message();
-//		m.copyFrom(msg);
+        ArrayDeque<Message> msgQueue = ((TcBaseInterface) this).getMessageQueue();
         Message m = Message.obtain(msg);
         msgQueue.add(m);
         MyLog.d(msgQueue);

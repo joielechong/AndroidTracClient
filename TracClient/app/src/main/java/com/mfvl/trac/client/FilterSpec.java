@@ -70,19 +70,23 @@ class FilterSpecImpl extends SpecImpl implements FilterSpec {
         return retVal;
     }
 
+    @Override
     public String getOperator() {
         return _operator;
     }
 
+    @Override
     public FilterSpec setOperator(final String o) {
         _operator = o;
         return this;
     }
 
+    @Override
     public String getWaarde() {
         return _edited ? _newwaarde : _waarde;
     }
 
+    @Override
     public FilterSpec setWaarde(final String w) {
         if (_edited) {
             _newwaarde = w;
@@ -92,6 +96,7 @@ class FilterSpecImpl extends SpecImpl implements FilterSpec {
         return this;
     }
 
+    @Override
     public boolean getEdit() {
         return _edited;
     }

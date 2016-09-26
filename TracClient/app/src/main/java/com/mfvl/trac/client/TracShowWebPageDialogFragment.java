@@ -119,11 +119,13 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements T
         }
     }
 
+    @Override
     public void onResume() {
         super.onResume();
         tl.addOnTabSelectedListener(this);
     }
 
+    @Override
     public void onPause() {
         super.onPause();
         tl.removeOnTabSelectedListener(this);

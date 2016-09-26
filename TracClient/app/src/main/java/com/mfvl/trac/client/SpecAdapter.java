@@ -34,6 +34,7 @@ class SpecAdapter<T extends Spec> extends ArrayAdapter<T> implements ItemsAdapte
         this.items = items;
     }
 
+    @Override
     public ArrayList<T> getItems() {
 //    MyLog.logCall();
         return items;

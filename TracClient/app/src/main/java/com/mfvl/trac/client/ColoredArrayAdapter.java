@@ -29,7 +29,7 @@ import static com.mfvl.trac.client.TracGlobal.*;
 
 class ColoredArrayAdapter<T> extends ArrayAdapter<T> {
 
-    public ColoredArrayAdapter(Activity context, List<T> list) {
+    ColoredArrayAdapter(Activity context, List<T> list) {
         super(context, R.layout.ticket_list, list);
         //MyLog.d("context = "+context+" resource = "+ resource+" list = " +list);
     }

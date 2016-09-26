@@ -496,7 +496,7 @@ public class RefreshService extends Service implements Handler.Callback {
 //            MyLog.logCall();
         }
 
-        public void killOwner() {
+        void killOwner() {
 //            MyLog.logCall();
             Thread t = super.getOwner();
             t.interrupt();
@@ -505,6 +505,7 @@ public class RefreshService extends Service implements Handler.Callback {
     }
 
     public class RefreshBinderImpl extends Binder implements RefreshBinder {
+        @Override
         public RefreshService getService() {
             // Return this instance of LocalService so clients can call public methods
             return RefreshService.this;

@@ -61,9 +61,12 @@ import java.io.Serializable;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 import static com.mfvl.trac.client.Const.*;
 import static com.mfvl.trac.client.TracGlobal.*;
@@ -81,7 +84,7 @@ interface DetailInterface {
 public class DetailFragment extends TracClientFragment
         implements SwipeRefreshLayout.OnRefreshListener, CompoundButton.OnCheckedChangeListener,
         GestureDetector.OnGestureListener, OnFileSelectedListener, OnItemClickListener,
-        OnItemLongClickListener, DetailInterface {
+        OnItemLongClickListener, DetailInterface, HelpInterface {
 
     private static final String EMPTYFIELDS = "emptyfields";
     private static final String MODVELD = "modveld";
@@ -144,7 +147,8 @@ public class DetailFragment extends TracClientFragment
         }
     }
 
-    int getHelpFile() {
+    @Override
+    public int getHelpFile() {
         return R.string.helpdetailfile;
     }
 
@@ -186,12 +190,12 @@ public class DetailFragment extends TracClientFragment
                     R.color.swipe_red);
             if (savedInstanceState != null) {
                 showEmptyFields = savedInstanceState.getBoolean(EMPTYFIELDS, false);
+                if (savedInstanceState.containsKey(MODVELD)) {
+                    modVeld = (ModVeldMap) savedInstanceState.getSerializable(MODVELD);
+                }
+                setSelect(modVeld != null && modVeld.isEmpty());
                 if (savedInstanceState.containsKey(CURRENT_TICKET)) {
                     // MyLog.d("onActivityCreated start Loading");
-                    if (savedInstanceState.containsKey(MODVELD)) {
-                        modVeld = (ModVeldMap) savedInstanceState.getSerializable(MODVELD);
-                    }
-                    setSelect(modVeld != null && modVeld.isEmpty());
                     ticknr = savedInstanceState.getInt(CURRENT_TICKET, -1);
                 }
             }
@@ -357,7 +361,7 @@ public class DetailFragment extends TracClientFragment
         listener.startProgressBar(R.string.uploading);
         listener.addAttachment(_ticket, uri, new onTicketCompleteListener() {
             @Override
-            public void onComplete(Ticket t2) {
+            public void onComplete() {
                 refreshTicket();
                 listener.stopProgressBar();
             }
@@ -511,15 +515,18 @@ public class DetailFragment extends TracClientFragment
         return false;
     }
 
+    @Override
     public void setTicket(int newTicket) {
         ticknr = newTicket;
         display_and_refresh_ticket();
     }
 
+    @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         return gestureDetector != null && gestureDetector.onTouchEvent(ev);
     }
 
+    @Override
     public void setModVeld(final String veld, final String waarde, final String newValue) {
         MyLog.d("veld = " + veld + " waarde = " + waarde + "newValue = " + newValue);
         final ListView parent = (ListView) currentView.findViewById(R.id.listofFields);
@@ -700,6 +707,7 @@ public class DetailFragment extends TracClientFragment
         }
     }
 
+    @Override
     public boolean onBackPressed() {
         MyLog.logCall();
         if (!modVeld.isEmpty()) {
@@ -744,7 +752,71 @@ public class DetailFragment extends TracClientFragment
         String veld();
     }
 
-    private class ModVeldMap extends HashMap<String, String> implements Serializable {
+    private class ModVeldMap implements Map<String, String>, Serializable {
+        private final Map<String, String> hashMap = new HashMap<>();
+
+        @Override
+        public int size() {
+            return hashMap.size();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return hashMap.isEmpty();
+        }
+
+        @Override
+        public boolean containsKey(Object key) {
+            return hashMap.containsKey(key);
+        }
+
+        @Override
+        public boolean containsValue(Object value) {
+            return hashMap.containsValue(value);
+        }
+
+        @Override
+        public String get(Object key) {
+            return hashMap.get(key);
+        }
+
+        @Override
+        public String put(String key, String value) {
+            return hashMap.put(key, value);
+        }
+
+        @Override
+        public String remove(Object key) {
+            return null;
+        }
+
+        @Override
+        public void putAll(@NonNull Map<? extends String, ? extends String> m) {
+            hashMap.putAll(m);
+        }
+
+        @Override
+        public void clear() {
+            hashMap.clear();
+        }
+
+        @NonNull
+        @Override
+        public Set<String> keySet() {
+            return hashMap.keySet();
+        }
+
+        @NonNull
+        @Override
+        public Collection<String> values() {
+            return hashMap.values();
+        }
+
+        @NonNull
+        @Override
+        public Set<Entry<String, String>> entrySet() {
+            return hashMap.entrySet();
+        }
 //	private static final long serialVersionUID = 191019591050L;
     }
 
@@ -753,40 +825,48 @@ public class DetailFragment extends TracClientFragment
         private boolean _updated;
         private String _waarde;
 
-        public ModifiedStringImpl(String v, String w) {
+        ModifiedStringImpl(String v, String w) {
             _veld = v;
             _waarde = w;
             _updated = false;
         }
 
+        @Override
         public boolean getUpdated() {
             return _updated;
         }
 
+        @Override
         public void setUpdated() {
             _updated = true;
         }
 
+        @Override
         public int length() {
             return toString().length();
         }
 
+        @Override
         public int indexOf(String s) {
             return toString().indexOf(s);
         }
 
+        @Override
         public String substring(int b, int l) {
             return toString().substring(b, l);
         }
 
+        @Override
         public String[] split(String s, int c) {
             return toString().split(s, c);
         }
 
+        @Override
         public void setWaarde(String s) {
             _waarde = s;
         }
 
+        @Override
         public String veld() {
             return _veld;
         }
@@ -804,24 +884,23 @@ public class DetailFragment extends TracClientFragment
     }
 
     private class ModifiedStringArrayAdapter extends ColoredArrayAdapter<ModifiedString> {
-        public ModifiedStringArrayAdapter(Activity context, List<ModifiedString> list) {
+        ModifiedStringArrayAdapter(Activity context, List<ModifiedString> list) {
             super(context, list);
         }
 
         @NonNull
         @Override
         public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+            final View view = super.getView(position, convertView, parent);
             try {
-                final View view = super.getView(position, convertView, parent);
                 final ModifiedString ms = getItem(position);
 
                 ((TextView) view).setTextColor(
                         ms.getUpdated() ? popup_selected_color : popup_unselected_color);
-                return view;
             } catch (final Exception e) {
                 MyLog.e("exception", e);
-                return null;
             }
+            return view;
         }
     }
 }

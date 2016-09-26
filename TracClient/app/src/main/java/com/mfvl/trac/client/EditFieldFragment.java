@@ -34,11 +34,11 @@ public class EditFieldFragment extends TcDialogFragment {
     public static final String VELD = "veld";
     public static final String WAARDE = "waarde";
     private static final String NIEUW_WAARDE = "nieuwWaarde";
-    private static TicketModel tm;
-    private static String veld;
-    private static String waarde;
-    private static String nieuwWaarde;
-    private static Spinner spinValue;
+    private TicketModel tm;
+    private String veld;
+    private String waarde;
+    private String nieuwWaarde;
+    private Spinner spinValue;
 
     @Override
     public void onSaveInstanceState(Bundle savedState) {
@@ -88,8 +88,8 @@ public class EditFieldFragment extends TcDialogFragment {
             }
             spinAdapter.addAll(tmv.options());
             spinValue.setAdapter(spinAdapter);
-            if (waarde != null && !"".equals(waarde)) {
-                spinValue.setSelection(tmv.options().indexOf(waarde) + (tmv.optional() ? 1 : 0), true);
+            if (nieuwWaarde != null && !"".equals(nieuwWaarde)) {
+                spinValue.setSelection(tmv.options().indexOf(nieuwWaarde) + (tmv.optional() ? 1 : 0), true);
             }
         }
 

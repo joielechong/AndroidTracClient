@@ -47,16 +47,15 @@ import static com.mfvl.trac.client.Const.*;
 
 class TracGlobal {
     private static final X500Principal DEBUG_DN = new X500Principal("CN=Android Debug,O=Android,C=US");
-
-    public static int ticketGroupCount;
     public static int webzoom;
-    public static int timerCorr;
-    public static int timerStart;
-    public static int timerPeriod;
-    public static int large_move;
-    public static int[] adapterColors = null;
-    public static String prefFilterKey = "filterstring";
-    public static String prefSortKey = "sortString";
+    static int ticketGroupCount;
+    static int timerCorr;
+    static int timerStart;
+    static int timerPeriod;
+    static int large_move;
+    static int[] adapterColors = null;
+    static String prefFilterKey = "filterstring";
+    static String prefSortKey = "sortString";
 
     private static String versie = null;
     private static String _url = "";
@@ -104,7 +103,7 @@ class TracGlobal {
         _profile = settings.getString(PREF_PROF, null);
     }
 
-    public static SharedPreferences getSharedPreferences() {
+    static SharedPreferences getSharedPreferences() {
         return settings;
     }
 
@@ -117,7 +116,7 @@ class TracGlobal {
     /**
      * Store login credentials to shared preferences: server-url, username, password and profile
      */
-    public static void storeCredentials() {
+    static void storeCredentials() {
 //        MyLog.logCall();
         settings.edit()
                 .putString(PREF_URL, _url)
@@ -132,7 +131,7 @@ class TracGlobal {
     /**
      * Set login credentials server-url, username, password and profile
      */
-    public static void setCredentials(final String url, final String username, final String password, final String profile) {
+    static void setCredentials(final String url, final String username, final String password, final String profile) {
 //        MyLog.logCall();
         _url = url;
         _username = username;
@@ -160,11 +159,11 @@ class TracGlobal {
         _sslHack = sslHack;
     }
 
-    public static boolean getSslHostNameHack() {
+    static boolean getSslHostNameHack() {
         return _sslHostNameHack;
     }
 
-    public static void setSslHostNameHack(boolean sslHostNameHack) {
+    static void setSslHostNameHack(boolean sslHostNameHack) {
         _sslHostNameHack = sslHostNameHack;
     }
 
@@ -172,7 +171,7 @@ class TracGlobal {
         return _profile;
     }
 
-    public static boolean isFirstRun() {
+    static boolean isFirstRun() {
         // MyLog.d("isFirstRun");
         final String thisRun = versie;
         final String lastRun = settings.getString(PREF_1ST, "");
@@ -180,22 +179,22 @@ class TracGlobal {
         return !lastRun.equals(thisRun);
     }
 
-    public static String getFilterString() {
+    static String getFilterString() {
         MyLog.logCall();
         return settings.getString(prefFilterKey, "max=500&status!=closed");
     }
 
-    public static void removeFilterString() {
+    static void removeFilterString() {
         // MyLog.logCall();
         storeFilterString("max=500&status!=closed");
     }
 
-    public static void storeFilterString(final String filterString) {
+    static void storeFilterString(final String filterString) {
         MyLog.d(filterString);
         settings.edit().putString(prefFilterKey, filterString == null ? "" : filterString).apply();
     }
 
-    public static String getSortString() {
+    static String getSortString() {
         // MyLog.logCall();
         final String sortString = settings.getString(prefSortKey,
                 "order=priority&order=modified&desc=1");
@@ -204,17 +203,17 @@ class TracGlobal {
         return sortString;
     }
 
-    public static void removeSortString() {
+    static void removeSortString() {
         // MyLog.logCall();
         storeSortString("order=priority&order=modified&desc=1");
     }
 
-    public static void storeSortString(final String sortString) {
+    static void storeSortString(final String sortString) {
         //MyLog.d(sortString);
         settings.edit().putString(prefSortKey, sortString == null ? "" : sortString).apply();
     }
 
-    public static String makeDbPath() {
+    static String makeDbPath() {
 
         String dbpath = DATABASE_NAME;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
@@ -229,7 +228,7 @@ class TracGlobal {
         return dbpath;
     }
 
-    public static boolean isDebuggable() {
+    static boolean isDebuggable() {
         boolean debuggable = false;
 
         try {
@@ -259,11 +258,11 @@ class TracGlobal {
         return debuggable;
     }
 
-    public static boolean isRCVersion() {
+    static boolean isRCVersion() {
         return (versie != null) && (versie.toLowerCase(Locale.US).contains("rc"));
     }
 
-    public static File makeExtFilePath(String filename, boolean visible) throws FileNotFoundException {
+    static File makeExtFilePath(String filename, boolean visible) throws FileNotFoundException {
         File dirPath;
         //MyLog.d("filename = "+filename);
         if (visible) {
@@ -286,13 +285,13 @@ class TracGlobal {
         return filePath;
     }
 
-    public static File makeCacheFilePath(final String filename) {
+    static File makeCacheFilePath(final String filename) {
         final File filePath = new File(_context.getExternalCacheDir(), filename);
         MyLog.d("filepath = " + filePath);
         return filePath;
     }
 
-    public static String joinList(Object list[], final String sep) {
+    static String joinList(Object list[], final String sep) {
         String reqString = "";
 
         for (final Object fs : list) {
@@ -309,7 +308,7 @@ class TracGlobal {
     /**
      * Transform Calendar to ISO 8601 string.
      */
-    public static String fromUnix(final long tijd) {
+    static String fromUnix(final long tijd) {
         final Date date = new Date();
 
         date.setTime(tijd);
@@ -322,7 +321,7 @@ class TracGlobal {
     /**
      * Transform ISO 8601 string to Calendar.
      */
-    public static Calendar toCalendar(final String iso8601string) throws ParseException {
+    static Calendar toCalendar(final String iso8601string) throws ParseException {
         final Calendar calendar = Calendar.getInstance();
         String s = iso8601string.replace("Z", "+00:00");
 

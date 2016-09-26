@@ -55,6 +55,7 @@ public class TcPreference extends PreferenceActivity {
             getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
         }
 
+        @Override
         public void onDestroy() {
             super.onDestroy();
             MyLog.logCall();

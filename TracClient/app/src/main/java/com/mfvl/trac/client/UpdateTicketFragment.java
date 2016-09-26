@@ -42,7 +42,7 @@ import java.util.List;
 
 import static com.mfvl.trac.client.Const.*;
 
-public class UpdateTicketFragment extends TracClientFragment {
+public class UpdateTicketFragment extends TracClientFragment implements HelpInterface {
     private static final String UPDATE_CURRENT_BUTTON = "currentButton";
     private static final String UPDATE_SPIN_POSITION = "spinPosition";
     private static final String UPDATE_OPTION_VAL = "optionVal";
@@ -50,6 +50,7 @@ public class UpdateTicketFragment extends TracClientFragment {
     private String currentActionName = null;
     private int ticknr;
 
+    @Override
     void onMyAttach(Context context) {
         super.onMyAttach(context);
         final Bundle args = getArguments();
@@ -257,7 +258,8 @@ public class UpdateTicketFragment extends TracClientFragment {
         }
     }
 
-    int getHelpFile() {
+    @Override
+    public int getHelpFile() {
         return R.string.updatehelpfile;
     }
 
