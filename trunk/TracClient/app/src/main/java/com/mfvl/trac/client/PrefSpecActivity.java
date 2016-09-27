@@ -24,7 +24,7 @@ import android.support.v4.content.LocalBroadcastManager;
 
 import com.mfvl.mfvllib.MyLog;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.Collection;
 
@@ -63,12 +63,12 @@ public class PrefSpecActivity extends TcBaseActivity implements TcBaseInterface 
         if (filterAction.equals(action)) {
             ff = new FilterFragment();
             String filterString = getFilterString();
-            final ArrayList<FilterSpec> filter = parseFilterString(filterString);
+            final Serializable filter = parseFilterString(filterString);
             args.putSerializable(FILTERLISTNAME, filter);
         } else if (sortAction.equals(action)) {
             ff = new SortFragment();
             String sortString = getSortString();
-            final ArrayList<SortSpec> filter = parseSortString(sortString);
+            final Serializable filter = parseSortString(sortString);
             args.putSerializable(SORTLISTNAME, filter);
         } else if (loginAction.equals(action)) {
             ff = new TracLoginFragment();
@@ -91,7 +91,7 @@ public class PrefSpecActivity extends TcBaseActivity implements TcBaseInterface 
 
             case MSG_SET_FILTER:
                 //noinspection unchecked
-                Collection<FilterSpec> filter = (ArrayList<FilterSpec>) msg.obj;
+                Collection<FilterSpec> filter = (Collection<FilterSpec>) msg.obj;
                 String filterString = joinList(filter.toArray(), "&");
                 storeFilterString(filterString);
 				intent = new Intent(PERFORM_FILTER);
@@ -102,7 +102,7 @@ public class PrefSpecActivity extends TcBaseActivity implements TcBaseInterface 
 
             case MSG_SET_SORT:
                 //noinspection unchecked
-                Collection<SortSpec> sort = (ArrayList<SortSpec>) msg.obj;
+                Collection<SortSpec> sort = (Collection<SortSpec>) msg.obj;
                 String sortString = joinList(sort.toArray(), "&");
                 storeSortString(sortString);
 				intent = new Intent(PERFORM_SORT);

@@ -19,23 +19,24 @@ package com.mfvl.trac.client;
 import android.content.Context;
 import android.widget.ArrayAdapter;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-interface ItemsAdapter<T> {
-    ArrayList<T> getItems();
+interface ItemsAdapter {
+    Serializable getItems();
 }
 
-class SpecAdapter<T extends Spec> extends ArrayAdapter<T> implements ItemsAdapter<T> {
+class SpecAdapter<T extends Spec> extends ArrayAdapter<T> implements ItemsAdapter {
     final ArrayList<T> items;
 
-    public SpecAdapter(Context context, int textViewResourceId, ArrayList<T> items) {
+    SpecAdapter(Context context, int textViewResourceId, ArrayList<T> items) {
         super(context, textViewResourceId, items);
 //        MyLog.logCall();
         this.items = items;
     }
 
     @Override
-    public ArrayList<T> getItems() {
+    public Serializable getItems() {
 //    MyLog.logCall();
         return items;
     }

@@ -28,14 +28,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Semaphore;
 
-class TicketModel {
+final class TicketModel {
     public final static String bundleKey = "TicketModelObject";
     private final static List<String> extraFields = Arrays.asList("max", "page");
     private final static List<String> extraValues = Arrays.asList("500", "0");
-    private static HashMap<String, TicketModelVeld> _velden;
-    private static ArrayList<String> _volgorde;
+    private static Map<String, TicketModelVeld> _velden;
+    private static List<String> _volgorde;
     private static int fieldCount;
     private static TicketModel _instance = null;
     private static boolean _hasData;

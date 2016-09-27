@@ -57,6 +57,8 @@ import ch.boye.httpclientandroidlib.util.EntityUtils;
 public class JSONRPCHttpClient extends JSONRPCClient {
     // HTTP 1.0
     private static final ProtocolVersion PROTOCOL_VERSION = new ProtocolVersion("HTTP", 1, 1);
+    private static final int MAX_CONN_TOTAL = 30;
+    private static final int MAX_CONN_PER_ROUTE = 30;
     /**
      * HttpClient to issue the HTTP/POST request
      */
@@ -78,8 +80,8 @@ public class JSONRPCHttpClient extends JSONRPCClient {
     public JSONRPCHttpClient(final String uri, final boolean sslHack, final boolean sslHostNameHack) {
         serviceUri = uri;
         final HttpClientBuilder hcb = HttpClientBuilder.create();
-        hcb.setMaxConnTotal(30);
-        hcb.setMaxConnPerRoute(30);
+        hcb.setMaxConnTotal(MAX_CONN_TOTAL);
+        hcb.setMaxConnPerRoute(MAX_CONN_PER_ROUTE);
         hcb.setDefaultRequestConfig(
                 RequestConfig.custom().setSocketTimeout(getSoTimeout()).setConnectionRequestTimeout(
                         getConnectionTimeout()).build());

@@ -23,7 +23,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.Checkable;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -229,7 +228,7 @@ public class UpdateTicketFragment extends TracClientFragment implements HelpInte
         final int sel = rg.getCheckedRadioButtonId();
         final RadioButton rb = (RadioButton) rg.findViewById(sel);
         final EditText et = (EditText) view.findViewById(R.id.comment);
-        final Checkable updNotify = (CheckBox) view.findViewById(R.id.updNotify);
+        final Checkable updNotify = (Checkable) view.findViewById(R.id.updNotify);
 
         final String action = (String) rb.getText();
         final String comment = et.getText().toString();

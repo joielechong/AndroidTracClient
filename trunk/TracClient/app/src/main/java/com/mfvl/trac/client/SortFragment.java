@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -161,7 +162,7 @@ public class SortFragment extends SpecFragment<SortSpec> implements HelpInterfac
                     break;
 
                 case R.id.sortdirec:
-                    ((ImageButton) dv).setImageResource(
+                    ((ImageView) dv).setImageResource(
                             sortItem.flip() ? R.drawable.upArrow : R.drawable.downArrow);
                     break;
 

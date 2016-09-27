@@ -16,6 +16,7 @@
 
 package com.mfvl.trac.client;
 
+import android.annotation.SuppressLint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,16 +28,17 @@ import android.support.v7.app.AppCompatActivity;
 import com.mfvl.mfvllib.MyLog;
 import com.mfvl.mfvllib.MyProgressBar;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.Map;
 
 import static com.mfvl.trac.client.Const.*;
 
 interface TcBaseInterface {
-    ArrayDeque<Message> getMessageQueue();
+    Deque<Message> getMessageQueue();
 }
 
+@SuppressLint("Registered")
 class TcBaseActivity extends AppCompatActivity implements Handler.Callback, InterFragmentListener {
     static boolean debug = false; // disable menuoption at startup
     Handler tracStartHandler = null;
@@ -62,7 +64,7 @@ class TcBaseActivity extends AppCompatActivity implements Handler.Callback, Inte
         super.onStart();
         MyLog.logCall();
         isPaused = false;
-        ArrayDeque<Message> msgQueue = ((TcBaseInterface) this).getMessageQueue();
+        Deque<Message> msgQueue = ((TcBaseInterface) this).getMessageQueue();
         MyLog.d(msgQueue);
         while (!msgQueue.isEmpty()) {
             Message m = msgQueue.poll();
@@ -109,7 +111,7 @@ class TcBaseActivity extends AppCompatActivity implements Handler.Callback, Inte
 
     private synchronized boolean queueMessage(Message msg) {
         MyLog.d("msg = " + msg);
-        ArrayDeque<Message> msgQueue = ((TcBaseInterface) this).getMessageQueue();
+        Deque<Message> msgQueue = ((TcBaseInterface) this).getMessageQueue();
         Message m = Message.obtain(msg);
         msgQueue.add(m);
         MyLog.d(msgQueue);

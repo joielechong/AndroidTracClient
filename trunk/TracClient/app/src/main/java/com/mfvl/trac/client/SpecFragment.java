@@ -23,6 +23,7 @@ import android.widget.ListView;
 
 import com.mfvl.mfvllib.MyLog;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 interface SpecInterface {
@@ -79,10 +80,10 @@ public class SpecFragment<T extends Spec> extends TracClientFragment {
             savedState.putSerializable(inputSpecText, inputSpec);
         }
 
-        ItemsAdapter<T> adapter = (ItemsAdapter<T>) listView.getAdapter();
+        ItemsAdapter adapter = (ItemsAdapter) listView.getAdapter();
 
         if (adapter != null) {
-            final ArrayList<T> outputSpec = adapter.getItems();
+            final Serializable outputSpec = adapter.getItems();
 
             if (outputSpec != null) {
 //                MyLog.d("outputSpec = " + outputSpec);
