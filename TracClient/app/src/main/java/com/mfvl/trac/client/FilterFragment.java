@@ -62,7 +62,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements HelpInte
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.storefilter:
-                final ArrayList<FilterSpec> items = filterAdapter.items;
+                final List<FilterSpec> items = filterAdapter.items;
 
                 for (int i = items.size() - 1; i >= 0; i--) {
                     if (items.get(i).getOperator() == null || items.get(i).getOperator().equals("")
@@ -241,7 +241,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements HelpInte
             for (int i = 0; i < waardes.size(); i++) {
                 final CheckBox rb = new CheckBox(context);
 
-                rb.setText((String) waardes.get(i));
+                rb.setText((CharSequence) waardes.get(i));
                 rb.setId(i);
                 rb.setChecked(omgekeerd);
                 if (w != null) {

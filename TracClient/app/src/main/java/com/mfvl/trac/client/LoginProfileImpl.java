@@ -34,11 +34,11 @@ interface LoginProfile {
 
     List<FilterSpec> getFilterList();
 
-    LoginProfileImpl setFilterList(List<FilterSpec> fl);
+    LoginProfile setFilterList(List<FilterSpec> fl);
 
     List<SortSpec> getSortList();
 
-    LoginProfileImpl setSortList(List<SortSpec> sl);
+    LoginProfile setSortList(List<SortSpec> sl);
 
     String getProfile();
 
@@ -56,11 +56,11 @@ class LoginProfileImpl extends TcObject implements Serializable, Cloneable, Logi
     private List<SortSpec> sortList = null;
     private String _profile = null;
 
-    public LoginProfileImpl(String url, String username, String password, boolean sslHack) {
+    LoginProfileImpl(String url, String username, String password, boolean sslHack) {
         this(url, username, password, sslHack, false);
     }
 
-    public LoginProfileImpl(String url, String username, String password, boolean sslHack, boolean sslHostNameHack) {
+    LoginProfileImpl(String url, String username, String password, boolean sslHack, boolean sslHostNameHack) {
         _url = url;
         _username = username;
         _password = password;
@@ -73,10 +73,10 @@ class LoginProfileImpl extends TcObject implements Serializable, Cloneable, Logi
         boolean retVal;
         if (this == o) {
             retVal = true;
-        } else if (!(o instanceof LoginProfileImpl)) {
+        } else if (!(o instanceof LoginProfile)) {
             retVal = false;
         } else {
-            LoginProfile f = (LoginProfileImpl) o;
+            LoginProfile f = (LoginProfile) o;
 //			MyLog.d("this = "+this+" f = "+f + " "+retVal);
             retVal = equalFields(_url, f.getUrl());
             retVal &= equalFields(_username, f.getUsername());
@@ -116,7 +116,7 @@ class LoginProfileImpl extends TcObject implements Serializable, Cloneable, Logi
     }
 
     @Override
-    public LoginProfileImpl setSslHostNameHack(boolean v) {
+    public LoginProfile setSslHostNameHack(boolean v) {
         _sslHostNameHack = v;
         return this;
     }
@@ -127,7 +127,7 @@ class LoginProfileImpl extends TcObject implements Serializable, Cloneable, Logi
     }
 
     @Override
-    public LoginProfileImpl setFilterList(List<FilterSpec> fl) {
+    public LoginProfile setFilterList(List<FilterSpec> fl) {
         filterList = fl;
         return this;
     }
@@ -138,7 +138,7 @@ class LoginProfileImpl extends TcObject implements Serializable, Cloneable, Logi
     }
 
     @Override
-    public LoginProfileImpl setSortList(List<SortSpec> sl) {
+    public LoginProfile setSortList(List<SortSpec> sl) {
         sortList = sl;
         return this;
     }

@@ -39,7 +39,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CheckedTextView;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.CursorAdapter;
@@ -273,7 +272,7 @@ public class TracLoginFragment extends TracClientFragment
     @Override
     public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
         if (arg1 != null) {
-            SelectedProfile = ((CheckedTextView) arg1).getText().toString();
+            SelectedProfile = ((TextView) arg1).getText().toString();
             if (arg2 > 0) { // pos 0 is empty
                 final LoginProfileImpl prof = pdb.getProfile(SelectedProfile);
 

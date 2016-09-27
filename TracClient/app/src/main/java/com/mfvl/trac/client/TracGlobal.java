@@ -39,13 +39,12 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.TimeZone;
 
 import javax.security.auth.x500.X500Principal;
 
 import static com.mfvl.trac.client.Const.*;
 
-class TracGlobal {
+final class TracGlobal {
     private static final X500Principal DEBUG_DN = new X500Principal("CN=Android Debug,O=Android,C=US");
     public static int webzoom;
     static int ticketGroupCount;
@@ -184,11 +183,6 @@ class TracGlobal {
         return settings.getString(prefFilterKey, "max=500&status!=closed");
     }
 
-    static void removeFilterString() {
-        // MyLog.logCall();
-        storeFilterString("max=500&status!=closed");
-    }
-
     static void storeFilterString(final String filterString) {
         MyLog.d(filterString);
         settings.edit().putString(prefFilterKey, filterString == null ? "" : filterString).apply();
@@ -201,11 +195,6 @@ class TracGlobal {
 
         MyLog.d("sortString = " + sortString);
         return sortString;
-    }
-
-    static void removeSortString() {
-        // MyLog.logCall();
-        storeSortString("order=priority&order=modified&desc=1");
     }
 
     static void storeSortString(final String sortString) {
@@ -303,19 +292,6 @@ class TracGlobal {
             }
         }
         return reqString;
-    }
-
-    /**
-     * Transform Calendar to ISO 8601 string.
-     */
-    static String fromUnix(final long tijd) {
-        final Date date = new Date();
-
-        date.setTime(tijd);
-        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
-
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return sdf.format(date);
     }
 
     /**

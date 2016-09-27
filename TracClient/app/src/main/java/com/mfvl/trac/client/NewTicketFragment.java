@@ -128,7 +128,7 @@ public class NewTicketFragment extends TracClientFragment implements HelpInterfa
     public void onSaveInstanceState(Bundle SavedState) {
         View v = getView();
         if (v != null) {
-            SavedState.putBoolean(NotfifyField, ((CheckBox) v.findViewById(R.id.updNotify)).isChecked());
+            SavedState.putBoolean(NotfifyField, ((Checkable) v.findViewById(R.id.updNotify)).isChecked());
             final TableLayout tl = (TableLayout) v.findViewById(R.id.newTickTable);
             if (tl != null) {
                 for (int i = 0; i < tm.count(); i++) {
@@ -141,7 +141,7 @@ public class NewTicketFragment extends TracClientFragment implements HelpInterfa
                             MyLog.e("Exception in createTicket", e);
                         }
                     } else if (w != null) {
-                        final String s = ((EditText) w).getText().toString();
+                        final String s = ((TextView) w).getText().toString();
                         if (!"".equals(s)) {
                             SavedState.putString(veldnaam, s);
                         }
@@ -182,7 +182,7 @@ public class NewTicketFragment extends TracClientFragment implements HelpInterfa
                                 MyLog.e("Exception in createTicket", e);
                             }
                         } else if (w != null) {
-                            final String s = ((EditText) w).getText().toString();
+                            final String s = ((TextView) w).getText().toString();
 
                             if (!"".equals(s)) {
                                 velden.put(veldnaam, s);
@@ -191,7 +191,7 @@ public class NewTicketFragment extends TracClientFragment implements HelpInterfa
                     }
                     velden.put("status", "new");
                     velden.put("reporter", username);
-                    final Checkable updNotify = (CheckBox) view.findViewById(R.id.updNotify);
+                    final Checkable updNotify = (Checkable) view.findViewById(R.id.updNotify);
                     final boolean notify = updNotify != null && updNotify.isChecked();
                     final Ticket t = new Ticket(velden);
                     final int newtick = listener.createTicket(t, notify);

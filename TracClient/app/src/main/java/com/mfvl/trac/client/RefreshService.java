@@ -404,7 +404,7 @@ public class RefreshService extends Service implements Handler.Callback {
                 break;
 
             case MSG_SEND_TICKETS:
-                Collection<Integer> newTickets = (List<Integer>) msg.obj;
+                Collection<Integer> newTickets = (Collection<Integer>) msg.obj;
                 if (newTickets == null) {
                     newTickets = new ArrayList<>();
                     newTickets.add(msg.arg1);

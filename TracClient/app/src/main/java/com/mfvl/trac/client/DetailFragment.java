@@ -95,7 +95,7 @@ public class DetailFragment extends TracClientFragment
     private final List<ModifiedString> values = new ArrayList<>();
     private int ticknr = -1;
     private boolean showEmptyFields = false;
-    private ModVeldMap modVeld;
+    private Map<String, String> modVeld;
     private boolean sendNotification = false;
     private boolean didUpdate = false;
     private String[] notModified;
@@ -170,6 +170,7 @@ public class DetailFragment extends TracClientFragment
         sendNotification = isChecked;
     }
 
+    @SuppressWarnings({"CastToConcreteClass", "unchecked"})
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -191,7 +192,7 @@ public class DetailFragment extends TracClientFragment
             if (savedInstanceState != null) {
                 showEmptyFields = savedInstanceState.getBoolean(EMPTYFIELDS, false);
                 if (savedInstanceState.containsKey(MODVELD)) {
-                    modVeld = (ModVeldMap) savedInstanceState.getSerializable(MODVELD);
+                    modVeld = (Map<String, String>) savedInstanceState.getSerializable(MODVELD);
                 }
                 setSelect(modVeld != null && modVeld.isEmpty());
                 if (savedInstanceState.containsKey(CURRENT_TICKET)) {
@@ -335,7 +336,7 @@ public class DetailFragment extends TracClientFragment
             savedState.putInt(CURRENT_TICKET, ticknr);
         }
         if (!modVeld.isEmpty()) {
-            savedState.putSerializable(MODVELD, modVeld);
+            savedState.putSerializable(MODVELD, (Serializable) modVeld);
         }
         savedState.putBoolean(EMPTYFIELDS, showEmptyFields);
         // MyLog.d( "onSaveInstanceState = " + savedState);
@@ -821,24 +822,24 @@ public class DetailFragment extends TracClientFragment
     }
 
     private class ModifiedStringImpl implements ModifiedString {
-        private final String _veld;
-        private boolean _updated;
-        private String _waarde;
+        private final String veld;
+        private boolean updated;
+        private String waarde;
 
         ModifiedStringImpl(String v, String w) {
-            _veld = v;
-            _waarde = w;
-            _updated = false;
+            veld = v;
+            waarde = w;
+            updated = false;
         }
 
         @Override
         public boolean getUpdated() {
-            return _updated;
+            return updated;
         }
 
         @Override
         public void setUpdated() {
-            _updated = true;
+            updated = true;
         }
 
         @Override
@@ -863,23 +864,23 @@ public class DetailFragment extends TracClientFragment
 
         @Override
         public void setWaarde(String s) {
-            _waarde = s;
+            waarde = s;
         }
 
         @Override
         public String veld() {
-            return _veld;
+            return veld;
         }
 
         @Override
         public boolean equals(Object o) {
-            return this == o || o instanceof ModifiedString && _veld.equals(
+            return this == o || o instanceof ModifiedString && veld.equals(
                     ((ModifiedString) o).veld());
         }
 
         @Override
         public String toString() {
-            return _veld + ": " + _waarde;
+            return veld + ": " + waarde;
         }
     }
 

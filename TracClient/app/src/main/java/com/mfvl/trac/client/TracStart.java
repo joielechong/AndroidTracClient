@@ -78,10 +78,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TimeZone;
 import java.util.concurrent.Semaphore;
 import java.util.ArrayDeque;
 
@@ -96,6 +100,9 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         NavigationView.OnNavigationItemSelectedListener, ActivityCompat.OnRequestPermissionsResultCallback,
         ViewTreeObserver.OnGlobalLayoutListener, SharedPreferences.OnSharedPreferenceChangeListener, TcBaseInterface {
     public static final String DetailFragmentTag = "Detail_Fragment";
+    public static final int DELAY_2ND_BACK = 2000;
+    public static final int CHANGEHOSTMARKER = 1234;
+    public static final int ALERT_TIME = 7500;
     private static final int REQUEST_CODE_CHOOSER = 174;
     private static final int REQUEST_CODE_WRITE_EXT = 175;
     private static final String ListFragmentTag = "List_Fragment";
@@ -158,7 +165,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     private ArrayList<SortSpec> sortList = null;
     private ArrayList<FilterSpec> filterList = null;
     private String profile = null;
-    private LoginProfileImpl currentLoginProfile = null;
+    private LoginProfile currentLoginProfile = null;
     private String url = null;
     private String username = null;
     private String password = null;
@@ -186,20 +193,43 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             // Get extra data included in the Intent
             MyLog.d("intent = " + intent);
             Menu menu = navigationView.getMenu();
-            menu.removeGroup(1234);
+            menu.removeGroup(CHANGEHOSTMARKER);
 
-            MenuItem mi = menu.add(1234, Menu.NONE, Menu.NONE, R.string.changehost);
+            MenuItem mi = menu.add(CHANGEHOSTMARKER, Menu.NONE, Menu.NONE, R.string.changehost);
             mi.setEnabled(false);
             Cursor pdbCursor = pdb.getProfiles(false);
             MyLog.d("pdbCursor = " + pdbCursor);
             for (pdbCursor.moveToFirst(); !pdbCursor.isAfterLast(); pdbCursor.moveToNext()) {
                 //MyLog.d("pdbCursor 0 = "+pdbCursor.getInt(0));
                 //MyLog.d("pdbCursor 1 = "+pdbCursor.getString(1));
-                menu.add(1234, Menu.NONE, Menu.NONE, pdbCursor.getString(1));
+                menu.add(CHANGEHOSTMARKER, Menu.NONE, Menu.NONE, pdbCursor.getString(1));
             }
             pdbCursor.close();
         }
     };
+
+    private void removeFilterString() {
+        // MyLog.logCall();
+        storeFilterString("max=500&status!=closed");
+    }
+
+    /**
+     * Transform Calendar to ISO 8601 string.
+     */
+    private String fromUnix(final long tijd) {
+        final Date date = new Date();
+
+        date.setTime(tijd);
+        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
+
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return sdf.format(date);
+    }
+
+    private void removeSortString() {
+        // MyLog.logCall();
+        storeSortString("order=priority&order=modified&desc=1");
+    }
 
     @Override
     public ArrayDeque<Message> getMessageQueue() {
@@ -225,10 +255,10 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                 break;
 
             default:
-                if (item.getGroupId() == 1234 && item.isEnabled()) {
+                if (item.getGroupId() == CHANGEHOSTMARKER && item.isEnabled()) {
                     String newProfile = item.getTitle().toString();
                     //MyLog.d(newProfile);
-                    LoginProfileImpl lp = pdb.getProfile(newProfile);
+                    LoginProfile lp = pdb.getProfile(newProfile);
                     MyLog.d(lp);
                     if (lp != null) {
                         removeFilterString();
@@ -573,7 +603,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                             } catch (Exception ignored) {
                             }
                         }
-                    }, 7500);
+                    }, ALERT_TIME);
                     ad.show();
                 }
             });
@@ -748,7 +778,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                         public void run() {
                             doubleBackToExitPressedOnce = false;
                         }
-                    }, 2000);
+                    }, DELAY_2ND_BACK);
                 }
             }
         }
