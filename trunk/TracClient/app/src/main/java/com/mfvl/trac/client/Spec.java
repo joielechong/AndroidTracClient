@@ -18,31 +18,32 @@ package com.mfvl.trac.client;
 
 import java.io.Serializable;
 
-interface Spec {
+interface Spec extends Cloneable {
     String getVeld();
 
     void setEdit(final boolean edited);
 
-    Object clone() throws CloneNotSupportedException;
+    Spec clone() throws CloneNotSupportedException;
 }
 
-class SpecImpl extends TcObject implements Serializable, Cloneable, Spec {
+class SpecImpl extends TcObject implements Serializable, Spec {
     String _veld;
 
     SpecImpl(String veld) {
         _veld = veld;
     }
 
+    @SuppressWarnings({"MethodReturnOfConcreteClass", "LocalVariableOfConcreteClass"})
     @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    public SpecImpl clone() throws CloneNotSupportedException {
+        SpecImpl s = (SpecImpl) super.clone();
+        s._veld = _veld;
+        return s;
     }
 
     @Override
     public boolean equals(Object o) {
-        boolean retVal;
-        retVal = (o instanceof Spec) && equalFields(_veld, ((Spec) o).getVeld());
-        return retVal;
+        return (o instanceof Spec) && equalFields(_veld, ((Spec) o).getVeld());
     }
 
     @Override
