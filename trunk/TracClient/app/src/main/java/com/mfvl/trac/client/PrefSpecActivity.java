@@ -82,8 +82,8 @@ public class PrefSpecActivity extends TcBaseActivity implements TcBaseInterface 
 
     @Override
     public boolean processMessage(Message msg) {
-		Intent intent;
         MyLog.d(msg);
+        Intent intent;
         switch (msg.what) {
             case MSG_DONE:
                 finish();

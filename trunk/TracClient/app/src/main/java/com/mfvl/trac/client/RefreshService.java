@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.app.NotificationCompat;
@@ -67,9 +68,9 @@ public class RefreshService extends Service implements Handler.Callback {
      */
     private final IBinder mBinder = new RefreshBinderImpl();
     private Timer monitorTimer = null;
-    private MyHandlerThread mHandlerThread = null;
+    private HandlerThread mHandlerThread = null;
     private Handler mServiceHandler;
-    private LoginProfileImpl mLoginProfile = null;
+    private LoginProfile mLoginProfile = null;
     private TracHttpClient tracClient = null;
     private NotificationManager mNotificationManager;
     private Tickets mTickets = null;
@@ -117,14 +118,14 @@ public class RefreshService extends Service implements Handler.Callback {
         MyLog.d("intent = " + intent + " cmd = " + cmd);
         if (cmd != -1) {
             int arg1 = 0;
-            int arg2 = 0;
-            Object obj = null;
             if (intent.hasExtra(INTENT_ARG1)) {
                 arg1 = intent.getIntExtra(INTENT_ARG1, -1);
             }
+            int arg2 = 0;
             if (intent.hasExtra(INTENT_ARG2)) {
                 arg2 = intent.getIntExtra(INTENT_ARG2, -1);
             }
+            Object obj = null;
             if (intent.hasExtra(INTENT_OBJ)) {
                 obj = intent.getSerializableExtra(INTENT_OBJ);
             }
@@ -376,6 +377,7 @@ public class RefreshService extends Service implements Handler.Callback {
         switch (msg.what) {
             case MSG_REMOVE_NOTIFICATION:
                 mNotificationManager.cancel(notifId);
+                //noinspection fallthrough
             case MSG_START_TIMER:
                 startTimer();
                 break;
@@ -430,8 +432,9 @@ public class RefreshService extends Service implements Handler.Callback {
 
             case MSG_REFRESH_LIST:
                 msg.obj = null;
+                //noinspection fallthrough
             case MSG_LOAD_TICKETS:
-                @SuppressWarnings("CastToConcreteClass") LoginProfileImpl lp = (LoginProfileImpl) msg.obj;
+                LoginProfile lp = (LoginProfile) msg.obj;
                 MyLog.d("lp = " + lp);
                 MyLog.d("mLoginProfile = " + mLoginProfile);
                 if (lp != null) {
@@ -505,6 +508,7 @@ public class RefreshService extends Service implements Handler.Callback {
     }
 
     public class RefreshBinderImpl extends Binder implements RefreshBinder {
+        @SuppressWarnings("MethodReturnOfConcreteClass")
         @Override
         public RefreshService getService() {
             // Return this instance of LocalService so clients can call public methods

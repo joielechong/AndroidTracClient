@@ -208,7 +208,8 @@ final class TicketModel {
         wacht();
         if (_velden.containsKey(naam)) {
             return _velden.get(naam);
-        } else if ("id".equals(naam)) {
+        }
+        if ("id".equals(naam)) {
             return new TicketModelVeld(naam, naam, "0");
         }
         throw new IndexOutOfBoundsException();

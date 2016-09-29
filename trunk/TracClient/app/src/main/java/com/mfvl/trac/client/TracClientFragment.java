@@ -46,7 +46,8 @@ interface HelpInterface {
     int getHelpFile();
 }
 
-public class TracClientFragment extends Fragment implements View.OnClickListener {
+@SuppressWarnings("AbstractClassExtendsConcreteClass")
+public abstract class TracClientFragment extends Fragment implements View.OnClickListener {
 
     Ticket _ticket = null;
     Activity context;

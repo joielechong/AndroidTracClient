@@ -100,9 +100,9 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         NavigationView.OnNavigationItemSelectedListener, ActivityCompat.OnRequestPermissionsResultCallback,
         ViewTreeObserver.OnGlobalLayoutListener, SharedPreferences.OnSharedPreferenceChangeListener, TcBaseInterface {
     public static final String DetailFragmentTag = "Detail_Fragment";
-    public static final int DELAY_2ND_BACK = 2000;
-    public static final int CHANGEHOSTMARKER = 1234;
-    public static final int ALERT_TIME = 7500;
+    private static final int DELAY_2ND_BACK = 2000;
+    private static final int CHANGEHOSTMARKER = 1234;
+    private static final int ALERT_TIME = 7500;
     private static final int REQUEST_CODE_CHOOSER = 174;
     private static final int REQUEST_CODE_WRITE_EXT = 175;
     private static final String ListFragmentTag = "List_Fragment";
@@ -297,7 +297,9 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         mMessenger = new Messenger(tracStartHandler);
 
         if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            canWriteSD = true;
+        } else {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 new AlertDialog.Builder(this)
                         .setTitle(R.string.permissiontitle)
@@ -313,8 +315,6 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             } else {
                 tracStartHandler.obtainMessage(MSG_GET_PERMISSIONS).sendToTarget();
             }
-        } else {
-            canWriteSD = true;
         }
 
         setContentView(R.layout.tracstart);
@@ -1164,7 +1164,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         final int ticknr = t.getTicketnr();
 
         if (ticknr == -1) {
-            throw new IllegalArgumentException(getString(R.string.invtick) + " " + ticknr);
+            throw new IllegalArgumentException(getString(R.string.invtick));
         }
         if (action == null) {
             throw new NullPointerException(getString(R.string.noaction));
@@ -1223,13 +1223,13 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         try {
             TracHttpClient tracClient = new TracHttpClient(url, sslHack, sslHostNameHack, username, password);
             final int newticknr = tracClient.createTicket(s, d, velden, notify);
-            if (newticknr != -1) {
+            if (newticknr == -1) {
+                showAlertBox(R.string.storerr, R.string.noticketUnk, "");
+                return -1;
+            } else {
 //				reloadTicketData(new Ticket(newticknr));
                 refreshTicket(newticknr);
                 return newticknr;
-            } else {
-                showAlertBox(R.string.storerr, R.string.noticketUnk, "");
-                return -1;
             }
         } catch (final Exception e) {
             MyLog.e("Exception during create", e);
@@ -1290,16 +1290,16 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             public void run() {
                 MyLog.i(ticket.toString() + " " + uri);
                 final int _ticknr = ticket.getTicketnr();
-                String filename = null;
-                int bytes = 0;
                 if (uri != null) {
+                    String filename = null;
+                    int bytes = 0;
                     if (uri.toString().startsWith("file:")) {
                         filename = uri.getPath();
                     } else {
                         Cursor c = getContentResolver().query(uri, null, null, null, null);
                         if (c != null) {
                             if (c.moveToFirst()) {
-//                    MyLog.d("ColumnNames = "+Arrays.asList(c.getColumnNames()));
+                                // MyLog.d("ColumnNames = "+Arrays.asList(c.getColumnNames()));
                                 int id = c.getColumnIndex(Images.Media.DISPLAY_NAME);
                                 if (id != -1) {
                                     filename = c.getString(id);

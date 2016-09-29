@@ -193,10 +193,9 @@ public class TicketListFragment extends TracClientFragment
                 break;
 
             case R.id.tlshare:
-                String lijst = "";
-
                 if (dataAdapter != null) {
                     final Intent sendIntent = new Intent(Intent.ACTION_SEND);
+                    String lijst = "";
                     for (Ticket t : dataAdapter.getTicketList()) {
                         try {
                             lijst += t.getTicketnr() + ";" + t.getString("status") + ";" + t.getString("summary") + "\r\n";
@@ -229,6 +228,8 @@ public class TicketListFragment extends TracClientFragment
                 }
                 zoektext = null;
                 filterText.setText(null);
+                break;
+
             default:
                 return super.onOptionsItemSelected(item);
         }

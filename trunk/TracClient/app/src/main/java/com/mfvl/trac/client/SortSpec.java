@@ -28,21 +28,27 @@ public class SortSpec extends SpecImpl {
         _richting = richting;
     }
 
+
+    @SuppressWarnings({"MethodReturnOfConcreteClass", "LocalVariableOfConcreteClass"})
     @Override
-    public boolean equals(Object o) {
-        boolean retVal;
-        retVal = (this == o)
-                || (o instanceof SortSpec && super.equals(o)
-                && (_richting == ((SortSpec) o).getRichting()));
-//		MyLog.d("this = "+this+" o = "+o+" retVal = "+retVal);
-        return retVal;
+    public SortSpec clone() throws CloneNotSupportedException {
+        SortSpec s = (SortSpec) super.clone();
+        s._richting = _richting;
+        return s;
     }
 
-    public boolean getRichting() {
+    @Override
+    public boolean equals(Object o) {
+        return (this == o)
+                || (o instanceof SortSpec && super.equals(o)
+                && (_richting == ((SortSpec) o).getRichting()));
+    }
+
+    boolean getRichting() {
         return _richting;
     }
 
-    public boolean flip() {
+    boolean flip() {
         _richting = !_richting;
         return _richting;
     }

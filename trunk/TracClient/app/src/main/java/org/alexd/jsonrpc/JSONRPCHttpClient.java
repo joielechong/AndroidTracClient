@@ -87,7 +87,6 @@ public class JSONRPCHttpClient extends JSONRPCClient {
                         getConnectionTimeout()).build());
 
         final SSLContextBuilder builder = new SSLContextBuilder();
-        SSLConnectionSocketFactory sslsf;
 
         if (sslHack) {
             try {
@@ -98,12 +97,8 @@ public class JSONRPCHttpClient extends JSONRPCClient {
         }
 
         try {
-            if (sslHostNameHack) {
-                sslsf = new SSLConnectionSocketFactory(builder.build(),
-                        new AllowAllHostnameVerifier());
-            } else {
-                sslsf = new SSLConnectionSocketFactory(builder.build());
-            }
+            SSLConnectionSocketFactory sslsf = sslHostNameHack ? new SSLConnectionSocketFactory(builder.build(),
+                    new AllowAllHostnameVerifier()) : new SSLConnectionSocketFactory(builder.build());
             hcb.setSSLSocketFactory(sslsf);
         } catch (final GeneralSecurityException e) {
             MyLog.e("Exception after sslHostNameHack", e);
@@ -136,13 +131,7 @@ public class JSONRPCHttpClient extends JSONRPCClient {
                 final HttpPost request = new HttpPost(actualUri);
                 lastJsonRequest = jsonRequest;
 
-                HttpEntity entity;
-
-                if (encoding.length() > 0) {
-                    entity = new JSONEntity(jsonRequest, encoding);
-                } else {
-                    entity = new JSONEntity(jsonRequest);
-                }
+                HttpEntity entity = encoding.length() > 0 ? new JSONEntity(jsonRequest, encoding) : new JSONEntity(jsonRequest);
                 request.setEntity(entity);
                 request.setProtocolVersion(PROTOCOL_VERSION);
                 response = null;

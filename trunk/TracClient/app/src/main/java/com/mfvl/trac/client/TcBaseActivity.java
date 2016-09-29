@@ -102,11 +102,7 @@ class TcBaseActivity extends AppCompatActivity implements Handler.Callback, Inte
     @Override
     public boolean handleMessage(Message msg) {
         MyLog.d("msg = " + msg);
-        if (isPaused && msg.what != MSG_REQUEST_TICKET_COUNT) {
-            return queueMessage(msg);
-        } else {
-            return processMessage(msg);
-        }
+        return isPaused && msg.what != MSG_REQUEST_TICKET_COUNT ? queueMessage(msg) : processMessage(msg);
     }
 
     private synchronized boolean queueMessage(Message msg) {

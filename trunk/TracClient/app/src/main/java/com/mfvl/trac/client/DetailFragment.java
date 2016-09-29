@@ -158,10 +158,10 @@ public class DetailFragment extends TracClientFragment
         gestureDetector = new GestureDetector(context, this);
 
         currentView = getView();
-        if (ticknr != -1) {
-            display_and_refresh_ticket();
-        } else {
+        if (ticknr == -1) {
             getFragmentManager().popBackStack();
+        } else {
+            display_and_refresh_ticket();
         }
     }
 
@@ -382,7 +382,8 @@ public class DetailFragment extends TracClientFragment
 //        MyLog.d("position = " + position);
         if (t.length() >= 8 && "bijlage ".equals(t.substring(0, 8))) {
             return false;
-        } else if (t.length() >= 8 && "comment:".equals(t.substring(0, 8))) {
+        }
+        if (t.length() >= 8 && "comment:".equals(t.substring(0, 8))) {
             showAlertBox(R.string.notpossible, R.string.nocomment, null);
         } else {
             final String[] parsed = t.split(":", 2);
@@ -632,10 +633,9 @@ public class DetailFragment extends TracClientFragment
 
             if (history != null) {
                 for (int j = 0; j < history.length(); j++) {
-                    JSONArray cmt;
 
                     try {
-                        cmt = history.getJSONArray(j);
+                        JSONArray cmt = history.getJSONArray(j);
                         if ("comment".equals(cmt.getString(2)) && cmt.getString(4).length() > 0) {
                             values.add(
                                     new ModifiedStringImpl("comment",
@@ -652,10 +652,9 @@ public class DetailFragment extends TracClientFragment
 
             if (attachments != null) {
                 for (int j = 0; j < attachments.length(); j++) {
-                    JSONArray bijlage;
 
                     try {
-                        bijlage = attachments.getJSONArray(j);
+                        JSONArray bijlage = attachments.getJSONArray(j);
                         values.add(
                                 new ModifiedStringImpl("bijlage " + (j + 1),
                                         toonTijd(bijlage.getJSONObject(
@@ -711,28 +710,29 @@ public class DetailFragment extends TracClientFragment
     @Override
     public boolean onBackPressed() {
         MyLog.logCall();
-        if (!modVeld.isEmpty()) {
-            context.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    new AlertDialog.Builder(context)
-                            .setTitle(R.string.warning)
-                            .setMessage(R.string.unsaved)
-                            .setPositiveButton(R.string.ja, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    getFragmentManager().popBackStack();
-                                    updateTicket();
-                                }
-                            })
-                            .setNegativeButton(R.string.nee, null)
-                            .show();
-                }
-            });
-            return true;
-        } else {
+        if (modVeld.isEmpty()) {
             return false;
         }
+
+        context.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                new AlertDialog.Builder(context)
+                        .setTitle(R.string.warning)
+                        .setMessage(R.string.unsaved)
+                        .setPositiveButton(R.string.ja, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                getFragmentManager().popBackStack();
+                                updateTicket();
+                            }
+                        })
+                        .setNegativeButton(R.string.nee, null)
+                        .show();
+            }
+        });
+        return true;
+
     }
 
     interface ModifiedString {

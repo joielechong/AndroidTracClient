@@ -92,11 +92,7 @@ class TracHttpClient extends JSONRPCHttpClient {
     }
 
     public JSONArray getModel() throws Exception {
-        if (current_url == null) {
-            return null;
-        } else {
-            return callJSONArray(TICKET_GETTICKETFIELDS);
-        }
+        return current_url == null ? null : callJSONArray(TICKET_GETTICKETFIELDS);
     }
 
     public byte[] getAttachment(int ticknr, String filename) throws JSONException, JSONRPCException {
