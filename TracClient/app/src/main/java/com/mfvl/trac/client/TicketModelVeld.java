@@ -26,8 +26,8 @@ import java.util.List;
 
 class TicketModelVeld {
 
-    private String _name;
-    private String _label;
+    private final String _name;
+    private final String _label;
     private String _type;
     private String _format;
     private String _value;
@@ -65,7 +65,7 @@ class TicketModelVeld {
             _order = 0;
         }
 */
-        if (_type.equals("text")) {
+        if ("text".equals(_type)) {
             try {
                 _format = v.getString("format");
             } catch (final JSONException e) {
@@ -73,7 +73,7 @@ class TicketModelVeld {
             }
         }
 
-        if (_type.equals("select") || _type.equals("radio")) {
+        if ("select".equals(_type) || "radio".equals(_type)) {
             try {
                 final JSONArray ja = v.getJSONArray("options");
                 final int count = ja.length();
@@ -90,7 +90,7 @@ class TicketModelVeld {
             } catch (final JSONException ignored) {
             }
             try {
-                _optional = v.getString("optional").equals("true");
+                _optional = "true".equals(v.getString("optional"));
             } catch (final JSONException e) {
                 _optional = false;
             }

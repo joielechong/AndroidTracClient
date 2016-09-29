@@ -157,10 +157,9 @@ public class Ticket { // implements Serializable {
             final int count = fields.length();
 
             for (int i = 0; i < count; i++) {
-                String veld;
 
                 try {
-                    veld = fields.getString(i);
+                    String veld = fields.getString(i);
                     switch (veld) {
                         case "summary":
                         case "_ts":
@@ -181,10 +180,9 @@ public class Ticket { // implements Serializable {
             MyLog.e("velden failed", e);
         }
         for (int j = 0; j < _history.length(); j++) {
-            JSONArray cmt;
 
             try {
-                cmt = _history.getJSONArray(j);
+                JSONArray cmt = _history.getJSONArray(j);
                 if ("comment".equals(cmt.getString(2)) && cmt.getString(4).length() > 0) {
                     tekst += "comment: " + toonTijd(cmt.getJSONObject(0)) + " - " + cmt.getString(
                             1) + " - " + cmt.getString(4)
@@ -195,10 +193,9 @@ public class Ticket { // implements Serializable {
             }
         }
         for (int j = 0; j < _attachments.length(); j++) {
-            JSONArray bijlage;
 
             try {
-                bijlage = _attachments.getJSONArray(j);
+                JSONArray bijlage = _attachments.getJSONArray(j);
                 tekst += "bijlage " + (j + 1) + ": " + toonTijd(
                         bijlage.getJSONObject(3)) + " - " + bijlage.getString(4) + " - "
                         + bijlage.getString(0) + " - " + bijlage.getString(1) + "\n";

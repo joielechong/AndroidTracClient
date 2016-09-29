@@ -85,12 +85,12 @@ public class NewTicketFragment extends TracClientFragment implements HelpInterfa
         boolean first = true;
 
         for (int i = 0; i < tm.count(); i++) {
-            View v;
             final TicketModelVeld veld = tm.getVeld(i);
             final String veldnaam = veld.label();
             //MyLog.d("i = "+i+" veld = "+veld);
 
             if (!Arrays.asList(ignoreFields).contains(veldnaam)) {
+                View v;
                 if (veld.options() != null) {
                     List<Object> waardes = veld.options();
                     boolean optional = veld.optional();
@@ -105,8 +105,7 @@ public class NewTicketFragment extends TracClientFragment implements HelpInterfa
                     }
                     v1.setTag(veldnaam);
                 } else {
-                    v = LayoutInflater.from(context).inflate((veldnaam.equals(
-                            "Description") ? R.layout.descrfield : R.layout.stdfield), tl, false);
+                    v = LayoutInflater.from(context).inflate(("Description".equals(veldnaam) ? R.layout.descrfield : R.layout.stdfield), tl, false);
                     @SuppressLint("CutPasteId") EditText e = (EditText) v.findViewById(R.id.nt_val);
                     if (savedInstanceState != null && savedInstanceState.containsKey(veldnaam)) {
                         e.setText(savedInstanceState.getString(veldnaam));

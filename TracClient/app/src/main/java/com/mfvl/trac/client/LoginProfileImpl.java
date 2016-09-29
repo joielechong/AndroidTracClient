@@ -157,4 +157,10 @@ class LoginProfileImpl extends TcObject implements Serializable, Cloneable, Logi
     public void setProfile(String profile) {
         _profile = profile;
     }
+
+    @SuppressWarnings("MethodReturnOfConcreteClass")
+    @Override
+    public LoginProfileImpl clone() throws CloneNotSupportedException {
+        return (LoginProfileImpl) super.clone();
+    }
 }

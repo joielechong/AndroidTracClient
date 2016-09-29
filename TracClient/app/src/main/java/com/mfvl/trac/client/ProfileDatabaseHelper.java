@@ -170,7 +170,6 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public LoginProfileImpl getProfile(String name) {
-        LoginProfileImpl profile = null;
 
         open();
         final Cursor c = db.query(TABLE_NAME,
@@ -178,6 +177,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
                 NAME_ID + "=?",
                 new String[]{name}, null, null, null);
 
+        LoginProfileImpl profile = null;
         if (c.getCount() > 0) {
             c.moveToFirst();
             profile = new LoginProfileImpl(c.getString(0), c.getString(1), c.getString(2),
@@ -188,7 +188,6 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public LoginProfileImpl findProfile(String url) {
-        LoginProfileImpl profile = null;
 
         open();
         final Cursor c = db.query(TABLE_NAME,
@@ -196,6 +195,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
                 URL_ID + "=?",
                 new String[]{url}, null, null, null);
 
+        LoginProfileImpl profile = null;
         if (c.getCount() > 0) {
             c.moveToFirst();
             profile = new LoginProfileImpl(c.getString(0), c.getString(1), c.getString(2),

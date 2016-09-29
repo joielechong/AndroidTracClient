@@ -34,14 +34,14 @@ class FilterSpecImpl extends SpecImpl implements FilterSpec {
     private String _newwaarde;
     private Boolean _edited = false;
 
-    public FilterSpecImpl(final String veld, final String operator, final String waarde) {
+    FilterSpecImpl(final String veld, final String operator, final String waarde) {
         super(veld);
         _operator = operator;
         _waarde = waarde;
         _newwaarde = waarde;
     }
 
-    public FilterSpecImpl(final String string, final String[] operators) {
+    FilterSpecImpl(final String string, final String[] operators) {
         super(null);
         _operator = null;
         _waarde = null;
@@ -59,15 +59,23 @@ class FilterSpecImpl extends SpecImpl implements FilterSpec {
     }
 
     @Override
+    @SuppressWarnings({"MethodReturnOfConcreteClass", "LocalVariableOfConcreteClass"})
+    public FilterSpecImpl clone() throws CloneNotSupportedException {
+        FilterSpecImpl f = (FilterSpecImpl) super.clone();
+        f._operator = _operator;
+        f._waarde = _waarde;
+        f._newwaarde = _newwaarde;
+        f._edited = _edited;
+        return f;
+    }
+
+    @Override
     public boolean equals(Object o) {
-        boolean retVal;
-        retVal = (this == o)
+        return (this == o)
                 || (o instanceof FilterSpec
                 && super.equals(o)
                 && equalFields(_operator, ((FilterSpec) o).getOperator())
                 && equalFields(_waarde, ((FilterSpec) o).getWaarde()));
-//		MyLog.d("this = "+this+" o = "+o+" retVal = "+retVal);
-        return retVal;
     }
 
     @Override

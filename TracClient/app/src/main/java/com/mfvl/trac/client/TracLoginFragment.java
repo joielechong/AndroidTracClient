@@ -187,10 +187,10 @@ public class TracLoginFragment extends TracClientFragment
         if (pdbCursor.getCount() < 2) {
             loginSpinner.setVisibility(View.GONE);
         } else {
-            final String[] columns = new String[]{"name"};
-            final int[] to = new int[]{android.R.id.text1};
 
             loginSpinner.setVisibility(View.VISIBLE);
+            final int[] to = new int[]{android.R.id.text1};
+            final String[] columns = new String[]{"name"};
             final SimpleCursorAdapter adapt = new SimpleCursorAdapter(context,
                     android.R.layout.simple_spinner_dropdown_item,
                     pdbCursor,
@@ -311,8 +311,7 @@ public class TracLoginFragment extends TracClientFragment
 
     private void checkHackBox(String s) {
         if (sslHackBox != null && s != null) {
-            sslHackBox.setVisibility(s.length() >= 6 && s.substring(0, 6).equals(
-                    "https:") ? View.VISIBLE : View.GONE);
+            sslHackBox.setVisibility(s.length() >= 6 && "https:".equals(s.substring(0, 6)) ? View.VISIBLE : View.GONE);
         }
     }
 

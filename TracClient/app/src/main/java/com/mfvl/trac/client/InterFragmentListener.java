@@ -64,6 +64,7 @@ interface InterFragmentListener {
 
     void listViewCreated();
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean isFinishing();
 
     Handler getHandler();

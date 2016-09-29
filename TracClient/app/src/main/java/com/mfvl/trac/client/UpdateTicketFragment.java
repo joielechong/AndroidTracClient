@@ -62,12 +62,12 @@ public class UpdateTicketFragment extends TracClientFragment implements HelpInte
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        final int button;
-        final String optionVal;
-        final int spinPosition;
 
         super.onActivityCreated(savedInstanceState);
         MyLog.d("savedInstanceState = " + savedInstanceState);
+        final int spinPosition;
+        final String optionVal;
+        final int button;
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(CURRENT_TICKET)) {
                 ticknr = savedInstanceState.getInt(CURRENT_TICKET);

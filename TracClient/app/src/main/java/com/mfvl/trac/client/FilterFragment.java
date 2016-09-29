@@ -65,8 +65,8 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements HelpInte
                 final List<FilterSpec> items = filterAdapter.items;
 
                 for (int i = items.size() - 1; i >= 0; i--) {
-                    if (items.get(i).getOperator() == null || items.get(i).getOperator().equals("")
-                            || items.get(i).getWaarde() == null || items.get(i).getWaarde().equals("")) {
+                    if ("".equals(items.get(i).getOperator())
+                            || "".equals(items.get(i).getWaarde())) {
                         items.remove(i);
                     } else {
                         items.get(i).setEdit(false);
@@ -223,7 +223,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements HelpInte
             List<Object> waardes = tm.getVeld(veldnaam).options();
             final String w = o.getWaarde();
             final String op = o.getOperator();
-            final boolean omgekeerd = op != null && op.equals("!=");
+            final boolean omgekeerd = "!=".equals(op);
 
 //        MyLog.d(veldnaam + " " + w + " " + omgekeerd);
             LinearLayout valCheckBoxes = new LinearLayout(context);

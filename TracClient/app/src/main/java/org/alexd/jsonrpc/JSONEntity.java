@@ -42,4 +42,10 @@ class JSONEntity extends StringEntity {
     public Header getContentType() {
         return new BasicHeader(HTTP.CONTENT_TYPE, "application/json");
     }
+
+    @SuppressWarnings("MethodReturnOfConcreteClass")
+    @Override
+    public JSONEntity clone() throws CloneNotSupportedException {
+        return (JSONEntity) super.clone();
+    }
 }

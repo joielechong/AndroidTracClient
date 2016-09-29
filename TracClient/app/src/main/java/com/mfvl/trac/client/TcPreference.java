@@ -43,15 +43,11 @@ public class TcPreference extends PreferenceActivity {
             getPreferenceManager().setSharedPreferencesName(Const.PREFS_NAME);
             addPreferencesFromResource(R.xml.preferences);
             EditTextPreference editPref = (EditTextPreference) findPreference(getString(R.string.prefNrItemsKey));
-            String val = editPref.getText();
-            editPref.setSummary(val);
+            editPref.setSummary(editPref.getText());
             PreferenceScreen filterPref = (PreferenceScreen) findPreference(TracGlobal.prefFilterKey);
-            val = TracGlobal.getFilterString();
-            filterPref.setSummary(val);
+            filterPref.setSummary(TracGlobal.getFilterString());
             PreferenceScreen sortPref = (PreferenceScreen) findPreference(TracGlobal.prefSortKey);
-            val = TracGlobal.getSortString();
-            sortPref.setSummary(val);
-            MyLog.logCall();
+            sortPref.setSummary(TracGlobal.getSortString());
             getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
         }
 
@@ -65,10 +61,10 @@ public class TcPreference extends PreferenceActivity {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             MyLog.d(key);
-            String val;
             Preference pref = findPreference(key);
             MyLog.d(pref);
 
+            String val;
             if (pref instanceof EditTextPreference && getString(R.string.prefNrItemsKey).equals(key)) {
                 EditTextPreference editPref = (EditTextPreference) pref;
                 val = editPref.getText();
