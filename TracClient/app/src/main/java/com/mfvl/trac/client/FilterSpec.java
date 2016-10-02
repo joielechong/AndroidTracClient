@@ -56,7 +56,7 @@ class FilterSpecImpl extends SpecImpl implements FilterSpec {
                 _newwaarde = _waarde;
             }
         }
-    }
+     }
 
     @Override
     @SuppressWarnings({"MethodReturnOfConcreteClass", "LocalVariableOfConcreteClass"})
@@ -74,8 +74,7 @@ class FilterSpecImpl extends SpecImpl implements FilterSpec {
         return (this == o)
                 || (o instanceof FilterSpec
                 && super.equals(o)
-                && equalFields(_operator, ((FilterSpec) o).getOperator())
-                && equalFields(_waarde, ((FilterSpec) o).getWaarde()));
+                && equalFields(_operator, ((FilterSpec) o).getOperator()));
     }
 
     @Override
@@ -124,5 +123,10 @@ class FilterSpecImpl extends SpecImpl implements FilterSpec {
 
     public String toString() {
         return _edited ? _veld : _veld + (_operator != null ? _operator : "") + (_waarde != null ? _waarde : "");
+    }
+
+    @Override
+    public int hashCode() {
+        return _operator.hashCode()+super.hashCode();
     }
 }
