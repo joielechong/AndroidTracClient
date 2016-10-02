@@ -125,10 +125,14 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements HelpInte
 
     private class FilterAdapter extends SpecAdapter<FilterSpec> implements View.OnClickListener, OnCheckedChangeListener {
 
-        public FilterAdapter(Context context, ArrayList<FilterSpec> input) {
-            super(context, android.R.layout.simple_list_item_1, input);
+        FilterAdapter(Context ctx, ArrayList<FilterSpec> input) {
+            super(ctx, android.R.layout.simple_list_item_1, input);
+            setOperators(ctx);
+        }
+
+        private synchronized void setOperators(Context ctx) {
             if (operators == null) {
-                final Resources res = context.getResources();
+                final Resources res = ctx.getResources();
                 operators = Arrays.asList(res.getStringArray(R.array.filter2_choice));
                 operatornames = Arrays.asList(res.getStringArray(R.array.filter_names));
             }
@@ -178,12 +182,12 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements HelpInte
                 spin.setSelection(operators.indexOf(filterItem.getOperator()));
                 spin.setOnItemSelectedListener(new OnItemSelectedListener() {
                     @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        filterItem.setOperator(operators.get(position));
+                    public void onItemSelected(AdapterView<?> parentView, View view, int pos, long id) {
+                        filterItem.setOperator(operators.get(pos));
                     }
 
                     @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
+                    public void onNothingSelected(AdapterView<?> parentView) {
                     }
                 });
             }

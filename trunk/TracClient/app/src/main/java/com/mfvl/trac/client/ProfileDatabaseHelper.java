@@ -57,18 +57,18 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
     private static final String PASSWORD_ID = "password";
     private static final String SSLHACK_ID = "sslhack";
     private final Context context;
-    private SQLiteDatabase db = null;
+    private SQLiteDatabase sqlDb = null;
     private boolean upgrade = false;
 
-    public ProfileDatabaseHelper(Context context) {
-        super(context, makeDbPath(), null, DATABASE_VERSION);
-        this.context = context;
+    ProfileDatabaseHelper(Context ctx) {
+        super(ctx, makeDbPath(), null, DATABASE_VERSION);
+        this.context = ctx;
         sendNotification("class creation");
     }
 
     public void open() {
-        if (db == null) {
-            db = getWritableDatabase();
+        if (sqlDb == null) {
+            sqlDb = getWritableDatabase();
             if (upgrade) {
                 Resources res = context.getResources();
                 TypedArray ta = res.obtainTypedArray(R.array.profiles);
@@ -92,8 +92,8 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void close() {
-        db.close();
-        db = null;
+        sqlDb.close();
+        sqlDb = null;
     }
 
     @Override
@@ -118,14 +118,14 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
         upgrade = true;
     }
 
-    public void beginTransaction() {
+    private void beginTransaction() {
         open();
-        db.beginTransaction();
+        sqlDb.beginTransaction();
     }
 
-    public void endTransaction() {
-        db.setTransactionSuccessful();
-        db.endTransaction();
+    private void endTransaction() {
+        sqlDb.setTransactionSuccessful();
+        sqlDb.endTransaction();
     }
 
     private void sendNotification(String message) {
@@ -134,7 +134,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
-    public void addProfile(String name, LoginProfileImpl profile) throws SQLException {
+    void addProfile(String name, LoginProfile profile) throws SQLException {
         final ContentValues values = new ContentValues();
 
         values.put(NAME_ID, name);
@@ -145,39 +145,39 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
 
         open();
         try {
-            db.insertOrThrow(TABLE_NAME, null, values);
+            sqlDb.insertOrThrow(TABLE_NAME, null, values);
         } catch (final SQLException e) {
-            db.replaceOrThrow(TABLE_NAME, null, values);
+            sqlDb.replaceOrThrow(TABLE_NAME, null, values);
         } finally {
             sendNotification("add profile");
         }
     }
 
-    public Cursor getProfiles(boolean addBlank) {
+    Cursor getProfiles(boolean addBlank) {
         MyLog.d("addBlank = " + addBlank);
         open();
-        return db.rawQuery(
+        return sqlDb.rawQuery(
                 "SELECT rowid as _id,name from " + TABLE_NAME + (!addBlank ? " WHERE " + NAME_ID + " !=''" : "") + " ORDER BY name",
                 null);
     }
 
     private Cursor getAllProfiles() {
         open();
-        return db.rawQuery(
+        return sqlDb.rawQuery(
                 "SELECT " + NAME_ID + "," + URL_ID + "," + USERNAME_ID + "," + PASSWORD_ID + "," + SSLHACK_ID + " from "
                         + TABLE_NAME + " WHERE " + NAME_ID + " !=''",
                 null);
     }
 
-    public LoginProfileImpl getProfile(String name) {
+    LoginProfile getProfile(String name) {
 
         open();
-        final Cursor c = db.query(TABLE_NAME,
+        final Cursor c = sqlDb.query(TABLE_NAME,
                 new String[]{URL_ID, USERNAME_ID, PASSWORD_ID, SSLHACK_ID},
                 NAME_ID + "=?",
                 new String[]{name}, null, null, null);
 
-        LoginProfileImpl profile = null;
+        LoginProfile profile = null;
         if (c.getCount() > 0) {
             c.moveToFirst();
             profile = new LoginProfileImpl(c.getString(0), c.getString(1), c.getString(2),
@@ -187,15 +187,15 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
         return profile;
     }
 
-    public LoginProfileImpl findProfile(String url) {
+    LoginProfile findProfile(String url) {
 
         open();
-        final Cursor c = db.query(TABLE_NAME,
+        final Cursor c = sqlDb.query(TABLE_NAME,
                 new String[]{URL_ID, USERNAME_ID, PASSWORD_ID, SSLHACK_ID},
                 URL_ID + "=?",
                 new String[]{url}, null, null, null);
 
-        LoginProfileImpl profile = null;
+        LoginProfile profile = null;
         if (c.getCount() > 0) {
             c.moveToFirst();
             profile = new LoginProfileImpl(c.getString(0), c.getString(1), c.getString(2),
@@ -205,18 +205,18 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
         return profile;
     }
 
-    public int delProfiles() {
+    private int delProfiles() {
         try {
             open();
             final String values[] = new String[]{""};
 
-            return db.delete(TABLE_NAME, "name!=?", values);
+            return sqlDb.delete(TABLE_NAME, "name!=?", values);
         } finally {
             sendNotification("delProfiles");
         }
     }
 
-    public void readXML(final String appname) throws Exception {
+    void readXML(final String appname) throws Exception {
         try {
             open();
             final File fileName = makeExtFilePath(appname + ".xml", true);
@@ -233,7 +233,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void writeXML(final String appname) throws Exception {
+    void writeXML(final String appname) throws Exception {
         final File fileName = makeExtFilePath(appname + ".xml", true);
         final OutputStream out = new BufferedOutputStream(new FileOutputStream(fileName));
 
@@ -266,7 +266,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
         String _appname = null;
         private int state = -1;
         private String profileName;
-        private LoginProfileImpl lp;
+        private LoginProfile lp;
 
         XMLHandler(String appname, ProfileDatabaseHelper pdb) {
             super();

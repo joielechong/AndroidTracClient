@@ -18,6 +18,7 @@ package com.mfvl.trac.client;
 
 import android.net.Uri;
 import android.os.Handler;
+import android.widget.ArrayAdapter;
 
 import java.util.Map;
 
@@ -43,7 +44,7 @@ interface InterFragmentListener {
 
     void stopProgressBar();
 
-    TicketListAdapter getAdapter();
+    ArrayAdapter<Ticket> getAdapter();
 
     void getTicket(int ticknr, OnTicketLoadedListener oc);
 

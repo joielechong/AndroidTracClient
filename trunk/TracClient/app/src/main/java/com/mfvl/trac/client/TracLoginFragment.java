@@ -25,6 +25,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -152,6 +153,7 @@ public class TracLoginFragment extends TracClientFragment
         setHasOptionsMenu(true);
     }
 
+    @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         MyLog.d("savedInstanceState = " + savedInstanceState);
@@ -274,7 +276,7 @@ public class TracLoginFragment extends TracClientFragment
         if (arg1 != null) {
             SelectedProfile = ((TextView) arg1).getText().toString();
             if (arg2 > 0) { // pos 0 is empty
-                final LoginProfileImpl prof = pdb.getProfile(SelectedProfile);
+                final LoginProfile prof = pdb.getProfile(SelectedProfile);
 
                 if (prof != null) {
                     urlView.removeTextChangedListener(checkUrlInput);
@@ -595,7 +597,7 @@ public class TracLoginFragment extends TracClientFragment
         username = userView.getText().toString();
         password = pwView.getText().toString();
         sslHack = sslHackBox.isChecked();
-        final LoginProfileImpl prof = new LoginProfileImpl(url, username, password, sslHack);
+        final LoginProfile prof = new LoginProfileImpl(url, username, password, sslHack);
 
         final AlertDialog.Builder alert = new AlertDialog.Builder(context);
 

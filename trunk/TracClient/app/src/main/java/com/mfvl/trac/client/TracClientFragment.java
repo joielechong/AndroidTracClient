@@ -22,6 +22,8 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
@@ -94,7 +96,7 @@ public abstract class TracClientFragment extends Fragment implements View.OnClic
 
     public void showHelp() {
         final String filename = context.getString(((HelpInterface) this).getHelpFile());
-        final TracHelp about = new TracHelp();
+        final DialogFragment about = new TracHelp();
         final Bundle aboutArgs = new Bundle();
         aboutArgs.putString(HELP_FILE, filename);
         aboutArgs.putInt(HELP_ZOOM, webzoom);
@@ -124,7 +126,8 @@ public abstract class TracClientFragment extends Fragment implements View.OnClic
         tracStartHandler.obtainMessage(MSG_SHOW_DIALOG, titleres, message, addit).sendToTarget();
     }
 
-    SpinnerAdapter makeComboAdapter(Context context, Collection<Object> waardes, boolean optional) {
+    @Nullable
+    SpinnerAdapter makeComboAdapter(Context ctx, Collection<Object> waardes, boolean optional) {
 //        MyLog.d("waardes = "+waardes+" optional = "+optional);
         if (waardes == null) {
             return null;
@@ -138,7 +141,7 @@ public abstract class TracClientFragment extends Fragment implements View.OnClic
 
         spinValues.addAll(waardes);
 
-        final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, spinValues);
+        final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<>(ctx, android.R.layout.simple_spinner_item, spinValues);
         spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         return spinAdapter;

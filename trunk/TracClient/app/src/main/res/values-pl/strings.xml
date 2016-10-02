@@ -119,6 +119,6 @@
     <string name="choosefield">Wybierz pole</string>
     <string name="doubleback">Kliknij ponownie,aby wyjść</string>
     <string name="noJSON">Brak wsparcia JSON na TRAC-serwer</string>
-    <string name="permissiontext"> Ta aplikacja powinna być w stanie odczytywać i zapisywać na karcie SD. Nie ma zgody na dane. Jeśli nie zdecydujesz się dać takiej zgody nie jest możliwe importowanie i eksportowanie profili lub podłączenia do mocowania z karty SD. Jeśli nie jesteś pewien, kliknij następujący dialog a nie na "nie pytaj" wyboru.</string>
+    <string name="permissiontext"> Ta aplikacja powinna być w stanie odczytywać i zapisywać na karcie SD. Nie ma zgody na dane. Jeśli nie zdecydujesz się dać takiej zgody nie jest możliwe importowanie i eksportowanie profili lub podłączenia do mocowania z karty SD. Jeśli nie jesteś pewien, kliknij następujący dialog a nie na “nie pytaj” wyboru.</string>
 
 </resources>

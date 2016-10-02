@@ -83,11 +83,11 @@ public class SpecFragment<T extends Spec> extends TracClientFragment {
         ItemsAdapter adapter = (ItemsAdapter) listView.getAdapter();
 
         if (adapter != null) {
-            final Serializable outputSpec = adapter.getItems();
+            final Serializable output = adapter.getItems();
 
-            if (outputSpec != null) {
+            if (output != null) {
 //                MyLog.d("outputSpec = " + outputSpec);
-                savedState.putSerializable(outputSpecText, outputSpec);
+                savedState.putSerializable(outputSpecText, output);
             }
         }
 //        MyLog.d("super savedState = " + savedState);

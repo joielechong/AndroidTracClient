@@ -131,14 +131,14 @@ public abstract class JSONRPCClient {
 
         }
 
-        final RequestThread requestThread = new RequestThread(method, params);
+        final Thread requestThread = new RequestThread(method, params);
         requestThread.start();
     }
 
     /**
      * Get the socket operation timeout in milliseconds
      */
-    public int getSoTimeout() {
+    int getSoTimeout() {
         return soTimeout;
     }
 

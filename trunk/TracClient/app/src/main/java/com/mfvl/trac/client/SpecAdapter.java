@@ -29,10 +29,10 @@ interface ItemsAdapter {
 class SpecAdapter<T extends Spec> extends ArrayAdapter<T> implements ItemsAdapter {
     final ArrayList<T> items;
 
-    SpecAdapter(Context context, int textViewResourceId, ArrayList<T> items) {
-        super(context, textViewResourceId, items);
+    SpecAdapter(Context context, int textViewResourceId, ArrayList<T> _items) {
+        super(context, textViewResourceId, _items);
 //        MyLog.logCall();
-        this.items = items;
+        this.items = _items;
     }
 
     @Override

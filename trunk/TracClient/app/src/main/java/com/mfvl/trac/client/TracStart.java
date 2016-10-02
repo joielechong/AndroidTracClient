@@ -45,6 +45,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -60,6 +61,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
@@ -116,26 +118,6 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             NewFragmentTag, UpdFragmentTag, FilterFragmentTag, SortFragmentTag};
     private final Semaphore loadingActive = new TcSemaphore(1, true);
     private final Semaphore isBinding = new TcSemaphore(1, true);
-    private final BroadcastReceiver performLoginReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            // Get extra data included in the Intent
-            MyLog.d("intent = " + intent);
-            String url = intent.getStringExtra(CURRENT_URL);
-            String username = intent.getStringExtra(CURRENT_USERNAME);
-            String password = intent.getStringExtra(CURRENT_PASSWORD);
-            String SelectedProfile = intent.getStringExtra(CURRENT_PROFILE);
-            boolean bewaren = intent.getBooleanExtra(BEWAREN, false);
-            boolean sslHack = intent.getBooleanExtra(CURRENT_SSLHACK, false);
-            boolean sslHostNameHack = intent.getBooleanExtra(CURRENT_SSLHOSTNAMEHACK, false);
-            LoginProfile lp = new LoginProfileImpl(url, username, password, sslHack, sslHostNameHack);
-            lp.setProfile(SelectedProfile);
-            MyLog.d(lp);
-            Message m = tracStartHandler.obtainMessage(MSG_PERFORM_LOGIN, (bewaren ? 1 : 0), 0, lp);
-            MyLog.d(m);
-            m.sendToTarget();
-        }
-    };
 	private final BroadcastReceiver performFilterReceiver = new BroadcastReceiver() {
 		@Override
 		public void	onReceive(Context context, Intent intent) {
@@ -167,9 +149,29 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     private String profile = null;
     private LoginProfile currentLoginProfile = null;
     private String url = null;
-    private String username = null;
-    private String password = null;
+    private String userName = null;
+    private String passWord = null;
     private boolean sslHack = false;
+    private final BroadcastReceiver performLoginReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get extra data included in the Intent
+            MyLog.d("intent = " + intent);
+            String uri = intent.getStringExtra(CURRENT_URL);
+            String username = intent.getStringExtra(CURRENT_USERNAME);
+            String password = intent.getStringExtra(CURRENT_PASSWORD);
+            String SelectedProfile = intent.getStringExtra(CURRENT_PROFILE);
+            boolean bewaren = intent.getBooleanExtra(BEWAREN, false);
+            boolean sslhack = intent.getBooleanExtra(CURRENT_SSLHACK, false);
+            boolean sslHostNamehack = intent.getBooleanExtra(CURRENT_SSLHOSTNAMEHACK, false);
+            LoginProfile lp = new LoginProfileImpl(uri, username, password, sslHack, sslHostNamehack);
+            lp.setProfile(SelectedProfile);
+            MyLog.d(lp);
+            Message m = tracStartHandler.obtainMessage(MSG_PERFORM_LOGIN, (bewaren ? 1 : 0), 0, lp);
+            MyLog.d(m);
+            m.sendToTarget();
+        }
+    };
     private boolean sslHostNameHack = false;
     private OnFileSelectedListener _oc = null;
     private boolean canWriteSD = false;
@@ -184,8 +186,8 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     private Intent serviceIntent;
     private boolean hasTicketsLoadingBar = false;
     private Boolean ticketsLoading = false;
-    private TicketListAdapter dataAdapter = null;
-    private String action = null;
+    private ArrayAdapter<Ticket> dataAdapter = null;
+    private String serviceAction = null;
     private NavigationView navigationView = null;
     private final BroadcastReceiver sqlupdateReceiver = new BroadcastReceiver() {
         @Override
@@ -274,10 +276,6 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         return true;
     }
 
-    private static class MsgQueueHolder {
-        private static final ArrayDeque<Message> msgQueue = new ArrayDeque<>(100);
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -285,15 +283,13 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         MyLog.setContext(this, getString(R.string.logfile));
 //		MyLog.logCall();
         MyLog.d("savedInstanceState = " + savedInstanceState);
-        action = getString(R.string.serviceAction);
+        serviceAction = getString(R.string.serviceAction);
         sendMessageToService(-1);
 
         if (DEBUG_MANAGERS) {
             FragmentManager.enableDebugLogging(true);
         }
         TracGlobal.getInstance(getApplicationContext());
-        mHandlerThread = new MyHandlerThread("IncomingHandler");
-        mHandlerThread.start();
         tracStartHandler = new Handler(mHandlerThread.getLooper(), this);
         mMessenger = new Messenger(tracStartHandler);
 
@@ -349,22 +345,22 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         serviceIntent = new Intent(this, RefreshService.class);
         if (savedInstanceState != null) {
             url = savedInstanceState.getString(CURRENT_URL);
-            username = savedInstanceState.getString(CURRENT_USERNAME);
-            password = savedInstanceState.getString(CURRENT_PASSWORD);
+            userName = savedInstanceState.getString(CURRENT_USERNAME);
+            passWord = savedInstanceState.getString(CURRENT_PASSWORD);
             sslHack = savedInstanceState.getBoolean(CURRENT_SSLHACK, false);
             sslHostNameHack = savedInstanceState.getBoolean(CURRENT_SSLHOSTNAMEHACK, false);
             filterList = (ArrayList<FilterSpec>) savedInstanceState.getSerializable(FILTERLISTNAME);
             sortList = (ArrayList<SortSpec>) savedInstanceState.getSerializable(SORTLISTNAME);
             dispAds = savedInstanceState.getBoolean(ADMOB, true);
-            tm = TicketModel.restore(savedInstanceState.getString(TicketModel.bundleKey));
+            tm = StdTicketModel.restore(savedInstanceState.getString(TicketModel.bundleKey));
             if (tm != null) {
                 MyLog.d("restoring TicketModel");
                 tracStartHandler.sendMessage(Message.obtain(null, MSG_SET_TICKET_MODEL, tm));
             }
         } else {
             url = getUrl();
-            username = getUsername();
-            password = getPassword();
+            userName = getUsername();
+            passWord = getPassword();
             sslHack = getSslHack();
             sslHostNameHack = getSslHostNameHack();
             profile = getProfile();
@@ -390,7 +386,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             final String urlArg2 = urlArg + "login/rpc";
 
             if (!(urlArg.equals(url) || urlArg1.equals(url) || urlArg2.equals(url))) {
-                LoginProfileImpl lp = pdb.findProfile(urlArg2);
+                LoginProfile lp = pdb.findProfile(urlArg2);
 
                 if (lp == null) {
                     lp = pdb.findProfile(urlArg1);
@@ -406,8 +402,8 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                     ticketArg = -1;
                 } else {
                     url = lp.getUrl();
-                    username = lp.getUsername();
-                    password = lp.getPassword();
+                    userName = lp.getUsername();
+                    passWord = lp.getPassword();
                     sslHack = lp.getSslHack();
                     sslHostNameHack = false; // force dialog to confirm
                     profile = null;
@@ -416,7 +412,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             }
         }
 
-        newDataAdapter(new Tickets()); // empty list
+        newDataAdapter(new TicketsStore()); // empty list
         getSupportFragmentManager().addOnBackStackChangedListener(this);
         // Handle when activity is recreated like on orientation Change
         shouldDisplayHomeUp();
@@ -440,7 +436,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                 final TicketListFragment ticketListFragment = new TicketListFragment();
 
                 if (urlArg != null) {
-                    MyLog.d("select Ticket = " + ticketArg);
+                    MyLog.d("select NormalTicket = " + ticketArg);
                     final Bundle args = makeArgs();
                     args.putInt("TicketArg", ticketArg);
                     urlArg = null;
@@ -566,7 +562,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                     if (mService == null) {
                         MyLog.d("using bindService");
                         bindService(new Intent(TracStart.this,
-                                        RefreshService.class).setAction(action)
+                                        RefreshService.class).setAction(serviceAction)
                                         .putExtra(INTENT_CMD, msg.what)
                                         .putExtra(INTENT_ARG1, msg.arg1)
                                         .putExtra(INTENT_ARG2, msg.arg2)
@@ -673,8 +669,8 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         savedInstanceState.putSerializable(SORTLISTNAME, sortList);
         savedInstanceState.putSerializable(FILTERLISTNAME, filterList);
         savedInstanceState.putString(CURRENT_URL, url);
-        savedInstanceState.putString(CURRENT_USERNAME, username);
-        savedInstanceState.putString(CURRENT_PASSWORD, password);
+        savedInstanceState.putString(CURRENT_USERNAME, userName);
+        savedInstanceState.putString(CURRENT_PASSWORD, passWord);
         savedInstanceState.putBoolean(CURRENT_SSLHACK, sslHack);
         savedInstanceState.putBoolean(CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
         saveFragment(savedInstanceState, ListFragmentTag);
@@ -853,7 +849,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
 
     private void showAbout(boolean showCookies) {
         MyLog.d("showAbout");
-        TracShowWebPageDialogFragment about = new TracShowWebPageDialogFragment();
+        DialogFragment about = new TracShowWebPageDialogFragment();
         Bundle aboutArgs = new Bundle();
         aboutArgs.putString(HELP_FILE, getString(R.string.whatsnewhelpfile));
         aboutArgs.putBoolean(HELP_VERSION, true);
@@ -902,11 +898,11 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     private void onNewTicket() {
         MyLog.logCall();
 
-        final NewTicketFragment newtickFragment = new NewTicketFragment();
+        final Fragment newtickFragment = new NewTicketFragment();
         // MyLog.d("newTickFragment =" +  newtickFragment.toString());
         final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         final Bundle args = makeArgs();
-        args.putString(CURRENT_USERNAME, username);
+        args.putString(CURRENT_USERNAME, userName);
         newtickFragment.setArguments(args);
 
         ft.replace(R.id.displayList, newtickFragment, NewFragmentTag);
@@ -919,8 +915,8 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         final TracLoginFragment tracLoginFragment = new TracLoginFragment();
         final Bundle args = makeArgs();
         args.putString(CURRENT_URL, url);
-        args.putString(CURRENT_USERNAME, username);
-        args.putString(CURRENT_PASSWORD, password);
+        args.putString(CURRENT_USERNAME, userName);
+        args.putString(CURRENT_PASSWORD, passWord);
         args.putBoolean(CURRENT_SSLHACK, sslHack);
         args.putBoolean(CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
         tracLoginFragment.setArguments(args);
@@ -1019,8 +1015,8 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     private void onLogin(String newUrl, String newUser, String newPass, boolean newHack, boolean newHostNameHack, String newProfile, boolean bewaren) {
         MyLog.d(newUrl + " " + newUser + " " + newPass + " " + newHack + " " + newHostNameHack + " " + newProfile);
         url = newUrl;
-        username = newUser;
-        password = newPass;
+        userName = newUser;
+        passWord = newPass;
         sslHack = newHack;
         sslHostNameHack = newHostNameHack;
         profile = newProfile;
@@ -1041,7 +1037,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         } else {
             getSupportFragmentManager().popBackStackImmediate(ListFragmentTag, 0);
         }
-        newDataAdapter(new Tickets()); // empty list
+        newDataAdapter(new TicketsStore()); // empty list
         startListLoader(true);
     }
 
@@ -1094,7 +1090,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     }
 
     @Override
-    public TicketListAdapter getAdapter() {
+    public ArrayAdapter<Ticket> getAdapter() {
         MyLog.d("dataAdapter = " + dataAdapter);
         return dataAdapter;
     }
@@ -1111,7 +1107,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                     loadingActive.release();
                 }
 
-                Ticket t = Tickets.getTicket(i);
+                Ticket t = TicketsStore.getTicket(i);
                 MyLog.d("i = " + i + " ticket = " + t);
                 if (t != null && !t.hasdata()) {
                     refreshTicket(i);
@@ -1134,12 +1130,12 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
 
     @Override
     public int getNextTicket(int i) {
-        return dataAdapter.getNextTicket(i);
+        return ((TicketListAdapterIF) dataAdapter).getNextTicket(i);
     }
 
     @Override
     public int getPrevTicket(int i) {
-        return dataAdapter.getPrevTicket(i);
+        return ((TicketListAdapterIF) dataAdapter).getPrevTicket(i);
     }
 
     @Override
@@ -1150,7 +1146,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     @Override
     public int getTicketContentCount() {
         try {
-            return dataAdapter.getTicketContentCount();
+            return ((TicketListAdapterIF) dataAdapter).getTicketContentCount();
         } catch (Exception e) {
             return 0;
         }
@@ -1170,7 +1166,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         if (action == null) {
             throw new NullPointerException(getString(R.string.noaction));
         }
-        velden.put("action", action);
+        velden.put("serviceAction", action);
         if (waarde != null && veld != null && !"".equals(veld) && !"".equals(waarde)) {
             velden.put(veld, waarde);
         }
@@ -1191,7 +1187,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             public void run() {
                 try {
                     TracHttpClient tracClient = new TracHttpClient(url, sslHack, sslHostNameHack,
-                            username, password);
+                            userName, passWord);
                     JSONArray retTick = tracClient.updateTicket(ticknr, cmt, velden, notify);
                     t.setFields(retTick.getJSONObject(3));
                     if (modVeld != null) {
@@ -1222,13 +1218,13 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         velden.remove("description");
 
         try {
-            TracHttpClient tracClient = new TracHttpClient(url, sslHack, sslHostNameHack, username, password);
+            TracHttpClient tracClient = new TracHttpClient(url, sslHack, sslHostNameHack, userName, passWord);
             final int newticknr = tracClient.createTicket(s, d, velden, notify);
             if (newticknr == -1) {
                 showAlertBox(R.string.storerr, R.string.noticketUnk, "");
                 return -1;
             } else {
-//				reloadTicketData(new Ticket(newticknr));
+//				reloadTicketData(new NormalTicket(newticknr));
                 refreshTicket(newticknr);
                 return newticknr;
             }
@@ -1268,7 +1264,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
 //                available.acquireUninterruptibly();
                 if (oc != null) {
                     try {
-                        TracHttpClient tracClient = new TracHttpClient(url, sslHack, sslHostNameHack, username, password);
+                        TracHttpClient tracClient = new TracHttpClient(url, sslHack, sslHostNameHack, userName, passWord);
                         oc.onComplete(tracClient.getAttachment(_ticknr, filename));
                     } catch (final Exception e) {
                         MyLog.e("Exception during getAttachment", e);
@@ -1328,10 +1324,10 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                                 b64 += Base64.encodeToString(data, 0, nbytes, Base64.DEFAULT);
                             }
                             is.close();
-                            new TracHttpClient(url, sslHack, sslHostNameHack, username,
-                                    password).putAttachment(_ticknr, file.getName(), b64);
+                            new TracHttpClient(url, sslHack, sslHostNameHack, userName,
+                                    passWord).putAttachment(_ticknr, file.getName(), b64);
                         } else {
-                            MyLog.e("Cannot open" + uri);
+                            MyLog.e("Cannot open " + uri);
                             showAlertBox(R.string.warning, R.string.notfound, filename);
                         }
                     } catch (final FileNotFoundException e) {
@@ -1411,7 +1407,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                 break;
 
             case MSG_START_LISTLOADER:
-                currentLoginProfile = new LoginProfileImpl(url, username, password, sslHack)
+                currentLoginProfile = new LoginProfileImpl(url, userName, passWord, sslHack)
                         .setSslHostNameHack(sslHostNameHack)
                         .setFilterList(filterList)
                         .setSortList(sortList);
@@ -1468,7 +1464,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                     @Override
                     public void run() {
                         dataAdapter.clear();
-                        dataAdapter.addAll(tl);
+                        ((TicketListAdapterIF) dataAdapter).addAll(tl);
                         notifyTicketListFragment();
                     }
                 });

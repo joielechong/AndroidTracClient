@@ -31,20 +31,33 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 
-final class TicketModel {
-    public final static String bundleKey = "TicketModelObject";
+interface TicketModel {
+    String bundleKey = "TicketModelObject";
+
+    void onSaveInstanceState(Bundle b);
+
+    ArrayList<String> velden();
+
+    TicketModelVeld getVeld(final int i) throws IndexOutOfBoundsException;
+
+    TicketModelVeld getVeld(final String naam) throws IndexOutOfBoundsException;
+
+    int count();
+}
+
+final class StdTicketModel implements TicketModel {
     private final static List<String> extraFields = Arrays.asList("max", "page");
     private final static List<String> extraValues = Arrays.asList("500", "0");
     private static Map<String, TicketModelVeld> _velden;
     private static List<String> _volgorde;
     private static int fieldCount;
-    private static TicketModel _instance = null;
+    private static StdTicketModel _instance = null;
     private static boolean _hasData = false;
     private static TracHttpClient _tracClient = null;
     private static Semaphore active = null;
     private static JSONArray v;
 
-    private TicketModel(TracHttpClient tracClient) {
+    private StdTicketModel(TracHttpClient tracClient) {
         MyLog.logCall();
         fieldCount = 0;
         _tracClient = tracClient;
@@ -60,7 +73,7 @@ final class TicketModel {
             JSONObject h = o.getJSONObject("HttpClient");
             v = o.getJSONArray("Model");
             fieldCount = v.length();
-            _instance = new TicketModel(new TracHttpClient(h));
+            _instance = new StdTicketModel(new TracHttpClient(h));
             processModelData(v);
 //            MyLog.d("_instance = " + _instance + " tracClient = " + _tracClient);
             return _instance;
@@ -73,7 +86,7 @@ final class TicketModel {
     public static void getInstance(TracHttpClient tracClient, final OnTicketModelListener oc) {
         MyLog.d("new tracClient = " + tracClient);
         if (_instance == null || !tracClient.equals(_tracClient)) {
-            _instance = new TicketModel(tracClient);
+            _instance = new StdTicketModel(tracClient);
         }
         if (_hasData) {
             oc.onTicketModelLoaded(_instance);
@@ -94,12 +107,12 @@ final class TicketModel {
         return _instance;
     }
 
-    private static void processModelData(JSONArray v) throws JSONException {
-        fieldCount = v.length();
+    private static void processModelData(JSONArray veld) throws JSONException {
+        fieldCount = veld.length();
         for (int i = 0; i < fieldCount; i++) {
-            final String key = v.getJSONObject(i).getString("name");
+            final String key = veld.getJSONObject(i).getString("name");
 
-            _velden.put(key, new TicketModelVeld(v.getJSONObject(i)));
+            _velden.put(key, new TicketModelVeld(veld.getJSONObject(i)));
             _volgorde.add(key);
         }
         for (int i = 0; i < extraFields.size(); i++) {
@@ -123,6 +136,7 @@ final class TicketModel {
         }
     }
 
+    @Override
     public void onSaveInstanceState(Bundle b) {
         MyLog.logCall();
         b.putString(bundleKey, jsonString());
@@ -159,8 +173,8 @@ final class TicketModel {
         String s = "";
 
         if (_velden != null) {
-            for (String v : _volgorde) {
-                s += _velden.get(v) + "\n";
+            for (String volg : _volgorde) {
+                s += _velden.get(volg) + "\n";
             }
         } else {
             s += "TicketModel not initialized";
@@ -175,27 +189,30 @@ final class TicketModel {
         }
     }
 
+    @Override
     public ArrayList<String> velden() {
-        final ArrayList<String> v = new ArrayList<>();
+        final ArrayList<String> veldlijst = new ArrayList<>();
 
         wacht();
         if (fieldCount > 0) {
-            v.add("id");
-            for (String v1 : _volgorde) {
-                if (!extraFields.contains(v1)) {
-                    v.add(_velden.get(v1).name());
+            veldlijst.add("id");
+            for (String veld : _volgorde) {
+                if (!extraFields.contains(veld)) {
+                    veldlijst.add(_velden.get(veld).name());
                 }
             }
         }
-        return v;
+        return veldlijst;
     }
 
+    @Override
     public int count() {
         wacht();
         return fieldCount;
     }
 
-    TicketModelVeld getVeld(final int i) throws IndexOutOfBoundsException {
+    @Override
+    public TicketModelVeld getVeld(final int i) throws IndexOutOfBoundsException {
         wacht();
         if (i < 0 || i >= fieldCount) {
             throw new IndexOutOfBoundsException();
@@ -203,7 +220,8 @@ final class TicketModel {
         return getVeld(_volgorde.get(i));
     }
 
-    TicketModelVeld getVeld(final String naam) throws IndexOutOfBoundsException {
+    @Override
+    public TicketModelVeld getVeld(final String naam) throws IndexOutOfBoundsException {
         wacht();
         if (_velden.containsKey(naam)) {
             return _velden.get(naam);

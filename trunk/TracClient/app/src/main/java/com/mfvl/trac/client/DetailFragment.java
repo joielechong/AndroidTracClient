@@ -23,6 +23,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -698,7 +700,7 @@ public class DetailFragment extends TracClientFragment
             }
             ft.addToBackStack(null);
             // Create and show the dialog.
-            EditFieldFragment editFieldFragment = new EditFieldFragment();
+            DialogFragment editFieldFragment = new EditFieldFragment();
             Bundle args = new Bundle();
             args.putString(EditFieldFragment.VELD, veld);
             args.putString(EditFieldFragment.WAARDE, waarde);
@@ -786,6 +788,7 @@ public class DetailFragment extends TracClientFragment
             return hashMap.put(key, value);
         }
 
+        @Nullable
         @Override
         public String remove(Object key) {
             return null;
@@ -890,8 +893,8 @@ public class DetailFragment extends TracClientFragment
     }
 
     private class ModifiedStringArrayAdapter extends ColoredArrayAdapter<ModifiedString> {
-        ModifiedStringArrayAdapter(Activity context, List<ModifiedString> list) {
-            super(context, list);
+        ModifiedStringArrayAdapter(Activity ctx, List<ModifiedString> list) {
+            super(ctx, list);
         }
 
         @NonNull

@@ -156,10 +156,8 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements T
             final WebView wv = (WebView) v.findViewById(R.id.webfile);
             final Bundle args = getArguments();
             if (args != null) {
-                final String fileUrl = args.getString(HELP_FILE);
-                final int webzoom = args.getInt(HELP_ZOOM);
-                wv.loadUrl(fileUrl);
-                wv.getSettings().setTextZoom(webzoom);
+                wv.loadUrl(args.getString(HELP_FILE));
+                wv.getSettings().setTextZoom(args.getInt(HELP_ZOOM));
             }
             return v;
         }

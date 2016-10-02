@@ -95,8 +95,8 @@ public class SortFragment extends SpecFragment<SortSpec> implements HelpInterfac
     }
 
     private class SortAdapter extends SpecAdapter<SortSpec> implements View.OnClickListener {
-        public SortAdapter(Context context, ArrayList<SortSpec> items) {
-            super(context, R.layout.sort_spec, items);
+        SortAdapter(Context ctx, ArrayList<SortSpec> _items) {
+            super(ctx, R.layout.sort_spec, _items);
         }
 
         @NonNull
