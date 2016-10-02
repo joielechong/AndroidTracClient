@@ -57,4 +57,9 @@ public class SortSpec extends SpecImpl {
     public String toString() {
         return "order=" + _veld + (_richting ? "" : "&desc=1");
     }
+
+    @Override
+    public int hashCode() {
+        return (_richting ? 1 : 0)+super.hashCode();
+    }
 }

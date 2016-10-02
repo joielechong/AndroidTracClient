@@ -530,7 +530,7 @@ public class DetailFragment extends TracClientFragment
 
     @Override
     public void setModVeld(final String veld, final String waarde, final String newValue) {
-        MyLog.d("veld = " + veld + " waarde = " + waarde + "newValue = " + newValue);
+        MyLog.d("veld = " + veld + " waarde = " + waarde + " newValue = " + newValue);
         final ListView parent = (ListView) currentView.findViewById(R.id.listofFields);
         if (newValue != null && !newValue.equals(waarde) || newValue == null && waarde != null) {
             if ("summary".equals(veld)) {
@@ -881,6 +881,11 @@ public class DetailFragment extends TracClientFragment
         @Override
         public String toString() {
             return veld + ": " + waarde;
+        }
+
+        @Override
+        public int hashCode() {
+            return veld.hashCode()+super.hashCode();
         }
     }
 

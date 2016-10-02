@@ -39,7 +39,7 @@ final class TicketModel {
     private static List<String> _volgorde;
     private static int fieldCount;
     private static TicketModel _instance = null;
-    private static boolean _hasData;
+    private static boolean _hasData = false;
     private static TracHttpClient _tracClient = null;
     private static Semaphore active = null;
     private static JSONArray v;
@@ -48,7 +48,6 @@ final class TicketModel {
         MyLog.logCall();
         fieldCount = 0;
         _tracClient = tracClient;
-        _hasData = false;
         _velden = new HashMap<>();
         _volgorde = new ArrayList<>();
         active = new TcSemaphore(1, true);

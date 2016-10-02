@@ -43,7 +43,7 @@ class SpecImpl extends TcObject implements Serializable, Spec {
 
     @Override
     public boolean equals(Object o) {
-        return (o instanceof Spec) && equalFields(_veld, ((Spec) o).getVeld());
+        return this == o || (o instanceof Spec) && equalFields(_veld, ((Spec) o).getVeld());
     }
 
     @Override
@@ -53,5 +53,10 @@ class SpecImpl extends TcObject implements Serializable, Spec {
 
     @Override
     public void setEdit(final boolean edited) { //no-op
+    }
+
+    @Override
+    public int hashCode() {
+        return (_veld != null ? _veld.hashCode() : 0)+super.hashCode();
     }
 }

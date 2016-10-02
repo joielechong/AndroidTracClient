@@ -41,13 +41,14 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.preference.PreferenceActivity;
-import android.provider.MediaStore.Images;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -113,7 +114,6 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     private static final String SortFragmentTag = "Sort_Fragment";
     private static final String[] FragmentTags = new String[]{ListFragmentTag, LoginFragmentTag, DetailFragmentTag,
             NewFragmentTag, UpdFragmentTag, FilterFragmentTag, SortFragmentTag};
-    private static ArrayDeque<Message> msgQueue = null;
     private final Semaphore loadingActive = new TcSemaphore(1, true);
     private final Semaphore isBinding = new TcSemaphore(1, true);
     private final BroadcastReceiver performLoginReceiver = new BroadcastReceiver() {
@@ -234,7 +234,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     @Override
     public ArrayDeque<Message> getMessageQueue() {
         MyLog.logCall();
-        return msgQueue;
+        return MsgQueueHolder.msgQueue;
     }
 
     @Override
@@ -274,6 +274,10 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         return true;
     }
 
+    private static class MsgQueueHolder {
+        private static final ArrayDeque<Message> msgQueue = new ArrayDeque<>(100);
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -288,15 +292,12 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             FragmentManager.enableDebugLogging(true);
         }
         TracGlobal.getInstance(getApplicationContext());
-        if (msgQueue == null) {
-            msgQueue = new ArrayDeque<>(100);
-        }
         mHandlerThread = new MyHandlerThread("IncomingHandler");
         mHandlerThread.start();
         tracStartHandler = new Handler(mHandlerThread.getLooper(), this);
         mMessenger = new Messenger(tracStartHandler);
 
-        if (ActivityCompat.checkSelfPermission(this,
+        if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             canWriteSD = true;
         } else {
@@ -1300,11 +1301,11 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                         if (c != null) {
                             if (c.moveToFirst()) {
                                 // MyLog.d("ColumnNames = "+Arrays.asList(c.getColumnNames()));
-                                int id = c.getColumnIndex(Images.Media.DISPLAY_NAME);
+                                int id = c.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME);
                                 if (id != -1) {
                                     filename = c.getString(id);
                                 }
-                                id = c.getColumnIndex(Images.Media.SIZE);
+                                id = c.getColumnIndex(MediaStore.MediaColumns.SIZE);
                                 if (id != -1) {
                                     bytes = c.getInt(id);
                                 }
@@ -1584,13 +1585,13 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
 
 class TcSemaphore extends Semaphore {
 
-    public TcSemaphore(int permits, boolean fair) {
+    TcSemaphore(int permits, boolean fair) {
         super(permits, fair);
     }
 
     @Override
     public void acquireUninterruptibly() {
-        if (Looper.myLooper() == Looper.getMainLooper()) {
+        if (Looper.getMainLooper().equals(Looper.myLooper())) {
             try {
                 throw new Exception("debug");
             } catch (Exception e) {

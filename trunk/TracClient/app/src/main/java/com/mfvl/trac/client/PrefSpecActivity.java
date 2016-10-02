@@ -19,12 +19,12 @@ package com.mfvl.trac.client;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.mfvl.mfvllib.MyLog;
 
-import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.Collection;
 
@@ -32,12 +32,15 @@ import static com.mfvl.trac.client.Const.*;
 import static com.mfvl.trac.client.TracGlobal.*;
 
 public class PrefSpecActivity extends TcBaseActivity implements TcBaseInterface {
-    private static ArrayDeque<Message> msgQueue = null;
 
     @Override
     public ArrayDeque<Message> getMessageQueue() {
         MyLog.logCall();
-        return msgQueue;
+        return MsgQueueHolder.msgQueue;
+    }
+
+    private static class MsgQueueHolder {
+        private static final ArrayDeque<Message> msgQueue = new ArrayDeque<>(100);
     }
 
     @Override
@@ -48,9 +51,6 @@ public class PrefSpecActivity extends TcBaseActivity implements TcBaseInterface 
         String sortAction = getString(R.string.editSortAction);
         String loginAction = getString(R.string.editLoginAction);
 
-        if (msgQueue == null) {
-            msgQueue = new ArrayDeque<>(100);
-        }
         Intent intent = getIntent();
         MyLog.d(intent);
         String action = intent.getAction();
@@ -58,18 +58,14 @@ public class PrefSpecActivity extends TcBaseActivity implements TcBaseInterface 
         tm = TicketModel.getInstance();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         final Bundle args = makeArgs();
-        TracClientFragment ff;
+        Fragment ff;
 
         if (filterAction.equals(action)) {
             ff = new FilterFragment();
-            String filterString = getFilterString();
-            final Serializable filter = parseFilterString(filterString);
-            args.putSerializable(FILTERLISTNAME, filter);
+             args.putSerializable(FILTERLISTNAME, parseFilterString(getFilterString()));
         } else if (sortAction.equals(action)) {
             ff = new SortFragment();
-            String sortString = getSortString();
-            final Serializable filter = parseSortString(sortString);
-            args.putSerializable(SORTLISTNAME, filter);
+            args.putSerializable(SORTLISTNAME, parseSortString(getSortString()));
         } else if (loginAction.equals(action)) {
             ff = new TracLoginFragment();
         } else {
@@ -80,6 +76,7 @@ public class PrefSpecActivity extends TcBaseActivity implements TcBaseInterface 
         ft.commit();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean processMessage(Message msg) {
         MyLog.d(msg);
@@ -90,7 +87,6 @@ public class PrefSpecActivity extends TcBaseActivity implements TcBaseInterface 
                 break;
 
             case MSG_SET_FILTER:
-                //noinspection unchecked
                 Collection<FilterSpec> filter = (Collection<FilterSpec>) msg.obj;
                 String filterString = joinList(filter.toArray(), "&");
                 storeFilterString(filterString);
@@ -101,7 +97,6 @@ public class PrefSpecActivity extends TcBaseActivity implements TcBaseInterface 
                 break;
 
             case MSG_SET_SORT:
-                //noinspection unchecked
                 Collection<SortSpec> sort = (Collection<SortSpec>) msg.obj;
                 String sortString = joinList(sort.toArray(), "&");
                 storeSortString(sortString);
