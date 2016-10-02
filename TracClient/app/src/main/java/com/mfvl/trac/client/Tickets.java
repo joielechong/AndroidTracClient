@@ -16,39 +16,60 @@
 
 package com.mfvl.trac.client;
 
+import android.support.annotation.Nullable;
+
 import com.mfvl.mfvllib.MyLog;
 
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-class Tickets {
+interface Tickets {
+    void addTicket(Ticket ticket);
+
+    List<Ticket> getTicketList();
+
+    int getTicketCount();
+
+    void resetCache();
+
+    void putTicket(Ticket ticket);
+
+    int getTicketContentCount();
+}
+
+class TicketsStore implements Tickets {
 
     private static Map<Integer, Ticket> ticketMap = null;
-    private TicketList ticketList = null;
+    private List<Ticket> ticketList = null;
 
-    Tickets() {
+    TicketsStore() {
         MyLog.logCall();
         ticketList = new TicketList();
     }
 
+    @Nullable
     static Ticket getTicket(final int ticknr) {
 //        MyLog.d("ticketMap = "+ticketMap);
 //        MyLog.d("ticknr = "+ticknr+ " "+ticketMap.containsKey(ticknr));
         return ticketMap.containsKey(ticknr) ? ticketMap.get(ticknr) : null;
     }
 
-    TicketList getTicketList() {
+    @Override
+    public List<Ticket> getTicketList() {
         return ticketList;
     }
 
-    void resetCache() {
+    @Override
+    public void resetCache() {
         MyLog.logCall();
         // MyLog.d("voor: ticketMap = "+ticketMap);
         ticketMap = new TreeMap<>();
         // MyLog.d("na: ticketMap = "+ticketMap);
     }
 
-    int getTicketCount() {
+    @Override
+    public int getTicketCount() {
         try {
             return ticketList.size();
         } catch (final Exception e) {
@@ -57,19 +78,22 @@ class Tickets {
         }
     }
 
-    void addTicket(Ticket ticket) {
+    @Override
+    public void addTicket(Ticket ticket) {
 //		MyLog.d("ticket = "+ticket);
         ticketList.add(ticket);
         putTicket(ticket);
     }
 
-    void putTicket(Ticket ticket) {
+    @Override
+    public void putTicket(Ticket ticket) {
 //        MyLog.d("ticketMap = "+ticketMap);
 //        MyLog.d("ticket = "+ticket);
         ticketMap.put(ticket.getTicketnr(), ticket);
     }
 
-    int getTicketContentCount() {
+    @Override
+    public int getTicketContentCount() {
         int c = 0;
         for (Ticket t : ticketList) {
             if (t.hasdata()) {

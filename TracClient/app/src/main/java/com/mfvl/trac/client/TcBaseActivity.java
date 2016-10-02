@@ -16,18 +16,21 @@
 
 package com.mfvl.trac.client;
 
-import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Message;
 import android.os.Messenger;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.ArrayAdapter;
 
 import com.mfvl.mfvllib.MyLog;
 import com.mfvl.mfvllib.MyProgressBar;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.Map;
@@ -38,15 +41,15 @@ interface TcBaseInterface {
     Deque<Message> getMessageQueue();
 }
 
-@SuppressLint("Registered")
-class TcBaseActivity extends AppCompatActivity implements Handler.Callback, InterFragmentListener {
+@SuppressWarnings("AbstractClassExtendsConcreteClass")
+abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callback, InterFragmentListener {
     static boolean debug = false; // disable menuoption at startup
     Handler tracStartHandler = null;
     Messenger mMessenger = null;
-    MyHandlerThread mHandlerThread = null;
+    HandlerThread mHandlerThread = null;
     TicketModel tm = null;
-    private MyProgressBar progressBar = null;
-    private boolean isPaused;
+    private ProgressDialog progressBar = null;
+    private boolean isPaused = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,7 +57,6 @@ class TcBaseActivity extends AppCompatActivity implements Handler.Callback, Inte
         MyLog.logCall();
         mHandlerThread = new MyHandlerThread("IncomingHandler");
         mHandlerThread.start();
-        isPaused = false;
         tracStartHandler = new Handler(mHandlerThread.getLooper(), this);
         mMessenger = new Messenger(tracStartHandler);
     }
@@ -262,7 +264,7 @@ class TcBaseActivity extends AppCompatActivity implements Handler.Callback, Inte
     }
 
     @Override
-    public TicketListAdapter getAdapter() {
+    public ArrayAdapter<Ticket> getAdapter() {
         throw new RuntimeException("not implemented");
     }
 
@@ -329,5 +331,9 @@ class TcBaseActivity extends AppCompatActivity implements Handler.Callback, Inte
     @Override
     public void addAttachment(Ticket ticket, Uri uri, onTicketCompleteListener oc) {
         throw new RuntimeException("not implemented");
+    }
+
+    static class MsgQueueHolder {
+        static final ArrayDeque<Message> msgQueue = new ArrayDeque<>();
     }
 }

@@ -35,10 +35,37 @@ interface onAttachmentCompleteListener {
     void onComplete(byte[] data);
 }
 
-public class Ticket { // implements Serializable {
-    /**
-     *
-     */
+interface Ticket {
+    int getTicketnr();
+
+    JSONObject getVelden();
+
+    String getString(final String veld) throws JSONException;
+
+    JSONObject getJSONObject(final String veld) throws JSONException;
+
+    void setFields(JSONObject velden);
+
+    JSONArray getHistory();
+
+    void setHistory(JSONArray history);
+
+    JSONArray getActions();
+
+    void setActions(JSONArray actions);
+
+    JSONArray getAttachments();
+
+    void setAttachments(JSONArray attachments);
+
+    String getAttachmentFile(int nr) throws JSONException;
+
+    boolean hasdata();
+
+    String toText();
+}
+
+class NormalTicket implements Ticket { // implements Serializable {
     private final int _ticknr;
     private final Semaphore actionLock = new TcSemaphore(1, true);
     private JSONObject _velden;
@@ -47,32 +74,32 @@ public class Ticket { // implements Serializable {
     private JSONArray _actions;
     private boolean _hasdata = false;
 
-    public Ticket(final JSONObject velden) {
-        MyLog.d("Ticket = " + velden);
-
+    NormalTicket(final JSONObject velden) {
+        MyLog.d("NormalTicket = " + velden);
         _ticknr = -1;
+        init(velden);
+    }
+
+    NormalTicket(final int ticknr) {
+        _ticknr = ticknr;
+        init(null);
+    }
+
+    private void init(JSONObject velden) {
         _velden = velden;
         _history = null;
         _attachments = null;
         _actions = null;
         actionLock.acquireUninterruptibly();
-        _hasdata = true;
+        _hasdata = (velden != null);
     }
 
-    public Ticket(final int ticknr) {
-        _ticknr = ticknr;
-        _velden = null;
-        _history = null;
-        _attachments = null;
-        _actions = null;
-        actionLock.acquireUninterruptibly();
-        _hasdata = false;
-    }
-
+    @Override
     public int getTicketnr() {
         return _ticknr;
     }
 
+    @Override
     public JSONObject getVelden() {
         return _velden;
     }
@@ -91,6 +118,7 @@ public class Ticket { // implements Serializable {
         }
     }
 
+    @Override
     public String getString(final String veld) throws JSONException {
         try {
             return _velden.getString(veld);
@@ -99,23 +127,28 @@ public class Ticket { // implements Serializable {
         }
     }
 
+    @Override
     public JSONObject getJSONObject(final String veld) throws JSONException {
         return _velden.getJSONObject(veld);
     }
 
+    @Override
     public void setFields(JSONObject velden) {
         _velden = velden;
         _hasdata = true;
     }
 
+    @Override
     public JSONArray getHistory() {
         return _history;
     }
 
+    @Override
     public void setHistory(JSONArray history) {
         _history = history;
     }
 
+    @Override
     public JSONArray getActions() {
         if (actionLock.availablePermits() == 0) {
             actionLock.acquireUninterruptibly();
@@ -124,6 +157,7 @@ public class Ticket { // implements Serializable {
         return _actions;
     }
 
+    @Override
     public void setActions(JSONArray actions) {
         _actions = actions;
         if (actionLock.availablePermits() == 0) {
@@ -131,22 +165,27 @@ public class Ticket { // implements Serializable {
         }
     }
 
+    @Override
     public JSONArray getAttachments() {
         return _attachments;
     }
 
+    @Override
     public void setAttachments(JSONArray attachments) {
         _attachments = attachments;
     }
 
+    @Override
     public String getAttachmentFile(int nr) throws JSONException {
         return _attachments.getJSONArray(nr).getString(0);
     }
 
+    @Override
     public boolean hasdata() {
         return _hasdata;
     }
 
+    @Override
     public String toText() {
         String tekst = "Ticket: " + _ticknr;
 

@@ -17,7 +17,6 @@
 package com.mfvl.trac.client;
 
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,18 +46,7 @@ public class UpdateTicketFragment extends TracClientFragment implements HelpInte
     private static final String UPDATE_OPTION_VAL = "optionVal";
 
     private String currentActionName = null;
-    private int ticknr;
-
-    @Override
-    void onMyAttach(Context context) {
-        super.onMyAttach(context);
-        final Bundle args = getArguments();
-
-        // MyLog.d("onAttach ");
-        if (args != null) {
-            ticknr = args.getInt(CURRENT_TICKET);
-        }
-    }
+    private int ticknr = -1;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -79,6 +67,10 @@ public class UpdateTicketFragment extends TracClientFragment implements HelpInte
             button = (savedInstanceState.containsKey(
                     UPDATE_CURRENT_BUTTON) ? savedInstanceState.getInt(UPDATE_CURRENT_BUTTON) : 0);
         } else {
+            final Bundle args = getArguments();
+            if (args != null) {
+                ticknr = args.getInt(CURRENT_TICKET);
+            }
             button = 0;
             optionVal = null;
             spinPosition = 0;

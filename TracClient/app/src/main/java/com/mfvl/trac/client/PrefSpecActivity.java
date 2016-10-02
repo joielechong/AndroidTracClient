@@ -39,10 +39,6 @@ public class PrefSpecActivity extends TcBaseActivity implements TcBaseInterface 
         return MsgQueueHolder.msgQueue;
     }
 
-    private static class MsgQueueHolder {
-        private static final ArrayDeque<Message> msgQueue = new ArrayDeque<>(100);
-    }
-
     @Override
     public void onCreate(Bundle sis) {
         super.onCreate(sis);
@@ -55,7 +51,7 @@ public class PrefSpecActivity extends TcBaseActivity implements TcBaseInterface 
         MyLog.d(intent);
         String action = intent.getAction();
         setContentView(R.layout.content_main);
-        tm = TicketModel.getInstance();
+        tm = StdTicketModel.getInstance();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         final Bundle args = makeArgs();
         Fragment ff;

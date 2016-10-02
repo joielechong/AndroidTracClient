@@ -127,6 +127,6 @@ class FilterSpecImpl extends SpecImpl implements FilterSpec {
 
     @Override
     public int hashCode() {
-        return _operator.hashCode()+super.hashCode();
+        return _operator.hashCode() + _waarde.hashCode() + super.hashCode();
     }
 }

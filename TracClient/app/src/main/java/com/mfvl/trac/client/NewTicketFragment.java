@@ -19,6 +19,7 @@ package com.mfvl.trac.client;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,6 +61,7 @@ public class NewTicketFragment extends TracClientFragment implements HelpInterfa
         setHasOptionsMenu(true);
     }
 
+    @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // MyLog.d("onCreateView savedInstanceState = " + savedInstanceState);
@@ -192,7 +194,7 @@ public class NewTicketFragment extends TracClientFragment implements HelpInterfa
                     velden.put("reporter", username);
                     final Checkable updNotify = (Checkable) view.findViewById(R.id.updNotify);
                     final boolean notify = updNotify != null && updNotify.isChecked();
-                    final Ticket t = new Ticket(velden);
+                    final Ticket t = new NormalTicket(velden);
                     final int newtick = listener.createTicket(t, notify);
 
                     if (newtick < 0) {

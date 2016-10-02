@@ -37,6 +37,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Filterable;
 import android.widget.ListView;
@@ -45,7 +46,7 @@ import android.widget.TextView;
 import com.mfvl.mfvllib.MyLog;
 
 interface TicketListFragInterface {
-    void setAdapter(TicketListAdapter adapter);
+    void setAdapter(ArrayAdapter<Ticket> adapter);
 
     void dataHasChanged();
 
@@ -59,7 +60,7 @@ public class TicketListFragment extends TracClientFragment
     private static final String ZOEKTEXTNAME = "filtertext";
     private static final String SCROLLPOSITIONNAME = "scrollPosition";
 
-    private TicketListAdapter dataAdapter = null;
+    private ArrayAdapter<Ticket> dataAdapter = null;
     private ListView listView = null;
     private EditText filterText = null;
     private TextView hs = null;
@@ -136,7 +137,7 @@ public class TicketListFragment extends TracClientFragment
     }
 
     @Override
-    public void setAdapter(TicketListAdapter a) {
+    public void setAdapter(ArrayAdapter<Ticket> a) {
         MyLog.d("a = " + a + " listView = " + listView);
         dataAdapter = a;
         listView.setAdapter(a);
@@ -149,15 +150,15 @@ public class TicketListFragment extends TracClientFragment
         final View v = getView();
 
         if (v != null) {
-            final EditText filterText = (EditText) v.findViewById(R.id.search_box);
+            final EditText filter = (EditText) v.findViewById(R.id.search_box);
 
-            if (filterText != null && dataAdapter != null) {
+            if (filter != null && dataAdapter != null) {
                 if (zoeken) {
-                    dataAdapter.getFilter().filter(filterText.getText());
-                    filterText.setVisibility(View.VISIBLE);
-                    filterText.requestFocus();
+                    dataAdapter.getFilter().filter(filter.getText());
+                    filter.setVisibility(View.VISIBLE);
+                    filter.requestFocus();
                 } else {
-                    filterText.setVisibility(View.GONE);
+                    filter.setVisibility(View.GONE);
                     dataAdapter.getFilter().filter(null);
                 }
             }
@@ -196,7 +197,7 @@ public class TicketListFragment extends TracClientFragment
                 if (dataAdapter != null) {
                     final Intent sendIntent = new Intent(Intent.ACTION_SEND);
                     String lijst = "";
-                    for (Ticket t : dataAdapter.getTicketList()) {
+                    for (Ticket t : ((TicketListAdapterIF) dataAdapter).getTicketList()) {
                         try {
                             lijst += t.getTicketnr() + ";" + t.getString("status") + ";" + t.getString("summary") + "\r\n";
                         } catch (final Exception e) {

@@ -200,7 +200,7 @@ public class RefreshService extends Service implements Handler.Callback {
     private void loadTickets() {
         MyLog.d(mLoginProfile + "\ninvalid = " + invalid);
         if (invalid) {
-            mTickets = new Tickets();
+            mTickets = new TicketsStore();
             mTickets.resetCache();
             String reqString = "";
             List<FilterSpec> fl = mLoginProfile.getFilterList();
@@ -231,7 +231,7 @@ public class RefreshService extends Service implements Handler.Callback {
                         Ticket t = null;
                         try {
                             tickets[i] = jsonTicketlist.getInt(i);
-                            t = new Ticket(tickets[i]);
+                            t = new NormalTicket(tickets[i]);
                             mTickets.putTicket(t);
                         } catch (JSONException e) {
                             tickets[i] = -1;
@@ -293,7 +293,7 @@ public class RefreshService extends Service implements Handler.Callback {
                         final int thisTicket = Integer.parseInt(id.substring(startpos));
 
                         if (t == null || t.getTicketnr() != thisTicket) {
-                            t = Tickets.getTicket(thisTicket);
+                            t = TicketsStore.getTicket(thisTicket);
                         }
                         if (t != null) {
                             if ((TICKET_GET + "_" + thisTicket).equals(id)) {
@@ -355,10 +355,10 @@ public class RefreshService extends Service implements Handler.Callback {
             Tickets t = null;
 
             if (jsonTicketlist.length() > 0) {
-                t = new Tickets();
+                t = new TicketsStore();
                 for (int i = 0; i < jsonTicketlist.length(); i++) {
                     int ticknr = jsonTicketlist.getInt(i);
-                    t.addTicket(new Ticket(ticknr));
+                    t.addTicket(new NormalTicket(ticknr));
                 }
                 loadTicketContent(t);
             }
@@ -414,14 +414,14 @@ public class RefreshService extends Service implements Handler.Callback {
                 MyLog.d("newTickets = " + newTickets);
 
                 if (newTickets.size() > 0) {
-                    Tickets tl = new Tickets();
+                    Tickets tl = new TicketsStore();
                     for (Integer i : newTickets) {
-                        tl.addTicket(new Ticket(i));
+                        tl.addTicket(new NormalTicket(i));
                     }
                     try {
                         loadTicketContent(tl);
                         if (msg.arg2 != 0) {
-                            sendMessageToUI(msg.arg2, Tickets.getTicket(msg.arg1));
+                            sendMessageToUI(msg.arg2, TicketsStore.getTicket(msg.arg1));
                         }
                     } catch (Exception e) {
                         MyLog.e("MSG_SEND_TICKETS exception", e);
@@ -441,7 +441,7 @@ public class RefreshService extends Service implements Handler.Callback {
                     invalid = !lp.equals(mLoginProfile);
                     mLoginProfile = lp;
                     tracClient = new TracHttpClient(mLoginProfile);
-                    TicketModel.getInstance(tracClient, new OnTicketModelListener() {
+                    StdTicketModel.getInstance(tracClient, new OnTicketModelListener() {
                         @Override
                         public void onTicketModelLoaded(TicketModel tm) {
                             dispatchMessage(Message.obtain(null, MSG_SET_TICKET_MODEL, tm));

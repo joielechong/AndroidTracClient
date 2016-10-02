@@ -44,8 +44,7 @@ class TracHttpClient extends JSONRPCHttpClient {
     private String current_username = null;
     private String current_password = null;
 
-
-    public TracHttpClient(final String url, final boolean sslHack, final boolean sslHostNameHack, final String username, final String password) {
+    TracHttpClient(final String url, final boolean sslHack, final boolean sslHostNameHack, final String username, final String password) {
         super(url, sslHack, sslHostNameHack);
         current_url = url;
         current_username = username;
@@ -55,16 +54,16 @@ class TracHttpClient extends JSONRPCHttpClient {
         setCredentials(username, password);
     }
 
-    public TracHttpClient(final LoginProfile lp) {
+    TracHttpClient(final LoginProfile lp) {
         this(lp.getUrl(), lp.getSslHack(), lp.getSslHostNameHack(), lp.getUsername(), lp.getPassword());
     }
 
-    public TracHttpClient(final JSONObject b) throws JSONException {
+    TracHttpClient(final JSONObject b) throws JSONException {
         this(b.getString(CURRENT_URL), b.getBoolean(CURRENT_SSLHACK), b.getBoolean(CURRENT_SSLHOSTNAMEHACK), b.getString(CURRENT_USERNAME),
                 b.getString(CURRENT_PASSWORD));
     }
 
-    public JSONObject toJSON() throws JSONException {
+    JSONObject toJSON() throws JSONException {
         JSONObject a = new JSONObject();
         a.put(CURRENT_URL, current_url);
         a.put(CURRENT_USERNAME, current_username);
@@ -74,32 +73,32 @@ class TracHttpClient extends JSONRPCHttpClient {
         return a;
     }
 
-    public JSONArray Query(String reqString) throws JSONRPCException {
+    JSONArray Query(String reqString) throws JSONRPCException {
         return callJSONArray(TICKET_QUERY, reqString);
     }
 
-    public int createTicket(final String s, final String d, final JSONObject _velden, boolean notify) throws JSONRPCException {
+    int createTicket(final String s, final String d, final JSONObject _velden, boolean notify) throws JSONRPCException {
         return callInt(TICKET_CREATE, s, d, _velden, notify);
     }
 
-    public JSONArray updateTicket(final int _ticknr, final String cmt, final JSONObject _velden, final boolean notify) throws JSONRPCException {
+    JSONArray updateTicket(final int _ticknr, final String cmt, final JSONObject _velden, final boolean notify) throws JSONRPCException {
         // MyLog.d( "_velden call = " + _velden);
         return callJSONArray(TICKET_UPDATE, _ticknr, cmt, _velden, notify);
     }
 
-    public String verifyHost() throws JSONRPCException {
+    String verifyHost() throws JSONRPCException {
         return callJSONArray(SYSTEM_GETAPIVERSION).toString();
     }
 
-    public JSONArray getModel() throws Exception {
-        return current_url == null ? null : callJSONArray(TICKET_GETTICKETFIELDS);
+    JSONArray getModel() throws JSONRPCException {
+        return callJSONArray(TICKET_GETTICKETFIELDS);
     }
 
-    public byte[] getAttachment(int ticknr, String filename) throws JSONException, JSONRPCException {
+    byte[] getAttachment(int ticknr, String filename) throws JSONException, JSONRPCException {
         return Base64.decode(callJSONObject(TICKET_GETATTACHMENT, ticknr, filename).getJSONArray(_JSONCLASS).getString(1), Base64.DEFAULT);
     }
 
-    public void putAttachment(final int ticknr, String filename, String base64Content) throws JSONException, JSONRPCException {
+    void putAttachment(final int ticknr, String filename, String base64Content) throws JSONException, JSONRPCException {
         final JSONArray ar = new JSONArray();
 
         ar.put(ticknr);

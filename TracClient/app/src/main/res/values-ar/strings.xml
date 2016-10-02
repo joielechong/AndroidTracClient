@@ -103,7 +103,7 @@
     <string name="debug">تصحيح</string>
     <string name="foundnew">تم إيجاد تذكرة جديدة أو معدلة</string>
     <string name="notifmod">تم إيجاد تذكرة معدلة</string>
-    <string name="tracLogin">تسجيل الدخول لخادم"المتابعة"</string>
+    <string name="tracLogin">تسجيل الدخول لخادم“المتابعة”</string>
     <string name="notickets">لا يوجد تذكرة</string>
     <string name="nocomment">لا يمكن تغيير التعليق</string>
     <string name="notpossible">غير ممكن</string>

@@ -57,7 +57,7 @@ public class EditFieldFragment extends TcDialogFragment {
         MyLog.d(savedInstanceState);
 
         if (savedInstanceState == null) {
-            tm = TicketModel.getInstance();
+            tm = StdTicketModel.getInstance();
             veld = getArguments().getString(VELD);
             waarde = getArguments().getString(WAARDE);
             nieuwWaarde = waarde;
@@ -65,7 +65,7 @@ public class EditFieldFragment extends TcDialogFragment {
             veld = savedInstanceState.getString(VELD);
             waarde = savedInstanceState.getString(WAARDE);
             nieuwWaarde = savedInstanceState.getString(NIEUW_WAARDE);
-            tm = TicketModel.restore(savedInstanceState.getString(TicketModel.bundleKey));
+            tm = StdTicketModel.restore(savedInstanceState.getString(TicketModel.bundleKey));
         }
         final TicketModelVeld tmv = tm.getVeld(veld);
 
