@@ -951,7 +951,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
 
     private void setReferenceTime() {
         // MyLog.d("setReferenceTime");
-        referenceTime = System.currentTimeMillis() - timerCorr;
+        referenceTime = new Date().getTime() - timerCorr;
         sendMessageToService(MSG_REMOVE_NOTIFICATION);
     }
 
