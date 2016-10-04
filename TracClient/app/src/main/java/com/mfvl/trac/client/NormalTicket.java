@@ -65,7 +65,7 @@ interface Ticket {
     String toText();
 }
 
-class NormalTicket implements Ticket { // implements Serializable {
+class NormalTicket implements Ticket {
     private final int _ticknr;
     private final Semaphore actionLock = new TcSemaphore(1, true);
     private JSONObject _velden;
@@ -253,5 +253,24 @@ class NormalTicket implements Ticket { // implements Serializable {
             MyLog.e("Exception", e);
             return "";
         }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        return obj instanceof NormalTicket && (_ticknr == ((NormalTicket) obj)._ticknr);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = _ticknr;
+        result = 31 * result + (_velden != null ? _velden.toString().hashCode() : 0);
+        result = 31 * result + (_history != null ? _history.toString().hashCode() : 0);
+        result = 31 * result + (_attachments != null ? _attachments.toString().hashCode() : 0);
+        result = 31 * result + (_actions != null ? _actions.toString().hashCode() : 0);
+        result = 31 * result + (_hasdata ? 1 : 0);
+        return result;
     }
 }
