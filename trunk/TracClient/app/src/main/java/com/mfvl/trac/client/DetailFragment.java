@@ -109,6 +109,7 @@ public class DetailFragment extends TracClientFragment
     private SwipeRefreshLayout swipeLayout;
     private View currentView;
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,10 +119,18 @@ public class DetailFragment extends TracClientFragment
         }
         if (savedInstanceState != null && savedInstanceState.containsKey(CURRENT_TICKET)) {
             ticknr = savedInstanceState.getInt(CURRENT_TICKET, -1);
+            showEmptyFields = savedInstanceState.getBoolean(EMPTYFIELDS, false);
+            modVeld = (Map<String, String>) savedInstanceState.getSerializable(MODVELD);
+            setSelect(modVeld.isEmpty());
+            ticknr = savedInstanceState.getInt(CURRENT_TICKET, -1);
+        } else {
+            if (fragmentArgs != null) {
+                ticknr = fragmentArgs.getInt(CURRENT_TICKET);
+            }
+            modVeld = new ModVeldMap();
+            modVeld.clear();
         }
 
-        modVeld = new ModVeldMap();
-        modVeld.clear();
         setHasOptionsMenu(true);
         didUpdate = false;
 
@@ -191,17 +200,6 @@ public class DetailFragment extends TracClientFragment
                     R.color.swipe_green,
                     R.color.swipe_orange,
                     R.color.swipe_red);
-            if (savedInstanceState != null) {
-                showEmptyFields = savedInstanceState.getBoolean(EMPTYFIELDS, false);
-                if (savedInstanceState.containsKey(MODVELD)) {
-                    modVeld = (Map<String, String>) savedInstanceState.getSerializable(MODVELD);
-                }
-                setSelect(modVeld != null && modVeld.isEmpty());
-                if (savedInstanceState.containsKey(CURRENT_TICKET)) {
-                    // MyLog.d("onActivityCreated start Loading");
-                    ticknr = savedInstanceState.getInt(CURRENT_TICKET, -1);
-                }
-            }
         }
     }
 
@@ -334,12 +332,10 @@ public class DetailFragment extends TracClientFragment
         MyLog.d("_ticket = " + _ticket + " " + modVeld);
         if (_ticket != null) {
             savedState.putInt(CURRENT_TICKET, _ticket.getTicketnr());
-        } else if (ticknr != -1) {
+        } else {
             savedState.putInt(CURRENT_TICKET, ticknr);
         }
-        if (!modVeld.isEmpty()) {
-            savedState.putSerializable(MODVELD, (Serializable) modVeld);
-        }
+        savedState.putSerializable(MODVELD, (Serializable) modVeld);
         savedState.putBoolean(EMPTYFIELDS, showEmptyFields);
         // MyLog.d( "onSaveInstanceState = " + savedState);
     }
@@ -581,7 +577,7 @@ public class DetailFragment extends TracClientFragment
             final TextView tickText = (TextView) currentView.findViewById(R.id.ticknr);
 
             if (tickText != null) {
-                tickText.setText(String.format(Locale.US, "Ticket %d", _ticket.getTicketnr()));
+                tickText.setText(getString(R.string.tickethead, _ticket.getTicketnr()));
                 try {
                     String summ = _ticket.getString("summary");
 

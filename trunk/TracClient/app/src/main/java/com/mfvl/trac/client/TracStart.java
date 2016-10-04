@@ -731,10 +731,6 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         MyLog.d(frag + " this = " + this);
         super.onAttachFragment(frag);
 
-        if (frag instanceof TracClientFragment) {
-            ((TracClientFragment) frag).onNewTicketModel(tm);
-        }
-
         if (ListFragmentTag.equals(frag.getTag())) {
             final TicketListFragment ticketListFragment = getTicketListFragment();
             if (ticketListFragment != null) {
@@ -1097,7 +1093,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
 
     @Override
     public void getTicket(final int i, final OnTicketLoadedListener oc) {
-//        MyLog.d("i = " + i + " semaphore = " + loadingActive);
+        //MyLog.d("i = " + i + " semaphore = " + loadingActive);
 
         new Thread() {
             @Override

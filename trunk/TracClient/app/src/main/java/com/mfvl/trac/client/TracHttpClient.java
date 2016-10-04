@@ -117,4 +117,24 @@ class TracHttpClient extends JSONRPCHttpClient {
 
         MyLog.i("putAttachment " + retfile);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o instanceof TracHttpClient) {
+            TracHttpClient t = (TracHttpClient) o;
+            return current_url.equals(t.current_url) && current_username.equals(t.current_username);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        int result = current_url != null ? current_url.hashCode() : 0;
+        result = 31 * result + (current_username != null ? current_username.hashCode() : 0);
+        return result;
+    }
 }

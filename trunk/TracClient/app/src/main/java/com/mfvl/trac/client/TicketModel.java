@@ -66,7 +66,7 @@ final class StdTicketModel implements TicketModel {
         active = new TcSemaphore(1, true);
     }
 
-    public static TicketModel restore(String jsonString) {
+    static TicketModel restore(String jsonString) {
         MyLog.logCall();
         try {
             JSONObject o = new JSONObject(jsonString);
