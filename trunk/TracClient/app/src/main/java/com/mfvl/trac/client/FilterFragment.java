@@ -104,11 +104,11 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements HelpInte
         MyLog.d("savedInstanceState = " + savedInstanceState+" tm = "+tm);
 
         if (tm == null) {
-            MyLog.toast(context.getString(R.string.notpossible));
+            MyLog.toast(getString(R.string.notpossible));
             sendMessageToHandler(MSG_DONE, null);
             getFragmentManager().popBackStack();
         } else {
-            filterAdapter = new FilterAdapter(context, outputSpec);
+            filterAdapter = new FilterAdapter(getActivity(), outputSpec);
             listView.setAdapter(filterAdapter);
 
             currentView.findViewById(R.id.storefilter).setOnClickListener(this);
@@ -118,7 +118,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements HelpInte
             getScreensize(addSpinner, addButton);
             final ArrayList<String> velden = tm.velden();
             Collections.sort(velden);
-            final SpinnerAdapter spinAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, velden);
+            final SpinnerAdapter spinAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, velden);
             addSpinner.setAdapter(spinAdapter);
         }
     }
@@ -155,7 +155,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements HelpInte
 
             //MyLog.d("getView pos = " + position + " curid = " + curid + " resid=" + resid + " veld = " + filterItem.getVeld());
             if (curid != resid) {
-                v = LayoutInflater.from(context).inflate(resid, null);
+                v = LayoutInflater.from(getActivity()).inflate(resid, null);
                 //noinspection ResourceType
                 v.setId(resid); // hack hack
                 parent.requestLayout();
@@ -174,7 +174,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements HelpInte
             filterNaam.setText((filterItem.getEdit() ? filterItem.getVeld() : filterItem.toString()));
 
             if (spin != null) {
-                final SpinnerAdapter spinAdapter = new ArrayAdapter<>(context,
+                final SpinnerAdapter spinAdapter = new ArrayAdapter<>(getActivity(),
                         android.R.layout.simple_spinner_item,
                         operatornames);
 
@@ -230,7 +230,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements HelpInte
             final boolean omgekeerd = "!=".equals(op);
 
 //        MyLog.d(veldnaam + " " + w + " " + omgekeerd);
-            LinearLayout valCheckBoxes = new LinearLayout(context);
+            LinearLayout valCheckBoxes = new LinearLayout(getActivity());
 
             valCheckBoxes.setOrientation(LinearLayout.VERTICAL);
             String[] ws;
@@ -243,7 +243,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements HelpInte
             }
 
             for (int i = 0; i < waardes.size(); i++) {
-                final CheckBox rb = new CheckBox(context);
+                final CheckBox rb = new CheckBox(getActivity());
 
                 rb.setText((CharSequence) waardes.get(i));
                 rb.setId(i);

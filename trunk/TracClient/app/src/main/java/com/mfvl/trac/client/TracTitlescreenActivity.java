@@ -38,7 +38,7 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
         super.onCreate(savedInstanceState);
         MyLog.setContext(this, getString(R.string.logfile));
         MyLog.reset();
-        TracGlobal.getInstance(getApplicationContext());
+        TracGlobal.setContext(getApplicationContext());
         setContentView(R.layout.trac_version);
         startService(new Intent(this, RefreshService.class));
     }

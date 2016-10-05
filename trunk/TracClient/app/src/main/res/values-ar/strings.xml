@@ -36,14 +36,14 @@
     <string name="nieuw">تذكرة جديدة</string>
     <string name="nodata">لا يوجد بيانات</string>
     <string name="nodatadesc">لم يتم تحميل بيانات هذه التذكرة</string>
-    <string name="connerr">خطأ في الإتصال</string>
+    <string name="connerr">خطأ في الإتصال: %s</string>
     <string name="newtick">عمل تذكرة جديدة</string>
     <string name="store">تخزين التذكرة</string>
     <string name="storerr">حدث خطأ أثناء عمل التذكرة</string>
     <string name="oktext">موافق</string>
-    <string name="storerrdesc">لا يمكن تخزين التذكرة</string>
+    <string name="storerrdesc">لا يمكن تخزين التذكرة:%s</string>
     <string name="storok">تم عمل التذكرة</string>
-    <string name="storokdesc">=تم عمل التذكرة.المعرف</string>
+    <string name="storokdesc">%s=تم عمل التذكرة.المعرف</string>
     <string name="comment">إضافة تعليق</string>
     <string name="attach">إضافة مرفق</string>
     <string name="chooser_title">مرفق تذكرة</string>
@@ -60,7 +60,7 @@
     <string name="zoek">بحث</string>
     <string name="storefilter">حفظ التصنيف</string>
     <string name="storesort">حفظ نظام الترتيب</string>
-    <string name="help">مساعدة</string>
+    <string name="help">s%\nمساعدة</string>
     <string name="sslHack">قبول الشهادة الموقعة ذاتيا</string>
 
     <string-array name="filter_names">
@@ -75,12 +75,11 @@
     </string-array>
 
     <string name="select">اختيار</string>
-    <string name="getlist">جلب قائمة التذكرة</string>
     <string name="storeprofile">حفظ الملف الشخصي</string>
     <string name="profiletext">أدخل إسم للملف الشخصي لحفظه</string>
     <string name="loadprofile">تحميل الدخول إلى الملف الشخصي</string>
-    <string name="loadprofiletext">لا يمكن تحميل الملف الشخصي</string>
-    <string name="notfound">غير موجود</string>
+    <string name="loadprofiletext">لا يمكن تحميل الملف الشخصي: %s</string>
+    <string name="notfound">غير موجود:%s</string>
     <string name="sdcardmissing">بطاقة الذاكرة الرقمية غير موجودة.لا يمكن حفظ المرفق</string>
     <string name="ioerror">ذاكرة خارجية-خطأ في الكتابة</string>
     <string name="chooseapp">إختيار ملف للفتح بواسطة</string>
@@ -88,7 +87,7 @@
     <string name="exportprofiles">تصدير الملف الشخصي</string>
     <string name="importprofiles">استيراد ملف شخصي</string>
     <string name="completed">إكتمل</string>
-    <string name="failed">فشل</string>
+    <string name="failed">فشل:%s</string>
     <string name="xmlwritecompleted">التصدير ل XML نجح</string>
     <string name="xmlreadcompleted">الإستيراد من XML نجح</string>
     <string name="downloading">جاري التنزيل</string>
@@ -96,7 +95,7 @@
     <string name="saveupdate">حفظ التحديثات على الخادم</string>
     <string name="saveticket">جاري حفظ التذكرة</string>
     <string name="selectticket">إختيار ذاكرة فردية</string>
-    <string name="ticketnotfound">التذكرة غير موجودة</string>
+    <string name="ticketnotfound">التذكرة غير موجودة %s</string>
     <string name="chooseticknr">أدخل رقم التذكرة</string>
     <string name="chooseticket">اختيار تذكرة</string>
     <string name="checking">فحص</string>
@@ -109,9 +108,6 @@
     <string name="notpossible">غير ممكن</string>
     <string name="notchange">لا يمكنك تغيير هذا الحقل</string>
     <string name="wrongdb">قاعدة بيانات خاطئة</string>
-    <string name="wrongdbtext1">قاعدة البيانات الحالية=</string>
-    <string name="wrongdbtext3">إختر قاعدة البيانات الصحيحة أولا</string>
-    <string name="wrongdbtext2">قاعدة البيانات المطلوبة=</string>
     <string name="showempty">عرض حقول فارغة</string>
     <string name="unsaved">مغادرة الشاشة وحفظ التغييرات؟</string>
     <string name="nee">لا</string>

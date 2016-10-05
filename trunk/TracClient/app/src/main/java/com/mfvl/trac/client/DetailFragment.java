@@ -114,10 +114,7 @@ public class DetailFragment extends TracClientFragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // MyLog.d( "onCreate savedInstanceState = " + savedInstanceState);
-        if (fragmentArgs != null) {
-            ticknr = fragmentArgs.getInt(CURRENT_TICKET);
-        }
-        if (savedInstanceState != null && savedInstanceState.containsKey(CURRENT_TICKET)) {
+        if (savedInstanceState != null) {
             ticknr = savedInstanceState.getInt(CURRENT_TICKET, -1);
             showEmptyFields = savedInstanceState.getBoolean(EMPTYFIELDS, false);
             modVeld = (Map<String, String>) savedInstanceState.getSerializable(MODVELD);
@@ -136,8 +133,8 @@ public class DetailFragment extends TracClientFragment
 
         notModified = getResources().getStringArray(R.array.fieldsnotmodified);
         isStatusUpd = getResources().getStringArray(R.array.fieldsstatusupdate);
-        popup_selected_color = ContextCompat.getColor(context, R.color.popup_selected);
-        popup_unselected_color = ContextCompat.getColor(context, R.color.popup_unselected);
+        popup_selected_color = ContextCompat.getColor(getActivity(), R.color.popup_selected);
+        popup_unselected_color = ContextCompat.getColor(getActivity(), R.color.popup_unselected);
     }
 
     @Override
@@ -166,7 +163,7 @@ public class DetailFragment extends TracClientFragment
     @Override
     public void onResume() {
         super.onResume();
-        gestureDetector = new GestureDetector(context, this);
+        gestureDetector = new GestureDetector(getActivity(), this);
 
         currentView = getView();
         if (ticknr == -1) {
@@ -208,7 +205,7 @@ public class DetailFragment extends TracClientFragment
             @Override
             public void onTicketLoaded(final Ticket t) {
                 _ticket = t;
-                context.runOnUiThread(new Runnable() {
+                runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         displayTicket();
@@ -232,7 +229,7 @@ public class DetailFragment extends TracClientFragment
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // MyLog.d(item.toString());
+        MyLog.d(item.toString());
 
         switch (item.getItemId()) {
             case R.id.dfupdate:
@@ -245,10 +242,10 @@ public class DetailFragment extends TracClientFragment
             case R.id.dfselect:
                 if (!listener.isFinishing()) {
 
-                    final EditText input = new EditText(context);
+                    final EditText input = new EditText(getActivity());
                     input.setInputType(InputType.TYPE_CLASS_NUMBER);
 
-                    final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+                    final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
                     alertDialogBuilder.setTitle(R.string.chooseticket)
                             .setMessage(R.string.chooseticknr)
                             .setView(input)
@@ -350,7 +347,7 @@ public class DetailFragment extends TracClientFragment
             displayTicket();
         } catch (final Exception e) {
             MyLog.e("Exception during update", e);
-            showAlertBox(R.string.upderr, R.string.storerrdesc, e.getMessage());
+            showAlertBox(R.string.upderr, getString(R.string.storerrdesc, e.getMessage()));
         }
     }
 
@@ -382,7 +379,7 @@ public class DetailFragment extends TracClientFragment
             return false;
         }
         if (t.length() >= 8 && "comment:".equals(t.substring(0, 8))) {
-            showAlertBox(R.string.notpossible, R.string.nocomment, null);
+            showAlertBox(R.string.notpossible, R.string.nocomment);
         } else {
             final String[] parsed = t.split(":", 2);
 
@@ -439,14 +436,13 @@ public class DetailFragment extends TracClientFragment
                             startActivity(viewIntent);
                         } else {
                             viewIntent.setData(Uri.parse(file.toString()));
-                            final Intent j = Intent.createChooser(viewIntent, context.getString(
-                                    R.string.chooseapp));
+                            final Intent j = Intent.createChooser(viewIntent, getString(R.string.chooseapp));
 
                             startActivity(j);
                         }
                     } catch (final Exception e) {
-                        MyLog.e(context.getString(R.string.ioerror) + ": " + filename, e);
-                        showAlertBox(R.string.notfound, R.string.sdcardmissing, null);
+                        MyLog.e(getString(R.string.ioerror) + ": " + filename, e);
+                        showAlertBox(R.string.warning, R.string.sdcardmissing);
                     } finally {
                         listener.stopProgressBar();
                     }
@@ -667,7 +663,7 @@ public class DetailFragment extends TracClientFragment
             }
             listView.setOnItemLongClickListener(this);
             listView.setOnItemClickListener(this);
-            final ListAdapter dataAdapter = new ModifiedStringArrayAdapter(context, values);
+            final ListAdapter dataAdapter = new ModifiedStringArrayAdapter(getActivity(), values);
             listView.setAdapter(dataAdapter);
         }
     }
@@ -684,7 +680,7 @@ public class DetailFragment extends TracClientFragment
 
     private void selectField(final String veld, final String waarde) {
         if (Arrays.asList(notModified).contains(veld)) {
-            showAlertBox(R.string.notpossible, R.string.notchange, null);
+            showAlertBox(R.string.notpossible, R.string.notchange);
         } else if (Arrays.asList(isStatusUpd).contains(veld)) {
             listener.onUpdateTicket(_ticket);
             didUpdate = true;
@@ -712,10 +708,10 @@ public class DetailFragment extends TracClientFragment
             return false;
         }
 
-        context.runOnUiThread(new Runnable() {
+        runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                new AlertDialog.Builder(context)
+                new AlertDialog.Builder(getActivity())
                         .setTitle(R.string.warning)
                         .setMessage(R.string.unsaved)
                         .setPositiveButton(R.string.ja, new DialogInterface.OnClickListener() {

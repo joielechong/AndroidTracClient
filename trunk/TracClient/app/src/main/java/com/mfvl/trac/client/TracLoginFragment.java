@@ -183,7 +183,7 @@ public class TracLoginFragment extends TracClientFragment
         sslHackBox = (CheckBox) view.findViewById(R.id.sslHack);
         loginSpinner = (Spinner) view.findViewById(R.id.loginspinner);
 
-        pdb = new ProfileDatabaseHelper(context);
+        pdb = new ProfileDatabaseHelper(getActivity());
         pdb.open();
         pdbCursor = pdb.getProfiles(true);
         if (pdbCursor.getCount() < 2) {
@@ -193,7 +193,7 @@ public class TracLoginFragment extends TracClientFragment
             loginSpinner.setVisibility(View.VISIBLE);
             final int[] to = new int[]{android.R.id.text1};
             final String[] columns = new String[]{"name"};
-            final SimpleCursorAdapter adapt = new SimpleCursorAdapter(context,
+            final SimpleCursorAdapter adapt = new SimpleCursorAdapter(getActivity(),
                     android.R.layout.simple_spinner_dropdown_item,
                     pdbCursor,
                     columns, to,
@@ -301,7 +301,7 @@ public class TracLoginFragment extends TracClientFragment
                     storButton.setEnabled(false);
                     credWarn.setVisibility(View.GONE);
                 } else {
-                    showAlertBox(R.string.notfound, R.string.loadprofiletext, SelectedProfile);
+                    showAlertBox(R.string.notfound, getString(R.string.loadprofiletext, SelectedProfile));
                 }
             }
         }
@@ -377,23 +377,23 @@ public class TracLoginFragment extends TracClientFragment
             case R.id.exportprofiles:
                 try {
                     pdb.open();
-                    pdb.writeXML(context.getString(R.string.app_name));
-                    showAlertBox(R.string.completed, R.string.xmlwritecompleted, null);
+                    pdb.writeXML(getString(R.string.app_name));
+                    showAlertBox(R.string.completed, R.string.xmlwritecompleted);
                 } catch (final Exception e) {
                     MyLog.e("Export failed", e);
-                    showAlertBox(R.string.failed, 0, e.getMessage());
+                    showAlertBox(R.string.warning, getString(R.string.failed, e.getMessage()));
                 }
                 break;
 
             case R.id.importprofiles:
                 try {
                     pdb.open();
-                    pdb.readXML(context.getString(R.string.app_name));
+                    pdb.readXML(getString(R.string.app_name));
                     swapSpinnerAdapter();
-                    showAlertBox(R.string.completed, R.string.xmlreadcompleted, null);
+                    showAlertBox(R.string.completed, R.string.xmlreadcompleted);
                 } catch (final Exception e) {
                     MyLog.e("Import failed", e);
-                    showAlertBox(R.string.failed, 0, e.getMessage());
+                    showAlertBox(R.string.warning, getString(R.string.failed, e.getMessage()));
                 }
                 break;
 
@@ -444,13 +444,12 @@ public class TracLoginFragment extends TracClientFragment
                     MyLog.toast("==" + errmsg + "==");
                     if (errmsg.startsWith("hostname in certificate didn't match:")) {
                         listener.stopProgressBar();
-                        context.runOnUiThread(new Runnable() {
+                        runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                final String msg = context.getString(
-                                        R.string.hostnametext) + errmsg + context.getString(
-                                        R.string.hostnameign);
-                                new AlertDialog.Builder(context)
+                                final String msg = getString(
+                                        R.string.hostnametext) + errmsg + getString(R.string.hostnameign);
+                                new AlertDialog.Builder(getActivity())
                                         .setMessage(msg)
                                         .setTitle(R.string.hostnametitle)
                                         .setCancelable(false)
@@ -515,7 +514,7 @@ public class TracLoginFragment extends TracClientFragment
     }
 
     private void setNoJSONMessage(final CharSequence message) {
-        context.runOnUiThread(new Runnable() {
+        runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 credWarn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_warn, 0, 0, 0);
@@ -533,7 +532,7 @@ public class TracLoginFragment extends TracClientFragment
     }
 
     private void setInvalidMessage(final String m1, final String m2) {
-        context.runOnUiThread(new Runnable() {
+        runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 credWarn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_warn, 0, 0, 0);
@@ -555,7 +554,7 @@ public class TracLoginFragment extends TracClientFragment
     }
 
     private void setValidMessage() {
-        context.runOnUiThread(new Runnable() {
+        runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 credWarn.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
@@ -588,7 +587,7 @@ public class TracLoginFragment extends TracClientFragment
         intent.putExtra(CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
         intent.putExtra(CURRENT_PROFILE, SelectedProfile);
         intent.putExtra(BEWAREN, bewaren);
-        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+        LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
         sendMessageToHandler(MSG_DONE, null);
     }
 
@@ -599,10 +598,10 @@ public class TracLoginFragment extends TracClientFragment
         sslHack = sslHackBox.isChecked();
         final LoginProfile prof = new LoginProfileImpl(url, username, password, sslHack);
 
-        final AlertDialog.Builder alert = new AlertDialog.Builder(context);
+        final AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
 
         // Set an EditText view to get user input
-        final EditText input = new EditText(context);
+        final EditText input = new EditText(getActivity());
         final LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 

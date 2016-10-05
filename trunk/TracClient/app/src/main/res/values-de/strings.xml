@@ -36,15 +36,15 @@
     <string name="nieuw">Neues Ticket</string>
     <string name="nodata">Keine Daten</string>
     <string name="nodatadesc">Inhalt des Tickets ist noch nicht geladen</string>
-    <string name="connerr">Verbindungsfehler</string>
+    <string name="connerr">Verbindungsfehler: %s</string>
     <string name="newtick">Neues Ticket</string>
     <string name="oktext">OK</string>
     <string name="store">Ticket Speichern</string>
     <string name="storerr">Fehler beim Erstellen des Tickets</string>
     <string name="upderr">Fehler beim Ändern des Tickets</string>
-    <string name="storerrdesc">Ticket kann nicht gespeichert werden</string>
+    <string name="storerrdesc">Ticket kann nicht gespeichert werden: %s</string>
     <string name="storok">Ticket erstellt</string>
-    <string name="storokdesc">Ticket erstellt,ID=</string>
+    <string name="storokdesc">Ticket erstellt, ID = %d</string>
     <string name="comment">Kommentar hinzufügen</string>
     <string name="attach">Anhang hinzufügen</string>
     <string name="chooser_title">Ticket Anhang</string>
@@ -74,12 +74,12 @@
         <item>endet nicht auf</item>
     </string-array>
     <string name="select">Auswählen</string>
-    <string name="getlist">Ticketliste holen</string>
+    <string name="getlist">Ticketliste holen\n%s</string>
     <string name="storeprofile">Profil speichern</string>
     <string name="profiletext">Geben Sie den Profilnamen an</string>
     <string name="loadprofile">Laden Login-Profil</string>
-    <string name="loadprofiletext">Profil kann nicht geladen werden</string>
-    <string name="notfound">Nicht gefunden</string>
+    <string name="loadprofiletext">Profil kann nicht geladen werden: %s</string>
+    <string name="notfound">Nicht gefunden: %s</string>
     <string name="sdcardmissing">SD-Karte fehlt.Kann Anhang nicht speichern</string>
     <string name="ioerror">Externer Speicher-Schreibfehler</string>
     <string name="chooseapp">Zum öffnen eine Anwendung wählen:</string>
@@ -87,7 +87,7 @@
     <string name="exportprofiles">Profile exportieren</string>
     <string name="importprofiles">Profile importieren</string>
     <string name="completed">Abgeschlossen</string>
-    <string name="failed">Fehlgeschlagen</string>
+    <string name="failed">Fehlgeschlagen: %s</string>
     <string name="xmlwritecompleted">Export nach XML erfolgreich</string>
     <string name="xmlreadcompleted">Import von XML erfolgreich</string>
     <string name="downloading">Herunterladen</string>
@@ -95,7 +95,7 @@
     <string name="saveupdate">Speichere Update auf dem Server</string>
     <string name="saveticket">Speichere Ticket</string>
     <string name="selectticket">Einzelnes Ticket wählen</string>
-    <string name="ticketnotfound">Ticket nicht gefunden</string>
+    <string name="ticketnotfound">Ticket nicht gefunden %s</string>
     <string name="chooseticknr">Ticketnummer eingeben</string>
     <string name="chooseticket">Ticket wählen</string>
     <string name="checking">Prüfe</string>
@@ -108,9 +108,7 @@
     <string name="notpossible">Nicht möglich</string>
     <string name="notchange">Sie können dieses Feld nicht verändern</string>
     <string name="wrongdb">Falsche Datenbank</string>
-    <string name="wrongdbtext1">Aktuelle Datenbank= </string>
-    <string name="wrongdbtext3">\nZuerst korrekte Datenbank auswählen</string>
-    <string name="wrongdbtext2">\nAngeforderte Datenbank= </string>
+    <string name="wrongdbtext">Aktuelle Datenbank= %1$s\nAngeforderte Datenbank= %2$s\nZuerst korrekte Datenbank auswählen</string>
     <string name="showempty">Leere Felder anzeigen</string>
     <string name="unsaved">Bildschirm verlassen und Änderungen speichern?</string>
     <string name="nee">Nein</string>

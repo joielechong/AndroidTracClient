@@ -23,7 +23,7 @@
     <string name="bewaren">Store credentials</string>
     <string name="vertext">Verify</string>
     <string name="invalidCred">Credentials not valid</string>
-    <string name="validCred">Credentials valid</string>
+    <string name="validCred" tools:ignore="MissingTranslation">Credentials valid</string>
     <string name="list_heading">Ticket Listing</string>
     <string name="ophalen">Loading data</string>
     <string name="tlrefresh">Refresh list</string>
@@ -35,15 +35,15 @@
     <string name="nieuw">New ticket</string>
     <string name="nodata">No data</string>
     <string name="nodatadesc">Data of this ticket is not yet loaded</string>
-    <string name="connerr">Connection error</string>
+    <string name="connerr">Connection error: %s</string>
     <string name="newtick">Create new ticket</string>
     <string name="oktext">OK</string>
     <string name="store">Store ticket</string>
     <string name="storerr">Error during create ticket</string>
-    <string name="upderr">Error during update ticket</string>
-    <string name="storerrdesc">Cannot store ticket</string>
+    <string name="upderr" tools:ignore="MissingTranslation">Error during update ticket</string>
+    <string name="storerrdesc">Cannot store ticket: %s</string>
     <string name="storok">Ticket created</string>
-    <string name="storokdesc">Ticket created, id =</string>
+    <string name="storokdesc">Ticket created, id = %d</string>
     <string name="comment">Add comment</string>
     <string name="attach">Add attachment</string>
     <string name="chooser_title">Ticket attachment</string>
@@ -63,12 +63,12 @@
     <string name="help">Help</string>
     <string name="sslHack">Accept Self Signed Certificates</string>
     <string name="select">Select</string>
-    <string name="getlist">Fetching Ticketlist</string>
+    <string name="getlist" tools:ignore="MissingTranslation">Fetching Ticketlist\n%s</string>
     <string name="storeprofile">Save profile</string>
     <string name="profiletext">Enter name for the profile to be saved</string>
     <string name="loadprofile">Load login profile</string>
-    <string name="loadprofiletext">Profile cannot be loaded</string>
-    <string name="notfound">Not found</string>
+    <string name="loadprofiletext">Profile cannot be loaded: %s</string>
+    <string name="notfound">Not found: %s</string>
     <string name="sdcardmissing">SDcard is missing. Cannot store attachment</string>
     <string name="ioerror">ExternalStorage - Error writing</string>
     <string name="chooseapp">Choose an application to open with:</string>
@@ -76,7 +76,7 @@
     <string name="exportprofiles">Export profiles</string>
     <string name="importprofiles">Import profiles</string>
     <string name="completed">Completed</string>
-    <string name="failed">Failed</string>
+    <string name="failed">Failed: %s</string>
     <string name="xmlwritecompleted">Export to XML succeeded</string>
     <string name="xmlreadcompleted">Import from XML succeeded</string>
     <string name="downloading">Downloading</string>
@@ -84,12 +84,12 @@
     <string name="saveupdate">Saving update on server</string>
     <string name="saveticket">Saving ticket</string>
     <string name="selectticket">Select individual ticket</string>
-    <string name="ticketnotfound">Ticket not found</string>
+    <string name="ticketnotfound">Ticket not found %s</string>
     <string name="chooseticknr">Enter ticketnumber</string>
     <string name="chooseticket">Choose ticket</string>
     <string name="checking">Checking</string>
     <string name="debug">Debug</string>
-    <string name="foundnew">Modified or new tickets found:</string>
+    <string name="foundnew" tools:ignore="MissingTranslation">Modified or new tickets found:</string>
     <string name="notifmod">Modified tickets found</string>
     <string name="tracLogin">Log in to TRAC server</string>
     <string name="notickets">No tickets found</string>
@@ -97,24 +97,22 @@
     <string name="notpossible">Not possible</string>
     <string name="notchange">You cannot modify this field</string>
     <string name="wrongdb">Wrong database</string>
-    <string name="wrongdbtext1">Current database = </string>
-    <string name="wrongdbtext3">\nSelect the right database first</string>
-    <string name="wrongdbtext2">\nRequested database = </string>
+    <string name="wrongdbtext">Current database = %1$s\nRequested database = %2$s\nSelect the right database first</string>
     <string name="showempty">Show empty fields</string>
     <string name="unsaved">Leave screen and save changes?</string>
     <string name="nee">No</string>
     <string name="ja">Yes</string>
-    <string name="hostnametitle">Ignore Hostname verification?"</string>
-    <string name="hostnametext">Hostname verification failed when trying to connect to server.\nMessage = "</string>
-    <string name="hostnameign">\nIgnore the verification?</string>
+    <string name="hostnametitle" tools:ignore="MissingTranslation">Ignore Hostname verification?"</string>
+    <string name="hostnametext" tools:ignore="MissingTranslation">Hostname verification failed when trying to connect to server.\nMessage = "</string>
+    <string name="hostnameign" tools:ignore="MissingTranslation">\nIgnore the verification?</string>
     <string name="noJSON">No JSON support on the TRAC-server</string>
-    <string name="cookies">Cookies</string>
-    <string name="cookieInform">This app uses cookies from Google to deliver services, to personalize ads and analyze traffic. Information about your use of this app will be shared with Google. If you use this app, you agree to the use of cookies.</string>
-    <string name="showchanges">Change history</string>
+    <string name="cookies" tools:ignore="MissingTranslation">Cookies</string>
+    <string name="cookieInform" tools:ignore="MissingTranslation">This app uses cookies from Google to deliver services, to personalize ads and analyze traffic. Information about your use of this app will be shared with Google. If you use this app, you agree to the use of cookies.</string>
+    <string name="showchanges" tools:ignore="MissingTranslation">Change history</string>
     <string name="permissiontitle">Permission request</string>
-    <string name="permissiontext">This app needs to read and write the SD-card, this permission has not been granted yet to the app. If you choose not to grant this permission it will not be possible to import or export profiles or to attach files from the SD-card. If in doubt don\'t check the “Do not ask again” checkbox in the next dialog.</string>
+    <string name="permissiontext" tools:ignore="MissingTranslation">This app needs to read and write the SD-card, this permission has not been granted yet to the app. If you choose not to grant this permission it will not be possible to import or export profiles or to attach files from the SD-card. If in doubt don\'t check the “Do not ask again” checkbox in the next dialog.</string>
 
-    <string-array name="filter_names">
+    <string-array name="filter_names" tools:ignore="MissingTranslation">
         <item>is equal to</item>
         <item>is not equal to</item>
         <item>contains</item>
@@ -127,16 +125,16 @@
     <string name="doubleback">Please click BACK again to exit</string>
     <string name="chooseoption">Choose option</string>
     <string name="choosefield">Choose field</string>
-    <string name="tryinterrupt">Trying to interrupt ticketlist loading</string>
-    <string name="interrupted">Ticketload interrupted</string>
+    <string name="tryinterrupt" tools:ignore="MissingTranslation">Trying to interrupt ticketlist loading</string>
+    <string name="interrupted" tools:ignore="MissingTranslation">Ticketload interrupted</string>
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="prefNrItems">Batchsize loading tickets</string>
-    <string name="filtersumm">Specify filter options</string>
-    <string name="sortsumm">Specify sortorder</string>
-    <string name="generalsettings">General settings</string>
-    <string name="settings">Settings</string>
-    <string name="trachost">Trac Host</string>
-    <string name="tickethead">Ticket %d</string>
+    <string name="navigation_drawer_open" tools:ignore="MissingTranslation">Open navigation drawer</string>
+    <string name="navigation_drawer_close" tools:ignore="MissingTranslation">Close navigation drawer</string>
+    <string name="prefNrItems" tools:ignore="MissingTranslation">Batchsize loading tickets</string>
+    <string name="filtersumm" tools:ignore="MissingTranslation">Specify filter options</string>
+    <string name="sortsumm" tools:ignore="MissingTranslation">Specify sortorder</string>
+    <string name="generalsettings" tools:ignore="MissingTranslation">General settings</string>
+    <string name="settings" tools:ignore="MissingTranslation">Settings</string>
+    <string name="trachost" tools:ignore="MissingTranslation">Trac Host</string>
+    <string name="tickethead" tools:ignore="MissingTranslation">Ticket %d</string>
 </resources>

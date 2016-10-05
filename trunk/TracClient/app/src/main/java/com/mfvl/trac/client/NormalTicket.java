@@ -257,10 +257,7 @@ class NormalTicket implements Ticket {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        return obj instanceof NormalTicket && (_ticknr == ((NormalTicket) obj)._ticknr);
+        return this == obj || obj instanceof NormalTicket && (_ticknr == ((NormalTicket) obj)._ticknr);
     }
 
     @Override

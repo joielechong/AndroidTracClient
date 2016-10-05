@@ -246,11 +246,11 @@ public class RefreshService extends Service implements Handler.Callback {
                 } else {
                     sendMessageToUI(MSG_LOAD_FASE1_FINISHED, mTickets);
                     sendMessageToUI(MSG_LOAD_FASE2_FINISHED, mTickets);
-                    popup_warning(R.string.notickets, null);
+                    popup_warning(getString(R.string.notickets));
                 }
             } catch (JSONRPCException e) {
                 MyLog.d("JSONRPCException", e);
-                popup_warning(R.string.connerr, e.getMessage());
+                popup_warning(getString(R.string.connerr, e.getMessage()));
             } catch (InterruptedException e) {
                 MyLog.d("InterruptedException", e);
                 MyLog.toast(getString(R.string.interrupted));
@@ -258,7 +258,7 @@ public class RefreshService extends Service implements Handler.Callback {
             } catch (Exception e) {
                 MyLog.d("Exception", e);
                 sendMessageToUI(MSG_LOAD_ABORTED, mTickets);
-                popup_warning(R.string.connerr, e.getMessage());
+                popup_warning(getString(R.string.connerr, e.getMessage()));
             }
         } else {
             sendMessageToUI(MSG_LOAD_FASE1_FINISHED, mTickets);
@@ -280,7 +280,7 @@ public class RefreshService extends Service implements Handler.Callback {
             }
             try {
                 final JSONArray mcresult = tracClient.callJSONArray("system.multicall", mc);
-                // MyLog.d("mcresult = " + mcresult);
+                //MyLog.d("mcresult = " + mcresult);
                 check_interrupt();
                 Ticket t = null;
 
@@ -326,8 +326,8 @@ public class RefreshService extends Service implements Handler.Callback {
         sendMessageToUI(MSG_DATA_CHANGED);
     }
 
-    private void popup_warning(int messString, String addit) {
-        sendMessageToUI(MSG_SHOW_DIALOG, messString, addit);
+    private void popup_warning(String message) {
+        sendMessageToUI(MSG_SHOW_DIALOG, 0, message);
     }
 
     private void buildCall(JSONArray multiCall, int ticknr) throws JSONException {
@@ -425,7 +425,7 @@ public class RefreshService extends Service implements Handler.Callback {
                         }
                     } catch (Exception e) {
                         MyLog.e("MSG_SEND_TICKETS exception", e);
-                        popup_warning(R.string.ticketnotfound, "" + tl.getTicketList());
+                        popup_warning(getString(R.string.ticketnotfound, tl.getTicketList()));
                     }
                 }
                 break;

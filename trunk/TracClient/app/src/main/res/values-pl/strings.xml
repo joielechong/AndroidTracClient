@@ -35,14 +35,14 @@
     <string name="nieuw">Nowy bilet</string>
     <string name="nodata">Brak danych</string>
     <string name="nodatadesc">Dane tego biletu nie zostały jeszcze załadowane</string>
-    <string name="connerr">Błąd połączenia</string>
+    <string name="connerr">Błąd połączenia: %s</string>
     <string name="newtick">Stwórz nowy bilet</string>
     <string name="oktext">OK</string>
     <string name="store">Zachowaj bilet</string>
     <string name="storerr">Wystąpił błąd podczas tworzenia biletu</string>
-    <string name="storerrdesc">Nie można zachować biletu</string>
+    <string name="storerrdesc">Nie można zachować biletu: %s</string>
     <string name="storok">Bilet został utworzony</string>
-    <string name="storokdesc">Utworzono bilet,id=</string>
+    <string name="storokdesc">Utworzono bilet, id = %d</string>
     <string name="comment">Dodaj komentarz</string>
     <string name="attach">Dodaj załącznik</string>
     <string name="chooser_title">Załącznik biletu</string>
@@ -62,12 +62,12 @@
     <string name="help">Pomoc</string>
     <string name="sslHack">Akceptuj Certyfikaty z Podpisem Własnym(SSC)</string>
     <string name="select">Wybierz</string>
-    <string name="getlist">Ładuj Listę Biletów</string>
+    <string name="getlist">Ładuj Listę Biletów\n%s</string>
     <string name="storeprofile">Zapisz profil</string>
     <string name="profiletext">Wprowadź nazwę dla zapisywanego profilu</string>
     <string name="loadprofile">Załaduj profil</string>
-    <string name="loadprofiletext">Nie można załadować profilu</string>
-    <string name="notfound">Nie znaleziono</string>
+    <string name="loadprofiletext">Nie można załadować profilu: %s</string>
+    <string name="notfound">Nie znaleziono: %s</string>
     <string name="sdcardmissing">Brak karty SD.Nie można zachować załącznika</string>
     <string name="ioerror">Zewnętrzne Urządzenie Magazynujące-błąd zapisu</string>
     <string name="chooseapp">Otwórz aplikację za pomocą:</string>
@@ -75,7 +75,7 @@
     <string name="exportprofiles">Wyeksportuj profile</string>
     <string name="importprofiles">Zaimportuj profile</string>
     <string name="completed">Zakończono</string>
-    <string name="failed">Nie powiodło się</string>
+    <string name="failed">Nie powiodło się: %s</string>
     <string name="xmlwritecompleted">Wyeksportowanie do XML powiodło się</string>
     <string name="xmlreadcompleted">Zaimportowanie z XML powiodło się</string>
     <string name="downloading">Pobieranie</string>
@@ -83,7 +83,7 @@
     <string name="saveupdate">Trwa zapisywanie aktualizacji na serwerze</string>
     <string name="saveticket">Trwa zapisywanie biletu</string>
     <string name="selectticket">Wybierz określony bilet</string>
-    <string name="ticketnotfound">Nie odnaleziono biletu</string>
+    <string name="ticketnotfound">Nie odnaleziono biletu %s</string>
     <string name="chooseticknr">Wprowadź numer biletu</string>
     <string name="chooseticket">Wybierz bilet</string>
     <string name="checking">Trwa sprawdzanie</string>
@@ -96,9 +96,6 @@
     <string name="notpossible">Nie można wykonać akcji</string>
     <string name="notchange">Nie można edytować tego pola</string>
     <string name="wrongdb">Niewłaściwa baza danych</string>
-    <string name="wrongdbtext1">Aktualnie używana baza danych=</string>
-    <string name="wrongdbtext3">\nWybierz najpierw właściwą bazę danych</string>
-    <string name="wrongdbtext2">\nBaza danych,o którą proszono=</string>
     <string name="showempty">Pokaż puste pola</string>
     <string name="unsaved">Czy opuścić ekran i zapisać wprowadzone zmiany?</string>
     <string name="nee">Nie</string>

@@ -40,24 +40,17 @@ public class SpecFragment<T extends Spec> extends TracClientFragment {
 
     @Override
     @SuppressWarnings("unchecked")
-    void onMyAttach(Context activity) {
-//        MyLog.d("keyName = " + keyName());
-        super.onMyAttach(activity);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //MyLog.d("savedInstanceState = " + savedInstanceState);
         inputSpec = null;
 
         final Bundle args = getArguments();
-        if (args != null) {
+        if (savedInstanceState == null && args != null) {
             if (args.containsKey(((SpecInterface) this).keyName())) {
                 inputSpec = (ArrayList<T>) args.getSerializable(((SpecInterface) this).keyName());
             }
         }
-        //MyLog.d("onMyAttach inputSpec = "+inputSpec);
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        //MyLog.d("savedInstanceState = " + savedInstanceState);
         setHasOptionsMenu(true);
     }
 

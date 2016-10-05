@@ -55,6 +55,7 @@ abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callb
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         MyLog.logCall();
+        TracGlobal.setContext(getApplicationContext());
         mHandlerThread = new MyHandlerThread("IncomingHandler");
         mHandlerThread.start();
         tracStartHandler = new Handler(mHandlerThread.getLooper(), this);

@@ -97,17 +97,17 @@ public class NewTicketFragment extends TracClientFragment implements HelpInterfa
                     List<Object> waardes = veld.options();
                     boolean optional = veld.optional();
 
-                    v = LayoutInflater.from(context).inflate(R.layout.spinfield, tl, false);
+                    v = LayoutInflater.from(getActivity()).inflate(R.layout.spinfield, tl, false);
                     @SuppressLint("CutPasteId") Spinner v1 = (Spinner) v.findViewById(R.id.nt_val);
                     v1.setPrompt(veldnaam);
-                    SpinnerAdapter a = makeComboAdapter(context, waardes, optional);
+                    SpinnerAdapter a = makeComboAdapter(waardes, optional);
                     v1.setAdapter(a);
                     if (savedInstanceState != null && savedInstanceState.containsKey(veldnaam)) {
                         v1.setSelection(savedInstanceState.getInt(veldnaam));
                     }
                     v1.setTag(veldnaam);
                 } else {
-                    v = LayoutInflater.from(context).inflate(("Description".equals(veldnaam) ? R.layout.descrfield : R.layout.stdfield), tl, false);
+                    v = LayoutInflater.from(getActivity()).inflate(("Description".equals(veldnaam) ? R.layout.descrfield : R.layout.stdfield), tl, false);
                     @SuppressLint("CutPasteId") EditText e = (EditText) v.findViewById(R.id.nt_val);
                     if (savedInstanceState != null && savedInstanceState.containsKey(veldnaam)) {
                         e.setText(savedInstanceState.getString(veldnaam));
@@ -159,9 +159,9 @@ public class NewTicketFragment extends TracClientFragment implements HelpInterfa
         final View view = getView();
         final TableLayout tl = (TableLayout) view.findViewById(R.id.newTickTable);
         listener.startProgressBar(R.string.saveticket);
-        hideSoftKeyboard(context);
+        hideSoftKeyboard(getActivity());
 
-        new Thread() {
+        listener.getHandler().post(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -201,15 +201,15 @@ public class NewTicketFragment extends TracClientFragment implements HelpInterfa
                         throw new RuntimeException("Ticket == -1 ontvangen");
                     }
                     listener.stopProgressBar();
-                    showAlertBox(R.string.storok, R.string.storokdesc, "" + newtick);
+                    showAlertBox(R.string.storok, getString(R.string.storokdesc, newtick));
                     listener.refreshOverview();
                     getFragmentManager().popBackStack();
                 } catch (final Exception e) {
                     MyLog.e("Exception in createTicket", e);
                     listener.stopProgressBar();
-                    showAlertBox(R.string.storerr, R.string.storerrdesc, e.getMessage());
+                    showAlertBox(R.string.storerr, getString(R.string.storerrdesc, e.getMessage()));
                 }
             }
-        }.start();
+        });
     }
 }

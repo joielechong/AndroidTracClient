@@ -13,13 +13,13 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<resources>
-    <string name="helpdetailfile">detailhelp</string>
-    <string name="helplistfile">listhelp</string>
-    <string name="whatsnewhelpfile">whatsnew</string>
-    <string name="filterhelpfile">filterhelp</string>
-    <string name="sorthelpfile">sorthelp</string>
-    <string name="updatehelpfile">updatehelp</string>
-    <string name="loginhelpfile">loginhelp</string>
-    <string name="newhelpfile">newhelp</string>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="helpdetailfile" tools:ignore="MissingTranslation">detailhelp</string>
+    <string name="helplistfile" tools:ignore="MissingTranslation">listhelp</string>
+    <string name="whatsnewhelpfile" tools:ignore="MissingTranslation">whatsnew</string>
+    <string name="filterhelpfile" tools:ignore="MissingTranslation">filterhelp</string>
+    <string name="sorthelpfile" tools:ignore="MissingTranslation">sorthelp</string>
+    <string name="updatehelpfile" tools:ignore="MissingTranslation">updatehelp</string>
+    <string name="loginhelpfile" tools:ignore="MissingTranslation">loginhelp</string>
+    <string name="newhelpfile" tools:ignore="MissingTranslation">newhelp</string>
 </resources>

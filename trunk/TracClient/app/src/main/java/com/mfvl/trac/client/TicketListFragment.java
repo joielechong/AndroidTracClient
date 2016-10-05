@@ -60,6 +60,10 @@ public class TicketListFragment extends TracClientFragment
     private static final String ZOEKTEXTNAME = "filtertext";
     private static final String SCROLLPOSITIONNAME = "scrollPosition";
 
+    private int scrollPosition = 0;
+    private boolean scrolling = false;
+    private boolean hasScrolled = false;
+    private SwipeRefreshLayout swipeLayout;
     private ArrayAdapter<Ticket> dataAdapter = null;
     private ListView listView = null;
     private EditText filterText = null;
@@ -96,21 +100,6 @@ public class TicketListFragment extends TracClientFragment
             }
         }
     };
-    private int scrollPosition = 0;
-    private boolean scrolling = false;
-    private boolean hasScrolled = false;
-    private SwipeRefreshLayout swipeLayout;
-
-    @Override
-    void onMyAttach(Context activity) {
-        MyLog.logCall();
-        super.onMyAttach(activity);
-        if (fragmentArgs != null) {
-            if (fragmentArgs.containsKey("TicketArg")) {
-                selectTicket(fragmentArgs.getInt("TicketArg"));
-            }
-        }
-    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -171,11 +160,11 @@ public class TicketListFragment extends TracClientFragment
 
         switch (item.getItemId()) {
             case R.id.tlselect:
-                final EditText input = new EditText(context);
+                final EditText input = new EditText(getActivity());
                 input.setInputType(InputType.TYPE_CLASS_NUMBER);
 
                 if (!listener.isFinishing()) {
-                    final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+                    final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
                     alertDialogBuilder.setTitle(R.string.chooseticket)
                             .setMessage(R.string.chooseticknr)
                             .setView(input)
@@ -242,6 +231,11 @@ public class TicketListFragment extends TracClientFragment
         super.onCreate(savedInstanceState);
         MyLog.d("savedInstanceState = " + savedInstanceState);
         setHasOptionsMenu(true);
+        if (fragmentArgs != null) {
+            if (fragmentArgs.containsKey("TicketArg")) {
+                selectTicket(fragmentArgs.getInt("TicketArg"));
+            }
+        }
     }
 
     @Override
@@ -330,7 +324,7 @@ public class TicketListFragment extends TracClientFragment
         MyLog.d("menu = " + menu + " view = " + v + "menuInfo = " + menuInfo);
         super.onCreateContextMenu(menu, v, menuInfo);
         if (v.getId() == R.id.listOfTickets) {
-            final MenuInflater inflater = context.getMenuInflater();
+            final MenuInflater inflater = getActivity().getMenuInflater();
             inflater.inflate(R.menu.listcontextmenu, menu);
         }
     }
@@ -436,7 +430,7 @@ public class TicketListFragment extends TracClientFragment
                 if (t != null && t.hasdata()) {
                     listener.onTicketSelected(t);
                 } else {
-                    showAlertBox(R.string.nodata, R.string.nodatadesc, null);
+                    showAlertBox(R.string.nodata, R.string.nodatadesc);
                 }
                 break;
         }
