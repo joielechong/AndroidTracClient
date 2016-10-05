@@ -17,6 +17,8 @@
 package com.mfvl.trac.client;
 
 
+import android.support.annotation.Nullable;
+
 import com.mfvl.mfvllib.MyLog;
 
 import org.json.JSONArray;
@@ -42,6 +44,7 @@ interface Ticket {
 
     String getString(final String veld) throws JSONException;
 
+    @Nullable
     JSONObject getJSONObject(final String veld) throws JSONException;
 
     void setFields(JSONObject velden);
@@ -127,9 +130,15 @@ class NormalTicket implements Ticket {
         }
     }
 
+    @Nullable
     @Override
     public JSONObject getJSONObject(final String veld) throws JSONException {
-        return _velden.getJSONObject(veld);
+        try {
+            return _velden.getJSONObject(veld);
+        } catch (final NullPointerException e) {
+            MyLog.e(e);
+            return null;
+        }
     }
 
     @Override

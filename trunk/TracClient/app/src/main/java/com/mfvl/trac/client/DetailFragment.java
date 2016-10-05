@@ -619,7 +619,7 @@ public class DetailFragment extends TracClientFragment
                         values.add(ms);
                     }
                 } catch (final JSONException e) {
-//                    MyLog.e( "JSONException fetching field " + veld);
+                    //MyLog.e( "JSONException fetching field " + veld);
                     values.add(new ModifiedStringImpl(veld, ""));
                 }
             }
