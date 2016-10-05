@@ -112,9 +112,9 @@ abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callb
         MyLog.d("msg = " + msg);
         Deque<Message> msgQueue = ((TcBaseInterface) this).getMessageQueue();
         Message m = Message.obtain(msg);
-        msgQueue.add(m);
+        boolean retval = msgQueue.add(m);
         MyLog.d(msgQueue);
-        return true;
+        return retval;
     }
 
     boolean processMessage(Message msg) {

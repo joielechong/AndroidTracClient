@@ -16,7 +16,6 @@
 
 package com.mfvl.trac.client;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -168,7 +167,7 @@ public abstract class TracClientFragment extends Fragment implements View.OnClic
         }
     }
 
-    protected void runOnUiThread(Runnable r) {
+    void runOnUiThread(Runnable r) {
         getActivity().runOnUiThread(r);
     }
 

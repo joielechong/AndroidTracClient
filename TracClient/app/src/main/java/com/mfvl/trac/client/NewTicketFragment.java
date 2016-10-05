@@ -125,6 +125,7 @@ public class NewTicketFragment extends TracClientFragment implements HelpInterfa
         view.invalidate();
     }
 
+    @SuppressWarnings("OverlyStrongTypeCast")
     @Override
     public void onSaveInstanceState(Bundle SavedState) {
         View v = getView();
