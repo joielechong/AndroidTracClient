@@ -124,17 +124,15 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements HelpInte
     }
 
     private class FilterAdapter extends SpecAdapter<FilterSpec> implements View.OnClickListener, OnCheckedChangeListener {
-
+        final Object lock = (Integer) 1;
         FilterAdapter(Context ctx, ArrayList<FilterSpec> input) {
             super(ctx, android.R.layout.simple_list_item_1, input);
-            setOperators(ctx);
-        }
-
-        private synchronized void setOperators(Context ctx) {
-            if (operators == null) {
-                final Resources res = ctx.getResources();
-                operators = Arrays.asList(res.getStringArray(R.array.filter2_choice));
-                operatornames = Arrays.asList(res.getStringArray(R.array.filter_names));
+            synchronized (lock) {
+                if (operators == null) {
+                    final Resources res = ctx.getResources();
+                    operators = Arrays.asList(res.getStringArray(R.array.filter2_choice));
+                    operatornames = Arrays.asList(res.getStringArray(R.array.filter_names));
+                }
             }
         }
 
@@ -225,7 +223,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements HelpInte
         private LinearLayout makeCheckBoxes(final FilterSpec o) {
             final String veldnaam = o.getVeld();
             List<Object> waardes = tm.getVeld(veldnaam).options();
-            final String w = o.getWaarde();
+            final String waarde = o.getWaarde();
             final String op = o.getOperator();
             final boolean omgekeerd = "!=".equals(op);
 
@@ -236,10 +234,10 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements HelpInte
             String[] ws;
 
             try {
-                ws = w == null ? null : w.split("\\|");
+                ws = waarde == null ? null : waarde.split("\\|");
             } catch (final IllegalArgumentException e) {
                 ws = new String[1];
-                ws[0] = w;
+                ws[0] = waarde;
             }
 
             for (int i = 0; i < waardes.size(); i++) {
@@ -248,7 +246,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements HelpInte
                 rb.setText((CharSequence) waardes.get(i));
                 rb.setId(i);
                 rb.setChecked(omgekeerd);
-                if (w != null) {
+                if (ws != null) {
                     for (final String w1 : ws) {
                         if (w1.equals(waardes.get(i))) {
                             rb.setChecked(!omgekeerd);

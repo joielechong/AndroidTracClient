@@ -179,10 +179,10 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     private String urlArg = null;
     private int ticketArg = -1;
     private boolean doNotFinish = false;
-    private RefreshService mService = null;
+    private RefreshSrv mService = null;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle toggle;
-    private ProfileDatabaseHelper pdb = null;
+    private PDHelper pdb = null;
     private Intent serviceIntent;
     private boolean hasTicketsLoadingBar = false;
     private Boolean ticketsLoading = false;
@@ -247,8 +247,8 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         switch (item.getItemId()) {
             case R.id.help:
                 Fragment frag = getSupportFragmentManager().findFragmentByTag(getTopFragment());
-                if (frag instanceof TracClientFragment) {
-                    ((TracClientFragment) frag).showHelp();
+                if (frag instanceof TcFragment) {
+                    ((TcFragment) frag).showHelp();
                 }
                 break;
 
@@ -509,7 +509,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                 final AdRequest.Builder arb = new AdRequest.Builder();
 
                 arb.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
-                if (isDebuggable() && testDevices != null) {
+                if (isDebuggable(this) && testDevices != null) {
                     for (final String t : testDevices) {
                         MyLog.d("testDevice = " + t);
                         arb.addTestDevice(t);
@@ -894,8 +894,8 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         ft.commit();
     }
 
-    private TracLoginFragment newLoginFrag() {
-        final TracLoginFragment tracLoginFragment = new TracLoginFragment();
+    private Fragment newLoginFrag() {
+        final Fragment tracLoginFragment = new TracLoginFragment();
         final Bundle args = makeArgs();
         args.putString(CURRENT_URL, url);
         args.putString(CURRENT_USERNAME, userName);
@@ -996,7 +996,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         profile = newProfile;
         setFilter(getFilterString());
         setSort(getSortString());
-        TicketListFragment ticketListFragment = (TicketListFragment) getFragment(ListFragmentTag);
+        Fragment ticketListFragment = getFragment(ListFragmentTag);
 
         if (ticketListFragment == null) {
             doNotFinish = true;
@@ -1041,7 +1041,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     public void onUpdateTicket(Ticket ticket) {
         MyLog.d("ticket = " + ticket);
 
-        final UpdateTicketFragment updtickFragment = new UpdateTicketFragment();
+        final Fragment updtickFragment = new UpdateTicketFragment();
         final Bundle args = makeArgs();
 
         args.putInt(CURRENT_TICKET, ticket.getTicketnr());
@@ -1351,8 +1351,8 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                 tm = (TicketModel) msg.obj;
                 for (String f : FragmentTags) {
                     Fragment frag = getSupportFragmentManager().findFragmentByTag(f);
-                    if (frag != null && frag instanceof TracClientFragment) {
-                        ((TracClientFragment) frag).onNewTicketModel(tm);
+                    if (frag != null && frag instanceof TcFragment) {
+                        ((TcFragment) frag).onNewTicketModel(tm);
                     }
                 }
                 break;

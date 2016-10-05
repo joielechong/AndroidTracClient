@@ -47,8 +47,14 @@ interface HelpInterface {
     int getHelpFile();
 }
 
+interface TcFragment {
+    void onNewTicketModel(TicketModel tm);
+
+    void showHelp();
+}
+
 @SuppressWarnings("AbstractClassExtendsConcreteClass")
-public abstract class TracClientFragment extends Fragment implements View.OnClickListener {
+public abstract class TracClientFragment extends Fragment implements View.OnClickListener, TcFragment {
     Ticket _ticket = null;
     InterFragmentListener listener = null;
     Bundle fragmentArgs = null;
@@ -66,7 +72,7 @@ public abstract class TracClientFragment extends Fragment implements View.OnClic
         super.onCreate(savedInstanceState);
         listener = (InterFragmentListener) getActivity();
         fragmentArgs = (savedInstanceState == null ? getArguments() : null);
-        TracGlobal.setContext(getActivity());
+        TracGlobal.initialize(getActivity());
     }
 
     @Override
@@ -76,6 +82,7 @@ public abstract class TracClientFragment extends Fragment implements View.OnClic
         tracStartHandler = listener.getHandler();
     }
 
+    @Override
     public void showHelp() {
         final String filename = getString(((HelpInterface) this).getHelpFile());
         final DialogFragment about = new TracHelp();
@@ -176,7 +183,8 @@ public abstract class TracClientFragment extends Fragment implements View.OnClic
         MyLog.d("v =" + v);
     }
 
-    void onNewTicketModel(TicketModel newTm) {
+    @Override
+    public void onNewTicketModel(TicketModel newTm) {
         MyLog.d("newTm == null " + (newTm == null));
         tm = newTm;
     }

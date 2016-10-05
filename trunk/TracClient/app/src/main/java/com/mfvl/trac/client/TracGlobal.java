@@ -64,10 +64,8 @@ final class TracGlobal {
     private static boolean _sslHostNameHack = false;
     private static String _profile = null;
     private static SharedPreferences settings = null;
-    private static Context _context = null;
 
-    public static void setContext(final Context context) {
-        _context = context;
+    static void initialize(final Context context) {
         Resources res = context.getResources();
         settings = context.getSharedPreferences(PREFS_NAME, 0);
         //MyLog.d(settings.getAll());
@@ -195,14 +193,14 @@ final class TracGlobal {
         settings.edit().putString(prefSortKey, sortString == null ? "" : sortString).apply();
     }
 
-    static String makeDbPath() {
+    static String makeDbPath(Context _context) {
 
         String dbpath = DATABASE_NAME;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
             final File filePath = new File(_context.getExternalFilesDir(null), dbpath);
 //			MyLog.d("filePath = "+filePath);
 
-            if (isDebuggable() || isRCVersion() || filePath.exists()) {
+            if (isDebuggable(_context) || isRCVersion() || filePath.exists()) {
                 dbpath = filePath.toString();
             }
         }
@@ -210,7 +208,7 @@ final class TracGlobal {
         return dbpath;
     }
 
-    static boolean isDebuggable() {
+    static boolean isDebuggable(Context _context) {
         boolean debuggable = false;
 
         try {
@@ -244,7 +242,7 @@ final class TracGlobal {
         return (versie != null) && (versie.toLowerCase(Locale.US).contains("rc"));
     }
 
-    static File makeExtFilePath(String filename, boolean visible) throws FileNotFoundException {
+    static File makeExtFilePath(Context _context, String filename, boolean visible) throws FileNotFoundException {
         File dirPath;
         //MyLog.d("filename = "+filename);
         if (visible) {
@@ -267,7 +265,7 @@ final class TracGlobal {
         return filePath;
     }
 
-    static File makeCacheFilePath(final String filename) {
+    static File makeCacheFilePath(Context _context, final String filename) {
         final File filePath = new File(_context.getExternalCacheDir(), filename);
         MyLog.d("filepath = " + filePath);
         return filePath;

@@ -97,7 +97,7 @@
     <string name="notpossible">Not possible</string>
     <string name="notchange">You cannot modify this field</string>
     <string name="wrongdb">Wrong database</string>
-    <string name="wrongdbtext">Current database = %1$s\nRequested database = %2$s\nSelect the right database first</string>
+    <string name="wrongdbtext" tools:ignore="MissingTranslation">Current database = %1$s\nRequested database = %2$s\nSelect the right database first</string>
     <string name="showempty">Show empty fields</string>
     <string name="unsaved">Leave screen and save changes?</string>
     <string name="nee">No</string>

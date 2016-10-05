@@ -99,7 +99,7 @@ public class TracLoginFragment extends TracClientFragment
     private TextView credWarnSts = null;
     private Spinner loginSpinner = null;
     private Cursor pdbCursor = null;
-    private ProfileDatabaseHelper pdb = null;
+    private PDHelper pdb = null;
     private String SelectedProfile = null;
     private final TextWatcher checkUrlInput = new TextWatcher() {
         @Override
