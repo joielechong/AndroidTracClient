@@ -422,7 +422,7 @@ public class DetailFragment extends TracClientFragment
                     // MyLog.d("onComplete filedata = "
                     // + filedata.length);
                     try {
-                        final File file = makeCacheFilePath(filename);
+                        final File file = makeCacheFilePath(getActivity(), filename);
                         final OutputStream os = new FileOutputStream(file);
 
                         file.deleteOnExit();

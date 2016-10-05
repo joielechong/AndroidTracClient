@@ -49,11 +49,17 @@ interface OnTicketModelListener {
     void onTicketModelLoaded(TicketModel tm);
 }
 
-interface RefreshBinder {
-    RefreshService getService();
+interface RefreshSrv {
+    void send(Message msg);
+
+    void setTracStartHandler(final Handler tsh);
 }
 
-public class RefreshService extends Service implements Handler.Callback {
+interface RefreshBinder {
+    RefreshSrv getService();
+}
+
+public class RefreshService extends Service implements Handler.Callback, RefreshSrv {
 
 
     public static final String refreshAction = "LIST_REFRESH";
@@ -140,6 +146,7 @@ public class RefreshService extends Service implements Handler.Callback {
         return false;
     }
 
+    @Override
     public void send(Message msg) {
 //        MyLog.d(msg);
         mServiceHandler.sendMessage(msg);
@@ -477,6 +484,7 @@ public class RefreshService extends Service implements Handler.Callback {
         msg.sendToTarget();
     }
 
+    @Override
     public void setTracStartHandler(final Handler tsh) {
         tracStartHandler = tsh;
     }

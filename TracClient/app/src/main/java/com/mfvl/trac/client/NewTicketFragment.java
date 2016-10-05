@@ -175,6 +175,7 @@ public class NewTicketFragment extends TracClientFragment implements HelpInterfa
 
                         if (w instanceof Spinner) {
                             try {
+                                @SuppressWarnings("OverlyStrongTypeCast")
                                 final String val = (String) ((Spinner) w).getSelectedItem();
 
                                 if (val != null && !val.startsWith(" - ")) {

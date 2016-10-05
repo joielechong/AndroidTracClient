@@ -48,7 +48,31 @@ import javax.xml.parsers.SAXParserFactory;
 import static com.mfvl.trac.client.Const.*;
 import static com.mfvl.trac.client.TracGlobal.*;
 
-class ProfileDatabaseHelper extends SQLiteOpenHelper {
+interface PDHelper {
+    void open();
+
+    void close();
+
+    void beginTransaction();
+
+    void endTransaction();
+
+    void addProfile(String name, LoginProfile lp);
+
+    LoginProfile getProfile(String naam);
+
+    Cursor getProfiles(boolean addBlank);
+
+    LoginProfile findProfile(String url);
+
+    int delProfiles();
+
+    void readXML(String s) throws Exception;
+
+    void writeXML(String s) throws Exception;
+}
+
+class ProfileDatabaseHelper extends SQLiteOpenHelper implements PDHelper {
     private static final int DATABASE_VERSION = 2;
     private static final String TABLE_NAME = "profiles";
     private static final String NAME_ID = "name";
@@ -61,11 +85,12 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
     private boolean upgrade = false;
 
     ProfileDatabaseHelper(Context ctx) {
-        super(ctx, makeDbPath(), null, DATABASE_VERSION);
-        this.context = ctx;
+        super(ctx, makeDbPath(ctx), null, DATABASE_VERSION);
+        context = ctx;
         sendNotification("class creation");
     }
 
+    @Override
     public void open() {
         if (sqlDb == null) {
             sqlDb = getWritableDatabase();
@@ -118,12 +143,14 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
         upgrade = true;
     }
 
-    private void beginTransaction() {
+    @Override
+    public void beginTransaction() {
         open();
         sqlDb.beginTransaction();
     }
 
-    private void endTransaction() {
+    @Override
+    public void endTransaction() {
         sqlDb.setTransactionSuccessful();
         sqlDb.endTransaction();
     }
@@ -134,7 +161,8 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
-    void addProfile(String name, LoginProfile profile) throws SQLException {
+    @Override
+    public void addProfile(String name, LoginProfile profile) throws SQLException {
         final ContentValues values = new ContentValues();
 
         values.put(NAME_ID, name);
@@ -153,7 +181,8 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    Cursor getProfiles(boolean addBlank) {
+    @Override
+    public Cursor getProfiles(boolean addBlank) {
         MyLog.d("addBlank = " + addBlank);
         open();
         return sqlDb.rawQuery(
@@ -169,7 +198,8 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
                 null);
     }
 
-    LoginProfile getProfile(String name) {
+    @Override
+    public LoginProfile getProfile(String name) {
 
         open();
         final Cursor c = sqlDb.query(TABLE_NAME,
@@ -187,7 +217,8 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
         return profile;
     }
 
-    LoginProfile findProfile(String url) {
+    @Override
+    public LoginProfile findProfile(String url) {
 
         open();
         final Cursor c = sqlDb.query(TABLE_NAME,
@@ -205,7 +236,8 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
         return profile;
     }
 
-    private int delProfiles() {
+    @Override
+    public int delProfiles() {
         try {
             open();
             final String values[] = new String[]{""};
@@ -216,10 +248,11 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    void readXML(final String appname) throws Exception {
+    @Override
+    public void readXML(final String appname) throws Exception {
         try {
             open();
-            final File fileName = makeExtFilePath(appname + ".xml", true);
+            final File fileName = makeExtFilePath(context, appname + ".xml", true);
             final InputStream in = new BufferedInputStream(new FileInputStream(fileName));
             final XMLReader xmlR = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
 
@@ -233,8 +266,9 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    void writeXML(final String appname) throws Exception {
-        final File fileName = makeExtFilePath(appname + ".xml", true);
+    @Override
+    public void writeXML(final String appname) throws Exception {
+        final File fileName = makeExtFilePath(context, appname + ".xml", true);
         final OutputStream out = new BufferedOutputStream(new FileOutputStream(fileName));
 
         String xmlString = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n";
@@ -262,13 +296,13 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
 
     private class XMLHandler extends DefaultHandler {
 
-        private final ProfileDatabaseHelper _pdb;
+        private final PDHelper _pdb;
         String _appname = null;
         private int state = -1;
         private String profileName;
         private LoginProfile lp;
 
-        XMLHandler(String appname, ProfileDatabaseHelper pdb) {
+        XMLHandler(String appname, PDHelper pdb) {
             super();
             _appname = appname;
             _pdb = pdb;

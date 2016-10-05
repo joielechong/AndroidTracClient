@@ -55,7 +55,7 @@ abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callb
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         MyLog.logCall();
-        TracGlobal.setContext(getApplicationContext());
+        TracGlobal.initialize(getApplicationContext());
         mHandlerThread = new MyHandlerThread("IncomingHandler");
         mHandlerThread.start();
         tracStartHandler = new Handler(mHandlerThread.getLooper(), this);
@@ -97,8 +97,8 @@ abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callb
     public void onAttachFragment(final Fragment frag) {
         MyLog.d(frag + " this = " + this);
 
-        if (frag instanceof TracClientFragment) {
-            ((TracClientFragment) frag).onNewTicketModel(tm);
+        if (frag instanceof TcFragment) {
+            ((TcFragment) frag).onNewTicketModel(tm);
         }
     }
 
