@@ -1070,7 +1070,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     }
 
     @Override
-    public void getTicket(final int i, final OnTicketLoadedListener oc) {
+    public void getTicket(final int i, final OnTicketLoadedListener _oc) {
         //MyLog.d("i = " + i + " semaphore = " + loadingActive);
 
         new Thread() {
@@ -1086,8 +1086,8 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                 if (t != null && !t.hasdata()) {
                     refreshTicket(i);
                 }
-                if (oc != null) {
-                    oc.onTicketLoaded(t);
+                if (_oc != null) {
+                    _oc.onTicketLoaded(t);
                 }
             }
         }.start();
@@ -1230,17 +1230,17 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     }
 
     @Override
-    public void getAttachment(final Ticket ticket, final String filename, final onAttachmentCompleteListener oc) {
+    public void getAttachment(final Ticket ticket, final String filename, final onAttachmentCompleteListener _oc) {
         MyLog.d(ticket.toString() + " " + filename);
         final int _ticknr = ticket.getTicketnr();
         new Thread() {
             @Override
             public void run() {
 //                available.acquireUninterruptibly();
-                if (oc != null) {
+                if (_oc != null) {
                     try {
                         TracHttpClient tracClient = new TracHttpClient(url, sslHack, sslHostNameHack, userName, passWord);
-                        oc.onComplete(tracClient.getAttachment(_ticknr, filename));
+                        _oc.onComplete(tracClient.getAttachment(_ticknr, filename));
                     } catch (final Exception e) {
                         MyLog.e("Exception during getAttachment", e);
 //                    } finally {
@@ -1255,7 +1255,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
      * always executed in a thread
      */
     @Override
-    public void addAttachment(final Ticket ticket, final Uri uri, final onTicketCompleteListener oc) {
+    public void addAttachment(final Ticket ticket, final Uri uri, final onTicketCompleteListener _oc) {
         tracStartHandler.post(new Runnable() {
 
             @Override
@@ -1312,7 +1312,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                         MyLog.e("Exception during addAttachment, uri = " + uri, e);
                         showAlertBox(R.string.warning, getString(R.string.failed, filename));
                     } finally {
-                        oc.onComplete();
+                        _oc.onComplete();
                     }
                 }
             }

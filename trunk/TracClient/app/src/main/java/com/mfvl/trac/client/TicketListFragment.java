@@ -17,7 +17,6 @@
 package com.mfvl.trac.client;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.DataSetObserver;
@@ -321,7 +320,7 @@ public class TicketListFragment extends TracClientFragment
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-        MyLog.d("menu = " + menu + " view = " + v + "menuInfo = " + menuInfo);
+        MyLog.d("menu = " + menu + " view = " + v + " menuInfo = " + menuInfo);
         super.onCreateContextMenu(menu, v, menuInfo);
         if (v.getId() == R.id.listOfTickets) {
             final MenuInflater inflater = getActivity().getMenuInflater();

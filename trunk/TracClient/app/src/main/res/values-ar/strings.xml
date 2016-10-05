@@ -43,7 +43,7 @@
     <string name="oktext">موافق</string>
     <string name="storerrdesc">لا يمكن تخزين التذكرة:%s</string>
     <string name="storok">تم عمل التذكرة</string>
-    <string name="storokdesc">%s=تم عمل التذكرة.المعرف</string>
+    <string name="storokdesc">تم عمل التذكرة.المعرف= %d</string>
     <string name="comment">إضافة تعليق</string>
     <string name="attach">إضافة مرفق</string>
     <string name="chooser_title">مرفق تذكرة</string>
