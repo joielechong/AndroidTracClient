@@ -35,14 +35,14 @@
     <string name="nieuw">Новый тикет</string>
     <string name="nodata">Нет данных</string>
     <string name="nodatadesc">Данные для тикета ещё не загружены</string>
-    <string name="connerr">Ошибка соединения</string>
+    <string name="connerr">Ошибка соединения: %s</string>
     <string name="newtick">Создать новый тикет</string>
     <string name="store">Разместить тикет</string>
     <string name="storerr">Ошибка во время создания тикета</string>
     <string name="oktext">Принять</string>
-    <string name="storerrdesc">Невозможно разместить тикет</string>
+    <string name="storerrdesc">Невозможно разместить тикет: %s</string>
     <string name="storok">Тикет создан</string>
-    <string name="storokdesc">Тикет создан,id=</string>
+    <string name="storokdesc">Тикет создан, id = %d</string>
     <string name="comment">Добавить комментарий</string>
     <string name="attach">Добавить вложение</string>
     <string name="chooser_title">Вложения тикета</string>
@@ -65,8 +65,8 @@
     <string name="storeprofile">Сохранить профиль</string>
     <string name="profiletext">Введите название профиля,под которым он будет сохранен</string>
     <string name="loadprofile">Нагрузка Войти профиль</string>
-    <string name="loadprofiletext">Невозможно загрузить профиль</string>
-    <string name="notfound">Не найдено</string>
+    <string name="loadprofiletext">Невозможно загрузить профиль: %s</string>
+    <string name="notfound">Не найдено: %s</string>
     <string name="sdcardmissing">Карта памяти отсутствует.Невозможно сохранить вложение</string>
     <string name="ioerror">Внешний накопитель-ошибка записи</string>
     <string name="chooseapp">Открыть с помощью приложения:</string>
@@ -74,7 +74,7 @@
     <string name="exportprofiles">Экспорт профилей</string>
     <string name="importprofiles">Импорт профилей</string>
     <string name="completed">Завершено</string>
-    <string name="failed">Сбой</string>
+    <string name="failed">Сбой: %s</string>
     <string name="xmlwritecompleted">Экспорт в XML успешно завершен</string>
     <string name="xmlreadcompleted">Импорт из XML успешно завершен</string>
     <string name="downloading">Загрузка</string>
@@ -82,7 +82,7 @@
     <string name="saveupdate">Сохранение изменений на сервер</string>
     <string name="saveticket">Сохранение тикета</string>
     <string name="selectticket">Выберите индивидуальный тикет</string>
-    <string name="ticketnotfound">Тикет не найден</string>
+    <string name="ticketnotfound">Тикет не найден %s</string>
     <string name="chooseticknr">Введите номер тикета</string>
     <string name="chooseticket">Выберите тикет</string>
     <string name="checking">Проверка</string>
@@ -95,9 +95,7 @@
     <string name="notpossible">Не возможно</string>
     <string name="notchange">Вы не можете изменить данное поле</string>
     <string name="wrongdb">Неверная база данных</string>
-    <string name="wrongdbtext1">Текущая база данных=</string>
-    <string name="wrongdbtext3">Сначала выберите подходящую базу данных</string>
-    <string name="wrongdbtext2">Необходимая база данных=</string>
+    <string name="wrongdbtext">Текущая база данных= %1$s\nНеобходимая база данных= %2$s\nСначала выберите подходящую базу данных</string>
     <string name="showempty">Показать пустые поля</string>
     <string name="unsaved">Уйти и сохранить изменения?</string>
     <string name="nee">Нет</string>

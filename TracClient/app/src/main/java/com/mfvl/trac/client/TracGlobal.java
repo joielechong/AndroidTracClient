@@ -64,10 +64,9 @@ final class TracGlobal {
     private static boolean _sslHostNameHack = false;
     private static String _profile = null;
     private static SharedPreferences settings = null;
-    private static TracGlobal _instance = null;
     private static Context _context = null;
 
-    private TracGlobal(final Context context) {
+    public static void setContext(final Context context) {
         _context = context;
         Resources res = context.getResources();
         settings = context.getSharedPreferences(PREFS_NAME, 0);
@@ -104,12 +103,6 @@ final class TracGlobal {
 
     static SharedPreferences getSharedPreferences() {
         return settings;
-    }
-
-    public static void getInstance(final Context context) {
-        if (_instance == null) {
-            _instance = new TracGlobal(context);
-        }
     }
 
     /**

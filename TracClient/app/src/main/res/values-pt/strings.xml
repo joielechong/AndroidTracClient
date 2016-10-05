@@ -36,14 +36,14 @@
     <string name="nieuw">Bilhete novo</string>
     <string name="nodata">Sem informações</string>
     <string name="nodatadesc">As informações desse bilhete ainda não estão disponíveis</string>
-    <string name="connerr">Erro de conexão</string>
+    <string name="connerr">Erro de conexão: %s</string>
     <string name="newtick">Criar bilhete novo</string>
     <string name="oktext">OK</string>
     <string name="store">Armazenar bilhete</string>
     <string name="storerr">Falha ao criar bilhete</string>
-    <string name="storerrdesc">Impossível armazenar bilhete</string>
+    <string name="storerrdesc">Impossível armazenar bilhete: %s</string>
     <string name="storok">Bilhete criado</string>
-    <string name="storokdesc">Bilhete criado,id=</string>
+    <string name="storokdesc">Bilhete criado, id =  %d</string>
     <string name="comment">Adicionar comentário</string>
     <string name="attach">Adicionar anexo</string>
     <string name="chooser_title">Bilhete anexo</string>
@@ -75,12 +75,12 @@
     </string-array>
 
     <string name="select">Selecionar</string>
-    <string name="getlist">Buscar lista de bilhetes</string>
+    <string name="getlist">Buscar lista de bilhetes\n%s</string>
     <string name="storeprofile">Salvar perfil</string>
     <string name="profiletext">Introduza um nome para salvar o perfil</string>
     <string name="loadprofile">Carregar login do perfil</string>
-    <string name="loadprofiletext">Perfil não pode ser carregado</string>
-    <string name="notfound">Não encontrado</string>
+    <string name="loadprofiletext">Perfil não pode ser carregado: %s</string>
+    <string name="notfound">Não encontrado: %s</string>
     <string name="sdcardmissing">Falta cartão SD.Impossível armazenar anexo</string>
     <string name="ioerror">Armazenagem externa-Erro de escrita</string>
     <string name="chooseapp">Escolha uma aplicação para abrir:</string>
@@ -88,7 +88,7 @@
     <string name="exportprofiles">Exportar perfis</string>
     <string name="importprofiles">Importar perfis</string>
     <string name="completed">Completo</string>
-    <string name="failed">Falhou</string>
+    <string name="failed">Falhou: %s</string>
     <string name="xmlwritecompleted">Exportação para XML bem sucedida</string>
     <string name="xmlreadcompleted">Importação de XML bem sucedida</string>
     <string name="downloading">Baixando</string>
@@ -96,7 +96,7 @@
     <string name="saveupdate">Salvando atualização no servidor</string>
     <string name="saveticket">Salvando bilhete</string>
     <string name="selectticket">Selecionar bilhete individual</string>
-    <string name="ticketnotfound">Bilhete não encontrado</string>
+    <string name="ticketnotfound">Bilhete não encontrado %s</string>
     <string name="chooseticknr">Introduzir número de bilhete</string>
     <string name="chooseticket">Escolher bilhete</string>
     <string name="checking">Verificando</string>
@@ -109,9 +109,7 @@
     <string name="notpossible">Impossível</string>
     <string name="notchange">Você não pode modificar esse campo</string>
     <string name="wrongdb">Banco de dados errado</string>
-    <string name="wrongdbtext1">Banco de dados atual=</string>
-    <string name="wrongdbtext3">\nSelecionar o banco de dados correto primeiro</string>
-    <string name="wrongdbtext2">\nBanco de dados requisitado</string>
+    <string name="wrongdbtext">Banco de dados atual= %1$s\nBanco de dados requisitado: %2$s\nSelecionar o banco de dados correto primeiro</string>
     <string name="showempty">Mostrar campos vazios</string>
     <string name="unsaved">Deixar a tela e salvar as modificações?</string>
     <string name="nee">Não</string>

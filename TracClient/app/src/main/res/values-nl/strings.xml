@@ -37,15 +37,15 @@
     <string name="nieuw">Nieuw ticket</string>
     <string name="nodata">Geen gegevens</string>
     <string name="nodatadesc">Gegevens van dit ticket zijn nog niet geladen</string>
-    <string name="connerr">Verbindingsfout</string>
+    <string name="connerr">Verbindingsfout: %s</string>
     <string name="newtick">Maak nieuw ticket aan</string>
     <string name="oktext">OK</string>
     <string name="store">Sla ticket op</string>
     <string name="storerr">Fout tijdens creeeren van ticket</string>
     <string name="upderr">Fout tijdens bijwerken van ticket</string>
-    <string name="storerrdesc">Kan ticket niet opslaan</string>
+    <string name="storerrdesc">Kan ticket niet opslaan: %s</string>
     <string name="storok">Ticket aangemaakt</string>
-    <string name="storokdesc">Ticket aangemaakt, id =</string>
+    <string name="storokdesc">Ticket aangemaakt, id = %d</string>
     <string name="comment">Voeg commentaar toe</string>
     <string name="attach">Voeg bijlage toe</string>
     <string name="chooser_title">Ticket bijlage</string>
@@ -77,12 +77,12 @@
     </string-array>
 
     <string name="select">Selecteer</string>
-    <string name="getlist">Haal ticketlijst op</string>
+    <string name="getlist">Haal ticketlijst op\n%s</string>
     <string name="storeprofile">Bewaar profiel</string>
     <string name="profiletext">Voer een naam in voor het op te slaan profiel</string>
     <string name="loadprofile">Laad login profiel</string>
-    <string name="loadprofiletext">Profiel kan niet geladen worden</string>
-    <string name="notfound">Niet gevonden</string>
+    <string name="loadprofiletext">Profiel kan niet geladen worden: %s</string>
+    <string name="notfound">Niet gevonden: %s</string>
     <string name="sdcardmissing">Geen SDkaart. Kan bijlage niet opslaan.</string>
     <string name="ioerror">ExternalStorage - Fout bij schrijven van"</string>
     <string name="chooseapp">Kies applicatie om mee te openen:</string>
@@ -90,7 +90,7 @@
     <string name="exportprofiles">Exporteer profielen</string>
     <string name="importprofiles">Importeer profielen</string>
     <string name="completed">Gereed</string>
-    <string name="failed">Gefaald</string>
+    <string name="failed">Gefaald: %s</string>
     <string name="xmlwritecompleted">Export naar XML gelukt</string>
     <string name="xmlreadcompleted">Import van XML gelukt</string>
     <string name="downloading">Downloading</string>
@@ -98,7 +98,7 @@
     <string name="saveupdate">Wijziging opslaan op server</string>
     <string name="saveticket">Ticket opslaan</string>
     <string name="selectticket">Selecteer een enkel ticket</string>
-    <string name="ticketnotfound">Ticket niet gevonden</string>
+    <string name="ticketnotfound">Ticket niet gevonden  %s</string>
     <string name="chooseticknr">Voer ticketnummer in</string>
     <string name="chooseticket">Kies ticket</string>
     <string name="debug">Debug</string>
@@ -110,9 +110,7 @@
     <string name="notpossible">Niet mogelijk</string>
     <string name="notchange">Dit veld kan niet gewijzigd worden</string>
     <string name="wrongdb">Verkeerde database</string>
-    <string name="wrongdbtext1">Huidige database = </string>
-    <string name="wrongdbtext3">\nSelecteer de juiste database eerst</string>
-    <string name="wrongdbtext2">\nGevraagde database = </string>
+    <string name="wrongdbtext">Huidige database = %1$s\nGevraagde database = %2$s\nSelecteer de juiste database eerst</string>
     <string name="showempty">Toon lege velden</string>
     <string name="unsaved">Scherm verlaten en gegevens bewaren?</string>
     <string name="nee">Nee</string>

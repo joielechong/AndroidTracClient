@@ -78,11 +78,11 @@ public class SortFragment extends SpecFragment<SortSpec> implements HelpInterfac
         MyLog.d("savedInstanceState = " + savedInstanceState);
 
         if (tm == null) {
-            MyLog.toast(context.getString(R.string.notpossible));
+            MyLog.toast(getString(R.string.notpossible));
             sendMessageToHandler(MSG_DONE, null);
             getFragmentManager().popBackStack();
         } else {
-            sortAdapter = new SortAdapter(context, outputSpec);
+            sortAdapter = new SortAdapter(getActivity(), outputSpec);
             listView.setAdapter(sortAdapter);
 
             ImageButton addButton = (ImageButton) currentView.findViewById(R.id.addbutton);
@@ -90,7 +90,7 @@ public class SortFragment extends SpecFragment<SortSpec> implements HelpInterfac
             setListener(R.id.storebutton);
             addSpinner = (Spinner) currentView.findViewById(R.id.addspin);
             getScreensize(addSpinner, addButton);
-            addSpinner.setAdapter(new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, tm.velden()));
+            addSpinner.setAdapter(new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, tm.velden()));
         }
     }
 
@@ -106,7 +106,7 @@ public class SortFragment extends SpecFragment<SortSpec> implements HelpInterfac
             View v = convertView;
 
             if (v == null) {
-                v = LayoutInflater.from(context).inflate(R.layout.sort_spec, parent, false);
+                v = LayoutInflater.from(getActivity()).inflate(R.layout.sort_spec, parent, false);
             }
             v.setTag(position);
             ImageButton sortup = (ImageButton) v.findViewById(R.id.sortup);

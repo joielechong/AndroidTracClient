@@ -26,14 +26,14 @@
     <string name="chooseticknr">Angiv tricket nummer</string>
     <string name="comment">Tilføj kommentar</string>
     <string name="completed">Gennemført</string>
-    <string name="connerr">Forbindelsesfejl</string>
+    <string name="connerr">Forbindelsesfejl: %s</string>
     <string name="dfrefresh">Opdater tickets</string>
     <string name="dfshare">Del ticket</string>
     <string name="downloading">Henter</string>
     <string name="exportprofiles">Eksporter profiler</string>
-    <string name="failed">Fejlede</string>
+    <string name="failed">Fejlede: %s</string>
     <string name="filter">Filtrerings muligheder</string>
-    <string name="getlist">Henter tickets</string>
+    <string name="getlist">Henter tickets\n%s</string>
     <string name="help">Hjælp</string>
     <string name="hostnametitle">Ignorer host navns verificering?</string>
     <string name="importprofiles">Importeret profiler</string>
@@ -42,7 +42,7 @@
     <string name="ja">Ja</string>
     <string name="list_heading">Ticket liste</string>
     <string name="loadprofile">Hent login profil</string>
-    <string name="loadprofiletext">Profil kan ikke hentes</string>
+    <string name="loadprofiletext">Profil kan ikke hentes: %s</string>
     <string name="nee">Nej</string>
     <string name="newtick">Generer ny ticket</string>
     <string name="nieuw">Ny ticket</string>
@@ -52,7 +52,7 @@
     <string name="nodatadesc">Datoen for denne ticket er ikke hentet</string>
     <string name="noJSON">Ingen understøttelse af JSON på TRAC-server</string>
     <string name="notchange">Du kan ikke ændre dette felt</string>
-    <string name="notfound">Ikke fundet</string>
+    <string name="notfound">Ikke fundet: %s</string>
     <string name="notickets">Ingen tickets fundet</string>
     <string name="noticketUnk">Ingen ticket oprettet: ukendt fejl</string>
     <string name="notifmod">Ændret tickets fundet</string>
@@ -73,12 +73,12 @@
     <string name="storefilter">Gem filter</string>
     <string name="storeprofile">Gem profil</string>
     <string name="storerr">Fejl ved oprettelse af tcket</string>
-    <string name="storerrdesc">Kan ikke gemme ticket</string>
+    <string name="storerrdesc">Kan ikke gemme ticket: %s</string>
     <string name="storesort">Gem sorteringen</string>
     <string name="storeupd">Gem ændringerne</string>
     <string name="storok">Ticket genereret</string>
-    <string name="storokdesc">Ticket genereret, id =</string>
-    <string name="ticketnotfound">Tricket ikke fundet</string>
+    <string name="storokdesc">Ticket genereret, id = %d</string>
+    <string name="ticketnotfound">Tricket ikke fundet %s</string>
     <string name="tlrefresh">Opdager listen</string>
     <string name="tlshare">Del listen</string>
     <string name="tracLogin">Log på Trac server</string>
@@ -92,8 +92,6 @@
     <string name="uploading">Sender</string>
     <string name="vertext">Bekræft</string>
     <string name="wrongdb">Forkert database</string>
-    <string name="wrongdbtext1">Nuværende database =</string>
-    <string name="wrongdbtext3">Vælg først korrekt database</string>
     <string name="xmlreadcompleted">Importen fra XML gennemført</string>
     <string name="xmlwritecompleted">Ekspertering til XML udført</string>
     <string name="zoek">Søg</string>

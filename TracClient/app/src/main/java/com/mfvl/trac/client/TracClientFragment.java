@@ -50,9 +50,7 @@ interface HelpInterface {
 
 @SuppressWarnings("AbstractClassExtendsConcreteClass")
 public abstract class TracClientFragment extends Fragment implements View.OnClickListener {
-
     Ticket _ticket = null;
-    Activity context;
     InterFragmentListener listener = null;
     Bundle fragmentArgs = null;
     TicketModel tm = null;
@@ -64,27 +62,12 @@ public abstract class TracClientFragment extends Fragment implements View.OnClic
         inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
     }
 
-    @TargetApi(23)
     @Override
-    public void onAttach(Context activity) {
-        super.onAttach(activity);
-        MyLog.d("(C) ");
-        onMyAttach(activity);
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        MyLog.d("(A) ");
-        onMyAttach(activity);
-    }
-
-    void onMyAttach(Context activity) {
-        context = (Activity) activity;
-        TracGlobal.getInstance(context.getApplicationContext());
-        listener = (InterFragmentListener) activity;
-        fragmentArgs = getArguments();
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        listener = (InterFragmentListener) getActivity();
+        fragmentArgs = (savedInstanceState == null ? getArguments() : null);
+        TracGlobal.setContext(getActivity());
     }
 
     @Override
@@ -95,7 +78,7 @@ public abstract class TracClientFragment extends Fragment implements View.OnClic
     }
 
     public void showHelp() {
-        final String filename = context.getString(((HelpInterface) this).getHelpFile());
+        final String filename = getString(((HelpInterface) this).getHelpFile());
         final DialogFragment about = new TracHelp();
         final Bundle aboutArgs = new Bundle();
         aboutArgs.putString(HELP_FILE, filename);
@@ -122,12 +105,16 @@ public abstract class TracClientFragment extends Fragment implements View.OnClic
         tracStartHandler.obtainMessage(msg, o).sendToTarget();
     }
 
-    void showAlertBox(final int titleres, final int message, final String addit) {
-        tracStartHandler.obtainMessage(MSG_SHOW_DIALOG, titleres, message, addit).sendToTarget();
+    void showAlertBox(final int titleres, int message) {
+        tracStartHandler.obtainMessage(MSG_SHOW_DIALOG, titleres, 0, getString(message)).sendToTarget();
+    }
+
+    void showAlertBox(final int titleres, String message) {
+        tracStartHandler.obtainMessage(MSG_SHOW_DIALOG, titleres, 0, message).sendToTarget();
     }
 
     @Nullable
-    SpinnerAdapter makeComboAdapter(Context ctx, Collection<Object> waardes, boolean optional) {
+    SpinnerAdapter makeComboAdapter(Collection<Object> waardes, boolean optional) {
 //        MyLog.d("waardes = "+waardes+" optional = "+optional);
         if (waardes == null) {
             return null;
@@ -141,7 +128,7 @@ public abstract class TracClientFragment extends Fragment implements View.OnClic
 
         spinValues.addAll(waardes);
 
-        final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<>(ctx, android.R.layout.simple_spinner_item, spinValues);
+        final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, spinValues);
         spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         return spinAdapter;
@@ -161,9 +148,9 @@ public abstract class TracClientFragment extends Fragment implements View.OnClic
 
     void getScreensize(View spin, View but) {
         DisplayMetrics metrics = new DisplayMetrics();
-        context.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
         int widthPixels = metrics.widthPixels;
-        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.plus);
+        Drawable drawable = ContextCompat.getDrawable(getActivity(), R.drawable.plus);
         spin.setLayoutParams(
                 new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, widthPixels - drawable.getIntrinsicWidth()));
         but.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, drawable.getIntrinsicWidth()));
@@ -179,6 +166,10 @@ public abstract class TracClientFragment extends Fragment implements View.OnClic
             v.findViewById(resid).setOnClickListener(c);
         } catch (Exception ignored) {
         }
+    }
+
+    protected void runOnUiThread(Runnable r) {
+        getActivity().runOnUiThread(r);
     }
 
     @Override

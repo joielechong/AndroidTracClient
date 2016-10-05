@@ -14,7 +14,7 @@
   ~ limitations under the License.
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <string name="about_button">À propos de TracClient</string>
     <string name="tracUser">Nom d\'utilisateur</string>
@@ -36,15 +36,15 @@
     <string name="nieuw">Nouveau ticket</string>
     <string name="nodata">Pas de données</string>
     <string name="nodatadesc">Les données de ce billet n\'est pas encore chargé</string>
-    <string name="connerr">Erreur de connexion</string>
+    <string name="connerr">Erreur de connexion: %s</string>
     <string name="newtick">Créer un nouveau billet</string>
     <string name="oktext">OK</string>
     <string name="store">Sauver le billet</string>
     <string name="storerr">Erreur lors de la création de billet</string>
     <string name="upderr">Erreur lors de la modification de billet</string>
-    <string name="storerrdesc">Vous ne pouvez pas stocker billet</string>
+    <string name="storerrdesc">Vous ne pouvez pas stocker billet: %s</string>
     <string name="storok">Ticket créé</string>
-    <string name="storokdesc">Billet créé,id=</string>
+    <string name="storokdesc">Billet créé, id= %d</string>
     <string name="comment">Ajouter un commentaire</string>
     <string name="attach">Ajouter une pièce jointe</string>
     <string name="chooser_title">fixation de billets</string>
@@ -76,12 +76,12 @@
     </string-array>
 
     <string name="select">Sélectionner</string>
-    <string name="getlist">Choisissez la liste de billets</string>
+    <string name="getlist">Choisissez la liste de billets\n%s</string>
     <string name="storeprofile">Enregistrer votre profil</string>
     <string name="profiletext">Entrez un nom pour le profil pour être sauvé</string>
     <string name="loadprofile">Profil de charge de connexion</string>
-    <string name="loadprofiletext">Profil ne peut pas être chargé</string>
-    <string name="notfound">Introuvable</string>
+    <string name="loadprofiletext">Profil ne peut pas être chargé: %s</string>
+    <string name="notfound">Introuvable: %s</string>
     <string name="sdcardmissing">Carte SD est manquant.Vous ne pouvez pas stocker attachement</string>
     <string name="ioerror">ExternalStorage-Erreur d\'écriture</string>
     <string name="chooseapp">Choisissez une application à ouvrir avec:</string>
@@ -89,7 +89,7 @@
     <string name="exportprofiles">profils d\'exportation</string>
     <string name="importprofiles">Importer des profils</string>
     <string name="completed">Terminé</string>
-    <string name="failed">Échec</string>
+    <string name="failed">Échec: %s</string>
     <string name="xmlwritecompleted">Exporter vers XML a réussi</string>
     <string name="xmlreadcompleted">Importation à partir de XML a réussi</string>
     <string name="downloading">Téléchargement en cours…</string>
@@ -97,7 +97,7 @@
     <string name="saveupdate">Enregistrement mise à jour sur le serveur</string>
     <string name="saveticket">Enregistrement billet</string>
     <string name="selectticket">Sélectionnez billet individuel</string>
-    <string name="ticketnotfound">Billet pas trouvé</string>
+    <string name="ticketnotfound">Billet pas trouvé %s</string>
     <string name="chooseticknr">Entrez ticketnumber</string>
     <string name="chooseticket">Choisissez billet</string>
     <string name="debug">Débogage</string>
@@ -109,9 +109,7 @@
     <string name="notpossible">Pas possible</string>
     <string name="notchange">Vous ne pouvez pas modifier ce champ</string>
     <string name="wrongdb">Base de données erronées</string>
-    <string name="wrongdbtext1">=Base de données actuelle </string>
-    <string name="wrongdbtext3">\nSélectionnez le droit première base de données</string>
-    <string name="wrongdbtext2">\nRequested base de données= </string>
+    <string name="wrongdbtext">=Base de données actuelle %1$s\nRequested base de données= %2$s\nSélectionnez le droit première base de données</string>
     <string name="showempty">Afficher les champs vides</string>
     <string name="unsaved">Laissez l\'écran et enregistrer les modifications?</string>
     <string name="nee">Non</string>
@@ -125,11 +123,11 @@
     <string name="chooseoption">Choisissez option</string>
     <string name="showchanges">Historique des modifications</string>
     <string name="choosefield">Choisissez champ</string>
-    <string name="cookieInform">Cette application utilise les cookies de Google pour offrir des services, pour personnaliser les annonces et d\'analyser le trafic. Informations sur votre utilisation de cette application est partagée avec Google. Si vous utilisez cette application, vous acceptez l\'utilisation de cookies.</string>
+    <string name="cookieInform" tools:ignore="TypographyQuotes">Cette application utilise les cookies de Google pour offrir des services, pour personnaliser les annonces et d\'analyser le trafic. Informations sur votre utilisation de cette application est partagée avec Google. Si vous utilisez cette application, vous acceptez l\'utilisation de cookies.</string>
     <string name="checking">Vérification</string>
     <string name="generalsettings">Réglages généraux</string>
     <string name="settings">Réglages</string>
     <string name="trachost">Hôte Trac</string>
-    <string name="permissiontext">Cette application devrait être capable de lire et d\‘écrire sur la carte SD. Il n\’y a pas l\'autorisation pour les données. Si vous choisissez de ne pas donner un tel consentement, il est impossible d\'importer ou d\'exporter des profils ou des pièces jointes à attacher de la carte SD. Si vous n\'êtes pas cliquez sur le dialogue suivant pas le choix "Ne demandez pas".</string>
+    <string name="permissiontext" tools:ignore="TypographyQuotes">Cette application devrait être capable de lire et d\‘écrire sur la carte SD. Il n\’y a pas l\'autorisation pour les données. Si vous choisissez de ne pas donner un tel consentement, il est impossible d\'importer ou d\'exporter des profils ou des pièces jointes à attacher de la carte SD. Si vous n\'êtes pas cliquez sur le dialogue suivant pas le choix "Ne demandez pas".</string>
 
 </resources>

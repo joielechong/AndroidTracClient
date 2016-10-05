@@ -49,6 +49,19 @@ public class UpdateTicketFragment extends TracClientFragment implements HelpInte
     private int ticknr = -1;
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // MyLog.d("onCreate savedInstanceState = " + savedInstanceState );
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // MyLog.d(_tag,"onCreateView savedInstanceState = " + savedInstanceState);
+        return inflater.inflate(R.layout.update_view, container, false);
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
 
         super.onActivityCreated(savedInstanceState);
@@ -78,7 +91,7 @@ public class UpdateTicketFragment extends TracClientFragment implements HelpInte
         listener.getTicket(ticknr, new OnTicketLoadedListener() {
             @Override
             public void onTicketLoaded(final Ticket t) {
-                context.runOnUiThread(new Runnable() {
+                runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         _ticket = t;
@@ -92,7 +105,7 @@ public class UpdateTicketFragment extends TracClientFragment implements HelpInte
     private void displayView(final int checkedButton, final int spinPosition, final CharSequence optionVal) {
         final View view = getView();
         final TextView tv = (TextView) view.findViewById(R.id.titel);
-        final String text = context.getString(R.string.updtick) + " " + _ticket;
+        final String text = getString(R.string.updtick) + " " + _ticket;
 
         tv.setText(text);
 
@@ -106,7 +119,7 @@ public class UpdateTicketFragment extends TracClientFragment implements HelpInte
                 setListener(R.id.canBut);
                 setListener(R.id.storeUpdate);
                 final TextView explain = (TextView) view.findViewById(R.id.explaintxt);
-                final RadioButton rb = new RadioButton(context);
+                final RadioButton rb = new RadioButton(getActivity());
                 final String hintText = actieInfo.getString(2);
                 final Spinner optiesSpin = (Spinner) view.findViewById(R.id.opties);
                 final EditText optieval = (EditText) view.findViewById(R.id.optieval);
@@ -167,7 +180,7 @@ public class UpdateTicketFragment extends TracClientFragment implements HelpInte
                                             }
                                         }
                                         final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<>(
-                                                context, android.R.layout.simple_spinner_item,
+                                                getActivity(), android.R.layout.simple_spinner_item,
                                                 opties);
 
                                         spinAdapter.setDropDownViewResource(
@@ -239,11 +252,10 @@ public class UpdateTicketFragment extends TracClientFragment implements HelpInte
         listener.startProgressBar(R.string.saveupdate);
         try {
             final boolean notify = updNotify != null && updNotify.isChecked();
-            listener.updateTicket(_ticket, action, comment, currentActionName, waarde, notify,
-                    null);
+            listener.updateTicket(_ticket, action, comment, currentActionName, waarde, notify, null);
         } catch (final Exception e) {
             MyLog.e("update failed", e);
-            showAlertBox(R.string.storerr, R.string.storerrdesc, e.getMessage());
+            showAlertBox(R.string.storerr, getString(R.string.storerrdesc, e.getMessage()));
         } finally {
             listener.stopProgressBar();
         }
@@ -252,19 +264,6 @@ public class UpdateTicketFragment extends TracClientFragment implements HelpInte
     @Override
     public int getHelpFile() {
         return R.string.updatehelpfile;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // MyLog.d("onCreate savedInstanceState = " + savedInstanceState );
-        setHasOptionsMenu(true);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // MyLog.d(_tag,"onCreateView savedInstanceState = " + savedInstanceState);
-        return inflater.inflate(R.layout.update_view, container, false);
     }
 
     @Override
