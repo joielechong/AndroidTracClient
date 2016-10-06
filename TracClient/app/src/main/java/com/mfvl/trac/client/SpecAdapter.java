@@ -26,7 +26,7 @@ interface ItemsAdapter {
     Serializable getItems();
 }
 
-class SpecAdapter<T extends Spec> extends ArrayAdapter<T> implements ItemsAdapter {
+abstract class SpecAdapter<T extends Spec> extends ArrayAdapter<T> implements ItemsAdapter {
     final ArrayList<T> items;
 
     SpecAdapter(Context context, int textViewResourceId, ArrayList<T> _items) {

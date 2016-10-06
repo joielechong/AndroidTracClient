@@ -56,7 +56,7 @@ class FilterSpecImpl extends SpecImpl implements FilterSpec {
                 _newwaarde = _waarde;
             }
         }
-     }
+    }
 
     @Override
     @SuppressWarnings({"MethodReturnOfConcreteClass", "LocalVariableOfConcreteClass"})

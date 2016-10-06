@@ -27,6 +27,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.v4.content.LocalBroadcastManager;
 
+import com.mfvl.mfvllib.FileOps;
 import com.mfvl.mfvllib.MyLog;
 
 import org.xml.sax.Attributes;
@@ -252,7 +253,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper implements PDHelper {
     public void readXML(final String appname) throws Exception {
         try {
             open();
-            final File fileName = makeExtFilePath(context, appname + ".xml", true);
+            final File fileName = FileOps.makeExtFilePath(context, "TracClient", appname + ".xml", true);
             final InputStream in = new BufferedInputStream(new FileInputStream(fileName));
             final XMLReader xmlR = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
 
@@ -268,7 +269,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper implements PDHelper {
 
     @Override
     public void writeXML(final String appname) throws Exception {
-        final File fileName = makeExtFilePath(context, appname + ".xml", true);
+        final File fileName = FileOps.makeExtFilePath(context, "TracClient", appname + ".xml", true);
         final OutputStream out = new BufferedOutputStream(new FileOutputStream(fileName));
 
         String xmlString = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n";

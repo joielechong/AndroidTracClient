@@ -91,9 +91,9 @@ class LoginProfileImpl extends TcObject implements Serializable, Cloneable, Logi
     @Override
     public LoginProfileImpl clone() throws CloneNotSupportedException {
         LoginProfileImpl lp = (LoginProfileImpl) super.clone();
-        lp._url=_url;
+        lp._url = _url;
         lp._username = _username;
-        lp._password=_password;
+        lp._password = _password;
         lp._sslHack = _sslHack;
         lp._sslHostNameHack = _sslHostNameHack;
         lp.filterList = filterList;
@@ -180,6 +180,6 @@ class LoginProfileImpl extends TcObject implements Serializable, Cloneable, Logi
         result = 31 * result + (filterList != null ? filterList.hashCode() : 0);
         result = 31 * result + (sortList != null ? sortList.hashCode() : 0);
         result = 31 * result + (_profile != null ? _profile.hashCode() : 0);
-        return result +super.hashCode();
+        return result + super.hashCode();
     }
 }

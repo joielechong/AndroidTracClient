@@ -60,6 +60,6 @@ public class SortSpec extends SpecImpl {
 
     @Override
     public int hashCode() {
-        return (_richting ? 1 : 0)+super.hashCode();
+        return (_richting ? 1 : 0) + super.hashCode();
     }
 }

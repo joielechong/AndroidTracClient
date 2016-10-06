@@ -50,6 +50,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.mfvl.mfvllib.FileOps;
 import com.mfvl.mfvllib.MyLog;
 
 import org.json.JSONArray;
@@ -422,7 +423,7 @@ public class DetailFragment extends TracClientFragment
                     // MyLog.d("onComplete filedata = "
                     // + filedata.length);
                     try {
-                        final File file = makeCacheFilePath(getActivity(), filename);
+                        final File file = FileOps.makeCacheFilePath(getActivity(), filename);
                         final OutputStream os = new FileOutputStream(file);
 
                         file.deleteOnExit();
@@ -880,7 +881,7 @@ public class DetailFragment extends TracClientFragment
 
         @Override
         public int hashCode() {
-            return veld.hashCode()+super.hashCode();
+            return veld.hashCode() + super.hashCode();
         }
     }
 

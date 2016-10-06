@@ -83,7 +83,7 @@ final class StdTicketModel implements TicketModel {
         }
     }
 
-    public static void getInstance(TracHttpClient tracClient, final OnTicketModelListener oc) {
+    static void getInstance(TracHttpClient tracClient, final OnTicketModelListener oc) {
         MyLog.d("new tracClient = " + tracClient);
         if (_instance == null || !tracClient.equals(_tracClient)) {
             _instance = new StdTicketModel(tracClient);
@@ -102,8 +102,11 @@ final class StdTicketModel implements TicketModel {
         }
     }
 
-    public static TicketModel getInstance() {
+    static TicketModel getInstance() {
         MyLog.d("noargs _instance = " + _instance);
+        if (_instance == null) {
+            throw new RuntimeException("No ticketmodel available");
+        }
         return _instance;
     }
 
@@ -112,12 +115,12 @@ final class StdTicketModel implements TicketModel {
         for (int i = 0; i < fieldCount; i++) {
             final String key = veld.getJSONObject(i).getString("name");
 
-            _velden.put(key, new TicketModelVeld(veld.getJSONObject(i)));
+            _velden.put(key, new TicketModelVeldImpl(veld.getJSONObject(i)));
             _volgorde.add(key);
         }
         for (int i = 0; i < extraFields.size(); i++) {
             String v1 = extraFields.get(i);
-            _velden.put(v1, new TicketModelVeld(v1, v1, extraValues.get(i)));
+            _velden.put(v1, new TicketModelVeldImpl(v1, v1, extraValues.get(i)));
             _volgorde.add(v1);
         }
         _hasData = true;
@@ -227,7 +230,7 @@ final class StdTicketModel implements TicketModel {
             return _velden.get(naam);
         }
         if ("id".equals(naam)) {
-            return new TicketModelVeld(naam, naam, "0");
+            return new TicketModelVeldImpl(naam, naam, "0");
         }
         throw new IndexOutOfBoundsException();
     }

@@ -57,6 +57,6 @@ class SpecImpl extends TcObject implements Serializable, Spec {
 
     @Override
     public int hashCode() {
-        return (_veld != null ? _veld.hashCode() : 0)+super.hashCode();
+        return (_veld != null ? _veld.hashCode() : 0) + super.hashCode();
     }
 }
