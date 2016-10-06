@@ -18,7 +18,7 @@ package com.mfvl.trac.client;
 
 final class Const {
 
-    static final public boolean DEBUG_MANAGERS = false;
+    static final boolean DEBUG_MANAGERS = false;
     /*
      * Constanten voor opslaan van variablen
      */
@@ -82,7 +82,7 @@ final class Const {
     static final String DB_UPDATED = "db_update";
 
     static final String PERFORM_LOGIN = "perform_login";
-	static final String PERFORM_FILTER = "perform_filter";
-	static final String PERFORM_SORT = "perform_sort";
+    static final String PERFORM_FILTER = "perform_filter";
+    static final String PERFORM_SORT = "perform_sort";
     static final String BEWAREN = "bewaren";
 }

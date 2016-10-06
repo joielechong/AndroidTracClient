@@ -30,7 +30,6 @@ import com.mfvl.mfvllib.MyLog;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -240,35 +239,6 @@ final class TracGlobal {
 
     static boolean isRCVersion() {
         return (versie != null) && (versie.toLowerCase(Locale.US).contains("rc"));
-    }
-
-    static File makeExtFilePath(Context _context, String filename, boolean visible) throws FileNotFoundException {
-        File dirPath;
-        //MyLog.d("filename = "+filename);
-        if (visible) {
-            final File extPath = Environment.getExternalStorageDirectory();
-            //MyLog.d("extpath = " + extPath);
-            dirPath = new File(extPath, "TracClient");
-        } else {
-            dirPath = _context.getExternalFilesDir(null);
-        }
-        dirPath.mkdirs();
-        //MyLog.d("dirpath = "+dirPath);
-        if (!dirPath.isDirectory()) {
-            throw new FileNotFoundException(dirPath.toString());
-        }
-        final File filePath = new File(dirPath, filename);
-        MyLog.d("filepath = " + filePath);
-        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            throw new FileNotFoundException(filePath.toString());
-        }
-        return filePath;
-    }
-
-    static File makeCacheFilePath(Context _context, final String filename) {
-        final File filePath = new File(_context.getExternalCacheDir(), filename);
-        MyLog.d("filepath = " + filePath);
-        return filePath;
     }
 
     static String joinList(Object list[], final String sep) {

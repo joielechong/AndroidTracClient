@@ -101,7 +101,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements HelpInte
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState); // must be called first
-        MyLog.d("savedInstanceState = " + savedInstanceState+" tm = "+tm);
+        MyLog.d("savedInstanceState = " + savedInstanceState + " tm = " + tm);
 
         if (tm == null) {
             MyLog.toast(getString(R.string.notpossible));
@@ -125,6 +125,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements HelpInte
 
     private class FilterAdapter extends SpecAdapter<FilterSpec> implements View.OnClickListener, OnCheckedChangeListener {
         final Object lock = (Integer) 1;
+
         FilterAdapter(Context ctx, ArrayList<FilterSpec> input) {
             super(ctx, android.R.layout.simple_list_item_1, input);
             synchronized (lock) {

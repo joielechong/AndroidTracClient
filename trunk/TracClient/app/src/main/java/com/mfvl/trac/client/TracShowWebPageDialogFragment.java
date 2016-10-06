@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.webkit.WebView;
 import android.widget.TextView;
+
 import com.mfvl.mfvllib.MyLog;
 
 import static com.mfvl.trac.client.Const.*;
@@ -54,10 +55,10 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements T
 
     private void selectFragment(TabLayout.Tab tab) {
         switch (tab.getPosition()) {
-		case 0:
-				startFragment(new AboutFragment());
+            case 0:
+                startFragment(new AboutFragment());
                 break;
-		case 1:
+            case 1:
                 Fragment frag = new ChangeFragment();
                 Bundle args = new Bundle();
                 args.putString(HELP_FILE, fileUrl);
@@ -65,12 +66,12 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements T
                 frag.setArguments(args);
                 startFragment(frag);
                 break;
-		case 2:
+            case 2:
                 startFragment(new CookiesFragment());
                 break;
-		case 3:
-				startFragment(new SvnFragment());
-				break;
+            case 3:
+                startFragment(new SvnFragment());
+                break;
         }
     }
 
@@ -97,16 +98,16 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements T
         fileUrl = "file:///android_asset/" + fileName + ".html";
         tl = (TabLayout) mainView.findViewById(R.id.tabs);
         MyLog.d(fileUrl);
-		if (listener.debugEnabled()) {
-			tl.addTab(tl.newTab().setText(R.string.svn));
-		}
+        if (listener.debugEnabled()) {
+            tl.addTab(tl.newTab().setText(R.string.svn));
+        }
         return mainView;
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(TABSELECTED,tabSelected);
+        outState.putInt(TABSELECTED, tabSelected);
     }
 
     @Override
@@ -144,7 +145,7 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements T
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             MyLog.logCall();
-            return inflater.inflate(R.layout.trac_version,  container,false);
+            return inflater.inflate(R.layout.trac_version, container, false);
         }
     }
 
@@ -152,7 +153,7 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements T
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             MyLog.logCall();
-            final View v = inflater.inflate(R.layout.trac_help, container,false);
+            final View v = inflater.inflate(R.layout.trac_help, container, false);
             final WebView wv = (WebView) v.findViewById(R.id.webfile);
             final Bundle args = getArguments();
             if (args != null) {
@@ -167,7 +168,7 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements T
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             MyLog.logCall();
-            return inflater.inflate(R.layout.cookies, container,false);
+            return inflater.inflate(R.layout.cookies, container, false);
         }
     }
 
@@ -175,10 +176,10 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements T
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             MyLog.logCall();
-            View v = inflater.inflate(R.layout.cookies, container,false);
-			TextView t =(TextView)v.findViewById(R.id.cookiestext);
-			t.setText(getString(R.string.svnrev,BuildConfig.SVN_REVISION));
-			return v;
+            View v = inflater.inflate(R.layout.cookies, container, false);
+            TextView t = (TextView) v.findViewById(R.id.cookiestext);
+            t.setText(getString(R.string.svnrev, BuildConfig.SVN_REVISION));
+            return v;
         }
     }
 }

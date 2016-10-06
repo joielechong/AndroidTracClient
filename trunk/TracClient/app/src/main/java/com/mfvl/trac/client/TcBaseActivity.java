@@ -125,7 +125,7 @@ abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callb
                 synchronized (this) {
                     //MyLog.d("handleMessage msg = START_PROGRESSBAR string = "+message);
                     if (progressBar == null) {
-                        progressBar = new MyProgressBar(this,message);
+                        progressBar = new MyProgressBar(this, message);
                     }
                 }
                 break;
@@ -215,10 +215,10 @@ abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callb
         MyLog.toast("Debug enabled");
     }
 
-	@Override
-	public boolean debugEnabled() {
-		return debug;
-	}
+    @Override
+    public boolean debugEnabled() {
+        return debug;
+    }
 
     @Override
     public void onChooserSelected(OnFileSelectedListener oc) {

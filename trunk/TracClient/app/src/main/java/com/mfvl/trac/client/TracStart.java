@@ -118,27 +118,27 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             NewFragmentTag, UpdFragmentTag, FilterFragmentTag, SortFragmentTag};
     private final Semaphore loadingActive = new TcSemaphore(1, true);
     private final Semaphore isBinding = new TcSemaphore(1, true);
-	private final BroadcastReceiver performFilterReceiver = new BroadcastReceiver() {
-		@Override
-		public void	onReceive(Context context, Intent intent) {
+    private final BroadcastReceiver performFilterReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
             MyLog.d("intent = " + intent);
-			String filterString = intent.getStringExtra(FILTERLISTNAME);
-			Message m = tracStartHandler.obtainMessage(MSG_SET_FILTER,parseFilterString(filterString));
-			MyLog.d(m);
-			m.sendToTarget();
-		}
-	};
-	private final BroadcastReceiver performSortReceiver = new BroadcastReceiver() {
-		@Override
-		public void	onReceive(Context context, Intent intent) {
+            String filterString = intent.getStringExtra(FILTERLISTNAME);
+            Message m = tracStartHandler.obtainMessage(MSG_SET_FILTER, parseFilterString(filterString));
+            MyLog.d(m);
+            m.sendToTarget();
+        }
+    };
+    private final BroadcastReceiver performSortReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
             MyLog.d("intent = " + intent);
-			String sortString = intent.getStringExtra(SORTLISTNAME);
-			Message m = tracStartHandler.obtainMessage(MSG_SET_SORT,parseSortString(sortString));
-			MyLog.d(m);
-			m.sendToTarget();
-		}
-	};
-	private boolean doubleBackToExitPressedOnce = false;
+            String sortString = intent.getStringExtra(SORTLISTNAME);
+            Message m = tracStartHandler.obtainMessage(MSG_SET_SORT, parseSortString(sortString));
+            MyLog.d(m);
+            m.sendToTarget();
+        }
+    };
+    private boolean doubleBackToExitPressedOnce = false;
     private FrameLayout adViewContainer = null;
     private AdView adView = null;
     private boolean dispAds = true;

@@ -58,7 +58,7 @@ public class PrefSpecActivity extends TcBaseActivity implements TcBaseInterface 
 
         if (filterAction.equals(action)) {
             ff = new FilterFragment();
-             args.putSerializable(FILTERLISTNAME, parseFilterString(getFilterString()));
+            args.putSerializable(FILTERLISTNAME, parseFilterString(getFilterString()));
         } else if (sortAction.equals(action)) {
             ff = new SortFragment();
             args.putSerializable(SORTLISTNAME, parseSortString(getSortString()));
@@ -86,19 +86,19 @@ public class PrefSpecActivity extends TcBaseActivity implements TcBaseInterface 
                 Collection<FilterSpec> filter = (Collection<FilterSpec>) msg.obj;
                 String filterString = joinList(filter.toArray(), "&");
                 storeFilterString(filterString);
-				intent = new Intent(PERFORM_FILTER);
-				intent.putExtra(FILTERLISTNAME, filterString);
-				LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-				finish();
+                intent = new Intent(PERFORM_FILTER);
+                intent.putExtra(FILTERLISTNAME, filterString);
+                LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+                finish();
                 break;
 
             case MSG_SET_SORT:
                 Collection<SortSpec> sort = (Collection<SortSpec>) msg.obj;
                 String sortString = joinList(sort.toArray(), "&");
                 storeSortString(sortString);
-				intent = new Intent(PERFORM_SORT);
-				intent.putExtra(SORTLISTNAME, sortString);
-				LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+                intent = new Intent(PERFORM_SORT);
+                intent.putExtra(SORTLISTNAME, sortString);
+                LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
                 finish();
                 break;
 
