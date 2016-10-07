@@ -266,9 +266,9 @@ public class TracLoginFragment extends TracClientFragment
         super.onPrepareOptionsMenu(menu);
         final MenuItem importItem = menu.findItem(R.id.importprofiles);
         final MenuItem exportItem = menu.findItem(R.id.exportprofiles);
-        MyLog.d("canWriteSD = " + listener.getCanWriteSD());
-        importItem.setEnabled(listener.getCanWriteSD());
-        exportItem.setEnabled(listener.getCanWriteSD());
+        MyLog.d("canWriteSD = " + TracGlobal.getCanWriteSD());
+        importItem.setEnabled(TracGlobal.getCanWriteSD());
+        exportItem.setEnabled(TracGlobal.getCanWriteSD());
     }
 
     @Override

@@ -70,6 +70,7 @@ import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.ipaulpro.afilechooser.utils.FileUtils;
 import com.mfvl.mfvllib.MyLog;
+import com.mfvl.mfvllib.SysOps;
 
 import org.alexd.jsonrpc.JSONRPCException;
 import org.json.JSONArray;
@@ -138,6 +139,26 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             m.sendToTarget();
         }
     };
+    private final BroadcastReceiver performLoginReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get extra data included in the Intent
+            MyLog.d("intent = " + intent);
+            String uri = intent.getStringExtra(CURRENT_URL);
+            String username = intent.getStringExtra(CURRENT_USERNAME);
+            String password = intent.getStringExtra(CURRENT_PASSWORD);
+            String SelectedProfile = intent.getStringExtra(CURRENT_PROFILE);
+            boolean bewaren = intent.getBooleanExtra(BEWAREN, false);
+            boolean sslhack = intent.getBooleanExtra(CURRENT_SSLHACK, false);
+            boolean sslHostNamehack = intent.getBooleanExtra(CURRENT_SSLHOSTNAMEHACK, false);
+            LoginProfile lp = new LoginProfileImpl(uri, username, password, sslhack, sslHostNamehack);
+            lp.setProfile(SelectedProfile);
+            MyLog.d(lp);
+            Message m = tracStartHandler.obtainMessage(MSG_PERFORM_LOGIN, (bewaren ? 1 : 0), 0, lp);
+            MyLog.d(m);
+            m.sendToTarget();
+        }
+    };
     private boolean doubleBackToExitPressedOnce = false;
     private FrameLayout adViewContainer = null;
     private AdView adView = null;
@@ -152,29 +173,8 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     private String userName = null;
     private String passWord = null;
     private boolean sslHack = false;
-    private final BroadcastReceiver performLoginReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            // Get extra data included in the Intent
-            MyLog.d("intent = " + intent);
-            String uri = intent.getStringExtra(CURRENT_URL);
-            String username = intent.getStringExtra(CURRENT_USERNAME);
-            String password = intent.getStringExtra(CURRENT_PASSWORD);
-            String SelectedProfile = intent.getStringExtra(CURRENT_PROFILE);
-            boolean bewaren = intent.getBooleanExtra(BEWAREN, false);
-            boolean sslhack = intent.getBooleanExtra(CURRENT_SSLHACK, false);
-            boolean sslHostNamehack = intent.getBooleanExtra(CURRENT_SSLHOSTNAMEHACK, false);
-            LoginProfile lp = new LoginProfileImpl(uri, username, password, sslHack, sslHostNamehack);
-            lp.setProfile(SelectedProfile);
-            MyLog.d(lp);
-            Message m = tracStartHandler.obtainMessage(MSG_PERFORM_LOGIN, (bewaren ? 1 : 0), 0, lp);
-            MyLog.d(m);
-            m.sendToTarget();
-        }
-    };
     private boolean sslHostNameHack = false;
     private OnFileSelectedListener oc = null;
-    private boolean canWriteSD = false;
     private long referenceTime = 0;
     private String urlArg = null;
     private int ticketArg = -1;
@@ -187,7 +187,6 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     private boolean hasTicketsLoadingBar = false;
     private Boolean ticketsLoading = false;
     private ArrayAdapter<Ticket> dataAdapter = null;
-    private String serviceAction = null;
     private NavigationView navigationView = null;
     private final BroadcastReceiver sqlupdateReceiver = new BroadcastReceiver() {
         @Override
@@ -283,7 +282,6 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         MyLog.setContext(this, getString(R.string.logfile));
 //		MyLog.logCall();
         MyLog.d("savedInstanceState = " + savedInstanceState);
-        serviceAction = getString(R.string.serviceAction);
         sendMessageToService(-1);
 
         if (DEBUG_MANAGERS) {
@@ -294,7 +292,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            canWriteSD = true;
+            TracGlobal.setCanWriteSD(true);
         } else {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 new AlertDialog.Builder(this)
@@ -509,7 +507,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                 final AdRequest.Builder arb = new AdRequest.Builder();
 
                 arb.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
-                if (isDebuggable(this) && testDevices != null) {
+                if (SysOps.isDebuggable(this) && testDevices != null) {
                     for (final String t : testDevices) {
                         MyLog.d("testDevice = " + t);
                         arb.addTestDevice(t);
@@ -550,7 +548,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                     if (mService == null) {
                         MyLog.d("using bindService");
                         bindService(new Intent(TracStart.this,
-                                        RefreshService.class).setAction(serviceAction)
+                                        RefreshService.class).setAction(getServiceAction())
                                         .putExtra(INTENT_CMD, msg.what)
                                         .putExtra(INTENT_ARG1, msg.arg1)
                                         .putExtra(INTENT_ARG2, msg.arg2)
@@ -718,18 +716,12 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         MyLog.d(frag + " this = " + this);
         super.onAttachFragment(frag);
 
-        if (ListFragmentTag.equals(frag.getTag())) {
-            final TicketListFragment ticketListFragment = getTicketListFragment();
-            if (ticketListFragment != null) {
-                MyLog.d("ticketListFragment = " + ticketListFragment);
-
-                if (urlArg != null) {
-                    MyLog.d("Ticket = " + ticketArg);
-                    ticketListFragment.selectTicket(ticketArg);
-                    urlArg = null;
-                    ticketArg = -1;
-                }
-            }
+        if (frag instanceof TicketListFragInterface && urlArg != null) {
+            MyLog.d("ticketListFragment = " + frag);
+            MyLog.d("Ticket = " + ticketArg);
+            ((TicketListFragInterface) frag).selectTicket(ticketArg);
+            urlArg = null;
+            ticketArg = -1;
         }
     }
 
@@ -857,7 +849,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                 permissions) + " grantResults = " + Arrays.asList(grantResults));
         if (requestCode == REQUEST_CODE_WRITE_EXT) {
             // If request is cancelled, the result arrays are empty.
-            canWriteSD = (grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED);
+            setCanWriteSD((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED));
         }
     }
 
@@ -954,8 +946,8 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         }
     }
 
-    private TicketListFragment getTicketListFragment() {
-        return (TicketListFragment) getFragment(ListFragmentTag);
+    private TicketListFragInterface getTicketListFragment() {
+        return (TicketListFragInterface) getFragment(ListFragmentTag);
     }
 
     private Fragment getFragment(final String tag) {
@@ -996,15 +988,14 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         profile = newProfile;
         setFilter(getFilterString());
         setSort(getSortString());
-        Fragment ticketListFragment = getFragment(ListFragmentTag);
 
-        if (ticketListFragment == null) {
+        if (getFragment(ListFragmentTag) == null) {
             doNotFinish = true;
             getSupportFragmentManager().popBackStackImmediate(LoginFragmentTag,
                     FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            ticketListFragment = new TicketListFragment();
+            Fragment frag = new TicketListFragment();
             final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.add(R.id.displayList, ticketListFragment, ListFragmentTag);
+            ft.add(R.id.displayList, frag, ListFragmentTag);
             ft.setTransition(FragmentTransaction.TRANSIT_NONE);
             ft.addToBackStack(ListFragmentTag);
             ft.commit();
@@ -1132,7 +1123,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             Exception {
         final JSONObject velden = t.getVelden();
         MyLog.d("Ticket = " + t + "update: " + action + " '" + comment + "' '" + veld + "' '" + waarde + "' " + modVeld);
-//        MyLog.d("velden voor = " + velden);
+        MyLog.d("velden voor = " + velden);
         final int ticknr = t.getTicketnr();
 
         if (ticknr == -1) {
@@ -1141,7 +1132,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         if (action == null) {
             throw new NullPointerException(getString(R.string.noaction));
         }
-        velden.put("serviceAction", action);
+        velden.put("action", action);
         if (waarde != null && veld != null && !"".equals(veld) && !"".equals(waarde)) {
             velden.put(veld, waarde);
         }
@@ -1222,11 +1213,6 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                 getTicketListFragment().startLoading();
             }
         }
-    }
-
-    @Override
-    public boolean getCanWriteSD() {
-        return canWriteSD;
     }
 
     @Override

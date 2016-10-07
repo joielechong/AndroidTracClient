@@ -50,6 +50,8 @@ interface HelpInterface {
 interface TcFragment {
     void onNewTicketModel(TicketModel tm);
 
+    void selectTicket(int ticknr);
+
     void showHelp();
 }
 
@@ -140,7 +142,8 @@ public abstract class TracClientFragment extends Fragment implements View.OnClic
         return spinAdapter;
     }
 
-    void selectTicket(int ticknr) {
+    @Override
+    public void selectTicket(int ticknr) {
         MyLog.d("ticknr = " + ticknr);
         listener.getTicket(ticknr, new OnTicketLoadedListener() {
             @Override
