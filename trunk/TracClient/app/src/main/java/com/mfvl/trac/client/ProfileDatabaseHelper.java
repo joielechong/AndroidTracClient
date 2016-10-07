@@ -26,6 +26,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Xml;
 
 import com.mfvl.mfvllib.FileOps;
 import com.mfvl.mfvllib.MyLog;
@@ -35,6 +36,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
+import org.xmlpull.v1.XmlSerializer;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -86,7 +88,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper implements PDHelper {
     private boolean upgrade = false;
 
     ProfileDatabaseHelper(Context ctx) {
-        super(ctx, makeDbPath(ctx), null, DATABASE_VERSION);
+        super(ctx, FileOps.makeDbPath(ctx, null, DATABASE_NAME, (isRCVersion() ? FileOps.VISIBLE : 0)), null, DATABASE_VERSION);
         context = ctx;
         sendNotification("class creation");
     }
@@ -193,10 +195,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper implements PDHelper {
 
     private Cursor getAllProfiles() {
         open();
-        return sqlDb.rawQuery(
-                "SELECT " + NAME_ID + "," + URL_ID + "," + USERNAME_ID + "," + PASSWORD_ID + "," + SSLHACK_ID + " from "
-                        + TABLE_NAME + " WHERE " + NAME_ID + " !=''",
-                null);
+        return sqlDb.query(TABLE_NAME, new String[]{NAME_ID, URL_ID, USERNAME_ID, PASSWORD_ID, SSLHACK_ID}, NAME_ID + " !=''", null, null, null, null);
     }
 
     @Override
@@ -271,32 +270,34 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper implements PDHelper {
     public void writeXML(final String appname) throws Exception {
         final File fileName = FileOps.makeExtFilePath(context, "TracClient", appname + ".xml", true);
         final OutputStream out = new BufferedOutputStream(new FileOutputStream(fileName));
+        XmlSerializer serializer = Xml.newSerializer();
 
-        String xmlString = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n";
-
-        xmlString += "<" + appname + ">\n";
-        xmlString += "<" + TABLE_NAME + ">\n";
-        final Cursor c = getAllProfiles();
-
-        for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-            xmlString += "<profile " + NAME_ID + "=\"" + c.getString(
-                    0) + "\" " + URL_ID + "=\"" + c.getString(1) + "\" "
-                    + USERNAME_ID + "=\"" + c.getString(
-                    2) + "\" " + PASSWORD_ID + "=\"" + c.getString(3) + "\" " + SSLHACK_ID
-                    + "=\"" + c.getInt(4) + "\" />\n";
+        try {
+            serializer.setOutput(out, "UTF-8");
+            serializer.startDocument("UTF-8", false);
+            serializer.startTag("", appname);
+            serializer.startTag("", TABLE_NAME);
+            final Cursor c = getAllProfiles();
+            for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+                //MyLog.d(c.getString(0));
+                serializer.startTag("", "profile");
+                serializer.attribute("", NAME_ID, c.getString(0));
+                serializer.attribute("", URL_ID, c.getString(1));
+                serializer.attribute("", USERNAME_ID, c.getString(2));
+                serializer.attribute("", PASSWORD_ID, c.getString(3));
+                serializer.attribute("", SSLHACK_ID, c.getString(4));
+                serializer.endTag("", "profile");
+            }
+            c.close();
+            serializer.endTag("", TABLE_NAME);
+            serializer.endTag("", appname);
+            serializer.flush();
+        } finally {
+            out.close();
         }
-        c.close();
-        xmlString += "</" + TABLE_NAME + ">\n";
-        xmlString += "</" + appname + ">\n";
-
-        final byte[] bytes = xmlString.getBytes("UTF-8");
-
-        out.write(bytes, 0, bytes.length);
-        out.close();
     }
 
     private class XMLHandler extends DefaultHandler {
-
         private final PDHelper _pdb;
         String _appname = null;
         private int state = -1;
@@ -314,6 +315,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper implements PDHelper {
         public void startElement(String uri, String localName, String qName, Attributes attributes) throws
                 SAXException,
                 RuntimeException {
+            //MyLog.d(localName);
             switch (state) {
                 case 0:
                     if (localName.equals(_appname)) {

@@ -49,9 +49,10 @@ interface TicketListFragInterface {
 
     void dataHasChanged();
 
+    void selectTicket(int ticknr);
+
     void startLoading();
 }
-
 public class TicketListFragment extends TracClientFragment
         implements SwipeRefreshLayout.OnRefreshListener, AdapterView.OnItemClickListener, AbsListView.OnScrollListener, HelpInterface, TicketListFragInterface {
 

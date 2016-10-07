@@ -126,4 +126,5 @@
     <string name="cookieInform"> Diese App nutzt Cookies von Google. um Dienstleistungen zu liefern, um Anzeigen zu personalisieren und Verkehr zu analysieren. Informationen über Ihre Benutzung dieser App wird mit Google geteilt. Wenn Sie diese App nutzen, akzeptieren Sie der Verwendung von Cookies.</string>
     <string name="generalsettings"> Allgemeine Einstellungen</string>
     <string name="settings">Einstellungen</string>
+    <string name="failexport">Exportieren fehlgeschlagen</string>
 </resources>

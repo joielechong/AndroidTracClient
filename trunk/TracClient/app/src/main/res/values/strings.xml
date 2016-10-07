@@ -137,4 +137,5 @@
     <string name="settings" tools:ignore="MissingTranslation">Settings</string>
     <string name="trachost" tools:ignore="MissingTranslation">Trac Host</string>
     <string name="tickethead" tools:ignore="MissingTranslation">Ticket %d</string>
+    <string name="failexport">Export to file failed</string>
 </resources>

@@ -16,35 +16,21 @@
 
 package com.mfvl.trac.client;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.pm.Signature;
 import android.content.res.Resources;
-import android.os.Environment;
 
 import com.mfvl.mfvllib.MyLog;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import javax.security.auth.x500.X500Principal;
-
 import static com.mfvl.trac.client.Const.*;
 
 final class TracGlobal {
-    private static final X500Principal DEBUG_DN = new X500Principal("CN=Android Debug,O=Android,C=US");
     public static int webzoom;
     static int ticketGroupCount;
     static int timerCorr;
@@ -63,39 +49,58 @@ final class TracGlobal {
     private static boolean _sslHostNameHack = false;
     private static String _profile = null;
     private static SharedPreferences settings = null;
+    private static boolean canWriteSD = false;
+    private static boolean started = false;
+    private static String serviceAction = null;
 
     static void initialize(final Context context) {
-        Resources res = context.getResources();
-        settings = context.getSharedPreferences(PREFS_NAME, 0);
-        //MyLog.d(settings.getAll());
-        versie = res.getString(R.string.app_version);
-        MyLog.i("Started TracClient version " + versie);
+        if (!started) {
+            Resources res = context.getResources();
+            settings = context.getSharedPreferences(PREFS_NAME, 0);
+            //MyLog.d(settings.getAll());
+            versie = res.getString(R.string.app_version);
+            MyLog.i("Started TracClient version " + versie);
 
-        try {
-            ticketGroupCount = Integer.parseInt(settings.getString(res.getString(R.string.prefNrItemsKey), "-1"));
-        } catch (Exception e) {
-            ticketGroupCount = -1;
+            try {
+                ticketGroupCount = Integer.parseInt(settings.getString(res.getString(R.string.prefNrItemsKey), "-1"));
+            } catch (Exception e) {
+                ticketGroupCount = -1;
+            }
+            if (ticketGroupCount == -1) {
+                ticketGroupCount = res.getInteger(R.integer.ticketGroupCount);
+            }
+            //MyLog.d("final: "+ticketGroupCount);
+            serviceAction = res.getString(R.string.serviceAction);
+
+            webzoom = res.getInteger(R.integer.webzoom);
+            timerCorr = res.getInteger(R.integer.timerCorr);
+            large_move = res.getInteger(R.integer.large_move);
+            timerStart = res.getInteger(R.integer.timerStart);
+            timerPeriod = res.getInteger(R.integer.timerPeriod);
+            prefFilterKey = res.getString(R.string.prefFilterKey);
+            prefSortKey = res.getString(R.string.prefSortKey);
+            adapterColors = res.getIntArray(R.array.list_col);
+
+            _url = settings.getString(PREF_URL, "");
+            _username = settings.getString(PREF_USER, "");
+            _password = settings.getString(PREF_PASS, "");
+            _sslHack = settings.getBoolean(PREF_HACK, false);
+            _sslHostNameHack = settings.getBoolean(PREF_HNH, false);
+            _profile = settings.getString(PREF_PROF, null);
+            started = true;
         }
-        if (ticketGroupCount == -1) {
-            ticketGroupCount = res.getInteger(R.integer.ticketGroupCount);
-        }
-        //MyLog.d("final: "+ticketGroupCount);
+    }
 
-        webzoom = res.getInteger(R.integer.webzoom);
-        timerCorr = res.getInteger(R.integer.timerCorr);
-        large_move = res.getInteger(R.integer.large_move);
-        timerStart = res.getInteger(R.integer.timerStart);
-        timerPeriod = res.getInteger(R.integer.timerPeriod);
-        prefFilterKey = res.getString(R.string.prefFilterKey);
-        prefSortKey = res.getString(R.string.prefSortKey);
-        adapterColors = res.getIntArray(R.array.list_col);
+    static boolean getCanWriteSD() {
+        return canWriteSD;
+    }
 
-        _url = settings.getString(PREF_URL, "");
-        _username = settings.getString(PREF_USER, "");
-        _password = settings.getString(PREF_PASS, "");
-        _sslHack = settings.getBoolean(PREF_HACK, false);
-        _sslHostNameHack = settings.getBoolean(PREF_HNH, false);
-        _profile = settings.getString(PREF_PROF, null);
+    static void setCanWriteSD(boolean _canWriteSD) {
+        TracGlobal.canWriteSD = _canWriteSD;
+    }
+
+    static String getServiceAction() {
+        return serviceAction;
     }
 
     static SharedPreferences getSharedPreferences() {
@@ -190,51 +195,6 @@ final class TracGlobal {
     static void storeSortString(final String sortString) {
         //MyLog.d(sortString);
         settings.edit().putString(prefSortKey, sortString == null ? "" : sortString).apply();
-    }
-
-    static String makeDbPath(Context _context) {
-
-        String dbpath = DATABASE_NAME;
-        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            final File filePath = new File(_context.getExternalFilesDir(null), dbpath);
-//			MyLog.d("filePath = "+filePath);
-
-            if (isDebuggable(_context) || isRCVersion() || filePath.exists()) {
-                dbpath = filePath.toString();
-            }
-        }
-        MyLog.d("dbpath = " + dbpath);
-        return dbpath;
-    }
-
-    static boolean isDebuggable(Context _context) {
-        boolean debuggable = false;
-
-        try {
-            @SuppressLint("PackageManagerGetSignatures")
-            final PackageInfo pinfo = _context.getPackageManager().getPackageInfo(
-                    _context.getPackageName(),
-                    PackageManager.GET_SIGNATURES);
-            //MyLog.d("pinfo = "+pinfo);
-            //MyLog.toast("pinfo.packageName = "+pinfo.packageName);
-            final Signature signatures[] = pinfo.signatures;
-
-            final CertificateFactory cf = CertificateFactory.getInstance("X.509");
-
-            for (final Signature signature : signatures) {
-                final ByteArrayInputStream stream = new ByteArrayInputStream(
-                        signature.toByteArray());
-                final X509Certificate cert = (X509Certificate) cf.generateCertificate(stream);
-
-                debuggable = cert.getSubjectX500Principal().equals(DEBUG_DN);
-                if (debuggable) {
-                    break;
-                }
-            }
-        } catch (final NameNotFoundException | CertificateException e) {
-            MyLog.w(e);
-        }
-        return debuggable;
     }
 
     static boolean isRCVersion() {

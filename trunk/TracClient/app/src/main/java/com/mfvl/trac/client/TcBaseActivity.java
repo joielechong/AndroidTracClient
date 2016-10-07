@@ -320,11 +320,6 @@ abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callb
     }
 
     @Override
-    public boolean getCanWriteSD() {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
     public void getAttachment(Ticket t, String filename, onAttachmentCompleteListener oc) {
         throw new RuntimeException("not implemented");
     }
