@@ -102,9 +102,8 @@
     <string name="unsaved">Leave screen and save changes?</string>
     <string name="nee">No</string>
     <string name="ja">Yes</string>
-    <string name="hostnametitle" tools:ignore="MissingTranslation">Ignore Hostname verification?"</string>
-    <string name="hostnametext" tools:ignore="MissingTranslation">Hostname verification failed when trying to connect to server.\nMessage = "</string>
-    <string name="hostnameign" tools:ignore="MissingTranslation">\nIgnore the verification?</string>
+    <string name="hostnametext" tools:ignore="MissingTranslation">Hostname verification failed when trying to connect to server.\nMessage = \“%s\”</string>
+    <string name="hostnameign" tools:ignore="MissingTranslation">Ignore the verification?</string>
     <string name="noJSON">No JSON support on the TRAC-server</string>
     <string name="cookies" tools:ignore="MissingTranslation">Cookies</string>
     <string name="cookieInform" tools:ignore="MissingTranslation">This app uses cookies from Google to deliver services, to personalize ads and analyze traffic. Information about your use of this app will be shared with Google. If you use this app, you agree to the use of cookies.</string>
@@ -137,5 +136,4 @@
     <string name="settings" tools:ignore="MissingTranslation">Settings</string>
     <string name="trachost" tools:ignore="MissingTranslation">Trac Host</string>
     <string name="tickethead" tools:ignore="MissingTranslation">Ticket %d</string>
-    <string name="failexport">Export to file failed</string>
 </resources>

@@ -266,6 +266,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper implements PDHelper {
         }
     }
 
+    @SuppressWarnings("ThrowFromFinallyBlock")
     @Override
     public void writeXML(final String appname) throws Exception {
         final File fileName = FileOps.makeExtFilePath(context, "TracClient", appname + ".xml", true);

@@ -35,7 +35,6 @@
     <string name="filter">Filtrerings muligheder</string>
     <string name="getlist">Henter tickets\n%s</string>
     <string name="help">Hjælp</string>
-    <string name="hostnametitle">Ignorer host navns verificering?</string>
     <string name="importprofiles">Importeret profiler</string>
     <string name="invtick">Ukorrekt ticket nummer</string>
     <string name="ioerror">Ekster hukommelse - fejl ved skrivning</string>

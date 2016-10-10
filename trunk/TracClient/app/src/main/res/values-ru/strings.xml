@@ -100,9 +100,8 @@
     <string name="unsaved">Уйти и сохранить изменения?</string>
     <string name="nee">Нет</string>
     <string name="ja">Да</string>
-    <string name="hostnametitle">Игнорировать имя хоста проверку? </string>
-    <string name="hostnametext">Имя хоста верификация не удалась при попытке подключиться к серверу. \nCообщение= </string>
-    <string name="hostnameign">\nИгнорировать проверку?</string>
+    <string name="hostnametext">Имя хоста верификация не удалась при попытке подключиться к серверу. \nCообщение= \“%s\”</string>
+    <string name="hostnameign">Игнорировать проверку?</string>
     <string name="noJSON">Нет поддержки JSON на TRAC-сервер</string>
 
     <string-array name="filter_names">

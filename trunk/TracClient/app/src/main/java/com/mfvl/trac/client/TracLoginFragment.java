@@ -70,19 +70,19 @@ public class TracLoginFragment extends TracClientFragment
     /**
      * username to use on server
      */
-    private String username;
+    private String username = null;
     /**
      * password to use on server
      */
-    private String password;
+    private String password = null;
     /**
      * flag to indicate that SSL sites can have problems like Self signed certificates
      */
-    private boolean sslHack;
+    private boolean sslHack = false;
     /**
      * flag to ingnore Hostname verification errors in SSL
      */
-    private boolean sslHostNameHack;
+    private boolean sslHostNameHack = false;
     /**
      * flag to indicate that the credentials will be stored in the shared preferences
      */
@@ -320,7 +320,7 @@ public class TracLoginFragment extends TracClientFragment
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        MyLog.d("savedInstanceState = " + (savedInstanceState == null ? "null" : "not null"));
+        MyLog.d(savedInstanceState);
 
         String currentUsername;
         boolean currentSslHostNameHack;
@@ -431,8 +431,7 @@ public class TracLoginFragment extends TracClientFragment
         new Thread() {
             @Override
             public void run() {
-                TracHttpClient tc = new TracHttpClient(url, sslHack, sslHostNameHack, username,
-                        password);
+                TracHttpClient tc = new TracHttpClient(url, sslHack, sslHostNameHack, username, password);
                 try {
                     final String TracVersion = tc.verifyHost();
                     MyLog.d(TracVersion);
@@ -447,11 +446,10 @@ public class TracLoginFragment extends TracClientFragment
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                final String msg = getString(
-                                        R.string.hostnametext) + errmsg + getString(R.string.hostnameign);
+                                final String msg = getString(R.string.hostnametext, errmsg);
                                 new AlertDialog.Builder(getActivity())
                                         .setMessage(msg)
-                                        .setTitle(R.string.hostnametitle)
+                                        .setTitle(R.string.hostnameign)
                                         .setCancelable(false)
                                         .setPositiveButton(R.string.oktext,
                                                 new DialogInterface.OnClickListener() {
@@ -586,7 +584,6 @@ public class TracLoginFragment extends TracClientFragment
         intent.putExtra(CURRENT_SSLHACK, sslHack);
         intent.putExtra(CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
         intent.putExtra(CURRENT_PROFILE, SelectedProfile);
-        intent.putExtra(BEWAREN, bewaren);
         LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
         sendMessageToHandler(MSG_DONE, null);
     }

@@ -37,25 +37,18 @@ import java.util.Map;
 
 import static com.mfvl.trac.client.Const.*;
 
-interface TcBaseInterface {
-    Deque<Message> getMessageQueue();
-}
-
 @SuppressWarnings("AbstractClassExtendsConcreteClass")
 abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callback, InterFragmentListener {
     static boolean debug = false; // disable menuoption at startup
     Handler tracStartHandler = null;
     Messenger mMessenger = null;
-    HandlerThread mHandlerThread = null;
     TicketModel tm = null;
+    private HandlerThread mHandlerThread = null;
     private ProgressDialog progressBar = null;
     private boolean isPaused = false;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    private void createHandler() {
         MyLog.logCall();
-        TracGlobal.initialize(getApplicationContext());
         mHandlerThread = new MyHandlerThread("IncomingHandler");
         mHandlerThread.start();
         tracStartHandler = new Handler(mHandlerThread.getLooper(), this);
@@ -63,11 +56,19 @@ abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callb
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        MyLog.logCall();
+        TracGlobal.initialize(getApplicationContext());
+        createHandler();
+    }
+
+    @Override
     public synchronized void onStart() {
         super.onStart();
         MyLog.logCall();
         isPaused = false;
-        Deque<Message> msgQueue = ((TcBaseInterface) this).getMessageQueue();
+        Deque<Message> msgQueue = MsgQueueHolder.msgQueue;
         MyLog.d(msgQueue);
         while (!msgQueue.isEmpty()) {
             Message m = msgQueue.poll();
@@ -89,6 +90,8 @@ abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callb
         MyLog.d("isFinishing = " + isFinishing());
         if (isFinishing()) {
             mHandlerThread.quit();
+            tracStartHandler = null;
+            mHandlerThread = null;
         }
         super.onDestroy();
     }
@@ -110,7 +113,7 @@ abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callb
 
     private synchronized boolean queueMessage(Message msg) {
         MyLog.d("msg = " + msg);
-        Deque<Message> msgQueue = ((TcBaseInterface) this).getMessageQueue();
+        Deque<Message> msgQueue = MsgQueueHolder.msgQueue;
         Message m = Message.obtain(msg);
         boolean retval = msgQueue.add(m);
         MyLog.d(msgQueue);
@@ -330,6 +333,6 @@ abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callb
     }
 
     static class MsgQueueHolder {
-        static final ArrayDeque<Message> msgQueue = new ArrayDeque<>();
+        static final Deque<Message> msgQueue = new ArrayDeque<>();
     }
 }

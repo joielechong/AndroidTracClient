@@ -114,9 +114,8 @@
     <string name="unsaved">Laissez l\'écran et enregistrer les modifications?</string>
     <string name="nee">Non</string>
     <string name="ja">Oui</string>
-    <string name="hostnametitle">Ignorer la vérification de nom d\'hôte?</string>
-    <string name="hostnametext">Vérification de nom d\'hôte a échoué lors de la tentative de connexion au serveur.\nMessage =</string>
-    <string name="hostnameign">\nIgnorez la vérification?</string>
+    <string name="hostnametext">Vérification de nom d\'hôte a échoué lors de la tentative de connexion au serveur.\nMessage = \“%s\”</string>
+    <string name="hostnameign">Ignorez la vérification?</string>
     <string name="noJSON">Pas de support de JSON sur le TRAC-serveur</string>
     <string name="permissiontitle">Demande d\'autorisation</string>
     <string name="doubleback">Cliquez sur \‘Retour\’ de nouveau pour sortir</string>
@@ -129,6 +128,5 @@
     <string name="settings">Réglages</string>
     <string name="trachost">Hôte Trac</string>
     <string name="permissiontext" tools:ignore="TypographyQuotes">Cette application devrait être capable de lire et d\‘écrire sur la carte SD. Il n\’y a pas l\'autorisation pour les données. Si vous choisissez de ne pas donner un tel consentement, il est impossible d\'importer ou d\'exporter des profils ou des pièces jointes à attacher de la carte SD. Si vous n\'êtes pas cliquez sur le dialogue suivant pas le choix "Ne demandez pas".</string>
-    <string name="failexport">Échec: d\'exportation</string>
 
 </resources>
