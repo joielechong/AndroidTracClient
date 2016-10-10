@@ -25,19 +25,12 @@ import android.support.v4.content.LocalBroadcastManager;
 
 import com.mfvl.mfvllib.MyLog;
 
-import java.util.ArrayDeque;
 import java.util.Collection;
 
 import static com.mfvl.trac.client.Const.*;
 import static com.mfvl.trac.client.TracGlobal.*;
 
-public class PrefSpecActivity extends TcBaseActivity implements TcBaseInterface {
-
-    @Override
-    public ArrayDeque<Message> getMessageQueue() {
-        MyLog.logCall();
-        return MsgQueueHolder.msgQueue;
-    }
+public class PrefSpecActivity extends TcBaseActivity {
 
     @Override
     public void onCreate(Bundle sis) {
@@ -51,15 +44,16 @@ public class PrefSpecActivity extends TcBaseActivity implements TcBaseInterface 
         MyLog.d(intent);
         String action = intent.getAction();
         setContentView(R.layout.content_main);
-        tm = StdTicketModel.getInstance();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         final Bundle args = makeArgs();
         Fragment ff;
 
         if (filterAction.equals(action)) {
+            tm = StdTicketModel.getInstance();
             ff = new FilterFragment();
             args.putSerializable(FILTERLISTNAME, parseFilterString(getFilterString()));
         } else if (sortAction.equals(action)) {
+            tm = StdTicketModel.getInstance();
             ff = new SortFragment();
             args.putSerializable(SORTLISTNAME, parseSortString(getSortString()));
         } else if (loginAction.equals(action)) {

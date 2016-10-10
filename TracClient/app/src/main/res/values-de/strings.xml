@@ -113,9 +113,8 @@
     <string name="unsaved">Bildschirm verlassen und Änderungen speichern?</string>
     <string name="nee">Nein</string>
     <string name="ja">Ja</string>
-    <string name="hostnametitle">Ignorieren Hostname Prüfung?</string>
-    <string name="hostnametext">Hostname Prüfung gescheitert beim Versuch,Verbindung zum Server. \nMessage=</string>
-    <string name="hostnameign">\nIgnore die Prüfung?</string>
+    <string name="hostnametext">Hostname Prüfung gescheitert beim Versuch,Verbindung zum Server. \nMessage= \“%s\”</string>
+    <string name="hostnameign">Ignore die Prüfung?</string>
     <string name="noJSON">Kein JSON Unterstutzung auf Trac host</string>
     <string name="permissiontitle">Antrag auf Genehmigung</string>
     <string name="doubleback">Bitte klicken Sie nochmals auf “BACK” zum Beenden</string>
@@ -126,5 +125,4 @@
     <string name="cookieInform"> Diese App nutzt Cookies von Google. um Dienstleistungen zu liefern, um Anzeigen zu personalisieren und Verkehr zu analysieren. Informationen über Ihre Benutzung dieser App wird mit Google geteilt. Wenn Sie diese App nutzen, akzeptieren Sie der Verwendung von Cookies.</string>
     <string name="generalsettings"> Allgemeine Einstellungen</string>
     <string name="settings">Einstellungen</string>
-    <string name="failexport">Exportieren fehlgeschlagen</string>
 </resources>

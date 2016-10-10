@@ -28,7 +28,7 @@ import ch.boye.httpclientandroidlib.Consts;
 public abstract class JSONRPCClient {
 
     protected Versions version;
-    protected boolean _debug = false;
+    protected boolean debug = false;
 
     // public static final String VERSION_1 = "1.0";
     // public static final String VERSION_2 = "2.0";
@@ -63,22 +63,22 @@ public abstract class JSONRPCClient {
      * Get the debugging mode
      */
     public boolean isDebug() {
-        return _debug;
+        return debug;
     }
 
     /**
      * Setting the _debugging mode (ON / OFF -> FALSE / TRUE
      */
     public void setDebug(boolean _debug) {
-        this._debug = _debug;
+        debug = _debug;
     }
 
-    public void setEncoding(String encoding) {
-        this.encoding = encoding;
+    public void setEncoding(String _encoding) {
+        encoding = _encoding;
     }
 
     public void delEncoding() {
-        this.encoding = "";
+        encoding = "";
     }
 
     protected JSONObject doRequest(String method, Object[] params) throws JSONRPCException {

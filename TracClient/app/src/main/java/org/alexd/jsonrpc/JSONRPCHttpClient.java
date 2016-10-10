@@ -206,7 +206,7 @@ public class JSONRPCHttpClient extends JSONRPCClient {
         }
     }
 
-    public void setCredentials(final String username, final String password) {
+    protected void setCredentials(final String username, final String password) {
         if (username != null && !"".equals(username)) {
             _username = username;
             _password = password;
@@ -221,7 +221,7 @@ public class JSONRPCHttpClient extends JSONRPCClient {
 
             @Override
             public boolean isTrusted(final X509Certificate[] chain, final String authType) throws CertificateException {
-                if (_debug) {
+                if (debug) {
                     for (final X509Certificate x : chain) {
                         MyLog.d( "cert: " + x);
                     }
