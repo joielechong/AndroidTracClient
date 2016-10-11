@@ -156,26 +156,6 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     private String urlArg = null;
     private int ticketArg = -1;
     private boolean doNotFinish = false;
-    private final BroadcastReceiver performLoginReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            // Get extra data included in the Intent
-            MyLog.d("intent = " + intent);
-            String uri = intent.getStringExtra(CURRENT_URL);
-            String username = intent.getStringExtra(CURRENT_USERNAME);
-            String password = intent.getStringExtra(CURRENT_PASSWORD);
-            String SelectedProfile = intent.getStringExtra(CURRENT_PROFILE);
-            boolean sslhack = intent.getBooleanExtra(CURRENT_SSLHACK, false);
-            boolean sslHostNamehack = intent.getBooleanExtra(CURRENT_SSLHOSTNAMEHACK, false);
-            LoginProfile lp = new LoginProfileImpl(uri, username, password, sslhack, sslHostNamehack);
-            lp.setProfile(SelectedProfile);
-            MyLog.d(lp);
-            Message m = tracStartHandler.obtainMessage(MSG_PERFORM_LOGIN, 0, 0, lp);
-            MyLog.d(m);
-            m.sendToTarget();
-            doNotFinish = true;
-        }
-    };
     private RefreshSrv mService = null;
     private DrawerLayout mDrawerLayout = null;
     private ActionBarDrawerToggle toggle = null;
@@ -316,7 +296,6 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         toggle.syncState();
 
         LocalBroadcastManager.getInstance(this).registerReceiver(sqlupdateReceiver, new IntentFilter(DB_UPDATED));
-        LocalBroadcastManager.getInstance(this).registerReceiver(performLoginReceiver, new IntentFilter(PERFORM_LOGIN));
         LocalBroadcastManager.getInstance(this).registerReceiver(performFilterReceiver, new IntentFilter(PERFORM_FILTER));
         LocalBroadcastManager.getInstance(this).registerReceiver(performSortReceiver, new IntentFilter(PERFORM_SORT));
 
@@ -469,18 +448,20 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         MyLog.d("intent = " + intent + " this = " + this);
         MyLog.d("tracStartHandler = " + tracStartHandler + " this = " + this);
         // Get extra data included in the Intent
-        String uri = intent.getStringExtra(CURRENT_URL);
-        String username = intent.getStringExtra(CURRENT_USERNAME);
-        String password = intent.getStringExtra(CURRENT_PASSWORD);
-        String SelectedProfile = intent.getStringExtra(CURRENT_PROFILE);
-        boolean sslhack = intent.getBooleanExtra(CURRENT_SSLHACK, false);
-        boolean sslHostNamehack = intent.getBooleanExtra(CURRENT_SSLHOSTNAMEHACK, false);
-        LoginProfile lp = new LoginProfileImpl(uri, username, password, sslhack, sslHostNamehack);
-        lp.setProfile(SelectedProfile);
-        MyLog.d(lp);
-        Message m = tracStartHandler.obtainMessage(MSG_PERFORM_LOGIN, 0, 0, lp);
-        MyLog.d(m);
-        m.sendToTarget();
+        if (PERFORM_LOGIN.equals(intent.getAction())) {
+            String uri = intent.getStringExtra(CURRENT_URL);
+            String username = intent.getStringExtra(CURRENT_USERNAME);
+            String password = intent.getStringExtra(CURRENT_PASSWORD);
+            String SelectedProfile = intent.getStringExtra(CURRENT_PROFILE);
+            boolean sslhack = intent.getBooleanExtra(CURRENT_SSLHACK, false);
+            boolean sslHostNamehack = intent.getBooleanExtra(CURRENT_SSLHOSTNAMEHACK, false);
+            LoginProfile lp = new LoginProfileImpl(uri, username, password, sslhack, sslHostNamehack);
+            lp.setProfile(SelectedProfile);
+            MyLog.d(lp);
+            Message m = tracStartHandler.obtainMessage(MSG_PERFORM_LOGIN, 0, 0, lp);
+            MyLog.d(m);
+            m.sendToTarget();
+        }
     }
 
     @Override
