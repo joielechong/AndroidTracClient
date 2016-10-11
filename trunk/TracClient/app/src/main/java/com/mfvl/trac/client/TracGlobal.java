@@ -54,7 +54,12 @@ final class TracGlobal {
     private static String serviceAction = null;
 
     static void initialize(final Context context) {
-        if (!started) {
+        initialize(context, false);
+    }
+
+    static void initialize(final Context context, boolean force) {
+        MyLog.d("context = " + context + " force = " + force);
+        if (force || !started) {
             Resources res = context.getResources();
             settings = context.getSharedPreferences(PREFS_NAME, 0);
             //MyLog.d(settings.getAll());

@@ -77,11 +77,11 @@ public class RefreshService extends Service implements Handler.Callback, Refresh
     private HandlerThread mHandlerThread = null;
     private Handler mServiceHandler;
     private LoginProfile mLoginProfile = null;
-    private TracHttpClient tracClient = null;
+    private TracHttp tracClient = null;
     private NotificationManager mNotificationManager;
     private Tickets mTickets = null;
     private boolean invalid = true;
-    private TicketLoaderLock loadLock = null;
+    private ReentrantLock loadLock = null;
     private Handler tracStartHandler = null;
 
     @Override
@@ -181,7 +181,7 @@ public class RefreshService extends Service implements Handler.Callback, Refresh
             @Override
             public void run() {
                 if (!loadLock.tryLock()) {
-                    loadLock.killOwner();
+                    ((TicketLoaderLck) loadLock).killOwner();
                     loadLock.lock();
                 }
 //                MyLog.d("locked: " + loadLock);
@@ -501,13 +501,18 @@ public class RefreshService extends Service implements Handler.Callback, Refresh
         dispatchMessage(Message.obtain(null, message, R.string.warning, arg2, o));
     }
 
-    private class TicketLoaderLock extends ReentrantLock {
+    interface TicketLoaderLck {
+        void killOwner();
+    }
+
+    private class TicketLoaderLock extends ReentrantLock implements TicketLoaderLck {
         TicketLoaderLock() {
             super();
 //            MyLog.logCall();
         }
 
-        void killOwner() {
+        @Override
+        public void killOwner() {
 //            MyLog.logCall();
             Thread t = super.getOwner();
             t.interrupt();

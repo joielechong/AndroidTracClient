@@ -26,7 +26,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.content.LocalBroadcastManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -273,6 +272,7 @@ public class TracLoginFragment extends TracClientFragment
 
     @Override
     public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+        //MyLog.logCall();
         if (arg1 != null) {
             SelectedProfile = ((TextView) arg1).getText().toString();
             if (arg2 > 0) { // pos 0 is empty
@@ -312,6 +312,7 @@ public class TracLoginFragment extends TracClientFragment
     }
 
     private void checkHackBox(String s) {
+        //MyLog.logCall();
         if (sslHackBox != null && s != null) {
             sslHackBox.setVisibility(s.length() >= 6 && "https:".equals(s.substring(0, 6)) ? View.VISIBLE : View.GONE);
         }
@@ -320,7 +321,7 @@ public class TracLoginFragment extends TracClientFragment
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        MyLog.d(savedInstanceState);
+        //MyLog.d(savedInstanceState);
 
         String currentUsername;
         boolean currentSslHostNameHack;
@@ -365,6 +366,7 @@ public class TracLoginFragment extends TracClientFragment
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        //MyLog.logCall();
         if (++debugcounter == 6) {
             listener.enableDebug();
         }
@@ -405,6 +407,7 @@ public class TracLoginFragment extends TracClientFragment
 
     @Override
     public void onClick(View v) {
+        //MyLog.logCall();
         switch (v.getId()) {
             case R.id.okBut:
                 performLogin();
@@ -421,6 +424,7 @@ public class TracLoginFragment extends TracClientFragment
     }
 
     private void performVerify() {
+        //MyLog.logCall();
         url = urlView.getText().toString();
         username = userView.getText().toString();
         password = pwView.getText().toString();
@@ -431,7 +435,8 @@ public class TracLoginFragment extends TracClientFragment
         new Thread() {
             @Override
             public void run() {
-                TracHttpClient tc = new TracHttpClient(url, sslHack, sslHostNameHack, username, password);
+                //MyLog.logCall();
+                TracHttp tc = new TracHttpClient(url, sslHack, sslHostNameHack, username, password);
                 try {
                     final String TracVersion = tc.verifyHost();
                     MyLog.d(TracVersion);
@@ -483,12 +488,13 @@ public class TracLoginFragment extends TracClientFragment
     }
 
     private void verifyHostNameHack() {
+        //MyLog.logCall();
         listener.startProgressBar(R.string.checking);
         new Thread() {
             @Override
             public void run() {
-                TracHttpClient tc = new TracHttpClient(url, sslHack, sslHostNameHack, username,
-                        password);
+                //MyLog.logCall();
+                TracHttp tc = new TracHttpClient(url, sslHack, sslHostNameHack, username, password);
                 try {
                     final String TracVersion = tc.verifyHost();
                     MyLog.d(TracVersion);
@@ -512,9 +518,11 @@ public class TracLoginFragment extends TracClientFragment
     }
 
     private void setNoJSONMessage(final CharSequence message) {
+        //MyLog.logCall();
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                //MyLog.logCall();
                 credWarn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_warn, 0, 0, 0);
                 credWarn.setText(R.string.noJSON);
                 credWarn.setVisibility(View.VISIBLE);
@@ -530,9 +538,11 @@ public class TracLoginFragment extends TracClientFragment
     }
 
     private void setInvalidMessage(final String m1, final String m2) {
+        //MyLog.logCall();
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                //MyLog.logCall();
                 credWarn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_warn, 0, 0, 0);
                 credWarn.setText(R.string.invalidCred);
                 credWarn.setVisibility(View.VISIBLE);
@@ -552,9 +562,11 @@ public class TracLoginFragment extends TracClientFragment
     }
 
     private void setValidMessage() {
+        //MyLog.logCall();
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                //MyLog.logCall();
                 credWarn.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
                 credWarn.setText(R.string.validCred);
                 credWarn.setVisibility(View.VISIBLE);
@@ -566,6 +578,7 @@ public class TracLoginFragment extends TracClientFragment
     }
 
     private void performLogin() {
+        //MyLog.logCall();
         url = urlView.getText().toString();
         username = userView.getText().toString();
         password = pwView.getText().toString();
@@ -577,18 +590,21 @@ public class TracLoginFragment extends TracClientFragment
             setSslHostNameHack(sslHostNameHack);
             storeCredentials();
         }
-        Intent intent = new Intent(PERFORM_LOGIN);
-        intent.putExtra(CURRENT_URL, url);
-        intent.putExtra(CURRENT_USERNAME, username);
-        intent.putExtra(CURRENT_PASSWORD, password);
-        intent.putExtra(CURRENT_SSLHACK, sslHack);
-        intent.putExtra(CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
-        intent.putExtra(CURRENT_PROFILE, SelectedProfile);
-        LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
+
+        Intent intentAct = new Intent(PERFORM_LOGIN);
+        intentAct.setClass(getActivity(), TracStart.class);
+        intentAct.putExtra(CURRENT_URL, url);
+        intentAct.putExtra(CURRENT_USERNAME, username);
+        intentAct.putExtra(CURRENT_PASSWORD, password);
+        intentAct.putExtra(CURRENT_SSLHACK, sslHack);
+        intentAct.putExtra(CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
+        intentAct.putExtra(CURRENT_PROFILE, SelectedProfile);
+        startActivity(intentAct);
         sendMessageToHandler(MSG_DONE, null);
     }
 
     private void storeProfile() {
+        //MyLog.logCall();
         url = urlView.getText().toString();
         username = userView.getText().toString();
         password = pwView.getText().toString();
@@ -620,6 +636,7 @@ public class TracLoginFragment extends TracClientFragment
     }
 
     private void swapSpinnerAdapter() {
+        //MyLog.logCall();
         final SimpleCursorAdapter a = (SimpleCursorAdapter) loginSpinner.getAdapter();
 
         a.swapCursor(pdb.getProfiles(true));
