@@ -34,11 +34,11 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-//        MyLog.logCall();
         super.onCreate(savedInstanceState);
         MyLog.setContext(this, getString(R.string.logfile));
         MyLog.reset();
-        TracGlobal.initialize(getApplicationContext());
+        //MyLog.logCall();
+        TracGlobal.initialize(getApplicationContext(), true);
         setContentView(R.layout.trac_version);
         startService(new Intent(this, RefreshService.class));
     }
@@ -93,7 +93,6 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
             public void run() {
                 MyLog.logCall();
                 startActivity(launchTrac);
-                finish();
             }
         }, timerVal);
     }

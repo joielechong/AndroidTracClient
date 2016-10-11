@@ -197,7 +197,7 @@ public class JSONRPCHttpClient extends JSONRPCClient {
                     }
                 } else {
                     final String titel = lastResponse.substring(titelstart + 7, titeleind).trim();
-                    throw new JSONRPCException("Invalid JSON response: title = " + titel);
+                    throw new JSONRPCException("Invalid JSON response: message = " + titel);
                 }
             }
         } catch (final Exception e) {
