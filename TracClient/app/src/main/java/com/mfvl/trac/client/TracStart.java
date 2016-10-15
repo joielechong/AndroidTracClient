@@ -18,7 +18,6 @@
 package com.mfvl.trac.client;
 
 import android.Manifest;
-import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -51,6 +50,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
@@ -443,12 +443,12 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
 
     @Override
     protected void onNewIntent(Intent intent) {
-        doNotFinish = true;
         //super.onNewIntent(intent);
         MyLog.d("intent = " + intent + " this = " + this);
         MyLog.d("tracStartHandler = " + tracStartHandler + " this = " + this);
         // Get extra data included in the Intent
         if (PERFORM_LOGIN.equals(intent.getAction())) {
+            doNotFinish = true;
             String uri = intent.getStringExtra(CURRENT_URL);
             String username = intent.getStringExtra(CURRENT_USERNAME);
             String password = intent.getStringExtra(CURRENT_PASSWORD);
@@ -602,7 +602,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         final boolean canBack = getSupportFragmentManager().getBackStackEntryCount() > 1;
 
         MyLog.d("canBack = " + canBack);
-        final ActionBar ab = getActionBar();
+        ActionBar ab = getSupportActionBar();
 
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(canBack);
@@ -1481,17 +1481,19 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
 
     @Override
     public void onGlobalLayout() {
+        MyLog.logCall();
         final View view = findViewById(android.R.id.content);
 
         if (view != null) {
-            final ActionBar ab = getActionBar();
+            final ActionBar ab = getSupportActionBar();
             final Rect r = new Rect();
 
             // r will be populated with the coordinates of your view that area still visible.
             view.getWindowVisibleDisplayFrame(r);
-
-            final int heightDiff = view.getRootView().getHeight() - (r.bottom - r.top);
-            if (heightDiff > 100) { // if more than 100 pixels,
+            final int viewHeight = view.getRootView().getHeight();
+            int visibleHeight = r.bottom - r.top;
+            float ratio = (float) viewHeight / (float) visibleHeight;
+            if (ratio > 1.7f) { // if more than 100 pixels,
                 // its probably a keyboard...
                 if (ab != null) {
                     ab.hide();
