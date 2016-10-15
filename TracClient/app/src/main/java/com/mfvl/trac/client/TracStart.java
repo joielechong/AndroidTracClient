@@ -602,7 +602,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         final boolean canBack = getSupportFragmentManager().getBackStackEntryCount() > 1;
 
         MyLog.d("canBack = " + canBack);
-        ActionBar ab = getSupportActionBar();
+        final ActionBar ab = getSupportActionBar();
 
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(canBack);
