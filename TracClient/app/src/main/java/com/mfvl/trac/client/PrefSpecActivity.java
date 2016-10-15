@@ -22,6 +22,10 @@ import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 
 import com.mfvl.mfvllib.MyLog;
 
@@ -33,6 +37,19 @@ import static com.mfvl.trac.client.TracGlobal.*;
 public class PrefSpecActivity extends TcBaseActivity {
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MyLog.logCall();
+        getMenuInflater().inflate(R.menu.preferences, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        MyLog.logCall();
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onCreate(Bundle sis) {
         super.onCreate(sis);
 
@@ -40,10 +57,14 @@ public class PrefSpecActivity extends TcBaseActivity {
         String sortAction = getString(R.string.editSortAction);
         String loginAction = getString(R.string.editLoginAction);
 
+        setContentView(R.layout.app_bar_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setLogo(R.drawable.traclogo);
+        setSupportActionBar(toolbar);
+
         Intent intent = getIntent();
         MyLog.d(intent);
         String action = intent.getAction();
-        setContentView(R.layout.content_main);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         final Bundle args = makeArgs();
         Fragment ff;
