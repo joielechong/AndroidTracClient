@@ -56,7 +56,7 @@ public class SortFragment extends SpecFragment<SortSpec> implements HelpInterfac
             case R.id.addbutton:
                 final String veld = tm.velden().get((int) addSpinner.getSelectedItemId());
                 //MyLog.d("addButton " + veld);
-                sortAdapter.add(new SortSpec(veld));
+                sortAdapter.add(new SortSpecImpl(veld));
                 break;
         }
     }

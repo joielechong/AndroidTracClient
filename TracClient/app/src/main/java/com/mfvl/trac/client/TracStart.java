@@ -17,17 +17,14 @@
 
 package com.mfvl.trac.client;
 
-import android.Manifest;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Rect;
@@ -41,12 +38,10 @@ import android.preference.PreferenceActivity;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -82,7 +77,6 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
@@ -98,14 +92,13 @@ interface OnTicketLoadedListener {
 }
 
 public class TracStart extends TcBaseActivity implements ServiceConnection, FragmentManager.OnBackStackChangedListener,
-        NavigationView.OnNavigationItemSelectedListener, ActivityCompat.OnRequestPermissionsResultCallback,
+        NavigationView.OnNavigationItemSelectedListener,
         ViewTreeObserver.OnGlobalLayoutListener, SharedPreferences.OnSharedPreferenceChangeListener {
     static final String DetailFragmentTag = "Detail_Fragment";
     private static final int DELAY_2ND_BACK = 2000;
     private static final int CHANGEHOSTMARKER = 1234;
     private static final int ALERT_TIME = 7500;
     private static final int REQUEST_CODE_CHOOSER = 174;
-    private static final int REQUEST_CODE_WRITE_EXT = 175;
     private static final String ListFragmentTag = "List_Fragment";
     private static final String LoginFragmentTag = "Login_Fragment";
     private static final String NewFragmentTag = "New_Fragment";
@@ -261,26 +254,6 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
 
         if (DEBUG_MANAGERS) {
             FragmentManager.enableDebugLogging(true);
-        }
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            TracGlobal.setCanWriteSD(true);
-        } else {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                new AlertDialog.Builder(this)
-                        .setTitle(R.string.permissiontitle)
-                        .setMessage(R.string.permissiontext)
-                        .setCancelable(false)
-                        .setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.dismiss();
-                                tracStartHandler.obtainMessage(MSG_GET_PERMISSIONS).sendToTarget();
-                            }
-                        }).show();
-            } else {
-                tracStartHandler.obtainMessage(MSG_GET_PERMISSIONS).sendToTarget();
-            }
         }
 
         setContentView(R.layout.tracstart);
@@ -842,16 +815,6 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        MyLog.d("requestCode = " + requestCode + " permissions = " + Arrays.asList(
-                permissions) + " grantResults = " + Arrays.asList(grantResults));
-        if (requestCode == REQUEST_CODE_WRITE_EXT) {
-            // If request is cancelled, the result arrays are empty.
-            setCanWriteSD((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED));
-        }
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         MyLog.d("requestcode = " + requestCode + " intent = " + data);
         if (requestCode == REQUEST_CODE_CHOOSER) {
@@ -1342,15 +1305,6 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                     });
                 } else {
                     onTicketSelected(t);
-                }
-                break;
-
-            case MSG_GET_PERMISSIONS:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    ActivityCompat.requestPermissions(TracStart.this,
-                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                    Manifest.permission.READ_EXTERNAL_STORAGE},
-                            REQUEST_CODE_WRITE_EXT);
                 }
                 break;
 
