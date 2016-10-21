@@ -145,10 +145,10 @@ public abstract class JSONRPCClient {
     /**
      * Set the socket operation timeout
      *
-     * @param soTimeout timeout in milliseconds
+     * @param _soTimeout timeout in milliseconds
      */
-    public void setSoTimeout(int soTimeout) {
-        this.soTimeout = soTimeout;
+    public void setSoTimeout(int _soTimeout) {
+        soTimeout = _soTimeout;
     }
 
     /**
@@ -162,10 +162,10 @@ public abstract class JSONRPCClient {
     /**
      * Set the connection timeout
      *
-     * @param connectionTimeout timeout in milliseconds
+     * @param _connectionTimeout timeout in milliseconds
      */
-    public void setConnectionTimeout(int connectionTimeout) {
-        this.connectionTimeout = connectionTimeout;
+    public void setConnectionTimeout(int _connectionTimeout) {
+        connectionTimeout = _connectionTimeout;
     }
 
     /**

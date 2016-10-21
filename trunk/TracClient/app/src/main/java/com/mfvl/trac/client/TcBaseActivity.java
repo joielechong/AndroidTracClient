@@ -16,14 +16,22 @@
 
 package com.mfvl.trac.client;
 
+import android.Manifest;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 import android.os.Messenger;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ArrayAdapter;
 
@@ -32,13 +40,16 @@ import com.mfvl.mfvllib.MyProgressBar;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.Map;
 
 import static com.mfvl.trac.client.Const.*;
+import static com.mfvl.trac.client.TracGlobal.setCanWriteSD;
 
 @SuppressWarnings("AbstractClassExtendsConcreteClass")
-abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callback, InterFragmentListener {
+abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callback, ActivityCompat.OnRequestPermissionsResultCallback, InterFragmentListener {
+    private static final int REQUEST_CODE_WRITE_EXT = 175;
     static boolean debug = false; // disable menuoption at startup
     Handler tracStartHandler = null;
     Messenger mMessenger = null;
@@ -75,6 +86,36 @@ abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callb
             if (m != null) {
                 tracStartHandler.sendMessage(m);
             }
+        }
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            TracGlobal.setCanWriteSD(true);
+        } else {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.permissiontitle)
+                        .setMessage(R.string.permissiontext)
+                        .setCancelable(false)
+                        .setPositiveButton(R.string.oktext, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                                tracStartHandler.obtainMessage(MSG_GET_PERMISSIONS).sendToTarget();
+                            }
+                        }).show();
+            } else {
+                tracStartHandler.obtainMessage(MSG_GET_PERMISSIONS).sendToTarget();
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        MyLog.d("requestCode = " + requestCode + " permissions = " + Arrays.asList(
+                permissions) + " grantResults = " + Arrays.asList(grantResults));
+        if (requestCode == REQUEST_CODE_WRITE_EXT) {
+            // If request is cancelled, the result arrays are empty.
+            setCanWriteSD((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED));
         }
     }
 
@@ -145,6 +186,15 @@ abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callb
                 }
                 break;
 
+            case MSG_GET_PERMISSIONS:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                    Manifest.permission.READ_EXTERNAL_STORAGE},
+                            REQUEST_CODE_WRITE_EXT);
+                }
+                break;
+
             default:
                 return false;
         }
@@ -203,7 +253,7 @@ abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callb
                             i++;
                         }
                     }
-                    sl.add(new SortSpec(veld, richting));
+                    sl.add(new SortSpecImpl(veld, richting));
                 }
             }
         }

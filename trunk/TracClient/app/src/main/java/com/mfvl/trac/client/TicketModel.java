@@ -45,7 +45,7 @@ interface TicketModel {
     int count();
 }
 
-final class StdTicketModel implements TicketModel {
+class StdTicketModel implements TicketModel {
     private final static List<String> extraFields = Arrays.asList("max", "page");
     private final static List<String> extraValues = Arrays.asList("500", "0");
     private static Map<String, TicketModelVeld> _velden;
