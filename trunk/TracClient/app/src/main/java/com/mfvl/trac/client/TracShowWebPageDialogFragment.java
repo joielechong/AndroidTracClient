@@ -35,10 +35,10 @@ import static com.mfvl.trac.client.Const.*;
 
 public class TracShowWebPageDialogFragment extends TcDialogFragment implements TabLayout.OnTabSelectedListener {
     private final static String TABSELECTED = "tabselected";
-    private String fileUrl;
+    private String fileUrl = null;
     private int webzoom = 0;
     private int tabSelected = 0;
-    private TabLayout tl;
+    private TabLayout tl = null;
 
     private void startFragment(Fragment frag) {
         MyLog.d(frag);

@@ -48,15 +48,15 @@ interface TicketModel {
 class StdTicketModel implements TicketModel {
     private final static List<String> extraFields = Arrays.asList("max", "page");
     private final static List<String> extraValues = Arrays.asList("500", "0");
-    private static Map<String, TicketModelVeld> _velden;
-    private static List<String> _volgorde;
-    private static int fieldCount;
+    private static Map<String, TicketModelVeld> _velden = null;
+    private static List<String> _volgorde = null;
+    private static int fieldCount = 0;
     @SuppressWarnings("StaticVariableOfConcreteClass")
     private static StdTicketModel _instance = null;
     private static boolean _hasData = false;
     private static TracHttp _tracClient = null;
     private static Semaphore active = null;
-    private static JSONArray v;
+    private static JSONArray v = null;
 
     private StdTicketModel(TracHttp tracClient) {
         MyLog.logCall();

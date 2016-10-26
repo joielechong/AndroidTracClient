@@ -50,8 +50,8 @@ import static com.mfvl.trac.client.Const.*;
 public class FilterFragment extends SpecFragment<FilterSpec> implements HelpInterface, SpecInterface {
     private static List<String> operators = null;
     private static List<String> operatornames = null;
-    private FilterAdapter filterAdapter;
-    private Spinner addSpinner;
+    private FilterAdapter filterAdapter = null;
+    private Spinner addSpinner = null;
 
     @Override
     public String keyName() {

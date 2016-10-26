@@ -22,9 +22,9 @@ android {
 
     defaultConfig {
         applicationId "com.mfvl.trac.client"
-        minSdkVersion 13
+        minSdkVersion 11
         targetSdkVersion 24
-        versionCode 109
+        versionCode 110
         resConfigs "nl","en","da","de","fr","pl","pt","ru","ar"
     }
 

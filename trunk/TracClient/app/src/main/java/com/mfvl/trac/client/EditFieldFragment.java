@@ -34,11 +34,11 @@ public class EditFieldFragment extends TcDialogFragment {
     public static final String VELD = "veld";
     public static final String WAARDE = "waarde";
     private static final String NIEUW_WAARDE = "nieuwWaarde";
-    private TicketModel tm;
-    private String veld;
-    private String waarde;
-    private String nieuwWaarde;
-    private Spinner spinValue;
+    private TicketModel tm = null;
+    private String veld = null;
+    private String waarde = null;
+    private String nieuwWaarde = null;
+    private Spinner spinValue = null;
 
     @Override
     public void onSaveInstanceState(Bundle savedState) {

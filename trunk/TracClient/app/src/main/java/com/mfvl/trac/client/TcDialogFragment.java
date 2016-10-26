@@ -18,19 +18,28 @@ package com.mfvl.trac.client;
 
 import android.content.Context;
 import android.graphics.Point;
+import android.os.Build;
 import android.support.v4.app.DialogFragment;
 import android.view.Display;
 import android.view.WindowManager;
 
 public class TcDialogFragment extends DialogFragment {
+    @SuppressWarnings("deprecation")
     @Override
     public void onResume() {
         super.onResume();
         Display display = ((WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         Point size = new Point();
-        display.getSize(size);
-        int width = size.x;
-        int height = size.y;
+        int width;
+        int height;
+        if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB_MR1) {
+            display.getSize(size);
+            width = size.x;
+            height = size.y;
+        } else {
+            width = display.getWidth();
+            height = display.getHeight();
+        }
         getDialog().getWindow().setLayout(width * 95 / 100, height * 9 / 10);
 //		getView().setAlpha(0.7f);
     }

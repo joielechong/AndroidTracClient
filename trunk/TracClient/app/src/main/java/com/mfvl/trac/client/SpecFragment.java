@@ -33,9 +33,9 @@ public class SpecFragment<T extends Spec> extends TracClientFragment {
     private final static String inputSpecText = "inputSpec";
     private final static String outputSpecText = "outputSpec";
     ArrayList<T> outputSpec = null;
-    ListView listView;
-    View currentView;
-    private ArrayList<T> inputSpec;
+    ListView listView = null;
+    View currentView = null;
+    private ArrayList<T> inputSpec = null;
 
     @Override
     @SuppressWarnings("unchecked")

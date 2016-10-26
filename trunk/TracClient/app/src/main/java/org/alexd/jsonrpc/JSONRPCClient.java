@@ -27,7 +27,7 @@ import ch.boye.httpclientandroidlib.Consts;
 
 public abstract class JSONRPCClient {
 
-    protected Versions version;
+    protected Versions version = null;
     protected boolean debug = false;
 
     // public static final String VERSION_1 = "1.0";

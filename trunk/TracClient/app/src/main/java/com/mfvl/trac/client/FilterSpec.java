@@ -31,7 +31,7 @@ interface FilterSpec extends Spec {
 class FilterSpecImpl extends SpecImpl implements FilterSpec {
     private String _operator;
     private String _waarde;
-    private String _newwaarde;
+    private String _newwaarde = null;
     private Boolean _edited = false;
 
     FilterSpecImpl(final String veld, final String operator, final String waarde) {
