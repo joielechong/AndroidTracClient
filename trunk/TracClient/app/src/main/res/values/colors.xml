@@ -16,25 +16,24 @@
 <resources>
     <color name="colorPrimary">@color/help_back</color>
     <color name="colorPrimaryDark">@color/material_blue_grey_800</color>
-    <color name="colorAccent">@android:color/holo_orange_dark</color>
+    <color name="colorAccent">#ff8800</color>
 
     <color name="popup_back">#39cccccc</color>
-    <color name="help_back">@android:color/holo_blue_dark</color>
-    <!-- color name="help_text">@android:color/holo_blue_light</color -->
+    <color name="help_back">#0099cc</color>
     <color name="help_text">#77e5e5</color>
-    <color name="about_text">@android:color/holo_blue_bright</color>
+    <color name="about_text">#00ddff</color>
     <color name="spinner_text">@android:color/black</color>
 
     <color name="list_col1">@color/primary_material_light</color>
     <color name="list_col2">@color/ripple_material_light</color>
 
-    <color name="popup_selected">@android:color/holo_red_light</color>
+    <color name="popup_selected">#ff4444</color>
     <color name="popup_unselected">@android:color/black</color>
 
-    <color name="swipe_blue">@android:color/holo_blue_bright</color>
-    <color name="swipe_green">@android:color/holo_green_light</color>
-    <color name="swipe_orange">@android:color/holo_orange_light</color>
-    <color name="swipe_red">@android:color/holo_red_light</color>
+    <color name="swipe_blue">#00ddff</color>
+    <color name="swipe_green">#99cc00</color>
+    <color name="swipe_orange">#ffbb33</color>
+    <color name="swipe_red">#ff4444</color>
 
     <array name="list_col">
         <item>@color/list_col1</item>

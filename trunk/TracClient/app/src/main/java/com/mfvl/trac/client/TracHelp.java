@@ -23,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.webkit.WebSettings.TextSize;
 import android.webkit.WebView;
 
 import com.mfvl.mfvllib.MyLog;
@@ -58,12 +59,17 @@ public class TracHelp extends TcDialogFragment {
         return d;
     }
 
+    @SuppressWarnings("deprecation")
     private void showWebpage() {
         MyLog.logCall();
         webfile.loadUrl(fileUrl);
         webfile.setVisibility(View.VISIBLE);
         // webfile.getSettings().setJavaScriptEnabled(true);
-        webfile.getSettings().setTextZoom(webzoom);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            webfile.getSettings().setTextZoom(webzoom);
+        } else {
+            webfile.getSettings().setTextSize((webzoom > 100 ? TextSize.LARGER : (webzoom == 100 ? TextSize.NORMAL : TextSize.SMALLER)));
+        }
         MyLog.d(webfile.getContentHeight());
     }
 }

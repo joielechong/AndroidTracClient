@@ -16,5 +16,5 @@
   -->
 
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources">
-    <string name="app_version" translatable="false">0.7-rc21</string>
+    <string name="app_version" translatable="false">0.7-rc22</string>
 </resources>
