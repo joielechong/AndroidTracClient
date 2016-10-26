@@ -31,12 +31,12 @@ import java.util.Locale;
 import static com.mfvl.trac.client.Const.*;
 
 final class TracGlobal {
-    public static int webzoom;
-    static int ticketGroupCount;
-    static int timerCorr;
-    static int timerStart;
-    static int timerPeriod;
-    static int large_move;
+    public static int webzoom = 0;
+    static int ticketGroupCount = 0;
+    static int timerCorr = 0;
+    static int timerStart = 0;
+    static int timerPeriod = 0;
+    static int large_move = 0;
     static int[] adapterColors = null;
     static String prefFilterKey = "filterstring";
     static String prefSortKey = "sortString";

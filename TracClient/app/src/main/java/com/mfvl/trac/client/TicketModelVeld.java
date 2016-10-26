@@ -44,11 +44,11 @@ class TicketModelVeldImpl implements TicketModelVeld {
 
     private final String _name;
     private final String _label;
-    private String _type;
-    private String _format;
-    private String _value;
+    private String _type = null;
+    private String _format = null;
+    private String _value = null;
     private List<Object> _options;
-    private boolean _optional;
+    private boolean _optional = false;
 //    private int _order;
 //    private boolean _custom;
 

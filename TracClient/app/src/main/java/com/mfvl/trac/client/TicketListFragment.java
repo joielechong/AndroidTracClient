@@ -63,7 +63,7 @@ public class TicketListFragment extends TracClientFragment
     private int scrollPosition = 0;
     private boolean scrolling = false;
     private boolean hasScrolled = false;
-    private SwipeRefreshLayout swipeLayout;
+    private SwipeRefreshLayout swipeLayout = null;
     private ArrayAdapter<Ticket> dataAdapter = null;
     private ListView listView = null;
     private EditText filterText = null;

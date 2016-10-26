@@ -98,17 +98,17 @@ public class DetailFragment extends TracClientFragment
     private final List<ModifiedString> values = new ArrayList<>();
     private int ticknr = -1;
     private boolean showEmptyFields = false;
-    private Map<String, String> modVeld;
+    private Map<String, String> modVeld = null;
     private boolean sendNotification = false;
     private boolean didUpdate = false;
-    private String[] notModified;
-    private String[] isStatusUpd;
-    private MenuItem selectItem;
+    private String[] notModified = null;
+    private String[] isStatusUpd = null;
+    private MenuItem selectItem = null;
     private GestureDetector gestureDetector = null;
     private int popup_selected_color = 0;
     private int popup_unselected_color = 0;
-    private SwipeRefreshLayout swipeLayout;
-    private View currentView;
+    private SwipeRefreshLayout swipeLayout = null;
+    private View currentView = null;
 
     @SuppressWarnings("unchecked")
     @Override

@@ -302,8 +302,8 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper implements PDHelper {
         private final PDHelper _pdb;
         String _appname = null;
         private int state = -1;
-        private String profileName;
-        private LoginProfile lp;
+        private String profileName = null;
+        private LoginProfile lp = null;
 
         XMLHandler(String appname, PDHelper pdb) {
             super();

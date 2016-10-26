@@ -75,10 +75,10 @@ public class RefreshService extends Service implements Handler.Callback, Refresh
     private final IBinder mBinder = new RefreshBinderImpl();
     private Timer monitorTimer = null;
     private HandlerThread mHandlerThread = null;
-    private Handler mServiceHandler;
+    private Handler mServiceHandler = null;
     private LoginProfile mLoginProfile = null;
     private TracHttp tracClient = null;
-    private NotificationManager mNotificationManager;
+    private NotificationManager mNotificationManager = null;
     private Tickets mTickets = null;
     private boolean invalid = true;
     private ReentrantLock loadLock = null;

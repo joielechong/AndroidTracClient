@@ -31,8 +31,8 @@ import com.mfvl.mfvllib.MyLog;
 import static com.mfvl.trac.client.Const.*;
 
 public class TracHelp extends TcDialogFragment {
-    private String fileUrl;
-    private WebView webfile;
+    private String fileUrl = null;
+    private WebView webfile = null;
     private int webzoom = 0;
 
     @Override

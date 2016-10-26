@@ -69,8 +69,8 @@ public class JSONRPCHttpClient extends JSONRPCClient {
     private final String serviceUri;
     public JSONObject lastJsonRequest = null;
     public String lastResponse = null;
-    private String _username;
-    private String _password;
+    private String _username = null;
+    private String _password = null;
 
     public JSONRPCHttpClient(final String uri) {
         this(uri, false, false);
