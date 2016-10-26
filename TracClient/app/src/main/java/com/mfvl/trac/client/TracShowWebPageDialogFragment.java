@@ -25,6 +25,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.webkit.WebSettings.TextSize;
 import android.webkit.WebView;
 import android.widget.TextView;
 
@@ -150,6 +151,7 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements T
     }
 
     public static class ChangeFragment extends Fragment {
+        @SuppressWarnings("deprecation")
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             MyLog.logCall();
@@ -158,7 +160,12 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements T
             final Bundle args = getArguments();
             if (args != null) {
                 wv.loadUrl(args.getString(HELP_FILE));
-                wv.getSettings().setTextZoom(args.getInt(HELP_ZOOM));
+                int zoom = args.getInt(HELP_ZOOM);
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                    wv.getSettings().setTextZoom(zoom);
+                } else {
+                    wv.getSettings().setTextSize((zoom > 100 ? TextSize.LARGER : (zoom == 100 ? TextSize.NORMAL : TextSize.SMALLER)));
+                }
             }
             return v;
         }
