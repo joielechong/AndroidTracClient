@@ -148,7 +148,7 @@ public class JSONRPCHttpClient extends JSONRPCClient {
                     }
                 } catch (SSLException e) {
                     // Catch 1st 3 times
-                    MyLog.w("SSLException in 	JSONRPCHTTPClient.doJSONRequest retrycount = " + retrycount);
+                    MyLog.w("SSLException in JSONRPCHTTPClient.doJSONRequest retrycount = " + retrycount);
                     if (retrycount++ < 3) {
                         retry = true;
                     } else {

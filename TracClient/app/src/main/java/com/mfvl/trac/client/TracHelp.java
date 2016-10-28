@@ -17,13 +17,14 @@
 package com.mfvl.trac.client;
 
 import android.app.Dialog;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.webkit.WebSettings.TextSize;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.mfvl.mfvllib.MyLog;
@@ -65,10 +66,10 @@ public class TracHelp extends TcDialogFragment {
         webfile.loadUrl(fileUrl);
         webfile.setVisibility(View.VISIBLE);
         // webfile.getSettings().setJavaScriptEnabled(true);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             webfile.getSettings().setTextZoom(webzoom);
         } else {
-            webfile.getSettings().setTextSize((webzoom > 100 ? TextSize.LARGER : (webzoom == 100 ? TextSize.NORMAL : TextSize.SMALLER)));
+            webfile.getSettings().setTextSize((webzoom > 100 ? WebSettings.TextSize.LARGER : (webzoom == 100 ? WebSettings.TextSize.NORMAL : WebSettings.TextSize.SMALLER)));
         }
         MyLog.d(webfile.getContentHeight());
     }

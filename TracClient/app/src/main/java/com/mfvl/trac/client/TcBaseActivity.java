@@ -17,6 +17,7 @@
 package com.mfvl.trac.client;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -161,6 +162,7 @@ abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callb
         return retval;
     }
 
+    @SuppressLint("InlinedApi")
     boolean processMessage(Message msg) {
         MyLog.d("msg = " + msg.what);
         switch (msg.what) {
@@ -187,22 +189,16 @@ abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callb
                 break;
 
             case MSG_GET_PERMISSIONS:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    ActivityCompat.requestPermissions(this,
-                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                    Manifest.permission.READ_EXTERNAL_STORAGE},
-                            REQUEST_CODE_WRITE_EXT);
-                }
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                Manifest.permission.READ_EXTERNAL_STORAGE},
+                        REQUEST_CODE_WRITE_EXT);
                 break;
 
             default:
                 return false;
         }
         return true;
-    }
-
-    Bundle makeArgs() {
-        return new Bundle();
     }
 
     ArrayList<FilterSpec> parseFilterString(String filterString) {

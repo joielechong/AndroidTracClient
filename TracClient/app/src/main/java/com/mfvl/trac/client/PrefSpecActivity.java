@@ -65,7 +65,7 @@ public class PrefSpecActivity extends TcBaseActivity {
         MyLog.d(intent);
         String action = intent.getAction();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        final Bundle args = makeArgs();
+        final Bundle args = new Bundle();
         Fragment ff;
 
         if (filterAction.equals(action)) {

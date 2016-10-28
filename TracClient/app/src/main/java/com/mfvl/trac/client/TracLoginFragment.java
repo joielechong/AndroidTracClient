@@ -538,7 +538,7 @@ public class TracLoginFragment extends TracClientFragment
     }
 
     private void setInvalidMessage(final String m1, final String m2) {
-        //MyLog.logCall();
+        MyLog.logCall();
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
