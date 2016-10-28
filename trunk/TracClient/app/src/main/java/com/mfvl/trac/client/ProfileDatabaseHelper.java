@@ -132,7 +132,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper implements PDHelper {
         db.execSQL(CREATE_PROFILE_TABLE);
         db.execSQL("insert into " + TABLE_NAME + "(" + NAME_ID + ") VALUES ('')");
         upgrade = true;
-        sendNotification("Databae opened");
+        sendNotification("Database opened");
     }
 
     @Override
@@ -159,6 +159,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper implements PDHelper {
     }
 
     private void sendNotification(String message) {
+        MyLog.d(message);
         Intent intent = new Intent(DB_UPDATED);
         intent.putExtra(DB_UPDATED, message);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);

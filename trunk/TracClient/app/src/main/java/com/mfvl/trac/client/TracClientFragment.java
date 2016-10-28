@@ -178,7 +178,9 @@ public abstract class TracClientFragment extends Fragment implements View.OnClic
     }
 
     void runOnUiThread(Runnable r) {
-        getActivity().runOnUiThread(r);
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(r);
+        }
     }
 
     @Override

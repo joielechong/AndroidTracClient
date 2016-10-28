@@ -162,7 +162,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         @Override
         public void onReceive(Context context, Intent intent) {
             // Get extra data included in the Intent
-            MyLog.d("intent = " + intent);
+            MyLog.d("intent = " + intent + "(" + intent.getStringExtra(DB_UPDATED) + ")");
             Menu menu = navigationView.getMenu();
             menu.removeGroup(CHANGEHOSTMARKER);
 
@@ -267,10 +267,6 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         toggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
-
-        LocalBroadcastManager.getInstance(this).registerReceiver(sqlupdateReceiver, new IntentFilter(DB_UPDATED));
-        LocalBroadcastManager.getInstance(this).registerReceiver(performFilterReceiver, new IntentFilter(PERFORM_FILTER));
-        LocalBroadcastManager.getInstance(this).registerReceiver(performSortReceiver, new IntentFilter(PERFORM_SORT));
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -382,7 +378,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
 
                 if (urlArg != null) {
                     MyLog.d("select NormalTicket = " + ticketArg);
-                    final Bundle args = makeArgs();
+                    final Bundle args = new Bundle();
                     args.putInt("TicketArg", ticketArg);
                     urlArg = null;
                     ticketArg = -1;
@@ -604,6 +600,11 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     protected void onResume() {
         super.onResume();
         MyLog.logCall();
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(sqlupdateReceiver, new IntentFilter(DB_UPDATED));
+        LocalBroadcastManager.getInstance(this).registerReceiver(performFilterReceiver, new IntentFilter(PERFORM_FILTER));
+        LocalBroadcastManager.getInstance(this).registerReceiver(performSortReceiver, new IntentFilter(PERFORM_SORT));
+
         if (getTopFragment() == null && !doNotFinish) {
             finish();
         }
@@ -669,6 +670,9 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         if (isFinishing() && isRCVersion()) {
             MyLog.save();
         }
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(sqlupdateReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(performFilterReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(performSortReceiver);
     }
 
     @Override
@@ -837,7 +841,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         final Fragment newtickFragment = new NewTicketFragment();
         // MyLog.d("newTickFragment =" +  newtickFragment.toString());
         final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        final Bundle args = makeArgs();
+        final Bundle args = new Bundle();
         args.putString(CURRENT_USERNAME, userName);
         newtickFragment.setArguments(args);
 
@@ -961,7 +965,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         MyLog.d("Ticket: " + ticket + " isTop = " + isTop);
 
         Fragment detailFragment = new DetailFragment();
-        final Bundle args = makeArgs();
+        final Bundle args = new Bundle();
         args.putInt(CURRENT_TICKET, ticket.getTicketnr());
         detailFragment.setArguments(args);
 
@@ -982,7 +986,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         MyLog.d("ticket = " + ticket);
 
         final Fragment updtickFragment = new UpdateTicketFragment();
-        final Bundle args = makeArgs();
+        final Bundle args = new Bundle();
 
         args.putInt(CURRENT_TICKET, ticket.getTicketnr());
         updtickFragment.setArguments(args);

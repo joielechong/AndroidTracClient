@@ -32,7 +32,7 @@ public class TcDialogFragment extends DialogFragment {
         Point size = new Point();
         int width;
         int height;
-        if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB_MR1) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB_MR1) {
             display.getSize(size);
             width = size.x;
             height = size.y;
