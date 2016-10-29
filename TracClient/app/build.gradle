@@ -105,7 +105,8 @@ dependencies {
     compile "com.android.support:support-v4:${google_support_library}"
     compile "andhradroid.dev:app:1.0.1"
     compile files('libs/httpclientandroidlib-1.2.1.jar')
-    compile project(":mfvllib")
+//    compile project(':mfvllib')
+    compile files('../mfvllib/build/libs/mfvllib.jar')
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
 
