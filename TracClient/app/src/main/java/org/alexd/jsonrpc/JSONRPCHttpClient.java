@@ -17,6 +17,7 @@
 package org.alexd.jsonrpc;
 
 import android.net.Uri;
+import android.text.TextUtils;
 
 import com.mfvl.mfvllib.MyLog;
 
@@ -207,12 +208,12 @@ public class JSONRPCHttpClient extends JSONRPCClient {
     }
 
     protected void setCredentials(final String username, final String password) {
-        if (username != null && !"".equals(username)) {
-            _username = username;
-            _password = password;
-        } else {
+        if (TextUtils.isEmpty(username)) {
             _username = null;
             _password = null;
+        } else {
+            _username = username;
+            _password = password;
         }
     }
 

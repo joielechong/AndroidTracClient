@@ -206,20 +206,6 @@ final class TracGlobal {
         return (versie != null) && (versie.toLowerCase(Locale.US).contains("rc"));
     }
 
-    static String joinList(Object list[], final String sep) {
-        String reqString = "";
-
-        for (final Object fs : list) {
-            if (fs != null) {
-                if (reqString.length() > 0) {
-                    reqString += sep;
-                }
-                reqString += fs.toString();
-            }
-        }
-        return reqString;
-    }
-
     /**
      * Transform ISO 8601 string to Calendar.
      */

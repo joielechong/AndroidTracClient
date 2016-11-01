@@ -27,6 +27,7 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.app.NotificationCompat;
+import android.text.TextUtils;
 
 import com.mfvl.mfvllib.MyLog;
 
@@ -212,14 +213,14 @@ public class RefreshService extends Service implements Handler.Callback, Refresh
             String reqString = "";
             List<FilterSpec> fl = mLoginProfile.getFilterList();
             if (fl != null) {
-                reqString = joinList(fl.toArray(), "&");
+                reqString = TextUtils.join("&", fl);
             }
             List<SortSpec> sl = mLoginProfile.getSortList();
             if (sl != null) {
                 if (fl != null) {
                     reqString += "&";
                 }
-                reqString += joinList(sl.toArray(), "&");
+                reqString += TextUtils.join("&", sl.toArray());
             }
             if (reqString.length() == 0) {
                 reqString = "max=0";
