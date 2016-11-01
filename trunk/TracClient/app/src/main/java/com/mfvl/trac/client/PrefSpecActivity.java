@@ -23,12 +23,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.mfvl.mfvllib.MyLog;
-
-import java.util.Collection;
 
 import static com.mfvl.trac.client.Const.*;
 import static com.mfvl.trac.client.TracGlobal.*;
@@ -97,8 +96,8 @@ public class PrefSpecActivity extends TcBaseActivity {
                 break;
 
             case MSG_SET_FILTER:
-                Collection<FilterSpec> filter = (Collection<FilterSpec>) msg.obj;
-                String filterString = joinList(filter.toArray(), "&");
+                Iterable<FilterSpec> filter = (Iterable<FilterSpec>) msg.obj;
+                String filterString = TextUtils.join("&", filter);
                 storeFilterString(filterString);
                 intent = new Intent(PERFORM_FILTER);
                 intent.putExtra(FILTERLISTNAME, filterString);
@@ -107,8 +106,8 @@ public class PrefSpecActivity extends TcBaseActivity {
                 break;
 
             case MSG_SET_SORT:
-                Collection<SortSpec> sort = (Collection<SortSpec>) msg.obj;
-                String sortString = joinList(sort.toArray(), "&");
+                Iterable<SortSpec> sort = (Iterable<SortSpec>) msg.obj;
+                String sortString = TextUtils.join("&", sort);
                 storeSortString(sortString);
                 intent = new Intent(PERFORM_SORT);
                 intent.putExtra(SORTLISTNAME, sortString);

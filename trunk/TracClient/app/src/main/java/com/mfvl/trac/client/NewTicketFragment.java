@@ -20,6 +20,7 @@ package com.mfvl.trac.client;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -143,9 +144,9 @@ public class NewTicketFragment extends TracClientFragment implements HelpInterfa
                             MyLog.e("Exception in createTicket", e);
                         }
                     } else if (w != null) {
-                        final String s = ((TextView) w).getText().toString();
-                        if (!"".equals(s)) {
-                            SavedState.putString(veldnaam, s);
+                        final CharSequence s = ((TextView) w).getText();
+                        if (!TextUtils.isEmpty(s)) {
+                            SavedState.putString(veldnaam, s.toString());
                         }
                     }
                 }
@@ -185,9 +186,9 @@ public class NewTicketFragment extends TracClientFragment implements HelpInterfa
                                 MyLog.e("Exception in createTicket", e);
                             }
                         } else if (w != null) {
-                            final String s = ((TextView) w).getText().toString();
+                            final CharSequence s = ((TextView) w).getText();
 
-                            if (!"".equals(s)) {
+                            if (!TextUtils.isEmpty(s)) {
                                 velden.put(veldnaam, s);
                             }
                         }

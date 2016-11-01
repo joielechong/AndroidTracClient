@@ -17,6 +17,7 @@
 package com.mfvl.trac.client;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,7 +49,7 @@ public class EditFieldFragment extends TcDialogFragment {
         savedState.putString(WAARDE, waarde);
         tm.onSaveInstanceState(savedState);
         nieuwWaarde = ((TextView) spinValue.getSelectedView()).getText().toString();
-        MyLog.d(nieuwWaarde);
+        //MyLog.d(nieuwWaarde);
         savedState.putString(NIEUW_WAARDE, nieuwWaarde);
     }
 
@@ -88,7 +89,7 @@ public class EditFieldFragment extends TcDialogFragment {
             }
             spinAdapter.addAll(tmv.options());
             spinValue.setAdapter(spinAdapter);
-            if (nieuwWaarde != null && !"".equals(nieuwWaarde)) {
+            if (!TextUtils.isEmpty(nieuwWaarde)) {
                 spinValue.setSelection(tmv.options().indexOf(nieuwWaarde) + (tmv.optional() ? 1 : 0), true);
             }
         }

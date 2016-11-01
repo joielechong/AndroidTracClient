@@ -18,6 +18,7 @@ package com.mfvl.trac.client;
 
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -186,7 +187,7 @@ public class UpdateTicketFragment extends TracClientFragment implements HelpInte
                                         spinAdapter.setDropDownViewResource(
                                                 android.R.layout.simple_spinner_dropdown_item);
                                         optiesSpin.setAdapter(spinAdapter);
-                                        if (!"".equals(ifValue) && opties.contains(ifValue)) {
+                                        if (!TextUtils.isEmpty(ifValue) && opties.contains(ifValue)) {
                                             optiesSpin.setSelection(opties.indexOf(ifValue), true);
                                         }
                                     }
@@ -241,7 +242,7 @@ public class UpdateTicketFragment extends TracClientFragment implements HelpInte
         final EditText optieVal = (EditText) view.findViewById(R.id.optieval);
 
         if (currentActionName != null) {
-            if (!"".equals(optieVal.getText().toString())) {
+            if (!TextUtils.isEmpty(optieVal.getText())) {
                 w = optieVal.getText().toString();
             }
             if (optiesSpin.getAdapter() != null) {

@@ -48,6 +48,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -448,7 +449,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     private String[] getTestDevices() {
         String[] td = null;
         final String t = getString(R.string.testDevice1);
-        if (!"".equals(t)) {
+        if (!TextUtils.isEmpty(t)) {
             try {
                 td = t.split(",");
             } catch (final IllegalArgumentException e) { // only 1 in split
@@ -858,7 +859,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
 
     private void setFilter(ArrayList<FilterSpec> filter) {
         MyLog.d(filter.toString());
-        String filterString = joinList(filter.toArray(), "&");
+        String filterString = TextUtils.join("&", filter);
         storeFilterString(filterString);
         filterList = filter;
     }
@@ -872,7 +873,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     private void setSort(ArrayList<SortSpec> sort) {
         MyLog.d(sort.toString());
 
-        String sortString = joinList(sort.toArray(), "&");
+        String sortString = TextUtils.join("&", sort);
         storeSortString(sortString);
         sortList = sort;
     }
@@ -1086,7 +1087,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             throw new NullPointerException(getString(R.string.noaction));
         }
         velden.put("action", action);
-        if (waarde != null && veld != null && !"".equals(veld) && !"".equals(waarde)) {
+        if (!TextUtils.isEmpty(waarde) && !TextUtils.isEmpty(veld)) {
             velden.put(veld, waarde);
         }
         if (modVeld != null) {

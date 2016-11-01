@@ -21,6 +21,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -65,8 +66,8 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements HelpInte
                 final List<FilterSpec> items = filterAdapter.items;
 
                 for (int i = items.size() - 1; i >= 0; i--) {
-                    if ("".equals(items.get(i).getOperator())
-                            || "".equals(items.get(i).getWaarde())) {
+                    if (TextUtils.isEmpty(items.get(i).getOperator())
+                            || !TextUtils.isEmpty(items.get(i).getWaarde())) {
                         items.remove(i);
                     } else {
                         items.get(i).setEdit(false);
