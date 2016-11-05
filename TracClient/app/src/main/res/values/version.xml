@@ -16,5 +16,6 @@
   -->
 
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources">
-    <string name="app_version" translatable="false">0.7-rc23</string>
+    <string name="app_version" translatable="false">0.7-rc24</string>
+    <string name="CookieVersion" translatable="false">1</string>
 </resources>

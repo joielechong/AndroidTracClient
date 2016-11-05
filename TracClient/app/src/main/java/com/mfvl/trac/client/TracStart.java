@@ -164,19 +164,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         public void onReceive(Context context, Intent intent) {
             // Get extra data included in the Intent
             MyLog.d("intent = " + intent + "(" + intent.getStringExtra(DB_UPDATED) + ")");
-            Menu menu = navigationView.getMenu();
-            menu.removeGroup(CHANGEHOSTMARKER);
-
-            MenuItem mi = menu.add(CHANGEHOSTMARKER, Menu.NONE, Menu.NONE, R.string.changehost);
-            mi.setEnabled(false);
-            Cursor pdbCursor = pdb.getProfiles(false);
-            MyLog.d("pdbCursor = " + pdbCursor);
-            for (pdbCursor.moveToFirst(); !pdbCursor.isAfterLast(); pdbCursor.moveToNext()) {
-                //MyLog.d("pdbCursor 0 = "+pdbCursor.getInt(0));
-                //MyLog.d("pdbCursor 1 = "+pdbCursor.getString(1));
-                menu.add(CHANGEHOSTMARKER, Menu.NONE, Menu.NONE, pdbCursor.getString(1));
-            }
-            pdbCursor.close();
+            update_navmenu();
         }
     };
 
@@ -307,7 +295,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
 
             // only at first start
             if (isFirstRun()) {
-                showAbout(true);
+                showAbout(mustShowCookie(this));
             }
             dispAds = !getIntent().hasExtra(ADMOB) || getIntent().getBooleanExtra(ADMOB, true);
             if (getIntent().hasExtra(INTENT_URL)) {
@@ -401,6 +389,23 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         }
         setReferenceTime();
         TracGlobal.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        update_navmenu();
+    }
+
+    private void update_navmenu() {
+        Menu menu = navigationView.getMenu();
+        menu.removeGroup(CHANGEHOSTMARKER);
+
+        MenuItem mi = menu.add(CHANGEHOSTMARKER, Menu.NONE, Menu.NONE, R.string.changehost);
+        mi.setEnabled(false);
+        Cursor pdbCursor = pdb.getProfiles(false);
+        MyLog.d("pdbCursor = " + pdbCursor);
+        for (pdbCursor.moveToFirst(); !pdbCursor.isAfterLast(); pdbCursor.moveToNext()) {
+            //MyLog.d("pdbCursor 0 = "+pdbCursor.getInt(0));
+            //MyLog.d("pdbCursor 1 = "+pdbCursor.getString(1));
+            menu.add(CHANGEHOSTMARKER, Menu.NONE, Menu.NONE, pdbCursor.getString(1));
+        }
+        pdbCursor.close();
     }
 
     private void startPreferences() {

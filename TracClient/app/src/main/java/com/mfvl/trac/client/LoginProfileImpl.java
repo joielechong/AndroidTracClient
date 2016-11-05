@@ -47,25 +47,25 @@ interface LoginProfile {
 }
 
 class LoginProfileImpl extends TcObject implements Serializable, Cloneable, LoginProfile {
-    private String _url;
-    private String _username;
-    private String _password;
-    private boolean _sslHack;
-    private boolean _sslHostNameHack = false;
+    private String url;
+    private String username;
+    private String password;
+    private boolean sslHack;
+    private boolean sslHostNameHack = false;
     private List<FilterSpec> filterList = null;
     private List<SortSpec> sortList = null;
     private String _profile = null;
 
-    LoginProfileImpl(String url, String username, String password, boolean sslHack) {
-        this(url, username, password, sslHack, false);
+    LoginProfileImpl(String _url, String _username, String _password, boolean _sslHack) {
+        this(_url, _username, _password, _sslHack, false);
     }
 
-    LoginProfileImpl(String url, String username, String password, boolean sslHack, boolean sslHostNameHack) {
-        _url = url;
-        _username = username;
-        _password = password;
-        _sslHack = sslHack;
-        _sslHostNameHack = sslHostNameHack;
+    LoginProfileImpl(String _url, String _username, String _password, boolean _sslHack, boolean _sslHostNameHack) {
+        url = _url;
+        username = _username;
+        password = _password;
+        sslHack = _sslHack;
+        sslHostNameHack = _sslHostNameHack;
     }
 
     @Override
@@ -78,24 +78,24 @@ class LoginProfileImpl extends TcObject implements Serializable, Cloneable, Logi
         }
         LoginProfile f = (LoginProfile) o;
 //			MyLog.d("this = "+this+" f = "+f + " "+retVal);
-        return equalFields(_url, f.getUrl())
-                && equalFields(_username, f.getUsername())
-                && equalFields(_password, f.getPassword())
+        return equalFields(url, f.getUrl())
+                && equalFields(username, f.getUsername())
+                && equalFields(password, f.getPassword())
                 && equalFields(filterList, f.getFilterList())
                 && equalFields(sortList, f.getSortList())
-                && (_sslHack == f.getSslHack())
-                && (_sslHostNameHack == f.getSslHostNameHack());
+                && (sslHack == f.getSslHack())
+                && (sslHostNameHack == f.getSslHostNameHack());
     }
 
     @SuppressWarnings({"MethodReturnOfConcreteClass", "LocalVariableOfConcreteClass"})
     @Override
     public LoginProfileImpl clone() throws CloneNotSupportedException {
         LoginProfileImpl lp = (LoginProfileImpl) super.clone();
-        lp._url = _url;
-        lp._username = _username;
-        lp._password = _password;
-        lp._sslHack = _sslHack;
-        lp._sslHostNameHack = _sslHostNameHack;
+        lp.url = url;
+        lp.username = username;
+        lp.password = password;
+        lp.sslHack = sslHack;
+        lp.sslHostNameHack = sslHostNameHack;
         lp.filterList = filterList;
         lp.sortList = sortList;
         lp._profile = _profile;
@@ -104,32 +104,32 @@ class LoginProfileImpl extends TcObject implements Serializable, Cloneable, Logi
 
     @Override
     public String getUrl() {
-        return _url;
+        return url;
     }
 
     @Override
     public String getUsername() {
-        return _username;
+        return username;
     }
 
     @Override
     public String getPassword() {
-        return _password;
+        return password;
     }
 
     @Override
     public boolean getSslHack() {
-        return _sslHack;
+        return sslHack;
     }
 
     @Override
     public boolean getSslHostNameHack() {
-        return _sslHostNameHack;
+        return sslHostNameHack;
     }
 
     @Override
     public LoginProfile setSslHostNameHack(boolean v) {
-        _sslHostNameHack = v;
+        sslHostNameHack = v;
         return this;
     }
 
@@ -157,7 +157,7 @@ class LoginProfileImpl extends TcObject implements Serializable, Cloneable, Logi
 
     @Override
     public String toString() {
-        return "url: " + _url + " username: " + _username + " password: " + _password + " sslHack: " + _sslHack + " sslHostNameHack: " + _sslHostNameHack + " filterList: " + filterList + " sortList: " + sortList;
+        return "url: " + url + " username: " + username + " password: " + password + " sslHack: " + sslHack + " sslHostNameHack: " + sslHostNameHack + " filterList: " + filterList + " sortList: " + sortList;
     }
 
     @Override
@@ -172,11 +172,11 @@ class LoginProfileImpl extends TcObject implements Serializable, Cloneable, Logi
 
     @Override
     public int hashCode() {
-        int result = _url != null ? _url.hashCode() : 0;
-        result = 31 * result + (_username != null ? _username.hashCode() : 0);
-        result = 31 * result + (_password != null ? _password.hashCode() : 0);
-        result = 31 * result + (_sslHack ? 1 : 0);
-        result = 31 * result + (_sslHostNameHack ? 1 : 0);
+        int result = url != null ? url.hashCode() : 0;
+        result = 31 * result + (username != null ? username.hashCode() : 0);
+        result = 31 * result + (password != null ? password.hashCode() : 0);
+        result = 31 * result + (sslHack ? 1 : 0);
+        result = 31 * result + (sslHostNameHack ? 1 : 0);
         result = 31 * result + (filterList != null ? filterList.hashCode() : 0);
         result = 31 * result + (sortList != null ? sortList.hashCode() : 0);
         result = 31 * result + (_profile != null ? _profile.hashCode() : 0);

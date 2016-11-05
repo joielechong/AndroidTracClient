@@ -90,18 +90,22 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements T
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         MyLog.logCall();
         InterFragmentListener listener = (InterFragmentListener) getActivity();
-        if (savedInstanceState != null) {
-            tabSelected = savedInstanceState.getInt(TABSELECTED);
-        }
         final String fileName = getArguments().getString(HELP_FILE);
         webzoom = getArguments().getInt(HELP_ZOOM);
+        boolean showCookies = getArguments().getBoolean(HELP_COOKIES);
 
         View mainView = inflater.inflate(R.layout.trac_about, container, false);
         fileUrl = "file:///android_asset/" + fileName + ".html";
         tl = (TabLayout) mainView.findViewById(R.id.tabs);
         MyLog.d(fileUrl);
+        if (showCookies) {
+            tabSelected = tl.getTabCount() - 1;
+        }
         if (listener.debugEnabled()) {
             tl.addTab(tl.newTab().setText(R.string.svn));
+        }
+        if (savedInstanceState != null) {
+            tabSelected = savedInstanceState.getInt(TABSELECTED);
         }
         return mainView;
     }

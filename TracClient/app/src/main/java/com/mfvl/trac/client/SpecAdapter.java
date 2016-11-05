@@ -32,7 +32,7 @@ abstract class SpecAdapter<T extends Spec> extends ArrayAdapter<T> implements It
     SpecAdapter(Context context, int textViewResourceId, ArrayList<T> _items) {
         super(context, textViewResourceId, _items);
 //        MyLog.logCall();
-        this.items = _items;
+        items = _items;
     }
 
     @Override

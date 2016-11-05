@@ -16,9 +16,11 @@
 
 package com.mfvl.trac.client;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.text.TextUtils;
 
 import com.mfvl.mfvllib.MyLog;
 
@@ -176,6 +178,17 @@ final class TracGlobal {
         final String lastRun = settings.getString(PREF_1ST, "");
         settings.edit().putString(PREF_1ST, thisRun).apply();
         return !lastRun.equals(thisRun);
+    }
+
+    static boolean mustShowCookie(Activity act) {
+        final String thisCookieVers = settings.getString(PREF_COOKIE_VERS, "");
+        final String newCookieVers = act.getString(R.string.CookieVersion);
+        if (TextUtils.equals(thisCookieVers, newCookieVers)) {
+            return false;
+        } else {
+            settings.edit().putString(PREF_COOKIE_VERS, newCookieVers).apply();
+            return true;
+        }
     }
 
     static String getFilterString() {
