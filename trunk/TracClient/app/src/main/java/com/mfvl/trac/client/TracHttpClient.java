@@ -61,9 +61,9 @@ class TracHttpClient extends JSONRPCHttpClient implements TracHttp {
     private final static String _JSONCLASS = "__jsonclass__";
     private final boolean current_sslHack;
     private final boolean current_sslHostNameHack;
-    private String current_url = null;
-    private String current_username = null;
-    private String current_password = null;
+    private final String current_url;
+    private final String current_username;
+    private final String current_password;
 
     TracHttpClient(final String url, final boolean sslHack, final boolean sslHostNameHack, final String username, final String password) {
         super(url, sslHack, sslHostNameHack);
