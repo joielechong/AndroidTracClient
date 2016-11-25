@@ -119,6 +119,10 @@ public class DetailFragment extends TracClientFragment
             ticknr = savedInstanceState.getInt(CURRENT_TICKET, -1);
             showEmptyFields = savedInstanceState.getBoolean(EMPTYFIELDS, false);
             modVeld = (Map<String, String>) savedInstanceState.getSerializable(MODVELD);
+            if (modVeld == null) {
+                modVeld = new ModVeldMap();
+                modVeld.clear();
+            }
             setSelect(modVeld.isEmpty());
             ticknr = savedInstanceState.getInt(CURRENT_TICKET, -1);
         } else {

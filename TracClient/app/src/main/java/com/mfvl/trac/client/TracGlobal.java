@@ -55,6 +55,9 @@ final class TracGlobal {
     private static boolean started = false;
     private static String serviceAction = null;
 
+    private TracGlobal() {
+    }
+
     static void initialize(final Context context) {
         initialize(context, false);
     }
