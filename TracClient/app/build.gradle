@@ -99,15 +99,14 @@ repositories {
 }
 
 dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile project(':mfvllib')
+    compile files('libs/httpclientandroidlib-1.2.1.jar')
     compile "com.google.android.gms:play-services-ads-lite:${google_play_services_library}"
     compile "com.android.support:appcompat-v7:${google_support_library}"
     compile "com.android.support:design:${google_support_library}"
     compile "com.android.support:support-v4:${google_support_library}"
     compile "andhradroid.dev:app:1.0.1"
-    compile files('libs/httpclientandroidlib-1.2.1.jar')
-//    compile project(':mfvllib')
-    compile files('../mfvllib/build/libs/mfvllib.jar')
-    compile fileTree(dir: 'libs', include: ['*.jar'])
 }
 
 preBuild.doFirst {
@@ -135,9 +134,11 @@ if (privatePropertiesFile.exists()) {
 }
 
 // check existence of private properties, show an error message
-task verifyPrivateProperties << {
-    if (!rootProject.file('private.properties').exists()) {
-        throw new InvalidUserDataException("For signing the release build you must provide a file private.properties in the root directory. Copy templates/private.properties and change the values.")
+task verifyPrivateProperties {
+    doLast {
+        if (!rootProject.file('private.properties').exists()) {
+            throw new InvalidUserDataException("For signing the release build you must provide a file private.properties in the root directory. Copy templates/private.properties and change the values.")
+        }
     }
 }
 
