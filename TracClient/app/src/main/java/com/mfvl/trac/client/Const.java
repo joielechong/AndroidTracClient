@@ -85,7 +85,6 @@ final class Const {
     static final String PERFORM_LOGIN = "perform_login";
     static final String PERFORM_FILTER = "perform_filter";
     static final String PERFORM_SORT = "perform_sort";
-    static final String BEWAREN = "bewaren";
 
     private Const() {
     }
