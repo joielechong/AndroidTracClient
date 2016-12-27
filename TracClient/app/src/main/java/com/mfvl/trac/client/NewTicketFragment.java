@@ -90,7 +90,7 @@ public class NewTicketFragment extends TracClientFragment implements HelpInterfa
         for (int i = 0; i < tm.count(); i++) {
             final TicketModelVeld veld = tm.getVeld(i);
             final String veldnaam = veld.label();
-            //MyLog.d("i = "+i+" veld = "+veld);
+            //MyLog.d("i = "+i+" veld = "+veld+" velnaam = "+veldnaam);
 
             if (!Arrays.asList(ignoreFields).contains(veldnaam)) {
                 View v;
@@ -106,14 +106,14 @@ public class NewTicketFragment extends TracClientFragment implements HelpInterfa
                     if (savedInstanceState != null && savedInstanceState.containsKey(veldnaam)) {
                         v1.setSelection(savedInstanceState.getInt(veldnaam));
                     }
-                    v1.setTag(veldnaam);
+                    v1.setTag(veld.name());
                 } else {
                     v = LayoutInflater.from(getActivity()).inflate(("Description".equals(veldnaam) ? R.layout.descrfield : R.layout.stdfield), tl, false);
                     @SuppressLint("CutPasteId") EditText e = (EditText) v.findViewById(R.id.nt_val);
                     if (savedInstanceState != null && savedInstanceState.containsKey(veldnaam)) {
                         e.setText(savedInstanceState.getString(veldnaam));
                     }
-                    e.setTag(veldnaam);
+                    e.setTag(veld.name());
                 }
                 ((TextView) v.findViewById(R.id.veldnaam)).setText(veldnaam);
                 tl.addView(v);
@@ -128,25 +128,25 @@ public class NewTicketFragment extends TracClientFragment implements HelpInterfa
 
     @SuppressWarnings("OverlyStrongTypeCast")
     @Override
-    public void onSaveInstanceState(Bundle SavedState) {
+    public void onSaveInstanceState(Bundle savedState) {
         View v = getView();
         if (v != null) {
-            SavedState.putBoolean(NotfifyField, ((Checkable) v.findViewById(R.id.updNotify)).isChecked());
+            savedState.putBoolean(NotfifyField, ((Checkable) v.findViewById(R.id.updNotify)).isChecked());
             final TableLayout tl = (TableLayout) v.findViewById(R.id.newTickTable);
             if (tl != null) {
                 for (int i = 0; i < tm.count(); i++) {
-                    final String veldnaam = tm.getVeld(i).label();
+                    final String veldnaam = tm.getVeld(i).name();
                     View w = tl.findViewWithTag(veldnaam);
                     if (w instanceof Spinner) {
                         try {
-                            SavedState.putInt(veldnaam, ((Spinner) w).getSelectedItemPosition());
+                            savedState.putInt(veldnaam, ((Spinner) w).getSelectedItemPosition());
                         } catch (final Exception e) {
                             MyLog.e("Exception in createTicket", e);
                         }
                     } else if (w != null) {
                         final CharSequence s = ((TextView) w).getText();
                         if (!TextUtils.isEmpty(s)) {
-                            SavedState.putString(veldnaam, s.toString());
+                            savedState.putString(veldnaam, s.toString());
                         }
                     }
                 }
@@ -158,21 +158,25 @@ public class NewTicketFragment extends TracClientFragment implements HelpInterfa
     public void onClick(View ignored) {
         // Only store button
         final JSONObject velden = new JSONObject();
-        final View view = getView();
-        final TableLayout tl = (TableLayout) view.findViewById(R.id.newTickTable);
         listener.startProgressBar(R.string.saveticket);
         hideSoftKeyboard(getActivity());
 
         listener.getHandler().post(new Runnable() {
             @Override
             public void run() {
+                View view = getView();
+                TableLayout tl = (TableLayout) view.findViewById(R.id.newTickTable);
                 try {
+                    //MyLog.d("tm = "+tm);
                     final int count = tm.count();
+                    //MyLog.d("count = "+count);
 
                     for (int i = 0; i < count; i++) {
                         final TicketModelVeld veld = tm.getVeld(i);
                         final String veldnaam = veld.name();
+                        //MyLog.d("i="+i+" velden = "+velden+" veldnaam = "+veldnaam);
                         View w = tl.findViewWithTag(veldnaam);
+                        //MyLog.d(w);
 
                         if (w instanceof Spinner) {
                             try {
@@ -198,6 +202,7 @@ public class NewTicketFragment extends TracClientFragment implements HelpInterfa
                     final Checkable updNotify = (Checkable) view.findViewById(R.id.updNotify);
                     final boolean notify = updNotify != null && updNotify.isChecked();
                     final Ticket t = new NormalTicket(velden);
+                    //MyLog.d(t);
                     final int newtick = listener.createTicket(t, notify);
 
                     if (newtick < 0) {
