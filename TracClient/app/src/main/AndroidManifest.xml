@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
  * Copyright (C) 2013-2016 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,39 +14,29 @@
  * limitations under the License.
 
 -->
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.mfvl.trac.client"
-    android:installLocation="auto"
-    android:versionCode="103"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" package="com.mfvl.trac.client"
+    android:installLocation="auto" android:versionCode="103"
     android:versionName="@string/app_version">
 
-    <uses-sdk
-        android:minSdkVersion="15"
-        android:targetSdkVersion="24" />
+    <uses-sdk android:minSdkVersion="11" android:targetSdkVersion="24" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
-    <application
-        android:allowBackup="true"
-        android:fullBackupContent="true"
-        android:icon="@drawable/traclogo"
-        android:label="@string/app_name"
-        android:restoreNeedsApplication="false"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        tools:ignore="UnusedAttribute">
+    <application android:allowBackup="true" android:fullBackupContent="true"
+        android:icon="@drawable/traclogo" android:label="@string/app_name"
+        android:restoreNeedsApplication="false" android:supportsRtl="true"
+        android:theme="@style/AppTheme" tools:ignore="UnusedAttribute">
 
-        <meta-data
-            android:name="com.google.android.gms.version"
+        <meta-data android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <activity
-            android:name=".TracTitlescreenActivity"
+        <activity android:name=".TracTitlescreenActivity"
+            android:noHistory="true"
+            android:clearTaskOnLaunch="true"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/app_name"
             android:theme="@style/FullscreenTheme">
@@ -78,9 +67,10 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".TracStart"
+        <activity android:name=".TracStart"
             android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="false"
+            android:launchMode="singleTask"
             android:label="@string/app_name"
             android:theme="@style/MyStyle"
             tools:ignore="GoogleAppIndexingWarning">>
@@ -90,8 +80,7 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".Refresh"
+        <activity android:name=".Refresh"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.NoDisplay">
@@ -101,13 +90,11 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name="com.google.android.gms.ads.AdActivity"
+        <activity android:name="com.google.android.gms.ads.AdActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:theme="@android:style/Theme.Translucent" />
 
-        <activity
-            android:name=".TcPreference"
+        <activity android:name=".TcPreference"
             android:exported="false"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Holo.Light.DarkActionBar">
@@ -118,8 +105,7 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".PrefSpecActivity"
+        <activity android:name=".PrefSpecActivity"
             android:exported="false"
             android:label="@string/app_name"
             android:theme="@style/MyStyle">
@@ -141,12 +127,11 @@
         </activity>
 
         <!-- android:enabled="@bool/use_activity" -->
-        <activity
-            android:name="com.ipaulpro.afilechooser.FileChooserActivity"
+        <activity android:name="com.ipaulpro.afilechooser.FileChooserActivity"
             android:icon="@drawable/ic_chooser"
             android:enabled="true"
-            android:exported="true"
-            android:label="@string/choose_file" >
+            android:exported="false"
+            android:label="@string/choose_file">
             <intent-filter>
                 <action android:name="android.intent.action.GET_CONTENT" />
 
@@ -157,8 +142,7 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".RefreshService"
+        <service android:name=".RefreshService"
             android:exported="false">
             <intent-filter>
                 <!-- action android:name="@string/serviceAction" / -->
