@@ -219,6 +219,7 @@ public class UpdateTicketFragment extends TracClientFragment implements HelpInte
             case R.id.storeUpdate:
                 getFragmentManager().popBackStack();
                 storeUpdate();
+                listener.refreshTicket(ticknr);
                 break;
         }
     }

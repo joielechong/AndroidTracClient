@@ -66,8 +66,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements HelpInte
                 final List<FilterSpec> items = filterAdapter.items;
 
                 for (int i = items.size() - 1; i >= 0; i--) {
-                    if (TextUtils.isEmpty(items.get(i).getOperator())
-                            || !TextUtils.isEmpty(items.get(i).getWaarde())) {
+                    if (TextUtils.isEmpty(items.get(i).getOperator()) || TextUtils.isEmpty(items.get(i).getWaarde())) {
                         items.remove(i);
                     } else {
                         items.get(i).setEdit(false);

@@ -106,7 +106,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper implements PDHelper {
                         int resId = ta.getResourceId(i, 0);
                         String[] values = res.getStringArray(resId);
 
-                        addProfile(values[0], new LoginProfileImpl(values[1], values[2], values[3],
+                        addProfile(values[0], new LoginProfile(values[1], values[2], values[3],
                                 "true".equals(values[4])));
                         // MyLog.d("i = "+i+" values = "+Arrays.asList(values));
                     }
@@ -211,7 +211,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper implements PDHelper {
         LoginProfile profile = null;
         if (c.getCount() > 0) {
             c.moveToFirst();
-            profile = new LoginProfileImpl(c.getString(0), c.getString(1), c.getString(2),
+            profile = new LoginProfile(c.getString(0), c.getString(1), c.getString(2),
                     c.getInt(3) == 1);
         }
         c.close();
@@ -230,7 +230,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper implements PDHelper {
         LoginProfile profile = null;
         if (c.getCount() > 0) {
             c.moveToFirst();
-            profile = new LoginProfileImpl(c.getString(0), c.getString(1), c.getString(2),
+            profile = new LoginProfile(c.getString(0), c.getString(1), c.getString(2),
                     c.getInt(3) == 1);
         }
         c.close();
@@ -339,7 +339,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper implements PDHelper {
                 case 2:
                     if ("profile".equals(localName)) {
                         state++;
-                        lp = new LoginProfileImpl(attributes.getValue(ProfileDatabaseHelper.URL_ID),
+                        lp = new LoginProfile(attributes.getValue(ProfileDatabaseHelper.URL_ID),
                                 attributes.getValue(ProfileDatabaseHelper.USERNAME_ID),
                                 attributes.getValue(ProfileDatabaseHelper.PASSWORD_ID),
                                 "1".equals(attributes.getValue(ProfileDatabaseHelper.SSLHACK_ID)));

@@ -167,16 +167,12 @@ public class NewTicketFragment extends TracClientFragment implements HelpInterfa
                 View view = getView();
                 TableLayout tl = (TableLayout) view.findViewById(R.id.newTickTable);
                 try {
-                    //MyLog.d("tm = "+tm);
                     final int count = tm.count();
-                    //MyLog.d("count = "+count);
 
                     for (int i = 0; i < count; i++) {
                         final TicketModelVeld veld = tm.getVeld(i);
                         final String veldnaam = veld.name();
-                        //MyLog.d("i="+i+" velden = "+velden+" veldnaam = "+veldnaam);
                         View w = tl.findViewWithTag(veldnaam);
-                        //MyLog.d(w);
 
                         if (w instanceof Spinner) {
                             try {
@@ -202,7 +198,6 @@ public class NewTicketFragment extends TracClientFragment implements HelpInterfa
                     final Checkable updNotify = (Checkable) view.findViewById(R.id.updNotify);
                     final boolean notify = updNotify != null && updNotify.isChecked();
                     final Ticket t = new NormalTicket(velden);
-                    //MyLog.d(t);
                     final int newtick = listener.createTicket(t, notify);
 
                     if (newtick < 0) {
