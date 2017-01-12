@@ -278,7 +278,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             filterList = (ArrayList<FilterSpec>) savedInstanceState.getSerializable(FILTERLISTNAME);
             sortList = (ArrayList<SortSpec>) savedInstanceState.getSerializable(SORTLISTNAME);
             dispAds = savedInstanceState.getBoolean(ADMOB, true);
-            tm = StdTicketModel.restore(savedInstanceState.getString(TicketModel.bundleKey));
+            tm = TicketModel.restore(savedInstanceState.getString(TicketModel.bundleKey));
             if (tm != null) {
                 MyLog.d("restoring TicketModel");
                 tracStartHandler.sendMessage(Message.obtain(null, MSG_SET_TICKET_MODEL, tm));
@@ -430,7 +430,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             String SelectedProfile = intent.getStringExtra(CURRENT_PROFILE);
             boolean sslhack = intent.getBooleanExtra(CURRENT_SSLHACK, false);
             boolean sslHostNamehack = intent.getBooleanExtra(CURRENT_SSLHOSTNAMEHACK, false);
-            LoginProfile lp = new LoginProfileImpl(uri, username, password, sslhack, sslHostNamehack);
+            LoginProfile lp = new LoginProfile(uri, username, password, sslhack, sslHostNamehack);
             lp.setProfile(SelectedProfile);
             MyLog.d(lp);
             Message m = tracStartHandler.obtainMessage(MSG_PERFORM_LOGIN, 0, 0, lp);
@@ -947,6 +947,8 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         profile = newProfile;
         setFilter(getFilterString());
         setSort(getSortString());
+        tm = null;
+
 
         if (getFragment(ListFragmentTag) == null) {
             doNotFinish = true;
@@ -1033,7 +1035,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
 
                 Ticket t = TicketsStore.getTicket(i);
                 MyLog.d("i = " + i + " ticket = " + t);
-                if (t != null && !t.hasdata()) {
+                if (t == null || !t.hasdata()) {
                     refreshTicket(i);
                 }
                 if (_oc != null) {
@@ -1319,7 +1321,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                 break;
 
             case MSG_START_LISTLOADER:
-                currentLoginProfile = new LoginProfileImpl(url, userName, passWord, sslHack)
+                currentLoginProfile = new LoginProfile(url, userName, passWord, sslHack)
                         .setSslHostNameHack(sslHostNameHack)
                         .setFilterList(filterList)
                         .setSortList(sortList);
@@ -1398,6 +1400,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                 MyLog.d(lp);
                 removeFilterString();
                 removeSortString();
+                TicketModel.delInstance();
                 TracStart.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

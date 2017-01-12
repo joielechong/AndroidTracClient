@@ -609,7 +609,7 @@ public class TracLoginFragment extends TracClientFragment
         username = userView.getText().toString();
         password = pwView.getText().toString();
         sslHack = sslHackBox.isChecked();
-        final LoginProfile prof = new LoginProfileImpl(url, username, password, sslHack);
+        final LoginProfile prof = new LoginProfile(url, username, password, sslHack);
 
         final AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
 

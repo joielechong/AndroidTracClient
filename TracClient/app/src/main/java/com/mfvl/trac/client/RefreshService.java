@@ -449,7 +449,7 @@ public class RefreshService extends Service implements Handler.Callback, Refresh
                     invalid = !lp.equals(mLoginProfile);
                     mLoginProfile = lp;
                     tracClient = new TracHttpClient(mLoginProfile);
-                    StdTicketModel.getInstance(tracClient, new OnTicketModelListener() {
+                    TicketModel.getInstance(tracClient, new OnTicketModelListener() {
                         @Override
                         public void onTicketModelLoaded(TicketModel tm) {
                             dispatchMessage(Message.obtain(null, MSG_SET_TICKET_MODEL, tm));
@@ -464,12 +464,16 @@ public class RefreshService extends Service implements Handler.Callback, Refresh
             case MSG_SET_FILTER:
                 if (mLoginProfile != null) {
                     mLoginProfile.setFilterList((List<FilterSpec>) msg.obj);
+                    invalid = true;
+                    startLoadTickets();
                 }
                 break;
 
             case MSG_SET_SORT:
                 if (mLoginProfile != null) {
                     mLoginProfile.setSortList((List<SortSpec>) msg.obj);
+                    invalid = true;
+                    startLoadTickets();
                 }
                 break;
 

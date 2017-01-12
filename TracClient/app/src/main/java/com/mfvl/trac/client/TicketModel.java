@@ -31,34 +31,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 
-interface TicketModel {
-    String bundleKey = "TicketModelObject";
-
-    void onSaveInstanceState(Bundle b);
-
-    ArrayList<String> velden();
-
-    TicketModelVeld getVeld(final int i) throws IndexOutOfBoundsException;
-
-    TicketModelVeld getVeld(final String naam) throws IndexOutOfBoundsException;
-
-    int count();
-}
-
-final class StdTicketModel implements TicketModel {
+final class TicketModel {
+    final static String bundleKey = "TicketModelObject";
     private final static List<String> extraFields = Arrays.asList("max", "page");
     private final static List<String> extraValues = Arrays.asList("500", "0");
     private static Map<String, TicketModelVeld> _velden = null;
     private static List<String> _volgorde = null;
     private static int fieldCount = 0;
     @SuppressWarnings("StaticVariableOfConcreteClass")
-    private static StdTicketModel _instance = null;
+    private static TicketModel _instance = null;
     private static boolean _hasData = false;
     private static TracHttp _tracClient = null;
     private static Semaphore active = null;
     private static JSONArray v = null;
 
-    private StdTicketModel(TracHttp tracClient) {
+    private TicketModel(TracHttp tracClient) {
         MyLog.logCall();
         fieldCount = 0;
         _tracClient = tracClient;
@@ -74,7 +61,7 @@ final class StdTicketModel implements TicketModel {
             JSONObject h = o.getJSONObject("HttpClient");
             v = o.getJSONArray("Model");
             fieldCount = v.length();
-            _instance = new StdTicketModel(new TracHttpClient(h));
+            _instance = new TicketModel(new TracHttpClient(h));
             processModelData(v);
 //            MyLog.d("_instance = " + _instance + " tracClient = " + _tracClient);
             return _instance;
@@ -87,7 +74,7 @@ final class StdTicketModel implements TicketModel {
     static void getInstance(TracHttp tracClient, final OnTicketModelListener oc) {
         MyLog.d("new tracClient = " + tracClient);
         if (_instance == null || !tracClient.equals(_tracClient)) {
-            _instance = new StdTicketModel(tracClient);
+            _instance = new TicketModel(tracClient);
         }
         if (_hasData) {
             oc.onTicketModelLoaded(_instance);
@@ -109,6 +96,10 @@ final class StdTicketModel implements TicketModel {
             throw new RuntimeException("No ticketmodel available");
         }
         return _instance;
+    }
+
+    static void delInstance() {
+        _instance = null;
     }
 
     private static void processModelData(JSONArray veld) throws JSONException {
@@ -140,7 +131,6 @@ final class StdTicketModel implements TicketModel {
         }
     }
 
-    @Override
     public void onSaveInstanceState(Bundle b) {
         MyLog.logCall();
         b.putString(bundleKey, jsonString());
@@ -193,7 +183,6 @@ final class StdTicketModel implements TicketModel {
         }
     }
 
-    @Override
     public ArrayList<String> velden() {
         final ArrayList<String> veldlijst = new ArrayList<>();
 
@@ -209,14 +198,12 @@ final class StdTicketModel implements TicketModel {
         return veldlijst;
     }
 
-    @Override
     public int count() {
         wacht();
         return fieldCount;
     }
 
-    @Override
-    public TicketModelVeld getVeld(final int i) throws IndexOutOfBoundsException {
+    TicketModelVeld getVeld(final int i) throws IndexOutOfBoundsException {
         wacht();
         if (i < 0 || i >= fieldCount) {
             throw new IndexOutOfBoundsException();
@@ -224,8 +211,7 @@ final class StdTicketModel implements TicketModel {
         return getVeld(_volgorde.get(i));
     }
 
-    @Override
-    public TicketModelVeld getVeld(final String naam) throws IndexOutOfBoundsException {
+    TicketModelVeld getVeld(final String naam) throws IndexOutOfBoundsException {
         wacht();
         if (_velden.containsKey(naam)) {
             return _velden.get(naam);

@@ -68,11 +68,11 @@ public class PrefSpecActivity extends TcBaseActivity {
         Fragment ff;
 
         if (filterAction.equals(action)) {
-            tm = StdTicketModel.getInstance();
+            tm = TicketModel.getInstance();
             ff = new FilterFragment();
             args.putSerializable(FILTERLISTNAME, parseFilterString(getFilterString()));
         } else if (sortAction.equals(action)) {
-            tm = StdTicketModel.getInstance();
+            tm = TicketModel.getInstance();
             ff = new SortFragment();
             args.putSerializable(SORTLISTNAME, parseSortString(getSortString()));
         } else if (loginAction.equals(action)) {

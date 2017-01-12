@@ -95,7 +95,7 @@ public class DetailFragment extends TracClientFragment
     private static final List<String> skipFields = Arrays.asList("summary", "_ts", "max", "page",
             "id");
     private static final List<String> timeFields = Arrays.asList("time", "changetime");
-    private final List<ModifiedString> values = new ArrayList<>();
+    private final List<TicketVeld> values = new ArrayList<>();
     private int ticknr = -1;
     private boolean showEmptyFields = false;
     private Map<String, String> modVeld = null;
@@ -263,7 +263,15 @@ public class DetailFragment extends TracClientFragment
                                         final int newTicket = Integer.parseInt(
                                                 input.getText().toString());
                                         // selectTicket(ticknr);
-                                        listener.getTicket(newTicket, null);
+                                        listener.getTicket(newTicket, new OnTicketLoadedListener() {
+                                            @Override
+                                            public void onTicketLoaded(Ticket t) {
+                                                MyLog.d(t);
+                                                if (t != null) {
+                                                    setTicket(t.getTicketnr());
+                                                }
+                                            }
+                                        });
                                     } catch (final Exception e) {// noop keep old ticketnr
                                     }
                                 }
@@ -377,7 +385,7 @@ public class DetailFragment extends TracClientFragment
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        final ModifiedString t = (ModifiedString) parent.getItemAtPosition(position);
+        final TicketVeld t = (TicketVeld) parent.getItemAtPosition(position);
 
 //        MyLog.d("position = " + position);
         if (t.length() >= 8 && "bijlage ".equals(t.substring(0, 8))) {
@@ -395,7 +403,7 @@ public class DetailFragment extends TracClientFragment
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        final ModifiedString t = (ModifiedString) parent.getItemAtPosition(position);
+        final TicketVeld t = (TicketVeld) parent.getItemAtPosition(position);
 
 //        MyLog.d("position = " + position);
         if (t.length() >= 8 && "bijlage ".equals(t.substring(0, 8))) {
@@ -518,6 +526,7 @@ public class DetailFragment extends TracClientFragment
 
     @Override
     public void setTicket(int newTicket) {
+        MyLog.d(newTicket);
         ticknr = newTicket;
         display_and_refresh_ticket();
     }
@@ -541,12 +550,12 @@ public class DetailFragment extends TracClientFragment
                 modVeld.put("summary", parsed[1].trim());
             } else {
                 @SuppressWarnings("unchecked")
-                ArrayAdapter<ModifiedString> adapter = (ArrayAdapter<ModifiedString>) parent.getAdapter();
+                ArrayAdapter<TicketVeld> adapter = (ArrayAdapter<TicketVeld>) parent.getAdapter();
                 final int pos = adapter.getPosition(
-                        new ModifiedStringImpl(veld, newValue));
+                        new TicketVeld(veld, newValue));
 
                 if (pos >= 0) {
-                    final ModifiedString ms = values.get(pos);
+                    final TicketVeld ms = values.get(pos);
 
                     ms.setWaarde(newValue);
                     ms.setUpdated();
@@ -603,15 +612,15 @@ public class DetailFragment extends TracClientFragment
             for (final String veld : tm.velden()) {
 
                 try {
-                    ModifiedString ms = null;
+                    TicketVeld ms = null;
 
                     //MyLog.d( "showEmptyFields = "+showEmptyFields);
 
                     if (!skipFields.contains(veld)) {
                         if (timeFields.contains(veld)) {
-                            ms = new ModifiedStringImpl(veld, toonTijd(_ticket.getJSONObject(veld)));
+                            ms = new TicketVeld(veld, toonTijd(_ticket.getJSONObject(veld)));
                         } else if (showEmptyFields || _ticket.getString(veld).length() > 0) {
-                            ms = new ModifiedStringImpl(veld, _ticket.getString(veld));
+                            ms = new TicketVeld(veld, _ticket.getString(veld));
                         }
                     }
 
@@ -625,7 +634,7 @@ public class DetailFragment extends TracClientFragment
                     }
                 } catch (final JSONException e) {
                     //MyLog.e( "JSONException fetching field " + veld);
-                    values.add(new ModifiedStringImpl(veld, ""));
+                    values.add(new TicketVeld(veld, ""));
                 }
             }
             final JSONArray history = _ticket.getHistory();
@@ -637,7 +646,7 @@ public class DetailFragment extends TracClientFragment
                         JSONArray cmt = history.getJSONArray(j);
                         if ("comment".equals(cmt.getString(2)) && cmt.getString(4).length() > 0) {
                             values.add(
-                                    new ModifiedStringImpl("comment",
+                                    new TicketVeld("comment",
                                             toonTijd(cmt.getJSONObject(
                                                     0)) + " - " + cmt.getString(
                                                     1) + " - " + cmt.getString(4)));
@@ -655,7 +664,7 @@ public class DetailFragment extends TracClientFragment
                     try {
                         JSONArray bijlage = attachments.getJSONArray(j);
                         values.add(
-                                new ModifiedStringImpl("bijlage " + (j + 1),
+                                new TicketVeld("bijlage " + (j + 1),
                                         toonTijd(bijlage.getJSONObject(
                                                 3)) + " - " + bijlage.getString(
                                                 4) + " - " + bijlage.getString(0)
@@ -668,7 +677,7 @@ public class DetailFragment extends TracClientFragment
             }
             listView.setOnItemLongClickListener(this);
             listView.setOnItemClickListener(this);
-            final ListAdapter dataAdapter = new ModifiedStringArrayAdapter(getActivity(), values);
+            final ListAdapter dataAdapter = new TicketVeldAdapter(getActivity(), values);
             listView.setAdapter(dataAdapter);
         }
     }
@@ -732,24 +741,6 @@ public class DetailFragment extends TracClientFragment
         });
         return true;
 
-    }
-
-    interface ModifiedString {
-        boolean getUpdated();
-
-        void setUpdated();
-
-        int length();
-
-        int indexOf(String s);
-
-        String substring(int b, int l);
-
-        String[] split(String s, int c);
-
-        void setWaarde(String s);
-
-        String veld();
     }
 
     private class ModVeldMap implements Map<String, String>, Serializable {
@@ -821,61 +812,53 @@ public class DetailFragment extends TracClientFragment
 //	private static final long serialVersionUID = 191019591050L;
     }
 
-    private class ModifiedStringImpl implements ModifiedString {
+    private class TicketVeld {
         private final String veld;
         private boolean updated;
         private String waarde;
 
-        ModifiedStringImpl(String v, String w) {
+        TicketVeld(String v, String w) {
             veld = v;
             waarde = w;
             updated = false;
         }
 
-        @Override
-        public boolean getUpdated() {
+        boolean getUpdated() {
             return updated;
         }
 
-        @Override
-        public void setUpdated() {
+        void setUpdated() {
             updated = true;
         }
 
-        @Override
-        public int length() {
+        int length() {
             return toString().length();
         }
 
-        @Override
-        public int indexOf(String s) {
+        int indexOf(String s) {
             return toString().indexOf(s);
         }
 
-        @Override
-        public String substring(int b, int l) {
+        String substring(int b, int l) {
             return toString().substring(b, l);
         }
 
-        @Override
-        public String[] split(String s, int c) {
+        String[] split(String s, int c) {
             return toString().split(s, c);
         }
 
-        @Override
-        public void setWaarde(String s) {
+        void setWaarde(String s) {
             waarde = s;
         }
 
-        @Override
-        public String veld() {
+        String veld() {
             return veld;
         }
 
         @Override
         public boolean equals(Object o) {
-            return this == o || o instanceof ModifiedString && veld.equals(
-                    ((ModifiedString) o).veld());
+            return this == o || o instanceof TicketVeld && veld.equals(
+                    ((TicketVeld) o).veld());
         }
 
         @Override
@@ -889,8 +872,8 @@ public class DetailFragment extends TracClientFragment
         }
     }
 
-    private class ModifiedStringArrayAdapter extends ColoredArrayAdapter<ModifiedString> {
-        ModifiedStringArrayAdapter(Activity ctx, List<ModifiedString> list) {
+    private class TicketVeldAdapter extends ColoredArrayAdapter<TicketVeld> {
+        TicketVeldAdapter(Activity ctx, List<TicketVeld> list) {
             super(ctx, list);
         }
 
@@ -899,7 +882,7 @@ public class DetailFragment extends TracClientFragment
         public View getView(int position, View convertView, @NonNull ViewGroup parent) {
             final View view = super.getView(position, convertView, parent);
             try {
-                final ModifiedString ms = getItem(position);
+                final TicketVeld ms = getItem(position);
 
                 ((TextView) view).setTextColor(
                         ms.getUpdated() ? popup_selected_color : popup_unselected_color);
