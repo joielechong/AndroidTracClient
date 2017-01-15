@@ -176,13 +176,12 @@ public class UpdateTicketFragment extends TracClientFragment implements HelpInte
                                             try {
                                                 opties.add(ifOpties.getString(j));
                                             } catch (final JSONException e) {
-                                                MyLog.e("exception adding " + ifOpties + " j=" + j,
+                                                MyLog.e("Exception adding " + ifOpties + " j=" + j,
                                                         e);
                                             }
                                         }
-                                        final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<>(
-                                                getActivity(), android.R.layout.simple_spinner_item,
-                                                opties);
+                                        final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<Object>(
+                                                getActivity(), android.R.layout.simple_spinner_item, opties);
 
                                         spinAdapter.setDropDownViewResource(
                                                 android.R.layout.simple_spinner_dropdown_item);
@@ -192,7 +191,7 @@ public class UpdateTicketFragment extends TracClientFragment implements HelpInte
                                         }
                                     }
                                 } catch (final Exception e) {
-                                    MyLog.e("exception getting fields", e);
+                                    MyLog.e("Exception getting fields", e);
                                 }
                             }
                             view.postInvalidate();
