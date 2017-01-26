@@ -25,11 +25,7 @@ import com.mfvl.mfvllib.MyLog;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-interface SpecInterface {
-    String keyName();
-}
-
-public class SpecFragment<T extends Spec> extends TracClientFragment {
+abstract public class SpecFragment<T extends Spec> extends TracClientFragment {
     private final static String inputSpecText = "inputSpec";
     private final static String outputSpecText = "outputSpec";
     ArrayList<T> outputSpec = null;
@@ -37,6 +33,7 @@ public class SpecFragment<T extends Spec> extends TracClientFragment {
     View currentView = null;
     private ArrayList<T> inputSpec = null;
 
+    abstract String keyName();
     @Override
     @SuppressWarnings("unchecked")
     public void onCreate(Bundle savedInstanceState) {
@@ -46,8 +43,8 @@ public class SpecFragment<T extends Spec> extends TracClientFragment {
 
         final Bundle args = getArguments();
         if (savedInstanceState == null && args != null) {
-            if (args.containsKey(((SpecInterface) this).keyName())) {
-                inputSpec = (ArrayList<T>) args.getSerializable(((SpecInterface) this).keyName());
+            if (args.containsKey(keyName())) {
+                inputSpec = (ArrayList<T>) args.getSerializable(keyName());
             }
         }
         setHasOptionsMenu(true);
@@ -72,7 +69,7 @@ public class SpecFragment<T extends Spec> extends TracClientFragment {
             savedState.putSerializable(inputSpecText, inputSpec);
         }
 
-        ItemsAdapter adapter = (ItemsAdapter) listView.getAdapter();
+        SpecAdapter<Spec> adapter = (SpecAdapter<Spec>) listView.getAdapter();
 
         if (adapter != null) {
             final Serializable output = adapter.getItems();

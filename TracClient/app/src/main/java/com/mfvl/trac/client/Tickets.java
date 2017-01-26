@@ -24,26 +24,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-interface Tickets {
-    void addTicket(Ticket ticket);
-
-    List<Ticket> getTicketList();
-
-    int getTicketCount();
-
-    void resetCache();
-
-    void putTicket(Ticket ticket);
-
-    int getTicketContentCount();
-}
-
-class TicketsStore implements Tickets {
+class Tickets {
 
     private static Map<Integer, Ticket> ticketMap = null;
     private List<Ticket> ticketList = null;
 
-    TicketsStore() {
+    Tickets() {
         MyLog.logCall();
         ticketList = new TicketList();
     }
@@ -55,21 +41,18 @@ class TicketsStore implements Tickets {
         return ticketMap.containsKey(ticknr) ? ticketMap.get(ticknr) : null;
     }
 
-    @Override
-    public List<Ticket> getTicketList() {
+    List<Ticket> getTicketList() {
         return ticketList;
     }
 
-    @Override
-    public void resetCache() {
+    void resetCache() {
         MyLog.logCall();
         // MyLog.d("voor: ticketMap = "+ticketMap);
         ticketMap = new TreeMap<>();
-        // MyLog.d("na: ticketMap = "+ticketMap);
+        MyLog.d("na: ticketMap = " + ticketMap);
     }
 
-    @Override
-    public int getTicketCount() {
+    int getTicketCount() {
         try {
             return ticketList.size();
         } catch (final Exception e) {
@@ -78,22 +61,19 @@ class TicketsStore implements Tickets {
         }
     }
 
-    @Override
-    public void addTicket(Ticket ticket) {
+    void addTicket(Ticket ticket) {
 //		MyLog.d("ticket = "+ticket);
         ticketList.add(ticket);
         putTicket(ticket);
     }
 
-    @Override
-    public void putTicket(Ticket ticket) {
+    void putTicket(Ticket ticket) {
 //        MyLog.d("ticketMap = "+ticketMap);
 //        MyLog.d("ticket = "+ticket);
         ticketMap.put(ticket.getTicketnr(), ticket);
     }
 
-    @Override
-    public int getTicketContentCount() {
+    int getTicketContentCount() {
         int c = 0;
         for (Ticket t : ticketList) {
             if (t.hasdata()) {

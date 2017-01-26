@@ -47,8 +47,8 @@ import java.util.Map;
 import static com.mfvl.trac.client.Const.*;
 import static com.mfvl.trac.client.TracGlobal.setCanWriteSD;
 
-@SuppressWarnings("AbstractClassExtendsConcreteClass")
-abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callback, ActivityCompat.OnRequestPermissionsResultCallback, InterFragmentListener {
+abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callback, ActivityCompat.OnRequestPermissionsResultCallback,
+        InterFragmentListener {
     private static final int REQUEST_CODE_WRITE_EXT = 175;
     static boolean debug = false; // disable menuoption at startup
     Handler tracStartHandler = null;
@@ -215,7 +215,17 @@ abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callb
             final String[] operators = getResources().getStringArray(R.array.filter2_choice);
 
             for (final String f : fs) {
-                filter.add(new FilterSpecImpl(f, operators));
+                String veld = null;
+                for (int i = operators.length - 1; i >= 0 && veld == null; i--) {
+                    final String op = operators[i];
+                    final int index = f.indexOf(op);
+
+                    if (index > 0) {
+                        veld = f.substring(0, index);
+                        final String waarde = f.substring(index + op.length());
+                        filter.add(new FilterSpec(veld, op, waarde));
+                    }
+                }
             }
         }
         return filter;
@@ -248,7 +258,7 @@ abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callb
                             i++;
                         }
                     }
-                    sl.add(new SortSpecImpl(veld, richting));
+                    sl.add(new SortSpec(veld, richting));
                 }
             }
         }

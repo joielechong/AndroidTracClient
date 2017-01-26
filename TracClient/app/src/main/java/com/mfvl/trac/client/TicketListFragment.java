@@ -44,17 +44,8 @@ import android.widget.TextView;
 
 import com.mfvl.mfvllib.MyLog;
 
-interface TicketListFragInterface {
-    void setAdapter(ArrayAdapter<Ticket> adapter);
-
-    void dataHasChanged();
-
-    void selectTicket(int ticknr);
-
-    void startLoading();
-}
 public class TicketListFragment extends TracClientFragment
-        implements SwipeRefreshLayout.OnRefreshListener, AdapterView.OnItemClickListener, AbsListView.OnScrollListener, HelpInterface, TicketListFragInterface {
+        implements SwipeRefreshLayout.OnRefreshListener, AdapterView.OnItemClickListener, AbsListView.OnScrollListener, HelpInterface {
 
     private static final String ZOEKENNAME = "zoeken";
     private static final String ZOEKTEXTNAME = "filtertext";
@@ -125,8 +116,7 @@ public class TicketListFragment extends TracClientFragment
         }
     }
 
-    @Override
-    public void setAdapter(ArrayAdapter<Ticket> a) {
+    void setAdapter(ArrayAdapter<Ticket> a) {
         MyLog.d("a = " + a + " listView = " + listView);
         dataAdapter = a;
         listView.setAdapter(a);
@@ -364,8 +354,7 @@ public class TicketListFragment extends TracClientFragment
         }
     }
 
-    @Override
-    public void dataHasChanged() {
+    void dataHasChanged() {
         try {
             MyLog.d("hs = " + hs);
             zetZoeken();
@@ -387,8 +376,7 @@ public class TicketListFragment extends TracClientFragment
         }
     }
 
-    @Override
-    public void startLoading() {
+    void startLoading() {
 //        MyLog.d("hs = " + hs);
         setStatus(R.string.ophalen);
     }

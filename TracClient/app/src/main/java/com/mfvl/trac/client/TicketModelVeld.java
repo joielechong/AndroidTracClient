@@ -23,24 +23,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-interface TicketModelVeld {
-    String name();
-
-    String label();
-
-    String type();
-
-    String format();
-
-    String value();
-
-    List<Object> options();
-
-    boolean optional();
-
-}
-
-class TicketModelVeldImpl implements TicketModelVeld {
+class TicketModelVeld {
 
     private final String _name;
     private final String _label;
@@ -52,7 +35,7 @@ class TicketModelVeldImpl implements TicketModelVeld {
 //    private int _order;
 //    private boolean _custom;
 
-    public TicketModelVeldImpl(String name, String label, String value) {
+    TicketModelVeld(String name, String label, String value) {
         _name = name;
         _label = label;
         _value = value;
@@ -60,7 +43,7 @@ class TicketModelVeldImpl implements TicketModelVeld {
         _options = null;
     }
 
-    public TicketModelVeldImpl(final JSONObject v) throws RuntimeException {
+    TicketModelVeld(final JSONObject v) throws RuntimeException {
         if (v == null) {
             throw new RuntimeException("JSONObject is null");
         }
@@ -126,39 +109,31 @@ class TicketModelVeldImpl implements TicketModelVeld {
         return _name + " (" + _label + ")[" + _format + "]";
     }
 
-    @Override
-    public String name() {
+    String name() {
         return _name;
     }
 
-    @Override
-    public String label() {
+    String label() {
         return _label;
     }
 
-    @Override
-    public String type() {
+    String type() {
         return _type;
     }
 
-    @Override
-    public String format() {
+    String format() {
         return _format;
     }
 
-    @Override
-    public String value() {
+    String value() {
         return _value;
     }
 
-    @Override
-    public List<Object> options() {
+    List<Object> options() {
         return _options;
     }
 
-    @Override
-    public boolean optional() {
+    boolean optional() {
         return _optional;
     }
-
 }

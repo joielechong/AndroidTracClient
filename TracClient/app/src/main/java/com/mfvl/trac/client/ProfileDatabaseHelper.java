@@ -51,31 +51,7 @@ import javax.xml.parsers.SAXParserFactory;
 import static com.mfvl.trac.client.Const.*;
 import static com.mfvl.trac.client.TracGlobal.*;
 
-interface PDHelper {
-    void open();
-
-    void close();
-
-    void beginTransaction();
-
-    void endTransaction();
-
-    void addProfile(String name, LoginProfile lp);
-
-    LoginProfile getProfile(String naam);
-
-    Cursor getProfiles(boolean addBlank);
-
-    LoginProfile findProfile(String url);
-
-    int delProfiles();
-
-    void readXML(String s) throws Exception;
-
-    void writeXML(String s) throws Exception;
-}
-
-class ProfileDatabaseHelper extends SQLiteOpenHelper implements PDHelper {
+class ProfileDatabaseHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 2;
     private static final String TABLE_NAME = "profiles";
     private static final String NAME_ID = "name";
@@ -93,7 +69,6 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper implements PDHelper {
         sendNotification("class creation");
     }
 
-    @Override
     public void open() {
         if (sqlDb == null) {
             sqlDb = getWritableDatabase();
@@ -146,14 +121,12 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper implements PDHelper {
         upgrade = true;
     }
 
-    @Override
-    public void beginTransaction() {
+    void beginTransaction() {
         open();
         sqlDb.beginTransaction();
     }
 
-    @Override
-    public void endTransaction() {
+    void endTransaction() {
         sqlDb.setTransactionSuccessful();
         sqlDb.endTransaction();
     }
@@ -165,8 +138,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper implements PDHelper {
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
-    @Override
-    public void addProfile(String name, LoginProfile profile) throws SQLException {
+    void addProfile(String name, LoginProfile profile) throws SQLException {
         final ContentValues values = new ContentValues();
 
         values.put(NAME_ID, name);
@@ -185,8 +157,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper implements PDHelper {
         }
     }
 
-    @Override
-    public Cursor getProfiles(boolean addBlank) {
+    Cursor getProfiles(boolean addBlank) {
         MyLog.d("addBlank = " + addBlank);
         open();
         return sqlDb.rawQuery(
@@ -199,8 +170,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper implements PDHelper {
         return sqlDb.query(TABLE_NAME, new String[]{NAME_ID, URL_ID, USERNAME_ID, PASSWORD_ID, SSLHACK_ID}, NAME_ID + " !=''", null, null, null, null);
     }
 
-    @Override
-    public LoginProfile getProfile(String name) {
+    LoginProfile getProfile(String name) {
 
         open();
         final Cursor c = sqlDb.query(TABLE_NAME,
@@ -218,8 +188,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper implements PDHelper {
         return profile;
     }
 
-    @Override
-    public LoginProfile findProfile(String url) {
+    LoginProfile findProfile(String url) {
 
         open();
         final Cursor c = sqlDb.query(TABLE_NAME,
@@ -237,8 +206,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper implements PDHelper {
         return profile;
     }
 
-    @Override
-    public int delProfiles() {
+    int delProfiles() {
         try {
             open();
             final String values[] = new String[]{""};
@@ -249,8 +217,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper implements PDHelper {
         }
     }
 
-    @Override
-    public void readXML(final String appname) throws Exception {
+    void readXML(final String appname) throws Exception {
         try {
             open();
             final File fileName = FileOps.makeExtFilePath(context, "TracClient", appname + ".xml", true);
@@ -268,8 +235,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper implements PDHelper {
     }
 
     @SuppressWarnings("ThrowFromFinallyBlock")
-    @Override
-    public void writeXML(final String appname) throws Exception {
+    void writeXML(final String appname) throws Exception {
         final File fileName = FileOps.makeExtFilePath(context, "TracClient", appname + ".xml", true);
         final OutputStream out = new BufferedOutputStream(new FileOutputStream(fileName));
         XmlSerializer serializer = Xml.newSerializer();
@@ -300,13 +266,13 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper implements PDHelper {
     }
 
     private class XMLHandler extends DefaultHandler {
-        private final PDHelper _pdb;
+        private final ProfileDatabaseHelper _pdb;
         String _appname = null;
         private int state = -1;
         private String profileName = null;
         private LoginProfile lp = null;
 
-        XMLHandler(String appname, PDHelper pdb) {
+        XMLHandler(String appname, ProfileDatabaseHelper pdb) {
             super();
             _appname = appname;
             _pdb = pdb;

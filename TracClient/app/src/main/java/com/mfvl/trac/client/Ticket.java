@@ -37,38 +37,7 @@ interface onAttachmentCompleteListener {
     void onComplete(byte[] data);
 }
 
-interface Ticket {
-    int getTicketnr();
-
-    JSONObject getVelden();
-
-    String getString(final String veld) throws JSONException;
-
-    @Nullable
-    JSONObject getJSONObject(final String veld) throws JSONException;
-
-    void setFields(JSONObject velden);
-
-    JSONArray getHistory();
-
-    void setHistory(JSONArray history);
-
-    JSONArray getActions();
-
-    void setActions(JSONArray actions);
-
-    JSONArray getAttachments();
-
-    void setAttachments(JSONArray attachments);
-
-    String getAttachmentFile(int nr) throws JSONException;
-
-    boolean hasdata();
-
-    String toText();
-}
-
-class NormalTicket implements Ticket {
+class Ticket {
     private final int _ticknr;
     private final Semaphore actionLock = new TcSemaphore(1, true);
     private JSONObject _velden;
@@ -77,13 +46,13 @@ class NormalTicket implements Ticket {
     private JSONArray _actions;
     private boolean _hasdata = false;
 
-    NormalTicket(final JSONObject velden) {
-        MyLog.d("NormalTicket = " + velden);
+    Ticket(final JSONObject velden) {
+        MyLog.d("Ticket = " + velden);
         _ticknr = -1;
         init(velden);
     }
 
-    NormalTicket(final int ticknr) {
+    Ticket(final int ticknr) {
         _ticknr = ticknr;
         init(null);
     }
@@ -97,17 +66,14 @@ class NormalTicket implements Ticket {
         _hasdata = (velden != null);
     }
 
-    @Override
-    public int getTicketnr() {
+    int getTicketnr() {
         return _ticknr;
     }
 
-    @Override
-    public JSONObject getVelden() {
+    JSONObject getVelden() {
         return _velden;
     }
 
-    @Override
     public String toString() {
         if (_velden == null) {
             return _ticknr + "";
@@ -121,7 +87,6 @@ class NormalTicket implements Ticket {
         }
     }
 
-    @Override
     public String getString(final String veld) throws JSONException {
         try {
             return _velden.getString(veld);
@@ -131,8 +96,7 @@ class NormalTicket implements Ticket {
     }
 
     @Nullable
-    @Override
-    public JSONObject getJSONObject(final String veld) throws JSONException {
+    JSONObject getJSONObject(final String veld) throws JSONException {
         try {
             return _velden.getJSONObject(veld);
         } catch (final NullPointerException e) {
@@ -141,23 +105,19 @@ class NormalTicket implements Ticket {
         }
     }
 
-    @Override
     public void setFields(JSONObject velden) {
         _velden = velden;
         _hasdata = true;
     }
 
-    @Override
-    public JSONArray getHistory() {
+    JSONArray getHistory() {
         return _history;
     }
 
-    @Override
-    public void setHistory(JSONArray history) {
+    void setHistory(JSONArray history) {
         _history = history;
     }
 
-    @Override
     public JSONArray getActions() {
         if (actionLock.availablePermits() == 0) {
             actionLock.acquireUninterruptibly();
@@ -166,7 +126,6 @@ class NormalTicket implements Ticket {
         return _actions;
     }
 
-    @Override
     public void setActions(JSONArray actions) {
         _actions = actions;
         if (actionLock.availablePermits() == 0) {
@@ -174,28 +133,23 @@ class NormalTicket implements Ticket {
         }
     }
 
-    @Override
-    public JSONArray getAttachments() {
+    JSONArray getAttachments() {
         return _attachments;
     }
 
-    @Override
-    public void setAttachments(JSONArray attachments) {
+    void setAttachments(JSONArray attachments) {
         _attachments = attachments;
     }
 
-    @Override
-    public String getAttachmentFile(int nr) throws JSONException {
+    String getAttachmentFile(int nr) throws JSONException {
         return _attachments.getJSONArray(nr).getString(0);
     }
 
-    @Override
-    public boolean hasdata() {
+    boolean hasdata() {
         return _hasdata;
     }
 
-    @Override
-    public String toText() {
+    String toText() {
         String tekst = "Ticket: " + _ticknr;
 
         try {
@@ -266,7 +220,7 @@ class NormalTicket implements Ticket {
 
     @Override
     public boolean equals(Object obj) {
-        return this == obj || obj instanceof NormalTicket && (_ticknr == ((NormalTicket) obj)._ticknr);
+        return this == obj || obj instanceof Ticket && (_ticknr == ((Ticket) obj)._ticknr);
     }
 
     @Override

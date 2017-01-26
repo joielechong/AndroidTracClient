@@ -28,35 +28,8 @@ import org.json.JSONObject;
 
 import static com.mfvl.trac.client.Const.*;
 
-interface TracHttp {
-    String TICKET_QUERY = "ticket.query";
-    String TICKET_CREATE = "ticket.create";
-    String TICKET_UPDATE = "ticket.update";
-    String TICKET_GETTICKETFIELDS = "ticket.getTicketFields";
-    String TICKET_GETATTACHMENT = "ticket.getAttachment";
-    String TICKET_PUTATTACHMENT = "ticket.putAttachment";
-    String SYSTEM_GETAPIVERSION = "system.getAPIVersion";
 
-    JSONObject toJSON() throws JSONException;
-
-    JSONArray Query(String reqString) throws JSONRPCException;
-
-    int createTicket(final String s, final String d, final JSONObject _velden, boolean notify) throws JSONRPCException;
-
-    JSONArray updateTicket(final int _ticknr, final String cmt, final JSONObject _velden, final boolean notify) throws JSONRPCException;
-
-    String verifyHost() throws JSONRPCException;
-
-    JSONArray getModel() throws JSONRPCException;
-
-    byte[] getAttachment(int ticknr, String filename) throws JSONException, JSONRPCException;
-
-    void putAttachment(final int ticknr, String filename, String base64Content) throws JSONException, JSONRPCException;
-
-    JSONArray callJSONArray(String t, JSONArray mc) throws JSONRPCException;
-}
-
-class TracHttpClient extends JSONRPCHttpClient implements TracHttp {
+class TracHttpClient extends JSONRPCHttpClient {
 
     private final static String _JSONCLASS = "__jsonclass__";
     private final boolean current_sslHack;
@@ -84,7 +57,6 @@ class TracHttpClient extends JSONRPCHttpClient implements TracHttp {
                 b.getString(CURRENT_PASSWORD));
     }
 
-    @Override
     public JSONObject toJSON() throws JSONException {
         JSONObject a = new JSONObject();
         a.put(CURRENT_URL, current_url);
@@ -95,39 +67,38 @@ class TracHttpClient extends JSONRPCHttpClient implements TracHttp {
         return a;
     }
 
-    @Override
     public JSONArray Query(String reqString) throws JSONRPCException {
+        String TICKET_QUERY = "ticket.query";
         return callJSONArray(TICKET_QUERY, reqString);
     }
 
-    @Override
     public int createTicket(final String s, final String d, final JSONObject _velden, boolean notify) throws JSONRPCException {
+        String TICKET_CREATE = "ticket.create";
         return callInt(TICKET_CREATE, s, d, _velden, notify);
     }
 
-    @Override
     public JSONArray updateTicket(final int _ticknr, final String cmt, final JSONObject _velden, final boolean notify) throws JSONRPCException {
         // MyLog.d( "_velden call = " + _velden);
+        String TICKET_UPDATE = "ticket.update";
         return callJSONArray(TICKET_UPDATE, _ticknr, cmt, _velden, notify);
     }
 
-    @Override
     public String verifyHost() throws JSONRPCException {
+        String SYSTEM_GETAPIVERSION = "system.getAPIVersion";
         return callJSONArray(SYSTEM_GETAPIVERSION).toString();
     }
 
-    @Override
     public JSONArray getModel() throws JSONRPCException {
+        String TICKET_GETTICKETFIELDS = "ticket.getTicketFields";
         return callJSONArray(TICKET_GETTICKETFIELDS);
     }
 
-    @Override
     public byte[] getAttachment(int ticknr, String filename) throws JSONException, JSONRPCException {
+        String TICKET_GETATTACHMENT = "ticket.getAttachment";
         return Base64.decode(callJSONObject(TICKET_GETATTACHMENT, ticknr, filename).getJSONArray(_JSONCLASS).getString(1), Base64.DEFAULT);
     }
 
-    @Override
-    public void putAttachment(final int ticknr, String filename, String base64Content) throws JSONException, JSONRPCException {
+    void putAttachment(final int ticknr, String filename, String base64Content) throws JSONException, JSONRPCException {
         final JSONArray ar = new JSONArray();
 
         ar.put(ticknr);
@@ -142,6 +113,7 @@ class TracHttpClient extends JSONRPCHttpClient implements TracHttp {
         ob.put("__jsonclass__", ar1);
         ar.put(ob);
         ar.put(true);
+        String TICKET_PUTATTACHMENT = "ticket.putAttachment";
         final String retfile = callString(TICKET_PUTATTACHMENT, ar);
 
         MyLog.i("putAttachment " + retfile);

@@ -41,11 +41,11 @@ final class TicketModel {
     @SuppressWarnings("StaticVariableOfConcreteClass")
     private static TicketModel _instance = null;
     private static boolean _hasData = false;
-    private static TracHttp _tracClient = null;
+    private static TracHttpClient _tracClient = null;
     private static Semaphore active = null;
     private static JSONArray v = null;
 
-    private TicketModel(TracHttp tracClient) {
+    private TicketModel(TracHttpClient tracClient) {
         MyLog.logCall();
         fieldCount = 0;
         _tracClient = tracClient;
@@ -71,7 +71,7 @@ final class TicketModel {
         }
     }
 
-    static void getInstance(TracHttp tracClient, final OnTicketModelListener oc) {
+    static void getInstance(TracHttpClient tracClient, final OnTicketModelListener oc) {
         MyLog.d("new tracClient = " + tracClient);
         if (_instance == null || !tracClient.equals(_tracClient)) {
             _instance = new TicketModel(tracClient);
@@ -107,12 +107,12 @@ final class TicketModel {
         for (int i = 0; i < fieldCount; i++) {
             final String key = veld.getJSONObject(i).getString("name");
 
-            _velden.put(key, new TicketModelVeldImpl(veld.getJSONObject(i)));
+            _velden.put(key, new TicketModelVeld(veld.getJSONObject(i)));
             _volgorde.add(key);
         }
         for (int i = 0; i < extraFields.size(); i++) {
             String v1 = extraFields.get(i);
-            _velden.put(v1, new TicketModelVeldImpl(v1, v1, extraValues.get(i)));
+            _velden.put(v1, new TicketModelVeld(v1, v1, extraValues.get(i)));
             _volgorde.add(v1);
         }
         _hasData = true;
@@ -217,7 +217,7 @@ final class TicketModel {
             return _velden.get(naam);
         }
         if ("id".equals(naam)) {
-            return new TicketModelVeldImpl(naam, naam, "0");
+            return new TicketModelVeld(naam, naam, "0");
         }
         throw new IndexOutOfBoundsException();
     }

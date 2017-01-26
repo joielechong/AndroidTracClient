@@ -120,7 +120,7 @@ public class EditFieldFragment extends TcDialogFragment {
                     newValue = et.getText().toString();
                 }
 
-                DetailInterface dt = (DetailInterface) (getFragmentManager().findFragmentByTag(
+                DetailFragment dt = (DetailFragment) (getFragmentManager().findFragmentByTag(
                         TracStart.DetailFragmentTag));
                 dt.setModVeld(veld, waarde, newValue);
                 getFragmentManager().popBackStack();

@@ -50,17 +50,11 @@ interface OnTicketModelListener {
     void onTicketModelLoaded(TicketModel tm);
 }
 
-interface RefreshSrv {
-    void send(Message msg);
-
-    void setTracStartHandler(final Handler tsh);
-}
-
 interface RefreshBinder {
-    RefreshSrv getService();
+    RefreshService getService();
 }
 
-public class RefreshService extends Service implements Handler.Callback, RefreshSrv {
+public class RefreshService extends Service implements Handler.Callback {
 
 
     public static final String refreshAction = "LIST_REFRESH";
@@ -78,7 +72,7 @@ public class RefreshService extends Service implements Handler.Callback, Refresh
     private HandlerThread mHandlerThread = null;
     private Handler mServiceHandler = null;
     private LoginProfile mLoginProfile = null;
-    private TracHttp tracClient = null;
+    private TracHttpClient tracClient = null;
     private NotificationManager mNotificationManager = null;
     private Tickets mTickets = null;
     private boolean invalid = true;
@@ -147,7 +141,6 @@ public class RefreshService extends Service implements Handler.Callback, Refresh
         return false;
     }
 
-    @Override
     public void send(Message msg) {
 //        MyLog.d(msg);
         mServiceHandler.sendMessage(msg);
@@ -208,7 +201,7 @@ public class RefreshService extends Service implements Handler.Callback, Refresh
     private void loadTickets() {
         MyLog.d(mLoginProfile + "\ninvalid = " + invalid);
         if (invalid) {
-            mTickets = new TicketsStore();
+            mTickets = new Tickets();
             mTickets.resetCache();
             String reqString = "";
             List<FilterSpec> fl = mLoginProfile.getFilterList();
@@ -239,7 +232,7 @@ public class RefreshService extends Service implements Handler.Callback, Refresh
                         Ticket t = null;
                         try {
                             tickets[i] = jsonTicketlist.getInt(i);
-                            t = new NormalTicket(tickets[i]);
+                            t = new Ticket(tickets[i]);
                             mTickets.putTicket(t);
                         } catch (JSONException e) {
                             tickets[i] = -1;
@@ -301,7 +294,7 @@ public class RefreshService extends Service implements Handler.Callback, Refresh
                         final int thisTicket = Integer.parseInt(id.substring(startpos));
 
                         if (t == null || t.getTicketnr() != thisTicket) {
-                            t = TicketsStore.getTicket(thisTicket);
+                            t = Tickets.getTicket(thisTicket);
                         }
                         if (t != null) {
                             if ((TICKET_GET + "_" + thisTicket).equals(id)) {
@@ -363,10 +356,10 @@ public class RefreshService extends Service implements Handler.Callback, Refresh
             Tickets t = null;
 
             if (jsonTicketlist.length() > 0) {
-                t = new TicketsStore();
+                t = new Tickets();
                 for (int i = 0; i < jsonTicketlist.length(); i++) {
                     int ticknr = jsonTicketlist.getInt(i);
-                    t.addTicket(new NormalTicket(ticknr));
+                    t.addTicket(new Ticket(ticknr));
                 }
                 loadTicketContent(t);
             }
@@ -422,14 +415,14 @@ public class RefreshService extends Service implements Handler.Callback, Refresh
                 MyLog.d("newTickets = " + newTickets);
 
                 if (newTickets.size() > 0) {
-                    Tickets tl = new TicketsStore();
+                    Tickets tl = new Tickets();
                     for (Integer i : newTickets) {
-                        tl.addTicket(new NormalTicket(i));
+                        tl.addTicket(new Ticket(i));
                     }
                     try {
                         loadTicketContent(tl);
                         if (msg.arg2 != 0) {
-                            sendMessageToUI(msg.arg2, TicketsStore.getTicket(msg.arg1));
+                            sendMessageToUI(msg.arg2, Tickets.getTicket(msg.arg1));
                         }
                     } catch (Exception e) {
                         MyLog.e("MSG_SEND_TICKETS exception", e);
@@ -489,7 +482,6 @@ public class RefreshService extends Service implements Handler.Callback, Refresh
         msg.sendToTarget();
     }
 
-    @Override
     public void setTracStartHandler(final Handler tsh) {
         tracStartHandler = tsh;
     }
