@@ -150,10 +150,10 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     private String urlArg = null;
     private int ticketArg = -1;
     private boolean doNotFinish = false;
-    private RefreshSrv mService = null;
+    private RefreshService mService = null;
     private DrawerLayout mDrawerLayout = null;
     private ActionBarDrawerToggle toggle = null;
-    private PDHelper pdb = null;
+    private ProfileDatabaseHelper pdb = null;
     private Intent serviceIntent = null;
     private boolean hasTicketsLoadingBar = false;
     private Boolean ticketsLoading = false;
@@ -342,7 +342,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             }
         }
 
-        newDataAdapter(new TicketsStore()); // empty list
+        newDataAdapter(new Tickets()); // empty list
         getSupportFragmentManager().addOnBackStackChangedListener(this);
         // Handle when activity is recreated like on orientation Change
         shouldDisplayHomeUp();
@@ -366,7 +366,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                 final Fragment ticketListFragment = new TicketListFragment();
 
                 if (urlArg != null) {
-                    MyLog.d("select NormalTicket = " + ticketArg);
+                    MyLog.d("select Ticket = " + ticketArg);
                     final Bundle args = new Bundle();
                     args.putInt("TicketArg", ticketArg);
                     urlArg = null;
@@ -697,10 +697,10 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         MyLog.d(frag + " this = " + this);
         super.onAttachFragment(frag);
 
-        if (frag instanceof TicketListFragInterface && urlArg != null) {
+        if (frag instanceof TicketListFragment && urlArg != null) {
             MyLog.d("ticketListFragment = " + frag);
             MyLog.d("Ticket = " + ticketArg);
-            ((TicketListFragInterface) frag).selectTicket(ticketArg);
+            ((TcFragment) frag).selectTicket(ticketArg);
             urlArg = null;
             ticketArg = -1;
         }
@@ -709,7 +709,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     @Override
     public void onBackPressed() {
         MyLog.logCall();
-        DetailInterface dt = (DetailInterface) getFragment(DetailFragmentTag);
+        DetailFragment dt = (DetailFragment) getFragment(DetailFragmentTag);
 
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -741,7 +741,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     public boolean dispatchTouchEvent(MotionEvent ev) {
         boolean ret = super.dispatchTouchEvent(ev);
         try {
-            ret |= ((DetailInterface) getFragment(DetailFragmentTag)).dispatchTouchEvent(ev);
+            ret |= ((DetailFragment) getFragment(DetailFragmentTag)).dispatchTouchEvent(ev);
         } catch (Exception ignored) {
         }
         return ret;
@@ -905,8 +905,8 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         }
     }
 
-    private TicketListFragInterface getTicketListFragment() {
-        return (TicketListFragInterface) getFragment(ListFragmentTag);
+    private TicketListFragment getTicketListFragment() {
+        return (TicketListFragment) getFragment(ListFragmentTag);
     }
 
     private Fragment getFragment(final String tag) {
@@ -963,7 +963,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         } else {
             getSupportFragmentManager().popBackStackImmediate(ListFragmentTag, 0);
         }
-        newDataAdapter(new TicketsStore()); // empty list
+        newDataAdapter(new Tickets()); // empty list
         startListLoader(true);
     }
 
@@ -1033,7 +1033,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                     loadingActive.release();
                 }
 
-                Ticket t = TicketsStore.getTicket(i);
+                Ticket t = Tickets.getTicket(i);
                 MyLog.d("i = " + i + " ticket = " + t);
                 if (t == null || !t.hasdata()) {
                     refreshTicket(i);
@@ -1113,7 +1113,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             @Override
             public void run() {
                 try {
-                    TracHttp tracClient = new TracHttpClient(url, sslHack, sslHostNameHack,
+                    TracHttpClient tracClient = new TracHttpClient(url, sslHack, sslHostNameHack,
                             userName, passWord);
                     JSONArray retTick = tracClient.updateTicket(ticknr, cmt, velden, notify);
                     t.setFields(retTick.getJSONObject(3));
@@ -1145,13 +1145,13 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         velden.remove("description");
 
         try {
-            TracHttp tracClient = new TracHttpClient(url, sslHack, sslHostNameHack, userName, passWord);
+            TracHttpClient tracClient = new TracHttpClient(url, sslHack, sslHostNameHack, userName, passWord);
             final int newticknr = tracClient.createTicket(s, d, velden, notify);
             if (newticknr == -1) {
                 showAlertBox(R.string.storerr, getString(R.string.noticketUnk));
                 return -1;
             } else {
-//				reloadTicketData(new NormalTicket(newticknr));
+//				reloadTicketData(new Ticket(newticknr));
                 refreshTicket(newticknr);
                 return newticknr;
             }
@@ -1186,7 +1186,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
 //                available.acquireUninterruptibly();
                 if (_oc != null) {
                     try {
-                        TracHttp tracClient = new TracHttpClient(url, sslHack, sslHostNameHack, userName, passWord);
+                        TracHttpClient tracClient = new TracHttpClient(url, sslHack, sslHostNameHack, userName, passWord);
                         _oc.onComplete(tracClient.getAttachment(_ticknr, filename));
                     } catch (final Exception e) {
                         MyLog.e("Exception during getAttachment", e);
@@ -1311,7 +1311,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            final DetailInterface d = (DetailInterface) getFragment(DetailFragmentTag);
+                            final DetailFragment d = (DetailFragment) getFragment(DetailFragmentTag);
                             d.setTicket(t.getTicketnr());
                         }
                     });

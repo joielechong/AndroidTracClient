@@ -98,7 +98,7 @@ public class TracLoginFragment extends TracClientFragment
     private TextView credWarnSts = null;
     private Spinner loginSpinner = null;
     private Cursor pdbCursor = null;
-    private PDHelper pdb = null;
+    private ProfileDatabaseHelper pdb = null;
     private String SelectedProfile = null;
     private final TextWatcher checkUrlInput = new TextWatcher() {
         @Override
@@ -436,7 +436,7 @@ public class TracLoginFragment extends TracClientFragment
             @Override
             public void run() {
                 //MyLog.logCall();
-                TracHttp tc = new TracHttpClient(url, sslHack, sslHostNameHack, username, password);
+                TracHttpClient tc = new TracHttpClient(url, sslHack, sslHostNameHack, username, password);
                 try {
                     final String TracVersion = tc.verifyHost();
                     MyLog.d(TracVersion);
@@ -494,7 +494,7 @@ public class TracLoginFragment extends TracClientFragment
             @Override
             public void run() {
                 //MyLog.logCall();
-                TracHttp tc = new TracHttpClient(url, sslHack, sslHostNameHack, username, password);
+                TracHttpClient tc = new TracHttpClient(url, sslHack, sslHostNameHack, username, password);
                 try {
                     final String TracVersion = tc.verifyHost();
                     MyLog.d(TracVersion);

@@ -57,7 +57,7 @@ class TicketListAdapter extends ColoredArrayAdapter<Ticket> implements TicketLis
 
     @Override
     public int getNextTicket(int ticknr) {
-        Ticket t = TicketsStore.getTicket(ticknr);
+        Ticket t = Tickets.getTicket(ticknr);
         int retVal = -1;
         if (t != null) {
             int pos = super.getPosition(t);
@@ -75,7 +75,7 @@ class TicketListAdapter extends ColoredArrayAdapter<Ticket> implements TicketLis
 
     @Override
     public int getPrevTicket(int ticknr) {
-        Ticket t = TicketsStore.getTicket(ticknr);
+        Ticket t = Tickets.getTicket(ticknr);
         int retVal = -1;
         if (t != null) {
             int pos = super.getPosition(t);

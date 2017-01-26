@@ -74,20 +74,10 @@ import java.util.Set;
 import static com.mfvl.trac.client.Const.*;
 import static com.mfvl.trac.client.TracGlobal.*;
 
-interface DetailInterface {
-    void setTicket(int newTicket);
-
-    boolean dispatchTouchEvent(MotionEvent ev);
-
-    boolean onBackPressed();
-
-    void setModVeld(final String veld, final String waarde, final String newValue);
-}
-
 public class DetailFragment extends TracClientFragment
         implements SwipeRefreshLayout.OnRefreshListener, CompoundButton.OnCheckedChangeListener,
         GestureDetector.OnGestureListener, OnFileSelectedListener, OnItemClickListener,
-        OnItemLongClickListener, DetailInterface, HelpInterface {
+        OnItemLongClickListener, HelpInterface {
 
     private static final String EMPTYFIELDS = "emptyfields";
     private static final String MODVELD = "modveld";
@@ -524,20 +514,17 @@ public class DetailFragment extends TracClientFragment
         return false;
     }
 
-    @Override
-    public void setTicket(int newTicket) {
+    void setTicket(int newTicket) {
         MyLog.d(newTicket);
         ticknr = newTicket;
         display_and_refresh_ticket();
     }
 
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
+    boolean dispatchTouchEvent(MotionEvent ev) {
         return gestureDetector != null && gestureDetector.onTouchEvent(ev);
     }
 
-    @Override
-    public void setModVeld(final String veld, final String waarde, final String newValue) {
+    void setModVeld(final String veld, final String waarde, final String newValue) {
         MyLog.d("veld = " + veld + " waarde = " + waarde + " newValue = " + newValue);
         final ListView parent = (ListView) currentView.findViewById(R.id.listofFields);
         if (newValue != null && !newValue.equals(waarde) || newValue == null && waarde != null) {
@@ -715,8 +702,7 @@ public class DetailFragment extends TracClientFragment
         }
     }
 
-    @Override
-    public boolean onBackPressed() {
+    boolean onBackPressed() {
         MyLog.logCall();
         if (modVeld.isEmpty()) {
             return false;

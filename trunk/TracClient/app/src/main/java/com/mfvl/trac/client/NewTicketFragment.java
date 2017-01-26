@@ -197,7 +197,7 @@ public class NewTicketFragment extends TracClientFragment implements HelpInterfa
                     velden.put("reporter", username);
                     final Checkable updNotify = (Checkable) view.findViewById(R.id.updNotify);
                     final boolean notify = updNotify != null && updNotify.isChecked();
-                    final Ticket t = new NormalTicket(velden);
+                    final Ticket t = new Ticket(velden);
                     final int newtick = listener.createTicket(t, notify);
 
                     if (newtick < 0) {

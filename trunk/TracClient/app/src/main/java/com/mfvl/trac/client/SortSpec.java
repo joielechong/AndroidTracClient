@@ -16,30 +16,21 @@
 
 package com.mfvl.trac.client;
 
-interface SortSpec extends Spec {
-    boolean getRichting();
-
-    boolean flip();
-}
-
-class SortSpecImpl extends SpecImpl implements SortSpec {
+class SortSpec extends Spec {
     private boolean _richting; // true = asc false = desc
 
-    public SortSpecImpl(String veld) {
+    SortSpec(String veld) {
         this(veld, true);
     }
 
-    public SortSpecImpl(String veld, boolean richting) {
+    SortSpec(String veld, boolean richting) {
         super(veld);
         _richting = richting;
     }
 
-    @SuppressWarnings({"MethodReturnOfConcreteClass", "LocalVariableOfConcreteClass"})
     @Override
-    public SortSpecImpl clone() throws CloneNotSupportedException {
-        SortSpecImpl s = (SortSpecImpl) super.clone();
-        s.setRichting(_richting);
-        return s;
+    public SortSpec clone() throws CloneNotSupportedException {
+        return (SortSpec) super.clone();
     }
 
     @Override
@@ -49,8 +40,7 @@ class SortSpecImpl extends SpecImpl implements SortSpec {
                 && (_richting == ((SortSpec) o).getRichting()));
     }
 
-    @Override
-    public boolean getRichting() {
+    boolean getRichting() {
         return _richting;
     }
 
@@ -58,8 +48,7 @@ class SortSpecImpl extends SpecImpl implements SortSpec {
         _richting = r;
     }
 
-    @Override
-    public boolean flip() {
+    boolean flip() {
         _richting = !_richting;
         return _richting;
     }

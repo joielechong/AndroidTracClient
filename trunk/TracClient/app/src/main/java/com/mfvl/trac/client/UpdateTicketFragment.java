@@ -180,7 +180,7 @@ public class UpdateTicketFragment extends TracClientFragment implements HelpInte
                                                         e);
                                             }
                                         }
-                                        final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<Object>(
+                                        final ArrayAdapter<Object> spinAdapter = new ArrayAdapter<>(
                                                 getActivity(), android.R.layout.simple_spinner_item, opties);
 
                                         spinAdapter.setDropDownViewResource(

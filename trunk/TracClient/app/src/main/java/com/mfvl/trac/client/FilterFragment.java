@@ -48,7 +48,7 @@ import java.util.List;
 
 import static com.mfvl.trac.client.Const.*;
 
-public class FilterFragment extends SpecFragment<FilterSpec> implements HelpInterface, SpecInterface {
+public class FilterFragment extends SpecFragment<FilterSpec> implements HelpInterface {
     private static List<String> operators = null;
     private static List<String> operatornames = null;
     private FilterAdapter filterAdapter = null;
@@ -78,7 +78,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements HelpInte
 
             case R.id.addbutton:
                 final String veld = (String) addSpinner.getSelectedItem();
-                final FilterSpec o = new FilterSpecImpl(veld, "=", "");
+                final FilterSpec o = new FilterSpec(veld, "=", "");
 
                 filterAdapter.add(o);
                 filterAdapter.notifyDataSetChanged();

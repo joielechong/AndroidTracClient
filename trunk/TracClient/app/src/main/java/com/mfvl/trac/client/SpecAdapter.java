@@ -22,11 +22,7 @@ import android.widget.ArrayAdapter;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-interface ItemsAdapter {
-    Serializable getItems();
-}
-
-abstract class SpecAdapter<T extends Spec> extends ArrayAdapter<T> implements ItemsAdapter {
+abstract class SpecAdapter<T extends Spec> extends ArrayAdapter<T> {
     final ArrayList<T> items;
 
     SpecAdapter(Context context, int textViewResourceId, ArrayList<T> _items) {
@@ -35,7 +31,6 @@ abstract class SpecAdapter<T extends Spec> extends ArrayAdapter<T> implements It
         items = _items;
     }
 
-    @Override
     public Serializable getItems() {
 //    MyLog.logCall();
         return items;

@@ -16,57 +16,22 @@
 
 package com.mfvl.trac.client;
 
-interface FilterSpec extends Spec {
-    String getOperator();
-
-    FilterSpec setOperator(final String o);
-
-    String getWaarde();
-
-    FilterSpec setWaarde(final String w);
-
-    boolean getEdit();
-}
-
-class FilterSpecImpl extends SpecImpl implements FilterSpec {
+class FilterSpec extends Spec {
     private String _operator;
     private String _waarde;
     private String _newwaarde = null;
     private Boolean _edited = false;
 
-    FilterSpecImpl(final String veld, final String operator, final String waarde) {
+    FilterSpec(final String veld, final String operator, final String waarde) {
         super(veld);
         _operator = operator;
         _waarde = waarde;
         _newwaarde = waarde;
     }
 
-    FilterSpecImpl(final String string, final String[] operators) {
-        super(null);
-        _operator = null;
-        _waarde = null;
-        for (int i = operators.length - 1; i >= 0 && _waarde == null; i--) {
-            final String op = operators[i];
-            final int index = string.indexOf(op);
-
-            if (index > 0) {
-                _veld = string.substring(0, index);
-                _operator = op;
-                _waarde = string.substring(index + op.length());
-                _newwaarde = _waarde;
-            }
-        }
-    }
-
     @Override
-    @SuppressWarnings({"MethodReturnOfConcreteClass", "LocalVariableOfConcreteClass"})
-    public FilterSpecImpl clone() throws CloneNotSupportedException {
-        FilterSpecImpl f = (FilterSpecImpl) super.clone();
-        f._operator = _operator;
-        f._waarde = _waarde;
-        f._newwaarde = _newwaarde;
-        f._edited = _edited;
-        return f;
+    public FilterSpec clone() throws CloneNotSupportedException {
+        return (FilterSpec) super.clone();
     }
 
     @Override
@@ -77,24 +42,20 @@ class FilterSpecImpl extends SpecImpl implements FilterSpec {
                 && equalFields(_operator, ((FilterSpec) o).getOperator()));
     }
 
-    @Override
-    public String getOperator() {
+    String getOperator() {
         return _operator;
     }
 
-    @Override
-    public FilterSpec setOperator(final String o) {
+    FilterSpec setOperator(final String o) {
         _operator = o;
         return this;
     }
 
-    @Override
-    public String getWaarde() {
+    String getWaarde() {
         return _edited ? _newwaarde : _waarde;
     }
 
-    @Override
-    public FilterSpec setWaarde(final String w) {
+    FilterSpec setWaarde(final String w) {
         if (_edited) {
             _newwaarde = w;
         } else {
@@ -103,8 +64,7 @@ class FilterSpecImpl extends SpecImpl implements FilterSpec {
         return this;
     }
 
-    @Override
-    public boolean getEdit() {
+    boolean getEdit() {
         return _edited;
     }
 
