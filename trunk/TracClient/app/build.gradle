@@ -22,16 +22,25 @@ android {
 
     defaultConfig {
         applicationId "com.mfvl.trac.client"
-        minSdkVersion 11
         targetSdkVersion 25
-        versionCode 116
         resConfigs "nl","en","da","de","fr","pl","pt","ru","ar"
+    }
+
+    productFlavors {
+        legacy {
+            minSdkVersion 11
+            versionCode 1101
+        }
+        current {
+            minSdkVersion 14
+            versionCode 1401
+        }
     }
 
     applicationVariants.all { variant ->
         variant.resValue "string", "versionName", variant.versionName
         variant.outputs.each    { output ->
-            output.outputFile = new File("${System.env.PROJECTHOME}/APKFiles", "TracClient-${variant.buildType.name}.apk")
+            output.outputFile = new File("${System.env.PROJECTHOME}/APKFiles", "TracClient-${variant.buildType.name}.${variant.flavorName}.apk")
         }
     }
 
@@ -102,11 +111,13 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':mfvllib')
     compile files('libs/httpclientandroidlib-1.2.1.jar')
-    compile "com.google.android.gms:play-services-ads-lite:${google_play_services_library}"
     compile "com.android.support:appcompat-v7:${google_support_library}"
     compile "com.android.support:design:${google_support_library}"
     compile "com.android.support:support-v4:${google_support_library}"
     compile "andhradroid.dev:app:1.0.1"
+    currentCompile "com.google.android.gms:play-services-ads-lite:${google_play_services_library}"
+    //noinspection GradleDependency
+    legacyCompile "com.google.android.gms:play-services-ads-lite:10.0.1"
 }
 
 preBuild.doFirst {
