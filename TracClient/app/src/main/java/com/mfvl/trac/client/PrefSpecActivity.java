@@ -16,14 +16,16 @@
 
 package com.mfvl.trac.client;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.Message;
+import android.os.IBinder;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -32,7 +34,12 @@ import com.mfvl.mfvllib.MyLog;
 import static com.mfvl.trac.client.Const.*;
 import static com.mfvl.trac.client.TracGlobal.*;
 
-public class PrefSpecActivity extends TcBaseActivity {
+public class PrefSpecActivity extends TcBaseActivity implements ServiceConnection, FragmentManager.OnBackStackChangedListener {
+    private static final String FilterFragmentTag = "Filter_Fragment";
+    private static final String SortFragmentTag = "Sort_Fragment";
+    private static final String LoginFragmentTag = "Login_Fragment";
+
+    private TracClientService mService = null;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -50,6 +57,7 @@ public class PrefSpecActivity extends TcBaseActivity {
     @Override
     public void onCreate(Bundle sis) {
         super.onCreate(sis);
+        MyLog.d(sis);
 
         String filterAction = getString(R.string.editFilterAction);
         String sortAction = getString(R.string.editSortAction);
@@ -63,6 +71,7 @@ public class PrefSpecActivity extends TcBaseActivity {
         Intent intent = getIntent();
         MyLog.d(intent);
         String action = intent.getAction();
+        getSupportFragmentManager().addOnBackStackChangedListener(this);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         final Bundle args = new Bundle();
         Fragment ff;
@@ -71,53 +80,71 @@ public class PrefSpecActivity extends TcBaseActivity {
             tm = TicketModel.getInstance();
             ff = new FilterFragment();
             args.putSerializable(FILTERLISTNAME, parseFilterString(getFilterString()));
+            ft.addToBackStack(FilterFragmentTag);
         } else if (sortAction.equals(action)) {
             tm = TicketModel.getInstance();
             ff = new SortFragment();
             args.putSerializable(SORTLISTNAME, parseSortString(getSortString()));
+            ft.addToBackStack(SortFragmentTag);
         } else if (loginAction.equals(action)) {
             ff = new TracLoginFragment();
+            ft.addToBackStack(LoginFragmentTag);
         } else {
             throw new RuntimeException("unkown action : " + action);
         }
         ff.setArguments(args);
         ft.add(R.id.displayList, ff);
         ft.commit();
+        bindService(new Intent(this,
+                        TracClientService.class).setAction(getServiceAction()),
+                this,
+                Context.BIND_AUTO_CREATE);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public boolean processMessage(Message msg) {
-        MyLog.d(msg);
-        Intent intent;
-        switch (msg.what) {
-            case MSG_DONE:
-                finish();
-                break;
+    public void onDestroy() {
+        MyLog.logCall();
+        unbindService(this);
+        super.onDestroy();
+    }
 
-            case MSG_SET_FILTER:
-                Iterable<FilterSpec> filter = (Iterable<FilterSpec>) msg.obj;
-                String filterString = TextUtils.join("&", filter);
-                storeFilterString(filterString);
-                intent = new Intent(PERFORM_FILTER);
-                intent.putExtra(FILTERLISTNAME, filterString);
-                LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-                finish();
-                break;
-
-            case MSG_SET_SORT:
-                Iterable<SortSpec> sort = (Iterable<SortSpec>) msg.obj;
-                String sortString = TextUtils.join("&", sort);
-                storeSortString(sortString);
-                intent = new Intent(PERFORM_SORT);
-                intent.putExtra(SORTLISTNAME, sortString);
-                LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-                finish();
-                break;
-
-            default:
-                return super.processMessage(msg);
+    @Override
+    public void onServiceConnected(ComponentName className, IBinder service) {
+        mService = ((TracClientService.TcBinder) service).getService();
+        MyLog.d("mConnection mService = " + mService);
+        for (Fragment frag : getSupportFragmentManager().getFragments()) {
+            MyLog.d(frag);
+            if (frag instanceof TracClientFragment) {
+                ((TracClientFragment) frag).onServiceConnected();
+            }
         }
-        return true;
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName className) {
+        MyLog.d("className = " + className);
+        mService = null;
+        for (Fragment frag : getSupportFragmentManager().getFragments()) {
+            MyLog.d(frag);
+            if (frag instanceof TracClientFragment) {
+                ((TracClientFragment) frag).onServiceDisconnected();
+            }
+        }
+    }
+
+    @Override
+    public TracClientService getService() {
+        return mService;
+    }
+
+    @Override
+    public void onBackStackChanged() {
+        MyLog.logCall();
+        final int depth = getSupportFragmentManager().getBackStackEntryCount();
+
+        MyLog.d("depth = " + depth);
+        if (depth == 0) {
+            finish();
+        }
     }
 }

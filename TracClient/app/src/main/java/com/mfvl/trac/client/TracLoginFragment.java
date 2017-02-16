@@ -22,7 +22,6 @@ package com.mfvl.trac.client;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -55,8 +54,8 @@ import org.alexd.jsonrpc.JSONRPCException;
 import static com.mfvl.trac.client.Const.*;
 import static com.mfvl.trac.client.TracGlobal.*;
 
-public class TracLoginFragment extends TracClientFragment
-        implements OnItemSelectedListener, OnCheckedChangeListener, HelpInterface {
+public class TracLoginFragment extends TracClientFragment implements OnItemSelectedListener,
+        OnCheckedChangeListener {
 
     private static final String NEW_URL = "newURL";
     private static final String NEW_USERNAME = "newUsername";
@@ -490,6 +489,7 @@ public class TracLoginFragment extends TracClientFragment
     private void verifyHostNameHack() {
         //MyLog.logCall();
         listener.startProgressBar(R.string.checking);
+        hideSoftKeyboard(getActivity());
         new Thread() {
             @Override
             public void run() {
@@ -579,6 +579,7 @@ public class TracLoginFragment extends TracClientFragment
 
     private void performLogin() {
         //MyLog.logCall();
+        hideSoftKeyboard(getActivity());
         url = urlView.getText().toString();
         username = userView.getText().toString();
         password = pwView.getText().toString();
@@ -590,17 +591,14 @@ public class TracLoginFragment extends TracClientFragment
             setSslHostNameHack(sslHostNameHack);
             storeCredentials();
         }
-
-        Intent intentAct = new Intent(PERFORM_LOGIN);
-        intentAct.setClass(getActivity(), TracStart.class);
-        intentAct.putExtra(CURRENT_URL, url);
-        intentAct.putExtra(CURRENT_USERNAME, username);
-        intentAct.putExtra(CURRENT_PASSWORD, password);
-        intentAct.putExtra(CURRENT_SSLHACK, sslHack);
-        intentAct.putExtra(CURRENT_SSLHOSTNAMEHACK, sslHostNameHack);
-        intentAct.putExtra(CURRENT_PROFILE, SelectedProfile);
-        startActivity(intentAct);
-        sendMessageToHandler(MSG_DONE, null);
+        removeFilterString();
+        removeSortString();
+        LoginProfile lp = new LoginProfile(url, username, password, sslHack, sslHostNameHack);
+        lp.setProfile(SelectedProfile);
+        lp.setFilterList(listener.parseFilterString(getFilterString()));
+        lp.setSortList(listener.parseSortString(getSortString()));
+        listener.getService().msgLoadTickets(lp);
+        getFragmentManager().popBackStack();
     }
 
     private void storeProfile() {

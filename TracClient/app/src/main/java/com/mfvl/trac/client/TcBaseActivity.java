@@ -25,68 +25,39 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Message;
-import android.os.Messenger;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.ArrayAdapter;
 
 import com.mfvl.mfvllib.MyLog;
 import com.mfvl.mfvllib.MyProgressBar;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Deque;
 import java.util.Map;
 
 import static com.mfvl.trac.client.Const.*;
-import static com.mfvl.trac.client.TracGlobal.setCanWriteSD;
+import static com.mfvl.trac.client.TracGlobal.*;
 
-abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callback, ActivityCompat.OnRequestPermissionsResultCallback,
+abstract class TcBaseActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback,
         InterFragmentListener {
     private static final int REQUEST_CODE_WRITE_EXT = 175;
     static boolean debug = false; // disable menuoption at startup
-    Handler tracStartHandler = null;
-    Messenger mMessenger = null;
     TicketModel tm = null;
-    private HandlerThread mHandlerThread = null;
     private ProgressDialog progressBar = null;
-    private boolean isPaused = false;
-
-    private void createHandler() {
-        MyLog.logCall();
-        mHandlerThread = new MyHandlerThread("IncomingHandler");
-        mHandlerThread.start();
-        tracStartHandler = new Handler(mHandlerThread.getLooper(), this);
-        mMessenger = new Messenger(tracStartHandler);
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         MyLog.logCall();
-        TracGlobal.initialize(getApplicationContext());
-        createHandler();
+        TracGlobal.initialize(this);
     }
 
     @Override
     public synchronized void onStart() {
         super.onStart();
         MyLog.logCall();
-        isPaused = false;
-        Deque<Message> msgQueue = MsgQueueHolder.msgQueue;
-        MyLog.d(msgQueue);
-        while (!msgQueue.isEmpty()) {
-            Message m = msgQueue.poll();
-            if (m != null) {
-                tracStartHandler.sendMessage(m);
-            }
-        }
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             TracGlobal.setCanWriteSD(true);
@@ -100,11 +71,11 @@ abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callb
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.dismiss();
-                                tracStartHandler.obtainMessage(MSG_GET_PERMISSIONS).sendToTarget();
+                                getPermissions();
                             }
                         }).show();
             } else {
-                tracStartHandler.obtainMessage(MSG_GET_PERMISSIONS).sendToTarget();
+                getPermissions();
             }
         }
     }
@@ -123,84 +94,18 @@ abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callb
     public void onStop() {
         super.onStop();
         MyLog.logCall();
-        isPaused = true;
-    }
-
-    @Override
-    protected void onDestroy() {
-        MyLog.d("isFinishing = " + isFinishing());
-        if (isFinishing()) {
-            mHandlerThread.quit();
-            tracStartHandler = null;
-            mHandlerThread = null;
-        }
-        super.onDestroy();
-    }
-
-    @Override
-    public void onAttachFragment(final Fragment frag) {
-        MyLog.d(frag + " this = " + this);
-
-        if (frag instanceof TcFragment) {
-            ((TcFragment) frag).onNewTicketModel(tm);
-        }
-    }
-
-    @Override
-    public boolean handleMessage(Message msg) {
-        MyLog.d("msg = " + msg);
-        return isPaused && msg.what != MSG_REQUEST_TICKET_COUNT ? queueMessage(msg) : processMessage(msg);
-    }
-
-    private synchronized boolean queueMessage(Message msg) {
-        MyLog.d("msg = " + msg);
-        Deque<Message> msgQueue = MsgQueueHolder.msgQueue;
-        Message m = Message.obtain(msg);
-        boolean retval = msgQueue.add(m);
-        MyLog.d(msgQueue);
-        return retval;
     }
 
     @SuppressLint("InlinedApi")
-    boolean processMessage(Message msg) {
-        MyLog.d("msg = " + msg.what);
-        switch (msg.what) {
-            case MSG_START_PROGRESSBAR:
-                final String message = (String) msg.obj;
-                synchronized (this) {
-                    //MyLog.d("handleMessage msg = START_PROGRESSBAR string = "+message);
-                    if (progressBar == null) {
-                        progressBar = new MyProgressBar(this, message);
-                    }
-                }
-                break;
-
-            case MSG_STOP_PROGRESSBAR:
-                synchronized (this) {
-                    // MyLog.d("handleMessage msg = STOP_PROGRESSBAR "+progressBar+" "+TracStart.this.isFinishing());
-                    if (progressBar != null) {
-                        if (!isFinishing()) {
-                            progressBar.dismiss();
-                        }
-                        progressBar = null;
-                    }
-                }
-                break;
-
-            case MSG_GET_PERMISSIONS:
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                Manifest.permission.READ_EXTERNAL_STORAGE},
-                        REQUEST_CODE_WRITE_EXT);
-                break;
-
-            default:
-                return false;
-        }
-        return true;
+    private void getPermissions() {
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE},
+                REQUEST_CODE_WRITE_EXT);
     }
 
-    ArrayList<FilterSpec> parseFilterString(String filterString) {
+    @Override
+    public ArrayList<FilterSpec> parseFilterString(String filterString) {
         final ArrayList<FilterSpec> filter = new ArrayList<>();
 
         if (filterString.length() > 0) {
@@ -231,7 +136,8 @@ abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callb
         return filter;
     }
 
-    ArrayList<SortSpec> parseSortString(String sortString) {
+    @Override
+    public ArrayList<SortSpec> parseSortString(String sortString) {
         final ArrayList<SortSpec> sl = new ArrayList<>();
 
         if (sortString.length() > 0) {
@@ -303,10 +209,20 @@ abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callb
         startProgressBar(getString(resid));
     }
 
-    void startProgressBar(String message) {
+    void startProgressBar(final String message) {
         MyLog.d(message);
         try {
-            tracStartHandler.obtainMessage(MSG_START_PROGRESSBAR, message).sendToTarget();
+            synchronized (this) {
+                //MyLog.d("handleMessage msg = START_PROGRESSBAR string = "+message);
+                if (progressBar == null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressBar = new MyProgressBar(TcBaseActivity.this, message);
+                        }
+                    });
+                }
+            }
         } catch (NullPointerException e) {
             MyLog.e("NullPointerException", e);
         }
@@ -316,14 +232,22 @@ abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callb
     public void stopProgressBar() {
         MyLog.logCall();
         try {
-            tracStartHandler.obtainMessage(MSG_STOP_PROGRESSBAR).sendToTarget();
+            synchronized (this) {
+                // MyLog.d("handleMessage msg = STOP_PROGRESSBAR "+progressBar+" "+TracStart.this.isFinishing());
+                if (progressBar != null) {
+                    if (!isFinishing()) {
+                        progressBar.dismiss();
+                    }
+                    progressBar = null;
+                }
+            }
         } catch (Exception e) {
             MyLog.e("Exception", e);
         }
     }
 
     @Override
-    public ArrayAdapter<Ticket> getAdapter() {
+    public TicketListAdapter getAdapter() {
         throw new RuntimeException("not implemented");
     }
 
@@ -335,6 +259,48 @@ abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callb
     @Override
     public void refreshTicket(int ticknr) {
         throw new RuntimeException("not implemented");
+    }
+
+
+    String getTopFragment() {
+        String retval;
+        try {
+            int bs = getSupportFragmentManager().getBackStackEntryCount();
+            retval = getSupportFragmentManager().getBackStackEntryAt(bs - 1).getName();
+        } catch (Exception e) {
+            retval = null;
+        }
+        MyLog.d(retval);
+        return retval;
+    }
+
+    @Override
+    public void showAlertBox(final int titleres, final CharSequence message) {
+        MyLog.d("titleres = " + titleres + " : " + getString(titleres));
+        if (!isFinishing()) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    final AlertDialog ad = new AlertDialog.Builder(TcBaseActivity.this)
+                            .setTitle(titleres)
+                            .setMessage(message)
+                            .setPositiveButton(R.string.oktext, null)
+                            .create();
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            //MyLog.d("dismiss");
+                            try {
+                                ad.dismiss();
+                            } catch (Exception ignored) {
+                            }
+                        }
+                    }, ALERT_TIME);
+                    ad.show();
+                }
+            });
+        }
     }
 
     @Override
@@ -373,11 +339,6 @@ abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callb
     }
 
     @Override
-    public Handler getHandler() {
-        return tracStartHandler;
-    }
-
-    @Override
     public void getAttachment(Ticket t, String filename, onAttachmentCompleteListener oc) {
         throw new RuntimeException("not implemented");
     }
@@ -385,9 +346,5 @@ abstract class TcBaseActivity extends AppCompatActivity implements Handler.Callb
     @Override
     public void addAttachment(Ticket ticket, Uri uri, onTicketCompleteListener oc) {
         throw new RuntimeException("not implemented");
-    }
-
-    static class MsgQueueHolder {
-        static final Deque<Message> msgQueue = new ArrayDeque<>();
     }
 }

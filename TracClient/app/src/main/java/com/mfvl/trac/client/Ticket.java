@@ -25,6 +25,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Locale;
 import java.util.concurrent.Semaphore;
 
 import static com.mfvl.trac.client.TracGlobal.*;
@@ -39,7 +40,7 @@ interface onAttachmentCompleteListener {
 
 class Ticket {
     private final int _ticknr;
-    private final Semaphore actionLock = new TcSemaphore(1, true);
+    private final Semaphore actionLock = new Semaphore(1, true);
     private JSONObject _velden;
     private JSONArray _history;
     private JSONArray _attachments;
@@ -76,14 +77,15 @@ class Ticket {
 
     public String toString() {
         if (_velden == null) {
-            return _ticknr + "";
+            return Integer.toString(_ticknr);
         }
         try {
-            return _ticknr + (_attachments != null && _attachments.length() > 0 ? "+" : "") + " - " + _velden.getString(
-                    "status") + " - "
-                    + _velden.getString("summary");
+            return String.format(Locale.getDefault(), "%d%s - %s - %s", _ticknr,
+                    (_attachments != null && _attachments.length() > 0 ? "+" : ""),
+                    _velden.getString("status"),
+                    _velden.getString("summary"));
         } catch (final JSONException e) {
-            return _ticknr + "";
+            return Integer.toString(_ticknr);
         }
     }
 
@@ -97,10 +99,10 @@ class Ticket {
 
     @Nullable
     JSONObject getJSONObject(final String veld) throws JSONException {
+        MyLog.d(veld);
         try {
             return _velden.getJSONObject(veld);
         } catch (final NullPointerException e) {
-            MyLog.e(e);
             return null;
         }
     }
@@ -208,16 +210,6 @@ class Ticket {
         return tekst;
     }
 
-    private String toonTijd(final JSONObject v) {
-        try {
-            return toCalendar(
-                    v.getJSONArray("__jsonclass__").getString(1) + "Z").getTime().toString();
-        } catch (final Exception e) {
-            MyLog.e("Exception", e);
-            return "";
-        }
-    }
-
     @Override
     public boolean equals(Object obj) {
         return this == obj || obj instanceof Ticket && (_ticknr == ((Ticket) obj)._ticknr);
@@ -233,4 +225,5 @@ class Ticket {
         result = 31 * result + (_hasdata ? 1 : 0);
         return result;
     }
+
 }

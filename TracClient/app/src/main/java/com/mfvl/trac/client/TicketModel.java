@@ -38,7 +38,6 @@ final class TicketModel {
     private static Map<String, TicketModelVeld> _velden = null;
     private static List<String> _volgorde = null;
     private static int fieldCount = 0;
-    @SuppressWarnings("StaticVariableOfConcreteClass")
     private static TicketModel _instance = null;
     private static boolean _hasData = false;
     private static TracHttpClient _tracClient = null;
@@ -49,9 +48,10 @@ final class TicketModel {
         MyLog.logCall();
         fieldCount = 0;
         _tracClient = tracClient;
+        _hasData = false;
         _velden = new HashMap<>();
         _volgorde = new ArrayList<>();
-        active = new TcSemaphore(1, true);
+        active = new Semaphore(1, true);
     }
 
     static TicketModel restore(String jsonString) {
@@ -72,7 +72,9 @@ final class TicketModel {
     }
 
     static void getInstance(TracHttpClient tracClient, final OnTicketModelListener oc) {
-        MyLog.d("new tracClient = " + tracClient);
+        //MyLog.d("instance = " + _instance);
+        //MyLog.d("old tracClient = " + _tracClient);
+        //MyLog.d("new tracClient = " + tracClient);
         if (_instance == null || !tracClient.equals(_tracClient)) {
             _instance = new TicketModel(tracClient);
         }
@@ -80,18 +82,17 @@ final class TicketModel {
             oc.onTicketModelLoaded(_instance);
         } else {
             if (active.availablePermits() > 0) {
-                _instance.loadModelData();
+                _instance.loadModelData(oc);
             } else {
                 active.acquireUninterruptibly();
                 active.release();
                 oc.onTicketModelLoaded(_instance);
             }
-            oc.onTicketModelLoaded(_instance);
         }
     }
 
     static TicketModel getInstance() {
-        MyLog.d("noargs _instance = " + _instance);
+        //MyLog.d("noargs _instance = " + _instance);
         if (_instance == null) {
             throw new RuntimeException("No ticketmodel available");
         }
@@ -134,12 +135,13 @@ final class TicketModel {
     public void onSaveInstanceState(Bundle b) {
         MyLog.logCall();
         b.putString(bundleKey, jsonString());
-        MyLog.d("b = " + b);
+        //MyLog.d("b = " + b);
     }
 
-    private void loadModelData() {
+    private void loadModelData(final OnTicketModelListener oc) {
         MyLog.logCall();
         if (_tracClient != null) {
+            MyLog.logCall();
             active.acquireUninterruptibly();
             new Thread() {
                 @Override
@@ -148,11 +150,12 @@ final class TicketModel {
                     try {
                         v = _tracClient.getModel();
                         processModelData(v);
+                        MyLog.d("Model loaded");
+                        oc.onTicketModelLoaded(_instance);
                     } catch (final Exception e) {
                         MyLog.e("exception", e);
                     } finally {
                         active.release();
-                        MyLog.d("Model loaded");
                     }
                 }
             }.start();

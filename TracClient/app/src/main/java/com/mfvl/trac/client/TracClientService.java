@@ -21,11 +21,10 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Binder;
-import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.IBinder;
-import android.os.Message;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 
@@ -43,19 +42,33 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static com.mfvl.trac.client.Const.*;
 import static com.mfvl.trac.client.TracGlobal.*;
 
 interface OnTicketModelListener {
     void onTicketModelLoaded(TicketModel tm);
 }
 
-interface RefreshBinder {
-    RefreshService getService();
+interface DataChangedListener {
+    void onDataChanged();
+
+    void onFase1Completed(Tickets mTickets);
+
+    void onFase2Completed();
+
+    void showAlertBox(int titleres, CharSequence message);
+
+    void loadAborted();
+
+    void newTicketModel(TicketModel tm);
+
 }
 
-public class RefreshService extends Service implements Handler.Callback {
+interface TicketCountInterface {
 
+    void requestTicketCount();
+}
+
+public class TracClientService extends Service {
 
     public static final String refreshAction = "LIST_REFRESH";
     private final static String TICKET_GET = "GET";
@@ -63,34 +76,34 @@ public class RefreshService extends Service implements Handler.Callback {
     private final static String TICKET_ATTACH = "ATTACH";
     private final static String TICKET_ACTION = "ACTION";
     private static final int notifId = 1234;
-    /**
-     * Class used for the client Binder.  Because we know this service always
-     * runs in the same process as its clients, we don't need to deal with IPC.
-     */
-    private final IBinder mBinder = new RefreshBinderImpl();
+    private final IBinder mBinder = new TcBinder();
+    private final Collection<DataChangedListener> dcList = new ArrayList<>();
     private Timer monitorTimer = null;
-    private HandlerThread mHandlerThread = null;
-    private Handler mServiceHandler = null;
     private LoginProfile mLoginProfile = null;
     private TracHttpClient tracClient = null;
     private NotificationManager mNotificationManager = null;
     private Tickets mTickets = null;
     private boolean invalid = true;
+    private boolean profileChanged = false;
     private ReentrantLock loadLock = null;
-    private Handler tracStartHandler = null;
+    private TicketModel ticketModel = null;
+
+    public boolean isProfileChanged() {
+        return profileChanged;
+    }
+
+    public void resetProfileChanged() {
+        this.profileChanged = false;
+    }
 
     @Override
     public void onCreate() {
         MyLog.logCall();
 
+        mLoginProfile = null;
+        tracClient = null;
         loadLock = new TicketLoaderLock();
-
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mHandlerThread = new MyHandlerThread("ServiceHandler");
-        mHandlerThread.start();
-
-        // Get the HandlerThread's Looper and use it for our Handler
-        mServiceHandler = new Handler(mHandlerThread.getLooper(), this);
     }
 
     /**
@@ -106,32 +119,13 @@ public class RefreshService extends Service implements Handler.Callback {
     public void onDestroy() {
         MyLog.logCall();
         stopTimer();
-        mHandlerThread.interrupt();
-        mHandlerThread.quit();
-        mHandlerThread = null;
-        mNotificationManager.cancel(notifId);
+        removeNotification();
         super.onDestroy();
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        int cmd = intent.getIntExtra(INTENT_CMD, -1);
-        MyLog.d("intent = " + intent + " cmd = " + cmd);
-        if (cmd != -1) {
-            int arg1 = 0;
-            if (intent.hasExtra(INTENT_ARG1)) {
-                arg1 = intent.getIntExtra(INTENT_ARG1, -1);
-            }
-            int arg2 = 0;
-            if (intent.hasExtra(INTENT_ARG2)) {
-                arg2 = intent.getIntExtra(INTENT_ARG2, -1);
-            }
-            Object obj = null;
-            if (intent.hasExtra(INTENT_OBJ)) {
-                obj = intent.getSerializableExtra(INTENT_OBJ);
-            }
-            send(Message.obtain(null, cmd, arg1, arg2, obj));
-        }
+        MyLog.d("intent = " + intent);
         return mBinder;
     }
 
@@ -139,11 +133,6 @@ public class RefreshService extends Service implements Handler.Callback {
     public boolean onUnbind(Intent intent) {
         MyLog.d("intent = " + intent);
         return false;
-    }
-
-    public void send(Message msg) {
-//        MyLog.d(msg);
-        mServiceHandler.sendMessage(msg);
     }
 
     private void stopTimer() {
@@ -163,7 +152,7 @@ public class RefreshService extends Service implements Handler.Callback {
             @Override
             public void run() {
                 MyLog.d("timertask started");
-                sendMessageToUI(MSG_REQUEST_TICKET_COUNT);
+                requestTicketCount();
             }
         }, timerStart, timerPeriod);
     }
@@ -174,8 +163,9 @@ public class RefreshService extends Service implements Handler.Callback {
         new Thread() {
             @Override
             public void run() {
+                MyLog.logCall();
                 if (!loadLock.tryLock()) {
-                    ((TicketLoaderLck) loadLock).killOwner();
+                    ((TicketLoaderLock) loadLock).killOwner();
                     loadLock.lock();
                 }
 //                MyLog.d("locked: " + loadLock);
@@ -240,43 +230,43 @@ public class RefreshService extends Service implements Handler.Callback {
                             mTickets.getTicketList().add(i, t);
                         }
                     }
-                    sendMessageToUI(MSG_LOAD_FASE1_FINISHED, mTickets);
+                    reportFase1Completed(mTickets);
                     loadTicketContent(mTickets);
-                    mServiceHandler.obtainMessage(MSG_START_TIMER).sendToTarget();
-                    sendMessageToUI(MSG_LOAD_FASE2_FINISHED, mTickets);
+                    startTimer();
+                    reportFase2Completed();
                 } else {
-                    sendMessageToUI(MSG_LOAD_FASE1_FINISHED, mTickets);
-                    sendMessageToUI(MSG_LOAD_FASE2_FINISHED, mTickets);
+                    reportFase1Completed(mTickets);
+                    reportFase2Completed();
                     popup_warning(getString(R.string.notickets));
                 }
             } catch (JSONRPCException e) {
                 MyLog.d("JSONRPCException", e);
                 popup_warning(getString(R.string.connerr, e.getMessage()));
             } catch (InterruptedException e) {
-                MyLog.d("InterruptedException", e);
+                MyLog.d("InterruptedException");
                 MyLog.toast(getString(R.string.interrupted));
-                sendMessageToUI(MSG_LOAD_ABORTED, mTickets);
+                reportLoadAborted();
             } catch (Exception e) {
                 MyLog.d("Exception", e);
-                sendMessageToUI(MSG_LOAD_ABORTED, mTickets);
+                reportLoadAborted();
                 popup_warning(getString(R.string.connerr, e.getMessage()));
             }
         } else {
-            sendMessageToUI(MSG_LOAD_FASE1_FINISHED, mTickets);
-            sendMessageToUI(MSG_LOAD_FASE2_FINISHED, mTickets);
+            reportFase1Completed(mTickets);
+            reportFase2Completed();
         }
 //        invalid = false;
     }
 
     private void loadTicketContent(Tickets tl) throws Exception {
-//        MyLog.logCall();
+        //MyLog.d(tl);
         int count = tl.getTicketCount();
 //        MyLog.d("count = " + count + " " + tl);
 
         for (int j = 0; j < count; j += ticketGroupCount) {
             final JSONArray mc = new JSONArray();
 
-            for (int i = j; i < (j + ticketGroupCount < count ? j + ticketGroupCount : count); i++) {
+            for (int i = j; i < Math.min(j + ticketGroupCount, count); i++) {
                 buildCall(mc, tl.getTicketList().get(i).getTicketnr());
             }
             try {
@@ -288,14 +278,23 @@ public class RefreshService extends Service implements Handler.Callback {
                 for (int k = 0; k < mcresult.length(); k++) {
                     try {
                         final JSONObject res = mcresult.getJSONObject(k);
+                        //MyLog.d(res);
                         final String id = res.getString("id");
-                        final JSONArray result = res.getJSONArray("result");
                         final int startpos = id.indexOf("_") + 1;
                         final int thisTicket = Integer.parseInt(id.substring(startpos));
-
                         if (t == null || t.getTicketnr() != thisTicket) {
                             t = Tickets.getTicket(thisTicket);
                         }
+                        JSONObject error = null;
+                        try {
+                            error = res.getJSONObject("error");
+                        } catch (JSONException ignore) {
+                        }
+                        if (error != null) {
+                            throw (new Resources.NotFoundException(id.substring(startpos)));
+                        }
+                        final JSONArray result = res.getJSONArray("result");
+
                         if (t != null) {
                             if ((TICKET_GET + "_" + thisTicket).equals(id)) {
                                 t.setFields(result.getJSONObject(3));
@@ -323,12 +322,65 @@ public class RefreshService extends Service implements Handler.Callback {
         }
     }
 
-    private void notify_datachanged() {
-        sendMessageToUI(MSG_DATA_CHANGED);
+    public void registerDataChangedListener(DataChangedListener oc) {
+        MyLog.d(oc);
+        if (!dcList.contains(oc)) {
+            dcList.add(oc);
+        }
     }
 
-    private void popup_warning(String message) {
-        sendMessageToUI(MSG_SHOW_DIALOG, 0, message);
+    public void unregisterDataChangedListener(DataChangedListener oc) {
+        MyLog.d(oc);
+        if (dcList.contains(oc)) {
+            dcList.remove(oc);
+        }
+    }
+
+    private void reportNewTicketModel(TicketModel tm) {
+        MyLog.logCall();
+        for (DataChangedListener oc : dcList) {
+            oc.newTicketModel(tm);
+        }
+    }
+
+    private void requestTicketCount() {
+        for (DataChangedListener oc : dcList) {
+            if (oc instanceof TicketCountInterface) {
+                ((TicketCountInterface) oc).requestTicketCount();
+            }
+        }
+    }
+
+    private void reportLoadAborted() {
+        for (DataChangedListener oc : dcList) {
+            oc.loadAborted();
+        }
+    }
+
+    private void reportFase1Completed(Tickets tl) {
+        for (DataChangedListener oc : dcList) {
+            oc.onFase1Completed(tl);
+        }
+    }
+
+    private void reportFase2Completed() {
+        for (DataChangedListener oc : dcList) {
+            oc.onFase2Completed();
+        }
+    }
+
+    private void notify_datachanged() {
+        MyLog.logCall();
+        for (DataChangedListener oc : dcList) {
+            oc.onDataChanged();
+        }
+    }
+
+    private void popup_warning(CharSequence message) {
+        MyLog.d(message);
+        for (DataChangedListener oc : dcList) {
+            oc.showAlertBox(R.string.warning, message);
+        }
     }
 
     private void buildCall(JSONArray multiCall, int ticknr) throws JSONException {
@@ -361,7 +413,7 @@ public class RefreshService extends Service implements Handler.Callback {
                     int ticknr = jsonTicketlist.getInt(i);
                     t.addTicket(new Ticket(ticknr));
                 }
-                loadTicketContent(t);
+                //loadTicketContent(t);
             }
             return t;
         } catch (Exception e) {
@@ -370,159 +422,121 @@ public class RefreshService extends Service implements Handler.Callback {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public boolean handleMessage(final Message msg) {
-        MyLog.d("msg = " + msg.what);
+    public void removeNotification() {
+        MyLog.logCall();
+        mNotificationManager.cancel(notifId);
+    }
 
-        switch (msg.what) {
-            case MSG_REMOVE_NOTIFICATION:
-                mNotificationManager.cancel(notifId);
-                //noinspection fallthrough
-            case MSG_START_TIMER:
-                startTimer();
-                break;
-
-            case MSG_STOP_TIMER:
-                stopTimer();
-                break;
-
-            case MSG_SEND_TICKET_COUNT:
-                if (msg.arg1 > 0) {
-                    Tickets tl = changedTickets((String) msg.obj);
-                    if (tl != null && tl.getTicketList().size() > 0) {
-                        mNotificationManager.notify(notifId, new NotificationCompat.Builder(this)
-                                .setSmallIcon(R.drawable.traclogo)
-                                .setAutoCancel(true)
-                                .setContentTitle(RefreshService.this.getString(R.string.notifmod))
-                                .setTicker(RefreshService.this.getString(R.string.foundnew))
-                                .setContentText(RefreshService.this.getString(R.string.foundnew))
-                                .setContentIntent(PendingIntent.getActivity(this, -1,
-                                        new Intent(this, Refresh.class).setAction(refreshAction), PendingIntent.FLAG_UPDATE_CURRENT))
-                                .setSubText(tl.getTicketList().toString())
-                                .build());
-                        // MyLog.d( "Notification sent");
-                    }
-                }
-                break;
-
-            case MSG_SEND_TICKETS:
-                Collection<Integer> newTickets = (Collection<Integer>) msg.obj;
-                if (newTickets == null) {
-                    newTickets = new ArrayList<>();
-                    newTickets.add(msg.arg1);
-                }
-                MyLog.d("newTickets = " + newTickets);
-
-                if (newTickets.size() > 0) {
-                    Tickets tl = new Tickets();
-                    for (Integer i : newTickets) {
-                        tl.addTicket(new Ticket(i));
-                    }
-                    try {
-                        loadTicketContent(tl);
-                        if (msg.arg2 != 0) {
-                            sendMessageToUI(msg.arg2, Tickets.getTicket(msg.arg1));
-                        }
-                    } catch (Exception e) {
-                        MyLog.e("MSG_SEND_TICKETS exception", e);
-                        popup_warning(getString(R.string.ticketnotfound, tl.getTicketList()));
-                    }
-                }
-                break;
-
-            case MSG_REFRESH_LIST:
-                msg.obj = null;
-                //noinspection fallthrough
-            case MSG_LOAD_TICKETS:
-                LoginProfile lp = (LoginProfile) msg.obj;
-                MyLog.d("lp = " + lp);
-                MyLog.d("mLoginProfile = " + mLoginProfile);
-                if (lp != null) {
-                    invalid = !lp.equals(mLoginProfile);
-                    mLoginProfile = lp;
-                    tracClient = new TracHttpClient(mLoginProfile);
-                    TicketModel.getInstance(tracClient, new OnTicketModelListener() {
-                        @Override
-                        public void onTicketModelLoaded(TicketModel tm) {
-                            dispatchMessage(Message.obtain(null, MSG_SET_TICKET_MODEL, tm));
-                        }
-                    });
-                } else {
-                    invalid = true;
-                }
-                startLoadTickets();
-                break;
-
-            case MSG_SET_FILTER:
-                if (mLoginProfile != null) {
-                    mLoginProfile.setFilterList((List<FilterSpec>) msg.obj);
-                    invalid = true;
-                    startLoadTickets();
-                }
-                break;
-
-            case MSG_SET_SORT:
-                if (mLoginProfile != null) {
-                    mLoginProfile.setSortList((List<SortSpec>) msg.obj);
-                    invalid = true;
-                    startLoadTickets();
-                }
-                break;
-
-            default:
-                return false;
+    public void sendTicketCount(int count, String tijdstip) {
+        if (count > 0) {
+            Tickets tl = changedTickets(tijdstip);
+            if (tl != null && tl.getTicketList().size() > 0) {
+                mNotificationManager.notify(notifId, new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.traclogo)
+                        .setAutoCancel(true)
+                        .setContentTitle(TracClientService.this.getString(R.string.notifmod))
+                        .setTicker(TracClientService.this.getString(R.string.foundnew))
+                        .setContentText(TracClientService.this.getString(R.string.foundnew))
+                        .setContentIntent(PendingIntent.getActivity(this, -1,
+                                new Intent(this, Refresh.class).setAction(refreshAction), PendingIntent.FLAG_UPDATE_CURRENT))
+                        .setSubText(tl.getTicketList().toString())
+                        .build());
+                // MyLog.d( "Notification sent");
+            }
         }
-        return true;
     }
 
-    private void dispatchMessage(final Message msg) {
-        msg.setTarget(tracStartHandler);
-        MyLog.d("msg = " + msg.what);
-        msg.sendToTarget();
+    @SuppressWarnings("ClassEscapesDefinedScope")
+    @Nullable
+    public Ticket requestTicket(int ticket) {
+        MyLog.d(ticket);
+
+        Tickets tl = new Tickets();
+        tl.addTicket(new Ticket(ticket));
+        try {
+            loadTicketContent(tl);
+            return Tickets.getTicket(ticket);
+        } catch (Resources.NotFoundException e) {
+            popup_warning(getString(R.string.ticketnotfound, tl.getTicketList()));
+        } catch (Exception e) {
+            MyLog.e("Exception", e);
+        }
+        return null;
     }
 
-    public void setTracStartHandler(final Handler tsh) {
-        tracStartHandler = tsh;
+    @SuppressWarnings("ClassEscapesDefinedScope")
+    public TicketModel getTicketModel() {
+        return ticketModel;
     }
 
-    private void sendMessageToUI(final int message) {
-        dispatchMessage(Message.obtain(null, message));
+    @SuppressWarnings("ClassEscapesDefinedScope")
+    public LoginProfile getLoginProfile() {
+        return mLoginProfile;
     }
 
-    private void sendMessageToUI(final int message, Object o) {
-        dispatchMessage(Message.obtain(null, message, o));
+    public void msgLoadTickets(LoginProfile lp) {
+        MyLog.d("lp = " + lp);
+        MyLog.d("mLoginProfile = " + mLoginProfile);
+        if (lp != null) {
+            invalid = !lp.equals(mLoginProfile);
+            mLoginProfile = lp;
+            tracClient = new TracHttpClient(mLoginProfile);
+            TicketModel.getInstance(tracClient, new OnTicketModelListener() {
+                @Override
+                public void onTicketModelLoaded(TicketModel tm) {
+                    MyLog.logCall();
+                    ticketModel = tm;
+                    reportNewTicketModel(tm);
+                }
+            });
+        } else {
+            invalid = true;
+        }
+        profileChanged |= invalid;
+        startLoadTickets();
     }
 
-    private void sendMessageToUI(final int message, int arg2, Object o) {
-        dispatchMessage(Message.obtain(null, message, R.string.warning, arg2, o));
+    public void setFilter(List<FilterSpec> items) {
+        MyLog.d(items);
+        String filterString = TextUtils.join("&", items);
+        storeFilterString(filterString);
+        if (mLoginProfile != null) {
+            mLoginProfile.setFilterList(items);
+            invalid = true;
+            startLoadTickets();
+        }
     }
 
-    interface TicketLoaderLck {
-        void killOwner();
+    public void setSort(List<SortSpec> items) {
+        MyLog.d(items);
+        String sortString = TextUtils.join("&", items);
+        storeSortString(sortString);
+        if (mLoginProfile != null) {
+            mLoginProfile.setSortList(items);
+            invalid = true;
+            startLoadTickets();
+        }
     }
 
-    private class TicketLoaderLock extends ReentrantLock implements TicketLoaderLck {
+    private class TicketLoaderLock extends ReentrantLock {
         TicketLoaderLock() {
             super();
 //            MyLog.logCall();
         }
 
-        @Override
-        public void killOwner() {
+        void killOwner() {
 //            MyLog.logCall();
             Thread t = super.getOwner();
             t.interrupt();
-            MyLog.toast(RefreshService.this.getString(R.string.tryinterrupt));
+            MyLog.toast(TracClientService.this.getString(R.string.tryinterrupt));
         }
     }
 
-    public class RefreshBinderImpl extends Binder implements RefreshBinder {
+    public class TcBinder extends Binder {
         @SuppressWarnings("MethodReturnOfConcreteClass")
-        @Override
-        public RefreshService getService() {
+        TracClientService getService() {
             // Return this instance of LocalService so clients can call public methods
-            return RefreshService.this;
+            return TracClientService.this;
         }
     }
 }

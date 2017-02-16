@@ -35,10 +35,11 @@ import java.util.ArrayList;
 
 import static com.mfvl.trac.client.Const.*;
 
-public class SortFragment extends SpecFragment<SortSpec> implements HelpInterface {
+public class SortFragment extends SpecFragment<SortSpec> {
 
     private SortAdapter sortAdapter = null;
     private Spinner addSpinner = null;
+    private TicketModel tm = null;
 
     @Override
     public String keyName() {
@@ -49,7 +50,7 @@ public class SortFragment extends SpecFragment<SortSpec> implements HelpInterfac
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.storebutton:
-                sendMessageToHandler(MSG_SET_SORT, sortAdapter.items);
+                listener.getService().setSort(sortAdapter.items);
                 getFragmentManager().popBackStack();
                 break;
 
@@ -73,13 +74,13 @@ public class SortFragment extends SpecFragment<SortSpec> implements HelpInterfac
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);  // vult inputSpec en outputSpec
-        MyLog.d("savedInstanceState = " + savedInstanceState);
+    public void onServiceConnected() {
+        super.onServiceConnected();
+        MyLog.logCall();
 
+        tm = listener.getService().getTicketModel();
         if (tm == null) {
             MyLog.toast(getString(R.string.notpossible));
-            sendMessageToHandler(MSG_DONE, null);
             getFragmentManager().popBackStack();
         } else {
             sortAdapter = new SortAdapter(getActivity(), outputSpec);
@@ -87,7 +88,7 @@ public class SortFragment extends SpecFragment<SortSpec> implements HelpInterfac
 
             ImageButton addButton = (ImageButton) currentView.findViewById(R.id.addbutton);
             addButton.setOnClickListener(this);
-            setListener(R.id.storebutton);
+            setOnClickListener(R.id.storebutton, getView(), this);
             addSpinner = (Spinner) currentView.findViewById(R.id.addspin);
             getScreensize(addSpinner, addButton);
             addSpinner.setAdapter(new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, tm.velden()));
@@ -116,7 +117,7 @@ public class SortFragment extends SpecFragment<SortSpec> implements HelpInterfac
             TextView tt = (TextView) v.findViewById(R.id.sortfield);
             ImageButton direc = (ImageButton) v.findViewById(R.id.sortdirec);
             direc.setOnClickListener(this);
-            setListener(R.id.delitem, v, this);
+            setOnClickListener(R.id.delitem, v, this);
 
             SortSpec sortItem = items.get(position);
 

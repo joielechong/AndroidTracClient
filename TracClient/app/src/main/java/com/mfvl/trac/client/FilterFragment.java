@@ -48,7 +48,7 @@ import java.util.List;
 
 import static com.mfvl.trac.client.Const.*;
 
-public class FilterFragment extends SpecFragment<FilterSpec> implements HelpInterface {
+public class FilterFragment extends SpecFragment<FilterSpec> {
     private static List<String> operators = null;
     private static List<String> operatornames = null;
     private FilterAdapter filterAdapter = null;
@@ -72,7 +72,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements HelpInte
                         items.get(i).setEdit(false);
                     }
                 }
-                sendMessageToHandler(MSG_SET_FILTER, items);
+                listener.getService().setFilter(items);
                 getFragmentManager().popBackStack();
                 break;
 
@@ -99,13 +99,13 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements HelpInte
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState); // must be called first
-        MyLog.d("savedInstanceState = " + savedInstanceState + " tm = " + tm);
+    public void onServiceConnected() {
+        super.onServiceConnected(); // must be called first
+        MyLog.logCall();
 
+        TicketModel tm = listener.getService().getTicketModel();
         if (tm == null) {
             MyLog.toast(getString(R.string.notpossible));
-            sendMessageToHandler(MSG_DONE, null);
             getFragmentManager().popBackStack();
         } else {
             filterAdapter = new FilterAdapter(getActivity(), outputSpec);
@@ -144,7 +144,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements HelpInte
 
             int p = (position >= items.size() || position < 0 ? 0 : position);
             final FilterSpec filterItem = items.get(p);
-            final TicketModelVeld tmv = tm.getVeld(filterItem.getVeld());
+            final TicketModelVeld tmv = listener.getService().getTicketModel().getVeld(filterItem.getVeld());
             //MyLog.d( "getView pos=" + position +" " + filterItem + " " + tmv);
             final int resid = (filterItem.getEdit() ? (tmv.options() == null ? R.layout.filter_spec2 : R.layout.filter_spec3) : R.layout.filter_spec1);
 
@@ -162,10 +162,10 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements HelpInte
             v.setTag(filterItem);
 
             final TextView filterNaam = (TextView) v.findViewById(R.id.filternaam);
-            setListener(R.id.filternaam, v, this);
-            setListener(R.id.startedit, v, this);
-            setListener(R.id.stopedit, v, this);
-            setListener(R.id.delitem, v, this);
+            setOnClickListener(R.id.filternaam, v, this);
+            setOnClickListener(R.id.startedit, v, this);
+            setOnClickListener(R.id.stopedit, v, this);
+            setOnClickListener(R.id.delitem, v, this);
             final Spinner spin = (Spinner) v.findViewById(R.id.filter_choice_spin);
             final EditText et = (EditText) v.findViewById(R.id.filtervaltext);
             final LinearLayout filterCheck = (LinearLayout) v.findViewById(R.id.filtercheck);
@@ -223,7 +223,7 @@ public class FilterFragment extends SpecFragment<FilterSpec> implements HelpInte
 
         private LinearLayout makeCheckBoxes(final FilterSpec o) {
             final String veldnaam = o.getVeld();
-            List<Object> waardes = tm.getVeld(veldnaam).options();
+            List<Object> waardes = listener.getService().getTicketModel().getVeld(veldnaam).options();
             final String waarde = o.getWaarde();
             final String op = o.getOperator();
             final boolean omgekeerd = "!=".equals(op);

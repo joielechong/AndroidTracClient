@@ -55,7 +55,6 @@ import com.mfvl.mfvllib.MyLog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -77,11 +76,10 @@ import static com.mfvl.trac.client.TracGlobal.*;
 public class DetailFragment extends TracClientFragment
         implements SwipeRefreshLayout.OnRefreshListener, CompoundButton.OnCheckedChangeListener,
         GestureDetector.OnGestureListener, OnFileSelectedListener, OnItemClickListener,
-        OnItemLongClickListener, HelpInterface {
+        OnItemLongClickListener {
 
     private static final String EMPTYFIELDS = "emptyfields";
     private static final String MODVELD = "modveld";
-
     private static final List<String> skipFields = Arrays.asList("summary", "_ts", "max", "page",
             "id");
     private static final List<String> timeFields = Arrays.asList("time", "changetime");
@@ -99,6 +97,13 @@ public class DetailFragment extends TracClientFragment
     private int popup_unselected_color = 0;
     private SwipeRefreshLayout swipeLayout = null;
     private View currentView = null;
+
+    @Override
+    public void onTicketModelChanged(TicketModel tm) {
+        super.onTicketModelChanged(tm);
+        MyLog.logCall();
+        refreshTicket();
+    }
 
     @SuppressWarnings("unchecked")
     @Override
@@ -145,6 +150,7 @@ public class DetailFragment extends TracClientFragment
     }
 
     private void refreshTicket() {
+        MyLog.logCall();
         if (_ticket != null) {
             listener.refreshTicket(_ticket.getTicketnr());
         }
@@ -184,8 +190,8 @@ public class DetailFragment extends TracClientFragment
         if (view != null) {
             CheckBox updNotify = (CheckBox) view.findViewById(R.id.updNotify);
             updNotify.setOnCheckedChangeListener(this);
-            setListener(R.id.canBut);
-            setListener(R.id.updBut);
+            setOnClickListener(R.id.canBut, view, this);
+            setOnClickListener(R.id.updBut, view, this);
             swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
             swipeLayout.setOnRefreshListener(this);
             swipeLayout.setColorSchemeResources(R.color.swipe_blue,
@@ -563,7 +569,6 @@ public class DetailFragment extends TracClientFragment
     private void displayTicket() {
         MyLog.d("ticket = " + _ticket);
         if (_ticket != null) {
-
             if (currentView == null) {
                 return;
             }
@@ -572,7 +577,6 @@ public class DetailFragment extends TracClientFragment
             listView.setAdapter(null);
             values.clear();
             final TextView tickText = (TextView) currentView.findViewById(R.id.ticknr);
-
             if (tickText != null) {
                 tickText.setText(getString(R.string.tickethead, _ticket.getTicketnr()));
                 try {
@@ -596,13 +600,10 @@ public class DetailFragment extends TracClientFragment
                     }
                 });
             }
-            for (final String veld : tm.velden()) {
-
+            for (final String veld : listener.getService().getTicketModel().velden()) {
                 try {
                     TicketVeld ms = null;
-
                     //MyLog.d( "showEmptyFields = "+showEmptyFields);
-
                     if (!skipFields.contains(veld)) {
                         if (timeFields.contains(veld)) {
                             ms = new TicketVeld(veld, toonTijd(_ticket.getJSONObject(veld)));
@@ -610,7 +611,6 @@ public class DetailFragment extends TracClientFragment
                             ms = new TicketVeld(veld, _ticket.getString(veld));
                         }
                     }
-
                     if (ms != null) {
                         if (modVeld.containsKey(veld)) {
                             ms.setUpdated();
@@ -666,16 +666,6 @@ public class DetailFragment extends TracClientFragment
             listView.setOnItemClickListener(this);
             final ListAdapter dataAdapter = new TicketVeldAdapter(getActivity(), values);
             listView.setAdapter(dataAdapter);
-        }
-    }
-
-    private String toonTijd(final JSONObject v) {
-        try {
-            return toCalendar(
-                    v.getJSONArray("__jsonclass__").getString(1) + "Z").getTime().toString();
-        } catch (final Exception e) {
-            MyLog.e("Error converting time", e);
-            return "";
         }
     }
 
@@ -869,9 +859,10 @@ public class DetailFragment extends TracClientFragment
             final View view = super.getView(position, convertView, parent);
             try {
                 final TicketVeld ms = getItem(position);
-
-                ((TextView) view).setTextColor(
-                        ms.getUpdated() ? popup_selected_color : popup_unselected_color);
+                if (ms != null) {
+                    ((TextView) view).setTextColor(
+                            ms.getUpdated() ? popup_selected_color : popup_unselected_color);
+                }
             } catch (final Exception e) {
                 MyLog.e("exception", e);
             }
