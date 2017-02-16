@@ -41,9 +41,10 @@ import java.util.List;
 
 import static com.mfvl.trac.client.Const.*;
 
-public class NewTicketFragment extends TracClientFragment implements HelpInterface {
+public class NewTicketFragment extends TracClientFragment {
     static final private String NotfifyField = "Notify";
     private String username = null;
+    private TicketModel tm = null;
 
     @Override
     public int getHelpFile() {
@@ -60,6 +61,7 @@ public class NewTicketFragment extends TracClientFragment implements HelpInterfa
             }
         }
         setHasOptionsMenu(true);
+        tm = listener.getService().getTicketModel();
     }
 
     @Nullable
@@ -161,7 +163,7 @@ public class NewTicketFragment extends TracClientFragment implements HelpInterfa
         listener.startProgressBar(R.string.saveticket);
         hideSoftKeyboard(getActivity());
 
-        listener.getHandler().post(new Runnable() {
+        new Thread(new Runnable() {
             @Override
             public void run() {
                 View view = getView();
@@ -213,6 +215,6 @@ public class NewTicketFragment extends TracClientFragment implements HelpInterfa
                     showAlertBox(R.string.storerr, getString(R.string.storerrdesc, e.getMessage()));
                 }
             }
-        });
+        }).start();
     }
 }

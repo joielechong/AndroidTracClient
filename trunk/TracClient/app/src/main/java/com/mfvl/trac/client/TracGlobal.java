@@ -24,6 +24,8 @@ import android.text.TextUtils;
 
 import com.mfvl.mfvllib.MyLog;
 
+import org.json.JSONObject;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -194,6 +196,11 @@ final class TracGlobal {
         }
     }
 
+    static void removeFilterString() {
+        // MyLog.logCall();
+        storeFilterString("max=500&status!=closed");
+    }
+
     static String getFilterString() {
         MyLog.logCall();
         return settings.getString(prefFilterKey, "max=500&status!=closed");
@@ -202,6 +209,11 @@ final class TracGlobal {
     static void storeFilterString(final String filterString) {
         MyLog.d(filterString);
         settings.edit().putString(prefFilterKey, filterString == null ? "" : filterString).apply();
+    }
+
+    static void removeSortString() {
+        // MyLog.logCall();
+        storeSortString("order=priority&order=modified&desc=1");
     }
 
     static String getSortString() {
@@ -225,12 +237,12 @@ final class TracGlobal {
     /**
      * Transform ISO 8601 string to Calendar.
      */
-    static Calendar toCalendar(final String iso8601string) throws ParseException {
+    private static Calendar toCalendar(final String iso8601string) throws ParseException {
         final Calendar calendar = Calendar.getInstance();
         String s = iso8601string.replace("Z", "+00:00");
 
         try {
-            s = s.substring(0, 22) + s.substring(23);
+            s = String.format(Locale.US, "%s%s", s.substring(0, 22), s.substring(23));
         } catch (final IndexOutOfBoundsException e) {
             throw new ParseException("Invalid length", 0);
         }
@@ -239,4 +251,18 @@ final class TracGlobal {
         calendar.setTime(date);
         return calendar;
     }
+
+    static String toonTijd(final JSONObject v) {
+        //MyLog.d(v);
+        try {
+            return toCalendar(
+                    String.format(Locale.US, "%sZ", v.getJSONArray("__jsonclass__").getString(1))).getTime().toString();
+        } catch (final NullPointerException e) {
+            return "";
+        } catch (final Exception e) {
+            MyLog.e("Error converting time", e);
+            return "";
+        }
+    }
+
 }

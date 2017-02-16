@@ -16,6 +16,8 @@
 
 package com.mfvl.trac.client;
 
+import java.util.Locale;
+
 class SortSpec extends Spec {
     private boolean _richting; // true = asc false = desc
 
@@ -55,7 +57,9 @@ class SortSpec extends Spec {
 
     @Override
     public String toString() {
-        return "order=" + _veld + (_richting ? "" : "&desc=1");
+        return String.format(Locale.US, "order=%s%s",
+                _veld,
+                _richting ? "" : "&desc=1");
     }
 
     @Override

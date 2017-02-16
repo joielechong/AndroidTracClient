@@ -17,9 +17,8 @@
 package com.mfvl.trac.client;
 
 import android.net.Uri;
-import android.os.Handler;
-import android.widget.ArrayAdapter;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -44,11 +43,15 @@ interface InterFragmentListener {
 
     void stopProgressBar();
 
-    ArrayAdapter<Ticket> getAdapter();
+    TicketListAdapter getAdapter();
 
     void getTicket(int ticknr, OnTicketLoadedListener oc);
 
     void refreshTicket(int ticknr);
+
+    TracClientService getService();
+
+    void showAlertBox(final int titleres, final CharSequence message);
 
     int getNextTicket(int i);
 
@@ -68,9 +71,13 @@ interface InterFragmentListener {
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean isFinishing();
 
-    Handler getHandler();
-
     void getAttachment(Ticket t, String filename, onAttachmentCompleteListener oc);
 
     void addAttachment(final Ticket ticket, final Uri uri, final onTicketCompleteListener oc);
+
+    @SuppressWarnings("CollectionDeclaredAsConcreteClass")
+    ArrayList<FilterSpec> parseFilterString(String filterString);
+
+    @SuppressWarnings("CollectionDeclaredAsConcreteClass")
+    ArrayList<SortSpec> parseSortString(String sortString);
 }

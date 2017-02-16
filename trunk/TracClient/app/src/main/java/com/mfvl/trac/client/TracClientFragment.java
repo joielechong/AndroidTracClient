@@ -20,7 +20,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -43,31 +42,19 @@ import java.util.List;
 import static com.mfvl.trac.client.Const.*;
 import static com.mfvl.trac.client.TracGlobal.*;
 
-interface HelpInterface {
-    int getHelpFile();
-}
 
-interface TcFragment {
-    void onNewTicketModel(TicketModel tm);
-
-    void selectTicket(int ticknr);
-
-    void showHelp();
-}
-
-@SuppressWarnings("AbstractClassExtendsConcreteClass")
-public abstract class TracClientFragment extends Fragment implements View.OnClickListener, TcFragment {
+public abstract class TracClientFragment extends Fragment implements View.OnClickListener {
     Ticket _ticket = null;
     InterFragmentListener listener = null;
     Bundle fragmentArgs = null;
-    TicketModel tm = null;
-    private Handler tracStartHandler = null;
 
     static void hideSoftKeyboard(Activity activity) {
         InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(
                 Context.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
     }
+
+    abstract int getHelpFile();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -77,16 +64,8 @@ public abstract class TracClientFragment extends Fragment implements View.OnClic
         TracGlobal.initialize(getActivity());
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        MyLog.logCall();
-        tracStartHandler = listener.getHandler();
-    }
-
-    @Override
     public void showHelp() {
-        final String filename = getString(((HelpInterface) this).getHelpFile());
+        final String filename = getString(getHelpFile());
         final DialogFragment about = new TracHelp();
         final Bundle aboutArgs = new Bundle();
         aboutArgs.putString(HELP_FILE, filename);
@@ -108,17 +87,12 @@ public abstract class TracClientFragment extends Fragment implements View.OnClic
         return true;
     }
 
-    void sendMessageToHandler(int msg, Object o) {
-        MyLog.d("msg = " + msg + " o = " + o);
-        tracStartHandler.obtainMessage(msg, o).sendToTarget();
-    }
-
     void showAlertBox(final int titleres, int message) {
-        tracStartHandler.obtainMessage(MSG_SHOW_DIALOG, titleres, 0, getString(message)).sendToTarget();
+        listener.showAlertBox(titleres, getString(message));
     }
 
-    void showAlertBox(final int titleres, String message) {
-        tracStartHandler.obtainMessage(MSG_SHOW_DIALOG, titleres, 0, message).sendToTarget();
+    void showAlertBox(final int titleres, CharSequence message) {
+        listener.showAlertBox(titleres, message);
     }
 
     @Nullable
@@ -142,7 +116,6 @@ public abstract class TracClientFragment extends Fragment implements View.OnClic
         return spinAdapter;
     }
 
-    @Override
     public void selectTicket(int ticknr) {
         MyLog.d("ticknr = " + ticknr);
         listener.getTicket(ticknr, new OnTicketLoadedListener() {
@@ -165,11 +138,7 @@ public abstract class TracClientFragment extends Fragment implements View.OnClic
         but.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, drawable.getIntrinsicWidth()));
     }
 
-    void setListener(int resid) {
-        setListener(resid, this.getView(), this);
-    }
-
-    void setListener(int resid, View v, View.OnClickListener c) {
+    void setOnClickListener(int resid, View v, View.OnClickListener c) {
 //		MyLog.d( "resid = "+resid+" v = "+v+" c =" + c);
         try {
             v.findViewById(resid).setOnClickListener(c);
@@ -188,9 +157,15 @@ public abstract class TracClientFragment extends Fragment implements View.OnClic
         MyLog.d("v =" + v);
     }
 
-    @Override
-    public void onNewTicketModel(TicketModel newTm) {
-        MyLog.d("newTm == null " + (newTm == null));
-        tm = newTm;
+    public void onServiceConnected() {
+        MyLog.logCall();
+    }
+
+    public void onServiceDisconnected() {
+        MyLog.logCall();
+    }
+
+    public void onTicketModelChanged(TicketModel tm) {
+        MyLog.logCall();
     }
 }

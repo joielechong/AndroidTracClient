@@ -24,11 +24,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.Message;
 
 import com.mfvl.mfvllib.MyLog;
-
-import static com.mfvl.trac.client.Const.*;
 
 public class Refresh extends Activity implements ServiceConnection {
 
@@ -39,9 +36,8 @@ public class Refresh extends Activity implements ServiceConnection {
     @Override
     public void onServiceConnected(ComponentName className, IBinder service) {
         MyLog.d("className = " + className + " service = " + service);
-        RefreshBinder binder = (RefreshBinder) service;
-        binder.getService().send(Message.obtain(null, MSG_REFRESH_LIST));
-        unbindService(this);
+        TracClientService.TcBinder binder = (TracClientService.TcBinder) service;
+        binder.getService().msgLoadTickets(null);
     }
 
     @Override
@@ -62,8 +58,8 @@ public class Refresh extends Activity implements ServiceConnection {
             final String action = getIntent().getAction();
 
             if (action != null) {
-                if (action.equalsIgnoreCase(RefreshService.refreshAction)) {
-                    bindService(new Intent(this, RefreshService.class).setAction(getString(R.string.serviceAction)), this,
+                if (action.equalsIgnoreCase(TracClientService.refreshAction)) {
+                    bindService(new Intent(this, TracClientService.class).setAction(getString(R.string.serviceAction)), this,
                             Context.BIND_AUTO_CREATE);
                     //MyLog.d("Refresh sent");
                 }

@@ -19,6 +19,6 @@ package com.mfvl.trac.client;
 class TcObject {
 
     boolean equalFields(Object f1, Object f2) {
-        return f1.equals(f2);
+        return f1 != null ? f1.equals(f2) : f2 == null;
     }
 }

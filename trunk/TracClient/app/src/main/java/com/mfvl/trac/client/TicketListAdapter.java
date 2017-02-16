@@ -22,19 +22,7 @@ import com.mfvl.mfvllib.MyLog;
 
 import java.util.Collection;
 
-interface TicketListAdapterIF {
-    int getNextTicket(int ticknr);
-
-    int getPrevTicket(int ticknr);
-
-    Iterable<Ticket> getTicketList();
-
-    int getTicketContentCount();
-
-    void addAll(Tickets tl);
-}
-
-class TicketListAdapter extends ColoredArrayAdapter<Ticket> implements TicketListAdapterIF {
+class TicketListAdapter extends ColoredArrayAdapter<Ticket> {
 
     TicketListAdapter(Context context, Tickets tl) {
         super(context, tl != null ? tl.getTicketList() : null);
@@ -42,7 +30,6 @@ class TicketListAdapter extends ColoredArrayAdapter<Ticket> implements TicketLis
         setNotifyOnChange(true);
     }
 
-    @Override
     public void addAll(Tickets tl) {
 
         //MyLog.d("tl = " + tl + " " + (tl != null ? tl.ticketList.toString() : null));
@@ -55,7 +42,6 @@ class TicketListAdapter extends ColoredArrayAdapter<Ticket> implements TicketLis
         return true;
     }
 
-    @Override
     public int getNextTicket(int ticknr) {
         Ticket t = Tickets.getTicket(ticknr);
         int retVal = -1;
@@ -73,7 +59,6 @@ class TicketListAdapter extends ColoredArrayAdapter<Ticket> implements TicketLis
         return retVal;
     }
 
-    @Override
     public int getPrevTicket(int ticknr) {
         Ticket t = Tickets.getTicket(ticknr);
         int retVal = -1;
@@ -91,7 +76,6 @@ class TicketListAdapter extends ColoredArrayAdapter<Ticket> implements TicketLis
         return retVal;
     }
 
-    @Override
     public Iterable<Ticket> getTicketList() {
         Collection<Ticket> tl = new TicketList();
         for (int i = 0; i < getCount(); i++) {
@@ -100,7 +84,6 @@ class TicketListAdapter extends ColoredArrayAdapter<Ticket> implements TicketLis
         return tl;
     }
 
-    @Override
     public int getTicketContentCount() {
         int count = 0;
         for (int i = 0; i < getCount(); i++) {

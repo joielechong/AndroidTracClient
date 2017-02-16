@@ -36,7 +36,6 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Filterable;
 import android.widget.ListView;
@@ -44,8 +43,8 @@ import android.widget.TextView;
 
 import com.mfvl.mfvllib.MyLog;
 
-public class TicketListFragment extends TracClientFragment
-        implements SwipeRefreshLayout.OnRefreshListener, AdapterView.OnItemClickListener, AbsListView.OnScrollListener, HelpInterface {
+public class TicketListFragment extends TracClientFragment implements AbsListView.OnScrollListener,
+        SwipeRefreshLayout.OnRefreshListener, AdapterView.OnItemClickListener {
 
     private static final String ZOEKENNAME = "zoeken";
     private static final String ZOEKTEXTNAME = "filtertext";
@@ -55,7 +54,7 @@ public class TicketListFragment extends TracClientFragment
     private boolean scrolling = false;
     private boolean hasScrolled = false;
     private SwipeRefreshLayout swipeLayout = null;
-    private ArrayAdapter<Ticket> dataAdapter = null;
+    private TicketListAdapter dataAdapter = null;
     private ListView listView = null;
     private EditText filterText = null;
     private TextView hs = null;
@@ -64,6 +63,7 @@ public class TicketListFragment extends TracClientFragment
         public void onChanged() {
             super.onChanged();
             MyLog.logCall();
+            //MyLog.d("debug",new Exception());
             setStatus(listener.getTicketContentCount() + "/" + listener.getTicketCount());
         }
     };
@@ -97,8 +97,6 @@ public class TicketListFragment extends TracClientFragment
         super.onActivityCreated(savedInstanceState);
         MyLog.d("savedInstanceState = " + savedInstanceState);
 
-        setAdapter(listener.getAdapter());
-
         if (savedInstanceState != null) {
             zoeken = savedInstanceState.getBoolean(ZOEKENNAME);
             zoektext = savedInstanceState.getString(ZOEKTEXTNAME);
@@ -116,11 +114,11 @@ public class TicketListFragment extends TracClientFragment
         }
     }
 
-    void setAdapter(ArrayAdapter<Ticket> a) {
+    void setAdapter(TicketListAdapter a) {
         MyLog.d("a = " + a + " listView = " + listView);
         dataAdapter = a;
         listView.setAdapter(a);
-        a.registerDataSetObserver(observer);
+        dataAdapter.registerDataSetObserver(observer);
         zetZoeken();
     }
 
@@ -176,7 +174,7 @@ public class TicketListFragment extends TracClientFragment
                 if (dataAdapter != null) {
                     final Intent sendIntent = new Intent(Intent.ACTION_SEND);
                     String lijst = "";
-                    for (Ticket t : ((TicketListAdapterIF) dataAdapter).getTicketList()) {
+                    for (Ticket t : dataAdapter.getTicketList()) {
                         try {
                             lijst += t.getTicketnr() + ";" + t.getString("status") + ";" + t.getString("summary") + "\r\n";
                         } catch (final Exception e) {
@@ -235,7 +233,6 @@ public class TicketListFragment extends TracClientFragment
 
         listView = (ListView) view.findViewById(R.id.listOfTickets);
 //        MyLog.d("listView = " + listView);
-        registerForContextMenu(listView);
         scrolling = false;
         hasScrolled = false;
         listView.setOnItemClickListener(this);
@@ -264,10 +261,13 @@ public class TicketListFragment extends TracClientFragment
     public void onResume() {
         super.onResume();
         MyLog.logCall();
-        listView.setAdapter(listener.getAdapter());
+        dataAdapter = listener.getAdapter();
+        listView.setAdapter(dataAdapter);
+        dataAdapter.registerDataSetObserver(observer);
         zetZoeken();
         setScroll();
         listView.invalidate();
+        registerForContextMenu(listView);
     }
 
     @Override
@@ -284,6 +284,10 @@ public class TicketListFragment extends TracClientFragment
         MyLog.logCall();
         super.onPause();
         scrollPosition = listView.getFirstVisiblePosition();
+        dataAdapter = listener.getAdapter();
+        dataAdapter.unregisterDataSetObserver(observer);
+        listView.setAdapter(null);
+        unregisterForContextMenu(listView);
     }
 
     @Override
@@ -294,9 +298,6 @@ public class TicketListFragment extends TracClientFragment
         }
         if (listView != null) {
             listView.invalidateViews();
-            listView.getAdapter().unregisterDataSetObserver(observer);
-            listView.setAdapter(null);
-            unregisterForContextMenu(listView);
             listView = null;
         }
         super.onDestroyView();
@@ -355,17 +356,17 @@ public class TicketListFragment extends TracClientFragment
     }
 
     void dataHasChanged() {
-        try {
-            MyLog.d("hs = " + hs);
+//        try {
+        //MyLog.d("hs = " + hs);
             zetZoeken();
-            setStatus(listener.getTicketContentCount() + "/" + listener.getTicketCount());
+//            setStatus(listener.getTicketContentCount() + "/" + listener.getTicketCount());
             listener.getAdapter().notifyDataSetChanged();
-            getView().invalidate();
-            listView.invalidate();
-            listView.invalidateViews();
+//            getView().invalidate();
+//            listView.invalidate();
+//            listView.invalidateViews();
             setScroll();
-        } catch (Exception ignored) {
-        }
+//        } catch (Exception ignored) {
+//        }
     }
 
     private void setStatus(final String s) {

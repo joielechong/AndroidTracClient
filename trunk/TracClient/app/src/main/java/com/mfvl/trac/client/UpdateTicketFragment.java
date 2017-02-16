@@ -41,7 +41,7 @@ import java.util.List;
 
 import static com.mfvl.trac.client.Const.*;
 
-public class UpdateTicketFragment extends TracClientFragment implements HelpInterface {
+public class UpdateTicketFragment extends TracClientFragment {
     private static final String UPDATE_CURRENT_BUTTON = "currentButton";
     private static final String UPDATE_SPIN_POSITION = "spinPosition";
     private static final String UPDATE_OPTION_VAL = "optionVal";
@@ -117,8 +117,8 @@ public class UpdateTicketFragment extends TracClientFragment implements HelpInte
         try {
             for (int action = 0; action < _actions.length(); action++) {
                 final JSONArray actieInfo = _actions.getJSONArray(action);
-                setListener(R.id.canBut);
-                setListener(R.id.storeUpdate);
+                setOnClickListener(R.id.canBut, view, this);
+                setOnClickListener(R.id.storeUpdate, view, this);
                 final TextView explain = (TextView) view.findViewById(R.id.explaintxt);
                 final RadioButton rb = new RadioButton(getActivity());
                 final String hintText = actieInfo.getString(2);
