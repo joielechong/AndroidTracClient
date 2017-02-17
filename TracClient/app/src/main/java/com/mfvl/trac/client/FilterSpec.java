@@ -16,6 +16,10 @@
 
 package com.mfvl.trac.client;
 
+import static com.mfvl.trac.client.TracGlobal.*;
+
+import java.util.Locale;
+
 class FilterSpec extends Spec {
     private String _operator;
     private String _waarde;
@@ -82,7 +86,8 @@ class FilterSpec extends Spec {
     }
 
     public String toString() {
-        return _edited ? _veld : _veld + (_operator != null ? _operator : "") + (_waarde != null ? _waarde : "");
+        return _edited ? _veld : String.format(Locale.US, "%s%s%s", _veld, denull(_operator), denull(_waarde));
+        //return _edited ? _veld : _veld + (_operator != null ? _operator : "") + (_waarde != null ? _waarde : "");
     }
 
     @Override

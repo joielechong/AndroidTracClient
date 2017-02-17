@@ -18,6 +18,8 @@ package com.mfvl.trac.client;
 
 import java.io.Serializable;
 
+import static com.mfvl.trac.client.TracGlobal.*;
+
 class Spec extends TcObject implements Serializable, Cloneable {
     final String _veld;
 
@@ -44,6 +46,6 @@ class Spec extends TcObject implements Serializable, Cloneable {
 
     @Override
     public int hashCode() {
-        return (_veld != null ? _veld.hashCode() : 0) + super.hashCode();
+        return denull(_veld).hashCode() + super.hashCode();
     }
 }

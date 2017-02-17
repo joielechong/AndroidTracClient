@@ -19,8 +19,8 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
 			  android:gravity="center"
-			  android:theme="@style/AboutscreenTheme"
-              android:orientation="vertical">
+    android:orientation="vertical"
+    android:theme="@style/AboutscreenTheme">
 				
     <ImageView
         android:layout_width="wrap_content"
@@ -33,8 +33,8 @@
         android:text="@string/title_text"/>
 
     <TextView
-        style="@style/TitleScreenText"
-        android:text="@string/app_version"/>
+        android:id="@+id/version"
+        style="@style/TitleScreenText" />
 
     <TextView
         style="@style/TitleScreenText"
