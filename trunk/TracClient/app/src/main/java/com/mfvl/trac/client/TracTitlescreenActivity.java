@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.widget.TextView;
 
 import com.mfvl.mfvllib.MyLog;
 
@@ -40,6 +41,7 @@ public class TracTitlescreenActivity extends Activity implements Thread.Uncaught
         //MyLog.logCall();
         TracGlobal.initialize(getApplicationContext(), true);
         setContentView(R.layout.trac_version);
+        ((TextView) findViewById(R.id.version)).setText(com.mfvl.trac.client.BuildConfig.VERSION_NAME);
         TicketModel.delInstance();
         startService(new Intent(this, TracClientService.class));
     }

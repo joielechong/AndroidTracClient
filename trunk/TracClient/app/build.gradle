@@ -21,6 +21,7 @@ android {
     buildToolsVersion "${build_tools_version}"
 
     defaultConfig {
+        versionName "0.7-rc27"
         applicationId "com.mfvl.trac.client"
         targetSdkVersion 25
         resConfigs "nl","en","da","de","fr","pl","pt","ru","ar"
@@ -38,7 +39,7 @@ android {
     }
 
     applicationVariants.all { variant ->
-        variant.resValue "string", "versionName", variant.versionName
+//        variant.resValue "string", "versionName", variant.versionName
         variant.outputs.each    { output ->
             output.outputFile = new File("${System.env.PROJECTHOME}/APKFiles", "TracClient-${variant.buildType.name}.${variant.flavorName}.apk")
         }
@@ -113,20 +114,20 @@ dependencies {
     compile files('libs/httpclientandroidlib-1.2.1.jar')
     compile "com.android.support:appcompat-v7:${google_support_library}"
     compile "com.android.support:design:${google_support_library}"
-    compile "com.android.support:support-v4:${google_support_library}"
+    //   compile "com.android.support:support-v4:${google_support_library}"
     compile "andhradroid.dev:app:1.0.1"
     currentCompile "com.google.android.gms:play-services-ads-lite:${google_play_services_library}"
     //noinspection GradleDependency
     legacyCompile "com.google.android.gms:play-services-ads-lite:10.0.1"
 }
 
-preBuild.doFirst {
-    def parsedProjectXml = (new XmlParser()).parse("${System.env.PROJECTHOME}/TracClient/app/src/main/res/values/version.xml")
-    //noinspection GroovyAssignabilityCheck
-    println parsedProjectXml.string[0].@name + " : " + parsedProjectXml.string[0].text()
-    //noinspection GroovyAssignabilityCheck
-    android.defaultConfig.versionName = parsedProjectXml.string[0].text()
-}
+//preBuild.doFirst {
+//    def parsedProjectXml = (new XmlParser()).parse("${System.env.PROJECTHOME}/TracClient/app/src/main/res/values/version.xml")
+//    //noinspection GroovyAssignabilityCheck
+//    println parsedProjectXml.string[0].@name + " : " + parsedProjectXml.string[0].text()
+//    //noinspection GroovyAssignabilityCheck
+//    android.defaultConfig.versionName = parsedProjectXml.string[0].text()
+//}
 
 // dynamically load the signing values from private.properties
 File privatePropertiesFile = rootProject.file('private.properties')

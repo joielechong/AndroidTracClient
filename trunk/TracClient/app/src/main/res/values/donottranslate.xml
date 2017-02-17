@@ -24,6 +24,7 @@
     <string name="auteur">Michiel van Loon</string>
     <string name="email_address">michiel@van-loon.xs4all.nl</string>
     <string name="logfile">tc-log.txt</string>
+    <string name="CookieVersion">1</string>
 
     <string name="prefNrItemsKey">prefNrItems</string>
     <string name="prefFilterKey">filterstring</string>

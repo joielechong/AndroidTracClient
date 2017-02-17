@@ -70,7 +70,7 @@ final class TracGlobal {
             Resources res = context.getResources();
             settings = context.getSharedPreferences(PREFS_NAME, 0);
             //MyLog.d(settings.getAll());
-            versie = res.getString(R.string.app_version);
+            versie = BuildConfig.VERSION_NAME;
             MyLog.i("Started TracClient version " + versie);
 
             try {
@@ -263,6 +263,10 @@ final class TracGlobal {
             MyLog.e("Error converting time", e);
             return "";
         }
+    }
+
+    static String denull(String s) {
+        return s == null ? "" : s;
     }
 
 }
