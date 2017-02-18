@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 - 2016 Michiel van Loon
+ * Copyright (C) 2013 - 2017 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -489,7 +489,6 @@ public class TracLoginFragment extends TracClientFragment implements OnItemSelec
     private void verifyHostNameHack() {
         //MyLog.logCall();
         listener.startProgressBar(R.string.checking);
-        hideSoftKeyboard(getActivity());
         new Thread() {
             @Override
             public void run() {
@@ -579,7 +578,6 @@ public class TracLoginFragment extends TracClientFragment implements OnItemSelec
 
     private void performLogin() {
         //MyLog.logCall();
-        hideSoftKeyboard(getActivity());
         url = urlView.getText().toString();
         username = userView.getText().toString();
         password = pwView.getText().toString();
