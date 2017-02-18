@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 - 2016 Michiel van Loon
+ * Copyright (C) 2013 - 2017 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,6 @@ final class TracGlobal {
     static String prefFilterKey = "filterstring";
     static String prefSortKey = "sortString";
 
-    private static String versie = null;
     private static String _url = "";
     private static String _username = "";
     private static String _password = "";
@@ -70,8 +69,7 @@ final class TracGlobal {
             Resources res = context.getResources();
             settings = context.getSharedPreferences(PREFS_NAME, 0);
             //MyLog.d(settings.getAll());
-            versie = BuildConfig.VERSION_NAME;
-            MyLog.i("Started TracClient version " + versie);
+            MyLog.i("Started TracClient version " + BuildConfig.VERSION_NAME);
 
             try {
                 ticketGroupCount = Integer.parseInt(settings.getString(res.getString(R.string.prefNrItemsKey), "-1"));
@@ -179,7 +177,7 @@ final class TracGlobal {
 
     static boolean isFirstRun() {
         // MyLog.d("isFirstRun");
-        final String thisRun = versie;
+        final String thisRun = BuildConfig.VERSION_NAME;
         final String lastRun = settings.getString(PREF_1ST, "");
         settings.edit().putString(PREF_1ST, thisRun).apply();
         return !lastRun.equals(thisRun);
@@ -231,7 +229,7 @@ final class TracGlobal {
     }
 
     static boolean isRCVersion() {
-        return (versie != null) && (versie.toLowerCase(Locale.US).contains("rc"));
+        return BuildConfig.VERSION_NAME.toLowerCase(Locale.US).contains("rc");
     }
 
     /**

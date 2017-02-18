@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 - 2016 Michiel van Loon
+ * Copyright (C) 2013 - 2017 Michiel van Loon
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,6 +97,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     private static final String ListFragmentTag = "List_Fragment";
     private static final String NewFragmentTag = "New_Fragment";
     private static final String UpdFragmentTag = "Modify_Fragment";
+    private static final java.lang.String DONOTFINISH = "DoNotFinish";
 
     private boolean doubleBackToExitPressedOnce = false;
     private FrameLayout adViewContainer = null;
@@ -235,6 +236,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             filterList = (ArrayList<FilterSpec>) savedInstanceState.getSerializable(FILTERLISTNAME);
             sortList = (ArrayList<SortSpec>) savedInstanceState.getSerializable(SORTLISTNAME);
             dispAds = savedInstanceState.getBoolean(ADMOB, true);
+            doNotFinish = savedInstanceState.getBoolean(DONOTFINISH, false);
             TicketModel ticketModel = TicketModel.restore(savedInstanceState.getString(TicketModel.bundleKey));
             if (ticketModel != null) {
                 MyLog.d("restoring TicketModel");
@@ -313,30 +315,29 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             startListLoader(true);
         } else {
 
-            if (url != null && url.length() > 0) {
-                startListLoader(true);
-                final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
-                final Fragment ticketListFragment = new TicketListFragment();
+            final Fragment ticketListFragment = new TicketListFragment();
 
-                if (urlArg != null) {
-                    MyLog.d("select Ticket = " + ticketArg);
-                    final Bundle args = new Bundle();
-                    args.putInt("TicketArg", ticketArg);
-                    urlArg = null;
-                    ticketArg = -1;
-                    ticketListFragment.setArguments(args);
-                }
-                ft.add(R.id.displayList, ticketListFragment, ListFragmentTag);
-                ft.addToBackStack(ListFragmentTag);
-                ft.setTransition(FragmentTransaction.TRANSIT_NONE);
-                ft.commit();
-                MyLog.d("backstack initiated");
-            } else {  // No host known
+            if (urlArg != null) {
+                MyLog.d("select Ticket = " + ticketArg);
+                final Bundle args = new Bundle();
+                args.putInt("TicketArg", ticketArg);
+                urlArg = null;
+                ticketArg = -1;
+                ticketListFragment.setArguments(args);
+            }
+            ft.add(R.id.displayList, ticketListFragment, ListFragmentTag);
+            ft.addToBackStack(ListFragmentTag);
+            ft.setTransition(FragmentTransaction.TRANSIT_NONE);
+            ft.commit();
+            MyLog.d("backstack initiated");
+            if (url == null || url.length() == 0) {
                 Intent intent = new Intent(getString(R.string.editLoginAction));
                 intent.setClass(this, PrefSpecActivity.class);
                 MyLog.d(intent);
                 doNotFinish = true;
+
                 startActivity(intent);
                 MyLog.d("login pref started");
             }
@@ -501,7 +502,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         super.onResume();
         MyLog.logCall();
 
-        bindService(new Intent(TracStart.this,
+        bindService(new Intent(this,
                         TracClientService.class).setAction(getServiceAction()),
                 this, Context.BIND_AUTO_CREATE);
 
@@ -510,7 +511,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         if (getTopFragment() == null && !doNotFinish) {
             finish();
         }
-        doNotFinish = false;
+        //doNotFinish = false;
         if (adView != null) {
             adView.resume();
         }
@@ -533,14 +534,16 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
         }
         MyLog.d("isFinishing = " + isFinishing());
     /* save logfile when exiting */
-        mService.unregisterDataChangedListener(this);
+        if (mService != null) {
+            mService.unregisterDataChangedListener(this);
+        }
         if (isFinishing()) {
             MyLog.d("Stopping service");
             stopService(serviceIntent);
             if (isRCVersion()) {
                 MyLog.save();
             }
-        } else {
+        } else if (mService != null) {
             MyLog.d("unbinding from service");
             unbindService(this);
             mService = null;
@@ -556,6 +559,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
             tm.onSaveInstanceState(savedInstanceState);
         }
         savedInstanceState.putBoolean(ADMOB, dispAds);
+        savedInstanceState.putBoolean(DONOTFINISH, doNotFinish);
         savedInstanceState.putSerializable(SORTLISTNAME, sortList);
         savedInstanceState.putSerializable(FILTERLISTNAME, filterList);
         savedInstanceState.putString(CURRENT_URL, url);
@@ -810,7 +814,7 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     public void onBackStackChanged() {
         final int depth = getSupportFragmentManager().getBackStackEntryCount();
 
-        MyLog.d("depth = " + depth);
+        MyLog.d("depth = " + depth + " doNotFinish = " + doNotFinish);
         if (depth == 0 && !doNotFinish) {
             unbindService(this);
             finish();
