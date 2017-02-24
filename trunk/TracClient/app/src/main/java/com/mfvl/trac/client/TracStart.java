@@ -1199,6 +1199,11 @@ public class TracStart extends TcBaseActivity implements ServiceConnection, Frag
     }
 
     @Override
+    public void reportError() {
+        stopProgressBar();
+    }
+
+    @Override
     public void loadAborted() {
         notifyTicketListFragment();
     }
