@@ -61,6 +61,8 @@ interface DataChangedListener {
 
     void newTicketModel(TicketModel tm);
 
+    void reportError();
+
 }
 
 interface TicketCountInterface {
@@ -241,7 +243,7 @@ public class TracClientService extends Service {
                 }
             } catch (JSONRPCException e) {
                 MyLog.d("JSONRPCException", e);
-                popup_warning(getString(R.string.connerr, e.getMessage()));
+                popup_error(getString(R.string.connerr, e.getMessage()));
             } catch (InterruptedException e) {
                 MyLog.d("InterruptedException");
                 MyLog.toast(getString(R.string.interrupted));
@@ -249,7 +251,7 @@ public class TracClientService extends Service {
             } catch (Exception e) {
                 MyLog.d("Exception", e);
                 reportLoadAborted();
-                popup_warning(getString(R.string.connerr, e.getMessage()));
+                popup_error(getString(R.string.connerr, e.getMessage()));
             }
         } else {
             reportFase1Completed(mTickets);
@@ -373,6 +375,14 @@ public class TracClientService extends Service {
         MyLog.logCall();
         for (DataChangedListener oc : dcList) {
             oc.onDataChanged();
+        }
+    }
+
+    private void popup_error(CharSequence message) {
+        MyLog.d(message);
+        for (DataChangedListener oc : dcList) {
+            oc.showAlertBox(R.string.warning, message);
+            oc.reportError();
         }
     }
 
