@@ -369,17 +369,17 @@ public class TicketListFragment extends TracClientFragment implements AbsListVie
 //        }
     }
 
+    void startLoading() {
+//        MyLog.d("hs = " + hs);
+        setStatus(R.string.ophalen);
+    }
+
     private void setStatus(final String s) {
         MyLog.d("s = " + s);
         if (hs != null) {
             hs.setText(s);
             hs.invalidate();
         }
-    }
-
-    void startLoading() {
-//        MyLog.d("hs = " + hs);
-        setStatus(R.string.ophalen);
     }
 
     private void setStatus(final int s) {
