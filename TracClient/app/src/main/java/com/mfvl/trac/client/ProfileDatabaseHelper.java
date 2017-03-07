@@ -121,12 +121,12 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
         upgrade = true;
     }
 
-    void beginTransaction() {
+    private void beginTransaction() {
         open();
         sqlDb.beginTransaction();
     }
 
-    void endTransaction() {
+    private void endTransaction() {
         sqlDb.setTransactionSuccessful();
         sqlDb.endTransaction();
     }
@@ -206,7 +206,7 @@ class ProfileDatabaseHelper extends SQLiteOpenHelper {
         return profile;
     }
 
-    int delProfiles() {
+    private int delProfiles() {
         try {
             open();
             final String values[] = new String[]{""};

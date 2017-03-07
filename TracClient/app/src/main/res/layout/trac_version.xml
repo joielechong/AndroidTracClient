@@ -32,9 +32,10 @@
         style="@style/TitleScreenText.Big"
         android:text="@string/title_text"/>
 
+    <!--suppress AndroidDomInspection -->
     <TextView
-        android:id="@+id/version"
-        style="@style/TitleScreenText" />
+        style="@style/TitleScreenText"
+        android:text="@string/versionName" />
 
     <TextView
         style="@style/TitleScreenText"
