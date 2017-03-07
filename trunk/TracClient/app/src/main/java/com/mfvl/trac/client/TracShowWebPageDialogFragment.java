@@ -151,9 +151,7 @@ public class TracShowWebPageDialogFragment extends TcDialogFragment implements T
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             MyLog.logCall();
-            View v = inflater.inflate(R.layout.trac_version, container, false);
-            ((TextView) v.findViewById(R.id.version)).setText(BuildConfig.VERSION_NAME);
-            return v;
+            return inflater.inflate(R.layout.trac_version, container, false);
         }
     }
 

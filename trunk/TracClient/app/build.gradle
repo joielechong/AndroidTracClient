@@ -39,9 +39,11 @@ android {
         }
     }
 
-    applicationVariants.all { variant ->
-        variant.outputs.each    { output ->
-            output.outputFile = new File("${System.env.PROJECTHOME}/APKFiles", "TracClient-${variant.buildType.name}.${variant.flavorName}.apk")
+    applicationVariants.all {
+        variant ->
+            variant.resValue "string", "versionName", variant.versionName
+            variant.outputs.each { output ->
+                output.outputFile = new File("${System.env.PROJECTHOME}/APKFiles", "TracClient-${variant.buildType.name}.${variant.flavorName}.apk")
         }
     }
 
