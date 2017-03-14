@@ -148,7 +148,7 @@ task verifyPrivateProperties {
 
 tasks.whenTaskAdded { theTask ->
     // only verify the existence of private.properties, when the file is really needed
-    if (theTask.name.equals("validateReleaseSigning")) {
+    if (theTask.name == "validateReleaseSigning") {
         theTask.dependsOn "verifyPrivateProperties"
     }
 }
