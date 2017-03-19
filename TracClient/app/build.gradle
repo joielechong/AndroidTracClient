@@ -24,7 +24,7 @@ android {
         versionName "0.7-rc28"
         applicationId "com.mfvl.trac.client"
         targetSdkVersion 25
-        resConfigs "nl","en","da","de","fr","pl","pt","ru","ar"
+        resConfigs "nl", "en", "da", "de", "fr", "pl", "pt", "ru", "ar"
     }
 
     productFlavors {
@@ -44,10 +44,10 @@ android {
             variant.resValue "string", "versionName", variant.versionName
             variant.outputs.each { output ->
                 output.outputFile = new File("${System.env.PROJECTHOME}/APKFiles", "TracClient-${variant.buildType.name}.${variant.flavorName}.apk")
-        }
+            }
     }
 
-    sourceSets.main{
+    sourceSets.main {
         setRoot("${System.env.PROJECTHOME}/TracClient/app/src/main")
     }
 
@@ -87,17 +87,17 @@ android {
             debuggable true
             minifyEnabled false
         }
-	all {
-        try {
-            def rev = rootProject.svnUpdate(file("${System.env.PROJECTHOME}/TracClient/"))
-            println "Updated to revision " + rev
-            buildConfigField "int", "SVN_REVISION", "${rev}"
+        all {
+            try {
+                def rev = rootProject.svnUpdate(file("${System.env.PROJECTHOME}/TracClient/"))
+                println "Updated to revision " + rev
+                buildConfigField "int", "SVN_REVISION", "${rev}"
+            }
+            catch (Exception ignored) {
+                println "Cannot get SVN revision"
+                buildConfigField "int", "SVN_REVISION", "0"
+            }
         }
-        catch (Exception ignored) {
-            println "Cannot get SVN revision"
-            buildConfigField "int", "SVN_REVISION", "0"
-        }
-	}
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
