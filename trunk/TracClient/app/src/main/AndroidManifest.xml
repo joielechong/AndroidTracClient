@@ -16,10 +16,8 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" package="com.mfvl.trac.client"
-    android:installLocation="auto" android:versionCode="103"
-    android:versionName="@string/app_version">
-
-    <uses-sdk android:minSdkVersion="11" android:targetSdkVersion="24" />
+    android:installLocation="auto"
+    android:versionName="@string/appVersion">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -142,7 +140,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".RefreshService"
+        <service android:name=".TracClientService"
             android:exported="false">
             <intent-filter>
                 <!-- action android:name="@string/serviceAction" / -->
