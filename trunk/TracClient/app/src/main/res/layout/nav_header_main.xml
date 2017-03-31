@@ -52,7 +52,8 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:text="@string/email_address"/>
+            android:text="@string/email_address"
+            tools:ignore="RelativeOverlap" />
 
         <ImageButton
             android:id="@+id/settings"

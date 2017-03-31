@@ -116,6 +116,7 @@ dependencies {
     compile "com.android.support:appcompat-v7:${google_support_library}"
     compile "com.android.support:design:${google_support_library}"
     compile "andhradroid.dev:app:1.0.1"
+    //compile "andhradroid.dev:aFilechooser:1.0.1"
     currentCompile "com.google.android.gms:play-services-ads-lite:${google_play_services_library}"
     //noinspection GradleDependency
     legacyCompile "com.google.android.gms:play-services-ads-lite:10.0.1"
